@@ -19,6 +19,8 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class jMQTT extends eqLogic {
 
+    private $client = null;
+    
     public function preSave() {
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
             //check if some change needs reloading daemon
@@ -136,29 +138,17 @@ class jMQTT extends eqLogic {
 
     public static function daemon() {
 
-    	$mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
-    	$mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
-    	$mosqId = config::byKey('mqttId', 'jMQTT', 'Jeedom');
+    	$mosqHost  = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
+    	$mosqPort  = config::byKey('mqttPort', 'jMQTT', '1883');
+    	$mosqId    = config::byKey('mqttId', 'jMQTT', 'Jeedom');
         $mosqTopic = config::byKey('mqttTopic', 'jMQTT', '#');
-        $mosqQos = config::byKey('mqttQos', 'jMQTT', 1);
-
-        //$mosqAuth = config::byKey('mqttAuth', 'jMQTT', 0);
-        $mosqUser = config::byKey('mqttUser', 'jMQTT', 0);
-        $mosqPass = config::byKey('mqttPass', 'jMQTT', 0);
-        //$mosqSecure = config::byKey('mqttSecure', 'jMQTT', 0);
-        //$mosqCA = config::byKey('mqttCA', 'jMQTT', 0);
-        //$mosqTree = config::byKey('mqttTree', 'jMQTT', 0);
+        $mosqQos   = config::byKey('mqttQos', 'jMQTT', 1);
+        $mosqUser  = config::byKey('mqttUser', 'jMQTT', 0);
+        $mosqPass  = config::byKey('mqttPass', 'jMQTT', 0);
         log::add('jMQTT', 'info', 'Paramètres utilisés, Host : ' . $mosqHost . ', Port : ' . $mosqPort . ', ID : ' . $mosqId);
         if (isset($mosqHost) && isset($mosqPort) && isset($mosqId)) {
             //https://github.com/mqtt/mqtt.github.io/wiki/mosquitto-php
             $client = new Mosquitto\Client($mosqId);
-            //if ($mosqAuth) {
-            //$client->setCredentials($mosqUser, $mosqPass);
-            //}
-            //if ($mosqSecure) {
-            //$client->setTlsOptions($certReqs = Mosquitto\Client::SSL_VERIFY_PEER, $tlsVersion = 'tlsv1.2', $ciphers=NULL);
-            //$client->setTlsCertificates($caPath = 'path/to/my/ca.crt');
-            //}
             $client->onConnect('jMQTT::connect');
             $client->onDisconnect('jMQTT::disconnect');
             $client->onSubscribe('jMQTT::subscribe');
