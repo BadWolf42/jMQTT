@@ -22,7 +22,6 @@
         "Doit être indiqué sous la forme : 3xAA": "Indicar el formato : 3xAA",
         "Inscrit au Topic": "Registrar un Tema",
         "Topic principal de l'équipement MQTT": "Tema princiapal del dispositivo MQTT",
-        "Topic Enfant": "Tema hijo",
         "Profondeur du Topic: ": "Profundidad del tema:",
         "Ce topic seulement (+)": "Este tema solo (+)",
         "Tout les sous-topics} (#)": "Todos los subtemas} (#)",

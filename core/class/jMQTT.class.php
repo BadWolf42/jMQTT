@@ -26,32 +26,30 @@ class jMQTT extends eqLogic {
 		$_topic = $this->getConfiguration('topic');
 		$_wcard = $this->getConfiguration('wcard');
 		$_qos = $this->getConfiguration('Qos');
-		if ($this->getConfiguration('isChild') != "1") {
-			if ($_logicalId != $_topic) {
-				$this->setLogicalId($_topic);
-				$this->setConfiguration('reload_d', '1');
-			}
-			else $this->setConfiguration('reload_d', '0');
+        if ($_logicalId != $_topic) {
+            $this->setLogicalId($_topic);
+            $this->setConfiguration('reload_d', '1');
+        }
+        else $this->setConfiguration('reload_d', '0');
 
-			if ($this->getConfiguration('wcard') != $this->getConfiguration('prev_wcard')) {
-				$this->setConfiguration('prev_wcard',$_wcard);
-				$this->setConfiguration('reload_d', '1');
-			}
-			if(!$this->getConfiguration('wcard') ) {
-				$this->setConfiguration('wcard','+');
-				$this->setConfiguration('prev_wcard','+');
-				$this->setConfiguration('reload_d', '1');
-			}
-			if ($this->getConfiguration('Qos') != $this->getConfiguration('prev_Qos')) {
-				$this->setConfiguration('prev_Qos',$_qos);
-				$this->setConfiguration('reload_d', '1');
-			}
-			if(!$this->getConfiguration('Qos') ) {
-				$this->setConfiguration('Qos','+');
-				$this->setConfiguration('prev_Qos','+');
-				$this->setConfiguration('reload_d', '1');
-			}
-		}
+        if ($this->getConfiguration('wcard') != $this->getConfiguration('prev_wcard')) {
+            $this->setConfiguration('prev_wcard',$_wcard);
+            $this->setConfiguration('reload_d', '1');
+        }
+        if(!$this->getConfiguration('wcard') ) {
+            $this->setConfiguration('wcard','+');
+            $this->setConfiguration('prev_wcard','+');
+            $this->setConfiguration('reload_d', '1');
+        }
+        if ($this->getConfiguration('Qos') != $this->getConfiguration('prev_Qos')) {
+            $this->setConfiguration('prev_Qos',$_qos);
+            $this->setConfiguration('reload_d', '1');
+        }
+        if(!$this->getConfiguration('Qos') ) {
+            $this->setConfiguration('Qos','+');
+            $this->setConfiguration('prev_Qos','+');
+            $this->setConfiguration('reload_d', '1');
+        }
 	}
   }
   public function postSave() {
@@ -175,18 +173,16 @@ class jMQTT extends eqLogic {
 
 		if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
 			foreach (eqLogic::byType('jMQTT', true) as $mqtt) {
-				if ($mqtt->getConfiguration('isChild') != "1") {
-					$devicetopic = $mqtt->getConfiguration('topic');
-					$wildcard    = $mqtt->getConfiguration('wcard');
-					$qos         = (int)$mqtt->getConfiguration('Qos');
-					if (!$qos) $qos = 1;
-					if($wildcard) {
-						$fulltopic = $devicetopic . "/" . $wildcard;
-					}
-					else $fulltopic = $devicetopic;
-					log::add('jMQTT', 'info', 'Subscribe to topic ' . $fulltopic);
-					$client->subscribe($fulltopic, $qos); // Subscribe to topic
-				}
+                $devicetopic = $mqtt->getConfiguration('topic');
+                $wildcard    = $mqtt->getConfiguration('wcard');
+                $qos         = (int)$mqtt->getConfiguration('Qos');
+                if (!$qos) $qos = 1;
+                if($wildcard) {
+                    $fulltopic = $devicetopic . "/" . $wildcard;
+                }
+                else $fulltopic = $devicetopic;
+                log::add('jMQTT', 'info', 'Subscribe to topic ' . $fulltopic);
+                $client->subscribe($fulltopic, $qos); // Subscribe to topic
 			}
 		}
 		else {
@@ -263,7 +259,6 @@ class jMQTT extends eqLogic {
 	  $elogic->setConfiguration('prev_wcard', '+');
 	  $elogic->setConfiguration('Qos', '1');
 	  $elogic->setConfiguration('prev_Qos', '1');
-	  $elogic->setConfiguration('isChild', '1');
 	  $elogic->setConfiguration('reload_d', '0');
 	  log::add('jMQTT', 'info', 'Saving device ');
       $elogic->save();

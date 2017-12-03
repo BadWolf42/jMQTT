@@ -166,12 +166,6 @@ $eqLogics = eqLogic::byType('jMQTT');
 				</select>
               </div>
             </div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label">{{Topic Enfant}}</label>
-				<div class="col-sm-8">	
-					<label class="checkbox-inline"><input id="isChild" type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="isChild" disabled readonly /></label>
-				</div>
-			</div>
             
 			<div class="form-group ">
 				<label class="col-sm-3 control-label">{{Profondeur du Topic: }}</label>
