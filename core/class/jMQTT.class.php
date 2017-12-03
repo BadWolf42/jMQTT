@@ -19,281 +19,255 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class jMQTT extends eqLogic {
 
-  public function preSave() {
-	if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
-	    //check if some change needs reloading daemon
-		$_logicalId = $this->getLogicalId();
-		$_topic = $this->getConfiguration('topic');
-		$_wcard = $this->getConfiguration('wcard');
-		$_qos = $this->getConfiguration('Qos');
-        if ($_logicalId != $_topic) {
-            $this->setLogicalId($_topic);
-            $this->setConfiguration('reload_d', '1');
+    public function preSave() {
+        if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
+            //check if some change needs reloading daemon
+            $_logicalId = $this->getLogicalId();
+            $_topic = $this->getConfiguration('topic');
+            $_wcard = $this->getConfiguration('wcard');
+            $_qos = $this->getConfiguration('Qos');
+
+            if ($_logicalId != $_topic) {
+                $this->setLogicalId($_topic);
+                $this->setConfiguration('reload_d', '1');
+            }
+            else $this->setConfiguration('reload_d', '0');
+
+            if ($this->getConfiguration('wcard') != $this->getConfiguration('prev_wcard')) {
+                $this->setConfiguration('prev_wcard',$_wcard);
+                $this->setConfiguration('reload_d', '1');
+            }
+            if(!$this->getConfiguration('wcard') ) {
+                $this->setConfiguration('wcard','+');
+                $this->setConfiguration('prev_wcard','+');
+                $this->setConfiguration('reload_d', '1');
+            }
+            if ($this->getConfiguration('Qos') != $this->getConfiguration('prev_Qos')) {
+                $this->setConfiguration('prev_Qos',$_qos);
+                $this->setConfiguration('reload_d', '1');
+            }
+            if(!$this->getConfiguration('Qos') ) {
+                $this->setConfiguration('Qos','+');
+                $this->setConfiguration('prev_Qos','+');
+                $this->setConfiguration('reload_d', '1');
+            }
         }
-        else $this->setConfiguration('reload_d', '0');
+    }
 
-        if ($this->getConfiguration('wcard') != $this->getConfiguration('prev_wcard')) {
-            $this->setConfiguration('prev_wcard',$_wcard);
-            $this->setConfiguration('reload_d', '1');
+    public function postSave() {
+        if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
+            if ($this->getConfiguration('reload_d') == "1") {
+                $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+                //Restarting mqtt daemon
+                if (is_object($cron) && $cron->running()) {
+                    $cron->halt();
+                    $cron->run();
+                }
+            }
         }
-        if(!$this->getConfiguration('wcard') ) {
-            $this->setConfiguration('wcard','+');
-            $this->setConfiguration('prev_wcard','+');
-            $this->setConfiguration('reload_d', '1');
+    }
+  
+    public function postRemove() {
+        if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
+            $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+            //Restarting mqtt daemon
+            if (is_object($cron) && $cron->running()) {
+                $cron->halt();
+                $cron->run();
+            }
         }
-        if ($this->getConfiguration('Qos') != $this->getConfiguration('prev_Qos')) {
-            $this->setConfiguration('prev_Qos',$_qos);
-            $this->setConfiguration('reload_d', '1');
+    }
+
+    public static function health() {
+        $return = array();
+        $mosqHost = config::byKey('mqttAdress', 'jMQTT', 0);
+        if ($mosqHost == '') {
+            $mosqHost = '127.0.0.1';
         }
-        if(!$this->getConfiguration('Qos') ) {
-            $this->setConfiguration('Qos','+');
-            $this->setConfiguration('prev_Qos','+');
-            $this->setConfiguration('reload_d', '1');
+        $mosqPort = config::byKey('mqttPort', 'jMQTT', 0);
+        if ($mosqPort == '') {
+            $mosqPort = '1883';
         }
-	}
-  }
-  public function postSave() {
-	if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
-		if ($this->getConfiguration('reload_d') == "1") {
-			$cron = cron::byClassAndFunction('jMQTT', 'daemon');
-			//Restarting mqtt daemon
-			if (is_object($cron) && $cron->running()) {
-				$cron->halt();
-				$cron->run();
-			}
-		}
-	}
+        $socket = socket_create(AF_INET, SOCK_STREAM, 0);
+        $server = socket_connect ($socket , $mosqHost, $mosqPort);
 
-  }
-
-
-  public function postRemove() {
-	if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
-		$cron = cron::byClassAndFunction('jMQTT', 'daemon');
-		//Restarting mqtt daemon
-		if (is_object($cron) && $cron->running()) {
-			$cron->halt();
-			$cron->run();
-		}
-	}
-  }
-
-
-  public static function health() {
-    $return = array();
-    $mosqHost = config::byKey('mqttAdress', 'jMQTT', 0);
-    if ($mosqHost == '') {
-      $mosqHost = '127.0.0.1';
+        $return[] = array(
+            'test' => __('Mosquitto', __FILE__),
+            'result' => ($server) ? __('OK', __FILE__) : __('NOK', __FILE__),
+            'advice' => ($server) ? '' : __('Indique si Mosquitto est disponible', __FILE__),
+            'state' => $server,
+        );
+        return $return;
     }
-    $mosqPort = config::byKey('mqttPort', 'jMQTT', 0);
-    if ($mosqPort == '') {
-      $mosqPort = '1883';
-    }
-    $socket = socket_create(AF_INET, SOCK_STREAM, 0);
-    $server = socket_connect ($socket , $mosqHost, $mosqPort);
 
-    $return[] = array(
-      'test' => __('Mosquitto', __FILE__),
-      'result' => ($server) ? __('OK', __FILE__) : __('NOK', __FILE__),
-      'advice' => ($server) ? '' : __('Indique si Mosquitto est disponible', __FILE__),
-      'state' => $server,
-    );
-    return $return;
-  }
+    public static function deamon_info() {
+        message::add('jMQTT', 'chargement info démon');
+        $return = array();
+        $return['log'] = '';
+        $return['state'] = 'nok';
+        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+        if (is_object($cron) && $cron->running()) {
+            $return['state'] = 'ok';
+        }
+        $return['launchable'] = 'ok';
+        return $return;
+    }
 
-  public static function deamon_info() {
-      message::add('jMQTT', 'chargement info démon');
-      $return = array();
-    $return['log'] = '';
-    $return['state'] = 'nok';
-    $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-    if (is_object($cron) && $cron->running()) {
-      $return['state'] = 'ok';
+    public static function deamon_start($_debug = false) {
+        self::deamon_stop();
+        $deamon_info = self::deamon_info();
+        if ($deamon_info['launchable'] != 'ok') {
+            throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
+        }
+        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+        if (!is_object($cron)) {
+            throw new Exception(__('Tache cron introuvable', __FILE__));
+        }
+        $cron->run();
     }
-    $return['launchable'] = 'ok';
-    return $return;
-  }
-  public static function deamon_start($_debug = false) {
-    self::deamon_stop();
-    $deamon_info = self::deamon_info();
-    if ($deamon_info['launchable'] != 'ok') {
-      throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
+    
+    public static function deamon_stop() {
+        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+        if (!is_object($cron)) {
+            throw new Exception(__('Tache cron introuvable', __FILE__));
+        }
+        $cron->halt();
     }
-    $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-    if (!is_object($cron)) {
-      throw new Exception(__('Tache cron introuvable', __FILE__));
-    }
-    $cron->run();
-  }
-  public static function deamon_stop() {
-    $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-    if (!is_object($cron)) {
-      throw new Exception(__('Tache cron introuvable', __FILE__));
-    }
-    $cron->halt();
-  }
 
-  public static function daemon() {
+    public static function daemon() {
 
     	$mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
     	$mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
     	$mosqId = config::byKey('mqttId', 'jMQTT', 'Jeedom');
-	$mosqTopic = config::byKey('mqttTopic', 'jMQTT', '#');
-	$mosqQos = config::byKey('mqttQos', 'jMQTT', 1);
+        $mosqTopic = config::byKey('mqttTopic', 'jMQTT', '#');
+        $mosqQos = config::byKey('mqttQos', 'jMQTT', 1);
 
-    //$mosqAuth = config::byKey('mqttAuth', 'jMQTT', 0);
-    $mosqUser = config::byKey('mqttUser', 'jMQTT', 0);
-    $mosqPass = config::byKey('mqttPass', 'jMQTT', 0);
-    //$mosqSecure = config::byKey('mqttSecure', 'jMQTT', 0);
-    //$mosqCA = config::byKey('mqttCA', 'jMQTT', 0);
-    //$mosqTree = config::byKey('mqttTree', 'jMQTT', 0);
-    log::add('jMQTT', 'info', 'Paramètres utilisés, Host : ' . $mosqHost . ', Port : ' . $mosqPort . ', ID : ' . $mosqId);
-    if (isset($mosqHost) && isset($mosqPort) && isset($mosqId)) {
-      //https://github.com/mqtt/mqtt.github.io/wiki/mosquitto-php
-      $client = new Mosquitto\Client($mosqId);
-      //if ($mosqAuth) {
-      //$client->setCredentials($mosqUser, $mosqPass);
-      //}
-      //if ($mosqSecure) {
-      //$client->setTlsOptions($certReqs = Mosquitto\Client::SSL_VERIFY_PEER, $tlsVersion = 'tlsv1.2', $ciphers=NULL);
-      //$client->setTlsCertificates($caPath = 'path/to/my/ca.crt');
-      //}
-      $client->onConnect('jMQTT::connect');
-      $client->onDisconnect('jMQTT::disconnect');
-      $client->onSubscribe('jMQTT::subscribe');
-      $client->onMessage('jMQTT::message');
-      $client->onLog('jMQTT::logmq');
-      $client->setWill('/jeedom', "Client died :-(", 1, 0);
+        //$mosqAuth = config::byKey('mqttAuth', 'jMQTT', 0);
+        $mosqUser = config::byKey('mqttUser', 'jMQTT', 0);
+        $mosqPass = config::byKey('mqttPass', 'jMQTT', 0);
+        //$mosqSecure = config::byKey('mqttSecure', 'jMQTT', 0);
+        //$mosqCA = config::byKey('mqttCA', 'jMQTT', 0);
+        //$mosqTree = config::byKey('mqttTree', 'jMQTT', 0);
+        log::add('jMQTT', 'info', 'Paramètres utilisés, Host : ' . $mosqHost . ', Port : ' . $mosqPort . ', ID : ' . $mosqId);
+        if (isset($mosqHost) && isset($mosqPort) && isset($mosqId)) {
+            //https://github.com/mqtt/mqtt.github.io/wiki/mosquitto-php
+            $client = new Mosquitto\Client($mosqId);
+            //if ($mosqAuth) {
+            //$client->setCredentials($mosqUser, $mosqPass);
+            //}
+            //if ($mosqSecure) {
+            //$client->setTlsOptions($certReqs = Mosquitto\Client::SSL_VERIFY_PEER, $tlsVersion = 'tlsv1.2', $ciphers=NULL);
+            //$client->setTlsCertificates($caPath = 'path/to/my/ca.crt');
+            //}
+            $client->onConnect('jMQTT::connect');
+            $client->onDisconnect('jMQTT::disconnect');
+            $client->onSubscribe('jMQTT::subscribe');
+            $client->onMessage('jMQTT::message');
+            $client->onLog('jMQTT::logmq');
+            $client->setWill('/jeedom', "Client died :-(", 1, 0);
 
-      try {
-        if (isset($mosqUser)) {
-          $client->setCredentials($mosqUser, $mosqPass);
-        }
-        $client->connect($mosqHost, $mosqPort, 60);
-
-		if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
-			foreach (eqLogic::byType('jMQTT', true) as $mqtt) {
-                $devicetopic = $mqtt->getConfiguration('topic');
-                $wildcard    = $mqtt->getConfiguration('wcard');
-                $qos         = (int)$mqtt->getConfiguration('Qos');
-                if (!$qos) $qos = 1;
-                if($wildcard) {
-                    $fulltopic = $devicetopic . "/" . $wildcard;
+            try {
+                if (isset($mosqUser)) {
+                    $client->setCredentials($mosqUser, $mosqPass);
                 }
-                else $fulltopic = $devicetopic;
-                log::add('jMQTT', 'info', 'Subscribe to topic ' . $fulltopic);
-                $client->subscribe($fulltopic, $qos); // Subscribe to topic
-			}
-		}
-		else {
-			$client->subscribe($mosqTopic, $mosqQos); // !auto: Subscribe to root topic
-			log::add('jMQTT', 'debug', 'Subscribe to topic ' . $mosqtopic);
-		}
+                $client->connect($mosqHost, $mosqPort, 60);
 
-        //$client->loopForever();
-        while (true) { $client->loop(); }
-      }
-      catch (Exception $e){
-        log::add('jMQTT', 'error', $e->getMessage());
-      }
-    } else {
-      log::add('jMQTT', 'info', 'Tous les paramètres ne sont pas définis');
-    }
-  }
+                if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
+                    foreach (eqLogic::byType('jMQTT', true) as $mqtt) {
+                        $devicetopic = $mqtt->getConfiguration('topic');
+                        $wildcard    = $mqtt->getConfiguration('wcard');
+                        $qos         = (int)$mqtt->getConfiguration('Qos');
+                        if (!$qos) $qos = 1;
+                        if($wildcard) {
+                            $fulltopic = $devicetopic . "/" . $wildcard;
+                        }
+                        else $fulltopic = $devicetopic;
+                        log::add('jMQTT', 'info', 'Subscribe to topic ' . $fulltopic);
+                        $client->subscribe($fulltopic, $qos); // Subscribe to topic
+                    }
+                }
+                else {
+                    $client->subscribe($mosqTopic, $mosqQos); // !auto: Subscribe to root topic
+                    log::add('jMQTT', 'debug', 'Subscribe to topic ' . $mosqtopic);
+                }
 
-  public function stopDaemon() {
-    $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-    $cron->stop();
-  }
-
-  public static function connect( $r, $message ) {
-    log::add('jMQTT', 'info', 'Connexion à Mosquitto avec code ' . $r . ' ' . $message);
-    config::save('status', '1',  'jMQTT');
-  }
-
-  public static function disconnect( $r ) {
-    log::add('jMQTT', 'debug', 'Déconnexion de Mosquitto avec code ' . $r);
-    config::save('status', '0',  'jMQTT');
-  }
-
-  public static function subscribe( ) {
-    log::add('jMQTT', 'debug', 'Subscribe ');
-  }
-
-  public static function logmq( $code, $str ) {
-    log::add('jMQTT', 'debug', $code . ' : ' . $str);
-  }
-
-
-  public static function message( $message ) {
-    log::add('jMQTT', 'debug', 'Message ' . $message->payload . ' sur ' . $message->topic);
-    $topic = $message->topic;
-
-    if(!ctype_print($topic) || empty($topic)) {
-      log::add('jMQTT', 'debug', 'Message skipped : "'.$message->topic.'" is not a valid topic');
-      return;
+                //$client->loopForever();
+                while (true) { $client->loop(); }
+            }
+            catch (Exception $e){
+                log::add('jMQTT', 'error', $e->getMessage());
+            }
+        } else {
+            log::add('jMQTT', 'info', 'Tous les paramètres ne sont pas définis');
+        }
     }
 
-    $topicArray = explode("/", $topic);
-    $cmdId = end($topicArray);
-    $key = count($topicArray) - 1;
-    unset($topicArray[$key]);
-    $nodeid = (implode($topicArray,'/'));
-    $value = $message->payload;
-
-    $elogic = self::byLogicalId($nodeid, 'jMQTT');
-
-    if (is_object($elogic)) {
-      $elogic->setStatus('lastCommunication', date('Y-m-d H:i:s'));
-      $elogic->save();
-    } else {
-
-      $elogic = new jMQTT();
-      $elogic->setEqType_name('jMQTT');
-      $elogic->setLogicalId($nodeid);
-      $elogic->setName($nodeid);
-      $elogic->setIsEnable(true);
-      $elogic->setStatus('lastCommunication', date('Y-m-d H:i:s'));
-      $elogic->setConfiguration('topic', $nodeid);
-	  $elogic->setConfiguration('wcard', '+');
-	  $elogic->setConfiguration('prev_wcard', '+');
-	  $elogic->setConfiguration('Qos', '1');
-	  $elogic->setConfiguration('prev_Qos', '1');
-	  $elogic->setConfiguration('reload_d', '0');
-	  log::add('jMQTT', 'info', 'Saving device ');
-      $elogic->save();
+    public function stopDaemon() {
+        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+        $cron->stop();
     }
 
-      log::add('jMQTT', 'info', 'Message texte : ' . $value . ' pour information : ' . $cmdId . ' sur : ' . $nodeid);
-      $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($elogic->getId(),$cmdId);
-      if (!is_object($cmdlogic)) {
-        log::add('jMQTT', 'info', 'Cmdlogic n existe pas, creation');
-        $cmdlogic = new jMQTTCmd();
-        $cmdlogic->setEqLogic_id($elogic->getId());
-        $cmdlogic->setEqType('jMQTT');
-        $cmdlogic->setIsVisible(1);
-        $cmdlogic->setIsHistorized(0);
-        $cmdlogic->setSubType('string');
-        $cmdlogic->setLogicalId($cmdId);
-        $cmdlogic->setType('info');
-        $cmdlogic->setName( $cmdId );
-        $cmdlogic->setConfiguration('topic', $topic);
-		$cmdlogic->setConfiguration('parseJson', 0); //default don't parse json data
-        $cmdlogic->save();
-      }
-      $cmdlogic->setConfiguration('value', $value);
-      $cmdlogic->save();
-      $cmdlogic->event($value);
+    public static function connect( $r, $message ) {
+        log::add('jMQTT', 'info', 'Connexion à Mosquitto avec code ' . $r . ' ' . $message);
+        config::save('status', '1',  'jMQTT');
+    }
 
-      if ($value[0] == '{' && substr($value, -1) == '}' && $cmdlogic->getConfiguration('parseJson') == 1) {
-        // payload is json
-        $nodeid = $topic;
-        $json = json_decode($value);
-        foreach ($json as $cmdId => $value) {
-          $topicjson = $topic . '{' . $cmdId . '}';
-          log::add('jMQTT', 'info', 'Message json : ' . $value . ' pour information : ' . $cmdId . ' sur : ' . $nodeid);
-          $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($elogic->getId(),$cmdId);
-          if (!is_object($cmdlogic)) {
+    public static function disconnect( $r ) {
+        log::add('jMQTT', 'debug', 'Déconnexion de Mosquitto avec code ' . $r);
+        config::save('status', '0',  'jMQTT');
+    }
+
+    public static function subscribe( ) {
+        log::add('jMQTT', 'debug', 'Subscribe ');
+    }
+
+    public static function logmq( $code, $str ) {
+        log::add('jMQTT', 'debug', $code . ' : ' . $str);
+    }
+
+
+    public static function message( $message ) {
+        log::add('jMQTT', 'debug', 'Message ' . $message->payload . ' sur ' . $message->topic);
+        $topic = $message->topic;
+
+        if(!ctype_print($topic) || empty($topic)) {
+            log::add('jMQTT', 'debug', 'Message skipped : "'.$message->topic.'" is not a valid topic');
+            return;
+        }
+
+        $topicArray = explode("/", $topic);
+        $cmdId = end($topicArray);
+        $key = count($topicArray) - 1;
+        unset($topicArray[$key]);
+        $nodeid = (implode($topicArray,'/'));
+        $value = $message->payload;
+
+        $elogic = self::byLogicalId($nodeid, 'jMQTT');
+
+        if (is_object($elogic)) {
+            $elogic->setStatus('lastCommunication', date('Y-m-d H:i:s'));
+            $elogic->save();
+        } else {
+
+            $elogic = new jMQTT();
+            $elogic->setEqType_name('jMQTT');
+            $elogic->setLogicalId($nodeid);
+            $elogic->setName($nodeid);
+            $elogic->setIsEnable(true);
+            $elogic->setStatus('lastCommunication', date('Y-m-d H:i:s'));
+            $elogic->setConfiguration('topic', $nodeid);
+            $elogic->setConfiguration('wcard', '+');
+            $elogic->setConfiguration('prev_wcard', '+');
+            $elogic->setConfiguration('Qos', '1');
+            $elogic->setConfiguration('prev_Qos', '1');
+            $elogic->setConfiguration('reload_d', '0');
+            log::add('jMQTT', 'info', 'Saving device ');
+            $elogic->save();
+        }
+
+        log::add('jMQTT', 'info', 'Message texte : ' . $value . ' pour information : ' . $cmdId . ' sur : ' . $nodeid);
+        $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($elogic->getId(),$cmdId);
+        if (!is_object($cmdlogic)) {
             log::add('jMQTT', 'info', 'Cmdlogic n existe pas, creation');
             $cmdlogic = new jMQTTCmd();
             $cmdlogic->setEqLogic_id($elogic->getId());
@@ -304,127 +278,150 @@ class jMQTT extends eqLogic {
             $cmdlogic->setLogicalId($cmdId);
             $cmdlogic->setType('info');
             $cmdlogic->setName( $cmdId );
-            $cmdlogic->setConfiguration('topic', $topicjson);
+            $cmdlogic->setConfiguration('topic', $topic);
+            $cmdlogic->setConfiguration('parseJson', 0); //default don't parse json data
             $cmdlogic->save();
-          }
-          $cmdlogic->setConfiguration('value', $value);
-          $cmdlogic->save();
-          $cmdlogic->event($value);
         }
-      }
-  }
+        $cmdlogic->setConfiguration('value', $value);
+        $cmdlogic->save();
+        $cmdlogic->event($value);
 
-  public static function publishMosquitto( $subject, $message, $qos , $retain) {
-    log::add('jMQTT', 'debug', 'Envoi du message ' . $message . ' vers ' . $subject);
-    $mosqHost = config::byKey('mqttAdress', 'jMQTT', 0);
-    $mosqPort = config::byKey('mqttPort', 'jMQTT', 0);
-    $mosqId = config::byKey('mqttId', 'jMQTT', 0);
-    if ($mosqHost == '') {
-      $mosqHost = '127.0.0.1';
+        if ($value[0] == '{' && substr($value, -1) == '}' && $cmdlogic->getConfiguration('parseJson') == 1) {
+            // payload is json
+            $nodeid = $topic;
+            $json = json_decode($value);
+            foreach ($json as $cmdId => $value) {
+                $topicjson = $topic . '{' . $cmdId . '}';
+                log::add('jMQTT', 'info', 'Message json : ' . $value . ' pour information : ' . $cmdId . ' sur : ' . $nodeid);
+                $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($elogic->getId(),$cmdId);
+                if (!is_object($cmdlogic)) {
+                    log::add('jMQTT', 'info', 'Cmdlogic n existe pas, creation');
+                    $cmdlogic = new jMQTTCmd();
+                    $cmdlogic->setEqLogic_id($elogic->getId());
+                    $cmdlogic->setEqType('jMQTT');
+                    $cmdlogic->setIsVisible(1);
+                    $cmdlogic->setIsHistorized(0);
+                    $cmdlogic->setSubType('string');
+                    $cmdlogic->setLogicalId($cmdId);
+                    $cmdlogic->setType('info');
+                    $cmdlogic->setName( $cmdId );
+                    $cmdlogic->setConfiguration('topic', $topicjson);
+                    $cmdlogic->save();
+                }
+                $cmdlogic->setConfiguration('value', $value);
+                $cmdlogic->save();
+                $cmdlogic->event($value);
+            }
+        }
     }
-    if ($mosqPort == '') {
-      $mosqPort = '1883';
+
+    public static function publishMosquitto( $subject, $message, $qos , $retain) {
+        log::add('jMQTT', 'debug', 'Envoi du message ' . $message . ' vers ' . $subject);
+        $mosqHost = config::byKey('mqttAdress', 'jMQTT', 0);
+        $mosqPort = config::byKey('mqttPort', 'jMQTT', 0);
+        $mosqId = config::byKey('mqttId', 'jMQTT', 0);
+        if ($mosqHost == '') {
+            $mosqHost = '127.0.0.1';
+        }
+        if ($mosqPort == '') {
+            $mosqPort = '1883';
+        }
+        if ($mosqId == '') {
+            $mosqId = 'Jeedom';
+        }
+        $mosqPub = $mosqId . '_pub';
+        $mosqUser = config::byKey('mqttUser', 'jMQTT', 0);
+        $mosqPass = config::byKey('mqttPass', 'jMQTT', 0);
+        $publish = new Mosquitto\Client($mosqPub);
+        if (isset($mosqUser)) {
+            $publish->setCredentials($mosqUser, $mosqPass);
+        }
+        $publish->connect($mosqHost, $mosqPort, 60);
+        $publish->publish($subject, $message, $qos, $retain);
+        for ($i = 0; $i < 100; $i++) {
+            // Loop around to permit the library to do its work
+            $publish->loop(1);
+        }
+        $publish->disconnect();
+        unset($publish);
     }
-    if ($mosqId == '') {
-      $mosqId = 'Jeedom';
+
+    public static function dependancy_info() {
+        $return = array();
+        $return['log'] = 'jMQTT_dep';
+        $return['state'] = 'nok';
+
+        $cmd = "dpkg -l | grep mosquitto";
+        exec($cmd, $output, $return_var);
+        //lib PHP exist
+        $libphp = extension_loaded('mosquitto');
+
+        if ($output[0] != "" && $libphp) {
+            $return['state'] = 'ok';
+        }
+        log::add('jMQTT', 'debug', 'Lib : ' . print_r(get_loaded_extensions(),true));
+
+        return $return;
     }
-    $mosqPub = $mosqId . '_pub';
-    $mosqUser = config::byKey('mqttUser', 'jMQTT', 0);
-    $mosqPass = config::byKey('mqttPass', 'jMQTT', 0);
-    $publish = new Mosquitto\Client($mosqPub);
-    if (isset($mosqUser)) {
-      $publish->setCredentials($mosqUser, $mosqPass);
+
+    public static function dependancy_install() {
+        log::add('jMQTT','info','Installation des dépéndances');
+        $resource_path = realpath(dirname(__FILE__) . '/../../resources');
+        passthru('sudo /bin/bash ' . $resource_path . '/install.sh ' . $resource_path . ' > ' . log::getPathToLog('jMQTT_dep') . ' 2>&1 &');
+        return true;
     }
-    $publish->connect($mosqHost, $mosqPort, 60);
-    $publish->publish($subject, $message, $qos, $retain);
-	for ($i = 0; $i < 100; $i++) {
-    // Loop around to permit the library to do its work
-    $publish->loop(1);
-	}
-    $publish->disconnect();
-    unset($publish);
-  }
-
-  public static function dependancy_info() {
-    $return = array();
-    $return['log'] = 'jMQTT_dep';
-    $return['state'] = 'nok';
-
-    $cmd = "dpkg -l | grep mosquitto";
-    exec($cmd, $output, $return_var);
-    //lib PHP exist
-    $libphp = extension_loaded('mosquitto');
-
-    if ($output[0] != "" && $libphp) {
-      $return['state'] = 'ok';
-    }
-    log::add('jMQTT', 'debug', 'Lib : ' . print_r(get_loaded_extensions(),true));
-
-    return $return;
-  }
-
-  public static function dependancy_install() {
-    log::add('jMQTT','info','Installation des dépéndances');
-    $resource_path = realpath(dirname(__FILE__) . '/../../resources');
-    passthru('sudo /bin/bash ' . $resource_path . '/install.sh ' . $resource_path . ' > ' . log::getPathToLog('jMQTT_dep') . ' 2>&1 &');
-    return true;
-  }
 
 }
 
 class jMQTTCmd extends cmd {
-  public function execute($_options = null) {
-    switch ($this->getType()) {
-      case 'info' :
-      return $this->getConfiguration('value');
-      break;
+    public function execute($_options = null) {
+        switch ($this->getType()) {
+        case 'info' :
+            return $this->getConfiguration('value');
+            break;
 
-      case 'action' :
-      $request = $this->getConfiguration('request');
-      $topic = $this->getConfiguration('topic');
-	  $qos = $this->getConfiguration('Qos');
-	  if ($this->getConfiguration('retain') == 0) $retain = false;
-	  else $retain = true;
+        case 'action' :
+            $request = $this->getConfiguration('request');
+            $topic = $this->getConfiguration('topic');
+            $qos = $this->getConfiguration('Qos');
+            if ($this->getConfiguration('retain') == 0) $retain = false;
+            else $retain = true;
 	  
-	  if ($qos == NULL) $qos = 1; //default to 1
+            if ($qos == NULL) $qos = 1; //default to 1
 
-      switch ($this->getSubType()) {
-        case 'slider':
-        $request = str_replace('#slider#', $_options['slider'], $request);
-        break;
-        case 'color':
-        $request = str_replace('#color#', $_options['color'], $request);
-        break;
-        case 'message':
-        if ($_options != null)  {
+            switch ($this->getSubType()) {
+            case 'slider':
+                $request = str_replace('#slider#', $_options['slider'], $request);
+                break;
+            case 'color':
+                $request = str_replace('#color#', $_options['color'], $request);
+                break;
+            case 'message':
+                if ($_options != null)  {
 
-          $replace = array('#title#', '#message#');
-          $replaceBy = array($_options['title'], $_options['message']);
-          if ( $_options['title'] == '') {
-            throw new Exception(__('Le sujet ne peuvent être vide', __FILE__));
-          }
-          $request = str_replace($replace, $replaceBy, $request);
+                    $replace = array('#title#', '#message#');
+                    $replaceBy = array($_options['title'], $_options['message']);
+                    if ( $_options['title'] == '') {
+                        throw new Exception(__('Le sujet ne peuvent être vide', __FILE__));
+                    }
+                    $request = str_replace($replace, $replaceBy, $request);
 
+                }
+                else
+                    $request = 1;
+
+                break;
+            default : $request == null ?  1 : $request;
+
+            }
+            $request = jeedom::evaluateExpression($request);
+            $eqLogic = $this->getEqLogic();
+
+            jMQTT::publishMosquitto($topic, $request, $qos, $retain);
+
+            $result = $request;
+            return $result;
         }
-        else
-        $request = 1;
-
-        break;
-        default : $request == null ?  1 : $request;
-
-      }
-	  $request = jeedom::evaluateExpression($request);
-      $eqLogic = $this->getEqLogic();
-
-      jMQTT::publishMosquitto(
-      $topic ,
-      $request ,
-	  $qos,
-	  $retain );
-
-      $result = $request;
-      return $result;
+        return true;
     }
-    return true;
-  }
 }
