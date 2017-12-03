@@ -1,0 +1,18 @@
+[panel,danger]
+.Mosquitto n'est pas installé sur mon système
+--
+Vous pouvez l'installer avec :
+
+  sudo apt-get install mosquitto
+
+A noter qu'un Mosquitto installé sur un système différent suffit
+--
+
+.La lib PHP-Mosquitto n'est pas installée sur mon système
+--
+Vous pouvez l'installer avec :
+
+  sudo apt-get install libmosquitto-dev
+
+  sudo pecl install Mosquitto-alpha
+--

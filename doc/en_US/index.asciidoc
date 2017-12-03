@@ -1,0 +1,14 @@
+== Description
+include::presentation.asciidoc[]
+
+'''
+== Settings
+include::configuration.asciidoc[]
+
+'''
+== FAQ
+include::faq.asciidoc[]
+
+'''
+== Changelog
+include::changelog.asciidoc[]

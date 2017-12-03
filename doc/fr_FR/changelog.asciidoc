@@ -1,0 +1,7 @@
+==== Changelog
+
+En cas d'absence de note dans ce chapitre, les mises à jour ne concernent que la doc, les traductions et des corrections mineures
+
+===== Octobre 2017
+
+Prise en compte de Stretch et PHP7 en natif dans les dépendances
