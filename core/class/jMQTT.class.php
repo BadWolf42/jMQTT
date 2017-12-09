@@ -27,7 +27,8 @@ class jMQTT extends eqLogic {
             $_topic     = $this->getConfiguration('topic');
             $_wcard     = $this->getConfiguration('wcard');
             $_qos       = $this->getConfiguration('Qos');
-
+            $_isActive  = $this->getIsEnable();
+            
             if ($_logicalId != $_topic) {
                 $this->setLogicalId($_topic);
                 $this->setConfiguration('reload_d', '1');
@@ -42,7 +43,11 @@ class jMQTT extends eqLogic {
                 $this->setConfiguration('prev_Qos', $_qos);
                 $this->setConfiguration('reload_d', '1');
             }
-            
+
+            if ($_isActive != $this->getConfiguration('prev_isActive')) {
+                $this->setConfiguration('prev_isActive', $_isActive);
+                $this->setConfiguration('reload_d', '1');
+            }            
         }
         log::add('jMQTT', 'debug', 'preSave: reload_d set to ' . $this->getConfiguration('reload_d'));
     }
@@ -261,6 +266,7 @@ class jMQTT extends eqLogic {
         }
         else {
             log::add('jMQTT', 'warning', 'No equipment listening ' . $topic . ' found');
+            return;
         }
             
         log::add('jMQTT', 'info', 'Message texte : ' . $value . ' pour information : ' . $cmdId . ' sur : ' . $nodeid);
