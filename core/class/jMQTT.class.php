@@ -315,7 +315,7 @@ class jMQTT extends eqLogic {
         }
     }
 
-    public static function publishMosquitto( $subject, $message, $qos , $retain) {
+    public static function publishMosquitto($subject, $message, $qos , $retain) {
         log::add('jMQTT', 'debug', 'Envoi du message ' . $message . ' vers ' . $subject);
         $mosqHost = config::byKey('mqttAdress', 'jMQTT', 0);
         $mosqPort = config::byKey('mqttPort', 'jMQTT', 0);
@@ -336,13 +336,19 @@ class jMQTT extends eqLogic {
         if (isset($mosqUser)) {
             $publish->setCredentials($mosqUser, $mosqPass);
         }
+
+        $publish->onConnect(function() use ($publish, $subject, $message, $qos, $retain) {
+            $publish->publish($subject, $message, $qos, $retain);
+            $publish->disconnect();
+        });
+        
         $publish->connect($mosqHost, $mosqPort, 60);
-        $publish->publish($subject, $message, $qos, $retain);
-        for ($i = 0; $i < 100; $i++) {
-            // Loop around to permit the library to do its work
-            $publish->loop(1);
-        }
-        $publish->disconnect();
+
+        // Loop around to permit the library to do its work
+        // This function will call the callback defined in `onConnect()`
+        // and disconnect cleanly when the message has been sent
+        $publish->loopForever();
+        log::add('jMQTT', 'debug', 'Message envoyé');
         unset($publish);
     }
 
