@@ -20,49 +20,41 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class jMQTT extends eqLogic {
 
     public function preSave() {
+        $this->setConfiguration('reload_d', '0');
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
             //check if some change needs reloading daemon
             $_logicalId = $this->getLogicalId();
-            $_topic = $this->getConfiguration('topic');
-            $_wcard = $this->getConfiguration('wcard');
-            $_qos = $this->getConfiguration('Qos');
+            $_topic     = $this->getConfiguration('topic');
+            $_wcard     = $this->getConfiguration('wcard');
+            $_qos       = $this->getConfiguration('Qos');
 
             if ($_logicalId != $_topic) {
                 $this->setLogicalId($_topic);
                 $this->setConfiguration('reload_d', '1');
             }
-            else $this->setConfiguration('reload_d', '0');
 
-            if ($this->getConfiguration('wcard') != $this->getConfiguration('prev_wcard')) {
-                $this->setConfiguration('prev_wcard',$_wcard);
+            if ($_wcard != $this->getConfiguration('prev_wcard')) {
+                $this->setConfiguration('prev_wcard', $_wcard);
                 $this->setConfiguration('reload_d', '1');
             }
-            if(!$this->getConfiguration('wcard') ) {
-                $this->setConfiguration('wcard','+');
-                $this->setConfiguration('prev_wcard','+');
+                        
+            if ($_qos != $this->getConfiguration('prev_Qos')) {
+                $this->setConfiguration('prev_Qos', $_qos);
                 $this->setConfiguration('reload_d', '1');
             }
-            if ($this->getConfiguration('Qos') != $this->getConfiguration('prev_Qos')) {
-                $this->setConfiguration('prev_Qos',$_qos);
-                $this->setConfiguration('reload_d', '1');
-            }
-            if(!$this->getConfiguration('Qos') ) {
-                $this->setConfiguration('Qos','+');
-                $this->setConfiguration('prev_Qos','+');
-                $this->setConfiguration('reload_d', '1');
-            }
+            
         }
+        log::add('jMQTT', 'debug', 'preSave: reload_d set to ' . $this->getConfiguration('reload_d'));
     }
 
     public function postSave() {
-        if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
-            if ($this->getConfiguration('reload_d') == "1") {
-                $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-                //Restarting mqtt daemon
-                if (is_object($cron) && $cron->running()) {
-                    $cron->halt();
-                    $cron->run();
-                }
+        if ($this->getConfiguration('reload_d') == "1") {
+            log::add('jMQTT', 'debug', 'postSave: restart daemon');
+            $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+            //Restarting mqtt daemon
+            if (is_object($cron) && $cron->running()) {
+                $cron->halt();
+                $cron->run();
             }
         }
     }
@@ -115,6 +107,7 @@ class jMQTT extends eqLogic {
 
     public static function deamon_start($_debug = false) {
         self::deamon_stop();
+        log::add('jMQTT', 'debug', 'daemon_start');
         $deamon_info = self::deamon_info();
         if ($deamon_info['launchable'] != 'ok') {
             throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
@@ -127,6 +120,7 @@ class jMQTT extends eqLogic {
     }
     
     public static function deamon_stop() {
+        log::add('jMQTT', 'debug', 'daemon_stop');
         $cron = cron::byClassAndFunction('jMQTT', 'daemon');
         if (!is_object($cron)) {
             throw new Exception(__('Tache cron introuvable', __FILE__));
@@ -217,14 +211,13 @@ class jMQTT extends eqLogic {
         config::save('status', '0',  'jMQTT');
     }
 
-    public static function subscribe( ) {
-        log::add('jMQTT', 'debug', 'Subscribe ');
+    public static function subscribe($mid, $qosCount) {
+        log::add('jMQTT', 'debug', 'Subscribed');
     }
 
     public static function logmq( $code, $str ) {
         log::add('jMQTT', 'debug', $code . ' : ' . $str);
     }
-
 
     public static function message( $message ) {
         log::add('jMQTT', 'debug', 'Message ' . $message->payload . ' sur ' . $message->topic);
@@ -242,13 +235,15 @@ class jMQTT extends eqLogic {
         $nodeid = (implode($topicArray,'/'));
         $value = $message->payload;
 
+        log::add('jMQTT', 'debug', 'nodeid: ' . $nodeid);
         $elogic = self::byLogicalId($nodeid, 'jMQTT');
+        log::add('jMQTT', 'debug', 'nodeid: ' . $nodeid);
 
         if (is_object($elogic)) {
             $elogic->setStatus('lastCommunication', date('Y-m-d H:i:s'));
             $elogic->save();
-        } else {
-
+        }
+        elseif (config::byKey('mqttAuto', 'jMQTT', 0) == 1) {
             $elogic = new jMQTT();
             $elogic->setEqType_name('jMQTT');
             $elogic->setLogicalId($nodeid);
@@ -261,10 +256,13 @@ class jMQTT extends eqLogic {
             $elogic->setConfiguration('Qos', '1');
             $elogic->setConfiguration('prev_Qos', '1');
             $elogic->setConfiguration('reload_d', '0');
-            log::add('jMQTT', 'info', 'Saving device ');
+            log::add('jMQTT', 'info', 'Saving device');
             $elogic->save();
         }
-
+        else {
+            log::add('jMQTT', 'warning', 'No equipment listening ' . $topic . ' found');
+        }
+            
         log::add('jMQTT', 'info', 'Message texte : ' . $value . ' pour information : ' . $cmdId . ' sur : ' . $nodeid);
         $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($elogic->getId(),$cmdId);
         if (!is_object($cmdlogic)) {
