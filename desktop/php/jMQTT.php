@@ -58,7 +58,6 @@ $eqLogics = eqLogic::byType('jMQTT');
         echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff ; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;' . $opacity . '" >';
         echo "<center>";
         $test = 'node_' . $eqLogic->getConfiguration('icone') . '.png';
-        log::add('jMQTT', 'debug', 'test ' . $test);
         if (in_array($test, $files)) {
           $path = 'node_' . $eqLogic->getConfiguration('icone');
         } else {
@@ -161,31 +160,16 @@ $eqLogics = eqLogic::byType('jMQTT');
 					<option value="0">0</option>
 					<option value="1" selected>1</option>
 					<option value="2">2</option>
-
-
 				</select>
               </div>
             </div>
             
-			<div class="form-group ">
-				<label class="col-sm-3 control-label">{{Profondeur du Topic: }}</label>
-					<div id="mqttdepth" class="col-sm-3">
-						<select style="width : 140pxpx;" class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="wcard">
-							<option value="+" selected>{{Ce topic seulement (+)}}</option>
-							<option value="#">{{Tout les sous-topics} (#)}}</option>
-							
-						</select>
-					</div>
-				</label>
-			</div>
-			
             <div class="form-group">
               <label class="col-sm-3 control-label">{{Dernière Activité}}</label>
               <div class="col-sm-3">
                 <span class="eqLogicAttr" data-l1key="configuration" data-l2key="updatetime"></span>
               </div>
             </div>
-
 
             <div class="form-group">
               <label class="col-sm-3 control-label">{{Catégorie du topic}}</label>
@@ -222,6 +206,7 @@ $eqLogics = eqLogic::byType('jMQTT');
                 </select>
               </div>
             </div>
+
             <div class="form-group">
               <div style="text-align: center">
                 <img name="icon_visu" src="" width="160" height="200"/>
@@ -248,8 +233,8 @@ $eqLogics = eqLogic::byType('jMQTT');
               <th style="width: 150px;">{{Nom}}</th>
               <th style="width: 110px;">{{Sous-Type}}</th>
               <th>{{Topic}}</th>
-              <th style="width: 100px;">{{Valeur}}</th>
-              <th style="width: 200px;">{{Paramètres}}</th>
+              <th style="width: 500px;">{{Valeur}}</th>
+              <th style="width: 100px;">{{Paramètres}}</th>
               <th style="width: 100px;"></th>
             </tr>
           </thead>
