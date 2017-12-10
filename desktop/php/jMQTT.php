@@ -58,7 +58,6 @@ $eqLogics = eqLogic::byType('jMQTT');
         echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff ; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;' . $opacity . '" >';
         echo "<center>";
         $test = 'node_' . $eqLogic->getConfiguration('icone') . '.png';
-        log::add('jMQTT', 'debug', 'test ' . $test);
         if (in_array($test, $files)) {
           $path = 'node_' . $eqLogic->getConfiguration('icone');
         } else {
@@ -234,8 +233,8 @@ $eqLogics = eqLogic::byType('jMQTT');
               <th style="width: 150px;">{{Nom}}</th>
               <th style="width: 110px;">{{Sous-Type}}</th>
               <th>{{Topic}}</th>
-              <th style="width: 100px;">{{Valeur}}</th>
-              <th style="width: 200px;">{{Paramètres}}</th>
+              <th style="width: 500px;">{{Valeur}}</th>
+              <th style="width: 100px;">{{Paramètres}}</th>
               <th style="width: 100px;"></th>
             </tr>
           </thead>
