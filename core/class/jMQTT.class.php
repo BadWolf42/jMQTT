@@ -163,21 +163,33 @@ class jMQTT extends eqLogic {
         $client = self::newMosquittoClient('');
         
         // Set callbacks
-        $client->onConnect('jMQTT::mosquittoConnect');
-        $client->onDisconnect('jMQTT::mosquittoDisconnect');
+        $client->onConnect(function($r, $message) use ($client) {
+            log::add('jMQTT', 'info', 'mosquitto: connection response is ' . $message);
+            $client->publish(jMQTT::getMqttId() . '/status', 'online', 1, 1);
+            config::save('status', '1',  'jMQTT');
+        });
+
+        $client->onDisconnect(function($r) use ($client) {
+            $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
+            log::add('jMQTT', 'debug', 'mosquitto: disconnected from broker' . $msg);
+            $client->publish(jMQTT::getMqttId() . '/status', 'offline', 1, 1);
+            config::save('status', '0',  'jMQTT');
+        });
+
+        //$client->onDisconnect('jMQTT::mosquittoDisconnect');
         $client->onSubscribe('jMQTT::mosquittoSubscribe');
         $client->onMessage('jMQTT::mosquittoMessage');
         $client->onLog('jMQTT::mosquittoLog');
 
         // Defines last will terminaison message
-        $client->setWill('jeedom', "Client died :-(", 1, 0);
+        $client->setWill(self::getMqttId() . '/status', 'offline', 1, 1);
 
         try {
             $mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
             $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
 
             log::add('jMQTT', 'info', 'Connect to mosquitto broker: Host=' . $mosqHost . ', Port=' . $mosqPort .
-                     ', Id=' . $mosqId);
+                     ', Id=' . self::getMqttId());
             $client->connect($mosqHost, $mosqPort, 60);
 
             if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
@@ -212,17 +224,17 @@ class jMQTT extends eqLogic {
         $cron->stop();
     }
 
-    public static function mosquittoConnect($r, $message) {
+    /*public static function mosquittoConnect($r, $message) {
         log::add('jMQTT', 'info', 'mosquitto: connection response is ' . $message);
         config::save('status', '1',  'jMQTT');
-    }
-
-    public static function mosquittoDisconnect($r) {
+    }*/
+ 
+    /*public static function mosquittoDisconnect($r) {
         $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
         log::add('jMQTT', 'debug', 'mosquitto: disconnected from broker' . $msg);
             
         config::save('status', '0',  'jMQTT');
-    }
+    }*/
 
     public static function mosquittoSubscribe($mid, $qosCount) {
         log::add('jMQTT', 'debug', 'mosquitto: topic subscription accepted, mid=' . $mid . ' ,qosCount=' . $qosCount);
@@ -325,14 +337,22 @@ class jMQTT extends eqLogic {
     }
 
     /**
+     * Return the MQTT id (default value = jeedom)
+     * @return MQTT id.
+     */
+    public static function getMqttId() {
+        return config::byKey('mqttId', 'jMQTT', 'jeedom');
+    }
+    
+    /**
      * Create a mosquitto client based on the plugin parameters (mqttAdress, mqttPort,
      * mqttId, mqttUser and mqttPass).
      * @param string $_mosqIdSuffix suffix to concatenate to mqttId if the later is not empty
      */
     private static function newMosquittoClient($_mosqIdSuffix) {
-        $mosqId   = config::byKey('mqttId', 'jMQTT', '');
-        $mosqUser = config::byKey('mqttUser', 'jMQTT', 0);
-        $mosqPass = config::byKey('mqttPass', 'jMQTT', 0);
+        $mosqId   = self::getMqttId();
+        $mosqUser = config::byKey('mqttUser', 'jMQTT', '');
+        $mosqPass = config::byKey('mqttPass', 'jMQTT', '');
 
         // Création client mosquitto
         // Documentation passerelle php ici:
