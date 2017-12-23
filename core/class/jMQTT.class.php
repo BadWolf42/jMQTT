@@ -45,49 +45,53 @@ class jMQTT extends eqLogic {
         $this->setConfiguration('reload_d', '0');
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
             //check if some change needs reloading daemon
-            $_logicalId = $this->getLogicalId();
-            $_topic     = $this->getConfiguration('topic');
-            $_qos       = $this->getConfiguration('Qos', 1);
-            $_isActive  = $this->getIsEnable();
+            $logicalId = $this->getLogicalId();
+            $topic     = $this->getConfiguration('topic');
+            $qos       = $this->getConfiguration('Qos', 1);
+            $isActive  = $this->getIsEnable();
             
-            log::add('jMQTT', 'debug', 'preSave: ' . $_logicalId . ', ' . $_topic . ', ' . $_qos . ', ' . $_isActive);
-
-            if ($_logicalId != $_topic) {
-                $this->setLogicalId($_topic);
+            if ($logicalId != $topic) {
+                log::add('jMQTT', 'debug', $this->getName() . '->preSave: LogicalId=' . $logicalId . ', topic=' . $topic);
+                $this->setLogicalId($topic);
                 $this->setConfiguration('reload_d', '1');
             }
 
-            if ($_qos != $this->getConfiguration('prev_Qos')) {
-                $this->setConfiguration('prev_Qos', $_qos);
+            if ($qos != $this->getConfiguration('prev_Qos')) {
+                log::add('jMQTT', 'debug', $this->getName() . '->preSave: prevQos=' . $this->getConfiguration('prev_Qos') .
+                         ', qos=' . $qos);
+                $this->setConfiguration('prev_Qos', $qos);
                 $this->setConfiguration('reload_d', '1');
             }
 
-            if ($_isActive != $this->getConfiguration('prev_isActive')) {
-                $this->setConfiguration('prev_isActive', $_isActive);
+            if ($isActive != $this->getConfiguration('prev_isActive')) {
+                log::add('jMQTT', 'debug', $this->getName() . '->preSave: prevIsActive=' .
+                         $this->getConfiguration('prev_isActive') . ', isActive=' . $isActive);
+                $this->setConfiguration('prev_isActive', $isActive);
                 $this->setConfiguration('reload_d', '1');
             }            
         }
-        log::add('jMQTT', 'debug', 'preSave: reload_d set to ' . $this->getConfiguration('reload_d') .
-                 ' on equipment ' .
-        $this->getName());
     }
 
     public function postSave() {
         if ($this->getConfiguration('reload_d') == "1") {
-            log::add('jMQTT', 'debug', 'postSave: restart daemon');
+            log::add('jMQTT', 'debug', 'postSave: restart deamon');
+
+            $e = new Exception();
+            $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
+            log::add('jMQTT', 'debug', $s);
+            
             $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-            //Restarting mqtt daemon
             if (is_object($cron) && $cron->running()) {
                 $cron->halt();
                 $cron->run();
             }
         }
     }
-  
+
     public function postRemove() {
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
+            log::add('jMQTT', 'debug', 'postRemove: restart deamon');
             $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-            //Restarting mqtt daemon
             if (is_object($cron) && $cron->running()) {
                 $cron->halt();
                 $cron->run();
@@ -133,7 +137,7 @@ class jMQTT extends eqLogic {
 
     public static function deamon_start($_debug = false) {
         self::deamon_stop();
-        log::add('jMQTT', 'debug', 'daemon_start');
+        log::add('jMQTT', 'debug', 'deamon_start');
         $deamon_info = self::deamon_info();
         if ($deamon_info['launchable'] != 'ok') {
             throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
@@ -146,7 +150,7 @@ class jMQTT extends eqLogic {
     }
     
     public static function deamon_stop() {
-        log::add('jMQTT', 'debug', 'daemon_stop');
+        log::add('jMQTT', 'debug', 'deamon_stop');
         $cron = cron::byClassAndFunction('jMQTT', 'daemon');
         if (!is_object($cron)) {
             throw new Exception(__('Tache cron introuvable', __FILE__));
@@ -424,7 +428,6 @@ class jMQTT extends eqLogic {
                  log::getPathToLog('jMQTT_dep') . ' 2>&1 &');
         return true;
     }
-
 }
 
 class jMQTTCmd extends cmd {
