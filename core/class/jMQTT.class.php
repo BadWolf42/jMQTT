@@ -31,7 +31,7 @@ class jMQTT extends eqLogic {
      * return new jMQTT object
      */
     private static function newEquipment($topic0) {
-        log::add('jMQTT', 'info', 'Creation device ' . $topic0);
+        log::add('jMQTT', 'info', 'Create device ' . $topic0);
         $topic = $topic0 . '/#';
         $eqpt = new jMQTT();
         $eqpt->setEqType_name('jMQTT');
@@ -332,10 +332,10 @@ class jMQTT extends eqLogic {
     }
 
     public static function mosquittoMessage($message) {
-        log::add('jMQTT', 'debug', 'Message ' . $message->payload . ' sur ' . $message->topic);
 
         $msgTopic = $message->topic;
         $msgValue = $message->payload;
+        log::add('jMQTT', 'debug', 'Message ' . $msgValue . ' sur ' . $msgTopic);
 
         $msgTopicArray = explode("/", $msgTopic);
 
@@ -344,12 +344,10 @@ class jMQTT extends eqLogic {
             return;
         }
 
-        // Loop on enabled jMQTT equipment and get ones that listen
-        // the current message
+        // Loop on jMQTT equipments and get ones that subscribed to the current message
         $elogics = array();
-        foreach (eqLogic::byType('jMQTT', true) as $eqpt) {
-            if ($message->topicMatchesSub($msgTopic,
-                $eqpt->getConfiguration('topic'))) {
+        foreach (eqLogic::byType('jMQTT', false) as $eqpt) {
+            if ($message->topicMatchesSub($msgTopic, $eqpt->getConfiguration('topic'))) {
                 $elogics[] = $eqpt;
             }
         }
@@ -370,44 +368,45 @@ class jMQTT extends eqLogic {
         }
             
         //
-        // Loop on equipments listening to the current message
+        // Loop on enabled equipments listening to the current message
         //
         foreach($elogics as $eqpt) {
 
-            $eqpt->setStatus('lastCommunication', date('Y-m-d H:i:s'));
-            $eqpt->save();
+            if ($eqpt->getIsEnable()) {
+                
+                $eqpt->setStatus('lastCommunication', date('Y-m-d H:i:s'));
+                $eqpt->save();
 
-            // Determine the name of the command
-            // Suppress starting topic levels that are common with the equipment
-            // suscribing topic
-            $sbscrbTopicArray = explode("/", $eqpt->getLogicalId());
-            reset($msgTopicArray);
-            foreach($sbscrbTopicArray as $s) {
-                if ($s == '#' || $s == '+')
+                // Determine the name of the command.
+                // Suppress starting topic levels that are common with the equipment suscribing topic
+                $sbscrbTopicArray = explode("/", $eqpt->getLogicalId());
+                reset($msgTopicArray);
+                foreach($sbscrbTopicArray as $s) {
+                    if ($s == '#' || $s == '+')
                     break;
                 else
                     next($msgTopicArray);
-            }
-            $cmdName = current($msgTopicArray) === false ?
-                       end($msgTopicArray) : current($msgTopicArray);
-            while(next($msgTopicArray) !== false) {
-                $cmdName = $cmdName . '/' . current($msgTopicArray);
-            }
+                }
+                $cmdName = current($msgTopicArray) === false ? end($msgTopicArray) : current($msgTopicArray);
+                while(next($msgTopicArray) !== false) {
+                    $cmdName = $cmdName . '/' . current($msgTopicArray);
+                }
             
-            $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($eqpt->getId(), $msgTopic);
-            if (!is_object($cmdlogic)) {
-                 // parseJson=0 by default
-                $cmdlogic = jMQTTCmd::newCmd($eqpt->getId(), $cmdName, $msgTopic, 0);
+                $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($eqpt->getId(), $msgTopic);
+                if (!is_object($cmdlogic)) {
+                    // parseJson=0 by default
+                    $cmdlogic = jMQTTCmd::newCmd($eqpt->getId(), $cmdName, $msgTopic, 0);
+                }
+
+                // Update the command value
+                $cmdlogic->updateCmdValue($msgValue);
+
+                if ($cmdlogic->getConfiguration('parseJson') == 1) {
+                    $jsonArray = json_decode($msgValue, true);
+                    if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
+                        jMQTTCmd::decodeJsonMessage($eqpt, $jsonArray, $cmdName, $msgTopic);
+                }
             }
-
-            // Update the command value
-            $cmdlogic->updateCmdValue($msgValue);
-
-            if ($cmdlogic->getConfiguration('parseJson') == 1) {
-                $jsonArray = json_decode($msgValue, true);
-                if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
-                    jMQTTCmd::decodeJsonMessage($eqpt, $jsonArray, $cmdName, $msgTopic);
-            }            
         }
     }
 
