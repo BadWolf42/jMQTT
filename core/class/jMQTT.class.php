@@ -19,6 +19,11 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class jMQTT extends eqLogic {
 
+    // MQTT client is defined as a static variable.
+    // IMPORTANT: This variable is set in the deamon method; it is only visible from functions
+    // that are executed on the same thread as the deamon method.
+    private static $_client;
+    
     /**
      * Create a new equipment that will subscribe to $topic0/#
      * The equipment is not saved
@@ -41,50 +46,97 @@ class jMQTT extends eqLogic {
         return $eqpt;
     }
 
+    /**
+     * Overload preSave to manage changes in subscription parameters to the MQTT broker
+     */
     public function preSave() {
-        $this->setConfiguration('reload_d', '0');
+
+        /*
+        // Local method to log messages
+        private function log($_msg) {
+        */    
+        
+        // Check if MQTT subscription parameters have changed for this equipment
+        // Applies to the manual mode only as in automatic mode # (all topics) is subscribed
+        $reload_d = 0;
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
-            //check if some change needs reloading daemon
-            $logicalId = $this->getLogicalId();
-            $topic     = $this->getConfiguration('topic');
-            $qos       = $this->getConfiguration('Qos', 1);
-            $isActive  = $this->getIsEnable();
-            
-            if ($logicalId != $topic) {
-                log::add('jMQTT', 'debug', $this->getName() . '->preSave: LogicalId=' . $logicalId . ', topic=' . $topic);
+
+            $prevTopic    = $this->getLogicalId();
+            $topic        = $this->getConfiguration('topic');
+            $prevQos      = $this->getConfiguration('prev_Qos');
+            $qos          = $this->getConfiguration('Qos', 1);
+            $prevIsActive = $this->getConfiguration('prev_isActive');
+            $isActive     = $this->getIsEnable();
+
+            // Subscription topic
+            if ($prevTopic != $topic) {
+                log::add('jMQTT', 'debug', $this->getName() . '.preSave: prevTopic=' . $prevTopic .
+                         ', topic=' . $topic);
                 $this->setLogicalId($topic);
-                $this->setConfiguration('reload_d', '1');
+                $reload_d = 1;
             }
 
-            if ($qos != $this->getConfiguration('prev_Qos')) {
-                log::add('jMQTT', 'debug', $this->getName() . '->preSave: prevQos=' . $this->getConfiguration('prev_Qos') .
-                         ', qos=' . $qos);
+            // Quality of service
+            if ($qos != $prevQos) {
+                log::add('jMQTT', 'debug', $this->getName() . '.preSave: prevQos=' . $prevQos . ', qos=' . $qos);
                 $this->setConfiguration('prev_Qos', $qos);
-                $this->setConfiguration('reload_d', '1');
+                $reload_d = 1;
             }
 
-            if ($isActive != $this->getConfiguration('prev_isActive')) {
-                log::add('jMQTT', 'debug', $this->getName() . '->preSave: prevIsActive=' .
-                         $this->getConfiguration('prev_isActive') . ', isActive=' . $isActive);
+            // Equipment enable status
+            if ($isActive != $prevIsActive) {
+                log::add('jMQTT', 'debug', $this->getName() . '.preSave: prevIsActive=' . $prevIsActive .
+                         ', isActive=' . $isActive);
                 $this->setConfiguration('prev_isActive', $isActive);
-                $this->setConfiguration('reload_d', '1');
-            }            
+                $reload_d = 1;
+            }
+
+            // If this method is executed on the thread that has access the $_client variable, we can manage directly
+            // the unsubscription/subscription here. Othervise will be done in postSave.
+            if ($reload_d == 1 and isset(self::$_client)) {
+                if ($prevIsActive == 1) {
+                    log::add('jMQTT', 'debug', $this->getName() . '.preSave: unsubscribe "' . $prevTopic . '"');
+                    self::$_client->unsubscribe($prevTopic, $prevQos);
+                }
+                if ($isActive == 1) {
+                    log::add('jMQTT', 'debug', $this->getName() . '.preSave: subscribe "' . $topic . '"');
+                    self::$_client->subscribe($topic, $qos);
+                }
+                $reload_d = 0;
+           }
         }
+        $this->setConfiguration('reload_d', $reload_d);
     }
 
+    /**
+     * To log the traceback (utility function for debug purpose)
+     */
+    private static function log_backtrace() {
+        $e = new Exception();
+        $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
+        log::add('jMQTT', 'debug', $s);
+    }
+
+    /**
+     * Overload postSave to restart the deamon when deemed necessary (see preSave)
+     */
     public function postSave() {
         if ($this->getConfiguration('reload_d') == "1") {
-            log::add('jMQTT', 'debug', 'postSave: restart deamon');
+            log::add('jMQTT', 'debug', 'postSave: restart deamon, current pid is ' . getmypid());
 
-            $e = new Exception();
-            $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
-            log::add('jMQTT', 'debug', $s);
-            
+            /*if (isset(self::$_client)) {
+                log::add('jMQTT', 'debug', 'postSave: variable client is visible');
+                self::$_client->disconnect();
+                self::mqtt_connect_subscribe(self::$_client);
+            }
+            else {*/
             $cron = cron::byClassAndFunction('jMQTT', 'daemon');
             if (is_object($cron) && $cron->running()) {
+                log::add('jMQTT', 'debug', 'postSave: restart the deamon, pid is ' . $cron->getPID());
                 $cron->halt();
                 $cron->run();
             }
+            //}
         }
     }
 
@@ -151,79 +203,94 @@ class jMQTT extends eqLogic {
     
     public static function deamon_stop() {
         log::add('jMQTT', 'debug', 'deamon_stop');
+        if (isset(self::$_client)) {
+            log::add('jMQTT', 'debug', 'disconnect MQTT client');
+            self::$_client->disconnect();
+        }
         $cron = cron::byClassAndFunction('jMQTT', 'daemon');
         if (!is_object($cron)) {
             throw new Exception(__('Tache cron introuvable', __FILE__));
         }
         $cron->halt();
+
+        // Unset the variable after calling halt as the deamon uses the client variable
+        self::$_client = NULL;
     }
 
+    private static function mqtt_connect_subscribe($client) {
+        $mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
+        $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
+
+        log::add('jMQTT', 'info', 'Connect to mosquitto broker: Host=' . $mosqHost . ', Port=' . $mosqPort .
+                 ', Id=' . self::getMqttId());
+        $client->connect($mosqHost, $mosqPort, 60);
+
+        if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
+            foreach (eqLogic::byType('jMQTT', true) as $mqtt) {
+                $topic = $mqtt->getConfiguration('topic');
+                $qos   = (int) $mqtt->getConfiguration('Qos', '1');
+                log::add('jMQTT', 'info', 'Equipment ' . $mqtt->getName() . ' subscribes to "' . $topic .
+                         '" with Qos=' . $qos);
+                $client->subscribe($topic, $qos);
+            }
+        }
+        else { // auto mode
+            $topic = config::byKey('mqttTopic', 'jMQTT', '#');
+            $qos   = config::byKey('mqttQos', 'jMQTT', 1);
+            // Subscribe to topic (root by default)
+            $client->subscribe($topic, $qos);
+            log::add('jMQTT', 'debug', 'Subscribe to topic ' . $topic . '" with Qos=' . $qos);
+        }
+    }
+    
     /**
      * Daemon method called by cron
      */
     public static function daemon() {
 
+        log::add('jMQTT', 'info', 'daemon pid is ' . getmypid());
+
         // Create mosquitto client
-        $client = self::newMosquittoClient('');
+        self::$_client = self::newMosquittoClient('');
         
         // Set callbacks
-        $client->onConnect(function($r, $message) use ($client) {
+        self::$_client->onConnect(function($r, $message) {
             log::add('jMQTT', 'info', 'mosquitto: connection response is ' . $message);
-            $client->publish(jMQTT::getMqttId() . '/status', 'online', 1, 1);
+            self::$_client->publish(jMQTT::getMqttId() . '/status', 'online', 1, 1);
             config::save('status', '1',  'jMQTT');
         });
 
-        $client->onDisconnect(function($r) use ($client) {
+        self::$_client->onDisconnect(function($r) {
             $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
             log::add('jMQTT', 'debug', 'mosquitto: disconnected from broker' . $msg);
-            $client->publish(jMQTT::getMqttId() . '/status', 'offline', 1, 1);
+            self::$_client->publish(jMQTT::getMqttId() . '/status', 'offline', 1, 1);
             config::save('status', '0',  'jMQTT');
         });
 
-        //$client->onDisconnect('jMQTT::mosquittoDisconnect');
-        $client->onSubscribe('jMQTT::mosquittoSubscribe');
-        $client->onMessage('jMQTT::mosquittoMessage');
-        $client->onLog('jMQTT::mosquittoLog');
+        //self::$_client->onDisconnect('jMQTT::mosquittoDisconnect');
+        self::$_client->onSubscribe('jMQTT::mosquittoSubscribe');
+        self::$_client->onUnsubscribe('jMQTT::mosquittoUnsubscribe');
+        self::$_client->onMessage('jMQTT::mosquittoMessage');
+        self::$_client->onLog('jMQTT::mosquittoLog');
 
         // Defines last will terminaison message
-        $client->setWill(self::getMqttId() . '/status', 'offline', 1, 1);
+        self::$_client->setWill(self::getMqttId() . '/status', 'offline', 1, 1);
 
         try {
-            $mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
-            $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
+            self::mqtt_connect_subscribe(self::$_client);
 
-            log::add('jMQTT', 'info', 'Connect to mosquitto broker: Host=' . $mosqHost . ', Port=' . $mosqPort .
-                     ', Id=' . self::getMqttId());
-            $client->connect($mosqHost, $mosqPort, 60);
-
-            if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
-                foreach (eqLogic::byType('jMQTT', true) as $mqtt) {
-                    $topic = $mqtt->getConfiguration('topic');
-                    $qos   = (int) $mqtt->getConfiguration('Qos', '1');
-                    log::add('jMQTT', 'info', 'Equipment ' . $mqtt->getName() . ' subscribes to topic ' .
-                              $topic . ' with Qos=' . $qos);
-                    $client->subscribe($topic, $qos); // Subscribe to topic
-                }
-            }
-            else { // auto mode
-                $mosqTopic = config::byKey('mqttTopic', 'jMQTT', '#');
-                $mosqQos   = config::byKey('mqttQos', 'jMQTT', 1);
-                // Subscribe to topic (root by default)
-                $client->subscribe($mosqTopic, $mosqQos);
-                log::add('jMQTT', 'debug', 'Subscribe to topic ' . $mosqTopic);
-            }
-
-            $client->loopForever();
-            //while (true) { $client->loop(); }
+            //self::$_client->loopForever();
+            while (true) { self::$_client->loop(); }
         }
         catch (Exception $e){
             log::add('jMQTT', 'error', $e->getMessage());
         }
 
-        log::add('jMQTT', 'error', 'Terminaison démon');
+        log::add('jMQTT', 'error', 'deamon method exists');
     }
 
     public function stopDaemon() {
+        log::add('jMQTT', 'debug', 'stopDaemon');
         $cron = cron::byClassAndFunction('jMQTT', 'daemon');
         $cron->stop();
     }
@@ -240,10 +307,14 @@ class jMQTT extends eqLogic {
         config::save('status', '0',  'jMQTT');
     }*/
 
-    public static function mosquittoSubscribe($mid, $qosCount) {
-        log::add('jMQTT', 'debug', 'mosquitto: topic subscription accepted, mid=' . $mid . ' ,qosCount=' . $qosCount);
+    public static function mosquittoSubscribe($mid, $qos) {
+        log::add('jMQTT', 'debug', 'mosquitto: topic subscription accepted, mid=' . $mid . ' ,qos=' . $qos);
     }
 
+    public static function mosquittoUnsubscribe($mid) {
+        log::add('jMQTT', 'debug', 'mosquitto: topic unsubscription accepted, mid=' . $mid);
+    }
+    
     public static function mosquittoLog($level, $str) {
         switch ($level) {
         case Mosquitto\Client::LOG_DEBUG:
@@ -389,7 +460,8 @@ class jMQTT extends eqLogic {
         $client = self::newMosquittoClient('_pub', 'debug');
 
         $client->onConnect(function() use ($client, $topic, $payload, $qos, $retain) {
-            log::add('jMQTT', 'debug', 'Envoi du message ' . $payload . ' vers ' . $topic);
+            log::add('jMQTT', 'debug', 'Envoi du message ' . $payload . ' vers ' . $topic . ' (pid=' .
+                     getmypid() . ')');
             $client->publish($topic, $payload, $qos, $retain);
             $client->disconnect();
         });
