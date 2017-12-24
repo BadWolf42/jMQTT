@@ -51,7 +51,7 @@ $eqLogics = eqLogic::byType('jMQTT');
         <span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>{{Ajouter}}</center></span>
       </div>
       <?php
-      $dir = dirname(__FILE__) . '/../../doc/images/';
+      $dir = dirname(__FILE__) . '/../../resources/images/';
       $files = scandir($dir);
       foreach ($eqLogics as $eqLogic) {
         $opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
@@ -61,9 +61,9 @@ $eqLogics = eqLogic::byType('jMQTT');
         if (in_array($test, $files)) {
           $path = 'node_' . $eqLogic->getConfiguration('icone');
         } else {
-          $path = 'jMQTT_icon';
+          $path = 'mqtt_icon';
         }
-        echo '<img src="plugins/jMQTT/doc/images/' . $path . '.png" height="105" width="95" />';
+        echo '<img src="plugins/jMQTT/resources/images/' . $path . '.png" height="105" width="95" />';
         echo "</center>";
         echo '<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
         echo '</div>';
@@ -241,7 +241,7 @@ $eqLogics = eqLogic::byType('jMQTT');
 
 <script>
 $( "#sel_icon" ).change(function(){
-  var text = 'plugins/jMQTT/doc/images/node_' + $("#sel_icon").val() + '.png';
+  var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png';
   //$("#icon_visu").attr('src',text);
   document.icon_visu.src=text;
 });
