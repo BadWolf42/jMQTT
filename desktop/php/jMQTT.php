@@ -117,6 +117,7 @@ $eqLogics = eqLogic::byType('jMQTT');
 
               </div>
             </div>
+
             <div class="form-group">
               <label class="col-sm-3 control-label" ></label>
               <div class="col-sm-8">
@@ -125,19 +126,6 @@ $eqLogics = eqLogic::byType('jMQTT');
               </div>
             </div>
 
-
-            <div class="form-group expertModeVisible">
-              <label class="col-sm-3 control-label">{{Délai max entre 2 messages}}</label>
-              <div class="col-sm-3">
-                <input class="eqLogicAttr form-control" data-l1key="timeout" placeholder="{{Délai maximum autorisé entre 2 messages (en mn)}}"/>
-              </div>
-            </div>
-            <div class="form-group expertModeVisible">
-              <label class="col-sm-3 control-label">{{Type de piles}}</label>
-              <div class="col-sm-3">
-                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" placeholder="{{Doit être indiqué sous la forme : 3xAA}}"/>
-              </div>
-            </div>
             <div class="form-group">
               <label class="col-sm-3 control-label">{{Commentaire}}</label>
               <div class="col-sm-3">

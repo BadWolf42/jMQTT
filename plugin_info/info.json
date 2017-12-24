@@ -2,7 +2,7 @@
     "id" : "jMQTT",
     "name" : "jMQTT",
     "licence" : "AGPL",
-    "author" : "StephC",
+    "author" : "Stef3147",
     "require" : "2.4",
     "category" : "automation protocol",
     "hasDependency" : 1,
