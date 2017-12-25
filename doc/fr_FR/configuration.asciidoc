@@ -1,4 +1,6 @@
-==== Configuration du plugin
+WARNING: *CETTE DOCUMENTATION EST A METTRE A JOUR*
+
+== Configuration du plugin
 
 La configuration du plugin se tient en 5 informations :
 

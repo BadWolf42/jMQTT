@@ -1,3 +1,5 @@
+WARNING: *CETTE DOCUMENTATION EST A METTRE A JOUR*
+
 [panel,primary]
 .Est-ce que ca rend Jeedom disponible comme broker MQTT ?
 --

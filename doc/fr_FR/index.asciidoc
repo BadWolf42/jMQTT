@@ -1,14 +1,14 @@
-== Description
+= Présentation
 include::presentation.asciidoc[]
 
 '''
-== Configuration
+= Configuration
 include::configuration.asciidoc[]
 
 '''
-== FAQ
+= FAQ
 include::faq.asciidoc[]
 
 '''
-== Changelog
+= Changelog
 include::changelog.asciidoc[]

@@ -1,9 +1,0 @@
-==== MQTT, un protocole de messages entre machines
-
-Ce plugin permet de se connecter à un broker Mosquitto et de récupérer les messages publiés.
-
-Il permet également de publier des messages sur ce même Mosquitto.
-
-MQTT est un protocole standard de communication sur IP. Il est disponible sur les Arduino et ESP8266 mais également utilisé par les plus grosses structures (architectures de messagerie entre applications MQSeries, RabbitMQ ...)
-
-Les produits capables de parler en MQTT sont ainsi connectés à Jeedom.
