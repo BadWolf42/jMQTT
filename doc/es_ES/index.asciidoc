@@ -1,0 +1,14 @@
+= Présentation
+include::presentation.asciidoc[]
+
+'''
+= Configuration
+include::configuration.asciidoc[]
+
+'''
+= FAQ
+include::faq.asciidoc[]
+
+'''
+= Changelog
+include::changelog.asciidoc[]
