@@ -95,5 +95,8 @@
         "Dernière communication": "Dernière communication",
         "Date création": "Date création",
         "OK": "OK"
+    },
+    "plugins\/jMQTT\/core\/class\/jMQTT.class.php": {
+        "Le topic ne peut pas être vide": "Le topic ne peut pas être vide"
     }
 }

@@ -55,14 +55,18 @@ class jMQTT extends eqLogic {
         // Local method to log messages
         private function log($_msg) {
         */    
+
+        $topic = $this->getConfiguration('topic');
+        if ($topic == '') {
+            throw new Exception(__("Le topic ne peut pas être vide", __FILE__));
+        }
         
         // Check if MQTT subscription parameters have changed for this equipment
-        // Applies to the manual mode only as in automatic mode # (all topics) is subscribed
+        // Applies to the manual mode only as in automatic mode, # (i.e. all topics) is subscribed
         $reload_d = 0;
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
 
             $prevTopic    = $this->getLogicalId();
-            $topic        = $this->getConfiguration('topic');
             $prevQos      = $this->getConfiguration('prev_Qos');
             $qos          = $this->getConfiguration('Qos', 1);
             $prevIsActive = $this->getConfiguration('prev_isActive');
