@@ -97,6 +97,10 @@
         "OK": "OK"
     },
     "plugins\/jMQTT\/core\/class\/jMQTT.class.php": {
-        "Le topic ne peut pas être vide": "Le topic ne peut pas être vide"
+        "Le topic ne peut pas être vide": "Le topic ne peut pas être vide",
+        "Mosquitto": "Mosquitto",
+        "OK": "OK",
+        "Indique si Mosquitto est disponible": "Indique si Mosquitto est disponible",
+        "NOK": "NOK"
     }
 }
