@@ -426,7 +426,7 @@ class jMQTT extends eqLogic {
         }
 
         if ($mosqUser != '') {
-            $publish->setCredentials($mosqUser, $mosqPass);
+            $client->setCredentials($mosqUser, $mosqPass);
         }
 
         return $client;
