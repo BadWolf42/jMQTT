@@ -51,7 +51,7 @@ class jMQTT extends eqLogic {
      */
     public function preSave() {
 
-        log::add('jMQTT', 'debug', $this->getName() . '.preSave');
+        //log::add('jMQTT', 'debug', $this->getName() . '.preSave');
 
         // Prevent from enabling an equipment with an empty topic
         $topic     = $this->getConfiguration('topic');
@@ -246,7 +246,7 @@ class jMQTT extends eqLogic {
      */
     public static function daemon() {
 
-        log::add('jMQTT', 'debug', 'daemon pid is ' . getmypid());
+        log::add('jMQTT', 'debug', 'daemon starts, pid is ' . getmypid());
 
         // Create mosquitto client
         self::$_client = self::newMosquittoClient('');
@@ -262,17 +262,20 @@ class jMQTT extends eqLogic {
         // Defines last will terminaison message
         self::$_client->setWill(self::getMqttId() . '/status', 'offline', 1, 1);
 
-        try {
-            self::mqtt_connect_subscribe(self::$_client);
+        // Suppress the exception management here. We let exceptions being thrown to the upper level
+        // and rely on the daemon management of the jeedom core: if automatic management is activated, the deamon
+        // is restarted every 5min.
+        // try {
+        self::mqtt_connect_subscribe(self::$_client);
 
-            //self::$_client->loopForever();
-            while (true) { self::$_client->loop(); }
-        }
+        self::$_client->loopForever();
+        //while (true) { self::$_client->loop(); }
+        /*  }
         catch (Exception $e){
             log::add('jMQTT', 'error', $e->getMessage());
-        }
+            }*/
 
-        log::add('jMQTT', 'error', 'deamon method exists');
+        log::add('jMQTT', 'error', 'deamon exits');
     }
 
     public function stopDaemon() {
@@ -425,9 +428,13 @@ class jMQTT extends eqLogic {
             $client = new Mosquitto\Client($mosqId);
         }
 
+        // Credential configuration when needed
         if ($mosqUser != '') {
             $client->setCredentials($mosqUser, $mosqPass);
         }
+
+        // Automatic reconnexion delay
+        $client->setReconnectDelay(1, 16, true);
 
         return $client;
     }
