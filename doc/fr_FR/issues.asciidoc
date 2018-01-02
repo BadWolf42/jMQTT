@@ -1,0 +1,3 @@
+== Problèmes connus
+
+Les problèmes connus sont sur GitHub: https://github.com/domotruc/jMQTT/issues[Issues jMQTT].
