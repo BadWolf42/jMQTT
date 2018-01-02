@@ -8,5 +8,5 @@
     "hasDependency" : 1,
     "hasOwnDeamon" : 1,
     "changelog" : "https://github.com/domotruc/jMQTT/tree/master/doc/#language#/changelog.asciidoc",
-    "documentation" : "https://github.com/domotruc/jMQTT/tree/master/doc/#language#/index.asciidoc"
+    "documentation" : "https://github.com/domotruc/jMQTT/tree/master/doc/#language#/index.html"
 }
