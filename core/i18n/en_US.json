@@ -100,7 +100,8 @@
         "Le topic ne peut pas être vide": "Topic cannot be empty",
         "Mosquitto": "Mosquitto",
         "OK": "OK",
-        "Indique si Mosquitto est disponible": "Indique si Mosquitto est disponible",
-        "NOK": "NOK"
+        "Indique si Mosquitto est disponible": "Gives Mosquitto availability",
+        "NOK": "OK",
+        "Le sujet du message ne peut pas être vide": "Le sujet du message ne peut pas être vide"
     }
 }
