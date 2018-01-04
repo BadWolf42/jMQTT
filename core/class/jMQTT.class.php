@@ -440,16 +440,19 @@ class jMQTT extends eqLogic {
     }
         
     /** Publish a given message to the mosquitto broker
+     * @param string $eqName equipment name (for log purpose)
      * @param string $topic topic
      * @param string $message payload
      * @param string $qos quality of service used to send the message  ('0', '1' or '2')
      * @param string $retain whether or not the message is a retained message ('0' or '1')
      */
-    public static function publishMosquitto($topic, $payload, $qos , $retain) {
+    public static function publishMosquitto($eqName, $topic, $payload, $qos , $retain) {
 
         $mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
         $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
 
+        $payloadMsg = (($payload == '') ? '(null)' : $payload);
+        log::add('jMQTT', 'info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg . ' (retain=' . $retain . ')');
 
         // FIXME: the static class variable $_client s not visible here as the current function
         // is not executed on the same thread as the deamon. So we do create a new client.
@@ -458,7 +461,7 @@ class jMQTT extends eqLogic {
         $client->onConnect(function() use ($client, $topic, $payload, $qos, $retain) {
             log::add('jMQTT', 'debug', 'Publication du message ' . $topic . ' ' . $payload . ' (pid=' .
                      getmypid() . ')');
-            $client->publish($topic, $payload, $qos, $retain);
+            $client->publish($topic, $payload, $qos, (($retain) ? true : false));
             $client->disconnect();
         });
 
@@ -539,7 +542,7 @@ class jMQTTCmd extends cmd {
         $eqLogic = $this->getEqLogic();
         $eqLogic->checkAndUpdateCmd($this, $value);
             
-        log::add('jMQTT', 'info', '-> ' . $eqLogic->getName() . ':' . $this->getName() . ' ' . $value);
+        log::add('jMQTT', 'info', '-> ' . $eqLogic->getName() . '|' . $this->getName() . ' ' . $value);
     }
     
     /**
@@ -581,12 +584,8 @@ class jMQTTCmd extends cmd {
         case 'action' :
             $request = $this->getConfiguration('request');
             $topic = $this->getConfiguration('topic');
-            $qos = $this->getConfiguration('Qos');
-
-            if ($this->getConfiguration('retain') == 0) $retain = false;
-            else $retain = true;
-	  
-            if ($qos == NULL) $qos = 1; //default to 1
+            $qos = $this->getConfiguration('Qos', 1);
+            $retain = $this->getConfiguration('retain', 0);
 
             switch ($this->getSubType()) {
             case 'slider':
@@ -614,13 +613,37 @@ class jMQTTCmd extends cmd {
 
             }
             $request = jeedom::evaluateExpression($request);
-            $eqLogic = $this->getEqLogic();
 
-            log::add('jMQTT', 'info', '<- ' . $eqLogic->getName() . ':' . $this->getName() . ' ' . $request);
-            jMQTT::publishMosquitto($topic, $request, $qos, $retain);
+            jMQTT::publishMosquitto($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
             return $request;
         }
         return true;
+    }
+
+    /*
+     * Overload preSave to detect changes on the retain flag: when retain mode is exited, send a null
+     * payload to the broker to erase the retained topic (implementation of Issue #1).
+     */
+    public function preSave() {
+        $prevRetain = $this->getConfiguration('prev_retain', 1);
+        $retain     = $this->getConfiguration('retain', 1);
+
+        if ($retain != $prevRetain) {
+            // Acknowledge the retain mode change
+            $this->setConfiguration('prev_retain', $retain);
+
+            $eqName = $this->getEqLogic()->getName();
+            $cmdName = $eqName  . '|' . $this->getName();
+            if ($prevRetain) {
+                // A null payload shall be sent to the broker to erase the last retained value
+                // Otherwise, this last value remains retained at broker level
+                log::add('jMQTT', 'info', $cmdName .
+                         ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker'); 
+                jMQTT::publishMosquitto($eqName, $this->getConfiguration('topic'), '', 1, 1);
+            }
+            else
+                log::add('jMQTT', 'info', $cmdName . ': mode retain activé');
+        }
     }
 }
