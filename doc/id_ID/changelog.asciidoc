@@ -1,5 +1,12 @@
 == Change log
 
+.2018-01-05 (version beta)
+    - Correction https://github.com/domotruc/jMQTT/issues/1[issue #1]: dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d'une commande.
+    - Correction https://github.com/domotruc/jMQTT/issues/6[issue #6]: case inversion cochée par défaut pour information binaire.
+
+.2018-01-04
+    - MAJ du README côté GitHub
+
 .2018-01-03
     - MAJ de la documentation
 

@@ -102,6 +102,6 @@
         "OK": "OK",
         "Indique si Mosquitto est disponible": "Gives Mosquitto availability",
         "NOK": "OK",
-        "Le sujet du message ne peut pas être vide": "Le sujet du message ne peut pas être vide"
+        "Le sujet du message ne peut pas être vide": "Message title cannot be empty"
     }
 }
