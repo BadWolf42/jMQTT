@@ -333,6 +333,12 @@ class jMQTT extends eqLogic {
         $msgValue = $message->payload;
         log::add('jMQTT', 'debug', 'Message ' . $msgValue . ' sur ' . $msgTopic);
 
+        // In case of topic starting with /, remove the starting character (fix Issue #7)
+        if ($msgTopic[0] === '/') {
+            log::add('jMQTT', 'debug', 'Skip topic starting character (/)');
+            $msgTopic = substr($msgTopic, 1);
+        }
+        
         $msgTopicArray = explode("/", $msgTopic);
 
         if(!ctype_print($msgTopic) || empty($msgTopic)) {
@@ -350,7 +356,7 @@ class jMQTT extends eqLogic {
 
         // If no equipment listening to the current message is found and the
         // automatic discovering mode is active => create a new equipment
-        // subscribing to all topics starting with the first topic of the
+        // subscribing to all sub-topics starting with the first topic of the
         // current message
         if (empty($elogics) && config::byKey('mqttAuto', 'jMQTT', 0) == 1) {
             $elogics[] = jMQTT::newEquipment($msgTopicArray[0]);
