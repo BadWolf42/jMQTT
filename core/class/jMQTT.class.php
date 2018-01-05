@@ -23,7 +23,13 @@ class jMQTT extends eqLogic {
     // IMPORTANT: This variable is set in the deamon method; it is only visible from functions
     // that are executed on the same thread as the deamon method.
     private static $_client;
-    
+
+    // Dependancy installation log file
+    private static $_depLogFile;
+
+    // Dependancy installation progress value log file
+    private static $_depProgressFile;
+
     /**
      * Create a new equipment that will subscribe to $topic0/#
      * The equipment is not saved
@@ -327,6 +333,12 @@ class jMQTT extends eqLogic {
         $msgValue = $message->payload;
         log::add('jMQTT', 'debug', 'Message ' . $msgValue . ' sur ' . $msgTopic);
 
+        // In case of topic starting with /, remove the starting character (fix Issue #7)
+        if ($msgTopic[0] === '/') {
+            log::add('jMQTT', 'debug', 'Skip topic starting character (/)');
+            $msgTopic = substr($msgTopic, 1);
+        }
+        
         $msgTopicArray = explode("/", $msgTopic);
 
         if(!ctype_print($msgTopic) || empty($msgTopic)) {
@@ -344,7 +356,7 @@ class jMQTT extends eqLogic {
 
         // If no equipment listening to the current message is found and the
         // automatic discovering mode is active => create a new equipment
-        // subscribing to all topics starting with the first topic of the
+        // subscribing to all sub-topics starting with the first topic of the
         // current message
         if (empty($elogics) && config::byKey('mqttAuto', 'jMQTT', 0) == 1) {
             $elogics[] = jMQTT::newEquipment($msgTopicArray[0]);
@@ -440,16 +452,19 @@ class jMQTT extends eqLogic {
     }
         
     /** Publish a given message to the mosquitto broker
+     * @param string $eqName equipment name (for log purpose)
      * @param string $topic topic
      * @param string $message payload
      * @param string $qos quality of service used to send the message  ('0', '1' or '2')
      * @param string $retain whether or not the message is a retained message ('0' or '1')
      */
-    public static function publishMosquitto($topic, $payload, $qos , $retain) {
+    public static function publishMosquitto($eqName, $topic, $payload, $qos , $retain) {
 
         $mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
         $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
 
+        $payloadMsg = (($payload == '') ? '(null)' : $payload);
+        log::add('jMQTT', 'info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg . ' (retain=' . $retain . ')');
 
         // FIXME: the static class variable $_client s not visible here as the current function
         // is not executed on the same thread as the deamon. So we do create a new client.
@@ -458,7 +473,7 @@ class jMQTT extends eqLogic {
         $client->onConnect(function() use ($client, $topic, $payload, $qos, $retain) {
             log::add('jMQTT', 'debug', 'Publication du message ' . $topic . ' ' . $payload . ' (pid=' .
                      getmypid() . ')');
-            $client->publish($topic, $payload, $qos, $retain);
+            $client->publish($topic, $payload, $qos, (($retain) ? true : false));
             $client->disconnect();
         });
 
@@ -472,30 +487,47 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'debug', 'Message publié');
     }
 
+    /**
+     * Provides dependancy information
+     */
     public static function dependancy_info() {
-        $return = array();
-        $return['log'] = 'jMQTT_dep';
-        $return['state'] = 'nok';
 
-        $cmd = "dpkg -l | grep mosquitto";
-        exec($cmd, $output, $return_var);
-        //lib PHP exist
+        if (!isset(self::$_depLogFile))
+            self::$_depLogFile = __CLASS__ . '_dep';
+
+        if (!isset(self::$_depProgressFile))
+            self::$_depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/progress_dep.txt';
+
+        $return = array();
+        $return['log'] = log::getPathToLog(self::$_depLogFile);
+        $return['progress_file'] = self::$_depProgressFile;
+
+        // get number of mosquitto packages installed (should be 3 at least)
+        $mosq = exec(system::get('cmd_check') . 'mosquitto | wc -l');
+
+        // is lib PHP exists?
         $libphp = extension_loaded('mosquitto');
 
-        if ($output[0] != "" && $libphp) {
+        // build the state status
+        if ($mosq >= 3 && $libphp) {
             $return['state'] = 'ok';
         }
-        log::add('jMQTT', 'debug', 'Lib : ' . print_r(get_loaded_extensions(),true));
+        else {
+            $return['state'] = 'nok';
+            log::add('jMQTT', 'debug', 'Lib : ' . print_r(get_loaded_extensions(),true));
+        }
 
         return $return;
     }
 
+    /**
+     * Provides dependancy installation script
+     */
     public static function dependancy_install() {
-        log::add('jMQTT','info','Installation des dépéndances');
-        $resource_path = realpath(dirname(__FILE__) . '/../../resources');
-        passthru('sudo /bin/bash ' . $resource_path . '/install.sh ' . $resource_path . ' > ' .
-                 log::getPathToLog('jMQTT_dep') . ' 2>&1 &');
-        return true;
+        log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
+        log::remove(self::$_depLogFile);
+        return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile,
+                     'log' => log::getPathToLog(self::$_depLogFile));
     }
 }
 
@@ -539,7 +571,7 @@ class jMQTTCmd extends cmd {
         $eqLogic = $this->getEqLogic();
         $eqLogic->checkAndUpdateCmd($this, $value);
             
-        log::add('jMQTT', 'info', '-> ' . $eqLogic->getName() . ':' . $this->getName() . ' ' . $value);
+        log::add('jMQTT', 'info', '-> ' . $eqLogic->getName() . '|' . $this->getName() . ' ' . $value);
     }
     
     /**
@@ -581,12 +613,8 @@ class jMQTTCmd extends cmd {
         case 'action' :
             $request = $this->getConfiguration('request');
             $topic = $this->getConfiguration('topic');
-            $qos = $this->getConfiguration('Qos');
-
-            if ($this->getConfiguration('retain') == 0) $retain = false;
-            else $retain = true;
-	  
-            if ($qos == NULL) $qos = 1; //default to 1
+            $qos = $this->getConfiguration('Qos', 1);
+            $retain = $this->getConfiguration('retain', 0);
 
             switch ($this->getSubType()) {
             case 'slider':
@@ -614,13 +642,37 @@ class jMQTTCmd extends cmd {
 
             }
             $request = jeedom::evaluateExpression($request);
-            $eqLogic = $this->getEqLogic();
 
-            log::add('jMQTT', 'info', '<- ' . $eqLogic->getName() . ':' . $this->getName() . ' ' . $request);
-            jMQTT::publishMosquitto($topic, $request, $qos, $retain);
+            jMQTT::publishMosquitto($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
             return $request;
         }
         return true;
+    }
+
+    /*
+     * Overload preSave to detect changes on the retain flag: when retain mode is exited, send a null
+     * payload to the broker to erase the retained topic (implementation of Issue #1).
+     */
+    public function preSave() {
+        $prevRetain = $this->getConfiguration('prev_retain', 1);
+        $retain     = $this->getConfiguration('retain', 1);
+
+        if ($retain != $prevRetain) {
+            // Acknowledge the retain mode change
+            $this->setConfiguration('prev_retain', $retain);
+
+            $eqName = $this->getEqLogic()->getName();
+            $cmdName = $eqName  . '|' . $this->getName();
+            if ($prevRetain) {
+                // A null payload shall be sent to the broker to erase the last retained value
+                // Otherwise, this last value remains retained at broker level
+                log::add('jMQTT', 'info', $cmdName .
+                         ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker'); 
+                jMQTT::publishMosquitto($eqName, $this->getConfiguration('topic'), '', 1, 1);
+            }
+            else
+                log::add('jMQTT', 'info', $cmdName . ': mode retain activé');
+        }
     }
 }

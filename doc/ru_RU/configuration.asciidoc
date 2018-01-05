@@ -1,61 +1,20 @@
-WARNING: *CETTE DOCUMENTATION EST A METTRE A JOUR*
-
 == Configuration du plugin
 
-La configuration du plugin se tient en 5 informations :
+Après installation du plugin, l'activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi de la progression est possible via le log `_jMQTT_dep_` qui apparait au bout d'un moment en rafraichissant la page.
 
-  - Adresse du broker Mosquitto (peut être présent ailleurs sur le réseau)
+Par défaut le plugin est configuré pour s'inscrire au broker Mosquitto qu'il a lui même installé sur la machine où tourne Jeedom. Si cette configuration convient, cliquer sur Sauvegarder. Le status du démon passe à OK. Rafraichir la page pour faire apparaitre le fichier de log `_jMQTT_`.
 
-  - Port du serveur Mosquitto (1883 par défaut)
+TIP: Configurer le niveau de log minimum à Info pour que le fichier de log apparaisse la première fois et avoir des informations intéressantes.
 
-  - Identifiant de Jeedom avec lequel il publiera sur le broker
-  Il est possible d'ajouter un compte et mot de passe si la connexion le requiert.
+Pour particulariser la configuration du plugin, les paramètres sont:
 
-  - Topic parent à partir duquel le plugin va ajouter les sous topics en mode automatique (défaut #)
+  - IP de Mosquitto: adresse IP du broker (par défaut 127.0.0.1 i.e. sur la machine hébergeant Jeedom).
+  - Port de Mosquitto: port du broker (1883 par défaut).
+  - Identifiant de connexion: identifiant avec lequel le plugin s'inscrit auprès du broker (jeedom par défaut).
+  - Compte et mot de passe de connexion: il est possible d'ajouter un compte et mot de passe si la connexion le nécessite (pas d'authentification par défaut).
+  - Topic root: topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (défaut #, i.e. tous les topics).
+  - QOS: qualité de service associée au topic root de souscription automatique (voué à disparaitre dans une future version du plugin, défaut 1).
 
-  - Mode Automatique ou Manuel.
+La sauvegarde de la configuration relance le démon et la souscription au broker MQTT avec les nouveaux paramètres.
 
-Il et aussi possible de choisir si l'ajout de topics doit se faire de manière 100% automatique ou semi manuelle.
-En mode automatique, le plugin souscrira au topic parent et ajoutera automatiquement les sous topics trouvés depuis le topic parent.
-En mode manuel, il faut rajouter manuellement des equipements MQTT et définir leurs topics parents. Chaque dispositif créé a son propre topic parent.
-La sélection du wildcard ("Profondeur du Topic") permet de décider si le pugin dit découvrir automatiquement les topics enfants de ce device ou pas.
-
-image::../images/MQTT1.png[Configuration]
-
-Toute sauvegarde de la configuration provoque une relance du cron du plugin (et donc un rechargement de la configuration)
-
-Ensuite les équipements se retrouvent dans la section MQTT
-
-image::../images/MQTT2.png[Configuration]
-
-Jeedom créera automatiquement toute information publiée sur Mosquitto. Le dernier élément du sujet MQTT est utilisé en tant qu'identifiant d'information. Le reste constitue un équipement.
-
-  Exemple : le sujet MQTT sensors/salon2/temp deviendra un équipement sensors/salon2 et temp une information. La valeur lui sera associée.
-
-  Si on publie ensuite sur sensors/salon2/hum l'information sera ajoutée
-
-Si le payload est de type json et que "parseJson' est coché, alors un équipement prenant le nom du topic et avec une commande info par élément du json sera créée.
-
-  Exemple : le sujet MQTT sensors/salon2/capteur avec {"temp":"23","hum":"23"} deviendra un équipement sensors/salon2/capteur et avec les informations temp et hum.
-
-image::../images/MQTT3.png[Configuration]
-
-Pour publier sur MQTT, il suffit d'ajouter une commande et de saisir le sujet et la valeur du message.
-
-==== Installation avec PHP7
-
-Actuellement la librairie n'est pas disponible dans les dépots PECL, pour l'installer il faut suivre cette procédure :
-
-    git clone https://github.com/mgdm/Mosquitto-PHP
-
-    cd Mosquitto-PHP
-
-    phpize7.0
-
-    ./configure --with-mosquitto=/path/to/libmosquitto
-
-    make
-
-    make install
-
-Il faut ensuite ajouter extension="mosquitto.so" dans le php.ini nécessaire
+TIP: Il est conseillé d'activer la gestion automatique du démon. Ainsi, en cas de problème (e.g. perte de connexion au broker), Jeedom relancera le démon toutes les 5 minutes, aux minutes fixes 00, 05, 10, ...

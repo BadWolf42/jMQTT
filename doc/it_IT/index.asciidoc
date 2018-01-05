@@ -1,14 +1,18 @@
-= Présentation
+= jMQTT
+
 include::presentation.asciidoc[]
 
 '''
-= Configuration
 include::configuration.asciidoc[]
 
 '''
-= FAQ
+include::equipements.asciidoc[]
+
+'''
 include::faq.asciidoc[]
 
 '''
-= Changelog
+include::issues.asciidoc[]
+
+'''
 include::changelog.asciidoc[]

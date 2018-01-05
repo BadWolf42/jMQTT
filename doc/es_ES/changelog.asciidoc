@@ -1,13 +1,22 @@
 == Change log
 
-.2017-12-31
-    - supprime les tentatives de reconnexion toutes les secondes sur problème de connexion au broker: rend maintenant la main au core Jeedom qui relancera le démon (et donc la reconnexion) toutes les 5min.
-    - correction bug sur authentification auprès du broker (merci Nicolas)
-    - message d'erreur sur définition d'un topic vide
-    - maj fichier internationalisation
-    - changement de la couleur de l'icône et des images du plugin (jaune au lieu de bleu)
-    - maj liens de la doc
-    
+.2018-01-05 (version beta)
+    - Correction https://github.com/domotruc/jMQTT/issues/1[issue #1]: dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d'une commande.
+    - Correction https://github.com/domotruc/jMQTT/issues/6[issue #6]: case inversion cochée par défaut pour information binaire.
+
+.2018-01-04
+    - MAJ du README côté GitHub
+
+.2018-01-03
+    - MAJ de la documentation
+
+.2018-01-01
+    - Supprime les tentatives de reconnexion toutes les secondes sur problème de connexion au broker: rend maintenant la main au core Jeedom qui relancera le démon (et donc la reconnexion) toutes les 5min.
+    - Correction bug sur authentification auprès du broker (merci Nicolas)
+    - Message d'erreur sur définition d'un topic vide
+    - MAJ fichier internationalisation
+    - Changement de la couleur de l'icône et des images du plugin (jaune au lieu de bleu)
+    - MAJ liens de la doc
     
 .2017-12-26
     - Version initiale

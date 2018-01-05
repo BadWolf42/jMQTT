@@ -432,12 +432,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_paramètres_de_l_équipement">3.2. Paramètres de l&#8217;équipement</a>
 <ul class="sectlevel3">
 <li><a href="#_onglet_equipement">3.2.1. Onglet Equipement</a></li>
-<li><a href="#_onglet_commandes">3.2.2. Onglet Commandes</a>
-<ul class="sectlevel4">
-<li><a href="#_commandes_de_type_information">Commandes de type Information</a></li>
-<li><a href="#_commandes_de_type_action">Commandes de type Action</a></li>
-</ul>
-</li>
+<li><a href="#_onglet_commandes">3.2.2. Onglet Commandes</a></li>
 </ul>
 </li>
 <li><a href="#_souscription_manuelle">3.3. Souscription manuelle</a></li>
@@ -1063,6 +1058,31 @@ Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le c
 <h2 id="_change_log">6. Change log</h2>
 <div class="sectionbody">
 <div class="ulist">
+<div class="title">2018-01-06</div>
+<ul>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/7">issue #7</a>: erreur "Le nom de l&#8217;équipement ne peut pas être vide" et arrêt du démon sur réception d&#8217;un topic commençant par /</p>
+</li>
+<li>
+<p>Amélioration de l&#8217;installation: ajout du statut de progression, lisibilité fichier de log</p>
+</li>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/1">issue #1</a>: dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d&#8217;une commande.</p>
+</li>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/6">issue #6</a>: case inversion cochée par défaut pour information binaire.</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<div class="title">2018-01-04</div>
+<ul>
+<li>
+<p>MAJ du README côté GitHub</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
 <div class="title">2018-01-03</div>
 <ul>
 <li>
@@ -1106,7 +1126,7 @@ Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le c
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-01-02 16:15:58 CET
+Last updated 2018-01-02 17:13:13 CET
 </div>
 </div>
 </body>
