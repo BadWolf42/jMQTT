@@ -23,7 +23,13 @@ class jMQTT extends eqLogic {
     // IMPORTANT: This variable is set in the deamon method; it is only visible from functions
     // that are executed on the same thread as the deamon method.
     private static $_client;
-    
+
+    // Dependancy installation log file
+    private static $_depLogFile;
+
+    // Dependancy installation progress value log file
+    private static $_depProgressFile;
+
     /**
      * Create a new equipment that will subscribe to $topic0/#
      * The equipment is not saved
@@ -475,30 +481,47 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'debug', 'Message publié');
     }
 
+    /**
+     * Provides dependancy information
+     */
     public static function dependancy_info() {
-        $return = array();
-        $return['log'] = 'jMQTT_dep';
-        $return['state'] = 'nok';
 
-        $cmd = "dpkg -l | grep mosquitto";
-        exec($cmd, $output, $return_var);
-        //lib PHP exist
+        if (!isset(self::$_depLogFile))
+            self::$_depLogFile = __CLASS__ . '_dep';
+
+        if (!isset(self::$_depProgressFile))
+            self::$_depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/progress_dep.txt';
+
+        $return = array();
+        $return['log'] = log::getPathToLog(self::$_depLogFile);
+        $return['progress_file'] = self::$_depProgressFile;
+
+        // get number of mosquitto packages installed (should be 3 at least)
+        $mosq = exec(system::get('cmd_check') . 'mosquitto | wc -l');
+
+        // is lib PHP exists?
         $libphp = extension_loaded('mosquitto');
 
-        if ($output[0] != "" && $libphp) {
+        // build the state status
+        if ($mosq >= 3 && $libphp) {
             $return['state'] = 'ok';
         }
-        log::add('jMQTT', 'debug', 'Lib : ' . print_r(get_loaded_extensions(),true));
+        else {
+            $return['state'] = 'nok';
+            log::add('jMQTT', 'debug', 'Lib : ' . print_r(get_loaded_extensions(),true));
+        }
 
         return $return;
     }
 
+    /**
+     * Provides dependancy installation script
+     */
     public static function dependancy_install() {
-        log::add('jMQTT','info','Installation des dépéndances');
-        $resource_path = realpath(dirname(__FILE__) . '/../../resources');
-        passthru('sudo /bin/bash ' . $resource_path . '/install.sh ' . $resource_path . ' > ' .
-                 log::getPathToLog('jMQTT_dep') . ' 2>&1 &');
-        return true;
+        log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
+        log::remove(self::$_depLogFile);
+        return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile,
+                     'log' => log::getPathToLog(self::$_depLogFile));
     }
 }
 
