@@ -1,6 +1,6 @@
 == Change log
 
-.2018-01-07
+.2018-01-08
     - Correction https://github.com/domotruc/jMQTT/issues/9[issue #9]: l'installation se bloque à 80% au redémarrage du serveur apache.
 
 .2018-01-06
