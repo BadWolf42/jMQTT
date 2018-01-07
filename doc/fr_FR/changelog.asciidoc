@@ -1,7 +1,10 @@
 == Change log
 
+.2018-01-08
+    - Correction https://github.com/domotruc/jMQTT/issues/9[issue #9]: l'installation se bloque à 80% au redémarrage du serveur apache.
+
 .2018-01-06
-    - Correction https://github.com/domotruc/jMQTT/issues/7[issue #7]: erreur "Le nom de l'équipement ne peut pas être vide" et arrêt du démon sur réception d'un topic commençant par /
+    - Correction https://github.com/domotruc/jMQTT/issues/7[issue #7]: erreur "Le nom de l'équipement ne peut pas être vide" et arrêt du démon sur réception d'un topic commençant par /.
     - Amélioration de l'installation: ajout du statut de progression, lisibilité fichier de log
     - Correction https://github.com/domotruc/jMQTT/issues/1[issue #1]: dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d'une commande.
     - Correction https://github.com/domotruc/jMQTT/issues/6[issue #6]: case inversion cochée par défaut pour information binaire.
