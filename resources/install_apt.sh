@@ -62,11 +62,11 @@ if [[ -d "/etc/php5/" ]]; then
     fi
     if [[ -d "/etc/php5/fpm/" && ! `cat /etc/php5/fpm/php.ini | grep "mosquitto"` ]]; then
   	echo "extension=mosquitto.so" | tee -a /etc/php5/fpm/php.ini
-	service php5-fpm restart
+	service php5-fpm reload
     fi
     if [[ -d "/etc/php5/apache2/" && ! `cat /etc/php5/apache2/php.ini | grep "mosquitto"` ]]; then
 	echo "extension=mosquitto.so" | tee -a /etc/php5/apache2/php.ini
-	service apache2 restart
+	service apache2 reload
     fi
 else
     apt-get -y install php7.0-dev
@@ -77,11 +77,11 @@ else
     fi
     if [[ -d "/etc/php/7.0/fpm/" && ! `cat /etc/php/7.0/fpm/php.ini | grep "mosquitto"` ]]; then
 	echo "extension=mosquitto.so" | tee -a /etc/php/7.0/fpm/php.ini
-	service php5-fpm restart
+	service php5-fpm reload
     fi
     if [[ -d "/etc/php/7.0/apache2/" && ! `cat /etc/php/7.0/apache2/php.ini | grep "mosquitto"` ]]; then
 	echo "extension=mosquitto.so" | tee -a /etc/php/7.0/apache2/php.ini
-	service apache2 restart
+	service apache2 reload
     fi
 fi
 
