@@ -1,3 +1,4 @@
+
 <?php
 
 /* This file is part of Jeedom.
@@ -31,25 +32,65 @@ class jMQTT extends eqLogic {
     private static $_depProgressFile;
 
     /**
-     * Create a new equipment that will subscribe to $topic0/#
-     * The equipment is not saved
-     * @param string $topic0 first topic level
+     * Create a new equipment given its name and subsciption topic.
+     * Equipment is disabled, not saved.
+     * @param string $name equipment name
+     * @param string $topic subscription topic (can be empty if isEnable is set to 0)
      * return new jMQTT object
      */
-    private static function newEquipment($topic0) {
-        log::add('jMQTT', 'info', 'Create equipment ' . $topic0);
-        $topic = $topic0 . '/#';
+    private static function newEquipment($name, $topic) {
+        log::add('jMQTT', 'info', 'Create equipment ' . $name . ', topic=' . $topic );
         $eqpt = new jMQTT();
         $eqpt->setEqType_name('jMQTT');
         $eqpt->setLogicalId($topic);
-        $eqpt->setName($topic0);
+        $eqpt->setName($name);
         $eqpt->setIsEnable(1);
-        $eqpt->setStatus('lastCommunication', date('Y-m-d H:i:s'));
+        //$eqpt->setStatus('lastCommunication', date('Y-m-d H:i:s'));
         $eqpt->setConfiguration('topic', $topic);
-        $eqpt->setConfiguration('Qos', '1');
-        $eqpt->setConfiguration('prev_Qos', '1');
+        $eqpt->setConfiguration('Qos', 1);
+        $eqpt->setConfiguration('prev_Qos', 1);
         $eqpt->setConfiguration('reload_d', '0');
         return $eqpt;
+    }
+
+    /**
+     * Overload the equipment copy method
+     * All information are copied but: suscribed topic (left empty), enable status (left disabled) and
+     * information commands.
+     * @param string $_name new equipment name
+     */
+    public function copy($_name) {
+
+        log::add('jMQTT', 'inf', 'Copying equipment ' . $this->getName() . ' as ' . $_name);
+
+        // Clone the equipment and change properties that shall be changed
+        // . new id will be given at saving
+        // . suscribing topic let empty to force the user to change it
+        // . remove commands: they are defined at the next step (as done in the parent method)
+        $eqLogicCopy = clone $this;
+		$eqLogicCopy->setId('');
+        $eqLogicCopy->setName($_name);
+        $eqLogicCopy->setIsEnable(0);
+        $eqLogicCopy->setConfiguration('prev_isActive');
+        $eqLogicCopy->setLogicalId('');
+        $eqLogicCopy->setConfiguration('topic', '');
+		foreach ($eqLogicCopy->getCmd() as $cmd) {
+			$cmd->remove();
+		}
+		$eqLogicCopy->save();
+
+        // Clone commands, only action type commands
+		foreach ($this->getCmd() as $cmd) {
+            if ($cmd->getType() == 'action') {
+                $cmdCopy = clone $cmd;
+                $cmdCopy->setId('');
+                $cmdCopy->setEqLogic_id($eqLogicCopy->getId());
+                $cmdCopy->save();
+                log::add('jMQTT', 'info', 'Cloning action command "' . $cmd->getName());
+            }
+        }
+
+        return $eqLogicCopy;
     }
 
     /**
@@ -124,6 +165,15 @@ class jMQTT extends eqLogic {
         $e = new Exception();
         $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
         log::add('jMQTT', 'debug', $s);
+    }
+
+    /**
+     * To remove all equipments (for test purpose ONLY, should never be used!)
+     */
+    private static function removeAll() {
+        foreach (eqLogic::byType('jMQTT', false) as $eqpt) {
+            $eqpt->remove();
+        }
     }
 
     /**
@@ -271,15 +321,9 @@ class jMQTT extends eqLogic {
         // Suppress the exception management here. We let exceptions being thrown to the upper level
         // and rely on the daemon management of the jeedom core: if automatic management is activated, the deamon
         // is restarted every 5min.
-        // try {
         self::mqtt_connect_subscribe(self::$_client);
 
         self::$_client->loopForever();
-        //while (true) { self::$_client->loop(); }
-        /*  }
-        catch (Exception $e){
-            log::add('jMQTT', 'error', $e->getMessage());
-            }*/
 
         log::add('jMQTT', 'error', 'deamon exits');
     }
@@ -359,7 +403,7 @@ class jMQTT extends eqLogic {
         // subscribing to all sub-topics starting with the first topic of the
         // current message
         if (empty($elogics) && config::byKey('mqttAuto', 'jMQTT', 0) == 1) {
-            $elogics[] = jMQTT::newEquipment($msgTopicArray[0]);
+            $elogics[] = jMQTT::newEquipment($msgTopicArray[0], $msgTopicArray[0] . '/#');
         }
 
         // No equipment listening to the current message is found
