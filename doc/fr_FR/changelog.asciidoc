@@ -1,5 +1,9 @@
 == Change log
 
+.2018-01-12 beta
+    - Nouvelle fonctionalité duplication d'équipement (voir la doc).
+    - Correction https://github.com/domotruc/jMQTT/issues/13[issue #13]: commande null systématiquement envoyée sur création d'une commande action.
+
 .2018-01-08
     - Correction https://github.com/domotruc/jMQTT/issues/9[issue #9]: l'installation se bloque à 80% au redémarrage du serveur apache.
 

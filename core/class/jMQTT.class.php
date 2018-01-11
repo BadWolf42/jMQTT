@@ -699,15 +699,23 @@ class jMQTTCmd extends cmd {
      * payload to the broker to erase the retained topic (implementation of Issue #1).
      */
     public function preSave() {
-        $prevRetain = $this->getConfiguration('prev_retain', 1);
-        $retain     = $this->getConfiguration('retain', 1);
+
+        $eqName     = $this->getEqLogic()->getName();
+        $cmdName    = $eqName  . '|' . $this->getName();
+        $prevRetain = $this->getConfiguration('prev_retain', 0);
+        $retain     = $this->getConfiguration('retain', 0);
+
+        // It the command is being created, initialize correctly the prev_retain flag (fix issue 11)
+        if ($this->getId() == '') {
+            log::add('jMQTT', 'info', 'Creating action command ' . $cmdName);
+            $prevRetain = $retain;
+            $this->setConfiguration('prev_retain', $retain);
+        }
 
         if ($retain != $prevRetain) {
             // Acknowledge the retain mode change
             $this->setConfiguration('prev_retain', $retain);
 
-            $eqName = $this->getEqLogic()->getName();
-            $cmdName = $eqName  . '|' . $this->getName();
             if ($prevRetain) {
                 // A null payload shall be sent to the broker to erase the last retained value
                 // Otherwise, this last value remains retained at broker level
