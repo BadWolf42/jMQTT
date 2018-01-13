@@ -42,11 +42,14 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'info', 'Create equipment ' . $name . ', topic=' . $topic );
         $eqpt = new jMQTT();
         $eqpt->setEqType_name('jMQTT');
-        $eqpt->setLogicalId($topic);
         $eqpt->setName($name);
         $eqpt->setIsEnable(1);
-        //$eqpt->setStatus('lastCommunication', date('Y-m-d H:i:s'));
+
+        // Topic is memorized as the LogicalId
+        // (could be use to ease the search of equipments listening to a given topic)
+        $eqpt->setLogicalId($topic);
         $eqpt->setConfiguration('topic', $topic);
+
         $eqpt->setConfiguration('Qos', 1);
         $eqpt->setConfiguration('prev_Qos', 1);
         $eqpt->setConfiguration('reload_d', '0');
@@ -371,6 +374,10 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', $logLevel, 'mosquitto: ' . $str);
     }
 
+    /**
+     * Callback called each time a subscirbed topic is dispatched by the broker.
+     * @param strting $message dispatched message
+     */
     public static function mosquittoMessage($message) {
 
         $msgTopic = $message->topic;
@@ -378,17 +385,24 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'debug', 'Message ' . $msgValue . ' sur ' . $msgTopic);
 
         // In case of topic starting with /, remove the starting character (fix Issue #7)
+        // And set the topic prefix (fix issue #15)
         if ($msgTopic[0] === '/') {
-            log::add('jMQTT', 'debug', 'Skip topic starting character (/)');
-            $msgTopic = substr($msgTopic, 1);
+            log::add('jMQTT', 'debug', 'message topic starts with /');
+            $topicPrefix = '/';
+            $topicContent = substr($msgTopic, 1);
+        }
+        else {
+            $topicPrefix = '';
+            $topicContent = $msgTopic;
         }
         
-        $msgTopicArray = explode("/", $msgTopic);
-
-        if(!ctype_print($msgTopic) || empty($msgTopic)) {
-            log::add('jMQTT', 'debug', 'Message skipped : "' . $message->topic . '" is not a valid topic');
+        // Return in case of invalid topic
+        if(!ctype_print($msgTopic) || empty($topicContent)) {
+            log::add('jMQTT', 'warning', 'Message skipped : "' . $msgTopic . '" is not a valid topic');
             return;
         }
+
+        $msgTopicArray = explode("/", $topicContent);
 
         // Loop on jMQTT equipments and get ones that subscribed to the current message
         $elogics = array();
@@ -403,7 +417,7 @@ class jMQTT extends eqLogic {
         // subscribing to all sub-topics starting with the first topic of the
         // current message
         if (empty($elogics) && config::byKey('mqttAuto', 'jMQTT', 0) == 1) {
-            $elogics[] = jMQTT::newEquipment($msgTopicArray[0], $msgTopicArray[0] . '/#');
+            $elogics[] = jMQTT::newEquipment($msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#');
         }
 
         // No equipment listening to the current message is found
@@ -426,19 +440,22 @@ class jMQTT extends eqLogic {
                 // Determine the name of the command.
                 // Suppress starting topic levels that are common with the equipment suscribing topic
                 $sbscrbTopicArray = explode("/", $eqpt->getLogicalId());
-                reset($msgTopicArray);
+                $msgTopicArray = explode("/", $msgTopic);
                 foreach($sbscrbTopicArray as $s) {
                     if ($s == '#' || $s == '+')
-                    break;
-                else
-                    next($msgTopicArray);
+                        break;
+                    else
+                        next($msgTopicArray);
                 }
                 $cmdName = current($msgTopicArray) === false ? end($msgTopicArray) : current($msgTopicArray);
                 while(next($msgTopicArray) !== false) {
                     $cmdName = $cmdName . '/' . current($msgTopicArray);
                 }
             
+                // Look for the command related to the current message
                 $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($eqpt->getId(), $msgTopic);
+
+                // If no command is found, create one
                 if (!is_object($cmdlogic)) {
                     // parseJson=0 by default
                     $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic, 0);
@@ -447,6 +464,7 @@ class jMQTT extends eqLogic {
                 // Update the command value
                 $cmdlogic->updateCmdValue($msgValue);
 
+                // Decode the JSON payload if requested
                 if ($cmdlogic->getConfiguration('parseJson') == 1) {
                     $jsonArray = json_decode($msgValue, true);
                     if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)

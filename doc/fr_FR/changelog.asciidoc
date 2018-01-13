@@ -1,7 +1,11 @@
 == Change log
 
 .2018-01-12 beta
-    - Nouvelle fonctionalité duplication d'équipement (voir la doc).
+
+IMPORTANT: Si vous avez des topics commençant par / créés avant cette version, il faut ajouter, dans les équipements concernés, le / en début de topic souscrit. Les commandes de types info vont être recréer par le plugin, il faudra supprimer les anciennes (celles dont le topic ne commencent pas par /). En cas de doute, poster sur le forum.
+
+    - Nouvelle fonctionalité: duplication d'équipement (voir la doc).
+    - Correction https://github.com/domotruc/jMQTT/issues/15[issue #15]: les topics commençant par / ne sont plus souscrits après désactivation du mode manuel
     - Correction https://github.com/domotruc/jMQTT/issues/13[issue #13]: commande null systématiquement envoyée sur création d'une commande action.
 
 .2018-01-08
