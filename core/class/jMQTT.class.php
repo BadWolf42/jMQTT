@@ -666,6 +666,9 @@ class jMQTTCmd extends cmd {
         }
     }
     
+    /**
+     * This method is called when a command is executed
+     */
     public function execute($_options = null) {
         switch ($this->getType()) {
         case 'info' :
@@ -673,7 +676,7 @@ class jMQTTCmd extends cmd {
             break;
 
         case 'action' :
-            $request = $this->getConfiguration('request');
+            $request = $this->getConfiguration('request', "");
             $topic = $this->getConfiguration('topic');
             $qos = $this->getConfiguration('Qos', 1);
             $retain = $this->getConfiguration('retain', 0);
@@ -687,22 +690,16 @@ class jMQTTCmd extends cmd {
                 break;
             case 'message':
                 if ($_options != null)  {
-
                     $replace = array('#title#', '#message#');
                     $replaceBy = array($_options['title'], $_options['message']);
                     if ( $_options['title'] == '') {
                         throw new Exception(__('Le sujet du message ne peut pas être vide', __FILE__));
                     }
                     $request = str_replace($replace, $replaceBy, $request);
-
                 }
-                else
-                    $request = 1;
-
                 break;
-            default : $request == null ?  1 : $request;
-
             }
+            
             $request = jeedom::evaluateExpression($request);
 
             jMQTT::publishMosquitto($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
