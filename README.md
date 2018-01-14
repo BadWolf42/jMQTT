@@ -13,6 +13,7 @@ Main functionalities are:
   * Automatic installation of the Mosquitto broker;
   * Automatic discovery of MQTT equipments;
   * Manual addition of MQTT equipement;
+  * Duplication of equipments;
   * Decoding of complex JSON payload and creation of related informations;
   * Manual addition of commands (for publishing), support of the retain mode.
 
