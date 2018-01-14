@@ -459,6 +459,12 @@ class jMQTT extends eqLogic {
                     $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic, 0);
                 }
 
+                // If the found command is an action command, skip
+                if ($cmdlogic->getType() == 'action') {
+                    log::add('jMQTT', 'debug', $eqpt->getName() . '|' . $cmdlogic->getName() . ' is an action command: skip');
+                    continue;
+                }
+
                 // Update the command value
                 $cmdlogic->updateCmdValue($msgValue);
 
@@ -708,8 +714,10 @@ class jMQTTCmd extends cmd {
     }
 
     /*
-     * Overload preSave to detect changes on the retain flag: when retain mode is exited, send a null
-     * payload to the broker to erase the retained topic (implementation of Issue #1).
+     * Overload preSave:
+     *    . To detect changes on the retain flag: when retain mode is exited, send a null
+     *      payload to the broker to erase the retained topic (implementation of Issue #1).
+     *    . To update the Logical Id: usefull for action commands (fix issue #18).
      */
     public function preSave() {
 
@@ -739,5 +747,8 @@ class jMQTTCmd extends cmd {
             else
                 log::add('jMQTT', 'info', $cmdName . ': mode retain activé');
         }
+
+        // Insure Logical ID is always equal to the topic (fix issue #18)
+        $this->setLogicalId($this->getConfiguration('topic'));
     }
 }
