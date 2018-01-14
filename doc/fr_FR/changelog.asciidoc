@@ -1,13 +1,25 @@
 == Change log
 
+.2018-01-15
+
+    - Implémentation https://github.com/domotruc/jMQTT/issues/10[#10]: duplication d'équipement (voir la doc).
+    - Correction https://github.com/domotruc/jMQTT/issues/15[#15]: les topics commençant par / n'étaient pas souscrits après désactivation du mode manuel
+
+IMPORTANT: Si vous avez des topics commençant par / créés avant cette version, il faut ajouter le / en début de topic souscrit dans les équipements concernés. Les commandes de types info vont être recréer par le plugin, il faudra supprimer les anciennes (celles dont le topic ne commencent pas par /). En cas de doutes, de questions, n'hésiter pas à poster sur le forum.
+
+    - Correction https://github.com/domotruc/jMQTT/issues/13[#13]: commande null systématiquement envoyée sur création d'une commande action.
+    - Correction https://github.com/domotruc/jMQTT/issues/14[#14]: le champ de sélection value, sous le nom d'une commande de type action, est supprimé car il n'avait pas d'effet.
+    - Implémentation https://github.com/domotruc/jMQTT/issues/17[#17]: autorise les équipements avec topic vide.
+    - Correction https://github.com/domotruc/jMQTT/issues/18[#18]: arrête de créer une commande info relative à une commande action.
+
 .2018-01-08
-    - Correction https://github.com/domotruc/jMQTT/issues/9[issue #9]: l'installation se bloque à 80% au redémarrage du serveur apache.
+    - Correction https://github.com/domotruc/jMQTT/issues/9[#9]: l'installation se bloque à 80% au redémarrage du serveur apache.
 
 .2018-01-06
-    - Correction https://github.com/domotruc/jMQTT/issues/7[issue #7]: erreur "Le nom de l'équipement ne peut pas être vide" et arrêt du démon sur réception d'un topic commençant par /.
+    - Correction https://github.com/domotruc/jMQTT/issues/7[#7]: erreur "Le nom de l'équipement ne peut pas être vide" et arrêt du démon sur réception d'un topic commençant par /.
     - Amélioration de l'installation: ajout du statut de progression, lisibilité fichier de log
-    - Correction https://github.com/domotruc/jMQTT/issues/1[issue #1]: dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d'une commande.
-    - Correction https://github.com/domotruc/jMQTT/issues/6[issue #6]: case inversion cochée par défaut pour information binaire.
+    - Correction https://github.com/domotruc/jMQTT/issues/1[#1]: dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d'une commande.
+    - Correction https://github.com/domotruc/jMQTT/issues/6[#6]: case inversion cochée par défaut pour information binaire.
 
 .2018-01-04
     - MAJ du README côté GitHub

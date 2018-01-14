@@ -1,16 +1,16 @@
 {
     "plugins\/jMQTT\/plugin_info\/configuration.php": {
         "IP de Mosquitto : ": "IP de Mosquitto : ",
-        "Port de Mosquitto : ": "Port de Mosquitto : ",
-        "Identifiant de Connexion : ": "Identifiant de Connexion : ",
-        "Compte de Connexion (non obligatoire) : ": "Compte de Connexion (non obligatoire) : ",
-        "Mot de passe de Connexion (non obligatoire) : ": "Mot de passe de Connexion (non obligatoire) : ",
-        "Decouverte Automatique des topics: ": "Decouverte Automatique des topics: ",
-        "Topic root (defaut: Tous): ": "Topic root (defaut: Tous): ",
+        "Port de Mosquitto : ": "Puerto de Mosquitto : ",
+        "Identifiant de Connexion : ": "Usuario de Conexión :",
+        "Compte de Connexion (non obligatoire) : ": "Cuenta de conexión (facultativo) :",
+        "Mot de passe de Connexion (non obligatoire) : ": "Contraseña de conexión (facultativo) :",
+        "Decouverte Automatique des topics: ": "Descubrimiento Automático de los topics : ",
+        "Topic root (defaut: Tous): ": "Topic root (todos por defecto) :",
         "Qos": "Qos"
     },
     "plugins\/jMQTT\/desktop\/php\/jMQTT.php": {
-        "Ajouter un équipement": "Ajouter un équipement",
+        "Ajouter un équipement": "Agregar un equipo",
         "Rechercher": "Rechercher",
         "Gestion": "Gestion",
         "Configuration": "Configuration",

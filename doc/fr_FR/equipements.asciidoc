@@ -26,8 +26,10 @@ Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres com
 
    - Inscrit au Topic: topic de souscrition auprès du broker.
    - Qos: qualité de service souscrit.
-   - Catégorie du topic: permet de sélectionner un icône spécifique à l'équipement.
-   
+   - Catégorie du topic: sélection d'une image spécifique à l'équipement.
+
+Le bouton `Dupliquer`, en haut à gauche, permet de <<Dupliquer un équipement>>.
+
 ==== Onglet Commandes
 
 ===== Commandes de type Information
@@ -263,6 +265,22 @@ Couleur
 Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur le bouton _+_ et saisir le nom de l'équipement. Dans la page de <<Onglet Equipement>>, le topic de souscription définit les informations qui seront souscrites par l'équipement.
 
 Pour plus d'information sur les topics MQTT, nous conseillons la lecture de https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices[MQTT Essentials Part 5: MQTT Topics & Best Practices].
+
+=== Dupliquer un équipement
+
+Un équipement peut être dupliqué via le bouton `Dupliquer` situé en haut à gauche de la page de configuration de l'équipement.
+
+Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués:
+
+   * Tous les paramètres de l'équipement y compris les paramètres de configuration avancés, sauf:
+     ** Le nom bien sûr
+     ** Le statut _Activer_ : l'équipement est désactivé par défaut
+     ** Le topic de souscription qui est laissé vide
+   * Les commandes de type action y compris leurs paramètres de configuration accessibles via la roue crantée.
+
+IMPORTANT: Le topic des commandes dupliquées de type action doit être modifié manuellement.
+
+NOTE: Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement.
 
 === L'équipement jeedom
 
