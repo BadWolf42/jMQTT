@@ -1,12 +1,12 @@
-== Configuration des équipements
+== Geräte Konfiguration
 
 Les équipements sont accessibles via le menu `Plugins -> Protocole domotique -> jMQTT`.
 
-=== Souscription automatique
+===  Automatische Anmeldung 
 
 Le mode souscription automatique permet la découverte automatique des équipements. Il s'active via la page de link:index.html[configuration du plugin]. Le plugin souscrit auprès du broker le topic configuré dans cette même page (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
 
-Prenons comme exemple une payload MQTT publiant les messages suivants:
+Betrachten Sie beispielsweise die MQTT-Nutzdaten, die folgende Nachrichten enthalten:
 ....
 boiler/brand "viesmann"
 boiler/burner 0
@@ -19,20 +19,22 @@ TIP: Le mode souscription automatique n'influe que sur la création de l'équipe
 
 IMPORTANT: Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d'équipements ou d'informations non souhaités, notamment dans les situations suivantes : publication de messages (si jMQTT reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le broker, tests de nouveaux équipements, ...
 
-=== Paramètres de l'équipement
+=== Geräteparameter
 
-==== Onglet Equipement
+==== Registerkarte Geräte
 Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que trois paramètres spécifiques au plugin:
 
    - Inscrit au Topic: topic de souscrition auprès du broker.
    - Qos: qualité de service souscrit.
-   - Catégorie du topic: permet de sélectionner un icône spécifique à l'équipement.
-   
-==== Onglet Commandes
+   - Catégorie du topic: sélection d'une image spécifique à l'équipement.
 
-===== Commandes de type Information
+Le bouton `Dupliquer`, en haut à gauche, permet de <<Dupliquer un équipement>>.
 
-.Payload simple
+==== Registerkarte Befehle
+
+===== Befehle des Typs Information
+
+.Einfache Nutzdaten
 Les commandes de type information (informations dans la suite) sont créés automatiquement. Reprenons l'exemple de la payload MQTT publiant les messages suivants:
 ....
 boiler/brand "viesmann"
@@ -46,7 +48,7 @@ boiler/hw/temp 49.0
 Le plugin créé les informations suivantes:
 
 |===
-|Nom|Sous-Type|Topic|Valeur
+|Name|Unter-Typ|Thema|Wert
 
 |boiler/brand
 |info
@@ -79,17 +81,17 @@ Le plugin créé les informations suivantes:
 |49.0
 |===
 
-.Payload JSON
+.JSON Nutzdaten
 Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées. Cette fonctionnalité doit être activée manuellement pour chaque information de ce type.
 
-Prenons l'exemple de la payload JSON suivante:
+Betrachten Sie zum Beispiel die folgenden JSON-Nutzdaten:
 ....
 esp/temperatures {"device": "ESP32", "sensorType": "Temperature", "values": [9.5, 18.2, 20.6]}
 ....
 
-Au premier message reçu, jMQTT créé automatiquement l'information suivante:
+Bei der ersten empfangenen Nachricht erstellt jMQTT automatisch die folgenden Informationen:
 |===
-|Nom|Sous-Type|Topic|Valeur|Paramètres
+|Name|Unter-Typ|Thema|Wert|Parameter
 
 |esp/temperatures
 |info
@@ -98,10 +100,10 @@ Au premier message reçu, jMQTT créé automatiquement l'information suivante:
 |`[ ]` parseJSON
 |===
 
-En cochant l'option _parseJSON_, au message reçu suivant, les informations complémentaires sont créés, ce qui donne:
+Wenn Sie die Option _parseJSON_ aktivieren, entsteht in der folgenden empfangenen Nachricht die Zusatzinformationen, welche folgendes enthält:
 
 |===
-|Nom|Sous-Type|Topic|Valeur|Paramètres
+|Name|Unter-Typ|Thema|Wert|Parameter
 
 |esp/temperatures
 |info
@@ -129,10 +131,10 @@ En cochant l'option _parseJSON_, au message reçu suivant, les informations comp
 
 |===
 
-Enfin, lle vecteur des températures peut également être séparé en cochant la case  _parseJSON_, pour finalement obtenir:
+Schließlich kann der Temperaturvektor auch getrennt werden, indem das Feld _parseJSON_ angekreutzt wird, um schließlich Folgendes zu erhalten:
 
 |===
-|Nom|Sous-Type|Topic|Valeur|Paramètres
+|Name|Unter-Typ|Thema|Wert|Parameter
 
 |esp/temperatures
 |info
@@ -178,9 +180,9 @@ Enfin, lle vecteur des températures peut également être séparé en cochant l
 
 |===
 
-NOTE: Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le champ Topic pour associer la bonne valeur. 
+Der Name der Befehle kann wie gewünscht geändert werden, jMQTT basiert auf dem Feld Thema, um den richtigen Wert zuzuordnen. 
 
-===== Commandes de type Action
+===== Befehle des Typs Action
 
 Les commandes de type action permettent au plugin jMQTT de publier sur le broker MQTT. Pour cela, créer une commande via le bouton _+ Ajouter une commande action_ et remplir les champs selon le besoin:
 
@@ -200,7 +202,7 @@ ecs/temp_setpoint 40
 Il est bien sûr possible de mettre la valeur courante d'un autre équipement en lieu et place de la valeur 40.
 
 |===
-|Nom|Sous-Type|Topic|Valeur
+|Name|Unter-Typ|Thema|Wert
 
 |set_ecs_setpoint
 |action
@@ -214,7 +216,7 @@ Défaut
 La configuration suivante publiera sous le topic _ecs/temp_setpoint_, la valeur entrée via un widget de type curseur:
 
 |===
-|Nom|Sous-Type|Topic|Valeur
+|Name|Unter-Typ|Thema|Wert
 
 |set_ecs_setpoint
 |action
@@ -231,7 +233,7 @@ boiler {"setpoint": "ecs", "value": 50}
 ....
 
 |===
-|Nom|Sous-Type|Topic|Valeur
+|Name|Unter-Typ|Thema|Wert
 
 |set_ecs_setpoint
 |action
@@ -248,7 +250,7 @@ room/lamp/color #e63939
 ....
 
 |===
-|Nom|Sous-Type|Topic|Valeur
+|Name|Unter-Typ|Thema|Wert
 
 |set_color
 |action
@@ -264,7 +266,24 @@ Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur
 
 Pour plus d'information sur les topics MQTT, nous conseillons la lecture de https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices[MQTT Essentials Part 5: MQTT Topics & Best Practices].
 
-=== L'équipement jeedom
+=== Dupliquer un équipement
+
+Un équipement peut être dupliqué via le bouton `Dupliquer` situé en haut à gauche de la page de configuration de l'équipement que l'on souhaite dupliquer.
+
+Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués:
+
+   * Tous les paramètres de l'équipement y compris les paramètres de configuration avancés, sauf:
+     ** Le nom bien sûr
+     ** L'objet parent
+     ** Le statut _Activer_ : l'équipement est désactivé par défaut pour que l'utilisateur renseigne le nouveau topic de souscription
+     ** Le topic de souscription
+   * Les commandes de type action y compris leurs paramètres de configuration accessibles via la roue crantée.
+
+IMPORTANT: Il faudra modifier le topic des commandes dupliqués.
+
+NOTE: Les commandes de type information ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement.
+
+=== Jeedom Geräte
 
 Le plugin jMQTT publie en mode persistant son état de connexion sous le topic  `jeedom/status`. Les valeurs possibles sont `offline` et `online`.
 

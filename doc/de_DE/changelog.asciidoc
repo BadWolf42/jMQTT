@@ -1,4 +1,15 @@
-== Change log
+== Änderungsprotokoll
+
+.2018-01-12 beta
+
+IMPORTANT: Si vous avez des topics commençant par / créés avant cette version, il faut ajouter, dans les équipements concernés, le / en début de topic souscrit. Les commandes de types info vont être recréer par le plugin, il faudra supprimer les anciennes (celles dont le topic ne commencent pas par /). En cas de doute, poster sur le forum.
+
+    - Implémentation https://github.com/domotruc/jMQTT/issues/10[issue #10]: duplication d'équipement (voir la doc).
+    - Correction https://github.com/domotruc/jMQTT/issues/15[issue #15]: les topics commençant par / ne sont plus souscrits après désactivation du mode manuel
+    - Correction https://github.com/domotruc/jMQTT/issues/13[issue #13]: commande null systématiquement envoyée sur création d'une commande action.
+    - Correction https://github.com/domotruc/jMQTT/issues/14[issue #14]: le champ de sélection value, sous le nom d'une commande de type action, est supprimé car il n'avait pas d'effet.
+    - Implémentation https://github.com/domotruc/jMQTT/issues/17[issue #17]: autorise les équipements avec topic vide.
+    - Correction https://github.com/domotruc/jMQTT/issues/18[issue #18]: arrête de créer une commande info relative à une commande action.
 
 .2018-01-08
     - Correction https://github.com/domotruc/jMQTT/issues/9[issue #9]: l'installation se bloque à 80% au redémarrage du serveur apache.
@@ -6,22 +17,22 @@
 .2018-01-06
     - Correction https://github.com/domotruc/jMQTT/issues/7[issue #7]: erreur "Le nom de l'équipement ne peut pas être vide" et arrêt du démon sur réception d'un topic commençant par /.
     - Amélioration de l'installation: ajout du statut de progression, lisibilité fichier de log
-    - Correction https://github.com/domotruc/jMQTT/issues/1[issue #1]: dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d'une commande.
-    - Correction https://github.com/domotruc/jMQTT/issues/6[issue #6]: case inversion cochée par défaut pour information binaire.
+    - Korrektur https://github.com/domotruc/jMQTT/issues/1[issue #1]: Der letzte gehaltene Wert wird auf der Broker-Ebene beibehalten, wenn der Retain-Modus eines Befehls gelöscht wird.
+    - Korrektur https://github.com/domotruc/jMQTT/issues/6[issue #6]: Invert Kontrollkästchen standardmäßig für binäre Informationen aktiviert.
 
 .2018-01-04
-    - MAJ du README côté GitHub
+    - Aktualisierung der GitHub README-Seite 
 
 .2018-01-03
-    - MAJ de la documentation
+    - Aktualisierung der Dokumentation
 
 .2018-01-01
     - Supprime les tentatives de reconnexion toutes les secondes sur problème de connexion au broker: rend maintenant la main au core Jeedom qui relancera le démon (et donc la reconnexion) toutes les 5min.
-    - Correction bug sur authentification auprès du broker (merci Nicolas)
-    - Message d'erreur sur définition d'un topic vide
-    - MAJ fichier internationalisation
-    - Changement de la couleur de l'icône et des images du plugin (jaune au lieu de bleu)
-    - MAJ liens de la doc
+    - Fehler bei der Authentifizierung mit dem Broker behoben (Danke Nicolas)
+    - Fehlermeldung beim definieren eines leeren Themas
+    - Aktualisierung der Internationalisierungs Datei
+    - Änderung der Farbe vom Symbol und Bild des Plugins (gelb statt blau)
+    - Aktualisierung der Doc-Links
     
 .2017-12-26
-    - Version initiale
+    - erste Version
