@@ -101,24 +101,17 @@ class jMQTT extends eqLogic {
      */
     public function preSave() {
 
-        //log::add('jMQTT', 'debug', $this->getName() . '.preSave');
-
-        // Prevent from enabling an equipment with an empty topic
-        $topic     = $this->getConfiguration('topic');
-        $isActive  = $this->getIsEnable();
-        if ($topic == '' && $isActive) {
-            throw new Exception(__("Le topic ne peut pas être vide", __FILE__));
-        }
-        
         // Check if MQTT subscription parameters have changed for this equipment
         // Applies to the manual mode only as in automatic mode, # is suscribed (i.e. all topics)
         $reload_d = 0;
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
 
             $prevTopic    = $this->getLogicalId();
+            $topic        = $this->getConfiguration('topic');
             $prevQos      = $this->getConfiguration('prev_Qos');
             $qos          = $this->getConfiguration('Qos', 1);
             $prevIsActive = $this->getConfiguration('prev_isActive');
+            $isActive     = $this->getIsEnable();
 
             // Subscription topic
             if ($prevTopic != $topic) {
@@ -283,12 +276,17 @@ class jMQTT extends eqLogic {
         $client->connect($mosqHost, $mosqPort, 60);
 
         if (config::byKey('mqttAuto', 'jMQTT', 0) == 0) {  // manual mode
+            // Loop on all equipments and subscribe 
             foreach (eqLogic::byType('jMQTT', true) as $mqtt) {
                 $topic = $mqtt->getConfiguration('topic');
                 $qos   = (int) $mqtt->getConfiguration('Qos', '1');
-                log::add('jMQTT', 'info', 'Equipment ' . $mqtt->getName() . ' subscribes to "' . $topic .
-                         '" with Qos=' . $qos);
-                $client->subscribe($topic, $qos);
+                if (empty($topic))
+                    log::add('jMQTT', 'info', 'Equipment ' . $mqtt->getName() . ': no subscription (empty topic)');
+                else {
+                    log::add('jMQTT', 'info', 'Equipment ' . $mqtt->getName() . ': subscribes to "' . $topic .
+                             '" with Qos=' . $qos);
+                    $client->subscribe($topic, $qos);
+                }
             }
         }
         else { // auto mode

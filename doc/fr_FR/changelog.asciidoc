@@ -8,6 +8,7 @@ IMPORTANT: Si vous avez des topics commençant par / créés avant cette version
     - Correction https://github.com/domotruc/jMQTT/issues/15[issue #15]: les topics commençant par / ne sont plus souscrits après désactivation du mode manuel
     - Correction https://github.com/domotruc/jMQTT/issues/13[issue #13]: commande null systématiquement envoyée sur création d'une commande action.
     - Correction https://github.com/domotruc/jMQTT/issues/14[issue #14]: le champ de sélection value, sous le nom d'une commande de type action, est supprimé car il n'avait pas d'effet.
+    - Correction https://github.com/domotruc/jMQTT/issues/17[issue #17]: autorise les équipements avec topic vide.
 
 .2018-01-08
     - Correction https://github.com/domotruc/jMQTT/issues/9[issue #9]: l'installation se bloque à 80% au redémarrage du serveur apache.
