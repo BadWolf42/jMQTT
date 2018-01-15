@@ -268,20 +268,19 @@ Pour plus d'information sur les topics MQTT, nous conseillons la lecture de http
 
 === Dupliquer un équipement
 
-Un équipement peut être dupliqué via le bouton `Dupliquer` situé en haut à gauche de la page de configuration de l'équipement que l'on souhaite dupliquer.
+Un équipement peut être dupliqué via le bouton `Dupliquer` situé en haut à gauche de la page de configuration de l'équipement.
 
 Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués:
 
    * Tous les paramètres de l'équipement y compris les paramètres de configuration avancés, sauf:
      ** Le nom bien sûr
-     ** L'objet parent
-     ** Le statut _Activer_ : l'équipement est désactivé par défaut pour que l'utilisateur renseigne le nouveau topic de souscription
-     ** Le topic de souscription
+     ** Le statut _Activer_ : l'équipement est désactivé par défaut
+     ** Le topic de souscription qui est laissé vide
    * Les commandes de type action y compris leurs paramètres de configuration accessibles via la roue crantée.
 
-IMPORTANT: Il faudra modifier le topic des commandes dupliqués.
+IMPORTANT: Le topic des commandes dupliquées de type action doit être modifié manuellement.
 
-NOTE: Les commandes de type information ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement.
+NOTE: Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement.
 
 === L'équipement jeedom
 

@@ -1,4 +1,4 @@
-== Configuration du plugin
+== Plugin Konfiguration
 
 Après installation du plugin, l'activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi de la progression est possible via le log `_jMQTT_dep_` qui apparait au bout d'un moment en rafraichissant la page.
 
