@@ -1,4 +1,3 @@
-
 <?php
 
 /* This file is part of Jeedom.
@@ -201,21 +200,15 @@ class jMQTT extends eqLogic {
 
     public static function health() {
         $return = array();
-        $mosqHost = config::byKey('mqttAdress', 'jMQTT', 0);
-        if ($mosqHost == '') {
-            $mosqHost = '127.0.0.1';
-        }
-        $mosqPort = config::byKey('mqttPort', 'jMQTT', 0);
-        if ($mosqPort == '') {
-            $mosqPort = '1883';
-        }
+        $mosqHost = config::byKey('mqttAdress', 'jMQTT', 'localhost');
+        $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
         $socket = socket_create(AF_INET, SOCK_STREAM, 0);
         $server = socket_connect ($socket , $mosqHost, $mosqPort);
 
         $return[] = array(
-            'test' => __('Mosquitto', __FILE__),
+            'test' => __('Accès à Mosquitto', __FILE__),
             'result' => ($server) ? __('OK', __FILE__) : __('NOK', __FILE__),
-            'advice' => __('Indique si Mosquitto est disponible', __FILE__),
+            'advice' => __('Indique si le broker MQTT est visible sur le réseau', __FILE__),
             'state' => $server,
         );
         return $return;
@@ -268,7 +261,7 @@ class jMQTT extends eqLogic {
      * @param object client client to connect
      */
     private static function mqtt_connect_subscribe($client) {
-        $mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
+        $mosqHost = config::byKey('mqttAdress', 'jMQTT', 'localhost');
         $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
 
         log::add('jMQTT', 'info', 'Connect to mosquitto: Host=' . $mosqHost . ', Port=' . $mosqPort .
@@ -526,7 +519,7 @@ class jMQTT extends eqLogic {
      */
     public static function publishMosquitto($eqName, $topic, $payload, $qos , $retain) {
 
-        $mosqHost = config::byKey('mqttAdress', 'jMQTT', '127.0.0.1');
+        $mosqHost = config::byKey('mqttAdress', 'jMQTT', 'localhost');
         $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
 
         $payloadMsg = (($payload == '') ? '(null)' : $payload);
@@ -568,19 +561,24 @@ class jMQTT extends eqLogic {
         $return['log'] = log::getPathToLog(self::$_depLogFile);
         $return['progress_file'] = self::$_depProgressFile;
 
-        // get number of mosquitto packages installed (should be 3 at least)
+        // get number of mosquitto packages installed (should be 2 or 3 at least depending
+        // on the installMosquitto config parameter)
         $mosq = exec(system::get('cmd_check') . 'mosquitto | wc -l');
+        $minMosq = config::byKey('installMosquitto', 'jMQTT', 1) ? 3 : 2;
 
         // is lib PHP exists?
         $libphp = extension_loaded('mosquitto');
 
-        // build the state status
-        if ($mosq >= 3 && $libphp) {
+        // build the state status; if nok log debug information
+        if ($mosq >= $minMosq && $libphp) {
             $return['state'] = 'ok';
         }
         else {
             $return['state'] = 'nok';
-            log::add('jMQTT', 'debug', 'Lib : ' . print_r(get_loaded_extensions(),true));
+            log::add('jMQTT', 'debug', 'dependancy_info: NOK');
+            log::add('jMQTT', 'debug', '   * Nb of mosquitto related packaged installed: ' . $mosq .
+                     ' (shall be greater equal than ' . $minMosq . ')');
+            log::add('jMQTT', 'debug', '   * Mosquitto extension loaded: ' . $libphp);
         }
 
         return $return;
@@ -592,7 +590,8 @@ class jMQTT extends eqLogic {
     public static function dependancy_install() {
         log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
         log::remove(self::$_depLogFile);
-        return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile,
+        return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile .
+                     ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
                      'log' => log::getPathToLog(self::$_depLogFile));
     }
 }

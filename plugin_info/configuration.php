@@ -29,18 +29,24 @@ if (!isConnect()) {
   <div class="form-group">
     <fieldset>
 
+		<div class="form-group">
+				<label class="col-sm-4 control-label">{{Installer Mosquitto localement : }}</label>
+				<div class="col-sm-2">
+					<input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="installMosquitto" checked />
+				</div>
+        </div>
     <div class="form-group">
             <label class="col-lg-4 control-label">{{IP de Mosquitto : }}</label>
             <div class="col-lg-4">
-				<input id="mosquitto_por" class="configKey form-control" data-l1key="mqttAdress" style="margin-top:5px" placeholder="127.0.0.1"/>
+				<input id="mosquitto_por" class="configKey form-control" data-l1key="mqttAdress" style="margin-top:5px" placeholder="localhost"/>
             </div>
-        </div>
+    </div>
     <div class="form-group">
             <label class="col-lg-4 control-label">{{Port de Mosquitto : }}</label>
             <div class="col-lg-4">
 				<input id="mosquitto_por" class="configKey form-control" data-l1key="mqttPort" style="margin-top:5px" placeholder="1883"/>
             </div>
-        </div>
+    </div>
 
         <div class="form-group">
                 <label class="col-lg-4 control-label">{{Identifiant de Connexion : }}</label>
