@@ -7,7 +7,8 @@
         "Mot de passe de Connexion (non obligatoire) : ": "Mot de passe de Connexion (non obligatoire) : ",
         "Decouverte Automatique des topics: ": "Decouverte Automatique des topics: ",
         "Topic root (defaut: Tous): ": "Topic root (defaut: Tous): ",
-        "Qos": "Qos"
+        "Qos": "Qos",
+        "Installer Mosquitto localement : ": "Installer Mosquitto localement : "
     },
     "plugins\/jMQTT\/desktop\/php\/jMQTT.php": {
         "Ajouter un équipement": "Ajouter un équipement",
@@ -67,7 +68,8 @@
         "Sous-Type": "Sous-Type",
         "Topic": "Topic",
         "Valeur": "Valeur",
-        "Paramètres": "Paramètres"
+        "Paramètres": "Paramètres",
+        "Dupliquer": "Dupliquer"
     },
     "plugins\/jMQTT\/desktop\/js\/jMQTT.js": {
         "Santé jMQTT": "Santé jMQTT",
@@ -102,6 +104,8 @@
         "OK": "OK",
         "Indique si Mosquitto est disponible": "Indique si Mosquitto est disponible",
         "NOK": "NOK",
-        "Le sujet du message ne peut pas être vide": "Le sujet du message ne peut pas être vide"
+        "Le sujet du message ne peut pas être vide": "Le sujet du message ne peut pas être vide",
+        "Accès à Mosquitto": "Accès à Mosquitto",
+        "Indique si le broker MQTT est visible sur le réseau": "Indique si le broker MQTT est visible sur le réseau"
     }
 }
