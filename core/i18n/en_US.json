@@ -8,7 +8,7 @@
         "Decouverte Automatique des topics: ": "Equipment automatic discovery",
         "Topic root (defaut: Tous): ": "Root topic (default: all)",
         "Qos": "Qos",
-        "Installer Mosquitto localement : ": "Installer Mosquitto localement : "
+        "Installer Mosquitto localement : ": "Install Mosquitto on localhost:"
     },
     "plugins\/jMQTT\/desktop\/php\/jMQTT.php": {
         "Ajouter un équipement": "Add an equipment",
@@ -69,7 +69,7 @@
         "Topic": "Topic",
         "Valeur": "Value",
         "Paramètres": "Parameter",
-        "Dupliquer": "Dupliquer"
+        "Dupliquer": "Duplicate"
     },
     "plugins\/jMQTT\/desktop\/js\/jMQTT.js": {
         "Santé jMQTT": "jMQTT Health",
@@ -105,7 +105,7 @@
         "Indique si Mosquitto est disponible": "Gives Mosquitto availability",
         "NOK": "OK",
         "Le sujet du message ne peut pas être vide": "Message title cannot be empty",
-        "Accès à Mosquitto": "Accès à Mosquitto",
-        "Indique si le broker MQTT est visible sur le réseau": "Indique si le broker MQTT est visible sur le réseau"
+        "Accès à Mosquitto": "Access to Mosquitto",
+        "Indique si le broker MQTT est visible sur le réseau": "Check if Mosquito is accessible through the network"
     }
 }
