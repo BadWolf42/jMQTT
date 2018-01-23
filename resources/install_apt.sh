@@ -4,17 +4,22 @@ PROGRESS_FILE=/tmp/jmqtt_dep;
 if [ ! -z $1 ]; then
     PROGRESS_FILE=$1
 fi
-touch ${PROGRESS_FILE}
 
+INSTALL_MOSQUITTO=1
+if [ ! -z $2 ] && [ $2 -eq 1 -o $2 -eq 0 ]; then
+    INSTALL_MOSQUITTO=$2
+fi
+
+echo 0 > ${PROGRESS_FILE}
 
 echo "********************************************************"
 echo "* Install dependancies                                 *"
 echo "********************************************************"
-
+echo "Progress file: " ${PROGRESS_FILE}
+echo "Install Mosquitto: " ${INSTALL_MOSQUITTO}
 echo "*"
 echo "* Update package source repository"
 echo "*"
-echo 0 > ${PROGRESS_FILE}
 apt-get -y install lsb-release php-pear
 archi=`lscpu | grep Architecture | awk '{ print $2 }'`
 echo 10 > ${PROGRESS_FILE}
@@ -47,7 +52,11 @@ echo 40 > ${PROGRESS_FILE}
 echo "*"
 echo "* Install Mosquitto"
 echo "*"
-apt-get -y install mosquitto mosquitto-clients libmosquitto-dev
+if [ ${INSTALL_MOSQUITTO} -eq 1 ]; then
+    apt-get -y install mosquitto mosquitto-clients libmosquitto-dev
+else
+    apt-get -y install mosquitto-clients libmosquitto-dev
+fi
 echo 60 > ${PROGRESS_FILE}
 
 echo "*"

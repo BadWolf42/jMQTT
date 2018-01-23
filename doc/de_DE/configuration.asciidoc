@@ -1,17 +1,21 @@
-== Configuration du plugin
+== Plugin Konfiguration
 
-Après installation du plugin, l'activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi de la progression est possible via le log `_jMQTT_dep_` qui apparait au bout d'un moment en rafraichissant la page.
+IMPORTANT: Pour ne pas installer le broker Mosquitto localement, c'est à dire sur la machine où tourne Jeedom, commencer par décocher la case _Installer Mosquitto localement_.
 
-Par défaut le plugin est configuré pour s'inscrire au broker Mosquitto qu'il a lui même installé sur la machine où tourne Jeedom. Si cette configuration convient, cliquer sur Sauvegarder. Le status du démon passe à OK. Rafraichir la page pour faire apparaitre le fichier de log `_jMQTT_`.
+Après installation du plugin, l'activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `_jMQTT_dep_` qui apparait au bout d'un moment en rafraichissant la page.
 
-TIP: Configurer le niveau de log minimum à Info pour que le fichier de log apparaisse la première fois et avoir des informations intéressantes.
+Par défaut le plugin est configuré pour s'inscrire au broker Mosquitto installé localement. Si cette configuration convient, cliquer sur Sauvegarder. Le status du démon passe à OK. Rafraichir la page pour faire apparaitre le fichier de log `_jMQTT_`.
+
+TIP: Configurer le niveau de log minimum à Info pour que le fichier de log apparaisse la première fois et avoir des informations intéressantes. Sauvegarder et relancer le démon pour rendre le changement actif.
 
 Pour particulariser la configuration du plugin, les paramètres sont:
 
-  - IP de Mosquitto: adresse IP du broker (par défaut 127.0.0.1 i.e. sur la machine hébergeant Jeedom).
+  - Installer Mosquitto localement: cocher cette case pour que jMQTT se charge de l'installation locale du broker Mosquitto. Si votre broker est distant, décocher la case.
+  - IP de Mosquitto: adresse IP du broker (par défaut localhost i.e. sur la machine hébergeant Jeedom).
   - Port de Mosquitto: port du broker (1883 par défaut).
   - Identifiant de connexion: identifiant avec lequel le plugin s'inscrit auprès du broker (jeedom par défaut).
   - Compte et mot de passe de connexion: il est possible d'ajouter un compte et mot de passe si la connexion le nécessite (pas d'authentification par défaut).
+  - Découverte automatique des topics: cocher la case pour que les équipements soient créés automatiquement, voir la partie équipements.
   - Topic root: topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (défaut #, i.e. tous les topics).
   - QOS: qualité de service associée au topic root de souscription automatique (voué à disparaitre dans une future version du plugin, défaut 1).
 
