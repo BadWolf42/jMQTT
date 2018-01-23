@@ -8,6 +8,8 @@ Par défaut le plugin est configuré pour s'inscrire au broker Mosquitto install
 
 TIP: Configurer le niveau de log minimum à Info pour que le fichier de log apparaisse la première fois et avoir des informations intéressantes. Sauvegarder et relancer le démon pour rendre le changement actif.
 
+IMPORTANT: Il peut arriver que l'installation du plugin se bloque. Cela se produit si le serveur apache est relancé pendant l'installation (voir log `_jMQTT_dep_`). Pour se débloquer, se connecter à sa station Jeedom et supprimer le fichier `/tmp/jeedom/jMQTT/progress_dep.txt`.
+
 Pour particulariser la configuration du plugin, les paramètres sont:
 
   - Installer Mosquitto localement: cocher cette case pour que jMQTT se charge de l'installation locale du broker Mosquitto. Si votre broker est distant, décocher la case.

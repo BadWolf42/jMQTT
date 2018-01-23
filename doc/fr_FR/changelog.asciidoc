@@ -1,5 +1,8 @@
 == Change log
 
+.2018-01-24
+    - Implémentation https://github.com/domotruc/jMQTT/issues/19[#19]: ajoute une option pour ne pas installer Mosquitto localement.
+
 .2018-01-15
 
     - Implémentation https://github.com/domotruc/jMQTT/issues/10[#10]: duplication d'équipement (voir la doc).
