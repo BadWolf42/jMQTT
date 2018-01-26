@@ -4,7 +4,7 @@ Les équipements sont accessibles via le menu `Plugins -> Protocole domotique ->
 
 ===  Automatische Anmeldung 
 
-Le mode souscription automatique permet la découverte automatique des équipements. Il s'active via la page de link:index.html[configuration du plugin]. Le plugin souscrit auprès du broker le topic configuré dans cette même page (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
+Le mode souscription automatique permet la découverte automatique des équipements. Il s'active via la page de <<Configuration du plugin>>. Le plugin souscrit auprès du broker le topic configuré dans cette même page (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
 
 Betrachten Sie beispielsweise die MQTT-Nutzdaten, die folgende Nachrichten enthalten:
 ....
@@ -286,7 +286,7 @@ NOTE: Les commandes de type info ne sont pas dupliquées. Elles seront découver
 
 Le plugin jMQTT publie en mode persistant son état de connexion sous le topic  `jeedom/status`. Les valeurs possibles sont `offline` et `online`.
 
-Plus précisément, il publie cet état sous le topic `_Identifiant de connexion_/status`, où l'identifiant de connexion vaut jeedom par défaut et se configure via la page de link:index.html[configuration du plugin].
+Plus précisément, il publie cet état sous le topic `_Identifiant de connexion_/status`, où l'identifiant de connexion vaut jeedom par défaut et se configure via la page de <<Configuration du plugin>>.
 
 Lorsque Jeedom est en mode détection automatique, il créé un équipement, dont le nom est `_Identifiant de connexion_` qui a ce statut en information.
 

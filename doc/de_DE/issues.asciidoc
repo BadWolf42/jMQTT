@@ -1,3 +1,5 @@
 == Bekannte Probleme
 
-Die bekannten Probleme sind auf GitHub: https://github.com/domotruc/jMQTT/issues[Issues jMQTT] zu finden. 
+Les problèmes connus en cours d'investigation sont sur GitHub: https://github.com/domotruc/jMQTT/issues[Issues jMQTT].
+
+Il peut arriver que l'installation des dépendances se bloque, se référer au chapitre <<Configuration du plugin>>.
