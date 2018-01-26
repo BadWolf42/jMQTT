@@ -299,7 +299,7 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'debug', 'daemon starts, pid is ' . getmypid());
 
         // Create mosquitto client
-        self::$_client = self::newMosquittoClient('');
+        self::$_client = self::newMosquittoClient(self::getMqttId());
 
         // Set callbacks
         self::$_client->onConnect('jMQTT::mosquittoConnect');
@@ -330,14 +330,14 @@ class jMQTT extends eqLogic {
 
     public static function mosquittoConnect($r, $message) {
         log::add('jMQTT', 'debug', 'mosquitto: connection response is ' . $message);
-        self::$_client->publish(jMQTT::getMqttId() . '/status', 'online', 1, 1);
+        self::$_client->publish(self::getMqttId() . '/status', 'online', 1, 1);
         config::save('status', '1',  'jMQTT');
     }
 
     public static function mosquittoDisconnect($r) {
         $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
         log::add('jMQTT', 'debug', 'mosquitto: disconnected' . $msg);
-        self::$_client->publish(jMQTT::getMqttId() . '/status', 'offline', 1, 1);
+        self::$_client->publish(self::getMqttId() . '/status', 'offline', 1, 1);
         config::save('status', '0',  'jMQTT');
     }
 
@@ -480,24 +480,17 @@ class jMQTT extends eqLogic {
     }
     
     /**
-     * Create a mosquitto client based on the plugin parameters (mqttAdress, mqttPort,
-     * mqttId, mqttUser and mqttPass).
+     * Create a mosquitto client based on the plugin parameters (mqttUser and mqttPass) and the given ID
      * @param string $_mosqIdSuffix suffix to concatenate to mqttId if the later is not empty
      */
-    private static function newMosquittoClient($_mosqIdSuffix) {
-        $mosqId   = self::getMqttId();
+    private static function newMosquittoClient($_id = '') {
         $mosqUser = config::byKey('mqttUser', 'jMQTT', '');
         $mosqPass = config::byKey('mqttPass', 'jMQTT', '');
 
         // Création client mosquitto
         // Documentation passerelle php ici:
         //    https://github.com/mqtt/mqtt.github.io/wiki/mosquitto-php
-        if ($mosqId == '')
-            $client = new Mosquitto\Client();
-        else {
-            $mosqId = $mosqId . $_mosqIdSuffix;
-            $client = new Mosquitto\Client($mosqId);
-        }
+        $client = ($_id == '') ? new Mosquitto\Client() : new Mosquitto\Client($_id);
 
         // Credential configuration when needed
         if ($mosqUser != '') {
@@ -511,27 +504,33 @@ class jMQTT extends eqLogic {
     }
         
     /** Publish a given message to the mosquitto broker
+     * @param string $id id of the command
      * @param string $eqName equipment name (for log purpose)
      * @param string $topic topic
      * @param string $message payload
      * @param string $qos quality of service used to send the message  ('0', '1' or '2')
      * @param string $retain whether or not the message is a retained message ('0' or '1')
      */
-    public static function publishMosquitto($eqName, $topic, $payload, $qos , $retain) {
+    public static function publishMosquitto($id, $eqName, $topic, $payload, $qos , $retain) {
 
         $mosqHost = config::byKey('mqttAdress', 'jMQTT', 'localhost');
         $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
 
         $payloadMsg = (($payload == '') ? '(null)' : $payload);
-        log::add('jMQTT', 'info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg . ' (retain=' . $retain . ')');
+        log::add('jMQTT', 'info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg);
 
-        // FIXME: the static class variable $_client s not visible here as the current function
+        // To identify the sender (in case of debug need), bvuild the client id based on the jMQTT connexion id
+        // and the command id.
+        // Concatenates a random string to have a unique id (in case of burst of commands, see issue #23).
+        $mosqId = self::getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
+
+        // FIXME: the static class variable $_client is not visible here as the current function
         // is not executed on the same thread as the deamon. So we do create a new client.
-        $client = self::newMosquittoClient('_pub', 'debug');
+        $client = self::newMosquittoClient($mosqId);
 
         $client->onConnect(function() use ($client, $topic, $payload, $qos, $retain) {
             log::add('jMQTT', 'debug', 'Publication du message ' . $topic . ' ' . $payload . ' (pid=' .
-                     getmypid() . ')');
+                     getmypid() . ', qos=' . $qos . ', retain=' . $retain . ')');
             $client->publish($topic, $payload, $qos, (($retain) ? true : false));
             $client->disconnect();
         });
@@ -705,7 +704,7 @@ class jMQTTCmd extends cmd {
             
             $request = jeedom::evaluateExpression($request);
 
-            jMQTT::publishMosquitto($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
+            jMQTT::publishMosquitto($this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
             return $request;
         }
@@ -741,7 +740,7 @@ class jMQTTCmd extends cmd {
                 // Otherwise, this last value remains retained at broker level
                 log::add('jMQTT', 'info', $cmdName .
                          ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker'); 
-                jMQTT::publishMosquitto($eqName, $this->getConfiguration('topic'), '', 1, 1);
+                jMQTT::publishMosquitto($this->getId(), $eqName, $this->getConfiguration('topic'), '', 1, 1);
             }
             else
                 log::add('jMQTT', 'info', $cmdName . ': mode retain activé');
