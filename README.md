@@ -11,7 +11,7 @@ __________________
 jMQTT is a plugin for Jeedom aiming to connect Jeedom to an MQTT broker to subscribe and publish messages.
 Main functionalities are:
   * Automatic installation of the Mosquitto broker;
-  * Automatic discovery of MQTT equipments;
+  * Automatic creation of MQTT equipments, automatic creation of information commands, options to desactivite these automatisms;
   * Manual addition of MQTT equipement;
   * Duplication of equipments;
   * Decoding of complex JSON payload and creation of related informations;
