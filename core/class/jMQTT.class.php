@@ -48,7 +48,6 @@ class jMQTT extends eqLogic {
         // (could be use to ease the search of equipments listening to a given topic)
         $eqpt->setLogicalId($topic);
         $eqpt->setConfiguration('topic', $topic);
-
         $eqpt->setConfiguration('Qos', 1);
         $eqpt->setConfiguration('prev_Qos', 1);
         $eqpt->setConfiguration('reload_d', '0');
@@ -63,7 +62,7 @@ class jMQTT extends eqLogic {
      */
     public function copy($_name) {
 
-        log::add('jMQTT', 'inf', 'Copying equipment ' . $this->getName() . ' as ' . $_name);
+        log::add('jMQTT', 'info', 'Copying equipment ' . $this->getName() . ' as ' . $_name);
 
         // Clone the equipment and change properties that shall be changed
         // . new id will be given at saving
@@ -341,8 +340,9 @@ class jMQTT extends eqLogic {
         config::save('status', '0',  'jMQTT');
     }
 
-    public static function mosquittoSubscribe($mid, $qos) {
-        log::add('jMQTT', 'debug', 'mosquitto: topic subscription accepted, mid=' . $mid . ' ,qos=' . $qos);
+    public static function mosquittoSubscribe($mid, $qosCount) {
+        // Note: qosCount is not representative, do not display it (fix #31)
+        log::add('jMQTT', 'debug', 'mosquitto: topic subscription accepted, mid=' . $mid);
     }
 
     public static function mosquittoUnsubscribe($mid) {
@@ -532,16 +532,30 @@ class jMQTT extends eqLogic {
             log::add('jMQTT', 'debug', 'Publication du message ' . $topic . ' ' . $payload . ' (pid=' .
                      getmypid() . ', qos=' . $qos . ', retain=' . $retain . ')');
             $client->publish($topic, $payload, $qos, (($retain) ? true : false));
-            $client->disconnect();
+
+            // exitLoop instead of disconnect:
+            //   . otherwise disconnect too early for Qos=2 see below  (issue #25)
+            //   . to correct issue #30 (action commands not run immediately on scenarios)
+            $client->exitLoop();
         });
 
         // Connect to the broker
         $client->connect($mosqHost, $mosqPort, 60);
 
         // Loop around to permit the library to do its work
-        // This function will call the callback defined in `onConnect()`
-        // and exit properly when the message is sent and the broker disconnected.
+        // This function will call the callback defined in `onConnect()` and exit properly
+        // when the message is sent and the broker disconnected.
         $client->loopForever();
+
+        // For Qos=2, it is nessary to loop around more to permit the library to do its work (see issue #25)
+        if ($qos == 2) {
+            for ($i = 0; $i < 30; $i++) {
+                $client->loop(1);
+            }
+        }
+
+        $client->disconnect();
+
         log::add('jMQTT', 'debug', 'Message publié');
     }
 
@@ -627,6 +641,7 @@ class jMQTTCmd extends cmd {
      * @param string $value new command value
      */
     public function updateCmdValue($value) {
+
         // Update the configuration value that is displayed inside the equipment command tab
         $this->setConfiguration('value', $value);
         $this->save();
@@ -672,6 +687,7 @@ class jMQTTCmd extends cmd {
      * This method is called when a command is executed
      */
     public function execute($_options = null) {
+
         switch ($this->getType()) {
         case 'info' :
             return $this->getConfiguration('value');
@@ -703,7 +719,6 @@ class jMQTTCmd extends cmd {
             }
             
             $request = jeedom::evaluateExpression($request);
-
             jMQTT::publishMosquitto($this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
             return $request;
@@ -724,7 +739,15 @@ class jMQTTCmd extends cmd {
         $prevRetain = $this->getConfiguration('prev_retain', 0);
         $retain     = $this->getConfiguration('retain', 0);
 
-        // It the command is being created, initialize correctly the prev_retain flag (fix issue 11)
+        // If value and request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
+        // the desktop interface - fix issue #28)
+        foreach(array('value', 'request') as $key) {
+            $conf = $this->getConfiguration($key);
+            if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK)) !== FALSE))
+                $this->setConfiguration($key, $conf);
+        }
+
+        // If the command is being created, initialize correctly the prev_retain flag (fix issue 11)
         if ($this->getId() == '') {
             log::add('jMQTT', 'info', 'Creating action command ' . $cmdName);
             $prevRetain = $retain;

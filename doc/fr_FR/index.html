@@ -798,7 +798,7 @@ boiler/hw/temp 49.0</pre>
 </tbody>
 </table>
 <div class="paragraph">
-<p>Enfin, lle vecteur des températures peut également être séparé en cochant la case  <em>parseJSON</em>, pour finalement obtenir:</p>
+<p>Enfin, le vecteur des températures peut également être séparé en cochant la case  <em>parseJSON</em>, pour finalement obtenir:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -911,44 +911,60 @@ Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le c
 </div>
 <div class="paragraph">
 <div class="title">Sous-type Défaut</div>
-<p>La configuration suivante publiera:</p>
+<p>Les exemples du tableau suivant:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Nom</th>
+<th class="tableblock halign-left valign-top">Sous-Type</th>
+<th class="tableblock halign-left valign-top">Topic</th>
+<th class="tableblock halign-left valign-top">Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set_hw_setpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">action - Défaut</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hw/setpoint/set</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>40</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set_hw_setpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">action - Défaut</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hw/set</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"name": "setpoint", "value": 40}</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set_hw_setpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">action - Défaut</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hw/set</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"name": "setpoint", "value": #[home][boiler][hw_setpoint]#}</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Publieront respectivement:</p>
 </div>
 <div class="literalblock">
 <div class="content">
-<pre>ecs/temp_setpoint 40</pre>
+<pre>hw/setpoint/set 40
+hw/set {"name": "setpoint", "value": 40}
+hw/set {"name": "setpoint", "value": 45}</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Il est bien sûr possible de mettre la valeur courante d&#8217;un autre équipement en lieu et place de la valeur 40.</p>
+<p>En supposant que <code>#[home][boiler][hw_setpoint]#</code> a pour valeur 45.</p>
 </div>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-<col style="width: 25%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-top">Nom</th>
-<th class="tableblock halign-left valign-top">Sous-Type</th>
-<th class="tableblock halign-left valign-top">Topic</th>
-<th class="tableblock halign-left valign-top">Valeur</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">set_ecs_setpoint</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">action
-</p><p class="tableblock">Défaut</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ecs/temp_setpoint</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>40</code></p></td>
-</tr>
-</tbody>
-</table>
 <div class="paragraph">
 <div class="title">Sous-type Curseur</div>
-<p>La configuration suivante publiera sous le topic <em>ecs/temp_setpoint</em>, la valeur entrée via un widget de type curseur:</p>
+<p>Les configurations suivantes publieront la valeur saisie via un widget de type curseur:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -967,14 +983,28 @@ Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le c
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">set_ecs_setpoint</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">action
-</p><p class="tableblock">Curseur</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ecs/temp_setpoint</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set_hw_setpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">action - Curseur</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hw/setpoint/set</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>#slider#</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">set_hw_setpoint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">action - Curseur</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>hw/set</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"name": "setpoint", "value": #slider#}</code></p></td>
 </tr>
 </tbody>
 </table>
+<div class="paragraph">
+<p>Soit respectivement, en supposant que la valeur du curseur est 50:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>hw/setpoint/set 50
+hw/set {"name": "setpoint", "value": 50}</pre>
+</div>
+</div>
 <div class="paragraph">
 <div class="title">Sous-type Message</div>
 <p>Pour un message dont le titre est <code>ecs</code> et le contenu est <code>50</code>, la configuration ci-après publiera:</p>
@@ -1002,8 +1032,7 @@ Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le c
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">set_ecs_setpoint</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">action
-</p><p class="tableblock">Message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">action - Message</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>boiler</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"setpoint": "#title#", "value": #message#}</code></p></td>
 </tr>
@@ -1036,8 +1065,7 @@ Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le c
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">set_color</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">action
-</p><p class="tableblock">Couleur</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">action - Couleur</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>room/lamp/color</code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>#color#</code></p></td>
 </tr>
@@ -1150,6 +1178,23 @@ Les commandes de type info ne sont pas dupliquées. Elles seront découvertes au
 <div class="sect1">
 <h2 id="_change_log">6. Change log</h2>
 <div class="sectionbody">
+<div class="ulist">
+<div class="title">2018-02-05</div>
+<ul>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/30">#30</a>: les commandes action n&#8217;étaient pas envoyées immédiatement depuis des scénarios.</p>
+</li>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/25">#25</a>: les commandes avec Qos=2 n&#8217;étaient pas envoyées.</p>
+</li>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/28">#28</a>: rend possible la définition de commandes action JSON (voir exemples dans la documentation: <a href="#_commandes_de_type_action">Commandes de type Action</a>).</p>
+</li>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/31">#31</a>: message de log erroné sur accusé de réception de souscription.</p>
+</li>
+</ul>
+</div>
 <div class="ulist">
 <div class="title">2018-01-26</div>
 <ul>
