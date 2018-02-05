@@ -1,10 +1,17 @@
-== Configuration des équipements
+== Gestion des équipements
 
-Les équipements sont accessibles via le menu `Plugins -> Protocole domotique -> jMQTT`.
+La page de gestion des équipements est accessible via le menu `Plugins -> Protocole domotique -> jMQTT`.
 
-=== Souscription automatique
+La ligne supérieure permet d'accéder à la page de <<Configuration du plugin>>, ou d'afficher l'état de santé du plugin.
+Suit la section _Mes jMQTT_ qui affiche les équipements présents. Plusieurs remarques:
+   
+   - Un équipement grisé est inactif;
+   - Un équipement cerclé d'une bordure rouge, ou grise si inactif, est un équipement dont l'_Ajout automatique des commandes_ est activé.
+   
 
-Le mode souscription automatique permet la découverte automatique des équipements. Il s'active via la page de <<Configuration du plugin>>. Le plugin souscrit auprès du broker le topic configuré dans cette même page (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
+=== Création automatique des équipements
+
+Le mode création automatique des équipements permet la découverte et la création automatique des équipements. Il s'active via la page de <<Configuration du plugin>>. Le plugin souscrit auprès du broker le topic configuré dans cette même page (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
 
 Prenons comme exemple une payload MQTT publiant les messages suivants:
 ....
@@ -13,29 +20,32 @@ boiler/burner 0
 boiler/temp 70.0
 ....
 
-A l'arrivée du premier message, le plugin crée automatiquement un équipement nommé _boiler_. Nous verrons dans la section <<Onglet Commandes>> qu'il créé aussi les informations associées à chaque message. 
+A l'arrivée du premier message, le plugin crée automatiquement un équipement nommé _boiler_. Nous verrons dans la section <<Onglet Commandes>> que, par défaut, il créé aussi les informations associées à chaque message. 
 
-TIP: Le mode souscription automatique n'influe que sur la création de l'équipement, pas sur la création des informations associées: une fois l'équipement créé, les informations nouvelles seront ajoutées que le plugin soit dans le mode automatique ou pas.
+TIP: Le mode création automatique des équipements n'influe que sur la création de l'équipement, pas sur la création des informations associées, qui dépend du paramètre _Ajout automatique des commandes_ que nous verrons dans le chapitre suivant.
 
-IMPORTANT: Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d'équipements ou d'informations non souhaités, notamment dans les situations suivantes : publication de messages (si jMQTT reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le broker, tests de nouveaux équipements, ...
+IMPORTANT: Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d'équipements non souhaités, notamment dans les situations suivantes : publication de messages (si jMQTT reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le broker, tests de nouveaux équipements, ...
 
 === Paramètres de l'équipement
 
 ==== Onglet Equipement
-Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que trois paramètres spécifiques au plugin:
+Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que quatre paramètres spécifiques au plugin:
 
-   - Inscrit au Topic: topic de souscrition auprès du broker.
+   - Inscrit au Topic: topic de souscription auprès du broker.
+   - Ajout automatique des commandes: si coché, les commandes de type information seront automatiquement créés par le plugin, et l'équipement apparaitra cerclé d'une bordure dans la page de <<Gestion des équipements>>. La case est cochée par défaut.
    - Qos: qualité de service souscrit.
    - Catégorie du topic: sélection d'une image spécifique à l'équipement.
 
 Le bouton `Dupliquer`, en haut à gauche, permet de <<Dupliquer un équipement>>.
+
+IMPORTANT: Une fois les commandes créés, il est conseillé de décocher la case _Ajout automatique des commandes_ pour éviter la création d'informations non souhaitées.
 
 ==== Onglet Commandes
 
 ===== Commandes de type Information
 
 .Payload simple
-Les commandes de type information (informations dans la suite) sont créés automatiquement. Reprenons l'exemple de la payload MQTT publiant les messages suivants:
+Les commandes de type information (informations dans la suite) sont créés automatiquement si la case _Ajout automatique des commandes_ de l'Onglet Equipement est cochée. Reprenons l'exemple de la payload MQTT publiant les messages suivants:
 ....
 boiler/brand "viesmann"
 boiler/burner 0
@@ -82,7 +92,7 @@ Le plugin créé les informations suivantes:
 |===
 
 .Payload JSON
-Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées. Cette fonctionnalité doit être activée manuellement pour chaque information de ce type.
+Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées, toujours si la case _Ajout automatique des commandes_ de l'Onglet Equipement est cochée. Cette fonctionnalité doit être activée manuellement pour chaque information de ce type.
 
 Prenons l'exemple de la payload JSON suivante:
 ....
@@ -277,9 +287,9 @@ room/lamp/color #e63939
 |`\#color#`
 |===
 
-=== Souscription manuelle
+=== Création manuelle d'un équipement
 
-Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur le bouton _+_ et saisir le nom de l'équipement. Dans la page de <<Onglet Equipement>>, le topic de souscription définit les informations qui seront souscrites par l'équipement.
+Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur le bouton *+* et saisir le nom de l'équipement. Dans la page <<Onglet Equipement>>, le topic de souscription définit les informations qui seront souscrites par l'équipement.
 
 Pour plus d'information sur les topics MQTT, nous conseillons la lecture de https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices[MQTT Essentials Part 5: MQTT Topics & Best Practices].
 
@@ -297,7 +307,7 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués:
 
 IMPORTANT: Le topic des commandes dupliquées de type action doit être modifié manuellement.
 
-NOTE: Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement.
+NOTE: Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement, si la case _Ajout automatique des commandes_ est cochée.
 
 === L'équipement jeedom
 
@@ -305,6 +315,6 @@ Le plugin jMQTT publie en mode persistant son état de connexion sous le topic  
 
 Plus précisément, il publie cet état sous le topic `_Identifiant de connexion_/status`, où l'identifiant de connexion vaut jeedom par défaut et se configure via la page de <<Configuration du plugin>>.
 
-Lorsque Jeedom est en mode détection automatique, il créé un équipement, dont le nom est `_Identifiant de connexion_` qui a ce statut en information.
+Lorsque Jeedom est en mode <<Création automatique des équipements>>, il créé un équipement, dont le nom est `_Identifiant de connexion_` qui a ce statut en information.
 
 Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion. Il peut aussi servir en interne Jeedom pour monitorer la connexion au broker via un scénario.

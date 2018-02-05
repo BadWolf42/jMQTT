@@ -55,7 +55,10 @@ $eqLogics = eqLogic::byType('jMQTT');
       $files = scandir($dir);
       foreach ($eqLogics as $eqLogic) {
         $opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-        echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff ; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;' . $opacity . '" >';
+        if ($eqLogic->getConfiguration('auto_add_cmd', 1)  == 1)
+            echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff;border:4px solid red;height:200px;margin-bottom:10px;padding:5px;border-radius:18px;width:160px;margin-left:10px;' . $opacity . '" >';
+        else
+            echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff;height:200px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;' . $opacity . '" >';
         echo "<center>";
         $test = 'node_' . $eqLogic->getConfiguration('icone') . '.png';
         if (in_array($test, $files)) {
@@ -137,10 +140,17 @@ $eqLogics = eqLogic::byType('jMQTT');
             <div class="form-group">
               <label class="col-sm-3 control-label">{{Inscrit au Topic}}</label>
               <div class="col-sm-3">
-				
 				<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic principal de l'équipement jMQTT}}"/>
               </div>
             </div>
+
+            <div class="form-group">
+              <label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label>
+              <div class="col-sm-3">
+				<input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" checked/>
+              </div>
+            </div>
+
 			
 			<div class="form-group">
               <label class="col-sm-3 control-label">{{Qos}}</label>
