@@ -340,8 +340,9 @@ class jMQTT extends eqLogic {
         config::save('status', '0',  'jMQTT');
     }
 
-    public static function mosquittoSubscribe($mid, $qos) {
-        log::add('jMQTT', 'debug', 'mosquitto: topic subscription accepted, mid=' . $mid . ' ,qos=' . $qos);
+    public static function mosquittoSubscribe($mid, $qosCount) {
+        // Note: qosCount is not representative, do not display it (fix #31)
+        log::add('jMQTT', 'debug', 'mosquitto: topic subscription accepted, mid=' . $mid);
     }
 
     public static function mosquittoUnsubscribe($mid) {

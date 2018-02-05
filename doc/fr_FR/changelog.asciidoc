@@ -4,6 +4,7 @@
     - Correction https://github.com/domotruc/jMQTT/issues/30[#30]: les commandes action n'étaient pas envoyées immédiatement depuis des scénarios.
     - Correction https://github.com/domotruc/jMQTT/issues/25[#25]: les commandes avec Qos=2 n'étaient pas envoyées.
     - Correction https://github.com/domotruc/jMQTT/issues/28[#28]: rend possible la définition de commandes action JSON (voir exemples dans la documentation: <<Commandes de type Action>>).
+    - Correction https://github.com/domotruc/jMQTT/issues/31[#31]: message de log erroné sur accusé de réception de souscription.
 
 .2018-01-26
     - Correction https://github.com/domotruc/jMQTT/issues/23[#23]: sur une rafale de commande, seule la dernière était envoyée.
