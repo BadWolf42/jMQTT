@@ -131,7 +131,7 @@ En cochant l'option _parseJSON_, au message reçu suivant, les informations comp
 
 |===
 
-Enfin, lle vecteur des températures peut également être séparé en cochant la case  _parseJSON_, pour finalement obtenir:
+Enfin, le vecteur des températures peut également être séparé en cochant la case  _parseJSON_, pour finalement obtenir:
 
 |===
 |Nom|Sous-Type|Topic|Valeur|Paramètres
@@ -194,37 +194,58 @@ Les commandes de type action permettent au plugin jMQTT de publier sur le broker
     * Qos: niveau de qualité de service utilisé pour publier la commande (1 par défaut)
 
 .Sous-type Défaut
-La configuration suivante publiera:
-....
-ecs/temp_setpoint 40
-....
-
-Il est bien sûr possible de mettre la valeur courante d'un autre équipement en lieu et place de la valeur 40.
+Les exemples du tableau suivant:
 
 |===
 |Nom|Sous-Type|Topic|Valeur
 
-|set_ecs_setpoint
-|action
-
-Défaut
-|`ecs/temp_setpoint`
+|set_hw_setpoint
+|action - Défaut
+|`hw/setpoint/set`
 |`40`
+
+|set_hw_setpoint
+|action - Défaut
+|`hw/set`
+|`{"name": "setpoint", "value": 40}`
+
+|set_hw_setpoint
+|action - Défaut
+|`hw/set`
+|`{"name": "setpoint", "value": \#[home][boiler][hw_setpoint]#}`
+
 |===
+
+Publieront respectivement:
+....
+hw/setpoint/set 40
+hw/set {"name": "setpoint", "value": 40}
+hw/set {"name": "setpoint", "value": 45}
+....
+En supposant que `\#[home][boiler][hw_setpoint]#` a pour valeur 45.
+
 
 .Sous-type Curseur
-La configuration suivante publiera sous le topic _ecs/temp_setpoint_, la valeur entrée via un widget de type curseur:
+Les configurations suivantes publieront la valeur saisie via un widget de type curseur:
 
 |===
 |Nom|Sous-Type|Topic|Valeur
 
-|set_ecs_setpoint
-|action
-
-Curseur
-|`ecs/temp_setpoint`
+|set_hw_setpoint
+|action - Curseur
+|`hw/setpoint/set`
 |`\#slider#`
+
+|set_hw_setpoint
+|action - Curseur
+|`hw/set`
+|`{"name": "setpoint", "value": \#slider#}`
 |===
+Soit respectivement, en supposant que la valeur du curseur est 50:
+....
+hw/setpoint/set 50
+hw/set {"name": "setpoint", "value": 50}
+....
 
 .Sous-type Message
 Pour un message dont le titre est `ecs` et le contenu est `50`, la configuration ci-après publiera:
@@ -236,9 +257,7 @@ boiler {"setpoint": "ecs", "value": 50}
 |Nom|Sous-Type|Topic|Valeur
 
 |set_ecs_setpoint
-|action
-
-Message
+|action - Message
 |`boiler`
 |`{"setpoint": "\#title#", "value": \#message#}`
 |===
@@ -253,9 +272,7 @@ room/lamp/color #e63939
 |Nom|Sous-Type|Topic|Valeur
 
 |set_color
-|action
-
-Couleur
+|action - Couleur
 |`room/lamp/color`
 |`\#color#`
 |===

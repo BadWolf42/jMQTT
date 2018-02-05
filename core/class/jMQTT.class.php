@@ -48,7 +48,6 @@ class jMQTT extends eqLogic {
         // (could be use to ease the search of equipments listening to a given topic)
         $eqpt->setLogicalId($topic);
         $eqpt->setConfiguration('topic', $topic);
-
         $eqpt->setConfiguration('Qos', 1);
         $eqpt->setConfiguration('prev_Qos', 1);
         $eqpt->setConfiguration('reload_d', '0');
@@ -738,6 +737,14 @@ class jMQTTCmd extends cmd {
         $cmdName    = $eqName  . '|' . $this->getName();
         $prevRetain = $this->getConfiguration('prev_retain', 0);
         $retain     = $this->getConfiguration('retain', 0);
+
+        // If value and request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
+        // the desktop interface - fix issue #28)
+        foreach(array('value', 'request') as $key) {
+            $conf = $this->getConfiguration($key);
+            if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK)) !== FALSE))
+                $this->setConfiguration($key, $conf);
+        }
 
         // If the command is being created, initialize correctly the prev_retain flag (fix issue 11)
         if ($this->getId() == '') {
