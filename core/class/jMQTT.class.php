@@ -48,6 +48,7 @@ class jMQTT extends eqLogic {
         // (could be use to ease the search of equipments listening to a given topic)
         $eqpt->setLogicalId($topic);
         $eqpt->setConfiguration('topic', $topic);
+        $eqpt->setConfiguration('auto_add_cmd', 1);
         $eqpt->setConfiguration('Qos', 1);
         $eqpt->setConfiguration('prev_Qos', 1);
         $eqpt->setConfiguration('reload_d', '0');
@@ -446,26 +447,29 @@ class jMQTT extends eqLogic {
                 // Look for the command related to the current message
                 $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($eqpt->getId(), $msgTopic);
 
-                // If no command is found, create one
+                // If no command has been found, try to create one
+                // Note: jMQTTCmd::newCmd returns NULL if parameter auto_add_cmd is not true
                 if (!is_object($cmdlogic)) {
-                    // parseJson=0 by default
-                    $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic, 0);
+                    $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
                 }
 
-                // If the found command is an action command, skip
-                if ($cmdlogic->getType() == 'action') {
-                    log::add('jMQTT', 'debug', $eqpt->getName() . '|' . $cmdlogic->getName() . ' is an action command: skip');
-                    continue;
-                }
+                if (is_object($cmdlogic)) {
 
-                // Update the command value
-                $cmdlogic->updateCmdValue($msgValue);
+                    // If the found command is an action command, skip
+                    if ($cmdlogic->getType() == 'action') {
+                        log::add('jMQTT', 'debug', $eqpt->getName() . '|' . $cmdlogic->getName() . ' is an action command: skip');
+                        continue;
+                    }
 
-                // Decode the JSON payload if requested
-                if ($cmdlogic->getConfiguration('parseJson') == 1) {
-                    $jsonArray = json_decode($msgValue, true);
-                    if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
-                        jMQTTCmd::decodeJsonMessage($eqpt, $jsonArray, $cmdName, $msgTopic);
+                    // Update the command value
+                    $cmdlogic->updateCmdValue($msgValue);
+
+                    // Decode the JSON payload if requested
+                    if ($cmdlogic->getConfiguration('parseJson') == 1) {
+                        $jsonArray = json_decode($msgValue, true);
+                        if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
+                            jMQTTCmd::decodeJsonMessage($eqpt, $jsonArray, $cmdName, $msgTopic);
+                    }
                 }
             }
         }
@@ -612,27 +616,35 @@ class jMQTT extends eqLogic {
 class jMQTTCmd extends cmd {
 
     /**
-     * Create a new command. Command is not saved.
+     * Create a new command if equipement parameter auto_add_cmd is TRUE.
+     * Command is not saved.
      * @param eqLogic $_eqLogic equipment the command belongs to
      * @param string $_name command name
      * @param string $_topic command mqtt topic
-     * @param integer $_parseJson whether or not the payload shall be decoded as Json (0 or 1)
-     * @return new command
+     * @return new command (NULL if not created)
      */
-    public static function newCmd($_eqLogic, $_name, $_topic, $_parseJson) {
-        $cmd = new jMQTTCmd();
-        $cmd->setEqLogic_id($_eqLogic->getId());
-        $cmd->setEqType('jMQTT');
-        $cmd->setIsVisible(1);
-        $cmd->setIsHistorized(0);
-        $cmd->setSubType('string');
-        $cmd->setLogicalId($_topic);
-        $cmd->setType('info');
-        $cmd->setName($_name);
-        $cmd->setConfiguration('topic', $_topic);
-        $cmd->setConfiguration('parseJson', $_parseJson);
-        log::add('jMQTT', 'info', 'Creating command of type info "' . $_name . '" in equipment ' .
-                 $_eqLogic->getName());
+    public static function newCmd($_eqLogic, $_name, $_topic) {
+
+        if ($_eqLogic->getConfiguration('auto_add_cmd', 1)) {
+            $cmd = new jMQTTCmd();
+            $cmd->setEqLogic_id($_eqLogic->getId());
+            $cmd->setEqType('jMQTT');
+            $cmd->setIsVisible(1);
+            $cmd->setIsHistorized(0);
+            $cmd->setSubType('string');
+            $cmd->setLogicalId($_topic);
+            $cmd->setType('info');
+            $cmd->setName($_name);
+            $cmd->setConfiguration('topic', $_topic);
+            $cmd->setConfiguration('parseJson', 0);
+            log::add('jMQTT', 'info', 'Creating command of type info ' . $_eqLogic->getName() . '|' . $_name);
+        }
+        else {
+            $cmd = NULL;
+            log::add('jMQTT', 'debug', 'Command ' . $_eqLogic->getName() . '|' . $_name .
+                     ' not created as automatic command creation is disabled');
+        }
+
         return $cmd;
     }
 
@@ -667,19 +679,21 @@ class jMQTTCmd extends cmd {
             $jsonTopic = $_topic    . '{' . $id . '}';
             $jsonName  = $_cmdName  . '{' . $id . '}';
             $cmd = jMQTTCmd::byEqLogicIdAndLogicalId($_eqLogic->getId(), $jsonTopic);
+
+            // If no command has been found, try to create one
+            // Note: jMQTTCmd::newCmd returns NULL if parameter auto_add_cmd is not true
             if (!is_object($cmd)) {
-                // parseJson=0 by default
-                $cmd = jMQTTCmd::newCmd($_eqLogic, $jsonName, $jsonTopic, 0);
+                $cmd = jMQTTCmd::newCmd($_eqLogic, $jsonName, $jsonTopic);
             }
 
-            // json_encode is used as it works whatever the type of $value
-            // (array, boolean, ...)
-            $cmd->updateCmdValue(json_encode($value));
+            if (is_object($cmd)) {
+                // json_encode is used as it works whatever the type of $value (array, boolean, ...)
+                $cmd->updateCmdValue(json_encode($value));
             
-            // If the current command is a JSON structure that shall be decoded, call
-            // this routine recursively
-            if ($cmd->getConfiguration('parseJson') == 1 && is_array($value))
-                jMQTTCmd::decodeJsonMessage($_eqLogic, $value, $jsonName, $jsonTopic);
+                // If the current command is a JSON structure that shall be decoded, call this routine recursively
+                if ($cmd->getConfiguration('parseJson') == 1 && is_array($value))
+                    jMQTTCmd::decodeJsonMessage($_eqLogic, $value, $jsonName, $jsonTopic);
+            }
         }
     }
     
