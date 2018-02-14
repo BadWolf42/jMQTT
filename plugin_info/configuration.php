@@ -66,42 +66,12 @@ if (!isConnect()) {
 					<input id="mosquitto_por" type="password" class="configKey form-control" data-l1key="mqttPass" style="margin-top:5px" placeholder="Jeedom"/>
 				</div>
         </div>
-		<div class="form-group">
-				<label class="col-sm-4 control-label">{{Decouverte Automatique des topics: }}</label>
-				<div class="col-sm-2">
-					<input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="mqttAuto" onchange="auto_changed()" checked /> 					
-				</div>
-        </div>
 		<div class="form-group" id="mqtt_topic">
-				<label class="col-lg-4 control-label">{{Topic root (defaut: Tous): }}</label>
+				<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipments : }}</label>
 				<div class="col-lg-4">
 					<input id="mosquitto_por" class="configKey form-control" data-l1key="mqttTopic" style="margin-top:5px" placeholder="#"/>
 				</div>
         </div>
-		<div class="form-group" id="mqtt_qos">
-			<label class="col-lg-4 control-label">{{Qos}}</label>
-			<div class="col-lg-4">
-				<select style="width : 40pxpx;" class="configKey form-control" data-l1key="mqttQos">
-					<option value="0">0</option>
-					<option value="1" selected>1</option>
-					<option value="2">2</option>
-				</select>
-			</div>
-        </div>
     
 	</fieldset>
 </form>
- 
-<script type="text/javascript">
-function auto_changed()
-{
-    if($('.autoCheck').is(":checked"))  { 
-        $("#mqtt_topic").show();
-		$("#mqtt_qos").show();
-	}
-    else {
-        $("#mqtt_topic").hide();
-		$("#mqtt_qos").hide();
-	}
-}
-</script>

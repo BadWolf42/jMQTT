@@ -1,5 +1,8 @@
 == Change log
 
+.2018-02-14
+    - Implémentation https://github.com/domotruc/jMQTT/issues/36[#36]: le mode inclusion automatique d'équipements s'active maintenant via un bouton d'inclusion depuis la page du plugin et se désactive automatiquement après 2 à 3 min.
+
 .2018-02-06
     - Implémentation https://github.com/domotruc/jMQTT/issues/26[#26]: ajout d'une case à cocher dans l'équipement permettant de désactiver la création automatique des commandes de type information.
 

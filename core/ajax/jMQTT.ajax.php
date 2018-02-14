@@ -24,7 +24,16 @@ try {
         throw new Exception(__('401 - {{Accès non autorisé}}', __FILE__));
     }
 
-    throw new Exception(__('{{Aucune methode correspondante à}} : ', __FILE__) . init('action'));
+    ajax::init();
+
+    // To change the equipment automatic inclusion mode
+    if (init('action') == 'setIncludeMode') {
+	jMQTT::setIncludeMode(init('state'));
+	ajax::success();
+    }
+
+    
+    throw new Exception(__('{{Aucune methode Ajax correspondante à}} : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
     ajax::error(displayExeption($e), $e->getCode());

@@ -1,13 +1,13 @@
 <?php
-
 if (!isConnect('admin')) {
     throw new Exception('{{401 - Accès non autorisé}}');
 }
 sendVarToJS('eqType', 'jMQTT');
 $eqLogics = eqLogic::byType('jMQTT');
-
 ?>
 
+<div id="div_newEqptMsg"></div>
+<div id="div_inclusionModeMsg"></div>
 <div class="row row-overflow">
     <div class="col-lg-2 col-sm-3 col-sm-4">
 	<div class="bs-sidebar">
@@ -16,7 +16,8 @@ $eqLogics = eqLogic::byType('jMQTT');
 		<li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>
 		<?php
 		foreach ($eqLogics as $eqLogic) {
-		    echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
+		    $opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
+		    echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '" style="' . $opacity . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
 		}
 		?>
 	    </ul>
@@ -26,17 +27,49 @@ $eqLogics = eqLogic::byType('jMQTT');
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
 	<legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
 	<div class="eqLogicThumbnailContainer">
+	    <div class="cursor eqLogicAction" data-action="add" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
+		<center>
+		    <i class="fa fa-plus-circle" style="font-size:6em;color:#f8d800;"></i>
+		</center>
+		<span style="font-size : 1.1em;font-weight: bold;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center>{{Ajouter}}</center></span>
+	    </div>
+
+	    <?php
+	    // Insert the automatic inclusion button: display according to the include_mode configuration parameter is done at the end of this page
+	    ?>
+	    <div class="cursor bt_changeIncludeMode include card" data-mode="0" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
+		<center><i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i></center>
+		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center></center></span>
+	    </div>
+
+<!-- 	    
+	    if (config::byKey('include_mode', 'jMQTT', 0) == 1) {
+		echo '<div class="cursor bt_changeIncludeMode include card" data-mode="1" style="background-color : #8000FF; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >';
+		echo '<center>';
+		echo '<i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i>';
+		echo '</center>';
+		echo '<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center>{{Arrêter inclusion}}</center></span>';
+		echo '</div>';
+	    } else {
+		echo '<div class="cursor bt_changeIncludeMode include card" data-mode="0" style="background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >';
+		echo '<center>';
+		echo '<i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i>';
+		echo '</center>';
+		echo '<span style="font-size : 1.1em;font-weight: bold;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center>{{Mode inclusion}}</center></span>';
+		echo '</div>';
+	    }
+	     -->
 	    <div class="cursor eqLogicAction" data-action="gotoPluginConf" style="background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;">
 		<center>
-		    <i class="fa fa-wrench" style="font-size : 5em;color:#767676;"></i>
+		    <i class="fa fa-wrench" style="font-size:5.4em;color:#767676;"></i>
 		</center>
-		<span style="font-size : 1.1em;position:relative; top : 23px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676"><center>{{Configuration}}</center></span>
+		<span style="font-size : 1.1em;position:relative; top : 23px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word"><center>{{Configuration}}</center></span>
 	    </div>
 	    <div class="cursor" id="bt_healthMQTT" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
 		<center>
-		    <i class="fa fa-medkit" style="font-size : 5em;color:#767676;"></i>
+		    <i class="fa fa-medkit" style="font-size:6em;color:#767676;"></i>
 		</center>
-		<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#767676"><center>{{Santé}}</center></span>
+		<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word"><center>{{Santé}}</center></span>
 	    </div>
 	</div>
 
@@ -44,19 +77,13 @@ $eqLogics = eqLogic::byType('jMQTT');
 	<legend><i class="fa fa-table"></i>  {{Mes jMQTT}}
 	</legend>
 	<div class="eqLogicThumbnailContainer">
-	    <div class="cursor eqLogicAction" data-action="add" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-		<center>
-		    <i class="fa fa-plus-circle" style="font-size : 7em;color:#f8d800;"></i>
-		</center>
-		<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>{{Ajouter}}</center></span>
-	    </div>
 	    <?php
 	    $dir = dirname(__FILE__) . '/../../resources/images/';
 	    $files = scandir($dir);
 	    foreach ($eqLogics as $eqLogic) {
 		$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
 		if ($eqLogic->getConfiguration('auto_add_cmd', 1)  == 1)
-		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff;border:4px solid red;height:200px;margin-bottom:10px;padding:5px;border-radius:18px;width:160px;margin-left:10px;' . $opacity . '" >';
+		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff;border:8px solid #8000FF;height:200px;margin-bottom:10px;padding:5px;border-radius:18px;width:160px;margin-left:10px;' . $opacity . '" >';
 		else
 		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff;height:200px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;' . $opacity . '" >';
 		echo "<center>";
@@ -249,6 +276,11 @@ $eqLogics = eqLogic::byType('jMQTT');
 <?php include_file('core', 'plugin.template', 'js'); ?>
 
 <script>
+ <?php
+ // Initialise the automatic inclusion button display according to include_mode configuration parameter
+ echo 'configureIncludeModeDisplay(' . config::byKey('include_mode', 'jMQTT', 0) . ');';
+ ?>
+
  $( "#sel_icon" ).change(function(){
      var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png';
      //$("#icon_visu").attr('src',text);
