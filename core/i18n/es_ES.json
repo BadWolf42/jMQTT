@@ -69,7 +69,8 @@
         "Topic": "Topic",
         "Valeur": "Valor",
         "Paramètres": "Parámetros",
-        "Dupliquer": "Duplicar"
+        "Dupliquer": "Duplicar",
+        "Ajout automatique des commandes": "Adición  automática de comandos"
     },
     "plugins\/jMQTT\/desktop\/js\/jMQTT.js": {
         "Santé jMQTT": "Salud jMQTT",
