@@ -8,7 +8,10 @@
         "Decouverte Automatique des topics: ": "Equipment automatic discovery",
         "Topic root (defaut: Tous): ": "Root topic (default: all)",
         "Qos": "Qos",
-        "Installer Mosquitto localement : ": "Install Mosquitto on localhost:"
+        "Installer Mosquitto localement : ": "Install Mosquitto on localhost:",
+        "Equipment automatic inclusion mode topic: ": "Equipment automatic inclusion mode topic: ",
+        "Equipment automatic inclusion mode topic : ": "Equipment automatic inclusion mode topic : ",
+        "Topic de souscription en mode inclusion automatique des équipments : ": "Topic de souscription en mode inclusion automatique des équipments : "
     },
     "plugins\/jMQTT\/desktop\/php\/jMQTT.php": {
         "Ajouter un équipement": "Add an equipment",
@@ -70,7 +73,11 @@
         "Valeur": "Value",
         "Paramètres": "Parameter",
         "Dupliquer": "Duplicate",
-        "Ajout automatique des commandes": "Ajout automatique des commandes"
+        "Ajout automatique des commandes": "Ajout automatique des commandes",
+        "Mode inclusion": "Mode inclusion",
+        "Vous etes en mode inclusion. Recliquez sur le bouton d'inclusion pour sortir de ce mode": "Vous etes en mode inclusion. Recliquez sur le bouton d'inclusion pour sortir de ce mode",
+        "Arrêter inclusion": "Arrêter inclusion",
+        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode"
     },
     "plugins\/jMQTT\/desktop\/js\/jMQTT.js": {
         "Santé jMQTT": "jMQTT Health",
@@ -89,7 +96,21 @@
         "La valeur de la commande vaut par défaut la commande": "Default command value is the command",
         "Rechercher équipement": "Search equipment",
         "Retain": "Retain",
-        "Qos": "QoS"
+        "Qos": "QoS",
+        "Arrêter l\\'inclusion": "Arrêter l\\'inclusion",
+        "Arreter inclusion": "Arreter inclusion",
+        "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode",
+        "Mode inclusion": "Mode inclusion",
+        "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode",
+        "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page": "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page",
+        "Un périphérique vient d\\'être inclu\/exclu.": "Un périphérique vient d\\'être inclu\/exclu.",
+        "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page": "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page",
+        "Un périphérique vient d\\'être inclu.": "Un périphérique vient d\\'être inclu.",
+        "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode": "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode",
+        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode",
+        "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.": "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.",
+        "Un équipement vient d\\'être inclu. Veuillez réactualiser la page": "Un équipement vient d\\'être inclu. Veuillez réactualiser la page",
+        "Un équipement vient d\\'être inclu. La page va se réactualiser.": "Un équipement vient d\\'être inclu. La page va se réactualiser."
     },
     "plugins\/jMQTT\/desktop\/modal\/health.php": {
         "Module": "Module",
@@ -108,5 +129,9 @@
         "Le sujet du message ne peut pas être vide": "Message title cannot be empty",
         "Accès à Mosquitto": "Access to Mosquitto",
         "Indique si le broker MQTT est visible sur le réseau": "Check if Mosquito is accessible through the network"
+    },
+    "plugins\/jMQTT\/core\/ajax\/jMQTT.ajax.php": {
+        "{{Aucune methode correspondante à": "{{Aucune methode correspondante à",
+        "{{Aucune methode Ajax correspondante à": "{{Aucune methode Ajax correspondante à"
     }
 }
