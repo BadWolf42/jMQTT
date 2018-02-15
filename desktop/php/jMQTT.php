@@ -12,7 +12,7 @@ $eqLogics = eqLogic::byType('jMQTT');
     <div class="col-lg-2 col-sm-3 col-sm-4">
 	<div class="bs-sidebar">
 	    <ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
-		<a class="btn btn-default eqLogicAction" style="width : 100%;margin-top : 5px;margin-bottom: 5px;" data-action="add"><i class="fa fa-plus-circle"></i> {{Ajouter un équipement}}</a>
+		<a class="btn btn-default eqLogicAction" style="width:100%;margin-top:5px;margin-bottom:5px;" data-action="add"><i class="fa fa-plus-circle"></i> {{Ajouter un équipement}}</a>
 		<li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>
 		<?php
 		foreach ($eqLogics as $eqLogic) {
@@ -23,53 +23,33 @@ $eqLogics = eqLogic::byType('jMQTT');
 	    </ul>
 	</div>
     </div>
-
+    
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
 	<legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
 	<div class="eqLogicThumbnailContainer">
-	    <div class="cursor eqLogicAction" data-action="add" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-		<center>
+	    <div class="cursor eqLogicAction" data-action="add" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
+		<center style="height:100px;padding-top:10px">
 		    <i class="fa fa-plus-circle" style="font-size:6em;color:#f8d800;"></i>
 		</center>
-		<span style="font-size : 1.1em;font-weight: bold;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center>{{Ajouter}}</center></span>
+		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;color:#f8d800;"><center>{{Ajouter}}</center></span>
 	    </div>
 
 	    <?php
 	    // Insert the automatic inclusion button: display according to the include_mode configuration parameter is done at the end of this page
 	    ?>
 	    <div class="cursor bt_changeIncludeMode include card" data-mode="0" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
-		<center><i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i></center>
-		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center></center></span>
+		<center style="height:100px;padding-top:10px"><i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i></center>
+		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;color:#f8d800;"><center></center></span>
 	    </div>
 
-<!-- 	    
-	    if (config::byKey('include_mode', 'jMQTT', 0) == 1) {
-		echo '<div class="cursor bt_changeIncludeMode include card" data-mode="1" style="background-color : #8000FF; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >';
-		echo '<center>';
-		echo '<i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i>';
-		echo '</center>';
-		echo '<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center>{{Arrêter inclusion}}</center></span>';
-		echo '</div>';
-	    } else {
-		echo '<div class="cursor bt_changeIncludeMode include card" data-mode="0" style="background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >';
-		echo '<center>';
-		echo '<i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i>';
-		echo '</center>';
-		echo '<span style="font-size : 1.1em;font-weight: bold;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;color:#f8d800;"><center>{{Mode inclusion}}</center></span>';
-		echo '</div>';
-	    }
-	     -->
 	    <div class="cursor eqLogicAction" data-action="gotoPluginConf" style="background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;">
-		<center>
-		    <i class="fa fa-wrench" style="font-size:5.4em;color:#767676;"></i>
-		</center>
-		<span style="font-size : 1.1em;position:relative; top : 23px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word"><center>{{Configuration}}</center></span>
+		<center style="height:100px;padding-top:10px"><i class="fa fa-wrench" style="font-size:5.4em;color:#767676;"></i></center>
+		<span style="font-size:1.1em;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word"><center>{{Configuration}}</center></span>
 	    </div>
+	    
 	    <div class="cursor" id="bt_healthMQTT" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-		<center>
-		    <i class="fa fa-medkit" style="font-size:6em;color:#767676;"></i>
-		</center>
-		<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word"><center>{{Santé}}</center></span>
+		<center style="height:100px;padding-top:10px"><i class="fa fa-medkit" style="font-size:6em;color:#767676;"></i></center>
+		<span style="font-size:1.1em;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word"><center>{{Santé}}</center></span>
 	    </div>
 	</div>
 
@@ -83,19 +63,19 @@ $eqLogics = eqLogic::byType('jMQTT');
 	    foreach ($eqLogics as $eqLogic) {
 		$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
 		if ($eqLogic->getConfiguration('auto_add_cmd', 1)  == 1)
-		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff;border:8px solid #8000FF;height:200px;margin-bottom:10px;padding:5px;border-radius:18px;width:160px;margin-left:10px;' . $opacity . '" >';
+		    echo '<div class="eqLogicDisplayCard cursor auto" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color:#ffffff;height:200px;margin-bottom:10px;padding:5px;width:160px;margin-left:10px;' . $opacity . '" >';
 		else
-		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff;height:200px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;' . $opacity . '" >';
-		echo "<center>";
+		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color:#ffffff;height:200px;margin-bottom:10px;padding:5px;width:160px;margin-left:10px;' . $opacity . '" >';
+		echo '<center  style="height:120px;padding-top:10px">';
 		$test = 'node_' . $eqLogic->getConfiguration('icone') . '.png';
 		if (in_array($test, $files)) {
 		    $path = 'node_' . $eqLogic->getConfiguration('icone');
 		} else {
 		    $path = 'mqtt_icon';
 		}
-		echo '<img src="plugins/jMQTT/resources/images/' . $path . '.png" height="105" width="95" />';
+		echo '<img src="plugins/jMQTT/resources/images/' . $path . '.png" height="105" width="92" />';
 		echo "</center>";
-		echo '<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
+		echo '<span style="font-size:1.1em;position:relative;top:10px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
 		echo '</div>';
 	    }
 	    ?>
@@ -274,6 +254,28 @@ $eqLogics = eqLogic::byType('jMQTT');
 
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
+
+<?php // The !important keyword is used as some themes (such as darksobre) overrides below property with this keyword (fix #37) ?>
+<style>
+ div.eqLogicDisplayCard.auto {
+     border:8px solid #8000FF !important;
+     border-radius:18px !important;
+     padding-top:5px !important;
+ }
+ div.eqLogicDisplayCard:not(auto) {
+     border-width:1px !important;
+     border-style:solid !important;
+     border-color: #FFFFFF;
+     border-radius:18px !important;
+     padding-top:12px !important;
+ }
+ div.bt_changeIncludeMode.include {
+     background-color: #8000FF !important;
+ }
+ div.bt_changeIncludeMode:not(.include) {
+     background-color: #FFFFFF;
+ }
+</style>
 
 <script>
  <?php

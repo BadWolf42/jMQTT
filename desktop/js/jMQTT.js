@@ -173,16 +173,13 @@ function addCmdToTable(_cmd) {
 // Configure the display according to the given mode
 // If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
 function configureIncludeModeDisplay(mode) {
-//    if (typeof mode === 'undefined') {
-//	mode = $('.bt_changeIncludeMode').attr('data-mode');
-//    }
     if (mode == 1) {
         $.hideAlert();
         $('.bt_changeIncludeMode:not(.card)').removeClass('btn-default').addClass('btn-success');
         $('.bt_changeIncludeMode').attr('data-mode', 1);
         $('.bt_changeIncludeMode.card span center').text('{{Arrêter l\'inclusion}}');
         $('.bt_changeIncludeMode:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Arreter inclusion}}');
-        $('.bt_changeIncludeMode.card').css('background-color','#8000FF');
+	$('.bt_changeIncludeMode').addClass('include');
 	$('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
     } else {
         $.hideAlert();
@@ -190,7 +187,7 @@ function configureIncludeModeDisplay(mode) {
         $('.bt_changeIncludeMode').attr('data-mode', 0);
         $('.bt_changeIncludeMode:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Mode inclusion}}');
         $('.bt_changeIncludeMode.card span center').text('{{Mode inclusion}}');
-        $('.bt_changeIncludeMode.card').css('background-color','#ffffff');
+	$('.bt_changeIncludeMode').removeClass('include');
 	$('#div_inclusionModeMsg').hideAlert();
     }
 }
