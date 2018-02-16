@@ -9,9 +9,9 @@
         "Topic root (defaut: Tous): ": "Topic root (todos por defecto) :",
         "Qos": "Qos",
         "Installer Mosquitto localement : ": "Instalar Mosquitto localmente :",
-        "Equipment automatic inclusion mode topic: ": "Equipment automatic inclusion mode topic: ",
-        "Equipment automatic inclusion mode topic : ": "Equipment automatic inclusion mode topic : ",
-        "Topic de souscription en mode inclusion automatique des équipments : ": "Topic de souscription en mode inclusion automatique des équipments : "
+        "Equipment automatic inclusion mode topic: ": "Tema del modo de inclusión automática de dispositivos :  ",
+        "Equipment automatic inclusion mode topic : ": "Tema del modo de inclusión automática de dispositivos :  ",
+        "Topic de souscription en mode inclusion automatique des équipments : ": "Suscripción por temas en el modo de inclusión automática de dispositivos : "
     },
     "plugins\/jMQTT\/desktop\/php\/jMQTT.php": {
         "Ajouter un équipement": "Agregar un equipo",
