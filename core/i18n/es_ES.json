@@ -74,10 +74,10 @@
         "Paramètres": "Parámetros",
         "Dupliquer": "Duplicar",
         "Ajout automatique des commandes": "Adición  automática de comandos",
-        "Mode inclusion": "Mode inclusion",
-        "Vous etes en mode inclusion. Recliquez sur le bouton d'inclusion pour sortir de ce mode": "Vous etes en mode inclusion. Recliquez sur le bouton d'inclusion pour sortir de ce mode",
-        "Arrêter inclusion": "Arrêter inclusion",
-        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode"
+        "Mode inclusion": "Modo inclusión",
+        "Vous etes en mode inclusion. Recliquez sur le bouton d'inclusion pour sortir de ce mode": "Se encuentra en modo inclusión. Haga clic de nuevo en el botón de inclusión para salir de este modo",
+        "Arrêter inclusion": "detener inclusión",
+        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Modo de inclusión durante 2 min. Haga clic en el botón para salir de este modo"
     },
     "plugins\/jMQTT\/desktop\/js\/jMQTT.js": {
         "Santé jMQTT": "Salud jMQTT",
@@ -97,20 +97,20 @@
         "Rechercher équipement": "Buscar dispositivo",
         "Retain": "Retain",
         "Qos": "Qos",
-        "Arrêter l\\'inclusion": "Arrêter l\\'inclusion",
-        "Arreter inclusion": "Arreter inclusion",
-        "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode",
-        "Mode inclusion": "Mode inclusion",
-        "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode",
-        "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page": "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page",
-        "Un périphérique vient d\\'être inclu\/exclu.": "Un périphérique vient d\\'être inclu\/exclu.",
-        "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page": "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page",
-        "Un périphérique vient d\\'être inclu.": "Un périphérique vient d\\'être inclu.",
-        "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode": "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode",
-        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode",
-        "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.": "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.",
-        "Un équipement vient d\\'être inclu. Veuillez réactualiser la page": "Un équipement vient d\\'être inclu. Veuillez réactualiser la page",
-        "Un équipement vient d\\'être inclu. La page va se réactualiser.": "Un équipement vient d\\'être inclu. La page va se réactualiser."
+        "Arrêter l\\'inclusion": "Detener la inclusión",
+        "Arreter inclusion": "Detener inclusión",
+        "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Estas en modo de inclusión. Vuelve a hacer clic en el botón inclusión para salir de este modo",
+        "Mode inclusion": "Modo inclusión",
+        "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Estas en modo de inclusión. Vuelve a hacer clic en el botón inclusión para salir de este modo",
+        "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page": "Se acaba de incluir/excluir un dispositivo. Por favor actualice la página",
+        "Un périphérique vient d\\'être inclu\/exclu.": "Se acaba de incluir/excluir un dispositivo.",
+        "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page": "Se acaba de incluir un periférico. Por favor actualice la página",
+        "Un périphérique vient d\\'être inclu.": "Se acaba de incluir un periférico.",
+        "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode": "Modo de inclusión durante 2 min. Haga clic en el botón para salir de este modo",
+        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Modo de inclusión durante 2 min. Haga clic en el botón para salir de este modo",
+        "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.": "Modo de inclusión automática durante 2 a 3 minutos. Haga clic en el botón para forzar la salida de este modo antes.",
+        "Un équipement vient d\\'être inclu. Veuillez réactualiser la page": "El dispositivo acaba de ser incluido. Por favor actualice la página",
+        "Un équipement vient d\\'être inclu. La page va se réactualiser.": "El dispositivo acaba de ser incluido. La página será actualizada."
     },
     "plugins\/jMQTT\/desktop\/modal\/health.php": {
         "Module": "Modulo",
@@ -131,7 +131,7 @@
         "Indique si le broker MQTT est visible sur le réseau": "Indica si Mosquitto esta visible en la red"
     },
     "plugins\/jMQTT\/core\/ajax\/jMQTT.ajax.php": {
-        "{{Aucune methode correspondante à": "{{Aucune methode correspondante à",
-        "{{Aucune methode Ajax correspondante à": "{{Aucune methode Ajax correspondante à"
+        "{{Aucune methode correspondante à": "{{Ningún método correspondiente a",
+        "{{Aucune methode Ajax correspondante à": "{{Ningún método Ajax correspondiente a"
     }
 }
