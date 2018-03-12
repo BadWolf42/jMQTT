@@ -1,10 +1,25 @@
-== Geräte Konfiguration
+== Gestion des équipements
 
-Les équipements sont accessibles via le menu `Plugins -> Protocole domotique -> jMQTT`.
+La page de gestion des équipements est accessible via le menu `Plugins -> Protocole domotique -> jMQTT`.
 
-===  Automatische Anmeldung 
+Le panneau supérieur, intitulé _Gestion_, permet:
 
-Le mode souscription automatique permet la découverte automatique des équipements. Il s'active via la page de <<Configuration du plugin>>. Le plugin souscrit auprès du broker le topic configuré dans cette même page (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
+   - La <<Création manuelle d\'un équipement>>;
+   - L'activation du mode <<Inclusion automatique des équipements>>;
+   - L'accès à la <<Configuration du plugin>>;
+   - L'accès à la page <<Santé du plugin>>.
+
+Le panneau inférieur, _Mes jMQTT_ affiche les équipements présents. A noter que:
+   
+   - Un équipement grisé est inactif;
+   - Un équipement cerclé d'une bordure bleue-mauve, ou grise si inactif, est un équipement dont l'_Ajout automatique des commandes_ est activé.
+   
+
+=== Inclusion automatique des équipements
+
+Le mode inclusion automatique permet la découverte et la création automatique des équipements. Il s'active en cliquant sur le bouton _Mode inclusion_. Il se désactive en recliquant sur le même bouton, ou automatiquement après 2 à 3 min.
+
+Le plugin souscrit auprès du broker le topic configuré dans la page de <<Configuration du plugin>> (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
 
 Betrachten Sie beispielsweise die MQTT-Nutzdaten, die folgende Nachrichten enthalten:
 ....
@@ -13,29 +28,32 @@ boiler/burner 0
 boiler/temp 70.0
 ....
 
-A l'arrivée du premier message, le plugin crée automatiquement un équipement nommé _boiler_. Nous verrons dans la section <<Onglet Commandes>> qu'il créé aussi les informations associées à chaque message. 
+A l'arrivée du premier message, le plugin crée automatiquement un équipement nommé _boiler_. Nous verrons dans la section <<Onglet Commandes>> que, par défaut, il créé aussi les informations associées à chaque message. 
 
-TIP: Le mode souscription automatique n'influe que sur la création de l'équipement, pas sur la création des informations associées: une fois l'équipement créé, les informations nouvelles seront ajoutées que le plugin soit dans le mode automatique ou pas.
+TIP: Le mode création automatique des équipements n'influe que sur la création de l'équipement, et pas sur la création des informations associées, qui dépend du paramètre _Ajout automatique des commandes_ que nous verrons dans le chapitre suivant.
 
-IMPORTANT: Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d'équipements ou d'informations non souhaités, notamment dans les situations suivantes : publication de messages (si jMQTT reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le broker, tests de nouveaux équipements, ...
+NOTE: Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d'équipements non souhaités, notamment dans les situations suivantes : publication de messages (si jMQTT reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le broker, tests de nouveaux équipements, ...
 
 === Geräteparameter
 
 ==== Registerkarte Geräte
-Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que trois paramètres spécifiques au plugin:
+Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que quatre paramètres spécifiques au plugin:
 
-   - Inscrit au Topic: topic de souscrition auprès du broker.
-   - Qos: qualité de service souscrit.
+   - Inscrit au Topic: topic de souscription auprès du broker;
+   - Ajout automatique des commandes: si coché, les commandes de type information seront automatiquement créés par le plugin, et l'équipement apparaitra cerclé d'une bordure dans la page de <<Gestion des équipements>>. La case est cochée par défaut;
+   - Qos: qualité de service souscrit;
    - Catégorie du topic: sélection d'une image spécifique à l'équipement.
 
 Le bouton `Dupliquer`, en haut à gauche, permet de <<Dupliquer un équipement>>.
+
+IMPORTANT: Une fois les commandes créés, il est conseillé de décocher la case _Ajout automatique des commandes_ pour éviter la création d'informations non souhaitées.
 
 ==== Registerkarte Befehle
 
 ===== Befehle des Typs Information
 
 .Einfache Nutzdaten
-Les commandes de type information (informations dans la suite) sont créés automatiquement. Reprenons l'exemple de la payload MQTT publiant les messages suivants:
+Les commandes de type information (informations dans la suite) sont créés automatiquement si la case _Ajout automatique des commandes_ de l'Onglet Equipement est cochée. Reprenons l'exemple de la payload MQTT publiant les messages suivants:
 ....
 boiler/brand "viesmann"
 boiler/burner 0
@@ -82,7 +100,7 @@ Le plugin créé les informations suivantes:
 |===
 
 .JSON Nutzdaten
-Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées. Cette fonctionnalité doit être activée manuellement pour chaque information de ce type.
+Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées, toujours si la case _Ajout automatique des commandes_ de l'Onglet Equipement est cochée. Cette fonctionnalité doit être activée manuellement pour chaque information de ce type.
 
 Betrachten Sie zum Beispiel die folgenden JSON-Nutzdaten:
 ....
@@ -131,7 +149,7 @@ Wenn Sie die Option _parseJSON_ aktivieren, entsteht in der folgenden empfangene
 
 |===
 
-Schließlich kann der Temperaturvektor auch getrennt werden, indem das Feld _parseJSON_ angekreutzt wird, um schließlich Folgendes zu erhalten:
+Enfin, le vecteur des températures peut également être séparé en cochant la case  _parseJSON_, pour finalement obtenir:
 
 |===
 |Name|Unter-Typ|Thema|Wert|Parameter
@@ -186,45 +204,66 @@ Der Name der Befehle kann wie gewünscht geändert werden, jMQTT basiert auf dem
 
 Les commandes de type action permettent au plugin jMQTT de publier sur le broker MQTT. Pour cela, créer une commande via le bouton _+ Ajouter une commande action_ et remplir les champs selon le besoin:
 
-    * Nom: champ libre
-    * Sous-type: voir exemples ci-dessous
-    * Topic: topic de publication
-    * Valeur: définit la valeur publiée, i.e. la payload en langage MQTT, voir exemples ci-dessous
-    * Retain: si coché, la valeur sera persistante (conservée par le broker et publiée vers tout nouveau souscripteur)
-    * Qos: niveau de qualité de service utilisé pour publier la commande (1 par défaut)
+    * Nom: champ libre;
+    * Sous-type: voir exemples ci-dessous;
+    * Topic: topic de publication;
+    * Valeur: définit la valeur publiée, i.e. la payload en langage MQTT, voir exemples ci-dessous;
+    * Retain: si coché, la valeur sera persistante (conservée par le broker et publiée vers tout nouveau souscripteur);
+    * Qos: niveau de qualité de service utilisé pour publier la commande (1 par défaut).
 
 .Sous-type Défaut
-La configuration suivante publiera:
-....
-ecs/temp_setpoint 40
-....
-
-Il est bien sûr possible de mettre la valeur courante d'un autre équipement en lieu et place de la valeur 40.
+Les exemples du tableau suivant:
 
 |===
 |Name|Unter-Typ|Thema|Wert
 
-|set_ecs_setpoint
-|action
-
-Défaut
-|`ecs/temp_setpoint`
+|set_hw_setpoint
+|action - Défaut
+|`hw/setpoint/set`
 |`40`
+
+|set_hw_setpoint
+|action - Défaut
+|`hw/set`
+|`{"name": "setpoint", "value": 40}`
+
+|set_hw_setpoint
+|action - Défaut
+|`hw/set`
+|`{"name": "setpoint", "value": \#[home][boiler][hw_setpoint]#}`
+
 |===
+
+Publieront respectivement:
+....
+hw/setpoint/set 40
+hw/set {"name": "setpoint", "value": 40}
+hw/set {"name": "setpoint", "value": 45}
+....
+En supposant que `\#[home][boiler][hw_setpoint]#` a pour valeur 45.
+
 
 .Sous-type Curseur
-La configuration suivante publiera sous le topic _ecs/temp_setpoint_, la valeur entrée via un widget de type curseur:
+Les configurations suivantes publieront la valeur saisie via un widget de type curseur:
 
 |===
 |Name|Unter-Typ|Thema|Wert
 
-|set_ecs_setpoint
-|action
-
-Curseur
-|`ecs/temp_setpoint`
+|set_hw_setpoint
+|action - Curseur
+|`hw/setpoint/set`
 |`\#slider#`
+
+|set_hw_setpoint
+|action - Curseur
+|`hw/set`
+|`{"name": "setpoint", "value": \#slider#}`
 |===
+Soit respectivement, en supposant que la valeur du curseur est 50:
+....
+hw/setpoint/set 50
+hw/set {"name": "setpoint", "value": 50}
+....
 
 .Sous-type Message
 Pour un message dont le titre est `ecs` et le contenu est `50`, la configuration ci-après publiera:
@@ -236,9 +275,7 @@ boiler {"setpoint": "ecs", "value": 50}
 |Name|Unter-Typ|Thema|Wert
 
 |set_ecs_setpoint
-|action
-
-Message
+|action - Message
 |`boiler`
 |`{"setpoint": "\#title#", "value": \#message#}`
 |===
@@ -253,16 +290,14 @@ room/lamp/color #e63939
 |Name|Unter-Typ|Thema|Wert
 
 |set_color
-|action
-
-Couleur
+|action - Couleur
 |`room/lamp/color`
 |`\#color#`
 |===
 
-=== Souscription manuelle
+=== Création manuelle d\'un équipement
 
-Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur le bouton _+_ et saisir le nom de l'équipement. Dans la page de <<Onglet Equipement>>, le topic de souscription définit les informations qui seront souscrites par l'équipement.
+Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur le bouton *+* et saisir le nom de l'équipement. Dans la page <<Onglet Equipement>>, le topic de souscription définit les informations qui seront souscrites par l'équipement.
 
 Pour plus d'information sur les topics MQTT, nous conseillons la lecture de https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices[MQTT Essentials Part 5: MQTT Topics & Best Practices].
 
@@ -273,14 +308,20 @@ Un équipement peut être dupliqué via le bouton `Dupliquer` situé en haut à 
 Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués:
 
    * Tous les paramètres de l'équipement y compris les paramètres de configuration avancés, sauf:
-     ** Le nom bien sûr
-     ** Le statut _Activer_ : l'équipement est désactivé par défaut
-     ** Le topic de souscription qui est laissé vide
+     ** Le nom bien sûr,
+     ** Le statut _Activer_ : l'équipement est désactivé par défaut,
+     ** Le topic de souscription qui est laissé vide;
    * Les commandes de type action y compris leurs paramètres de configuration accessibles via la roue crantée.
 
 IMPORTANT: Le topic des commandes dupliquées de type action doit être modifié manuellement.
 
-NOTE: Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement.
+NOTE: Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l'équipement, si la case _Ajout automatique des commandes_ est cochée.
+
+=== Santé du plugin
+
+Ce chapitre est à écrire.
+
+IMPORTANT: La colonne _Status_ n'est pas significative, elle indique toujours OK. Sera corrigé dans une version ultérieure du plugin.
 
 === Jeedom Geräte
 
@@ -288,6 +329,6 @@ Le plugin jMQTT publie en mode persistant son état de connexion sous le topic  
 
 Plus précisément, il publie cet état sous le topic `_Identifiant de connexion_/status`, où l'identifiant de connexion vaut jeedom par défaut et se configure via la page de <<Configuration du plugin>>.
 
-Lorsque Jeedom est en mode détection automatique, il créé un équipement, dont le nom est `_Identifiant de connexion_` qui a ce statut en information.
+Lorsque Jeedom est en mode <<Inclusion automatique des équipements>>, il créé un équipement, dont le nom est `_Identifiant de connexion_` qui a ce statut en information.
 
 Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion. Il peut aussi servir en interne Jeedom pour monitorer la connexion au broker via un scénario.
