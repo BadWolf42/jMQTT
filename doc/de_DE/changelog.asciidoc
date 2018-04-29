@@ -1,5 +1,9 @@
 == Änderungsprotokoll
 
+.2018-04-29
+    - Implémentation https://github.com/domotruc/jMQTT/issues/40[#40]: ajout du champ "valeur de la commande par defaut" (voir https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740[post de vincnet68 sur le forum]). 
+    - MAJ icone et fichier info.json suite évolution processus de publication sur le market (mail partenaire@jeedom.com du 16/04/2018).
+
 .2018-02-15
     - Implémentation https://github.com/domotruc/jMQTT/issues/36[#36]: le mode inclusion automatique d'équipements s'active maintenant via un bouton d'inclusion depuis la page du plugin et se désactive automatiquement après 2 à 3 min.
     - Correction https://github.com/domotruc/jMQTT/issues/37[#37]: la bordure mettant en évidence un équipement dont l'ajout automatique de commandes est actif, est correctement affichée quelque soit le thème.

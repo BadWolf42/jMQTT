@@ -110,7 +110,8 @@
         "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode",
         "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.": "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.",
         "Un équipement vient d\\'être inclu. Veuillez réactualiser la page": "Un équipement vient d\\'être inclu. Veuillez réactualiser la page",
-        "Un équipement vient d\\'être inclu. La page va se réactualiser.": "Un équipement vient d\\'être inclu. La page va se réactualiser."
+        "Un équipement vient d\\'être inclu. La page va se réactualiser.": "Un équipement vient d\\'être inclu. La page va se réactualiser.",
+        "Valeur par défaut de la commande": "Valeur par défaut de la commande"
     },
     "plugins\/jMQTT\/desktop\/modal\/health.php": {
         "Module": "Module",
