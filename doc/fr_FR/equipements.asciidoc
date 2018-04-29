@@ -205,6 +205,7 @@ NOTE: Le nom des commandes peut être modifié comme souhaité, jMQTT se base su
 Les commandes de type action permettent au plugin jMQTT de publier sur le broker MQTT. Pour cela, créer une commande via le bouton _+ Ajouter une commande action_ et remplir les champs selon le besoin:
 
     * Nom: champ libre;
+    * Valeur par défaut de la commande: pour lier la valeur de la commande affichée sur le dashboard à une commande de type Information (exemple https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740[ici]);
     * Sous-type: voir exemples ci-dessous;
     * Topic: topic de publication;
     * Valeur: définit la valeur publiée, i.e. la payload en langage MQTT, voir exemples ci-dessous;
