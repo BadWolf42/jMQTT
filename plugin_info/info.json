@@ -1,12 +1,16 @@
 {
     "id" : "jMQTT",
     "name" : "jMQTT",
+    "description" : "Ce plugin connecte Jeedom à un broker MQTT comme Mosquitto afin, de récupérer les messages souscrits, et de publier ses propres messages.<br/>Il supporte la découverte automatique des équipements mais également leur création manuelle.",
+    "usage": "Voir documentation",
     "licence" : "AGPL",
-    "author" : "Stef3147",
+    "author" : "domotruc",
     "require" : "2.4",
-    "category" : "automation protocol",
-    "hasDependency" : 1,
-    "hasOwnDeamon" : 1,
+    "category" : "home automation protocol",
+    "hasDependency" : true,
+    "hasOwnDeamon" : true,
     "changelog" : "https://github.com/domotruc/jMQTT/tree/beta/doc/#language#/changelog.asciidoc",
-    "documentation" : "http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/master/doc/#language#/index.html"
+    "documentation" : "http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/master/doc/#language#/index.html",
+    "languages" : ["fr_FR","en_US","sp_SP"],
+    "compatibility" : ["Jeedomboard","Smart","RPI/RPI2","Docker","DIY","mobile"]
 }
