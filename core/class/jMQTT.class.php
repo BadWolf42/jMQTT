@@ -833,8 +833,8 @@ class jMQTTCmd extends cmd {
 		$this->setConfiguration($key, $conf);
 	}
 
-	// If the command is being created, initialize correctly the prev_retain flag (fix issue 11)
-	if ($this->getId() == '') {
+	// If an action command is being created, initialize correctly the prev_retain flag (fix issue 13)
+	if ($this->getId() == '' && $this->getType() == 'action') {
 	    log::add('jMQTT', 'info', 'Creating action command ' . $cmdName);
 	    $prevRetain = $retain;
 	    $this->setConfiguration('prev_retain', $retain);
