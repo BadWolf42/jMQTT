@@ -182,6 +182,13 @@ class jMQTT extends eqLogic {
     }
 
     /**
+     * preRemove method to log that an equipment is removed
+     */
+    public function preRemove() {
+	log::add('jMQTT', 'info', 'Removing equipment ' . $this->getName());
+    }
+
+    /**
      * Overload postRemove to restart the deamon when deemed necessary (see also preSave)
      */
     public function postRemove() {
@@ -704,6 +711,13 @@ class jMQTTCmd extends cmd {
 	}
 
 	return $cmd;
+    }
+
+    /**
+     * preRemove method to log that a command is removed
+     */
+    public function preRemove() {
+	log::add('jMQTT', 'info', 'Removing command ' . $this->getEqLogic()->getName() . '|' . $this->getName());
     }
 
     /**
