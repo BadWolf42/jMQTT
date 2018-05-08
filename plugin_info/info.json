@@ -6,7 +6,7 @@
     "licence" : "AGPL",
     "author" : "domotruc",
     "require" : "2.4",
-    "category" : "home automation protocol",
+    "category" : "automation protocol",
     "hasDependency" : true,
     "hasOwnDeamon" : true,
     "changelog" : "https://github.com/domotruc/jMQTT/tree/beta/doc/#language#/changelog.asciidoc",
