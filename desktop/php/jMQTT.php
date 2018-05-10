@@ -235,13 +235,14 @@ $eqLogics = eqLogic::byType('jMQTT');
 		<table id="table_cmd" class="table table-bordered table-condensed">
 		    <thead>
 			<tr>
-			    <th style="width: 50px;">#</th>
-			    <th style="width: 150px;">{{Nom}}</th>
-			    <th style="width: 110px;">{{Sous-Type}}</th>
-			    <th>{{Topic}}</th>
-			    <th style="width: 500px;">{{Valeur}}</th>
-			    <th style="width: 100px;">{{Paramètres}}</th>
-			    <th style="width: 100px;"></th>
+			    <th style="width:50px;">#</th>
+			    <th style="width:250px;">{{Nom}}</th>
+			    <th style="width:60px;">{{Sous-Type}}</th>
+			    <th style="width:300px;">{{Topic}}</th>
+			    <th style="width:300px;">{{Valeur}}</th>
+			    <th style="width:60px;">{{Unité}}</th>
+			    <th style="width:150px;">{{Paramètres}}</th>
+			    <th style="width:150px;"></th>
 			</tr>
 		    </thead>
 		    <tbody>
