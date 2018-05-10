@@ -378,19 +378,18 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Callback called each time a subscirbed topic is dispatched by the broker.
-     * @param strting $message dispatched message
+     * Callback called each time a subscribed topic is dispatched by the broker.
+     * @param $message dispatched message
      */
     public static function mosquittoMessage($message) {
 
         $msgTopic = $message->topic;
         $msgValue = $message->payload;
-        log::add('jMQTT', 'debug', 'Message ' . $msgValue . ' sur ' . $msgTopic);
 
         // In case of topic starting with /, remove the starting character (fix Issue #7)
         // And set the topic prefix (fix issue #15)
         if ($msgTopic[0] === '/') {
-            log::add('jMQTT', 'debug', 'message topic starts with /');
+            log::add('jMQTT', 'debug', 'Message topic starts with /');
             $topicPrefix = '/';
             $topicContent = substr($msgTopic, 1);
         }
@@ -401,9 +400,19 @@ class jMQTT extends eqLogic {
 
         // Return in case of invalid topic
         if(!ctype_print($msgTopic) || empty($topicContent)) {
-            log::add('jMQTT', 'warning', 'Message skipped : "' . $msgTopic . '" is not a valid topic');
+	    if (!mb_check_encoding($msgTopic, 'ASCII'))
+		$msgTopic = strtoupper(bin2hex($msgTopic));
+            log::add('jMQTT', 'warning', 'Message skipped: "' . $msgTopic . '" is not a valid topic');
             return;
         }
+
+	// Return in case of invalid payload (only ascii payload are supported) - fix issue #46
+	if (!mb_check_encoding($msgValue, 'ASCII')) {
+	    log::add('jMQTT', 'warning', 'Message skipped: payload ' . strtoupper(bin2hex($msgValue)) . ' is not valid for topic ' . $msgTopic);
+            return;
+	}
+
+        log::add('jMQTT', 'debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
 
         $msgTopicArray = explode("/", $topicContent);
 
@@ -623,7 +632,7 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
         log::remove(self::$_depLogFile);
         return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile .
-												    ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
+		     ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
                      'log' => log::getPathToLog(self::$_depLogFile));
     }
 
