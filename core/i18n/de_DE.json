@@ -77,7 +77,8 @@
         "Mode inclusion": "Mode inclusion",
         "Vous etes en mode inclusion. Recliquez sur le bouton d'inclusion pour sortir de ce mode": "Vous etes en mode inclusion. Recliquez sur le bouton d'inclusion pour sortir de ce mode",
         "Arrêter inclusion": "Arrêter inclusion",
-        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode"
+        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode",
+        "Unité": "Unité"
     },
     "plugins\/jMQTT\/desktop\/js\/jMQTT.js": {
         "Santé jMQTT": "jMQTT Gesundheit",
