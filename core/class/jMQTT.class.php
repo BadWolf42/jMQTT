@@ -400,14 +400,14 @@ class jMQTT extends eqLogic {
 
         // Return in case of invalid topic
         if(!ctype_print($msgTopic) || empty($topicContent)) {
-	    if (!mb_check_encoding($msgTopic, 'ASCII'))
+	    if (!jMQTTCmd::isConfigurationValid($msgTopic))
 		$msgTopic = strtoupper(bin2hex($msgTopic));
             log::add('jMQTT', 'warning', 'Message skipped: "' . $msgTopic . '" is not a valid topic');
             return;
         }
 
 	// Return in case of invalid payload (only ascii payload are supported) - fix issue #46
-	if (!mb_check_encoding($msgValue, 'ASCII')) {
+	if (!jMQTTCmd::isConfigurationValid($msgValue)) {
 	    log::add('jMQTT', 'warning', 'Message skipped: payload ' . strtoupper(bin2hex($msgValue)) . ' is not valid for topic ' . $msgTopic);
             return;
 	}
@@ -632,7 +632,7 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
         log::remove(self::$_depLogFile);
         return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile .
-		     ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
+                     ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
                      'log' => log::getPathToLog(self::$_depLogFile));
     }
 
@@ -747,7 +747,16 @@ class jMQTTCmd extends cmd {
     }
 
     /**
-     * Decode the given JSON decode array and update command values.
+     * Returns weather or not a given parameter is valid and can be processed by the setConfiguration method
+     * @param string $value given configuration parameter value
+     * @return boolean TRUE of the parameter is valid, FALSE if not
+     */
+    public static function isConfigurationValid($value) {
+	return (json_encode(array('v' => $value), JSON_UNESCAPED_UNICODE) !== FALSE);
+    }
+
+    /**
+     * Decode the given JSON array and update command values.
      * Commands are created when they do not exist.
      * If the given JSON structure contains other JSON structure, call this routine recursively.
      * @param eqLogic $_eqLogic current equipment
