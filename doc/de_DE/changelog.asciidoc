@@ -1,10 +1,13 @@
 == Änderungsprotokoll
 
+.2018-05-11
+    - Correction https://github.com/domotruc/jMQTT/issues/47[#47]: erreur "call to undefined function mb_check_encoding"
+
 .2018-05-10
     - Intégration des évolutions des 2 versions beta précédentes
 
 .2018-05-10 (beta)
-    - Correction  https://github.com/domotruc/jMQTT/issues/46[#46]: mauvaise payload avec caractères non ASCII corrompt la commande information associée
+    - Correction https://github.com/domotruc/jMQTT/issues/46[#46]: mauvaise payload avec caractères non ASCII corrompt la commande information associée
     - Implémentation https://github.com/domotruc/jMQTT/issues/44[#44]: amélioration de l'affichage dans le panneau de commandes
 
 .2018-05-08 (beta)
