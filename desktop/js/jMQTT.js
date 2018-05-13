@@ -18,11 +18,13 @@
 $("#bt_addMQTTInfo").on('click', function(event) {
     var _cmd = {type: 'info'};
     addCmdToTable(_cmd);
+    modifyWithoutSave = true;
 });
 
 $("#bt_addMQTTAction").on('click', function(event) {
     var _cmd = {type: 'action'};
     addCmdToTable(_cmd);
+    modifyWithoutSave = true;
 });
 
 $('#bt_healthMQTT').on('click', function () {
@@ -71,7 +73,7 @@ function addCmdToTable(_cmd) {
         tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="name" style="height:65px;" placeholder="{{Nom de l\'info}}" /></td>';
 	tr += '<td>';
 	tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
-	tr += '<span class="subType" subType="' + init(_cmd.subType) + '"></span>';
+	tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '"></span>';
 	tr += '</td><td>';
 	tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;" ' + disabled + ' placeholder="{{Topic}}" readonly=true />';
         tr += '</td><td>';
@@ -122,7 +124,7 @@ function addCmdToTable(_cmd) {
         tr += '</td>';
         tr += '<td>';
         tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;width:120px;" />';
-        tr += '<span class="subType" subType="' + init(_cmd.subType) + '" style=""></span>';
+        tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
         tr += '</td>';
         tr += '<td>';
 	tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';

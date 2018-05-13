@@ -1,5 +1,8 @@
 == Change log
 
+.2018-05-13
+    - Correction https://github.com/domotruc/jMQTT/issues/49[#49]: pas de demande de confirmation de sortie de page sur modifications de certains paramètres
+
 .2018-05-11
     - Correction https://github.com/domotruc/jMQTT/issues/47[#47]: erreur "call to undefined function mb_check_encoding"
 
@@ -8,23 +11,23 @@
 
 .2018-05-10 (beta)
     - Correction https://github.com/domotruc/jMQTT/issues/46[#46]: mauvaise payload avec caractères non ASCII corrompt la commande information associée
-    - Implémentation https://github.com/domotruc/jMQTT/issues/44[#44]: amélioration de l'affichage dans le panneau de commandes
+    - Amélioration https://github.com/domotruc/jMQTT/issues/44[#44]: amélioration de l'affichage dans le panneau de commandes
 
 .2018-05-08 (beta)
     - Correction https://github.com/domotruc/jMQTT/issues/42[#42]: log erroné sur création d'une commande info
     - Correction https://github.com/domotruc/jMQTT/issues/41[#41]: retour de jMQTT dans la catégorie protocole domotique (au lieu de passerelle domotique).
-    - Implémentation https://github.com/domotruc/jMQTT/issues/43[#43]: logguer qu'un équipement ou une commande est supprimé.
+    - Amélioration https://github.com/domotruc/jMQTT/issues/43[#43]: logguer qu'un équipement ou une commande est supprimé.
 
 .2018-04-29
-    - Implémentation https://github.com/domotruc/jMQTT/issues/40[#40]: ajout du champ "valeur de la commande par defaut" (voir https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740[post de vincnet68 sur le forum]). 
+    - Amélioration https://github.com/domotruc/jMQTT/issues/40[#40]: ajout du champ "valeur de la commande par defaut" (voir https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740[post de vincnet68 sur le forum]). 
     - MAJ icone et fichier info.json suite évolution processus de publication sur le market (mail partenaire@jeedom.com du 16/04/2018).
 
 .2018-02-15
-    - Implémentation https://github.com/domotruc/jMQTT/issues/36[#36]: le mode inclusion automatique d'équipements s'active maintenant via un bouton d'inclusion depuis la page du plugin et se désactive automatiquement après 2 à 3 min.
+    - Amélioration https://github.com/domotruc/jMQTT/issues/36[#36]: le mode inclusion automatique d'équipements s'active maintenant via un bouton d'inclusion depuis la page du plugin et se désactive automatiquement après 2 à 3 min.
     - Correction https://github.com/domotruc/jMQTT/issues/37[#37]: la bordure mettant en évidence un équipement dont l'ajout automatique de commandes est actif, est correctement affichée quelque soit le thème.
 
 .2018-02-06
-    - Implémentation https://github.com/domotruc/jMQTT/issues/26[#26]: ajout d'une case à cocher dans l'équipement permettant de désactiver la création automatique des commandes de type information.
+    - Amélioration https://github.com/domotruc/jMQTT/issues/26[#26]: ajout d'une case à cocher dans l'équipement permettant de désactiver la création automatique des commandes de type information.
 
 .2018-02-05
     - Correction https://github.com/domotruc/jMQTT/issues/30[#30]: les commandes action n'étaient pas envoyées immédiatement depuis des scénarios.
@@ -36,18 +39,18 @@
     - Correction https://github.com/domotruc/jMQTT/issues/23[#23]: sur une rafale de commande, seule la dernière était envoyée.
 
 .2018-01-24
-    - Implémentation https://github.com/domotruc/jMQTT/issues/19[#19]: ajoute une option pour ne pas installer Mosquitto localement.
+    - Amélioration https://github.com/domotruc/jMQTT/issues/19[#19]: ajoute une option pour ne pas installer Mosquitto localement.
 
 .2018-01-15
 
-    - Implémentation https://github.com/domotruc/jMQTT/issues/10[#10]: duplication d'équipement (voir la doc).
+    - Amélioration https://github.com/domotruc/jMQTT/issues/10[#10]: duplication d'équipement (voir la doc).
     - Correction https://github.com/domotruc/jMQTT/issues/15[#15]: les topics commençant par / n'étaient pas souscrits après désactivation du mode manuel
 
 IMPORTANT: Si vous avez des topics commençant par / créés avant cette version, il faut ajouter le / en début de topic souscrit dans les équipements concernés. Les commandes de types info vont être recréer par le plugin, il faudra supprimer les anciennes (celles dont le topic ne commencent pas par /). En cas de doutes, de questions, n'hésiter pas à poster sur le forum.
 
     - Correction https://github.com/domotruc/jMQTT/issues/13[#13]: commande null systématiquement envoyée sur création d'une commande action.
     - Correction https://github.com/domotruc/jMQTT/issues/14[#14]: le champ de sélection value, sous le nom d'une commande de type action, est supprimé car il n'avait pas d'effet.
-    - Implémentation https://github.com/domotruc/jMQTT/issues/17[#17]: autorise les équipements avec topic vide.
+    - Amélioration https://github.com/domotruc/jMQTT/issues/17[#17]: autorise les équipements avec topic vide.
     - Correction https://github.com/domotruc/jMQTT/issues/18[#18]: arrête de créer une commande info relative à une commande action.
 
 .2018-01-08
