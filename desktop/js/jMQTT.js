@@ -32,14 +32,6 @@ $('#bt_healthMQTT').on('click', function () {
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
 });
 
-$("#table_cmd").delegate(".listEquipementInfo", 'click', function() {
-    var el = $(this);
-    jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function(result) {
-        var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=calcul]');
-        calcul.atCaret('insert', result.human);
-    });
-});
-
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
     var el = $(this);
     jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
