@@ -33,7 +33,7 @@ try {
     }
 
     
-    throw new Exception(__('{{Aucune methode Ajax correspondante à}} : ', __FILE__) . init('action'));
+    throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
     ajax::error(displayExeption($e), $e->getCode());

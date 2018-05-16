@@ -1,16 +1,11 @@
 {
     "plugins\/jMQTT\/plugin_info\/configuration.php": {
+        "Installer Mosquitto localement : ": "Installer Mosquitto localement : ",
         "IP de Mosquitto : ": "IP de Mosquitto : ",
         "Port de Mosquitto : ": "Port de Mosquitto : ",
         "Identifiant de Connexion : ": "Identifiant de Connexion : ",
         "Compte de Connexion (non obligatoire) : ": "Compte de Connexion (non obligatoire) : ",
         "Mot de passe de Connexion (non obligatoire) : ": "Mot de passe de Connexion (non obligatoire) : ",
-        "Decouverte Automatique des topics: ": "Decouverte Automatique des topics: ",
-        "Topic root (defaut: Tous): ": "Topic root (defaut: Tous): ",
-        "Qos": "Qos",
-        "Installer Mosquitto localement : ": "Installer Mosquitto localement : ",
-        "Equipment automatic inclusion mode topic: ": "Equipment automatic inclusion mode topic: ",
-        "Equipment automatic inclusion mode topic : ": "Equipment automatic inclusion mode topic : ",
         "Topic de souscription en mode inclusion automatique des équipments : ": "Topic de souscription en mode inclusion automatique des équipments : "
     },
     "plugins\/jMQTT\/desktop\/php\/jMQTT.php": {
@@ -98,21 +93,17 @@
         "Rechercher équipement": "Rechercher équipement",
         "Retain": "Retain",
         "Qos": "Qos",
+        "Valeur par défaut de la commande": "Valeur par défaut de la commande",
         "Arrêter l\\'inclusion": "Arrêter l\\'inclusion",
         "Arreter inclusion": "Arreter inclusion",
-        "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode",
-        "Mode inclusion": "Mode inclusion",
-        "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode",
-        "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page": "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page",
-        "Un périphérique vient d\\'être inclu\/exclu.": "Un périphérique vient d\\'être inclu\/exclu.",
-        "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page": "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page",
-        "Un périphérique vient d\\'être inclu.": "Un périphérique vient d\\'être inclu.",
-        "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode": "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode",
-        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode",
         "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.": "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.",
+        "Mode inclusion": "Mode inclusion",
         "Un équipement vient d\\'être inclu. Veuillez réactualiser la page": "Un équipement vient d\\'être inclu. Veuillez réactualiser la page",
         "Un équipement vient d\\'être inclu. La page va se réactualiser.": "Un équipement vient d\\'être inclu. La page va se réactualiser.",
-        "Valeur par défaut de la commande": "Valeur par défaut de la commande"
+        "Une commande vient d\\'être ajoutée à l\\'équipment ": "Une commande vient d\\'être ajoutée à l\\'équipment ",
+        "Une commande vient d\\'être ajoutée à l\\'équipment et des modifications sont en cours.": "Une commande vient d\\'être ajoutée à l\\'équipment et des modifications sont en cours.",
+        "Une commande vient d\\'être ajoutée à cet équipment. La page va se réactualiser.": "Une commande vient d\\'être ajoutée à cet équipment. La page va se réactualiser.",
+        "La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?": "La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?"
     },
     "plugins\/jMQTT\/desktop\/modal\/health.php": {
         "Module": "Module",
@@ -130,10 +121,12 @@
         "NOK": "NOK",
         "Le sujet du message ne peut pas être vide": "Le sujet du message ne peut pas être vide",
         "Accès à Mosquitto": "Accès à Mosquitto",
-        "Indique si le broker MQTT est visible sur le réseau": "Indique si le broker MQTT est visible sur le réseau"
+        "Indique si le broker MQTT est visible sur le réseau": "Indique si le broker MQTT est visible sur le réseau",
+        "Commande ": "Commande ",
+        " créé dans l'équipement ": " créé dans l'équipement ",
+        "Nouvelle commande créé dans l'équipement ": "Nouvelle commande créé dans l'équipement "
     },
     "plugins\/jMQTT\/core\/ajax\/jMQTT.ajax.php": {
-        "{{Aucune methode correspondante à": "{{Aucune methode correspondante à",
-        "{{Aucune methode Ajax correspondante à": "{{Aucune methode Ajax correspondante à"
+        "Aucune methode Ajax correspondante à : ": "Aucune methode Ajax correspondante à : "
     }
 }
