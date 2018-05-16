@@ -49,6 +49,26 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     });
 });
 
+$('.eqLogicAction[data-action=refreshPage]').on('click', function () {
+
+    function refreshPage() {
+	$.hideAlert();
+	if ($('.li_eqLogic.active').attr('data-eqLogic_id') != undefined)
+	    $('.li_eqLogic[data-eqLogic_id=' + $('.li_eqLogic.active').attr('data-eqLogic_id') + ']').click();
+	else
+	    $('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
+    }
+    
+    if (modifyWithoutSave) {
+	bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
+	    if (result)
+		refreshPage();
+	});
+    }
+    else
+	refreshPage();
+});
+
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
 function addCmdToTable(_cmd) {
