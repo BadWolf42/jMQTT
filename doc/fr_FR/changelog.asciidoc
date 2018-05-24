@@ -1,6 +1,7 @@
 == Change log
 
-.2018-05-17 (tbc)
+.2018-05-24 (beta)
+    - Amélioration https://github.com/domotruc/jMQTT/issues/51[#51]: ajoute des messages d'alerte informant sur la création de commandes
     - Amélioration https://github.com/domotruc/jMQTT/issues/50[#50]: ajoute un bouton d'actualisation dans la page équipement
     - Correction https://github.com/domotruc/jMQTT/issues/49[#49]: pas de demande de confirmation de sortie de page sur modifications de certains paramètres
 

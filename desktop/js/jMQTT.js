@@ -14,7 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
-		
+
+function initPluginUrl(_filter=['id','saveSuccessFull','removeSuccessFull']) {
+    var vars = getUrlVars();
+    var url = '';
+    for (var i in vars) {
+        if ($.inArray(i,_filter) < 0) {
+            if (url.length > 0)
+                url += '&';
+            url += i + '=' + vars[i].replace('#', '');
+        }
+    }
+    return 'index.php?' + url;
+}
+
 $("#bt_addMQTTInfo").on('click', function(event) {
     var _cmd = {type: 'info'};
     addCmdToTable(_cmd);
@@ -49,10 +62,10 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     });
 });
 
+// Refresh the page on click on the refresh button
 $('.eqLogicAction[data-action=refreshPage]').on('click', function () {
 
     function refreshPage() {
-	$.hideAlert();
 	if ($('.li_eqLogic.active').attr('data-eqLogic_id') != undefined)
 	    $('.li_eqLogic[data-eqLogic_id=' + $('.li_eqLogic.active').attr('data-eqLogic_id') + ']').click();
 	else
@@ -68,6 +81,18 @@ $('.eqLogicAction[data-action=refreshPage]').on('click', function () {
     else
 	refreshPage();
 });
+
+// Override plugin template to rewrite the URL to avoid keeping the successfull save message
+if (getUrlVars('saveSuccessFull') == 1) {
+    $('#div_alert').showAlert({message: '{{Sauvegarde effectuée avec succès}}', level: 'success'});
+    history.replaceState(history.state, '', initPluginUrl(['saveSuccessFull']));
+}
+
+// Override plugin template to rewrite the URL to avoid keeping the successfull save delete message
+if (getUrlVars('removeSuccessFull') == 1) {
+    $('#div_alert').showAlert({message: '{{Suppression effectuée avec succès}}', level: 'success'});
+    history.replaceState(history.state, '', initPluginUrl(['removeSuccessFull']));
+}
 
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
@@ -176,6 +201,37 @@ function addCmdToTable(_cmd) {
     }
 }
 
+/**
+ * Management of the display when an information command is added
+ * Triggerred when the plugin core send a jMQTT::cmdAdded event
+ * @param _event string event name
+ * @param _options['eqlogic_name'] string name of the eqLogic command is added to
+ * @param _options['eqlogic_id'] int id of the eqLogic command is added to
+ * @param _options['cmd_name'] string name of the new command
+ */
+$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function (_event,_options) {
+
+    var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{a été ajoutée à l\'équipment}}' +
+              ' <b>' + _options['eqlogic_name'] + '</b>.';
+
+    // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
+    if (modifyWithoutSave || $('.li_eqLogic.active').attr('data-eqLogic_id') != _options['eqlogic_id'] ||
+	$('div[role="dialog"]').filter(':visible').length != 0) {
+        $('#div_newCmdMsg').showAlert({message: msg, level: 'warning'});
+    }
+    // Otherwise: display an alert message and reload the page
+    else {
+	$('#div_newCmdMsg').showAlert({
+	    message: msg + '. {{La page va se réactualiser automatiquement}}.',
+	    level: 'warning'
+	});
+	// Reload the page after a delay to let the user read the message
+	setTimeout(function() {
+	    $('.eqLogicAction[data-action=refreshPage]').click();
+	}, 3000);
+    }
+});
+
 ////////////////////////////////////////////
 // Management of the include button and mode
 ////////////////////////////////////////////
@@ -184,7 +240,6 @@ function addCmdToTable(_cmd) {
 // If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
 function configureIncludeModeDisplay(mode) {
     if (mode == 1) {
-        $.hideAlert();
         $('.bt_changeIncludeMode:not(.card)').removeClass('btn-default').addClass('btn-success');
         $('.bt_changeIncludeMode').attr('data-mode', 1);
         $('.bt_changeIncludeMode.card span center').text('{{Arrêter l\'inclusion}}');
@@ -192,7 +247,6 @@ function configureIncludeModeDisplay(mode) {
 	$('.bt_changeIncludeMode').addClass('include');
 	$('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
     } else {
-        $.hideAlert();
         $('.bt_changeIncludeMode:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
         $('.bt_changeIncludeMode').attr('data-mode', 0);
         $('.bt_changeIncludeMode:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Mode inclusion}}');
@@ -241,20 +295,30 @@ $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', funct
     configureIncludeModeDisplay(0);
 });
 
-// Called by the plugin core to inform about the inclusion of an equipment
-$('body').off('jMQTT::includeEqpt').on('jMQTT::includeEqpt', function (_event,_options) {
-    if (modifyWithoutSave) {
-        $('#div_newEqptMsg').showAlert({message: '{{Un équipement vient d\'être inclu. Veuillez réactualiser la page}}', level: 'warning'});
+/**
+ * Called by the plugin core to inform about the inclusion of an equipment
+ *
+ * @param {string} _event event name (jMQTT::eqptAdded in this context)
+ * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
+ */
+$('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _options) {
+
+    var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être inclu}}';
+
+    // If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
+    // Otherwise: display an alert message and reload the page
+    if (modifyWithoutSave || $('.li_eqLogic.active').attr('data-eqLogic_id') != undefined ||
+	$('div[role="dialog"]').filter(':visible').length != 0) {
+        $('#div_newEqptMsg').showAlert({message: msg + '.', level: 'warning'});
     }
     else {
-	$('#div_newEqptMsg').showAlert({message: '{{Un équipement vient d\'être inclu. La page va se réactualiser.}}', level: 'warning'});
+	$('#div_newEqptMsg').showAlert({
+	    message: msg + '. {{La page va se réactualiser automatiquement}}.',
+	    level: 'warning'
+	});
 	// Reload the page after a delay to let the user read the message
 	setTimeout(function() {
-            if (_options == '') {
-		window.location.reload();
-            } else {
-		window.location.href = 'index.php?v=d&p=jMQTT&m=jMQTT&id=' + _options;
-            }
-	}, 2000);
+	    window.location.reload();
+	}, 3000);
     }
 });

@@ -31,7 +31,7 @@ class jMQTT extends eqLogic {
     private static $_depProgressFile;
 
     /**
-     * Create a new equipment given its name and subsciption topic.
+     * Create a new equipment given its name and subscription topic.
      * Equipment is disabled, not saved.
      * @param string $name equipment name
      * @param string $topic subscription topic (can be empty if isEnable is set to 0)
@@ -52,6 +52,10 @@ class jMQTT extends eqLogic {
         $eqpt->setConfiguration('Qos', 1);
         $eqpt->setConfiguration('prev_Qos', 1);
         $eqpt->setConfiguration('reload_d', '0');
+
+	// Advise the desktop page (jMQTT.js) that a new equipment has been added
+	event::add('jMQTT::eqptAdded', array('eqlogic_name' => $name));
+
         return $eqpt;
     }
 
@@ -431,9 +435,6 @@ class jMQTT extends eqLogic {
         if (empty($elogics) && config::byKey('include_mode', 'jMQTT', 0) == 1) {
             $eqpt = jMQTT::newEquipment($msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#');
 	    $elogics[] = $eqpt;
-
-	    // Advise the desktop page (javascript) that a new equipment has been added
-	    event::add('jMQTT::includeEqpt', $eqpt->getId());
         }
 
         // No equipment listening to the current message is found
@@ -643,7 +644,7 @@ class jMQTT extends eqLogic {
 	log::add('jMQTT', 'info', 'Disable equipment automatic inclusion mode');
 	config::save('include_mode', 0,  'jMQTT');
 
-	// Advise the desktop page (javascript) that a new equipment has been added
+	// Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
 	event::add('jMQTT::disableIncludeMode');
 
 	// Restart the daemon
@@ -687,6 +688,9 @@ class jMQTT extends eqLogic {
     }
 }
 
+/**
+ * Extends the cmd core class
+ */
 class jMQTTCmd extends cmd {
 
     /**
@@ -711,7 +715,13 @@ class jMQTTCmd extends cmd {
 	    $cmd->setName($_name);
 	    $cmd->setConfiguration('topic', $_topic);
 	    $cmd->setConfiguration('parseJson', 0);
+
 	    log::add('jMQTT', 'info', 'Creating command of type info ' . $_eqLogic->getName() . '|' . $_name);
+
+	    // Advise the desktop page (jMQTT.js) that a new command has been added
+	    event::add('jMQTT::cmdAdded',
+		       array('eqlogic_id' => $_eqLogic->getId(), 'eqlogic_name' => $_eqLogic->getName(),
+			     'cmd_name' => $_name));
 	}
 	else {
 	    $cmd = NULL;
