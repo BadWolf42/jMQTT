@@ -1,16 +1,11 @@
 {
     "plugins\/jMQTT\/plugin_info\/configuration.php": {
+        "Installer Mosquitto localement : ": "Instalar Mosquitto localmente :",
         "IP de Mosquitto : ": "IP de Mosquitto : ",
         "Port de Mosquitto : ": "Puerto de Mosquitto : ",
         "Identifiant de Connexion : ": "Usuario de Conexión :",
         "Compte de Connexion (non obligatoire) : ": "Cuenta de conexión (facultativo) :",
         "Mot de passe de Connexion (non obligatoire) : ": "Contraseña de conexión (facultativo) :",
-        "Decouverte Automatique des topics: ": "Descubrimiento Automático de los topics : ",
-        "Topic root (defaut: Tous): ": "Topic root (todos por defecto) :",
-        "Qos": "Qos",
-        "Installer Mosquitto localement : ": "Instalar Mosquitto localmente :",
-        "Equipment automatic inclusion mode topic: ": "Tema del modo de inclusión automática de dispositivos :  ",
-        "Equipment automatic inclusion mode topic : ": "Tema del modo de inclusión automática de dispositivos :  ",
         "Topic de souscription en mode inclusion automatique des équipments : ": "Suscripción por temas en el modo de inclusión automática de dispositivos : "
     },
     "plugins\/jMQTT\/desktop\/php\/jMQTT.php": {
@@ -98,21 +93,19 @@
         "Rechercher équipement": "Buscar dispositivo",
         "Retain": "Retain",
         "Qos": "Qos",
+        "Valeur par défaut de la commande": "Valeur par défaut de la commande",
+        "La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?": "La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?",
+        "La commande": "La commande",
+        "a été ajoutée à l\\'équipment": "a été ajoutée à l\\'équipment",
+        "La page va se réactualiser automatiquement": "La page va se réactualiser automatiquement",
         "Arrêter l\\'inclusion": "Detener la inclusión",
         "Arreter inclusion": "Detener inclusión",
-        "Vous êtes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Estas en modo de inclusión. Vuelve a hacer clic en el botón inclusión para salir de este modo",
-        "Mode inclusion": "Modo inclusión",
-        "Vous etes en mode inclusion. Recliquez sur le bouton d\\'inclusion pour sortir de ce mode": "Estas en modo de inclusión. Vuelve a hacer clic en el botón inclusión para salir de este modo",
-        "Un périphérique vient d\\'être inclu\/exclu. Veuillez réactualiser la page": "Se acaba de incluir/excluir un dispositivo. Por favor actualice la página",
-        "Un périphérique vient d\\'être inclu\/exclu.": "Se acaba de incluir/excluir un dispositivo.",
-        "Un périphérique vient d\\'être inclu. Veuillez réactualiser la page": "Se acaba de incluir un periférico. Por favor actualice la página",
-        "Un périphérique vient d\\'être inclu.": "Se acaba de incluir un periférico.",
-        "Mode inclusion pendant 2min. Ou recliquez sur le bouton pour sortir du mode": "Modo de inclusión durante 2 min. Haga clic en el botón para salir de este modo",
-        "Mode inclusion pendant 2min. Cliquez sur le bouton pour sortir de ce mode": "Modo de inclusión durante 2 min. Haga clic en el botón para salir de este modo",
         "Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.": "Modo de inclusión automática durante 2 a 3 minutos. Haga clic en el botón para forzar la salida de este modo antes.",
-        "Un équipement vient d\\'être inclu. Veuillez réactualiser la page": "El dispositivo acaba de ser incluido. Por favor actualice la página",
-        "Un équipement vient d\\'être inclu. La page va se réactualiser.": "El dispositivo acaba de ser incluido. La página será actualizada.",
-        "Valeur par défaut de la commande": "Valeur par défaut de la commande"
+        "Mode inclusion": "Modo inclusión",
+        "L\\'équipement": "L\\'équipement",
+        "vient d\\'être inclu": "vient d\\'être inclu",
+        "Sauvegarde effectuée avec succès": "Sauvegarde effectuée avec succès",
+        "Suppression effectuée avec succès": "Suppression effectuée avec succès"
     },
     "plugins\/jMQTT\/desktop\/modal\/health.php": {
         "Module": "Modulo",
@@ -130,10 +123,12 @@
         "NOK": "NOK",
         "Le sujet du message ne peut pas être vide": "El objeto del mensaje no puede estar vacío ",
         "Accès à Mosquitto": "Acceso a Mosquitto",
-        "Indique si le broker MQTT est visible sur le réseau": "Indica si Mosquitto esta visible en la red"
+        "Indique si le broker MQTT est visible sur le réseau": "Indica si Mosquitto esta visible en la red",
+        "Commande ": "Commande ",
+        " créé dans l'équipement ": " créé dans l'équipement ",
+        "Nouvelle commande créé dans l'équipement ": "Nouvelle commande créé dans l'équipement "
     },
     "plugins\/jMQTT\/core\/ajax\/jMQTT.ajax.php": {
-        "{{Aucune methode correspondante à": "{{Ningún método correspondiente a",
-        "{{Aucune methode Ajax correspondante à": "{{Ningún método Ajax correspondiente a"
+        "Aucune methode Ajax correspondante à : ": "Aucune methode Ajax correspondante à : "
     }
 }
