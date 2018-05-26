@@ -1,6 +1,7 @@
 == Change log
 
-.2018-05-nn (beta)
+.2018-05-26 (beta)
+    - Amélioration https://github.com/domotruc/jMQTT/issues/45[#45]: décodage immédiat des payloads JSON sur activation de parseJSON
     - Amélioration https://github.com/domotruc/jMQTT/issues/52[#52]: activer l'export d'un équipement dans un fichier json
 
 .2018-05-24 (beta)

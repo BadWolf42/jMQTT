@@ -473,9 +473,14 @@ class jMQTT extends eqLogic {
                 $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($eqpt->getId(), $msgTopic);
 
                 // If no command has been found, try to create one
-                // Note: jMQTTCmd::newCmd returns NULL if parameter auto_add_cmd is not true
                 if (!is_object($cmdlogic)) {
-                    $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
+                    if ($eqpt->getConfiguration('auto_add_cmd', 1)) {
+                        $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
+                    }
+	            else {
+	                log::add('jMQTT', 'debug', 'Command ' . $eqpt->getName() . '|' . $cmdName .
+				                   ' not created as automatic command creation is disabled');
+	            }    
                 }
 
                 if (is_object($cmdlogic)) {
@@ -491,9 +496,7 @@ class jMQTT extends eqLogic {
 
                     // Decode the JSON payload if requested
                     if ($cmdlogic->getConfiguration('parseJson') == 1) {
-                        $jsonArray = json_decode($msgValue, true);
-                        if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
-                            jMQTTCmd::decodeJsonMessage($eqpt, $jsonArray, $cmdName, $msgTopic);
+                        jMQTTCmd::decodeJsonMessage($eqpt, $msgValue, $cmdName, $msgTopic);
                     }
                 }
             }
@@ -633,7 +636,7 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
         log::remove(self::$_depLogFile);
         return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile .
-                     ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
+                                 ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
                      'log' => log::getPathToLog(self::$_depLogFile));
     }
 
@@ -694,8 +697,7 @@ class jMQTT extends eqLogic {
 class jMQTTCmd extends cmd {
 
     /**
-     * Create a new command if equipement parameter auto_add_cmd is TRUE.
-     * Command is not saved.
+     * Create a new command. Command is not saved.
      * @param eqLogic $_eqLogic equipment the command belongs to
      * @param string $_name command name
      * @param string $_topic command mqtt topic
@@ -703,31 +705,25 @@ class jMQTTCmd extends cmd {
      */
     public static function newCmd($_eqLogic, $_name, $_topic) {
 
-	if ($_eqLogic->getConfiguration('auto_add_cmd', 1)) {
-	    $cmd = new jMQTTCmd();
-	    $cmd->setEqLogic_id($_eqLogic->getId());
-	    $cmd->setEqType('jMQTT');
-	    $cmd->setIsVisible(1);
-	    $cmd->setIsHistorized(0);
-	    $cmd->setSubType('string');
-	    $cmd->setLogicalId($_topic);
-	    $cmd->setType('info');
-	    $cmd->setName($_name);
-	    $cmd->setConfiguration('topic', $_topic);
-	    $cmd->setConfiguration('parseJson', 0);
+	$cmd = new jMQTTCmd();
+	$cmd->setEqLogic_id($_eqLogic->getId());
+	$cmd->setEqType('jMQTT');
+	$cmd->setIsVisible(1);
+	$cmd->setIsHistorized(0);
+	$cmd->setSubType('string');
+	$cmd->setLogicalId($_topic);
+	$cmd->setType('info');
+	$cmd->setName($_name);
+	$cmd->setConfiguration('topic', $_topic);
+	$cmd->setConfiguration('parseJson', 0);
+	$cmd->setConfiguration('prevParseJson', 0);
 
-	    log::add('jMQTT', 'info', 'Creating command of type info ' . $_eqLogic->getName() . '|' . $_name);
+	log::add('jMQTT', 'info', 'Creating command of type info ' . $_eqLogic->getName() . '|' . $_name);
 
-	    // Advise the desktop page (jMQTT.js) that a new command has been added
-	    event::add('jMQTT::cmdAdded',
-		       array('eqlogic_id' => $_eqLogic->getId(), 'eqlogic_name' => $_eqLogic->getName(),
-			     'cmd_name' => $_name));
-	}
-	else {
-	    $cmd = NULL;
-	    log::add('jMQTT', 'debug', 'Command ' . $_eqLogic->getName() . '|' . $_name .
-				       ' not created as automatic command creation is disabled');
-	}
+	// Advise the desktop page (jMQTT.js) that a new command has been added
+	event::add('jMQTT::cmdAdded',
+		   array('eqlogic_id' => $_eqLogic->getId(), 'eqlogic_name' => $_eqLogic->getName(),
+			 'cmd_name' => $_name));
 
 	return $cmd;
     }
@@ -766,22 +762,37 @@ class jMQTTCmd extends cmd {
     }
 
     /**
+     * Decode the given message as a JSON structure and update command values.
+     * If the given message is not a JSON valid structure, nothing is done.
+     * Commands are created when they do not exist.
+     * If the given JSON message contains other JSON structure, routine is called recursively.
+     * @param eqLogic $_eqLogic current equipment
+     * @param string $_msgValue message value
+     * @param string $_cmdName command name prefix
+     * @param string $_topic mqtt topic prefix
+     */
+    public static function decodeJsonMessage($_eqLogic, $_msgValue, $_cmdName, $_topic) {
+        $jsonArray = json_decode($_msgValue, true);
+        if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
+            self::decodeJsonArray($_eqLogic, $jsonArray, $_cmdName, $_topic);
+    }
+
+    /**
      * Decode the given JSON array and update command values.
      * Commands are created when they do not exist.
      * If the given JSON structure contains other JSON structure, call this routine recursively.
      * @param eqLogic $_eqLogic current equipment
-     * @param array $jsonArray JSON decoded array to parse
+     * @param array $_jsonArray JSON decoded array to parse
      * @param string $_cmdName command name prefix
      * @param string $_topic mqtt topic prefix
      */
-    public static function decodeJsonMessage($_eqLogic, $_jsonArray, $_cmdName, $_topic) {
+    public static function decodeJsonArray($_eqLogic, $_jsonArray, $_cmdName, $_topic) {
 	foreach ($_jsonArray as $id => $value) {
 	    $jsonTopic = $_topic    . '{' . $id . '}';
 	    $jsonName  = $_cmdName  . '{' . $id . '}';
 	    $cmd = jMQTTCmd::byEqLogicIdAndLogicalId($_eqLogic->getId(), $jsonTopic);
 
-	    // If no command has been found, try to create one
-	    // Note: jMQTTCmd::newCmd returns NULL if parameter auto_add_cmd is not true
+	    // If no command has been found, create one
 	    if (!is_object($cmd)) {
 		$cmd = jMQTTCmd::newCmd($_eqLogic, $jsonName, $jsonTopic);
 	    }
@@ -792,7 +803,7 @@ class jMQTTCmd extends cmd {
 
 		// If the current command is a JSON structure that shall be decoded, call this routine recursively
 		if ($cmd->getConfiguration('parseJson') == 1 && is_array($value))
-		    jMQTTCmd::decodeJsonMessage($_eqLogic, $value, $jsonName, $jsonTopic);
+		    self::decodeJsonArray($_eqLogic, $value, $jsonName, $jsonTopic);
 	    }
 	}
     }
@@ -848,10 +859,12 @@ class jMQTTCmd extends cmd {
      */
     public function preSave() {
 
-	$eqName     = $this->getEqLogic()->getName();
-	$cmdName    = $eqName  . '|' . $this->getName();
-	$prevRetain = $this->getConfiguration('prev_retain', 0);
-	$retain     = $this->getConfiguration('retain', 0);
+	$eqName        = $this->getEqLogic()->getName();
+	$cmdName       = $eqName  . '|' . $this->getName();
+	$prevRetain    = $this->getConfiguration('prev_retain', 0);
+	$retain        = $this->getConfiguration('retain', 0);
+	$parseJson     = $this->getConfiguration('parseJson', 0);
+	$prevParseJson = $this->getConfiguration('prevParseJson', 1);
 
 	// If value and request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
 	// the desktop interface - fix issue #28)
@@ -875,13 +888,26 @@ class jMQTTCmd extends cmd {
 	    if ($prevRetain) {
 		// A null payload shall be sent to the broker to erase the last retained value
 		// Otherwise, this last value remains retained at broker level
-		log::add('jMQTT', 'info', $cmdName .
-					  ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
+		log::add('jMQTT', 'info',
+                         $cmdName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
 		jMQTT::publishMosquitto($this->getId(), $eqName, $this->getConfiguration('topic'), '', 1, 1);
 	    }
 	    else
 		log::add('jMQTT', 'info', $cmdName . ': mode retain activé');
 	}
+
+        if ($parseJson != $prevParseJson && $this->getType() == 'info') {
+            // Acknowledge parseJson change
+	    $this->setConfiguration('prevParseJson', $parseJson);
+
+            if ($parseJson) {
+                log::add('jMQTT', 'info', $cmdName . ': parseJson is enabled');
+                jMQTTCmd::decodeJsonMessage($this->getEqLogic(), $this->getConfiguration('value'), $this->getName(),
+                                            $this->getConfiguration('topic'));
+            }
+            else
+                log::add('jMQTT', 'info', $cmdName . ': parseJson is disabled');
+        }
 
 	// Insure Logical ID is always equal to the topic (fix issue #18)
 	$this->setLogicalId($this->getConfiguration('topic'));

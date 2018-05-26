@@ -15,6 +15,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// To memorise page refresh timeout when set
+var refreshTimeout;
+
 function initPluginUrl(_filter=['id','saveSuccessFull','removeSuccessFull']) {
     var vars = getUrlVars();
     var url = '';
@@ -211,9 +214,12 @@ function addCmdToTable(_cmd) {
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function (_event,_options) {
 
-    var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{a été ajoutée à l\'équipment}}' +
-              ' <b>' + _options['eqlogic_name'] + '</b>.';
-
+    if ($('#div_newCmdMsg.alert').length == 0)
+        var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{a été ajoutée à l\'équipment}}' +
+                  ' <b>' + _options['eqlogic_name'] + '</b>.';
+    else
+        var msg = '{{Plusieurs commandes ont été ajoutée à l\'équipment}} <b>' + _options['eqlogic_name'] + '</b>.';
+    
     // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
     if (modifyWithoutSave || $('.li_eqLogic.active').attr('data-eqLogic_id') != _options['eqlogic_id'] ||
 	$('div[role="dialog"]').filter(':visible').length != 0) {
@@ -222,13 +228,16 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function (_event,_options
     // Otherwise: display an alert message and reload the page
     else {
 	$('#div_newCmdMsg').showAlert({
-	    message: msg + '. {{La page va se réactualiser automatiquement}}.',
+	    message: msg + ' {{La page va se réactualiser automatiquement}}.',
 	    level: 'warning'
 	});
 	// Reload the page after a delay to let the user read the message
-	setTimeout(function() {
-	    $('.eqLogicAction[data-action=refreshPage]').click();
-	}, 3000);
+        if (refreshTimeout === undefined) {
+	    refreshTimeout = setTimeout(function() {
+                refreshTimeout = undefined;
+	        $('.eqLogicAction[data-action=refreshPage]').click();
+	    }, 3000);
+        }
     }
 });
 
@@ -317,8 +326,11 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 	    level: 'warning'
 	});
 	// Reload the page after a delay to let the user read the message
-	setTimeout(function() {
-	    window.location.reload();
-	}, 3000);
+        if (refreshTimeout === undefined) {
+	    refreshTimeout = setTimeout(function() {
+                refreshTimeout = undefined;
+	        window.location.reload();
+	    }, 3000);
+        }
     }
 });
