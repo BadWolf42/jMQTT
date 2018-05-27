@@ -30,7 +30,7 @@ boiler/temp 70.0
 
 A l'arrivée du premier message, le plugin crée automatiquement un équipement nommé _boiler_. Nous verrons dans la section <<Onglet Commandes>> que, par défaut, il créé aussi les informations associées à chaque message. 
 
-TIP: Le mode création automatique des équipements n'influe que sur la création de l'équipement, et pas sur la création des informations associées, qui dépend du paramètre _Ajout automatique des commandes_ que nous verrons dans le chapitre suivant.
+TIP: Le mode inclusion automatique des équipements n'influe que sur la création de l'équipement, et pas sur la création des informations associées, qui dépend du paramètre _Ajout automatique des commandes_ que nous verrons dans le chapitre suivant.
 
 NOTE: Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d'équipements non souhaités, notamment dans les situations suivantes : publication de messages (si jMQTT reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le broker, tests de nouveaux équipements, ...
 
@@ -44,7 +44,10 @@ Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres com
    - Qos: qualité de service souscrit;
    - Catégorie du topic: sélection d'une image spécifique à l'équipement.
 
-Le bouton `Dupliquer`, en haut à gauche, permet de <<Dupliquer un équipement>>.
+Parmis le boutons en haut à gauche:
+
+   - `Export` permet d'obtenir un fichier JSON de toutes les informations de l'équipement. Il n'y a pas de fonctionalité import, le fichier peut surtout s'avérer utile pour investiguer sur problèmes;
+   - `Dupliquer` permet de <<Dupliquer un équipement>>.
 
 IMPORTANT: Une fois les commandes créés, il est conseillé de décocher la case _Ajout automatique des commandes_ pour éviter la création d'informations non souhaitées.
 
@@ -100,7 +103,7 @@ Le plugin créé les informations suivantes:
 |===
 
 .Payload JSON
-Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées, toujours si la case _Ajout automatique des commandes_ de l'Onglet Equipement est cochée. Cette fonctionnalité doit être activée manuellement pour chaque information de ce type.
+Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées, et ceci indépendamment de l'état de la case _Ajout automatique des commandes_ de l'Onglet Equipement. Cette fonctionnalité doit être activée manuellement pour chaque commande information de ce type.
 
 Prenons l'exemple de la payload JSON suivante:
 ....
@@ -118,7 +121,7 @@ Au premier message reçu, jMQTT créé automatiquement l'information suivante:
 |`[ ]` parseJSON
 |===
 
-En cochant l'option _parseJSON_, au message reçu suivant, les informations complémentaires sont créés, ce qui donne:
+En cochant l'option _parseJSON_, les informations complémentaires sont instantanément créés, ce qui donne:
 
 |===
 |Nom|Sous-Type|Topic|Valeur|Paramètres
@@ -326,9 +329,9 @@ IMPORTANT: La colonne _Status_ n'est pas significative, elle indique toujours OK
 
 === L'équipement jeedom
 
-Le plugin jMQTT publie en mode persistant son état de connexion sous le topic  `jeedom/status`. Les valeurs possibles sont `offline` et `online`.
+Le plugin jMQTT publie en mode persistant son état de connexion sous le topic `_Identifiant de connexion_/status`, où l'identifiant de connexion vaut jeedom par défaut et se configure via la page de <<Configuration du plugin>> `jeedom/status`.
 
-Plus précisément, il publie cet état sous le topic `_Identifiant de connexion_/status`, où l'identifiant de connexion vaut jeedom par défaut et se configure via la page de <<Configuration du plugin>>.
+Les valeurs possibles sont `offline` et `online`.
 
 Lorsque Jeedom est en mode <<Inclusion automatique des équipements>>, il créé un équipement, dont le nom est `_Identifiant de connexion_` qui a ce statut en information.
 

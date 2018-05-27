@@ -105,7 +105,8 @@
         "L\\'équipement": "L\\'équipement",
         "vient d\\'être inclu": "vient d\\'être inclu",
         "Sauvegarde effectuée avec succès": "Sauvegarde effectuée avec succès",
-        "Suppression effectuée avec succès": "Suppression effectuée avec succès"
+        "Suppression effectuée avec succès": "Suppression effectuée avec succès",
+        "Plusieurs commandes ont été ajoutée à l\\'équipment": "Plusieurs commandes ont été ajoutée à l\\'équipment"
     },
     "plugins\/jMQTT\/desktop\/modal\/health.php": {
         "Module": "Modulo",
