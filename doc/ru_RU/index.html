@@ -432,7 +432,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_paramètres_de_l_équipement">3.2. Paramètres de l&#8217;équipement</a>
 <ul class="sectlevel3">
 <li><a href="#_onglet_equipement">3.2.1. Onglet Equipement</a></li>
-<li><a href="#_onglet_commandes">3.2.2. Onglet Commandes</a></li>
+<li><a href="#_onglet_commandes">3.2.2. Onglet Commandes</a>
+<ul class="sectlevel4">
+<li><a href="#_commandes_de_type_information">Commandes de type Information</a></li>
+<li><a href="#_commandes_de_type_action">Commandes de type Action</a></li>
+<li><a href="#_vue_classic_vue_json">Vue Classic, vue JSON</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#_création_manuelle_d_un_équipement">3.3. Création manuelle d'un équipement</a></li>
@@ -617,7 +623,7 @@ boiler/temp 70.0</pre>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Le mode création automatique des équipements n&#8217;influe que sur la création de l&#8217;équipement, et pas sur la création des informations associées, qui dépend du paramètre <em>Ajout automatique des commandes</em> que nous verrons dans le chapitre suivant.
+Le mode inclusion automatique des équipements n&#8217;influe que sur la création de l&#8217;équipement, et pas sur la création des informations associées, qui dépend du paramètre <em>Ajout automatique des commandes</em> que nous verrons dans le chapitre suivant.
 </td>
 </tr>
 </table>
@@ -659,7 +665,17 @@ Une fois les équipements découverts, il est conseillé de quitter le mode auto
 </ul>
 </div>
 <div class="paragraph">
-<p>Le bouton <code>Dupliquer</code>, en haut à gauche, permet de <a href="#_dupliquer_un_équipement">Dupliquer un équipement</a>.</p>
+<p>Parmis le boutons en haut à gauche:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Export</code> permet d&#8217;obtenir un fichier JSON de toutes les informations de l&#8217;équipement. Il n&#8217;y a pas de fonctionalité import, le fichier peut surtout s&#8217;avérer utile pour investiguer sur problèmes;</p>
+</li>
+<li>
+<p><code>Dupliquer</code> permet de <a href="#_dupliquer_un_équipement">Dupliquer un équipement</a>.</p>
+</li>
+</ul>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -751,7 +767,7 @@ boiler/hw/temp 49.0</pre>
 </table>
 <div class="paragraph">
 <div class="title">Payload JSON</div>
-<p>Dans le cas d&#8217;une payload JSON, le plugin peut décoder le contenu et créer les informations associées, toujours si la case <em>Ajout automatique des commandes</em> de l&#8217;Onglet Equipement est cochée. Cette fonctionnalité doit être activée manuellement pour chaque information de ce type.</p>
+<p>Dans le cas d&#8217;une payload JSON, le plugin peut décoder le contenu et créer les informations associées, et ceci indépendamment de l&#8217;état de la case <em>Ajout automatique des commandes</em> de l&#8217;Onglet Equipement. Cette fonctionnalité doit être activée manuellement pour chaque commande information de ce type.</p>
 </div>
 <div class="paragraph">
 <p>Prenons l&#8217;exemple de la payload JSON suivante:</p>
@@ -792,7 +808,7 @@ boiler/hw/temp 49.0</pre>
 </tbody>
 </table>
 <div class="paragraph">
-<p>En cochant l&#8217;option <em>parseJSON</em>, au message reçu suivant, les informations complémentaires sont créés, ce qui donne:</p>
+<p>En cochant l&#8217;option <em>parseJSON</em>, les informations complémentaires sont instantanément créés, ce qui donne:</p>
 </div>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -1120,6 +1136,22 @@ hw/set {"name": "setpoint", "value": 50}</pre>
 </tbody>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_vue_classic_vue_json">Vue Classic, vue JSON</h5>
+<div class="paragraph">
+<p>Deux boutons en haut à droite de la page permettent de choisir entre 2 types du vue:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>La vue <strong>Classic</strong> montre les commandes dans l&#8217;ordre d&#8217;affichage sur la tuile du Dashboard. Elle permet de les réordonner par glissé/déposé;</p>
+</li>
+<li>
+<p>La vue <strong>JSON</strong> affiche un arbre hiérarchique permettant de naviguer dans les commandes JSON, de les déplier/replier. Dans cette vue, l&#8217;ordonnancement des commandes via glissé/déposé est désactivée.</p>
+</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -1208,10 +1240,10 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="sect2">
 <h3 id="_l_équipement_jeedom">3.6. L&#8217;équipement jeedom</h3>
 <div class="paragraph">
-<p>Le plugin jMQTT publie en mode persistant son état de connexion sous le topic  <code>jeedom/status</code>. Les valeurs possibles sont <code>offline</code> et <code>online</code>.</p>
+<p>Le plugin jMQTT publie en mode persistant son état de connexion sous le topic <code><em>Identifiant de connexion</em>/status</code>, où l&#8217;identifiant de connexion vaut jeedom par défaut et se configure via la page de <a href="#_configuration_du_plugin">Configuration du plugin</a> <code>jeedom/status</code>.</p>
 </div>
 <div class="paragraph">
-<p>Plus précisément, il publie cet état sous le topic <code><em>Identifiant de connexion</em>/status</code>, où l&#8217;identifiant de connexion vaut jeedom par défaut et se configure via la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>.</p>
+<p>Les valeurs possibles sont <code>offline</code> et <code>online</code>.</p>
 </div>
 <div class="paragraph">
 <p>Lorsque Jeedom est en mode <a href="#_inclusion_automatique_des_équipements">Inclusion automatique des équipements</a>, il créé un équipement, dont le nom est <code><em>Identifiant de connexion</em></code> qui a ce statut en information.</p>
@@ -1245,6 +1277,31 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <h2 id="_change_log">6. Change log</h2>
 <div class="sectionbody">
 <div class="ulist">
+<div class="title">2018-05-26 (beta)</div>
+<ul>
+<li>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/45">#45</a>: décodage immédiat des payloads JSON sur activation de parseJSON</p>
+</li>
+<li>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/52">#52</a>: activer l&#8217;export d&#8217;un équipement dans un fichier json</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<div class="title">2018-05-24 (beta)</div>
+<ul>
+<li>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/51">#51</a>: ajoute des messages d&#8217;alerte informant sur la création de commandes</p>
+</li>
+<li>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/50">#50</a>: ajoute un bouton d&#8217;actualisation dans la page équipement</p>
+</li>
+<li>
+<p>Correction <a href="https://github.com/domotruc/jMQTT/issues/49">#49</a>: pas de demande de confirmation de sortie de page sur modifications de certains paramètres</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
 <div class="title">2018-05-11</div>
 <ul>
 <li>
@@ -1267,7 +1324,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <p>Correction <a href="https://github.com/domotruc/jMQTT/issues/46">#46</a>: mauvaise payload avec caractères non ASCII corrompt la commande information associée</p>
 </li>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/44">#44</a>: amélioration de l&#8217;affichage dans le panneau de commandes</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/44">#44</a>: amélioration de l&#8217;affichage dans le panneau de commandes</p>
 </li>
 </ul>
 </div>
@@ -1281,7 +1338,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <p>Correction <a href="https://github.com/domotruc/jMQTT/issues/41">#41</a>: retour de jMQTT dans la catégorie protocole domotique (au lieu de passerelle domotique).</p>
 </li>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/43">#43</a>: logguer qu&#8217;un équipement ou une commande est supprimé.</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/43">#43</a>: logguer qu&#8217;un équipement ou une commande est supprimé.</p>
 </li>
 </ul>
 </div>
@@ -1289,7 +1346,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="title">2018-04-29</div>
 <ul>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/40">#40</a>: ajout du champ "valeur de la commande par defaut" (voir <a href="https://www.jeedom.com/forum/viewtopic.php?f=96&amp;t=32675&amp;p=612364#p602740">post de vincnet68 sur le forum</a>).</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/40">#40</a>: ajout du champ "valeur de la commande par defaut" (voir <a href="https://www.jeedom.com/forum/viewtopic.php?f=96&amp;t=32675&amp;p=612364#p602740">post de vincnet68 sur le forum</a>).</p>
 </li>
 <li>
 <p>MAJ icone et fichier info.json suite évolution processus de publication sur le market (mail <a href="mailto:partenaire@jeedom.com">partenaire@jeedom.com</a> du 16/04/2018).</p>
@@ -1300,7 +1357,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="title">2018-02-15</div>
 <ul>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/36">#36</a>: le mode inclusion automatique d&#8217;équipements s&#8217;active maintenant via un bouton d&#8217;inclusion depuis la page du plugin et se désactive automatiquement après 2 à 3 min.</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/36">#36</a>: le mode inclusion automatique d&#8217;équipements s&#8217;active maintenant via un bouton d&#8217;inclusion depuis la page du plugin et se désactive automatiquement après 2 à 3 min.</p>
 </li>
 <li>
 <p>Correction <a href="https://github.com/domotruc/jMQTT/issues/37">#37</a>: la bordure mettant en évidence un équipement dont l&#8217;ajout automatique de commandes est actif, est correctement affichée quelque soit le thème.</p>
@@ -1311,7 +1368,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="title">2018-02-06</div>
 <ul>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/26">#26</a>: ajout d&#8217;une case à cocher dans l&#8217;équipement permettant de désactiver la création automatique des commandes de type information.</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/26">#26</a>: ajout d&#8217;une case à cocher dans l&#8217;équipement permettant de désactiver la création automatique des commandes de type information.</p>
 </li>
 </ul>
 </div>
@@ -1344,7 +1401,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="title">2018-01-24</div>
 <ul>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/19">#19</a>: ajoute une option pour ne pas installer Mosquitto localement.</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/19">#19</a>: ajoute une option pour ne pas installer Mosquitto localement.</p>
 </li>
 </ul>
 </div>
@@ -1352,7 +1409,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="title">2018-01-15</div>
 <ul>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/10">#10</a>: duplication d&#8217;équipement (voir la doc).</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/10">#10</a>: duplication d&#8217;équipement (voir la doc).</p>
 </li>
 <li>
 <p>Correction <a href="https://github.com/domotruc/jMQTT/issues/15">#15</a>: les topics commençant par / n&#8217;étaient pas souscrits après désactivation du mode manuel</p>
@@ -1380,7 +1437,7 @@ Si vous avez des topics commençant par / créés avant cette version, il faut a
 <p>Correction <a href="https://github.com/domotruc/jMQTT/issues/14">#14</a>: le champ de sélection value, sous le nom d&#8217;une commande de type action, est supprimé car il n&#8217;avait pas d&#8217;effet.</p>
 </li>
 <li>
-<p>Implémentation <a href="https://github.com/domotruc/jMQTT/issues/17">#17</a>: autorise les équipements avec topic vide.</p>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/17">#17</a>: autorise les équipements avec topic vide.</p>
 </li>
 <li>
 <p>Correction <a href="https://github.com/domotruc/jMQTT/issues/18">#18</a>: arrête de créer une commande info relative à une commande action.</p>

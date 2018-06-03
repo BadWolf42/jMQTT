@@ -18,6 +18,11 @@
 // To memorise page refresh timeout when set
 var refreshTimeout;
 
+// Command number: used when displaying commands as a JSON tree.
+var N_CMD;
+
+// Return the plugin base URL
+// Parameters id, saveSuccessFull, removeSuccessFull are removed if present
 function initPluginUrl(_filter=['id','saveSuccessFull','removeSuccessFull']) {
     var vars = getUrlVars();
     var url = '';
@@ -29,6 +34,27 @@ function initPluginUrl(_filter=['id','saveSuccessFull','removeSuccessFull']) {
         }
     }
     return 'index.php?' + url;
+}
+
+// Function to refresh the page
+// Ask confirmation if the page has been modified
+function refreshEqLogicPage() {
+
+    function refreshPage() {
+	if ($('.li_eqLogic.active').attr('data-eqLogic_id') != undefined)
+	    $('.li_eqLogic[data-eqLogic_id=' + $('.li_eqLogic.active').attr('data-eqLogic_id') + ']').click();
+	else
+	    $('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
+    }
+    
+    if (modifyWithoutSave) {
+	bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
+	    if (result)
+		refreshPage();
+	});
+    }
+    else
+	refreshPage();
 }
 
 $("#bt_addMQTTInfo").on('click', function(event) {
@@ -65,24 +91,17 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     });
 });
 
-// Refresh the page on click on the refresh button
-$('.eqLogicAction[data-action=refreshPage]').on('click', function () {
+// Refresh the page on click on the refresh button, and classic and JSON button
+$('.eqLogicAction[data-action=refreshPage]').on('click', refreshEqLogicPage);
+$('#bt_classic').on('click', refreshEqLogicPage);
+$('#bt_json').on('click', refreshEqLogicPage);
 
-    function refreshPage() {
-	if ($('.li_eqLogic.active').attr('data-eqLogic_id') != undefined)
-	    $('.li_eqLogic[data-eqLogic_id=' + $('.li_eqLogic.active').attr('data-eqLogic_id') + ']').click();
-	else
-	    $('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
-    }
-    
-    if (modifyWithoutSave) {
-	bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
-	    if (result)
-		refreshPage();
-	});
-    }
-    else
-	refreshPage();
+$('a[href="#eqlogictab"]').on('click', function() {
+    $('#menu-bar').hide();
+});
+
+$('a[href="#commandtab"]').on('click', function() {
+    $('#menu-bar').show();
 });
 
 // Override plugin template to rewrite the URL to avoid keeping the successfull save message
@@ -97,8 +116,77 @@ if (getUrlVars('removeSuccessFull') == 1) {
     history.replaceState(history.state, '', initPluginUrl(['removeSuccessFull']));
 }
 
+// Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
+/**
+ * printEqLogic callback called by plugin.template before calling addCmdToTable.
+ * We reorder commands if the JSON view is active.
+ */
+function printEqLogic(_eqLogic) {
+
+    // Principle of the ordering algorithm is to associate an ordering string to each command
+    // and order ordering strings into alphebetical order
+    
+    // Encode the given number in base 36, on 3 caracters width
+    function toString36(_n) {
+        var ret = parseInt(_n).toString(36);
+        if (ret.length < 3)
+            ret = "0".repeat(3-ret.length) + ret;
+        return ret;
+    }
+
+    // Return the ordering string of the given command
+    function computeOrder(_c) {
+        if (_c.sOrder != undefined)
+            return _c.sOrder;
+        var sParent = '';
+        if (_c.configuration.jParent != undefined && _c.configuration.jParent >= 0) {
+            var tmp = _eqLogic.cmd.filter(function (c) { return c.id == _c.configuration.jParent; });
+            sParent = computeOrder(tmp[0]);
+        }
+        if (_c.configuration.jOrder == undefined || _c.configuration.jOrder < 0)
+            sOrder = toString36(_c.order);
+        else
+            sOrder = toString36(_c.configuration.jOrder);
+        return sParent + sOrder;
+    }
+
+    // JSON view button is active
+    if ($('#bt_json.active').length) {
+
+        // Initialize the counter used 
+        N_CMD = 1;
+
+        // Compute the ordering string of each commands
+        for (var c of _eqLogic.cmd) {
+            c.sOrder = computeOrder(c);
+        }
+        
+        // Sort the command array
+        _eqLogic.cmd.sort(function(c1, c2) {
+            if (c1.sOrder < c2.sOrder)
+                return -1;
+            if (c1.sOrder > c2.sOrder)
+                return 1;
+            return 0;
+        });
+
+        // Disable the sortable functionality and enlarge the Id column width
+        $("#table_cmd").sortable('disable');
+        $("#table_cmd th:first").width('120px');
+    }
+    else {
+        // Classical view: enable the sortable functionality and adapt the Id column width
+        $("#table_cmd").sortable('enable');
+        $("#table_cmd th:first").width('50px');
+    }
+}
+
+
+/**
+ *addCmdToTable callback called by plugin.template: render eqLogic commands
+ */
 function addCmdToTable(_cmd) {
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
@@ -108,9 +196,27 @@ function addCmdToTable(_cmd) {
     }
 
     if (init(_cmd.type) == 'info') {
+        // FIXME: is this disabled variable usefull?
         var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
-        var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
-        tr += '<td><span class="cmdAttr" data-l1key="id"></span></td>';
+
+        var tr = '<tr class="cmd';
+        if ($('#bt_json.active').length) {
+            tr += ' treegrid-' + N_CMD;
+            if (_cmd.configuration.jParent >= 0) {
+                tr += ' treegrid-parent-' + $('.cmd[data-cmd_id=' + _cmd.configuration.jParent + ']').attr('class').split('treegrid-')[1]
+            }
+        }
+        tr += '" data-cmd_id="' + init(_cmd.id) + '">';
+        tr += '<td><span class="cmdAttr" data-l1key="id"></span>';
+
+        // TRICK: For the JSON view include the "order" value in a hidden element
+        // so that the original/natural order is kept when saving
+        if ($('#bt_json.active').length) {
+            tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span></td>'
+        }
+        else
+            tr += '</td>'
+        
         tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="name" style="height:65px;" placeholder="{{Nom de l\'info}}" /></td>';
 	tr += '<td>';
 	tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
@@ -136,16 +242,18 @@ function addCmdToTable(_cmd) {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:40%;display:inline-block;"> ';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:40%;display:inline-block;">';
         tr += '</td></tr>';
+
         $('#table_cmd tbody').append(tr);
         $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
         if (isset(_cmd.type)) {
             $('#table_cmd tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type));
         }
         jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
+        N_CMD++;
     }
 
     if (init(_cmd.type) == 'action') {
-        var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
+        var tr = '<tr class="cmd treegrid-' + N_CMD + '" data-cmd_id="' + init(_cmd.id) + '">';
         tr += '<td>';
         tr += '<span class="cmdAttr" data-l1key="id"></span>';
         tr += '</td>';
@@ -201,6 +309,15 @@ function addCmdToTable(_cmd) {
 		jeedom.cmd.changeType(tr, init(_cmd.subType));
 	    }
 	});
+        N_CMD++;
+    }
+
+    // If JSON view is active, build the tree
+    if ($('#bt_json.active').length) {
+        $('.tree').treegrid({
+            expanderExpandedClass: 'glyphicon glyphicon-minus',
+            expanderCollapsedClass: 'glyphicon glyphicon-plus'
+        });
     }
 }
 
@@ -212,7 +329,7 @@ function addCmdToTable(_cmd) {
  * @param _options['eqlogic_id'] int id of the eqLogic command is added to
  * @param _options['cmd_name'] string name of the new command
  */
-$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function (_event,_options) {
+$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options) {
 
     if ($('#div_newCmdMsg.alert').length == 0)
         var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{a été ajoutée à l\'équipment}}' +
@@ -310,7 +427,7 @@ $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', funct
  * @param {string} _event event name (jMQTT::eqptAdded in this context)
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
  */
-$('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _options) {
+$('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_options) {
 
     var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être inclu}}';
 

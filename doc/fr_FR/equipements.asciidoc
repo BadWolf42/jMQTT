@@ -299,6 +299,13 @@ room/lamp/color #e63939
 |`\#color#`
 |===
 
+===== Vue Classic, vue JSON
+
+Deux boutons en haut à droite de la page permettent de choisir entre 2 types du vue:
+
+    * La vue *Classic* montre les commandes dans l'ordre d'affichage sur la tuile du Dashboard. Elle permet de les réordonner par glissé/déposé;
+    * La vue *JSON* affiche un arbre hiérarchique permettant de naviguer dans les commandes JSON, de les déplier/replier. Dans cette vue, l'ordonnancement des commandes via glissé/déposé est désactivée.
+
 === Création manuelle d\'un équipement
 
 Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur le bouton *+* et saisir le nom de l'équipement. Dans la page <<Onglet Equipement>>, le topic de souscription définit les informations qui seront souscrites par l'équipement.

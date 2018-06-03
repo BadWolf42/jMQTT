@@ -94,8 +94,17 @@ $eqLogics = eqLogic::byType('jMQTT');
 	    <li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
             <a class="btn btn-default eqLogicAction pull-left" data-action="refreshPage"><i class="fa fa-refresh"></i></a>
 	</ul>
-
-	<div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
+        <div id="menu-bar" style="display: none;">
+	    <div class="form-actions">
+		<a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+                <div class="btn-group pull-right" data-toggle="buttons">
+                    <label id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off" checked> Classic </label>
+                    <label id="bt_json" class="btn btn-sm btn-primary"><input type="radio" autocomplete="off"> JSON </label>
+                </div>
+	    </div>
+            <hr style="margin-top:5px; margin-bottom:5px;">
+        </div>
+	<div class="tab-content" style="height:calc(100% - 120px);overflow:auto;overflow-x: hidden;">
 	    <div role="tabpanel" class="tab-pane active" id="eqlogictab">
 		<form class="form-horizontal">
 		    <fieldset>
@@ -227,16 +236,7 @@ $eqLogics = eqLogic::byType('jMQTT');
 		</form>
 	    </div>
 	    <div role="tabpanel" class="tab-pane" id="commandtab">
-
-		<form class="form-horizontal">
-		    <fieldset>
-			<div class="form-actions">
-			    <a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
-			</div>
-		    </fieldset>
-		</form>
-		<br />
-		<table id="table_cmd" class="table table-bordered table-condensed">
+		<table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
 		    <thead>
 			<tr>
 			    <th style="width:50px;">#</th>
@@ -259,6 +259,9 @@ $eqLogics = eqLogic::byType('jMQTT');
 
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
+<?php include_file('3rdparty', 'jquery.treegrid', 'css', 'jMQTT'); ?>
+<?php include_file('3rdparty', 'jquery.treegrid.min', 'js', 'jMQTT'); ?>
+<?php include_file('3rdparty', 'jquery.treegrid.bootstrap3', 'js', 'jMQTT'); ?>
 
 <?php // The !important keyword is used as some themes (such as darksobre) overrides below property with this keyword (fix #37) ?>
 <style>

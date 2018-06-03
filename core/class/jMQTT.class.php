@@ -492,11 +492,11 @@ class jMQTT extends eqLogic {
                     }
 
                     // Update the command value
-                    $cmdlogic->updateCmdValue($msgValue);
+                    $cmdlogic->updateCmdValue($msgValue, jMQTTCmd::NOT_JSON_CHILD, jMQTTCmd::NOT_JSON_CHILD);
 
                     // Decode the JSON payload if requested
                     if ($cmdlogic->getConfiguration('parseJson') == 1) {
-                        jMQTTCmd::decodeJsonMessage($eqpt, $msgValue, $cmdName, $msgTopic);
+                        jMQTTCmd::decodeJsonMessage($eqpt, $msgValue, $cmdName, $msgTopic, $cmdlogic->getId(), 0);
                     }
                 }
             }
@@ -636,7 +636,7 @@ class jMQTT extends eqLogic {
         log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
         log::remove(self::$_depLogFile);
         return array('script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile .
-                                 ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
+                                                                                                    ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
                      'log' => log::getPathToLog(self::$_depLogFile));
     }
 
@@ -696,6 +696,10 @@ class jMQTT extends eqLogic {
  */
 class jMQTTCmd extends cmd {
 
+    // Constant value to be affected to Parent and Order configuration parameters, for commands
+    // that do not derive from a JSON structure
+    const NOT_JSON_CHILD = -1;
+
     /**
      * Create a new command. Command is not saved.
      * @param eqLogic $_eqLogic equipment the command belongs to
@@ -738,11 +742,15 @@ class jMQTTCmd extends cmd {
     /**
      * Update this command value, save and inform all stakeholders
      * @param string $value new command value
+     * @param int $_jParent cmd id of the parent. Set NOT_JSON_CHILD if not a JSON structure.
+     * @param int $_jOrder order of the command. Set NOT_JSON_CHILD if not a JSON structure.
      */
-    public function updateCmdValue($value) {
+    public function updateCmdValue($value, $_jParent, $_jOrder) {
 
 	// Update the configuration value that is displayed inside the equipment command tab
 	$this->setConfiguration('value', $value);
+        $this->setConfiguration('jParent', $_jParent);
+        $this->setConfiguration('jOrder', $_jOrder);
 	$this->save();
 
 	// Update the command value
@@ -770,11 +778,12 @@ class jMQTTCmd extends cmd {
      * @param string $_msgValue message value
      * @param string $_cmdName command name prefix
      * @param string $_topic mqtt topic prefix
+     * @param int $_jParent cmd id of the parent (in case of JSON payload)
      */
-    public static function decodeJsonMessage($_eqLogic, $_msgValue, $_cmdName, $_topic) {
+    public static function decodeJsonMessage($_eqLogic, $_msgValue, $_cmdName, $_topic, $_jParent) {
         $jsonArray = json_decode($_msgValue, true);
         if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
-            self::decodeJsonArray($_eqLogic, $jsonArray, $_cmdName, $_topic);
+            self::decodeJsonArray($_eqLogic, $jsonArray, $_cmdName, $_topic, $_jParent);
     }
 
     /**
@@ -785,8 +794,13 @@ class jMQTTCmd extends cmd {
      * @param array $_jsonArray JSON decoded array to parse
      * @param string $_cmdName command name prefix
      * @param string $_topic mqtt topic prefix
+     * @param int $_jParent cmd id of the parent (in case of JSON payload)
      */
-    public static function decodeJsonArray($_eqLogic, $_jsonArray, $_cmdName, $_topic) {
+    public static function decodeJsonArray($_eqLogic, $_jsonArray, $_cmdName, $_topic, $_jParent) {
+
+        // Current index in the JSON structure: starts from 0
+        $jOrder = 0;
+
 	foreach ($_jsonArray as $id => $value) {
 	    $jsonTopic = $_topic    . '{' . $id . '}';
 	    $jsonName  = $_cmdName  . '{' . $id . '}';
@@ -799,12 +813,13 @@ class jMQTTCmd extends cmd {
 
 	    if (is_object($cmd)) {
 		// json_encode is used as it works whatever the type of $value (array, boolean, ...)
-		$cmd->updateCmdValue(json_encode($value));
+		$cmd->updateCmdValue(json_encode($value), $_jParent, $jOrder);
 
 		// If the current command is a JSON structure that shall be decoded, call this routine recursively
 		if ($cmd->getConfiguration('parseJson') == 1 && is_array($value))
-		    self::decodeJsonArray($_eqLogic, $value, $jsonName, $jsonTopic);
+		    self::decodeJsonArray($_eqLogic, $value, $jsonName, $jsonTopic, $cmd->getId());
 	    }
+            $jOrder++;
 	}
     }
 
@@ -843,7 +858,9 @@ class jMQTTCmd extends cmd {
 			break;
 		}
 
+                log::add('jMQTT', 'debug', 'before: ' . $request);
 		$request = jeedom::evaluateExpression($request);
+                log::add('jMQTT', 'debug', 'after: ' . $request);
 		jMQTT::publishMosquitto($this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
 		return $request;
@@ -903,7 +920,7 @@ class jMQTTCmd extends cmd {
             if ($parseJson) {
                 log::add('jMQTT', 'info', $cmdName . ': parseJson is enabled');
                 jMQTTCmd::decodeJsonMessage($this->getEqLogic(), $this->getConfiguration('value'), $this->getName(),
-                                            $this->getConfiguration('topic'));
+                                            $this->getConfiguration('topic'), $this->getId());
             }
             else
                 log::add('jMQTT', 'info', $cmdName . ': parseJson is disabled');
