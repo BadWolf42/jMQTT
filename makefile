@@ -1,4 +1,4 @@
-minify-js = closure-compiler
+minify-js = closure-compiler --jscomp_off misplacedTypeAnnotation
 gen-doc = asciidoctor
 
 DOC_PATH = doc/fr_FR
