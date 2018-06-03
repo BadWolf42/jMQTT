@@ -1,5 +1,9 @@
 == Change log
 
+.2018-06-03 (beta)
+    - Amélioration https://github.com/domotruc/jMQTT/issues/55[#55]: ajout d'une vue de visualisation hiérarchique JSON dans le panneau des commandes
+
+
 .2018-05-26 (beta)
     - Amélioration https://github.com/domotruc/jMQTT/issues/45[#45]: décodage immédiat des payloads JSON sur activation de parseJSON
     - Amélioration https://github.com/domotruc/jMQTT/issues/52[#52]: activer l'export d'un équipement dans un fichier json
