@@ -93,8 +93,16 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 
 // Refresh the page on click on the refresh button, and classic and JSON button
 $('.eqLogicAction[data-action=refreshPage]').on('click', refreshEqLogicPage);
-$('#bt_classic').on('click', refreshEqLogicPage);
-$('#bt_json').on('click', refreshEqLogicPage);
+$('#bt_classic').on('click', function() {
+    refreshEqLogicPage();
+    $('#bt_classic').removeClass('btn-default').addClass('btn-primary');
+    $('#bt_json').removeClass('btn-primary').addClass('btn-default');
+});
+$('#bt_json').on('click', function() {
+    refreshEqLogicPage();
+    $('#bt_json').removeClass('btn-default').addClass('btn-primary');
+    $('#bt_classic').removeClass('btn-primary').addClass('btn-default');
+});
 
 $('a[href="#eqlogictab"]').on('click', function() {
     $('#menu-bar').hide();

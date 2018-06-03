@@ -98,8 +98,8 @@ $eqLogics = eqLogic::byType('jMQTT');
 	    <div class="form-actions">
 		<a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
                 <div class="btn-group pull-right" data-toggle="buttons">
-                    <label id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off" checked> Classic </label>
-                    <label id="bt_json" class="btn btn-sm btn-primary"><input type="radio" autocomplete="off"> JSON </label>
+                    <a id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off" checked><i class="fa fa-list-alt"></i>  Classic </a>
+                    <a id="bt_json" class="btn btn-sm btn-default"><input type="radio" autocomplete="off"><i class="fa fa-sitemap"></i>  JSON </a>
                 </div>
 	    </div>
             <hr style="margin-top:5px; margin-bottom:5px;">
