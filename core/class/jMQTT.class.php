@@ -17,8 +17,15 @@
  */
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
+include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
+
 class jMQTT extends eqLogic {
 
+    const CLIENT_STATUS = 'status';
+    const OFFLINE = 'offline';
+    const ONLINE = 'online';
+    const API_TOPIC = 'jeeApi';
+    
     // MQTT client is defined as a static variable.
     // IMPORTANT: This variable is set in the deamon method; it is only visible from functions
     // that are executed on the same thread as the deamon method.
@@ -285,6 +292,8 @@ class jMQTT extends eqLogic {
                     $client->subscribe($topic, $qos);
                 }
             }
+            log::add('jMQTT', 'info', 'Subscribes to the jeeAPI topic "' . self::getMqttApiTopic() . '"');
+            $client->subscribe(self::getMqttApiTopic(), '1');
         }
         else { // auto inclusion mode
             $topic = config::byKey('mqttTopic', 'jMQTT', '#');
@@ -313,7 +322,11 @@ class jMQTT extends eqLogic {
         self::$_client->onLog('jMQTT::mosquittoLog');
 
         // Defines last will terminaison message
-        self::$_client->setWill(self::getMqttId() . '/status', 'offline', 1, 1);
+        self::$_client->setWill(self::getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
+
+        $statusCmd = self::getMqttClientStatusCmd();
+        if ($statusCmd != null)
+            log::add('jMQTT', 'debug', 'status cmd: ' . $statusCmd->getId());
 
         // Suppress the exception management here. We let exceptions being thrown to the upper level
         // and rely on the daemon management of the jeedom core: if automatic management is activated, the deamon
@@ -345,15 +358,15 @@ class jMQTT extends eqLogic {
 
     public static function mosquittoConnect($r, $message) {
         log::add('jMQTT', 'debug', 'mosquitto: connection response is ' . $message);
-        self::$_client->publish(self::getMqttId() . '/status', 'online', 1, 1);
-        config::save('status', '1',  'jMQTT');
+        self::$_client->publish(self::getMqttClientStatusTopic(), self::ONLINE, 1, 1);
+        config::save(self::CLIENT_STATUS, '1',  'jMQTT');
     }
 
     public static function mosquittoDisconnect($r) {
         $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
         log::add('jMQTT', 'debug', 'mosquitto: disconnected' . $msg);
-        self::$_client->publish(self::getMqttId() . '/status', 'offline', 1, 1);
-        config::save('status', '0',  'jMQTT');
+        self::$_client->publish(self::getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
+        config::save(self::CLIENT_STATUS, '0',  'jMQTT');
     }
 
     public static function mosquittoSubscribe($mid, $qosCount) {
@@ -412,11 +425,18 @@ class jMQTT extends eqLogic {
 
 	// Return in case of invalid payload (only ascii payload are supported) - fix issue #46
 	if (!jMQTTCmd::isConfigurationValid($msgValue)) {
-	    log::add('jMQTT', 'warning', 'Message skipped: payload ' . strtoupper(bin2hex($msgValue)) . ' is not valid for topic ' . $msgTopic);
+	    log::add('jMQTT', 'warning', 'Message skipped: payload ' . strtoupper(bin2hex($msgValue)) .
+                                         ' is not valid for topic ' . $msgTopic);
             return;
 	}
 
         log::add('jMQTT', 'debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
+
+        // If this is the API topic, process the request
+        // Do not return, which means that the message can be registered
+        if ($msgTopic == self::getMqttApiTopic()) {
+            self::processApiRequest($msgValue);
+        }
 
         $msgTopicArray = explode("/", $topicContent);
 
@@ -504,11 +524,64 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Return the MQTT id (default value = jeedom)
-     * @return MQTT id.
+     * Process the API request
+     */
+    private static function processApiRequest($msg) {
+        try {
+            $request = new mqttApiRequest($msg);
+            $request->processRequest();
+        } catch (Exception $e) {}
+    }
+
+    /**
+     * Return the MQTT id used by jMQTT to connect to the broker (default value = jeedom)
+     * @return string MQTT id.
      */
     public static function getMqttId() {
         return config::byKey('mqttId', 'jMQTT', 'jeedom');
+    }
+
+    /**
+     * Return the topic name of the jMQTT client status
+     * @return string client status topic name
+     */
+    public static function getMqttClientStatusTopic() {
+        return self::getMqttId() . '/' . self::CLIENT_STATUS;
+    }
+
+    /**
+     * Return the jMQTT equipment (the one that contains the jMQTT status command)
+     * @return cmd eqLogic jMQTT equipment
+     */
+    public static function getMqttClientEqLogic() {
+        $cmd = self::getMqttClientStatusCmd();
+        return $cmd == null ? null : $cmd->getEqLogic();
+    }
+
+    /**
+     * Return the jMQTT status information command
+     * @return cmd status information command. null if does not exist.
+     */
+    public static function getMqttClientStatusCmd() {
+        $cmds = cmd::byLogicalId(self::getMqttClientStatusTopic(), 'info');
+        switch (count($cmds)) {
+            case 0:
+                return null; break;
+            case 1:
+                return $cmds[0]; break;
+            default:
+                log::add('jMQTT', 'warning', 'Several commands having "' . self::getMqttClientStatusTopic() .
+                                  '" as topic exist. Consider the one with id=' . $cmds[0]->getId() . '.');
+                return $cmds[0];
+        }
+    }
+
+    /**
+     * Return the topic to be used to interact with the jeeAPI using mqtt
+     * @return string API topic
+     */
+    private static function getMqttApiTopic() {
+        return self::getMqttId() . '/' . self::API_TOPIC;
     }
 
     /**
