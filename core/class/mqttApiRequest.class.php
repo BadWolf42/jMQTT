@@ -92,7 +92,7 @@ class mqttApiRequest {
         log::add('jMQTT', 'debug', 'API: jsonrpc request is ' . $request);
 
         $jsonRes = $this->send($request);
-        //log::add('jMQTT', 'debug', 'API: jsonrpc response is ' . $jsonRes);
+        log::add('jMQTT', 'debug', 'API: jsonrpc response is ' . $jsonRes);
         
         $arrRes = json_decode($jsonRes, true);
         if (!is_array($arrRes) || json_last_error() != JSON_ERROR_NONE ||
@@ -100,7 +100,6 @@ class mqttApiRequest {
             (!isset($arrRes[self::JRPC_RESULT]) && !isset($arrRes[self::JRPC_ERR])) ||
             (isset($arrRes[self::JRPC_ERR]) && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_CODE]) && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_MSG]))) {
             $arrRes = self::getErrorArray(-32603, 'Internal error', $this->id);
-            //            $rawResult = json_encode($arrRes);
         }
 
         if (isset($arrRes[self::JRPC_ERR]))
@@ -122,11 +121,7 @@ class mqttApiRequest {
 	    curl_setopt($ch, CURLOPT_POSTFIELDS, $_request);
 	    curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
 	    curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-	    //$response = preg_replace('/[^[:print:]]/', '', trim(curl_exec($ch)));
-            $response = curl_exec($ch);
-            file_put_contents(jeedom::getTmpFolder('jMQTT') . '/file1.txt' , $response);
-            $response = preg_replace('/[^[:print:]]/', '', $response);
-            file_put_contents(jeedom::getTmpFolder('jMQTT') . '/file2.txt' , $response);
+	    $response = preg_replace('/[^[:print:]]/', '', trim(curl_exec($ch)));
 	    $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	    $nbRetry++;
 	    if (curl_errno($ch) && $nbRetry < $_maxRetry) {
