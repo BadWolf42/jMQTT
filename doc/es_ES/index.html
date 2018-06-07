@@ -447,9 +447,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_l_équipement_jeedom">3.6. L&#8217;équipement jeedom</a></li>
 </ul>
 </li>
-<li><a href="#_faq">4. FAQ</a></li>
-<li><a href="#_problèmes_connus">5. Problèmes connus</a></li>
-<li><a href="#_change_log">6. Change log</a></li>
+<li><a href="#_api">4. API</a></li>
+<li><a href="#_faq">5. FAQ</a></li>
+<li><a href="#_problèmes_connus">6. Problèmes connus</a></li>
+<li><a href="#_change_log">7. Change log</a></li>
 </ul>
 </div>
 </div>
@@ -1240,7 +1241,7 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="sect2">
 <h3 id="_l_équipement_jeedom">3.6. L&#8217;équipement jeedom</h3>
 <div class="paragraph">
-<p>Le plugin jMQTT publie en mode persistant son état de connexion sous le topic <code><em>Identifiant de connexion</em>/status</code>, où l&#8217;identifiant de connexion vaut jeedom par défaut et se configure via la page de <a href="#_configuration_du_plugin">Configuration du plugin</a> <code>jeedom/status</code>.</p>
+<p>Le plugin jMQTT publie en mode persistant son état de connexion sous le topic <code><em>Identifiant de connexion</em>/status</code>, <code>jeedom/status</code> par défaut, puisque l&#8217;identifiant de connexion vaut jeedom par défaut et se configure via la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>.</p>
 </div>
 <div class="paragraph">
 <p>Les valeurs possibles sont <code>offline</code> et <code>online</code>.</p>
@@ -1256,13 +1257,87 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_faq">4. FAQ</h2>
+<h2 id="_api">4. API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Le plugin permet d&#8217;accéder à toutes les méthodes de l&#8217;<a href="http://jeedom.github.io/core/fr_FR/jsonrpc_api">API JSON RPC</a> au travers du protocole MQTT.</p>
+</div>
+<div class="paragraph">
+<p>Les payloads requêtes doivent être adressées au topic <code><em>Identifiant de connexion</em>/jeeAPI</code>, <code>jeedom/jeeApi</code> par défaut, l&#8217;identifiant de connexion étant jeedom par défaut et se configurant via la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>.</p>
+</div>
+<div class="paragraph">
+<p>Leur format JSON est:</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>{"method": "Méthode de la requête", "id": "Id. de la requête", "params": { Paramètres additionels }, "topic": "Topic de retour"}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Où:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Méthode de la requête</code> : nom de la méthode invoqué, voir <a href="http://jeedom.github.io/core/fr_FR/jsonrpc_api">API JSON RPC</a>;</p>
+</li>
+<li>
+<p><code>Id. de la requête</code> (optionnel) : identifiant qui sera retourné dans la réponse, doit être une chaine. Si absent, l&#8217;id de retour sera null;</p>
+</li>
+<li>
+<p><code>Paramètres additionels</code> (optionnel) : paramètres relatifs à la méthode de la requête, voir <a href="http://jeedom.github.io/core/fr_FR/jsonrpc_api">API JSON RPC</a>;</p>
+</li>
+<li>
+<p><code>Topic de retour</code> (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<div class="title">Exemple:</div>
+<p>Le tableau suivant fournit quelques exemples:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Requête</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Réponse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"method":"ping","topic":"retour"}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retourne pong (test de la communication avec Jeedom)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"jsonrpc":"2.0","id":null,"result":"pong"}</code> sur le topic <code>retour</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"method":"ping","id":"3","topic":"retour"}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Retourne pong (test de la communication avec Jeedom)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"jsonrpc":"2.0","id":"3","result":"pong"}</code> sur le topic <code>retour</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"method":"cmd::execCmd","topic":"emetteur/retour", "id":"a","params":{"id":"798","options":{"slider":"40"}}}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Execute la commande curseur dont l&#8217;id est 798</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"jsonrpc":"2.0", "id":"a", "result":{"value":"40","collectDate":""}}</code> sur le topic <code>emetteur/retour</code></p></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_faq">5. FAQ</h2>
 <div class="sectionbody">
 <hr>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_problèmes_connus">5. Problèmes connus</h2>
+<h2 id="_problèmes_connus">6. Problèmes connus</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Les problèmes connus en cours d&#8217;investigation sont sur GitHub: <a href="https://github.com/domotruc/jMQTT/issues">Issues jMQTT</a>.</p>
@@ -1274,8 +1349,16 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_change_log">6. Change log</h2>
+<h2 id="_change_log">7. Change log</h2>
 <div class="sectionbody">
+<div class="ulist">
+<div class="title">2018-06-07 (beta)</div>
+<ul>
+<li>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/53">#53</a>: api MQTT</p>
+</li>
+</ul>
+</div>
 <div class="ulist">
 <div class="title">2018-06-03</div>
 <ul>
@@ -1537,7 +1620,7 @@ Si vous avez des topics commençant par / créés avant cette version, il faut a
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-04-29 11:25:50 CEST
+Last updated 2018-06-07 21:36:38 CEST
 </div>
 </div>
 </body>
