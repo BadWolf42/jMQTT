@@ -336,7 +336,7 @@ IMPORTANT: La colonne _Status_ n'est pas significative, elle indique toujours OK
 
 === L'équipement jeedom
 
-Le plugin jMQTT publie en mode persistant son état de connexion sous le topic `_Identifiant de connexion_/status`, où l'identifiant de connexion vaut jeedom par défaut et se configure via la page de <<Configuration du plugin>> `jeedom/status`.
+Le plugin jMQTT publie en mode persistant son état de connexion sous le topic `_Identifiant de connexion_/status`, `jeedom/status` par défaut, puisque l'identifiant de connexion vaut jeedom par défaut et se configure via la page de <<Configuration du plugin>>.
 
 Les valeurs possibles sont `offline` et `online`.
 

@@ -9,6 +9,9 @@ include::configuration.asciidoc[]
 include::equipements.asciidoc[]
 
 '''
+include::api.asciidoc[]
+
+'''
 include::faq.asciidoc[]
 
 '''
