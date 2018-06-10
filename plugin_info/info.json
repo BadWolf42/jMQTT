@@ -10,7 +10,7 @@
     "hasDependency" : true,
     "hasOwnDeamon" : true,
     "changelog" : "https://github.com/domotruc/jMQTT/tree/beta/doc/#language#/changelog.asciidoc",
-    "documentation" : "http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/master/doc/#language#/index.html",
+    "documentation" : "http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/beta/doc/#language#/index.html",
     "languages" : ["fr_FR","en_US","sp_SP"],
     "compatibility" : ["Jeedomboard","Smart","RPI/RPI2","Docker","DIY","mobile"]
 }
