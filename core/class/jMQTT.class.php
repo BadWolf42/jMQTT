@@ -18,13 +18,11 @@
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
+include_file('core', 'jMQTTEqpt', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
 class jMQTT extends eqLogic {
 
-    const CLIENT_STATUS = 'status';
-    const OFFLINE = 'offline';
-    const ONLINE = 'online';
     const API_TOPIC = 'jeeApi';
     
     // MQTT client is defined as a static variable.
@@ -323,9 +321,9 @@ class jMQTT extends eqLogic {
         self::$_client->onLog('jMQTT::mosquittoLog');
 
         // Defines last will terminaison message
-        self::$_client->setWill(self::getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
+        self::$_client->setWill(jMQTTEqpt::getMqttClientStatusTopic(), jMQTTEqpt::OFFLINE, 1, 1);
 
-        $statusCmd = self::getMqttClientStatusCmd();
+        $statusCmd = jMQTTEqpt::getMqttClientStatusCmd();
         if ($statusCmd != null)
             log::add('jMQTT', 'debug', 'status cmd: ' . $statusCmd->getId());
 
@@ -359,15 +357,15 @@ class jMQTT extends eqLogic {
 
     public static function mosquittoConnect($r, $message) {
         log::add('jMQTT', 'debug', 'mosquitto: connection response is ' . $message);
-        self::$_client->publish(self::getMqttClientStatusTopic(), self::ONLINE, 1, 1);
-        config::save(self::CLIENT_STATUS, '1',  'jMQTT');
+        self::$_client->publish(jMQTTEqpt::getMqttClientStatusTopic(), jMQTTEqpt::ONLINE, 1, 1);
+        config::save(jMQTTEqpt::CLIENT_STATUS, '1',  'jMQTT');
     }
 
     public static function mosquittoDisconnect($r) {
         $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
         log::add('jMQTT', 'debug', 'mosquitto: disconnected' . $msg);
-        self::$_client->publish(self::getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
-        config::save(self::CLIENT_STATUS, '0',  'jMQTT');
+        self::$_client->publish(jMQTTEqpt::getMqttClientStatusTopic(), jMQTTEqpt::OFFLINE, 1, 1);
+        config::save(jMQTTEqpt::CLIENT_STATUS, '0',  'jMQTT');
     }
 
     public static function mosquittoSubscribe($mid, $qosCount) {
@@ -540,41 +538,6 @@ class jMQTT extends eqLogic {
      */
     public static function getMqttId() {
         return config::byKey('mqttId', 'jMQTT', 'jeedom');
-    }
-
-    /**
-     * Return the topic name of the jMQTT client status
-     * @return string client status topic name
-     */
-    public static function getMqttClientStatusTopic() {
-        return self::getMqttId() . '/' . self::CLIENT_STATUS;
-    }
-
-    /**
-     * Return the jMQTT equipment (the one that contains the jMQTT status command)
-     * @return cmd eqLogic jMQTT equipment
-     */
-    public static function getMqttClientEqLogic() {
-        $cmd = self::getMqttClientStatusCmd();
-        return $cmd == null ? null : $cmd->getEqLogic();
-    }
-
-    /**
-     * Return the jMQTT status information command
-     * @return cmd status information command. null if does not exist.
-     */
-    public static function getMqttClientStatusCmd() {
-        $cmds = cmd::byLogicalId(self::getMqttClientStatusTopic(), 'info');
-        switch (count($cmds)) {
-            case 0:
-                return null; break;
-            case 1:
-                return $cmds[0]; break;
-            default:
-                log::add('jMQTT', 'warning', 'Several commands having "' . self::getMqttClientStatusTopic() .
-                                  '" as topic exist. Consider the one with id=' . $cmds[0]->getId() . '.');
-                return $cmds[0];
-        }
     }
 
     /**
