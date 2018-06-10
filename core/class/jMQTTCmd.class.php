@@ -183,9 +183,7 @@ class jMQTTCmd extends cmd {
                         break;
                 }
 
-                log::add('jMQTT', 'debug', 'before: ' . $request);
                 $request = jeedom::evaluateExpression($request);
-                log::add('jMQTT', 'debug', 'after: ' . $request);
                 jMQTT::publishMosquitto($this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
                 return $request;

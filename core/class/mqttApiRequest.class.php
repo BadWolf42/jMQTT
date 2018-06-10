@@ -31,7 +31,6 @@ class mqttApiRequest {
     const JRPC_ERR_MSG = 'message';
     
     private $apiAddr;
-  //  private $apikey = '';
     private $ret_topic = NULL;
     private $method;
     private $id = NULL;
@@ -39,7 +38,7 @@ class mqttApiRequest {
     
 
     /**
-     *
+     * Construct a new request from the given JSON defined request
      * @param string $_request
      */
     function __construct($_request) {
@@ -47,7 +46,6 @@ class mqttApiRequest {
         log::add('jMQTT', 'info', 'API: processing request ' . $_request);
         
   	$this->apiAddr = 'http://' . config::byKey('internalAddr') . '/core/api/jeeApi.php';
-  //      $this->apikey = jeedom::getApiKey();
 
         $errArr = NULL;
         $jsonArray = json_decode($_request, true);
@@ -60,7 +58,7 @@ class mqttApiRequest {
                 $this->id = $jsonArray[self::JRPC_ID];
 
             if (!isset($jsonArray[self::JRPC_METHOD]) || empty($jsonArray[self::JRPC_METHOD]))
-                $errArr = self::getErrorArray(-32601, 'Method not found');
+                $errArr = self::newErrorArray(-32601, 'Method not found');
             else
                 $this->method = $jsonArray[self::JRPC_METHOD];                
             
@@ -69,11 +67,11 @@ class mqttApiRequest {
                 if (is_array($jsonArray[self::JRPC_PARAMS]))
                     $this->params = array_merge($jsonArray[self::JRPC_PARAMS], $this->params);
                 else
-                    $errArr = self::getErrorArray(-32602, 'Invalid params: shall be an array', $this->id);
+                    $errArr = self::newErrorArray(-32602, 'Invalid params: shall be an array', $this->id);
             }
         }
         else {
-            $err = self::getErrorArray(-32600, 'Invalid request: cannot decode a JSON structure');
+            $err = self::newErrorArray(-32600, 'Invalid request: cannot decode a JSON structure');
         }
 
         if (isset($errArr)) {
@@ -82,9 +80,20 @@ class mqttApiRequest {
         }
     }
 
+    /**
+     * Process this request
+     */
     public function processRequest() {
 
-        $request = json_encode(self::initJsonRpcMsg(
+        if (!jMQTT::isApiEnable()) {
+            $this->publishError(
+                self::newErrorArray(-32001,
+                                    "Vous n'êtes pas autorisé à effectuer cette action (API is disable)")
+            );
+            return;
+        }            
+        
+        $request = json_encode(self::newJsonRpcArray(
             self::addParam(array(self::JRPC_METHOD => $this->method),
                            self::JRPC_PARAMS, $this->params),
             $this->id
@@ -99,7 +108,7 @@ class mqttApiRequest {
             !isset($arrRes[self::JRPC_JSONRPC]) || $arrRes[self::JRPC_JSONRPC] != self::JRPC_VERSION ||
             (!isset($arrRes[self::JRPC_RESULT]) && !isset($arrRes[self::JRPC_ERR])) ||
             (isset($arrRes[self::JRPC_ERR]) && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_CODE]) && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_MSG]))) {
-            $arrRes = self::getErrorArray(-32603, 'Internal error', $this->id);
+            $arrRes = self::newErrorArray(-32603, 'Internal error', $this->id);
         }
 
         if (isset($arrRes[self::JRPC_ERR]))
@@ -138,36 +147,62 @@ class mqttApiRequest {
 	    }
 	}
 	if ($http_status != 200) {
-            $response = getError(-32300, 'Erreur http : ' . $http_status . ' Details : ' . $response);
+            $response = self::newErrorMsg(-32300, 'Erreur http : ' . $http_status . ' Details : ' . $response);
 	}
 	if (curl_errno($ch)) {
-	    $response = getError(-32400, 'Erreur curl sur : ' . $this->apiAddr . '. Détail :' . curl_error($ch));
+	    $response = self::newErrorMsg(-32400, 'Erreur curl sur : ' . $this->apiAddr . '. Détail :' . curl_error($ch));
 	}
 	curl_close($ch);
 	return $response;
     }
 
-    protected function publishError($_arrRes) {
-        log::add('jMQTT', 'error', 'API: ' . $_arrRes[self::JRPC_ERR][self::JRPC_ERR_MSG] . ' (err. code is ' .
-                                   $_arrRes[self::JRPC_ERR][self::JRPC_ERR_CODE] . ')');
+    /**
+     * Publish the given error array to the MQTT broker
+     * @param array error message
+     */
+    protected function publishError($_arrErr) {
+        log::add('jMQTT', 'error', 'API: ' . $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG] . ' (err. code is ' .
+                                   $_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE] . ')');
         if (isset($this->ret_topic))
-            jMQTT::publishMosquitto('api', 'api', $this->ret_topic, json_encode($_arrRes), '1', '0');
+            jMQTT::publishMosquitto('api', 'api', $this->ret_topic, json_encode($_arrErr), '1', '0');
     }
 
+    /**
+     * Publish the given result to the MQTT broker
+     * @param string result (JSON encoded)
+     */
     protected function publishSuccess($_jsonRes) {
         jMQTT::publishMosquitto('api', 'api', $this->ret_topic, $_jsonRes, '1', '0');
     }
 
-    public function getError($_code, $_message) {
-	return json_encode(self::getErrorArray($_code, $_message, $this->id));
+    /**
+     * Create and return an error message
+     * @param _code int error code
+     * @param _message string error message
+     * @return error message (JSON encoded)
+     */
+    public static function newErrorMsg($_code, $_message) {
+	return json_encode(self::newErrorArray($_code, $_message, $this->id));
     }
 
-    public function getSuccess($_result) {
-        return json_encode(initJsonRpcMsg(array(self::JRPC_RES => $_result), $this->id));
+    /**
+     * Create and return a success message
+     * @param _result array result JSON array
+     * @return success message (JSON encoded)
+     */
+    public static function newSuccessMsg($_result) {
+        return json_encode(self::newJsonRpcArray(array(self::JRPC_RES => $_result), $this->id));
     }
 
-    private static function getErrorArray($_code, $_message, $_id = NULL) {
-        return self::initJsonRpcMsg(
+    /**
+     * Create and return an error array
+     * @param _code int error code
+     * @param _message string error message
+     * @param _id string request id (optional - NULL by default)
+     * @return error array (JSON)
+     */
+    private static function newErrorArray($_code, $_message, $_id = NULL) {
+        return self::newJsonRpcArray(
             array(
                 self::JRPC_ERR => array(
                     self::JRPC_ERR_CODE => $_code,
@@ -176,14 +211,27 @@ class mqttApiRequest {
             $_id);
     }
 
-    private static function initJsonRpcMsg($_array, $_id = NULL) {
+    /**
+     * Create and return a new RPC JSON response array.
+     * Return array i sinitialized from the given one and following is added : JSON RPC version (2.0),
+     * and the request id. (if not NULL).
+     * @param array $_array initilisation array (JSON)
+     * @param _id string request id (optional - NULL by default)
+     * @return array new JSON RPC response array
+     */
+    private static function newJsonRpcArray($_array, $_id = NULL) {
         return self::addParam(array_merge(array(self::JRPC_JSONRPC => self::JRPC_VERSION), $_array),
                               self::JRPC_ID, $_id);
     }
 
-    private static function addParam($_arr, $_name, $_value) {
+    /**
+     * Add the given parameter the given array.
+     * The parameter is defined by its key and is value; it is added if the value is set (isset returns true)
+     * 
+     */
+    private static function addParam($_arr, $_key, $_value) {
         if (isset($_value))
-            $_arr[$_name] = $_value;
+            $_arr[$_key] = $_value;
         return $_arr;
     }
 }

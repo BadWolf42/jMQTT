@@ -1,5 +1,11 @@
 == Change log
 
+.2018-06-10 (beta)
+    - Complément à l'amélioration https://github.com/domotruc/jMQTT/issues/53[#53]:
+       * Ajoute un paramètre pour activer/désactiver l'API dans la configuration plugin;
+       * topic jeedom/jeeAPI changé en jeedom/api;
+       * Mise à jour doc.
+
 .2018-06-07 (beta)
     - Amélioration https://github.com/domotruc/jMQTT/issues/53[#53]: api MQTT
 

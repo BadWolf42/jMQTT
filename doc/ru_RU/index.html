@@ -538,6 +538,9 @@ Il peut arriver que l&#8217;installation du plugin se bloque. Cela se produit si
 <li>
 <p>Topic de souscription en mode inclusion automatique des équipments: topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (défaut #, i.e. tous les topics).</p>
 </li>
+<li>
+<p>Accès API: à activer pour utiliser l'<a href="#_api">API</a>.</p>
+</li>
 </ul>
 </div>
 <div class="paragraph">
@@ -1262,8 +1265,22 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="paragraph">
 <p>Le plugin permet d&#8217;accéder à toutes les méthodes de l&#8217;<a href="http://jeedom.github.io/core/fr_FR/jsonrpc_api">API JSON RPC</a> au travers du protocole MQTT.</p>
 </div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Pour pouvoir être utilisé:
+1) l&#8217;API doit être activé dans la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>;
+2)  l'<strong>API JSON RPC</strong> doit également l&#8217;être dans la configuration Jeedom.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
-<p>Les payloads requêtes doivent être adressées au topic <code><em>Identifiant de connexion</em>/jeeAPI</code>, <code>jeedom/jeeApi</code> par défaut, l&#8217;identifiant de connexion étant jeedom par défaut et se configurant via la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>.</p>
+<p>Les payloads requêtes doivent être adressées au topic <code><em>Identifiant de connexion</em>/api</code>, <code>jeedom/api</code> par défaut, l&#8217;identifiant de connexion étant jeedom par défaut et se configurant via la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>.</p>
 </div>
 <div class="paragraph">
 <p>Leur format JSON est:</p>
@@ -1351,6 +1368,27 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="sect1">
 <h2 id="_change_log">7. Change log</h2>
 <div class="sectionbody">
+<div class="ulist">
+<div class="title">2018-06-10 (beta)</div>
+<ul>
+<li>
+<p>Complément à l&#8217;amélioration <a href="https://github.com/domotruc/jMQTT/issues/53">#53</a>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Ajoute un paramètre pour activer/désactiver l&#8217;API dans la configuration plugin;</p>
+</li>
+<li>
+<p>topic jeedom/jeeAPI changé en jeedom/api;</p>
+</li>
+<li>
+<p>Mise à jour doc.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
 <div class="ulist">
 <div class="title">2018-06-07 (beta)</div>
 <ul>
@@ -1620,7 +1658,7 @@ Si vous avez des topics commençant par / créés avant cette version, il faut a
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-06-07 21:36:38 CEST
+Last updated 2018-06-07 22:55:06 CEST
 </div>
 </div>
 </body>

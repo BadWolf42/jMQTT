@@ -23,7 +23,9 @@ include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
 class jMQTT extends eqLogic {
 
-    const API_TOPIC = 'jeeApi';
+    const API_TOPIC = 'api';
+    const API_ENABLE = 'enable';
+    const API_DISABLE = 'disable';
     
     // MQTT client is defined as a static variable.
     // IMPORTANT: This variable is set in the deamon method; it is only visible from functions
@@ -291,14 +293,32 @@ class jMQTT extends eqLogic {
                     $client->subscribe($topic, $qos);
                 }
             }
-            log::add('jMQTT', 'info', 'Subscribes to the jeeAPI topic "' . self::getMqttApiTopic() . '"');
-            $client->subscribe(self::getMqttApiTopic(), '1');
+
+            if (self::isApiEnable()) {
+                log::add('jMQTT', 'info', 'Subscribes to the API topic "' . self::getMqttApiTopic() . '"');
+                $client->subscribe(self::getMqttApiTopic(), '1');
+            }
+            else {
+                log::add('jMQTT', 'info', 'API is disable');
+            }
         }
         else { // auto inclusion mode
             $topic = config::byKey('mqttTopic', 'jMQTT', '#');
             // Subscribe to topic (root by default)
             $client->subscribe($topic, 1);
             log::add('jMQTT', 'debug', 'Subscribe to topic "' . $topic . '" with Qos=1');
+
+            if (self::isApiEnable()) {
+                if (!Mosquitto\Message::topicMatchesSub(self::getMqttApiTopic(), $topic)) {
+                    log::add('jMQTT', 'info', 'Subscribes to the API topic "' . self::getMqttApiTopic() . '"');
+                    $client->subscribe(self::getMqttApiTopic(), '1');
+                }
+                else
+                    log::add('jMQTT', 'info', 'No need to subscribe to the API topic "' . self::getMqttApiTopic() . '"');
+            }
+            else {
+                log::add('jMQTT', 'info', 'API is disable');
+            }
         }
     }
 
@@ -540,6 +560,14 @@ class jMQTT extends eqLogic {
         return config::byKey('mqttId', 'jMQTT', 'jeedom');
     }
 
+    /**
+     * Return whether or not the MQTT API is enable
+     * return boolean
+     */ 
+    public function isApiEnable() {
+        return config::byKey('api', 'jMQTT', self::API_DISABLE) == self::API_ENABLE ? TRUE : FALSE;
+    }
+    
     /**
      * Return the topic to be used to interact with the jeeAPI using mqtt
      * @return string API topic
