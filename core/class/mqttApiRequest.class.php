@@ -70,7 +70,7 @@ class mqttApiRequest {
             }
         }
         else {
-            $err = self::newErrorArray(-32600, 'Invalid request: cannot decode a JSON structure');
+            $errArr = self::newErrorArray(-32600, 'Invalid request: cannot decode a JSON structure');
         }
 
         if (isset($errArr)) {
