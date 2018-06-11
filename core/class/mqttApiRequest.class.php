@@ -35,7 +35,6 @@ class mqttApiRequest {
     private $method;
     private $id = NULL;
     private $params = NULL;
-    
 
     /**
      * Construct a new request from the given JSON defined request
@@ -107,7 +106,8 @@ class mqttApiRequest {
         if (!is_array($arrRes) || json_last_error() != JSON_ERROR_NONE ||
             !isset($arrRes[self::JRPC_JSONRPC]) || $arrRes[self::JRPC_JSONRPC] != self::JRPC_VERSION ||
             (!isset($arrRes[self::JRPC_RESULT]) && !isset($arrRes[self::JRPC_ERR])) ||
-            (isset($arrRes[self::JRPC_ERR]) && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_CODE]) && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_MSG]))) {
+            (isset($arrRes[self::JRPC_ERR]) && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_CODE]) &&
+             !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_MSG]))) {
             $arrRes = self::newErrorArray(-32603, 'Internal error', $this->id);
         }
 
@@ -117,6 +117,10 @@ class mqttApiRequest {
             $this->publishSuccess($jsonRes);
     }
 
+    /**
+     * Send the request to the JSON RPC API
+       This method is inspired from jsonrpcClient::send (in core/class)
+     */
     protected function send($_request, $_timeout = 15, $_maxRetry = 2) {
 	$nbRetry = 0;
 	while ($nbRetry < $_maxRetry) {
@@ -150,14 +154,15 @@ class mqttApiRequest {
             $response = self::newErrorMsg(-32300, 'Erreur http : ' . $http_status . ' Details : ' . $response);
 	}
 	if (curl_errno($ch)) {
-	    $response = self::newErrorMsg(-32400, 'Erreur curl sur : ' . $this->apiAddr . '. Détail :' . curl_error($ch));
+	    $response = self::newErrorMsg(-32400, 'Erreur curl sur : ' . $this->apiAddr . '. Détail :' .
+                                                  curl_error($ch));
 	}
 	curl_close($ch);
 	return $response;
     }
 
     /**
-     * Publish the given error array to the MQTT broker
+     * Publish the given error array to the MQTT broker if $this->ret_topic is set
      * @param array error message
      */
     protected function publishError($_arrErr) {
@@ -168,11 +173,15 @@ class mqttApiRequest {
     }
 
     /**
-     * Publish the given result to the MQTT broker
+     * Publish the given result to the MQTT broker if $this->ret_topic is set
      * @param string result (JSON encoded)
      */
     protected function publishSuccess($_jsonRes) {
-        jMQTT::publishMosquitto('api', 'api', $this->ret_topic, $_jsonRes, '1', '0');
+        if (isset($this->ret_topic))
+            jMQTT::publishMosquitto('api', 'api', $this->ret_topic, $_jsonRes, '1', '0');
+        else
+            log::add('jMQTT', 'warning',
+                     'API: the response is not published as the response topic was not defined in the request.');
     }
 
     /**
