@@ -1,5 +1,8 @@
 == Change log
 
+.2018-06-11 (beta)
+    - Correction bug mineur relatif à https://github.com/domotruc/jMQTT/issues/53[#53] lorsque le topic de retour n'est pas défini
+
 .2018-06-10 (beta)
     - Complément à l'amélioration https://github.com/domotruc/jMQTT/issues/53[#53]:
        * Ajoute un paramètre pour activer/désactiver l'API dans la configuration plugin;
