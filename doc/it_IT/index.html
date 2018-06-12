@@ -1272,9 +1272,19 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-Pour pouvoir être utilisé:
-1) l&#8217;API doit être activé dans la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>;
-2)  l'<strong>API JSON RPC</strong> doit également l&#8217;être dans la configuration Jeedom.
+<div class="paragraph">
+<p>Pour activer l&#8217;API:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Activer l&#8217;accès à l&#8217;API jMQTT dans la page de <a href="#_configuration_du_plugin">Configuration du plugin</a>;</p>
+</li>
+<li>
+<p>Activer l'<strong>API JSON RPC</strong> dans la configuration Jeedom.</p>
+</li>
+</ol>
+</div>
 </td>
 </tr>
 </table>
@@ -1296,7 +1306,7 @@ Pour pouvoir être utilisé:
 <div class="ulist">
 <ul>
 <li>
-<p><code>Méthode de la requête</code> : nom de la méthode invoqué, voir <a href="http://jeedom.github.io/core/fr_FR/jsonrpc_api">API JSON RPC</a>;</p>
+<p><code>Méthode de la requête</code> : nom de la méthode invoquée, voir <a href="http://jeedom.github.io/core/fr_FR/jsonrpc_api">API JSON RPC</a>;</p>
 </li>
 <li>
 <p><code>Id. de la requête</code> (optionnel) : identifiant qui sera retourné dans la réponse, doit être une chaine. Si absent, l&#8217;id de retour sera null;</p>
@@ -1305,7 +1315,7 @@ Pour pouvoir être utilisé:
 <p><code>Paramètres additionels</code> (optionnel) : paramètres relatifs à la méthode de la requête, voir <a href="http://jeedom.github.io/core/fr_FR/jsonrpc_api">API JSON RPC</a>;</p>
 </li>
 <li>
-<p><code>Topic de retour</code> (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête.</p>
+<p><code>Topic de retour</code> (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête. Si absent, la réponse n&#8217;est pas publiée.</p>
 </li>
 </ul>
 </div>
@@ -1322,25 +1332,25 @@ Pour pouvoir être utilisé:
 <thead>
 <tr>
 <th class="tableblock halign-left valign-top">Requête</th>
-<th class="tableblock halign-left valign-top">Description</th>
 <th class="tableblock halign-left valign-top">Réponse</th>
+<th class="tableblock halign-left valign-top">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"method":"ping","topic":"retour"}</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retourne pong (test de la communication avec Jeedom)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"jsonrpc":"2.0","id":null,"result":"pong"}</code> sur le topic <code>retour</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Teste la communication avec Jeedom</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"method":"ping","id":"3","topic":"retour"}</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Retourne pong (test de la communication avec Jeedom)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"jsonrpc":"2.0","id":"3","result":"pong"}</code> sur le topic <code>retour</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Teste la communication avec Jeedom</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"method":"cmd::execCmd","topic":"emetteur/retour", "id":"a","params":{"id":"798","options":{"slider":"40"}}}</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Execute la commande curseur dont l&#8217;id est 798</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>{"jsonrpc":"2.0", "id":"a", "result":{"value":"40","collectDate":""}}</code> sur le topic <code>emetteur/retour</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Exécute la commande 798: positionne le curseur à 40</p></td>
 </tr>
 </tbody>
 </table>
@@ -1368,6 +1378,14 @@ Pour pouvoir être utilisé:
 <div class="sect1">
 <h2 id="_change_log">7. Change log</h2>
 <div class="sectionbody">
+<div class="ulist">
+<div class="title">2018-06-12</div>
+<ul>
+<li>
+<p>Intégration des évolutions des 3 versions betas précédentes</p>
+</li>
+</ul>
+</div>
 <div class="ulist">
 <div class="title">2018-06-11 (beta)</div>
 <ul>
@@ -1419,7 +1437,7 @@ Pour pouvoir être utilisé:
 <div class="title">2018-06-03</div>
 <ul>
 <li>
-<p>Intégration des évolutions des 3 versions beta précédentes</p>
+<p>Intégration des évolutions des 3 versions betas précédentes</p>
 </li>
 </ul>
 </div>

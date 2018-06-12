@@ -2,9 +2,14 @@
 
 Le plugin permet d'accéder à toutes les méthodes de l'http://jeedom.github.io/core/fr_FR/jsonrpc_api[API JSON RPC] au travers du protocole MQTT.
 
-IMPORTANT: Pour pouvoir être utilisé:
-1) l'API doit être activé dans la page de <<Configuration du plugin>>;
-2)  l'*API JSON RPC* doit également l'être dans la configuration Jeedom.
+
+[IMPORTANT]
+====
+Pour activer l'API:
+
+. Activer l'accès à l'API jMQTT dans la page de <<Configuration du plugin>>;
+. Activer l'*API JSON RPC* dans la configuration Jeedom.
+====
 
 Les payloads requêtes doivent être adressées au topic `_Identifiant de connexion_/api`, `jeedom/api` par défaut, l'identifiant de connexion étant jeedom par défaut et se configurant via la page de <<Configuration du plugin>>.
 
@@ -16,27 +21,27 @@ Leur format JSON est:
 
 Où:
 
-   - `Méthode de la requête` : nom de la méthode invoqué, voir http://jeedom.github.io/core/fr_FR/jsonrpc_api[API JSON RPC];
+   - `Méthode de la requête` : nom de la méthode invoquée, voir http://jeedom.github.io/core/fr_FR/jsonrpc_api[API JSON RPC];
    - `Id. de la requête` (optionnel) : identifiant qui sera retourné dans la réponse, doit être une chaine. Si absent, l'id de retour sera null;
    - `Paramètres additionels` (optionnel) : paramètres relatifs à la méthode de la requête, voir http://jeedom.github.io/core/fr_FR/jsonrpc_api[API JSON RPC];
-   - `Topic de retour` (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête.
+   - `Topic de retour` (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête. Si absent, la réponse n'est pas publiée.
    
 
 .Exemple:
 Le tableau suivant fournit quelques exemples:
 
 |===
-|Requête|Description|Réponse
+|Requête|Réponse|Description
 
 |`{"method":"ping","topic":"retour"}`
-|Retourne pong (test de la communication avec Jeedom)
 |`{"jsonrpc":"2.0","id":null,"result":"pong"}` sur le topic `retour`
+|Teste la communication avec Jeedom
 
 |`{"method":"ping","id":"3","topic":"retour"}`
-|Retourne pong (test de la communication avec Jeedom)
 |`{"jsonrpc":"2.0","id":"3","result":"pong"}` sur le topic `retour` 
+|Teste la communication avec Jeedom
 
 |`{"method":"cmd::execCmd","topic":"emetteur/retour", "id":"a","params":{"id":"798","options":{"slider":"40"}}}`
-|Execute la commande curseur dont l'id est 798
 |`{"jsonrpc":"2.0", "id":"a", "result":{"value":"40","collectDate":""}}` sur le topic `emetteur/retour`
+|Exécute la commande 798: positionne le curseur à 40
 |===
