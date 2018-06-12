@@ -63,10 +63,19 @@ if (!isConnect()) {
 		    <input id="mosquitto_por" type="password" class="configKey form-control" data-l1key="mqttPass" style="margin-top:5px" placeholder="Jeedom"/>
 		</div>
             </div>
-	    <div class="form-group" id="mqtt_topic">
+	    <div class="form-group">
 		<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipments : }}</label>
 		<div class="col-lg-4">
 		    <input id="mosquitto_por" class="configKey form-control" data-l1key="mqttTopic" style="margin-top:5px" placeholder="#"/>
+		</div>
+            </div>
+	    <div class="form-group">
+		<label class="col-lg-4 control-label">{{Accès API : }}</label>
+		<div class="col-lg-4">
+		    <select id="mosquitto_por" class="configKey form-control" data-l1key="api" style="margin-top:5px" placeholder="#">
+ 			<option value="enable">{{Activé}}</option>
+			<option value="disable">{{Désactivé}}</option>
+                    </select>
 		</div>
             </div>
 	</fieldset>
