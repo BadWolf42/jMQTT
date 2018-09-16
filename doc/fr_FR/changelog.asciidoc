@@ -1,5 +1,8 @@
 == Change log
 
+.2018-09-16
+    - Correction de https://github.com/domotruc/jMQTT/issues/57[#57]: perte de connexion du démon sur rafale de message (merci jmc)
+
 .2018-06-12
     - Intégration des évolutions des 3 versions betas précédentes
 
