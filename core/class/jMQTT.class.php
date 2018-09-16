@@ -40,7 +40,7 @@ class jMQTT extends eqLogic {
 
     /**
      * Create a new equipment given its name and subscription topic.
-     * Equipment is disabled, not saved.
+     * Equipment is disabled, and saved.
      * @param string $name equipment name
      * @param string $topic subscription topic (can be empty if isEnable is set to 0)
      * return new jMQTT object
@@ -60,6 +60,8 @@ class jMQTT extends eqLogic {
         $eqpt->setConfiguration('Qos', 1);
         $eqpt->setConfiguration('prev_Qos', 1);
         $eqpt->setConfiguration('reload_d', '0');
+        
+        $eqpt->save();
         
         // Advise the desktop page (jMQTT.js) that a new equipment has been added
         event::add('jMQTT::eqptAdded', array('eqlogic_name' => $name));
@@ -418,8 +420,8 @@ class jMQTT extends eqLogic {
     /**
      * Callback called each time a subscribed topic is dispatched by the broker.
      *
-     * @param $message dispatched
-     *            message
+     * @param $message string
+     *            dispatched message
      */
     public static function mosquittoMessage($message) {
         $msgTopic = $message->topic;
@@ -492,9 +494,6 @@ class jMQTT extends eqLogic {
         foreach ($elogics as $eqpt) {
 
             if ($eqpt->getIsEnable()) {
-
-                $eqpt->setStatus('lastCommunication', date('Y-m-d H:i:s'));
-                $eqpt->save();
 
                 // Determine the name of the command.
                 // Suppress starting topic levels that are common with the equipment suscribing topic
