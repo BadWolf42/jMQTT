@@ -340,10 +340,10 @@ function addCmdToTable(_cmd) {
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options) {
 
     if ($('#div_newCmdMsg.alert').length == 0)
-        var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{a été ajoutée à l\'équipment}}' +
+        var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{a été ajoutée à l\'équipement}}' +
                   ' <b>' + _options['eqlogic_name'] + '</b>.';
     else
-        var msg = '{{Plusieurs commandes ont été ajoutée à l\'équipment}} <b>' + _options['eqlogic_name'] + '</b>.';
+        var msg = '{{Plusieurs commandes ont été ajoutée à l\'équipement}} <b>' + _options['eqlogic_name'] + '</b>.';
     
     // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
     if (modifyWithoutSave || $('.li_eqLogic.active').attr('data-eqLogic_id') != _options['eqlogic_id'] ||
