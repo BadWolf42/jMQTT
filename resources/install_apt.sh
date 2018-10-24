@@ -15,15 +15,14 @@ echo 0 > ${PROGRESS_FILE}
 echo "********************************************************"
 echo "* Install dependancies                                 *"
 echo "********************************************************"
-echo "Progress file: " ${PROGRESS_FILE}
-echo "Install Mosquitto: " ${INSTALL_MOSQUITTO}
+echo "> Progress file: " ${PROGRESS_FILE}
+echo "> Install Mosquitto: " ${INSTALL_MOSQUITTO}
 echo "*"
 echo "* Update package source repository"
 echo "*"
 apt-get -y install lsb-release php-pear
 archi=`lscpu | grep Architecture | awk '{ print $2 }'`
 echo 10 > ${PROGRESS_FILE}
-
 
 if [ "$archi" == "x86_64" ]; then
     cd /tmp
@@ -62,36 +61,77 @@ echo 60 > ${PROGRESS_FILE}
 echo "*"
 echo "* Install php mosquitto wrapper"
 echo "*"
-if [[ -d "/etc/php5/" ]]; then
-    apt-get -y install php5-dev
-    echo 80 > ${PROGRESS_FILE}
-    if [[ -d "/etc/php5/cli/" && ! `cat /etc/php5/cli/php.ini | grep "mosquitto"` ]]; then
-  	echo "" | pecl install Mosquitto-alpha
-  	echo "extension=mosquitto.so" | tee -a /etc/php5/cli/php.ini
-    fi
-    if [[ -d "/etc/php5/fpm/" && ! `cat /etc/php5/fpm/php.ini | grep "mosquitto"` ]]; then
-  	echo "extension=mosquitto.so" | tee -a /etc/php5/fpm/php.ini
-	service php5-fpm reload
-    fi
-    if [[ -d "/etc/php5/apache2/" && ! `cat /etc/php5/apache2/php.ini | grep "mosquitto"` ]]; then
-	echo "extension=mosquitto.so" | tee -a /etc/php5/apache2/php.ini
-	service apache2 reload
-    fi
+php_ver=`php -version`
+php_ver=${php_ver:4:1}
+
+if [ ${php_ver} = 5 ]; then
+	echo "> Version 5 of PHP detected"
+	PHP_DEV_LIB="php5-dev"
+	PHP_CLI_DIR="/etc/php5/cli/"
+	PHP_FPM_DIR="/etc/php5/fpm/"
+	PHP_APACHE_DIR="/etc/php5/apache2/"
+	FPM_SERVER="php5-fpm"
+	APACHE_SERVER="apache2"
+elif [ ${php_ver} = 7 ]; then
+	echo "> Version 7 of PHP detected"
+	PHP_DEV_LIB="php7.0-dev"
+	PHP_CLI_DIR="/etc/php/7.0/cli/"
+	PHP_FPM_DIR="/etc/php/7.0/fpm/"
+	PHP_APACHE_DIR="/etc/php/7.0/apache2/"
+	FPM_SERVER="php7-fpm"
+	APACHE_SERVER="apache2"
 else
-    apt-get -y install php7.0-dev
+	PHP_DEV_LIB=""
+	echo "> ERROR: no version of PHP detected"
+fi
+
+if [ -n PHP_DEV_LIB ]; then	
+	echo "> Install ${PHP_DEV_LIB}"
+	apt-get -y install ${PHP_DEV_LIB}
     echo 80 > ${PROGRESS_FILE}
-    if [[ -d "/etc/php/7.0/cli/" && ! `cat /etc/php/7.0/cli/php.ini | grep "mosquitto"` ]]; then
-	echo "" | pecl install Mosquitto-alpha
-	echo "extension=mosquitto.so" | tee -a /etc/php/7.0/cli/php.ini
+    
+    echo "> Install pecl/Mosquitto"
+    echo "" | pecl install Mosquitto-alpha
+    if [ $? -eq 0 ]; then
+    	RELOAD="tbd"
+    else
+    	RELOAD=""
     fi
-    if [[ -d "/etc/php/7.0/fpm/" && ! `cat /etc/php/7.0/fpm/php.ini | grep "mosquitto"` ]]; then
-	echo "extension=mosquitto.so" | tee -a /etc/php/7.0/fpm/php.ini
-	service php5-fpm reload
+    echo 90 > ${PROGRESS_FILE}
+    
+    if [ -d ${PHP_CLI_DIR} ] && [ -e ${PHP_CLI_DIR}php.ini ] && [ ! `cat ${PHP_CLI_DIR}php.ini | grep "mosquitto"` ]; then
+        echo "> Adding mosquitto.so to ${PHP_CLI_DIR}php.ini"
+  		echo "extension=mosquitto.so" | tee -a ${PHP_CLI_DIR}php.ini
     fi
-    if [[ -d "/etc/php/7.0/apache2/" && ! `cat /etc/php/7.0/apache2/php.ini | grep "mosquitto"` ]]; then
-	echo "extension=mosquitto.so" | tee -a /etc/php/7.0/apache2/php.ini
-	service apache2 reload
+    
+	if [ -d ${PHP_FPM_DIR} ]; then
+    	if [ -n "$RELOAD" ]; then
+    		RELOAD=${FPM_SERVER}
+    	fi
+    	if [ ! `cat ${PHP_FPM_DIR}php.ini | grep "mosquitto"` ]; then
+    		echo "> Adding mosquitto.so to ${PHP_FPM_DIR}php.ini"
+		  	echo "extension=mosquitto.so" | tee -a ${PHP_FPM_DIR}php.ini
+		  	RELOAD=${FPM_SERVER}
+		fi
     fi
+    
+    if [ -d ${PHP_APACHE_DIR} ]; then
+    	if [ -n "$RELOAD" ]; then
+    		RELOAD=${APACHE_SERVER}
+    	fi
+    	if [ ! `cat ${PHP_APACHE_DIR}php.ini | grep "mosquitto"` ]; then
+    		echo "> Adding mosquitto.so to ${PHP_APACHE_DIR}php.ini"
+			echo "extension=mosquitto.so" | tee -a ${PHP_APACHE_DIR}php.ini
+			RELOAD=${APACHE_SERVER}
+		fi
+    fi
+      
+    if [ -n "${RELOAD}" ]; then
+    	echo "> Reload the web server" $RELOAD
+		service $RELOAD reload
+	else
+		echo "> No need to reload the web server"
+	fi
 fi
 
 rm ${PROGRESS_FILE}

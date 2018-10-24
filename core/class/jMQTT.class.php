@@ -230,7 +230,7 @@ class jMQTT extends eqLogic {
 
     public static function deamon_info() {
         $return = array();
-        $return['log'] = '';
+        $return['log'] = 'jMQTT';
         $return['state'] = 'nok';
         $cron = cron::byClassAndFunction('jMQTT', 'daemon');
         if (is_object($cron) && $cron->running()) {

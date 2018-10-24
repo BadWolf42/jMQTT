@@ -1,7 +1,8 @@
 == Change log
 
-.2018-10-13 (beta)
-    - Correction typo dans message affiché à l'utilisateur (équipment => équipement)
+.2018-10-24 (beta)
+    - Amélioration script installation des dépendances pour corriger https://github.com/domotruc/jMQTT/issues/59[#59]
+    - Correction typo dans message affiché à l'utilisateur (équipment => équipement), merci Gwladys
 
 .2018-09-16
     - Correction de https://github.com/domotruc/jMQTT/issues/57[#57]: perte de connexion du démon sur rafale de message (merci jmc)
