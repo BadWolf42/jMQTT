@@ -18,3 +18,7 @@ $(DOC_PATH)/index.html: $(DOC_PATH)/*.asciidoc
 	cp $@ doc/id_ID/.
 	cp $@ doc/it_IT/.
 	cp $@ doc/ru_RU/.
+
+chmod:
+	find . -type f -exec chmod 664 {} \;
+	chmod 774 resources/install_apt.sh
