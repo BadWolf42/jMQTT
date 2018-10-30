@@ -449,9 +449,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_api">4. API</a></li>
-<li><a href="#_faq">5. FAQ</a></li>
+<li><a href="#_faq">5. FAQ</a>
+<ul class="sectlevel2">
+<li><a href="#_quelles_données_fournir_pour_investigation_en_cas_de_problèmes">5.1. Quelles données fournir pour investigation en cas de problèmes ?</a></li>
+</ul>
+</li>
 <li><a href="#_problèmes_connus">6. Problèmes connus</a></li>
-<li><a href="#_change_log">7. Change log</a></li>
+<li><a href="#_exemples_d_utilisation">7. Exemples d&#8217;utilisation</a>
+<ul class="sectlevel2">
+<li><a href="#_commander_un_virtuel_via_un_message_mqtt">7.1. Commander un Virtuel via un message MQTT</a></li>
+</ul>
+</li>
+<li><a href="#_change_log">8. Change log</a></li>
 </ul>
 </div>
 </div>
@@ -1361,7 +1370,34 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="sect1">
 <h2 id="_faq">5. FAQ</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_quelles_données_fournir_pour_investigation_en_cas_de_problèmes">5.1. Quelles données fournir pour investigation en cas de problèmes ?</h3>
+<div class="paragraph">
+<p>En cas de problèmes à l&#8217;installation, fournir les fichiers de log jMQTT (niveau Debug) et jMQTT_dep.</p>
+</div>
+<div class="paragraph">
+<p>En cas de problèmes à l&#8217;utilisation, fournir:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Le fichier de log <code>jMQTT</code>, niveau Debug;</p>
+</li>
+<li>
+<p>Le résultat de la commande suivante:</p>
+</li>
+</ul>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>mosquitto_sub -h localhost -t "#" -v| xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' | tee /tmp/mosquitto_sub.log</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>En remplaçant, si besoin, <code>localhost</code> par le nom ou l&#8217;ip de la machine hébergeant le broker MQTT.</p>
+</div>
 <hr>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1377,7 +1413,76 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 </div>
 </div>
 <div class="sect1">
-<h2 id="_change_log">7. Change log</h2>
+<h2 id="_exemples_d_utilisation">7. Exemples d&#8217;utilisation</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_commander_un_virtuel_via_un_message_mqtt">7.1. Commander un Virtuel via un message MQTT</h3>
+<div class="paragraph">
+<p>Supposons un équipement virtuel, appellé <em>Saison Virtuel</em>, dont une commande action de sous-type Liste permette
+de définir la saison (été, hiver).
+L&#8217;objectif est de pouvoir définir cette saison via un message MQTT envoyé par une application externe.</p>
+</div>
+<div class="paragraph">
+<p>Supposons donc également un équipement jMQTT, appelé <em>Saison_jMQTT</em>, souscrivant au topic <code>saison/#</code>, dont une
+commande info est <code>saison/set</code>.</p>
+</div>
+<div class="paragraph">
+<p>Nous souhaitons donc que lorque une application publie le message <code>saison/set hiver</code> sur le broker, la commande info saison
+du virtuel soit mise à jour avec <em>hiver</em>.</p>
+</div>
+<div class="paragraph">
+<p>Pour ce faire, il faut créer une deuxième commande action côté virtuel (commande <em>set_saison</em> ci-dessous) qui mette à jour
+l&#8217;information saison du virtuel à partir de celle de l&#8217;équipement jMQTT. Le virtuel est donc configuré comme ceci:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../images/saison_virtuel.png" alt="saison virtuel">
+</div>
+</div>
+<div class="paragraph">
+<p>Côté équipement jMQTT, nous avons la configuration simple suivante:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../images/saison_jmqtt.png" alt="saison jmqtt">
+</div>
+</div>
+<div class="paragraph">
+<p>Ensuite, il y a deux solutions pour lier les commandes:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Créer un scénario avec la commande info <code>[Saison jMQTT][set]</code> comme déclencheur, qui executerait la commande action
+<code>[Saison Virtuel][set_saison]</code>; ou</p>
+</li>
+<li>
+<p>Configurer une <em>action sur valeur</em> en cliquant sur la roue crantée à droite de la commande info <code>[Saison jMQTT][set]</code>,
+onglet <em>Configuration</em>:</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../images/saison_action_sur_valeur.png" alt="saison action sur valeur">
+</div>
+</div>
+<div class="paragraph">
+<p>Attention, quelque soit la solution, il est important de configurer la <em>Gestion de la répétition des valeurs</em> de la commande
+info <code>[Saison jMQTT][set]</code> à <em>Toujours répéter</em> pour que toutes les valeurs remontent au virtuel. Pour celà, toujours en cliquant
+ sur la roue crantée à droite de cette dernière, onglet <em>Configuration</em>:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="../images/saison_repetition.png" alt="saison repetition">
+</div>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_change_log">8. Change log</h2>
 <div class="sectionbody">
 <div class="ulist">
 <div class="title">2018-10-24</div>
@@ -1714,7 +1819,7 @@ Si vous avez des topics commençant par / créés avant cette version, il faut a
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-09-23 15:37:35 CEST
+Last updated 2018-10-30 08:03:41 CET
 </div>
 </div>
 </body>

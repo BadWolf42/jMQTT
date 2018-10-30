@@ -1,0 +1,37 @@
+== Exemples d'utilisation
+
+=== Commander un Virtuel via un message MQTT
+
+Supposons un équipement virtuel, appellé _Saison Virtuel_, dont une commande action de sous-type Liste permette
+de définir la saison (été, hiver).
+L'objectif est de pouvoir définir cette saison via un message MQTT envoyé par une application externe.
+
+Supposons donc également un équipement jMQTT, appelé _Saison_jMQTT_, souscrivant au topic `saison/#`, dont une
+commande info est `saison/set`.
+
+Nous souhaitons donc que lorque une application publie le message `saison/set hiver` sur le broker, la commande info saison
+du virtuel soit mise à jour avec _hiver_.
+
+Pour ce faire, il faut créer une deuxième commande action côté virtuel (commande _set_saison_ ci-dessous) qui mette à jour 
+l'information saison du virtuel à partir de celle de l'équipement jMQTT. Le virtuel est donc configuré comme ceci:
+
+image::../images/saison_virtuel.png[]
+
+Côté équipement jMQTT, nous avons la configuration simple suivante:
+
+image::../images/saison_jmqtt.png[]
+
+Ensuite, il y a deux solutions pour lier les commandes:
+
+   - Créer un scénario avec la commande info `[Saison jMQTT][set]` comme déclencheur, qui executerait la commande action
+     `[Saison Virtuel][set_saison]`; ou
+   - Configurer une _action sur valeur_ en cliquant sur la roue crantée à droite de la commande info `[Saison jMQTT][set]`,
+     onglet _Configuration_:
+   
+image::../images/saison_action_sur_valeur.png[]
+
+Attention, quelque soit la solution, il est important de configurer la _Gestion de la répétition des valeurs_ de la commande
+info `[Saison jMQTT][set]` à _Toujours répéter_ pour que toutes les valeurs remontent au virtuel. Pour celà, toujours en cliquant
+ sur la roue crantée à droite de cette dernière, onglet _Configuration_:
+ 
+image::../images/saison_repetition.png[]
