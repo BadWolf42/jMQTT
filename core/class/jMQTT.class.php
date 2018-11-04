@@ -32,41 +32,53 @@ class jMQTT extends eqLogic {
     // that are executed on the same thread as the deamon method.
     private static $_client;
 
-    // Dependancy installation log file
+    /**
+     * @var string Dependancy installation log file
+     */
     private static $_depLogFile;
 
-    // Dependancy installation progress value log file
+    /**
+     * @var string Dependancy installation progress value log file
+     */
     private static $_depProgressFile;
-
+    
     /**
      * Create a new equipment given its name and subscription topic.
-     * Equipment is disabled, and saved.
+     * Equipment is enabled, and saved.
      * @param string $name equipment name
-     * @param string $topic subscription topic (can be empty if isEnable is set to 0)
+     * @param string $topic subscription topic
      * return new jMQTT object
      */
     private static function newEquipment($name, $topic) {
         log::add('jMQTT', 'info', 'Create equipment ' . $name . ', topic=' . $topic );
         $eqpt = new jMQTT();
-        $eqpt->setEqType_name('jMQTT');
-        $eqpt->setName($name);
+        $eqpt->initEquipment($name, $topic);
         $eqpt->setIsEnable(1);
-
-        // Topic is memorized as the LogicalId
-        // (could be use to ease the search of equipments listening to a given topic)
-        $eqpt->setLogicalId($topic);
-        $eqpt->setConfiguration('topic', $topic);
-        $eqpt->setConfiguration('auto_add_cmd', 1);
-        $eqpt->setConfiguration('Qos', 1);
-        $eqpt->setConfiguration('prev_Qos', 1);
-        $eqpt->setConfiguration('reload_d', '0');
-        
         $eqpt->save();
         
         // Advise the desktop page (jMQTT.js) that a new equipment has been added
         event::add('jMQTT::eqptAdded', array('eqlogic_name' => $name));
 
         return $eqpt;
+    }
+    
+    /**
+     * Initialize this equipment with the given data
+     * @param string $name equipment name
+     * @param string $topic subscription topic
+     */
+    private function initEquipment($name, $topic) {
+        log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
+        $this->setEqType_name('jMQTT');
+        $this->setName($name);
+ 
+        // Topic is memorized as the LogicalId
+        $this->setLogicalId($topic);
+        $this->setConfiguration('topic', $topic);
+        $this->setConfiguration('auto_add_cmd', '1');
+        $this->setConfiguration('Qos', '1');
+        $this->setConfiguration('prev_Qos', 1);
+        $this->setConfiguration('reload_d', 0);
     }
 
     /**
@@ -114,6 +126,11 @@ class jMQTT extends eqLogic {
      */
     public function preSave() {
 
+        // Initialise the equipment at creation if not already initialized (this is case 
+        // when equipment is created manually from the user interface)
+        if (!isset($this->id) && $this->logicalId == '')
+            $this->initEquipment($this->getName(), '');
+        
         // Check if MQTT subscription parameters have changed for this equipment
         // Applies to the manual inclusion mode only as in automatic mode, # is suscribed (i.e. all topics)
         $reload_d = 0;
@@ -122,7 +139,7 @@ class jMQTT extends eqLogic {
             $prevTopic    = $this->getLogicalId();
             $topic        = $this->getConfiguration('topic');
             $prevQos      = $this->getConfiguration('prev_Qos');
-            $qos          = $this->getConfiguration('Qos', 1);
+            $qos          = $this->getConfiguration('Qos', '1');
             $prevIsActive = $this->getConfiguration('prev_isActive');
             $isActive     = $this->getIsEnable();
 
@@ -189,7 +206,7 @@ class jMQTT extends eqLogic {
      * Overload postSave to restart the deamon when deemed necessary (see also preSave)
      */
     public function postSave() {
-        if ($this->getConfiguration('reload_d') == "1") {
+        if ($this->getConfiguration('reload_d') == 1) {
             log::add('jMQTT', 'debug', 'postSave: restart deamon, current pid is ' . getmypid());
             self::restartDeamon();
         }
@@ -515,7 +532,7 @@ class jMQTT extends eqLogic {
 
                 // If no command has been found, try to create one
                 if (! is_object($cmdlogic)) {
-                    if ($eqpt->getConfiguration('auto_add_cmd', 1)) {
+                    if ($eqpt->getConfiguration('auto_add_cmd', '1')) {
                         $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
                     }
                     else {
