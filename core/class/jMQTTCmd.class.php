@@ -24,6 +24,11 @@ class jMQTTCmd extends cmd {
     // Constant value to be affected to Parent and Order configuration parameters, for commands
     // that do not derive from a JSON structure
     const NOT_JSON_CHILD = -1;
+    
+    /**
+     * @var int maximum length of command name supported by the database scheme
+     */
+    private static $_cmdNameMaxLength;
 
     /**
      * Create a new command. Command is not saved.
@@ -42,11 +47,16 @@ class jMQTTCmd extends cmd {
         $cmd->setSubType('string');
         $cmd->setLogicalId($_topic);
         $cmd->setType('info');
-        $cmd->setName($_name);
         $cmd->setConfiguration('topic', $_topic);
         $cmd->setConfiguration('parseJson', 0);
         $cmd->setConfiguration('prevParseJson', 0);
 
+        // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
+        if (($newName = self::checkCmdName($_name)) !== true) {
+            $_name = $newName;
+        }
+        $cmd->setName($_name);
+        
         log::add('jMQTT', 'info', 'Creating command of type info ' . $_eqLogic->getName() . '|' . $_name);
 
         // Advise the desktop page (jMQTT.js) that a new command has been added
@@ -192,7 +202,7 @@ class jMQTTCmd extends cmd {
     }
 
     /*
-     * Overload preSave:
+     * Override preSave:
      *    . To detect changes on the retain flag: when retain mode is exited, send a null
      *      payload to the broker to erase the retained topic (implementation of Issue #1).
      *    . To update the Logical Id: usefull for action commands (fix issue #18).
@@ -200,12 +210,12 @@ class jMQTTCmd extends cmd {
     public function preSave() {
 
         $eqName        = $this->getEqLogic()->getName();
-        $cmdName       = $eqName  . '|' . $this->getName();
+        $cmdLogName    = $eqName  . '|' . $this->getName();
         $prevRetain    = $this->getConfiguration('prev_retain', 0);
         $retain        = $this->getConfiguration('retain', 0);
         $parseJson     = $this->getConfiguration('parseJson', 0);
         $prevParseJson = $this->getConfiguration('prevParseJson', 1);
-
+        
         // If value and request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
         // the desktop interface - fix issue #28)
         foreach(array('value', 'request') as $key) {
@@ -214,9 +224,9 @@ class jMQTTCmd extends cmd {
                 $this->setConfiguration($key, $conf);
         }
 
-        // If an action command is being created, initialize correctly the prev_retain flag (fix issue 13)
+        // If an action command is being created, initialize correctly the prev_retain flag (fix issue #13)
         if ($this->getId() == '' && $this->getType() == 'action') {
-            log::add('jMQTT', 'info', 'Creating action command ' . $cmdName);
+            log::add('jMQTT', 'info', 'Creating action command ' . $cmdLogName);
             $prevRetain = $retain;
             $this->setConfiguration('prev_retain', $retain);
         }
@@ -229,11 +239,11 @@ class jMQTTCmd extends cmd {
                 // A null payload shall be sent to the broker to erase the last retained value
                 // Otherwise, this last value remains retained at broker level
                 log::add('jMQTT', 'info',
-                         $cmdName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
+                         $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
                 jMQTT::publishMosquitto($this->getId(), $eqName, $this->getConfiguration('topic'), '', 1, 1);
             }
             else
-                log::add('jMQTT', 'info', $cmdName . ': mode retain activé');
+                log::add('jMQTT', 'info', $cmdLogName . ': mode retain activé');
         }
 
         if ($parseJson != $prevParseJson && $this->getType() == 'info') {
@@ -241,15 +251,34 @@ class jMQTTCmd extends cmd {
             $this->setConfiguration('prevParseJson', $parseJson);
 
             if ($parseJson) {
-                log::add('jMQTT', 'info', $cmdName . ': parseJson is enabled');
+                log::add('jMQTT', 'info', $cmdLogName . ': parseJson is enabled');
                 jMQTTCmd::decodeJsonMessage($this->getEqLogic(), $this->getConfiguration('value'), $this->getName(),
                                             $this->getConfiguration('topic'), $this->getId());
             }
             else
-                log::add('jMQTT', 'info', $cmdName . ': parseJson is disabled');
+                log::add('jMQTT', 'info', $cmdLogName . ': parseJson is disabled');
         }
 
         // Insure Logical ID is always equal to the topic (fix issue #18)
         $this->setLogicalId($this->getConfiguration('topic'));
+    }
+
+    /**
+     * @param string $_name
+     * @return boolean|string true if the command name is valid, corrected cmd name otherwise
+     */
+    private static function checkCmdName($_name) {
+        if (! isset(self::$_cmdNameMaxLength)) {
+            $field = 'character_maximum_length';
+            $sql = "SELECT " . $field . " FROM information_schema.columns WHERE table_name='cmd' AND column_name='name'";
+            $res = DB::Prepare($sql, array());
+            self::$_cmdNameMaxLength = $res[$field];
+            log::add('jMQTT', 'debug', 'Cmd name max length retrieved from the DB: ' . strval(self::$_cmdNameMaxLength));
+        }
+        
+        if (strlen($_name) > self::$_cmdNameMaxLength)
+            return hash("md4", $_name);
+        else
+            return true;
     }
 }

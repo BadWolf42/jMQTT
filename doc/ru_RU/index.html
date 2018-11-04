@@ -615,7 +615,8 @@ Il est conseillé d&#8217;activer la gestion automatique du démon. Ainsi, en ca
 <p>Le mode inclusion automatique permet la découverte et la création automatique des équipements. Il s&#8217;active en cliquant sur le bouton <em>Mode inclusion</em>. Il se désactive en recliquant sur le même bouton, ou automatiquement après 2 à 3 min.</p>
 </div>
 <div class="paragraph">
-<p>Le plugin souscrit auprès du broker le topic configuré dans la page de <a href="#_configuration_du_plugin">Configuration du plugin</a> (# par défaut, i.e. tous les topics). A réception d&#8217;un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.</p>
+<p>Le plugin souscrit auprès du broker le topic configuré dans la page de <a href="#_configuration_du_plugin">Configuration du plugin</a> (# par défaut, i.e. tous les topics).
+A réception d&#8217;un message auquel aucun équipement n&#8217;a souscrit, le plugin crée automatiquement un équipement associé au topic de premier niveau.</p>
 </div>
 <div class="paragraph">
 <p>Prenons comme exemple une payload MQTT publiant les messages suivants:</p>
@@ -779,6 +780,20 @@ boiler/hw/temp 49.0</pre>
 </tr>
 </tbody>
 </table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Jeedom, dans sa version actuelle, limite la longueur des noms de commande à 45 caractères. Dans le cas de commandes
+de longueur supérieure, jMQTT remplace leurs noms par leur code de hashage md4 sur 32 caractères (e.g. 5182636929901af7fa5fd97da5e279e1).
+L&#8217;utilisateur devra alors remplacer ces noms par le nommage de son choix.
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <div class="title">Payload JSON</div>
 <p>Dans le cas d&#8217;une payload JSON, le plugin peut décoder le contenu et créer les informations associées, et ceci indépendamment de l&#8217;état de la case <em>Ajout automatique des commandes</em> de l&#8217;Onglet Equipement. Cette fonctionnalité doit être activée manuellement pour chaque commande information de ce type.</p>
@@ -1484,6 +1499,21 @@ info <code>[Saison jMQTT][set]</code> à <em>Toujours répéter</em> pour que to
 <div class="sect1">
 <h2 id="_change_log">8. Change log</h2>
 <div class="sectionbody">
+<div class="ulist">
+<div class="title">2018-11-04</div>
+<ul>
+<li>
+<p>Correction de <a href="https://github.com/domotruc/jMQTT/issues/58">#58</a>: MySql duplicate entry error sur topic dépassant
+45 caractères. Voir documentation, chapitre <a href="#_commandes_de_type_information">Commandes de type Information</a>.</p>
+</li>
+<li>
+<p>Amélioration initialisation équipement sur création manuelle de façon à afficher les paramètres pas défaut comme Qos</p>
+</li>
+<li>
+<p>Ajout du chapitre exemple dans la documentation</p>
+</li>
+</ul>
+</div>
 <div class="ulist">
 <div class="title">2018-10-24</div>
 <ul>

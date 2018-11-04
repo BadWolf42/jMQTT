@@ -19,7 +19,8 @@ Le panneau inférieur, _Mes jMQTT_ affiche les équipements présents. A noter q
 
 Le mode inclusion automatique permet la découverte et la création automatique des équipements. Il s'active en cliquant sur le bouton _Mode inclusion_. Il se désactive en recliquant sur le même bouton, ou automatiquement après 2 à 3 min.
 
-Le plugin souscrit auprès du broker le topic configuré dans la page de <<Configuration du plugin>> (# par défaut, i.e. tous les topics). A réception d'un message dont le topic de premier niveau est nouveau, le plugin crée automatiquement un équipement associé à ce topic de premier niveau.
+Le plugin souscrit auprès du broker le topic configuré dans la page de <<Configuration du plugin>> (# par défaut, i.e. tous les topics).
+A réception d'un message auquel aucun équipement n'a souscrit, le plugin crée automatiquement un équipement associé au topic de premier niveau.
 
 Prenons comme exemple une payload MQTT publiant les messages suivants:
 ....
@@ -101,6 +102,11 @@ Le plugin créé les informations suivantes:
 |boiler/hw/temp
 |49.0
 |===
+
+NOTE: Jeedom, dans sa version actuelle, limite la longueur des noms de commande à 45 caractères. Dans le cas de commandes
+de longueur supérieure, jMQTT remplace leurs noms par leur code de hashage md4 sur 32 caractères (e.g. 5182636929901af7fa5fd97da5e279e1).
+L'utilisateur devra alors remplacer ces noms par le nommage de son choix.
+
 
 .Payload JSON
 Dans le cas d'une payload JSON, le plugin peut décoder le contenu et créer les informations associées, et ceci indépendamment de l'état de la case _Ajout automatique des commandes_ de l'Onglet Equipement. Cette fonctionnalité doit être activée manuellement pour chaque commande information de ce type.
