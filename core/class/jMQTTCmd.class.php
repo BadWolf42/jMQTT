@@ -48,7 +48,7 @@ class jMQTTCmd extends cmd {
         $cmd->setLogicalId($_topic);
         $cmd->setType('info');
         $cmd->setConfiguration('topic', $_topic);
-        $cmd->setConfiguration('parseJson', 0);
+        $cmd->setConfiguration('parseJson', '0');
         $cmd->setConfiguration('prevParseJson', 0);
 
         // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
@@ -151,7 +151,7 @@ class jMQTTCmd extends cmd {
                 $cmd->updateCmdValue(json_encode($value), $_jParent, $jOrder);
 
                 // If the current command is a JSON structure that shall be decoded, call this routine recursively
-                if ($cmd->getConfiguration('parseJson') == 1 && is_array($value))
+                if ($cmd->getConfiguration('parseJson') == '1' && is_array($value))
                     self::decodeJsonArray($_eqLogic, $value, $jsonName, $jsonTopic, $cmd->getId());
             }
             $jOrder++;
@@ -213,7 +213,7 @@ class jMQTTCmd extends cmd {
         $cmdLogName    = $eqName  . '|' . $this->getName();
         $prevRetain    = $this->getConfiguration('prev_retain', 0);
         $retain        = $this->getConfiguration('retain', 0);
-        $parseJson     = $this->getConfiguration('parseJson', 0);
+        $parseJson     = $this->getConfiguration('parseJson', '0');
         $prevParseJson = $this->getConfiguration('prevParseJson', 1);
         
         // If value and request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
