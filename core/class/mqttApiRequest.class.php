@@ -58,7 +58,7 @@ class mqttApiRequest {
     function __construct($_request) {
         log::add('jMQTT', 'info', 'API: processing request ' . $_request);
 
-        $this->apiAddr = 'http://' . config::byKey('internalAddr') . '/core/api/jeeApi.php';
+        $this->apiAddr = network::getNetworkAccess('internal', 'http:127.0.0.1:port:comp') . '/core/api/jeeApi.php';
 
         $errArr = NULL;
         $jsonArray = json_decode($_request, true);
@@ -157,14 +157,14 @@ class mqttApiRequest {
         if ($http_status == 301) {
             if (preg_match('/<a href="(.*)">/i', $response, $r)) {
                 $this->apiAddr = trim($r[1]);
-                return $this->send($_request, $_timeout, $_file, $_maxRetry);
+                return $this->send($_request, $_timeout, $_maxRetry);
             }
         }
         if ($http_status != 200) {
-            $response = self::newErrorMsg(- 32300, 'Erreur http : ' . $http_status . ' Details : ' . $response);
+            $response = $this->newErrorMsg(- 32300, 'Erreur http : ' . $http_status . ' Details : ' . $response);
         }
         if (curl_errno($ch)) {
-            $response = self::newErrorMsg(- 32400,
+            $response = $this->newErrorMsg(- 32400,
                 'Erreur curl sur : ' . $this->apiAddr . '. Détail :' . curl_error($ch));
         }
         curl_close($ch);
@@ -208,7 +208,7 @@ class mqttApiRequest {
      *            _message string error message
      * @return error message (JSON encoded)
      */
-    public static function newErrorMsg($_code, $_message) {
+    public function newErrorMsg($_code, $_message) {
         return json_encode(self::newErrorArray($_code, $_message, $this->id));
     }
 
@@ -219,7 +219,7 @@ class mqttApiRequest {
      *            _result array result JSON array
      * @return success message (JSON encoded)
      */
-    public static function newSuccessMsg($_result) {
+    public function newSuccessMsg($_result) {
         return json_encode(self::newJsonRpcArray(array(self::JRPC_RES => $_result), $this->id));
     }
 

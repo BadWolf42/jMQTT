@@ -1,5 +1,8 @@
 == Change log
 
+.2018-12-08 (beta)
+    - Correction de https://github.com/domotruc/jMQTT/issues/62[#62]: Erreur sur jMQTT::daemon() : Using $this when not in object context
+
 .2018-11-11 (beta)
     - Amélioration code pour besoin de tests
 
