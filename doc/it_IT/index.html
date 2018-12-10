@@ -452,6 +452,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_faq">5. FAQ</a>
 <ul class="sectlevel2">
 <li><a href="#_quelles_données_fournir_pour_investigation_en_cas_de_problèmes">5.1. Quelles données fournir pour investigation en cas de problèmes ?</a></li>
+<li><a href="#_le_démon_se_déconnecte_avec_le_message_erreur_sur_jmqtt_daemon_the_connection_was_lost">5.2. Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."</a></li>
 </ul>
 </li>
 <li><a href="#_problèmes_connus">6. Problèmes connus</a></li>
@@ -490,7 +491,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <i class="fa icon-important" title="Important"></i>
 </td>
 <td class="content">
-Pour ne pas installer le broker Mosquitto localement, c&#8217;est à dire sur la machine où tourne Jeedom, commencer par décocher la case <em>Installer Mosquitto localement</em>.
+Pour ne pas installer le broker Mosquitto localement, c&#8217;est à dire sur la machine où tourne Jeedom, commencer par décocher la case <em>Installer Mosquitto localement</em>, sans oublier de sauvegarder la configuration.
 </td>
 </tr>
 </table>
@@ -540,7 +541,7 @@ Il peut arriver que l&#8217;installation du plugin se bloque. Cela se produit si
 <p>Port de Mosquitto: port du broker (1883 par défaut).</p>
 </li>
 <li>
-<p>Identifiant de connexion: identifiant avec lequel le plugin s&#8217;inscrit auprès du broker (jeedom par défaut).</p>
+<p>Identifiant de connexion: identifiant avec lequel le plugin s&#8217;inscrit auprès du broker (jeedom par défaut). <strong>Attention</strong>: cet identifiant doit être unique par client et par broker. Sinon les clients portant le même identifiant vont se déconnecter l&#8217;un-l&#8217;autre à chaque connection.</p>
 </li>
 <li>
 <p>Compte et mot de passe de connexion: il est possible d&#8217;ajouter un compte et mot de passe si la connexion le nécessite (pas d&#8217;authentification par défaut).</p>
@@ -1410,6 +1411,12 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 </div>
 <div class="paragraph">
 <p>En remplaçant, si besoin, <code>localhost</code> par le nom ou l&#8217;ip de la machine hébergeant le broker MQTT.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_le_démon_se_déconnecte_avec_le_message_erreur_sur_jmqtt_daemon_the_connection_was_lost">5.2. Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."</h3>
+<div class="paragraph">
+<p>Vérifier qu&#8217;il n&#8217;y a pas 2 clients ayant le même identifiant, voir <em>Identifiant de connexion</em> dans le chapitre <a href="#_configuration_du_plugin">Configuration du plugin</a>.</p>
 </div>
 <hr>
 </div>
