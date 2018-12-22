@@ -15,7 +15,8 @@ Main functionalities are:
   * Manual addition of MQTT equipement;
   * Duplication of equipments;
   * Decoding of complex JSON payload and creation of related informations;
-  * Manual addition of commands (for publishing), support of the retain mode.
+  * Manual addition of commands (for publishing), support of the retain mode;
+  * Acces to the Jeedom [JSON RPC API](https://jeedom.github.io/core/fr_FR/jsonrpc_api) through MQTT. 
 
 __________________
 
