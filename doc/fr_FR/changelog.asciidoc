@@ -1,5 +1,8 @@
 == Change log
 
+.2018-12-27 (beta)
+    - Corretion de https://github.com/domotruc/jMQTT/issues/64[#64]: problème affichage barre de bouton du panneau commandes
+
 .2018-12-08 (beta)
     - Correction de https://github.com/domotruc/jMQTT/issues/62[#62]: Erreur sur jMQTT::daemon() : Using $this when not in object context
 

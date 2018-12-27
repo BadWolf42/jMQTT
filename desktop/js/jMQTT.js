@@ -56,6 +56,13 @@ function refreshEqLogicPage() {
         refreshPage();
 }
 
+$(document).ready(function() {
+    // On page load, show the commandtab menu bar if necessary (fix #64)
+    if (window.location.href.includes('#commandtab')) {
+        $('#menu-bar').show();
+    }
+});
+
 $("#bt_addMQTTInfo").on('click', function(event) {
     var _cmd = {type: 'info'};
     addCmdToTable(_cmd);
@@ -90,7 +97,7 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     });
 });
 
-//Refresh the page on click on the refresh button, and classic and JSON button
+// Refresh the page on click on the refresh button, and classic and JSON button
 $('.eqLogicAction[data-action=refreshPage]').on('click', refreshEqLogicPage);
 $('#bt_classic').on('click', function() {
     refreshEqLogicPage();
@@ -117,7 +124,7 @@ if (getUrlVars('saveSuccessFull') == 1) {
     history.replaceState(history.state, '', initPluginUrl(['saveSuccessFull']));
 }
 
-//Override plugin template to rewrite the URL to avoid keeping the successfull save delete message
+//Override plugin template to rewrite the URL to avoid keeping the successfull delete message
 if (getUrlVars('removeSuccessFull') == 1) {
     $('#div_alert').showAlert({message: '{{Suppression effectuée avec succès}}', level: 'success'});
     history.replaceState(history.state, '', initPluginUrl(['removeSuccessFull']));
@@ -303,7 +310,7 @@ function addCmdToTable(_cmd) {
         }
         tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i></td>';
         tr += '</tr>';
-
+        
         $('#table_cmd tbody').append(tr);
         // $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
         var tr = $('#table_cmd tbody tr:last');
@@ -368,9 +375,10 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
     }
 });
 
-
-//Management of the include button and mode
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Management of the include button and mode
+//
 
 //Configure the display according to the given mode
 //If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
