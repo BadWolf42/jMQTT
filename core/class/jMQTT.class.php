@@ -499,7 +499,7 @@ class jMQTT extends eqLogic {
         }
 
         // No equipment listening to the current message is found
-        // Should not occur: log a warning
+        // Should not occur: log a warning and return
         if (empty($elogics)) {
             log::add('jMQTT', 'warning', 'No equipment listening to topic ' . $msgTopic);
             return;
@@ -527,7 +527,7 @@ class jMQTT extends eqLogic {
                     $cmdName = $cmdName . '/' . current($msgTopicArray);
                 }
 
-                // Look for the command related to the current message
+                /** @var jMQTTCmd $cmdlogic command related to the current message */
                 $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($eqpt->getId(), $msgTopic);
 
                 // If no command has been found, try to create one
