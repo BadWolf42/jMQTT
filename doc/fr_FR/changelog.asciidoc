@@ -1,6 +1,7 @@
 == Change log
 
 .2018-02-09 (beta)
+    - Amélioration https://github.com/domotruc/jMQTT/issues/67[#67]: visualisation de la mise à jour des valeurs dans le panneau commande
     - Amélioration https://github.com/domotruc/jMQTT/issues/66[#66]: amélioration perfo en ne sauvant pas les commandes sur maj valeur
     - Amélioration de la documentation (https://github.com/domotruc/jMQTT/issues/65[#65])
 

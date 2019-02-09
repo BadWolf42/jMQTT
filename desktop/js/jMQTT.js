@@ -265,6 +265,20 @@ function addCmdToTable(_cmd) {
             $('#table_cmd tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type));
         }
         jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
+        
+        jeedom.cmd.execute({
+            id: _cmd.id,
+            cache: 0,
+            notify: false,
+            success: function(result) {
+                $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(result); //attr('placeholder', result);
+                console.log($('#table_cmd tbody tr:last .cmdAttr[data-key=value]'));
+                console.log(result);
+            }
+        });
+        jeedom.cmd.update[_cmd.id] = function(_options) {
+            $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(_options.display_value);
+        }
         N_CMD++;
     }
 
