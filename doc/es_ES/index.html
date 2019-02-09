@@ -544,7 +544,7 @@ Il peut arriver que l&#8217;installation du plugin se bloque. Cela se produit si
 <p>Identifiant de connexion: identifiant avec lequel le plugin s&#8217;inscrit auprès du broker (jeedom par défaut). <strong>Attention</strong>: cet identifiant doit être unique par client et par broker. Sinon les clients portant le même identifiant vont se déconnecter l&#8217;un-l&#8217;autre à chaque connection.</p>
 </li>
 <li>
-<p>Compte et mot de passe de connexion: il est possible d&#8217;ajouter un compte et mot de passe si la connexion le nécessite (pas d&#8217;authentification par défaut).</p>
+<p>Compte et mot de passe de connexion: compte et mot de passe de connexion au broker (laisser vide par défaut, notamment si jMQTT se charge de l&#8217;installation du broker, sauf bien-sûr si vous modifiez la configuration de ce dernier pour activer l&#8217;authentification).</p>
 </li>
 <li>
 <p>Topic de souscription en mode inclusion automatique des équipements: topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (défaut #, i.e. tous les topics).</p>
@@ -1880,7 +1880,7 @@ Si vous avez des topics commençant par / créés avant cette version, il faut a
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-12-08 16:07:57 CET
+Last updated 2019-02-01 07:21:08 CET
 </div>
 </div>
 </body>
