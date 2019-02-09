@@ -75,24 +75,24 @@ class jMQTTCmd extends cmd {
     }
 
     /**
-     * Update this command value, save and inform all stakeholders
+     * Update this command value, inform all stakeholders, and save when necessary
      * @param string $value new command value
-     * @param int $_jParent cmd id of the parent. Set NOT_JSON_CHILD if not a JSON structure.
-     * @param int $_jOrder order of the command. Set NOT_JSON_CHILD if not a JSON structure.
+     * @param int $jParent cmd id of the parent. Set NOT_JSON_CHILD if not a JSON structure.
+     * @param int $jOrder order of the command. Set NOT_JSON_CHILD if not a JSON structure.
      */
-    public function updateCmdValue($value, $_jParent, $_jOrder) {
+    public function updateCmdValue($value, $jParent, $jOrder) {
 
         // Update the configuration value that is displayed inside the equipment command tab
-        $this->setConfiguration('value', $value);
-        $this->setConfiguration('jParent', $_jParent);
-        $this->setConfiguration('jOrder', $_jOrder);
-        $this->save();
-
+        if ($this->getId() == '' || $this->getConfiguration('jParent', self::NOT_JSON_CHILD) != $jParent || $this->getConfiguration('jOrder', self::NOT_JSON_CHILD) != $jOrder) {
+            $this->setConfiguration('jParent', $jParent);
+            $this->setConfiguration('jOrder', $jOrder);
+            $this->save();
+        }
+        
         // Update the command value
-        $eqLogic = $this->getEqLogic();
-        $eqLogic->checkAndUpdateCmd($this, $value);
+        $this->event($value);
 
-        log::add('jMQTT', 'info', '-> ' . $eqLogic->getName() . '|' . $this->getName() . ' ' . $value);
+        log::add('jMQTT', 'info', '-> ' . $this->getEqLogic()->getName() . '|' . $this->getName() . ' ' . $value);
     }
 
     /**
@@ -163,42 +163,37 @@ class jMQTTCmd extends cmd {
      */
     public function execute($_options = null) {
 
-        switch ($this->getType()) {
-            case 'info' :
-                return $this->getConfiguration('value');
+        if ($this->getType() != 'action')
+            return;
+        
+        $request = $this->getConfiguration('request', "");
+        $topic = $this->getConfiguration('topic');
+        $qos = $this->getConfiguration('Qos', 1);
+        $retain = $this->getConfiguration('retain', 0);
+
+        switch ($this->getSubType()) {
+            case 'slider':
+                $request = str_replace('#slider#', $_options['slider'], $request);
                 break;
-
-            case 'action' :
-                $request = $this->getConfiguration('request', "");
-                $topic = $this->getConfiguration('topic');
-                $qos = $this->getConfiguration('Qos', 1);
-                $retain = $this->getConfiguration('retain', 0);
-
-                switch ($this->getSubType()) {
-                    case 'slider':
-                        $request = str_replace('#slider#', $_options['slider'], $request);
-                        break;
-                    case 'color':
-                        $request = str_replace('#color#', $_options['color'], $request);
-                        break;
-                    case 'message':
-                        if ($_options != null)  {
-                            $replace = array('#title#', '#message#');
-                            $replaceBy = array($_options['title'], $_options['message']);
-                            if ( $_options['title'] == '') {
-                                throw new Exception(__('Le sujet du message ne peut pas être vide', __FILE__));
-                            }
-                            $request = str_replace($replace, $replaceBy, $request);
-                        }
-                        break;
+            case 'color':
+                $request = str_replace('#color#', $_options['color'], $request);
+                break;
+            case 'message':
+                if ($_options != null)  {
+                    $replace = array('#title#', '#message#');
+                    $replaceBy = array($_options['title'], $_options['message']);
+                    if ( $_options['title'] == '') {
+                        throw new Exception(__('Le sujet du message ne peut pas être vide', __FILE__));
+                    }
+                    $request = str_replace($replace, $replaceBy, $request);
                 }
-
-                $request = jeedom::evaluateExpression($request);
-                jMQTT::publishMosquitto($this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
-
-                return $request;
+                break;
         }
-        return true;
+
+        $request = jeedom::evaluateExpression($request);
+        jMQTT::publishMosquitto($this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
+
+        return $request;
     }
 
     /*
@@ -216,9 +211,9 @@ class jMQTTCmd extends cmd {
         $parseJson     = $this->getConfiguration('parseJson', '0');
         $prevParseJson = $this->getConfiguration('prevParseJson', 1);
         
-        // If value and request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
+        // If request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
         // the desktop interface - fix issue #28)
-        foreach(array('value', 'request') as $key) {
+        foreach(array('request') as $key) {
             $conf = $this->getConfiguration($key);
             if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK)) !== FALSE))
                 $this->setConfiguration($key, $conf);
@@ -252,7 +247,7 @@ class jMQTTCmd extends cmd {
 
             if ($parseJson) {
                 log::add('jMQTT', 'info', $cmdLogName . ': parseJson is enabled');
-                jMQTTCmd::decodeJsonMessage($this->getEqLogic(), $this->getConfiguration('value'), $this->getName(),
+                jMQTTCmd::decodeJsonMessage($this->getEqLogic(), $this->execCmd(), $this->getName(),
                                             $this->getConfiguration('topic'), $this->getId());
             }
             else

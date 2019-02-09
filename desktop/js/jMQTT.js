@@ -140,8 +140,7 @@ $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder:
 function printEqLogic(_eqLogic) {
 
     // Principle of the ordering algorithm is to associate an ordering string to
-    // each command
-    // and order ordering strings into alphebetical order
+    // each command, and then ordering into alphabetical order
 
     // Encode the given number in base 36, on 3 caracters width
     function toString36(_n) {
@@ -241,7 +240,7 @@ function addCmdToTable(_cmd) {
         tr += '</td><td>';
         tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;" ' + disabled + ' placeholder="{{Topic}}" readonly=true />';
         tr += '</td><td>';
-        tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
+        tr += '<textarea class="cmdAttr form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
         tr += '</td><td>';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="{{Unité}}"></td><td>';
         tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
