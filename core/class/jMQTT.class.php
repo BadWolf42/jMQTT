@@ -27,6 +27,12 @@ class jMQTT extends eqLogic {
     const API_ENABLE = 'enable';
     const API_DISABLE = 'disable';
     
+    /**
+     * Name of the plugin conf parameter storing the last successfull connexion to the broker (linux time, in s)
+     * @var string
+     */
+    const LAST_CONNECT_TIME = 'lastClientConnectTime';
+    
     // MQTT client is defined as a static variable.
     // IMPORTANT: This variable is set in the deamon method; it is only visible from functions
     // that are executed on the same thread as the deamon method.
@@ -364,14 +370,27 @@ class jMQTT extends eqLogic {
         if ($statusCmd != null)
             log::add('jMQTT', 'debug', 'status cmd: ' . $statusCmd->getId());
 
-        // Suppress the exception management here. We let exceptions being thrown to the upper level
-        // and rely on the daemon management of the jeedom core: if automatic management is activated, the deamon
-        // is restarted every 5min.
-        self::mqtt_connect_subscribe(self::$_client);
-
-        self::$_client->loopForever();
-
-        log::add('jMQTT', 'error', 'deamon exits');
+        // Reset the last connection (to the broker) time. Will be set in the mosquittoConnect callback once connected
+        config::save(self::LAST_CONNECT_TIME, '', 'jMQTT');
+        
+        // Subscription and infinite loop
+        try {
+            self::mqtt_connect_subscribe(self::$_client);
+            self::$_client->loopForever();
+        }
+        catch (Exception $e) {
+            log::add('jMQTT', 'warning', 'exception thrown by MQTT client: ' . $e->getMessage());
+        }
+        
+        // Depending on the last connection time, reconnect immediately or wait 15s 
+        $time = config::byKey(self::LAST_CONNECT_TIME, 'jMQTT', '');
+        if ($time == '' || (strtotime('now') - $time) < 15) {
+            log::add('jMQTT', 'info', 'relance le démon dans 15s');
+            sleep(15);
+        }
+        else {
+            log::add('jMQTT', 'info', 'relance le démon immédiatement');
+        }
     }
 
     public function stopDaemon() {
@@ -395,14 +414,15 @@ class jMQTT extends eqLogic {
     public static function mosquittoConnect($r, $message) {
         log::add('jMQTT', 'debug', 'mosquitto: connection response is ' . $message);
         self::$_client->publish(jMQTTEqpt::getMqttClientStatusTopic(), jMQTTEqpt::ONLINE, 1, 1);
-        config::save(jMQTTEqpt::CLIENT_STATUS, '1', 'jMQTT');
+        config::save(self::LAST_CONNECT_TIME, strtotime('now'), 'jMQTT');
+        config::save(jMQTTEqpt::CLIENT_STATUS, jMQTTEqpt::ONLINE, 'jMQTT');
     }
 
     public static function mosquittoDisconnect($r) {
         $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
         log::add('jMQTT', 'debug', 'mosquitto: disconnected' . $msg);
         self::$_client->publish(jMQTTEqpt::getMqttClientStatusTopic(), jMQTTEqpt::OFFLINE, 1, 1);
-        config::save(jMQTTEqpt::CLIENT_STATUS, '0', 'jMQTT');
+        config::save(jMQTTEqpt::CLIENT_STATUS, jMQTTEqpt::OFFLINE, 'jMQTT');
     }
 
     public static function mosquittoSubscribe($mid, $qosCount) {

@@ -1412,6 +1412,9 @@ La colonne <em>Status</em> n&#8217;est pas significative, elle indique toujours 
 <div class="paragraph">
 <p>En remplaçant, si besoin, <code>localhost</code> par le nom ou l&#8217;ip de la machine hébergeant le broker MQTT.</p>
 </div>
+<div class="paragraph">
+<p>Si le broker requiert une authentification, il faudra ajouter <code>-u username</code> et <code>-p password</code> avant le <code>-v</code>.</p>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_le_démon_se_déconnecte_avec_le_message_erreur_sur_jmqtt_daemon_the_connection_was_lost">5.2. Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."</h3>
@@ -1506,6 +1509,14 @@ info <code>[Saison jMQTT][set]</code> à <em>Toujours répéter</em> pour que to
 <div class="sect1">
 <h2 id="_change_log">8. Change log</h2>
 <div class="sectionbody">
+<div class="ulist">
+<div class="title">2018-02-20</div>
+<ul>
+<li>
+<p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/68">#68</a>: amélioration robustesse aux deconnections intempestives</p>
+</li>
+</ul>
+</div>
 <div class="ulist">
 <div class="title">2018-02-16</div>
 <ul>

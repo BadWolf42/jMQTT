@@ -1,5 +1,8 @@
 == Change log
 
+.2018-02-20
+    - Amélioration https://github.com/domotruc/jMQTT/issues/68[#68]: amélioration robustesse aux deconnections intempestives
+
 .2018-02-16
     - Passage en stable des évolutions des 4 versions betas précédentes
 

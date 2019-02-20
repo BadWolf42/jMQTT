@@ -13,6 +13,8 @@ mosquitto_sub -h localhost -t "#" -v| xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d
 ....
 En remplaçant, si besoin, `localhost` par le nom ou l'ip de la machine hébergeant le broker MQTT.
 
+Si le broker requiert une authentification, il faudra ajouter `-u username` et `-p password` avant le `-v`. 
+
 === Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
 
 Vérifier qu'il n'y a pas 2 clients ayant le même identifiant, voir _Identifiant de connexion_ dans le chapitre <<Configuration du plugin>>.
