@@ -3,7 +3,62 @@ if (!isConnect('admin')) {
     throw new Exception('{{401 - Accès non autorisé}}');
 }
 sendVarToJS('eqType', 'jMQTT');
-$eqLogics = eqLogic::byType('jMQTT');
+$eqNonBrokers = jMQTT::getNonBrokers();
+$eqBrokers = jMQTT::getBrokers();
+
+/*
+$plugin = plugin::byId('jMQTT');
+$plugin->callInstallFunction('update', true);
+*/
+
+function displayActionCard($action_name, $fa_icon, $card_color, $action='', $add_class='') {
+    echo '<div class="cursor eqLogicAction ' . $add_class . '"';
+    if ($action != '')
+        echo ' data-action="' . $action . '"';
+    echo ' style="text-align:center;height:200px;width:160px;margin-bottom:10px;padding:5px;border-radius:10px;margin-right:10px;float:left;" >';
+    echo '<div class="center-block" style="width:130px;height:130px;display:flex;align-items: center;justify-content:center;">';
+    echo '<i class="fa ' . $fa_icon . '" style="font-size:6em;color:' . $card_color . ';"></i>';
+    echo "</div>";
+    echo '<span style="font-size:1.1em;font-weight:bold;position:relative;top:10px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;">' .
+        $action_name . '</span>';
+    echo '</div>';
+}
+
+        /**
+ *
+ * @param eqLogic $eqL
+ */
+function displayEqLogicCard($eqL) {
+    $opacity = $eqL->getIsEnable() ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
+    if ($eqL->getConfiguration('auto_add_cmd', 1)  == 1) {
+        echo '<div class="eqLogicDisplayCard cursor auto" data-eqLogic_id="' . $eqL->getId() .
+            '" style="text-align:center;height:200px;width:160px;margin-bottom:10px;padding:5px;margin-right:10px;float:left;' .
+            $opacity . '" >';
+    }
+    else {
+        echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() .
+            '" style="text-align:center;height:200px;width:160px;margin-bottom:10px;padding:5px;margin-right:10px;float:left;' .
+            $opacity . '" >';
+    }
+    
+    $dir = dirname(__FILE__) . '/../../resources/images/';
+    $files = scandir($dir);
+    $test = 'node_' . $eqL->getConfiguration('icone') . '.png';
+    if (in_array($test, $files)) {
+        $path = 'node_' . $eqL->getConfiguration('icone');
+    }
+    else {
+        $path = 'mqtt_icon';
+    }
+    
+    echo '<center style="height:120px;padding-top:10px">';
+    echo '<img src="plugins/jMQTT/resources/images/' . $path . '.png" height="105" width="92" />';
+    echo "</center>";
+    echo '<span style="font-size:1.1em;position:relative;top:10px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;">' .
+        $eqL->getHumanName(true, true) . '</span>';
+    echo '</div>';
+}
+
 ?>
 
 <div id="div_newCmdMsg"></div>
@@ -11,100 +66,104 @@ $eqLogics = eqLogic::byType('jMQTT');
 <div id="div_inclusionModeMsg"></div>
 <div class="row row-overflow">
     <div class="col-lg-2 col-sm-3 col-sm-4">
-	<div class="bs-sidebar">
-	    <ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
-		<a class="btn btn-default eqLogicAction" style="width:100%;margin-top:5px;margin-bottom:5px;" data-action="add"><i class="fa fa-plus-circle"></i> {{Ajouter un équipement}}</a>
-		<li class="filter" style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}" style="width: 100%"/></li>
+        <div class="bs-sidebar">
+            <a class="btn btn-default eqLogicAction" style="width: 100%; margin-top: 5px; margin-bottom: 5px;"
+                data-action="add"><i class="fa fa-plus-circle"></i> {{Ajouter un équipement}}</a> <a class="filter"
+                style="margin-bottom: 5px;"><input class="filter form-control input-sm" placeholder="{{Rechercher}}"
+                style="width: 100%" /></a> <br />
+            <ul id="ul_eqLogic" class="nav nav-list bs-sidenav">
+                <li><i class="fa fa-rss"></i><span> {{Brokers}}</span>
+                    <ul class="nav nav-list bs-sidenav sub-nav-list">
 		<?php
-		foreach ($eqLogics as $eqLogic) {
-		    $opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-		    echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqLogic->getId() . '" style="' . $opacity . '"><a>' . $eqLogic->getHumanName(true) . '</a></li>';
+		foreach ($eqBrokers as $eqL) {
+		    $opacity = ($eqL->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
+		    echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqL->getId() . '" style="' . $opacity . '"><a>' .
+		  		    $eqL->getHumanName(true) . '</a></li>';
 		}
 		?>
-	    </ul>
-	</div>
+	    </ul></li>
+                <li><i class="fa fa-table"></i><span> {{Mes jMQTT}}</span>
+                    <ul class="nav nav-list bs-sidenav sub-nav-list">
+        <?php
+        foreach ($eqNonBrokers as $eqL) {
+            $opacity = ($eqL->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
+            echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqL->getId() . '" style="' . $opacity . '"><a>' .
+                $eqL->getHumanName(true) . '</a></li>';
+        }
+        ?>
+        </ul></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay"
+        style="border-left: solid 1px #EEE; padding-left: 25px;">
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-4">        
+            <legend><i class="fa fa-cog"></i> {{Gestion}}</legend>
+    	    <?php
+    	    displayActionCard('{{Configuration}}', 'fa-wrench', '#767676', 'gotoPluginConf');
+    	    displayActionCard('{{Santé}}', 'fa-medkit', '#767676', 'healthMQTT');
+    	    ?>
+    	   </div>
+
+            <div class="col-lg-8 col-md-8 col-sm-8">        
+            <legend><i class="fa fa-rss"></i> {{Brokers MQTT}}</legend>
+            <?php
+            displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', '#f8d800', 'addBroker');
+        
+            foreach ($eqBrokers as $eqB) {
+                displayEqLogicCard($eqB);
+            }
+            ?>
+            </div>
+        </div>
+
+        <legend><i class="fa fa-table"></i> {{Mes jMQTT}}</legend>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12">        
+            <?php
+            displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', '#f8d800', 'add');
+    
+            // Insert the automatic inclusion button: display according to the include_mode configuration parameter is done at the end of this page
+            displayActionCard('{{Mode inclusion}}', 'fa-sign-in fa-rotate-90', '#f8d800', '',
+                'bt_changeIncludeMode include card');
+    
+            foreach ($eqNonBrokers as $eqL) {
+                displayEqLogicCard($eqL);
+            }
+            ?>
+            </div>
+        </div>
     </div>
     
-    <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
-	<legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
-	<div class="eqLogicThumbnailContainer">
-	    <div class="cursor eqLogicAction" data-action="add" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
-		<center style="height:100px;padding-top:10px">
-		    <i class="fa fa-plus-circle" style="font-size:6em;color:#f8d800;"></i>
-		</center>
-		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;color:#f8d800;"><center>{{Ajouter}}</center></span>
-	    </div>
-
-	    <?php
-	    // Insert the automatic inclusion button: display according to the include_mode configuration parameter is done at the end of this page
-	    ?>
-	    <div class="cursor bt_changeIncludeMode include card" data-mode="0" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
-		<center style="height:100px;padding-top:10px"><i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i></center>
-		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;color:#f8d800;"><center></center></span>
-	    </div>
-
-	    <div class="cursor eqLogicAction" data-action="gotoPluginConf" style="background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;">
-		<center style="height:100px;padding-top:10px"><i class="fa fa-wrench" style="font-size:5.4em;color:#767676;"></i></center>
-		<span style="font-size:1.1em;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word"><center>{{Configuration}}</center></span>
-	    </div>
-	    
-	    <div class="cursor" id="bt_healthMQTT" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-		<center style="height:100px;padding-top:10px"><i class="fa fa-medkit" style="font-size:6em;color:#767676;"></i></center>
-		<span style="font-size:1.1em;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word"><center>{{Santé}}</center></span>
-	    </div>
-	</div>
-
-
-	<legend><i class="fa fa-table"></i>  {{Mes jMQTT}}
-	</legend>
-	<div class="eqLogicThumbnailContainer">
-	    <?php
-	    $dir = dirname(__FILE__) . '/../../resources/images/';
-	    $files = scandir($dir);
-	    foreach ($eqLogics as $eqLogic) {
-		$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-		if ($eqLogic->getConfiguration('auto_add_cmd', 1)  == 1)
-		    echo '<div class="eqLogicDisplayCard cursor auto" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color:#ffffff;height:200px;margin-bottom:10px;padding:5px;width:160px;margin-left:10px;' . $opacity . '" >';
-		else
-		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color:#ffffff;height:200px;margin-bottom:10px;padding:5px;width:160px;margin-left:10px;' . $opacity . '" >';
-		echo '<center  style="height:120px;padding-top:10px">';
-		$test = 'node_' . $eqLogic->getConfiguration('icone') . '.png';
-		if (in_array($test, $files)) {
-		    $path = 'node_' . $eqLogic->getConfiguration('icone');
-		} else {
-		    $path = 'mqtt_icon';
-		}
-		echo '<img src="plugins/jMQTT/resources/images/' . $path . '.png" height="105" width="92" />';
-		echo "</center>";
-		echo '<span style="font-size:1.1em;position:relative;top:10px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
-		echo '</div>';
-	    }
-	    ?>
-	</div>
-    </div>
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
-	<a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
-	<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
-	<a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
-	<a class="btn btn-default eqLogicAction pull-right" data-action="copy"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>
-	<a class="btn btn-default eqLogicAction pull-right" data-action="export"><i class="fa fa-sign-out"></i> Export</a>
-	<a class="btn btn-default eqLogicAction pull-left" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a>
-	<ul class="nav nav-tabs" role="tablist">
-	    <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
-	    <li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
-            <a class="btn btn-default eqLogicAction pull-left" data-action="refreshPage"><i class="fa fa-refresh"></i></a>
-	</ul>
+    	<a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
+    	<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
+    	<a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
+    	<a class="btn btn-default eqLogicAction pull-right typ-std" data-action="copy" style="display:none;"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>
+    	<a class="btn btn-default eqLogicAction pull-right" data-action="export"><i class="fa fa-sign-out"></i> Export</a>
+    	<a class="btn btn-default eqLogicAction pull-left" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a>
+    	<ul class="nav nav-tabs" role="tablist">
+    	    <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
+            <li role="presentation" class="typ-brk" style="display:none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fa fa-rss"></i> {{Broker}}</a></li>
+    	    <li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
+                <a class="btn btn-default eqLogicAction pull-left" data-action="refreshPage"><i class="fa fa-refresh"></i></a>
+    	</ul>
         <div id="menu-bar" style="display: none;">
-	    <div class="form-actions">
-		<a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+            <div class="form-actions">
+                <a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i>
+                    {{Ajouter une commande action}}</a>
                 <div class="btn-group pull-right" data-toggle="buttons">
-                    <a id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off" checked><i class="fa fa-list-alt"></i>  Classic </a>
-                    <a id="bt_json" class="btn btn-sm btn-default"><input type="radio" autocomplete="off"><i class="fa fa-sitemap"></i>  JSON </a>
+                    <a id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off"
+                        checked><i class="fa fa-list-alt"></i> Classic </a> <a id="bt_json"
+                        class="btn btn-sm btn-default"><input type="radio" autocomplete="off"><i class="fa fa-sitemap"></i>
+                        JSON </a>
                 </div>
-	    </div>
-            <hr style="margin-top:5px; margin-bottom:5px;">
+            </div>
+            <hr style="margin-top: 5px; margin-bottom: 5px;">
         </div>
-	<div class="tab-content" style="height:calc(100% - 120px);overflow:auto;overflow-x: hidden;">
+        <div class="tab-content" style="height:calc(100% - 120px);overflow:auto;overflow-x: hidden;">
 	    <div role="tabpanel" class="tab-pane active" id="eqlogictab">
 		<form class="form-horizontal">
 		    <fieldset>
@@ -235,6 +294,10 @@ $eqLogics = eqLogic::byType('jMQTT');
 		    </fieldset>
 		</form>
 	    </div>
+        <div role="tabpanel" class="tab-pane active" id="brokertab">
+        <form class="form-horizontal">
+        </form>
+        </div>
 	    <div role="tabpanel" class="tab-pane" id="commandtab">
 		<table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
 		    <thead>
@@ -277,10 +340,10 @@ $eqLogics = eqLogic::byType('jMQTT');
      border-radius:18px !important;
      padding-top:12px !important;
  }
- div.bt_changeIncludeMode.include {
+ .row div.eqLogicAction.bt_changeIncludeMode.include {
      background-color: #8000FF !important;
  }
- div.bt_changeIncludeMode:not(.include) {
+ .row div.eqLogicAction.bt_changeIncludeMode:not(.include) {
      background-color: #FFFFFF;
  }
 </style>

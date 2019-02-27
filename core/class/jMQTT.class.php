@@ -28,6 +28,22 @@ class jMQTT extends eqLogic {
     const API_DISABLE = 'disable';
     
     /**
+     * To define a 'standard' jMQTT.
+     * jMQTT type is either self::TYP_STD or self::TYP_BRK.
+     * jMQTT is stored as a configuration parameter. 
+     * @var string 'standard' jMQTT.
+     */
+    const TYP_STD = 'standard';
+
+    /**
+     * To define a 'broker' jMQTT.
+     * jMQTT type is either self::TYP_STD or self::TYP_BRK.
+     * jMQTT is stored as a configuration parameter. 
+     * @var string 'broker' jMQTT.
+     */
+    const TYP_BRK = 'broker';
+    
+    /**
      * Name of the plugin conf parameter storing the last successfull connexion to the broker (linux time, in s)
      * @var string
      */
@@ -53,9 +69,10 @@ class jMQTT extends eqLogic {
      * Equipment is enabled, and saved.
      * @param string $name equipment name
      * @param string $topic subscription topic
+     * @param string $type jMQTT type (either self::TYP_STD or self::TYP_BRK)
      * return new jMQTT object
      */
-    private static function newEquipment($name, $topic) {
+    private static function newEquipment($name, $topic, $type) {
         log::add('jMQTT', 'info', 'Create equipment ' . $name . ', topic=' . $topic );
         $eqpt = new jMQTT();
         $eqpt->initEquipment($name, $topic);
@@ -72,12 +89,17 @@ class jMQTT extends eqLogic {
      * Initialize this equipment with the given data
      * @param string $name equipment name
      * @param string $topic subscription topic
+     * @param string $type jMQTT type. Used if type has not already been defined through the user interface.
      */
-    private function initEquipment($name, $topic) {
+    private function initEquipment($name, $topic, $type) {
         log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
         $this->setEqType_name('jMQTT');
         $this->setName($name);
- 
+
+        // Define topic if not already defined
+        if ($this->getConfiguration('type', '') == '')
+            $this->setConfiguration('type', $type);
+        
         // Topic is memorized as the LogicalId
         $this->setLogicalId($topic);
         $this->setConfiguration('topic', $topic);
@@ -113,7 +135,7 @@ class jMQTT extends eqLogic {
         }
         $eqLogicCopy->save();
 
-            // Clone commands, only action type commands
+        // Clone commands, only action type commands
         foreach ($this->getCmd() as $cmd) {
             if ($cmd->getType() == 'action') {
                 $cmdCopy = clone $cmd;
@@ -127,6 +149,24 @@ class jMQTT extends eqLogic {
         return $eqLogicCopy;
     }
 
+    /**
+     * Return jMQTT objects of type broker
+     * @return jMQTT[]
+     */
+    public static function getBrokers() {
+        $type = json_encode(array('type' => self::TYP_BRK));
+        return self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1));
+    }
+    
+    /**
+     * Return jMQTT objects of type standard
+     * @return jMQTT[]
+     */
+    public static function getNonBrokers() {
+        $type = json_encode(array('type' => self::TYP_STD));
+        return self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1));
+    }
+    
     /**
      * Overload preSave to manage changes in subscription parameters to the MQTT broker
      */
@@ -514,7 +554,7 @@ class jMQTT extends eqLogic {
         // subscribing to all sub-topics starting with the first topic of the
         // current message
         if (empty($elogics) && config::byKey('include_mode', 'jMQTT', 0) == 1) {
-            $eqpt = jMQTT::newEquipment($msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#');
+            $eqpt = jMQTT::newEquipment($msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#', self::TYP_STD);
             $elogics[] = $eqpt;
         }
 
@@ -610,6 +650,14 @@ class jMQTT extends eqLogic {
         return config::byKey('api', 'jMQTT', self::API_DISABLE) == self::API_ENABLE ? TRUE : FALSE;
     }
 
+    /**
+     * Set this jMQTT object type
+     * @param string $type either self::TYPE_STD or self::TYP_BRK
+     */
+    public function setType($type) {
+        $this->setConfiguration('type', $type);
+    }
+    
     /**
      * Return the topic to be used to interact with the jeeAPI using mqtt
      *

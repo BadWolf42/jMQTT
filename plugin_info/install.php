@@ -17,6 +17,7 @@
  */
 
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
+include_file('core', 'jMQTT', 'class', 'jMQTT');
 
 function jMQTT_install() {
     $cron = cron::byClassAndFunction('jMQTT', 'daemon');
@@ -43,6 +44,14 @@ function jMQTT_update() {
         $cron->setSchedule('* * * * *');
         $cron->setTimeout('1440');
         $cron->save();
+    }
+    
+    // Migration to multi support
+    foreach (eqLogic::byType('jMQTT') as $eqL) {
+        if ($eqL->getConfiguration('type', '') == '') {
+            $eqL->setConfiguration('type', jMQTT::TYP_STD);
+            $eqL->save();
+        }
     }
 }
 

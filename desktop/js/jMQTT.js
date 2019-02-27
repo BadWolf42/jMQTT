@@ -21,6 +21,30 @@ var refreshTimeout;
 //Command number: used when displaying commands as a JSON tree.
 var N_CMD;
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// For debug of the history
+//
+
+//(function setOnPushStateFunction (window, history){
+//    var pushState = history.pushState;
+//    history.pushState = function(state) {
+//      if (typeof window.onpushstate === 'function') {
+//          window.onpushstate({ state: state });
+//      }
+//      return pushState.apply(history, arguments);
+//    }
+//  })(window, window.history);
+//
+//window.onpopstate = function(event) {
+//    console.log("onpopstate: location=" + document.location + ", state=" + JSON.stringify(event.state));
+//    return false;
+//  };
+//  
+//window.onpushstate = function(event) {
+//    console.log("onpushstate: location=" + document.location + ", state=" + JSON.stringify(event.state));
+//};
+
 //Return the plugin base URL
 //Parameters id, saveSuccessFull, removeSuccessFull are removed if present
 function initPluginUrl(_filter=['id','saveSuccessFull','removeSuccessFull']) {
@@ -59,8 +83,8 @@ function refreshEqLogicPage() {
 $(document).ready(function() {
     // On page load, show the commandtab menu bar if necessary (fix #64)
     if (window.location.href.includes('#commandtab')) {
-        $('#menu-bar').show();
-    }
+        $('a[href="#commandtab"]').click();
+    } 
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {
@@ -75,7 +99,7 @@ $("#bt_addMQTTAction").on('click', function(event) {
     modifyWithoutSave = true;
 });
 
-$('#bt_healthMQTT').on('click', function () {
+$('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
     $('#md_modal').dialog({title: "{{Santé jMQTT}}"});
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
 });
@@ -110,7 +134,7 @@ $('#bt_json').on('click', function() {
     $('#bt_classic').removeClass('btn-primary').addClass('btn-default');
 });
 
-$('a[href="#eqlogictab"]').on('click', function() {
+$('a[href="#eqlogictab"],a[href="#brokertab"]').on('click', function() {
     $('#menu-bar').hide();
 });
 
@@ -118,24 +142,63 @@ $('a[href="#commandtab"]').on('click', function() {
     $('#menu-bar').show();
 });
 
-//Override plugin template to rewrite the URL to avoid keeping the successfull save message
+// Manage the history on eqlogic display
+$(".li_eqLogic").on('click', function () {
+    var url_id = getUrlVars('id');
+    var id = $(this).attr('data-eqLogic_id');
+    if (!is_numeric(url_id) || url_id != id) {
+        history.pushState({}, '', initPluginUrl() + '&id=' + id);
+    }
+});
+
+// Manage the history on return to the plugin page
+$('.eqLogicAction[data-action=returnToThumbnailDisplay]').on('click', function () {
+    history.pushState({}, '', initPluginUrl());
+});
+
+// Override plugin template to rewrite the URL to avoid keeping the successfull save message
 if (getUrlVars('saveSuccessFull') == 1) {
     $('#div_alert').showAlert({message: '{{Sauvegarde effectuée avec succès}}', level: 'success'});
-    history.replaceState(history.state, '', initPluginUrl(['saveSuccessFull']));
+    history.replaceState({}, '', initPluginUrl(['saveSuccessFull']));
 }
 
-//Override plugin template to rewrite the URL to avoid keeping the successfull delete message
+// Override plugin template to rewrite the URL to avoid keeping the successfull delete message
 if (getUrlVars('removeSuccessFull') == 1) {
     $('#div_alert').showAlert({message: '{{Suppression effectuée avec succès}}', level: 'success'});
-    history.replaceState(history.state, '', initPluginUrl(['removeSuccessFull']));
+    history.replaceState({}, '', initPluginUrl(['removeSuccessFull']));
 }
 
-//Configure the sortable functionality of the commands array
+// Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
+
+
+/**
+ * Add broker callback
+ */
+$('.eqLogicAction[data-action=addBroker]').on('click', function () {
+    bootbox.prompt("{{Nom du broker ?}}", function (result) {
+        if (result !== null) {
+            jeedom.eqLogic.save({
+                type: eqType,
+                eqLogics: [{name: result, type: 'broker'}],
+                error: function (error) {
+                    $('#div_alert').showAlert({message: error.message, level: 'danger'});
+                },
+                success: function (_data) {
+                    var url = initPluginUrl();
+                    modifyWithoutSave = false;
+                    url += '&id=' + _data.id + '&saveSuccessFull=1';
+                    loadPage(url);
+                }
+            });
+        }
+    });
+});
 
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
- * We reorder commands if the JSON view is active.
+ *   . Reorder commands if the JSON view is active
+ *   . Show the fields depending on the type (broker or standard)
  */
 function printEqLogic(_eqLogic) {
 
@@ -195,6 +258,17 @@ function printEqLogic(_eqLogic) {
         // column width
         $("#table_cmd").sortable('enable');
         $("#table_cmd th:first").width('50px');
+    }
+
+    
+    
+    // Show elements depending on the type
+    if (_eqLogic.configuration.type == 'broker') {
+        $('.typ-std').hide();
+        $('.typ-brk').show();
+    } else {
+        $('.typ-brk').hide();
+        $('.typ-std').show();
     }
 }
 
@@ -272,8 +346,6 @@ function addCmdToTable(_cmd) {
             notify: false,
             success: function(result) {
                 $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(result); //attr('placeholder', result);
-                console.log($('#table_cmd tbody tr:last .cmdAttr[data-key=value]'));
-                console.log(result);
             }
         });
         jeedom.cmd.update[_cmd.id] = function(_options) {
@@ -394,7 +466,7 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 //
 
 //Configure the display according to the given mode
-//If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
+//If given mode is not provided, use the data-mode attribute value
 function configureIncludeModeDisplay(mode) {
     if (mode == 1) {
         $('.bt_changeIncludeMode:not(.card)').removeClass('btn-default').addClass('btn-success');
