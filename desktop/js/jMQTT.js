@@ -240,7 +240,7 @@ function addCmdToTable(_cmd) {
         tr += '</td><td>';
         tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;" ' + disabled + ' placeholder="{{Topic}}" readonly=true />';
         tr += '</td><td>';
-        tr += '<textarea class="cmdAttr form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
+        tr += '<textarea class="form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
         tr += '</td><td>';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="{{Unité}}"></td><td>';
         tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
@@ -265,19 +265,20 @@ function addCmdToTable(_cmd) {
             $('#table_cmd tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type));
         }
         jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
-        
+
+        function refreshValue(val) {
+            $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(val);
+        }
+
         jeedom.cmd.execute({
             id: _cmd.id,
             cache: 0,
             notify: false,
             success: function(result) {
-                $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(result); //attr('placeholder', result);
-                console.log($('#table_cmd tbody tr:last .cmdAttr[data-key=value]'));
-                console.log(result);
-            }
-        });
+                refreshValue(result);
+        }});
         jeedom.cmd.update[_cmd.id] = function(_options) {
-            $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(_options.display_value);
+            refreshValue(_options.display_value);
         }
         N_CMD++;
     }
