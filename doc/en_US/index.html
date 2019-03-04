@@ -1099,6 +1099,18 @@ hw/set {"name": "setpoint", "value": 45}</pre>
 hw/set {"name": "setpoint", "value": 50}</pre>
 </div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Pour configurer les valeurs min/max d&#8217;un commande slider, éditer les paramètres avancées de la commande slider (la roue crantée à gauche du bouton <strong>Tester</strong>), aller dans l&#8217;onglet <strong>Affichage</strong> et ajouter <strong>minValue</strong> et <strong>maxValue</strong> dans la section <strong>Paramètres optionnels widget</strong> (cette configuration est apportée par le core de Jeedom, elle n&#8217;est pas spécifique à jMQTT).
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <div class="title">Sous-type Message</div>
 <p>Pour un message dont le titre est <code>ecs</code> et le contenu est <code>50</code>, la configuration ci-après publiera:</p>
@@ -1510,7 +1522,23 @@ info <code>[Saison jMQTT][set]</code> à <em>Toujours répéter</em> pour que to
 <h2 id="_change_log">8. Change log</h2>
 <div class="sectionbody">
 <div class="ulist">
-<div class="title">2018-02-20</div>
+<div class="title">2019-TBD</div>
+<ul>
+<li>
+<p>Amélioration documentation (commandes slider)</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<div class="title">2019-03-01 (beta)</div>
+<ul>
+<li>
+<p>Correction de <a href="https://github.com/domotruc/jMQTT/issues/69">#69</a>: message de confirmation de fermeture de page inopportun</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
+<div class="title">2019-02-20</div>
 <ul>
 <li>
 <p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/68">#68</a>: amélioration robustesse aux deconnections intempestives</p>
@@ -1526,7 +1554,7 @@ info <code>[Saison jMQTT][set]</code> à <em>Toujours répéter</em> pour que to
 </ul>
 </div>
 <div class="ulist">
-<div class="title">2018-02-09 (beta)</div>
+<div class="title">2019-02-09 (beta)</div>
 <ul>
 <li>
 <p>Amélioration <a href="https://github.com/domotruc/jMQTT/issues/67">#67</a>: visualisation de la mise à jour des valeurs dans le panneau commande</p>
@@ -1913,7 +1941,7 @@ Si vous avez des topics commençant par / créés avant cette version, il faut a
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-01 07:21:08 CET
+Last updated 2019-03-01 15:18:08 CET
 </div>
 </div>
 </body>
