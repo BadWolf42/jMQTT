@@ -1,7 +1,9 @@
 == Change log
 
-.2019-TBD
+.2019-03-05 (beta)
     - Amélioration documentation (commandes slider)
+    - Rend les boutons avancer/reculer du navigateur fonctionnels
+    - Correction mineure pour compatibilité avec core 3.3 
 
 .2019-03-01 (beta)
     - Correction de https://github.com/domotruc/jMQTT/issues/69[#69]: message de confirmation de fermeture de page inopportun

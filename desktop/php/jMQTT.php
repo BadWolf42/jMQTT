@@ -38,7 +38,7 @@ $eqLogics = eqLogic::byType('jMQTT');
 	    <?php
 	    // Insert the automatic inclusion button: display according to the include_mode configuration parameter is done at the end of this page
 	    ?>
-	    <div class="cursor bt_changeIncludeMode include card" data-mode="0" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
+	    <div class="cursor bt_changeIncludeMode card" data-mode="0" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
 		<center style="height:100px;padding-top:10px"><i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i></center>
 		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;color:#f8d800;"><center></center></span>
 	    </div>
@@ -83,17 +83,20 @@ $eqLogics = eqLogic::byType('jMQTT');
 	</div>
     </div>
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
-	<a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
+	<div class="row">
+    <a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
 	<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
 	<a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
 	<a class="btn btn-default eqLogicAction pull-right" data-action="copy"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>
 	<a class="btn btn-default eqLogicAction pull-right" data-action="export"><i class="fa fa-sign-out"></i> Export</a>
 	<a class="btn btn-default eqLogicAction pull-left" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a>
-	<ul class="nav nav-tabs" role="tablist">
-	    <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
+	<ul class="nav nav-tabs pull-left" role="tablist">
+ 	    <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
 	    <li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
-            <a class="btn btn-default eqLogicAction pull-left" data-action="refreshPage"><i class="fa fa-refresh"></i></a>
 	</ul>
+    <a class="btn btn-default eqLogicAction pull-left" data-action="refreshPage"><i class="fa fa-refresh"></i></a>
+    </div>
+
         <div id="menu-bar" style="display: none;">
 	    <div class="form-actions">
 		<a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i> {{Ajouter une commande action}}</a>
