@@ -1,5 +1,8 @@
 == Change log
 
+.2019-03-06
+    - Passage en stable des évolutions des 2 versions betas précédentes
+
 .2019-03-05 (beta)
     - Amélioration documentation (commandes slider)
     - Rend les boutons avancer/reculer du navigateur fonctionnels
