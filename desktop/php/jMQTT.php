@@ -127,7 +127,7 @@ function displayEqLogicCard($eqL) {
     
             // Insert the automatic inclusion button: display according to the include_mode configuration parameter is done at the end of this page
             displayActionCard('{{Mode inclusion}}', 'fa-sign-in fa-rotate-90', '#f8d800', '',
-                'bt_changeIncludeMode include card');
+                'bt_changeIncludeMode card');
     
             foreach ($eqNonBrokers as $eqL) {
                 displayEqLogicCard($eqL);
@@ -138,18 +138,20 @@ function displayEqLogicCard($eqL) {
     </div>
     
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
+        <div class="row">
     	<a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i> {{Sauvegarder}}</a>
     	<a class="btn btn-danger eqLogicAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
     	<a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
     	<a class="btn btn-default eqLogicAction pull-right typ-std" data-action="copy" style="display:none;"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>
     	<a class="btn btn-default eqLogicAction pull-right" data-action="export"><i class="fa fa-sign-out"></i> Export</a>
     	<a class="btn btn-default eqLogicAction pull-left" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a>
-    	<ul class="nav nav-tabs" role="tablist">
+    	<ul class="nav nav-tabs pull-left" role="tablist">
     	    <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fa fa-tachometer"></i> {{Equipement}}</a></li>
             <li role="presentation" class="typ-brk" style="display:none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fa fa-rss"></i> {{Broker}}</a></li>
     	    <li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fa fa-list-alt"></i> {{Commandes}}</a></li>
-                <a class="btn btn-default eqLogicAction pull-left" data-action="refreshPage"><i class="fa fa-refresh"></i></a>
     	</ul>
+        <a class="btn btn-default eqLogicAction pull-left" data-action="refreshPage"><i class="fa fa-refresh"></i></a>
+        </div>
         <div id="menu-bar" style="display: none;">
             <div class="form-actions">
                 <a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i>

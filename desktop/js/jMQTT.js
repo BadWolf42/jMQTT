@@ -22,50 +22,64 @@ var refreshTimeout;
 var N_CMD;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//To debug browser history management (pushState, ...)  
 //
-// For debug of the history
-//
-
 //(function setOnPushStateFunction (window, history){
 //    var pushState = history.pushState;
 //    history.pushState = function(state) {
-//      if (typeof window.onpushstate === 'function') {
-//          window.onpushstate({ state: state });
-//      }
-//      return pushState.apply(history, arguments);
+//        if (typeof window.onpushstate === 'function') {
+//            window.onpushstate({ state: state });
+//        }
+//        return pushState.apply(history, arguments);
 //    }
-//  })(window, window.history);
+//})(window, window.history);
 //
-//window.onpopstate = function(event) {
-//    console.log("onpopstate: location=" + document.location + ", state=" + JSON.stringify(event.state));
-//    return false;
-//  };
-//  
+//
 //window.onpushstate = function(event) {
 //    console.log("onpushstate: location=" + document.location + ", state=" + JSON.stringify(event.state));
 //};
 
-//Return the plugin base URL
-//Parameters id, saveSuccessFull, removeSuccessFull are removed if present
-function initPluginUrl(_filter=['id','saveSuccessFull','removeSuccessFull']) {
+// Workaround on Firefox : from times to times event.state is null which prevent the browser to reload the page
+window.addEventListener("popstate", function(event) {
+    if (event.state == null) {
+        location.reload(false);
+    }
+});
+
+// Rebuild the page URL from the current URL
+// 
+// filter: array of parameters to be removed from the URL
+// id:     if not empty, it is appended to the URL (in that case, 'id' should be passed within the filter.
+// hash:   if provided, it is appended at the end of the URL (shall contain the # character). If a hash was already 
+//         present, it is replaced by that one. 
+function initPluginUrl(filter=['id', 'saveSuccessFull','removeSuccessFull', 'hash'], id='', hash='') {
     var vars = getUrlVars();
-    var url = '';
+    var url = 'index.php?';
     for (var i in vars) {
-        if ($.inArray(i,_filter) < 0) {
-            if (url.length > 0)
+        if ($.inArray(i,filter) < 0) {
+            if (url.substr(-1) != '?')
                 url += '&';
             url += i + '=' + vars[i].replace('#', '');
         }
+    };
+    if (id != '') {
+        url += '&id=' + id;
     }
-    return 'index.php?' + url;
+    if (document.location.hash != "" && $.inArray('hash',filter) < 0) {
+        url += document.location.hash;
+    }
+    if (hash != '' ) {
+        url += hash
+    }
+    return url;
 }
 
 //Function to refresh the page
 //Ask confirmation if the page has been modified
 function refreshEqLogicPage() {
     function refreshPage() {
-        if ($('.li_eqLogic.active').attr('data-eqLogic_id') != undefined)
-            $('.li_eqLogic[data-eqLogic_id=' + $('.li_eqLogic.active').attr('data-eqLogic_id') + ']').click();
+        if ($('#ul_eqLogic .li_eqLogic.active').attr('data-eqLogic_id') != undefined)
+            $('#ul_eqLogic .li_eqLogic.active').click();
         else
             $('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
     }
@@ -82,9 +96,11 @@ function refreshEqLogicPage() {
 
 $(document).ready(function() {
     // On page load, show the commandtab menu bar if necessary (fix #64)
-    if (window.location.href.includes('#commandtab')) {
-        $('a[href="#commandtab"]').click();
-    } 
+    if (document.location.toString().match('#')) {
+        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').click();
+    }
+    
+    history.replaceState({}, '', url);
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {
@@ -123,6 +139,7 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 
 // Refresh the page on click on the refresh button, and classic and JSON button
 $('.eqLogicAction[data-action=refreshPage]').on('click', refreshEqLogicPage);
+
 $('#bt_classic').on('click', function() {
     refreshEqLogicPage();
     $('#bt_classic').removeClass('btn-default').addClass('btn-primary');
@@ -134,26 +151,40 @@ $('#bt_json').on('click', function() {
     $('#bt_classic').removeClass('btn-primary').addClass('btn-default');
 });
 
-$('a[href="#eqlogictab"],a[href="#brokertab"]').on('click', function() {
+$('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
     $('#menu-bar').hide();
 });
 
-$('a[href="#commandtab"]').on('click', function() {
+$('.nav-tabs a[href="#commandtab"]').on('click', function() {
     $('#menu-bar').show();
 });
 
+$('.nav-tabs a[role="tab"]').on('click', function() {
+    if (document.location.hash != $(this)[0].hash) {
+        url = initPluginUrl(['hash'], '', $(this)[0].hash);
+        if (document.location.hash == '' && $(this)[0].hash == '#eqlogictab') {
+            history.replaceState({hash: $(this)[0].hash}, '', url);
+        }
+        else {
+            history.pushState({hash: $(this)[0].hash}, '', url);
+        }
+    }
+});
+
 // Manage the history on eqlogic display
-$(".li_eqLogic").on('click', function () {
+$(".li_eqLogic,.eqLogicDisplayCard").on('click', function () {
     var url_id = getUrlVars('id');
     var id = $(this).attr('data-eqLogic_id');
     if (!is_numeric(url_id) || url_id != id) {
-        history.pushState({}, '', initPluginUrl() + '&id=' + id);
+        url = initPluginUrl(['id'], id);
+        history.pushState({}, '', url);
     }
 });
 
 // Manage the history on return to the plugin page
 $('.eqLogicAction[data-action=returnToThumbnailDisplay]').on('click', function () {
-    history.pushState({}, '', initPluginUrl());
+    url = initPluginUrl();
+    history.pushState({}, '', url);
 });
 
 // Override plugin template to rewrite the URL to avoid keeping the successfull save message
@@ -314,7 +345,7 @@ function addCmdToTable(_cmd) {
         tr += '</td><td>';
         tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;" ' + disabled + ' placeholder="{{Topic}}" readonly=true />';
         tr += '</td><td>';
-        tr += '<textarea class="cmdAttr form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
+        tr += '<textarea class="form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
         tr += '</td><td>';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="{{Unité}}"></td><td>';
         tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
@@ -339,17 +370,20 @@ function addCmdToTable(_cmd) {
             $('#table_cmd tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type));
         }
         jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
-        
+
+        function refreshValue(val) {
+            $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(val);
+        }
+
         jeedom.cmd.execute({
             id: _cmd.id,
             cache: 0,
             notify: false,
             success: function(result) {
-                $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(result); //attr('placeholder', result);
-            }
-        });
+                refreshValue(result);
+        }});
         jeedom.cmd.update[_cmd.id] = function(_options) {
-            $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(_options.display_value);
+            refreshValue(_options.display_value);
         }
         N_CMD++;
     }
@@ -466,7 +500,7 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 //
 
 //Configure the display according to the given mode
-//If given mode is not provided, use the data-mode attribute value
+//If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
 function configureIncludeModeDisplay(mode) {
     if (mode == 1) {
         $('.bt_changeIncludeMode:not(.card)').removeClass('btn-default').addClass('btn-success');

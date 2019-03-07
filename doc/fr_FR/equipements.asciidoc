@@ -275,6 +275,8 @@ hw/setpoint/set 50
 hw/set {"name": "setpoint", "value": 50}
 ....
 
+NOTE: Pour configurer les valeurs min/max d'un commande slider, éditer les paramètres avancées de la commande slider (la roue crantée à gauche du bouton *Tester*), aller dans l'onglet *Affichage* et ajouter *minValue* et *maxValue* dans la section *Paramètres optionnels widget* (cette configuration est apportée par le core de Jeedom, elle n'est pas spécifique à jMQTT).
+
 .Sous-type Message
 Pour un message dont le titre est `ecs` et le contenu est `50`, la configuration ci-après publiera:
 ....
