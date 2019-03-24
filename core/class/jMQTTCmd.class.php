@@ -31,38 +31,38 @@ class jMQTTCmd extends cmd {
     private static $_cmdNameMaxLength;
 
     /**
-     * Create a new command. Command is not saved.
-     * @param eqLogic $_eqLogic equipment the command belongs to
-     * @param string $_name command name
-     * @param string $_topic command mqtt topic
-     * @return new command (NULL if not created)
+     * Create a new command. Command IS NOT saved.
+     * @param jMQTT $eqLogic jMQTT equipment the command belongs to
+     * @param string $name command name
+     * @param string $topic command mqtt topic
+     * @return jMQTTCmd new command (NULL if not created)
      */
-    public static function newCmd($_eqLogic, $_name, $_topic) {
+    public static function newCmd($eqLogic, $name, $topic) {
 
         $cmd = new jMQTTCmd();
-        $cmd->setEqLogic_id($_eqLogic->getId());
+        $cmd->setEqLogic_id($eqLogic->getId());
         $cmd->setEqType('jMQTT');
         $cmd->setIsVisible(1);
         $cmd->setIsHistorized(0);
         $cmd->setSubType('string');
-        $cmd->setLogicalId($_topic);
+        $cmd->setLogicalId($topic);
         $cmd->setType('info');
-        $cmd->setConfiguration('topic', $_topic);
+        $cmd->setTopic($topic);
         $cmd->setConfiguration('parseJson', '0');
         $cmd->setConfiguration('prevParseJson', 0);
 
         // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
-        if (($newName = self::checkCmdName($_name)) !== true) {
-            $_name = $newName;
+        if (($newName = self::checkCmdName($eqLogic, $name)) !== true) {
+            $name = $newName;
         }
-        $cmd->setName($_name);
+        $cmd->setName($name);
         
-        log::add('jMQTT', 'info', 'Creating command of type info ' . $_eqLogic->getName() . '|' . $_name);
+        $eqLogic->log('info', 'Creating command of type info ' . $eqLogic->getName() . '|' . $name);
 
         // Advise the desktop page (jMQTT.js) that a new command has been added
         event::add('jMQTT::cmdAdded',
-                   array('eqlogic_id' => $_eqLogic->getId(), 'eqlogic_name' => $_eqLogic->getName(),
-                         'cmd_name' => $_name));
+                   array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(),
+                         'cmd_name' => $name));
 
         return $cmd;
     }
@@ -71,7 +71,7 @@ class jMQTTCmd extends cmd {
      * preRemove method to log that a command is removed
      */
     public function preRemove() {
-        log::add('jMQTT', 'info', 'Removing command ' . $this->getEqLogic()->getName() . '|' . $this->getName());
+        $this->getEqLogic()->log('info', 'Removing command ' . $this->getEqLogic()->getName() . '|' . $this->getName());
     }
 
     /**
@@ -92,7 +92,7 @@ class jMQTTCmd extends cmd {
         // Update the command value
         $this->event($value);
 
-        log::add('jMQTT', 'info', '-> ' . $this->getEqLogic()->getName() . '|' . $this->getName() . ' ' . $value);
+        $this->getEqLogic()->log('info', '-> ' . $this->getEqLogic()->getName() . '|' . $this->getName() . ' ' . $value);
     }
 
     /**
@@ -167,7 +167,7 @@ class jMQTTCmd extends cmd {
             return;
         
         $request = $this->getConfiguration('request', "");
-        $topic = $this->getConfiguration('topic');
+        $topic = getTopic();
         $qos = $this->getConfiguration('Qos', 1);
         $retain = $this->getConfiguration('retain', 0);
 
@@ -204,7 +204,9 @@ class jMQTTCmd extends cmd {
      */
     public function preSave() {
 
-        $eqName        = $this->getEqLogic()->getName();
+        /** @var jMQTT $eqLogic */
+        $eqLogic       = $this->getEqLogic();
+        $eqName        = $eqLogic->getName();
         $cmdLogName    = $eqName  . '|' . $this->getName();
         $prevRetain    = $this->getConfiguration('prev_retain', 0);
         $retain        = $this->getConfiguration('retain', 0);
@@ -221,7 +223,7 @@ class jMQTTCmd extends cmd {
 
         // If an action command is being created, initialize correctly the prev_retain flag (fix issue #13)
         if ($this->getId() == '' && $this->getType() == 'action') {
-            log::add('jMQTT', 'info', 'Creating action command ' . $cmdLogName);
+            $eqLogic->log('info', 'Creating action command ' . $cmdLogName);
             $prevRetain = $retain;
             $this->setConfiguration('prev_retain', $retain);
         }
@@ -233,12 +235,12 @@ class jMQTTCmd extends cmd {
             if ($prevRetain) {
                 // A null payload shall be sent to the broker to erase the last retained value
                 // Otherwise, this last value remains retained at broker level
-                log::add('jMQTT', 'info',
+                $eqLogic->log('info',
                          $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
-                jMQTT::publishMosquitto($this->getId(), $eqName, $this->getConfiguration('topic'), '', 1, 1);
+                jMQTT::publishMosquitto($this->getId(), $eqName, $this->getTopic(), '', 1, 1);
             }
             else
-                log::add('jMQTT', 'info', $cmdLogName . ': mode retain activé');
+                $eqLogic->log('info', $cmdLogName . ': mode retain activé');
         }
 
         if ($parseJson != $prevParseJson && $this->getType() == 'info') {
@@ -246,33 +248,42 @@ class jMQTTCmd extends cmd {
             $this->setConfiguration('prevParseJson', $parseJson);
 
             if ($parseJson) {
-                log::add('jMQTT', 'info', $cmdLogName . ': parseJson is enabled');
+                $eqLogic->log('info', $cmdLogName . ': parseJson is enabled');
                 jMQTTCmd::decodeJsonMessage($this->getEqLogic(), $this->execCmd(), $this->getName(),
-                                            $this->getConfiguration('topic'), $this->getId());
+                    $this->getTopic(), $this->getId());
             }
             else
-                log::add('jMQTT', 'info', $cmdLogName . ': parseJson is disabled');
+                $eqLogic->log('info', $cmdLogName . ': parseJson is disabled');
         }
 
         // Insure Logical ID is always equal to the topic (fix issue #18)
-        $this->setLogicalId($this->getConfiguration('topic'));
+        $this->setLogicalId($this->getTopic());
     }
 
+    public function setTopic($topic) {
+        $this->setConfiguration('topic', $topic);
+    }
+    
+    public function getTopic() {
+        return $this->getConfiguration('topic');
+    }
+    
     /**
-     * @param string $_name
+     * @param jMQTT jMQTT broker to log to
+     * @param string $name
      * @return boolean|string true if the command name is valid, corrected cmd name otherwise
      */
-    private static function checkCmdName($_name) {
+    private static function checkCmdName($eqLogic, $name) {
         if (! isset(self::$_cmdNameMaxLength)) {
             $field = 'character_maximum_length';
             $sql = "SELECT " . $field . " FROM information_schema.columns WHERE table_name='cmd' AND column_name='name'";
             $res = DB::Prepare($sql, array());
             self::$_cmdNameMaxLength = $res[$field];
-            log::add('jMQTT', 'debug', 'Cmd name max length retrieved from the DB: ' . strval(self::$_cmdNameMaxLength));
+            $eqLogic->log('debug', 'Cmd name max length retrieved from the DB: ' . strval(self::$_cmdNameMaxLength));
         }
         
-        if (strlen($_name) > self::$_cmdNameMaxLength)
-            return hash("md4", $_name);
+        if (strlen($name) > self::$_cmdNameMaxLength)
+            return hash("md4", $name);
         else
             return true;
     }

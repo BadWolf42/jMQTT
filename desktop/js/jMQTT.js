@@ -96,8 +96,8 @@ function refreshEqLogicPage() {
 
 $(document).ready(function() {
     // On page load, show the commandtab menu bar if necessary (fix #64)
-    if (document.location.toString().match('#')) {
-        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').click();
+    if (document.location.hash == '#commandtab') {
+        $('#menu-bar').show();
     }
     
     history.replaceState({}, '', url);
@@ -118,6 +118,26 @@ $("#bt_addMQTTAction").on('click', function(event) {
 $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
     $('#md_modal').dialog({title: "{{Santé jMQTT}}"});
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
+});
+
+$('.eqLogicAction[data-action=runDev]').on('click', function () {
+    $.ajax({
+        type: "POST", 
+        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php", 
+        data: {
+            action: "dev"
+        },
+        dataType: 'json',
+        error: function (request, status, error) {
+            handleAjaxError(request, status, error);
+        },
+        success: function (data) { 
+            if (data.state != 'ok') {
+                $('#div_alert').showAlert({message: data.result, level: 'danger'});
+                return;
+            }
+        }
+    });
 });
 
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
@@ -145,6 +165,7 @@ $('#bt_classic').on('click', function() {
     $('#bt_classic').removeClass('btn-default').addClass('btn-primary');
     $('#bt_json').removeClass('btn-primary').addClass('btn-default');
 });
+
 $('#bt_json').on('click', function() {
     refreshEqLogicPage();
     $('#bt_json').removeClass('btn-default').addClass('btn-primary');
@@ -169,16 +190,23 @@ $('.nav-tabs a[role="tab"]').on('click', function() {
             history.pushState({hash: $(this)[0].hash}, '', url);
         }
     }
+    if ($(this)[0].hash == '#brokertab')
+        refreshDaemonInfo();
 });
 
 // Manage the history on eqlogic display
 $(".li_eqLogic,.eqLogicDisplayCard").on('click', function () {
     var url_id = getUrlVars('id');
     var id = $(this).attr('data-eqLogic_id');
+    var hash = document.location.hash;
     if (!is_numeric(url_id) || url_id != id) {
-        url = initPluginUrl(['id'], id);
+        if (hash == '#brokertab' && $(this).attr('jmqtt_type') != 'broker')
+            hash = '';
+        url = initPluginUrl(['id', 'hash'], id, hash);
         history.pushState({}, '', url);
     }
+    if (hash == '#brokertab')
+        refreshDaemonInfo();
 });
 
 // Manage the history on return to the plugin page
@@ -204,21 +232,29 @@ $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder:
 
 
 /**
- * Add broker callback
+ * Add jMQTT equipment callback
  */
-$('.eqLogicAction[data-action=addBroker]').on('click', function () {
-    bootbox.prompt("{{Nom du broker ?}}", function (result) {
+$('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
+    if (typeof $(this).attr('brkId') === 'undefined') {
+        var eqL = {type: 'broker', brkId: -1};
+        var prompt = "{{Nom du broker ?}}"; 
+    }
+    else {
+        var eqL = {type: 'eqpt', brkId: $(this).attr('brkId')};
+        var prompt = "{{Nom de l'équipement ?}}"; 
+    }
+    bootbox.prompt(prompt, function (result) {
         if (result !== null) {
             jeedom.eqLogic.save({
                 type: eqType,
-                eqLogics: [{name: result, type: 'broker'}],
+                eqLogics: [ $.extend({name: result}, eqL) ],
                 error: function (error) {
                     $('#div_alert').showAlert({message: error.message, level: 'danger'});
                 },
-                success: function (_data) {
+                success: function (data) {
                     var url = initPluginUrl();
                     modifyWithoutSave = false;
-                    url += '&id=' + _data.id + '&saveSuccessFull=1';
+                    url += '&id=' + data.id + '&saveSuccessFull=1';
                     loadPage(url);
                 }
             });
@@ -226,10 +262,46 @@ $('.eqLogicAction[data-action=addBroker]').on('click', function () {
     });
 });
 
+$('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
+    if (typeof $(this).attr('brkId') === 'undefined') {
+        if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
+            bootbox.confirm('{{Etes-vous sûr de vouloir supprimer le broker}}' + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
+                if (result) {
+                    bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fa fa-warning"</i>' +
+                            '</span></td><td style="vertical-align:middle">' + '{{Tous les équipements associés au broker vont être supprimés}}' +
+                            '...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
+                        if (result) {
+                            jeedom.eqLogic.remove({
+                                type: eqType,
+                                id: $('.eqLogicAttr[data-l1key=id]').value(),
+                                error: function (error) {
+                                    $('#div_alert').showAlert({message: error.message, level: 'danger'});
+                                },
+                                success: function () {
+                                    var url = initPluginUrl();
+                                    modifyWithoutSave = false;
+                                    url += '&id=' + data.id + '&removeSuccessFull=1';
+                                    loadPage(url);
+                                }
+                            });                        
+                        }
+                    });
+                }
+            });
+        } else {
+            $('#div_alert').showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
+        }
+    }
+    else {
+        $(this).click();
+    }
+});
+
+
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
  *   . Reorder commands if the JSON view is active
- *   . Show the fields depending on the type (broker or standard)
+ *   . Show the fields depending on the type (broker or equipment)
  */
 function printEqLogic(_eqLogic) {
 
@@ -291,15 +363,21 @@ function printEqLogic(_eqLogic) {
         $("#table_cmd th:first").width('50px');
     }
 
-    
-    
-    // Show elements depending on the type
+    // Show UI elements depending on the type
     if (_eqLogic.configuration.type == 'broker') {
         $('.typ-std').hide();
         $('.typ-brk').show();
+        $('#sel_icon_div').css("visibility", "hidden");
+        $('#mqtttopic').prop('readonly', true);
+        var log = 'jMQTT_' + (_eqLogic.configuration.mqttId || 'jeedom');
+        $('.bt_plugin_conf_view_log').attr('data-log', log);
+        $('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
+        
     } else {
         $('.typ-brk').hide();
         $('.typ-std').show();
+        $('#sel_icon_div').css("visibility", "visible");
+        $('#mqtttopic').prop('readonly', false);
     }
 }
 
@@ -501,34 +579,35 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 
 //Configure the display according to the given mode
 //If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
-function configureIncludeModeDisplay(mode) {
+function configureIncludeModeDisplay(brkId, mode) {
     if (mode == 1) {
-        $('.bt_changeIncludeMode:not(.card)').removeClass('btn-default').addClass('btn-success');
-        $('.bt_changeIncludeMode').attr('data-mode', 1);
-        $('.bt_changeIncludeMode.card span center').text('{{Arrêter l\'inclusion}}');
-        $('.bt_changeIncludeMode:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Arreter inclusion}}');
-        $('.bt_changeIncludeMode').addClass('include');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').removeClass('btn-default').addClass('btn-success');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 1);
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span center').text('{{Arrêter l\'inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Arreter inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('include');
         $('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
     } else {
-        $('.bt_changeIncludeMode:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
-        $('.bt_changeIncludeMode').attr('data-mode', 0);
-        $('.bt_changeIncludeMode:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Mode inclusion}}');
-        $('.bt_changeIncludeMode.card span center').text('{{Mode inclusion}}');
-        $('.bt_changeIncludeMode').removeClass('include');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 0);
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Mode inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span center').text('{{Mode inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('include');
         $('#div_inclusionModeMsg').hideAlert();
     }
 }
 
 //Manage button clicks
-$('.bt_changeIncludeMode').on('click', function () {
+$('.eqLogicAction[data-action=changeIncludeMode]').on('click', function () {
     var el = $(this);
+    console.log(el.attr('data-mode'));
 
     // Invert the button display and show the alert message
     if (el.attr('data-mode') == 1) {
-        configureIncludeModeDisplay(0);
+        configureIncludeModeDisplay(el.attr('brkId'),0);
     }
     else {
-        configureIncludeModeDisplay(1);
+        configureIncludeModeDisplay(el.attr('brkId'),1);
     }
 
     // Ajax call to inform the plugin core of the change
@@ -536,8 +615,9 @@ $('.bt_changeIncludeMode').on('click', function () {
         type: "POST", 
         url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php", 
         data: {
-            action: "setIncludeMode",
-            state: el.attr('data-mode')
+            action: "changeIncludeMode",
+            mode: el.attr('data-mode'),
+            id: el.attr('brkId')
         },
         dataType: 'json',
         error: function (request, status, error) {
@@ -555,7 +635,7 @@ $('.bt_changeIncludeMode').on('click', function () {
 //Called by the plugin core to inform about the automatic inclusion mode disabling
 $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', function (_event,_options) {
     // Change display accordingly
-    configureIncludeModeDisplay(0);
+    configureIncludeModeDisplay(_options['brkId'], 0);
 });
 
 /**

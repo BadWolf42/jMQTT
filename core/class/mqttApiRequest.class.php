@@ -49,19 +49,23 @@ class mqttApiRequest {
     private $id = NULL;
 
     private $params = NULL;
+    
+    private $broker = NULL;
 
     /**
      * Construct a new request from the given JSON defined request
      *
-     * @param string $_request
+     * @param string $request
+     * @param jMQTT $broker jMQTT broker object
      */
-    function __construct($_request) {
-        log::add('jMQTT', 'info', 'API: processing request ' . $_request);
+    function __construct($request, $broker) {
+        $this->broker = $broker;
+        $broker->log('info', 'API: processing request ' . $request);
 
         $this->apiAddr = network::getNetworkAccess('internal', 'http:127.0.0.1:port:comp') . '/core/api/jeeApi.php';
 
         $errArr = NULL;
-        $jsonArray = json_decode($_request, true);
+        $jsonArray = json_decode($request, true);
         if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE) {
 
             if (isset($jsonArray[self::RET_TOPIC]))
@@ -97,7 +101,7 @@ class mqttApiRequest {
      * Process this request
      */
     public function processRequest() {
-        if (! jMQTT::isApiEnable()) {
+        if (! $this->broker->isApiEnable()) {
             $this->publishError(
                 self::newErrorArray(- 32001, "Vous n'êtes pas autorisé à effectuer cette action (API is disable)"));
             return;
@@ -106,10 +110,10 @@ class mqttApiRequest {
         $request = json_encode(
             self::newJsonRpcArray(
                 self::addParam(array(self::JRPC_METHOD => $this->method), self::JRPC_PARAMS, $this->params), $this->id));
-        log::add('jMQTT', 'debug', 'API: jsonrpc request is ' . $request);
+        $this->broker->log('debug', 'API: jsonrpc request is ' . $request);
 
         $jsonRes = $this->send($request);
-        log::add('jMQTT', 'debug', 'API: jsonrpc response is ' . $jsonRes);
+        $this->broker->log('debug', 'API: jsonrpc response is ' . $jsonRes);
 
         $arrRes = json_decode($jsonRes, true);
         if (! is_array($arrRes) || json_last_error() != JSON_ERROR_NONE || ! isset($arrRes[self::JRPC_JSONRPC]) ||
@@ -121,7 +125,7 @@ class mqttApiRequest {
         }
 
         if (isset($arrRes[self::JRPC_ERR]))
-            self::publishError($arrRes, $this->ret_topic);
+            $this->publishError($arrRes, $this->ret_topic);
         else
             $this->publishSuccess($jsonRes);
     }
@@ -178,11 +182,11 @@ class mqttApiRequest {
      *            array error message
      */
     protected function publishError($_arrErr) {
-        log::add('jMQTT', 'error',
+        $this->broker->log('error',
             'API: ' . $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG] . ' (err. code is ' .
             $_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE] . ')');
         if (isset($this->ret_topic))
-            jMQTT::publishMosquitto('api', 'api', $this->ret_topic, json_encode($_arrErr), '1', '0');
+            $this->broker->publishMosquitto('api', 'api', $this->ret_topic, json_encode($_arrErr), '1', '0');
     }
 
     /**
@@ -193,9 +197,9 @@ class mqttApiRequest {
      */
     protected function publishSuccess($_jsonRes) {
         if (isset($this->ret_topic))
-            jMQTT::publishMosquitto('api', 'api', $this->ret_topic, $_jsonRes, '1', '0');
+            $this->broker->publishMosquitto('api', 'api', $this->ret_topic, $_jsonRes, '1', '0');
         else
-            log::add('jMQTT', 'warning',
+            $this->broker->log('warning',
                 'API: the response is not published as the response topic was not defined in the request.');
     }
 

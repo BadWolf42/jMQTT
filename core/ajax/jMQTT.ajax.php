@@ -17,7 +17,7 @@
  */
 
 try {
-    require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
+    require_once __DIR__ . '/../../../../core/php/core.inc.php';
     include_file('core', 'authentification', 'php');
 
     if (!isConnect('admin')) {
@@ -27,11 +27,75 @@ try {
     ajax::init();
 
     // To change the equipment automatic inclusion mode
-    if (init('action') == 'setIncludeMode') {
-	jMQTT::setIncludeMode(init('state'));
-	ajax::success();
+    if (init('action') == 'changeIncludeMode') {
+        $broker = jMQTT::getBroker(init('id'));
+        $broker->changeIncludeMode(init('mode'));
+        ajax::success();
     }
 
+    if (init('action') == 'getDaemonInfo') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBroker(init('id'));
+        ajax::success($broker->getDaemonInfo());
+    }
+    
+    if (init('action') == 'getDaemonState') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBroker(init('id'));
+        ajax::success($broker->getDaemonState());
+    }
+    
+    if (init('action') == 'daemonStart') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBroker(init('id'));
+        ajax::success($broker->startDaemon(true, true));
+    }
+    
+    if (init('action') == 'daemonStop') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBroker(init('id'));
+        ajax::success($broker->stopDaemon());
+    }
+    
+    if (init('action') == 'daemonChangeAutoMode') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBroker(init('id'));
+        ajax::success($broker->setDaemonAutoMode(init('mode')));
+    }
+    
+    if (init('action') == 'dev') {
+//         foreach (eqLogic::byType('jMQTT') as $eqL) {
+//             $eqL->setConfiguration('type', null);
+//             $eqL->save();
+//         }
+//         require_once __DIR__ . '/../../plugin_info/install.php';
+//         ob_start();
+//         jMQTT_update();
+//         ob_end_clean();
+
+        foreach (eqLogic::byType('jMQTT') as $eql) {
+            /** @var jMQTT $eql */
+            $eql->setConfiguration('prev_Qos', null);
+            $eql->setConfiguration('prev_isActive', null);
+            $eql->setConfiguration('reload_d', null);
+            $eql->setConfiguration('prev_mqttId', null);
+            $eql->save(true);
+        }
+        
+        
+        ajax::success();
+    }
+    
     
     throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */

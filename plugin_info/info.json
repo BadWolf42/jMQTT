@@ -8,7 +8,7 @@
     "require" : "2.4",
     "category" : "automation protocol",
     "hasDependency" : true,
-    "hasOwnDeamon" : true,
+    "hasOwnDeamon" : false,
     "changelog" : "https://github.com/domotruc/jMQTT/tree/beta/doc/#language#/changelog.asciidoc",
     "documentation" : "http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/beta/doc/#language#/index.html",
     "languages" : ["fr_FR","en_US","sp_SP"],
