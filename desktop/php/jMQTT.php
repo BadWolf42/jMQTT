@@ -13,16 +13,13 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
  * $plugin = plugin::byId('jMQTT');
  * $plugin->callInstallFunction('update', true);
  */
-function displayActionCard($action_name, $fa_icon, $card_color, $attr = '', $class = '') {
-    echo '<div class="cursor eqLogicAction ' . $class . '"';
+function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
+    echo '<div class="eqLogicAction cursor ' . $class . '"';
     if ($attr != '')
         echo ' ' . $attr;
-    echo ' style="text-align:center;height:200px;width:160px;margin-bottom:10px;padding:5px;border-radius:10px;margin-right:10px;float:left;" >';
-    echo '<div class="center-block" style="width:130px;height:130px;display:flex;align-items: center;justify-content:center;">';
-    echo '<i class="fa ' . $fa_icon . '" style="font-size:6em;color:' . $card_color . ';"></i>';
-    echo "</div>";
-    echo '<span style="font-size:1.1em;font-weight:bold;position:relative;top:10px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;">' .
-        $action_name . '</span>';
+    echo '>';
+    echo '<i class="fa ' . $fa_icon . '"></i><br>';
+    echo '<span>' . $action_name . '</span>';
     echo '</div>';
 }
 
@@ -31,18 +28,11 @@ function displayActionCard($action_name, $fa_icon, $card_color, $attr = '', $cla
  * @param jMQTT $eqL
  */
 function displayEqLogicCard($eqL, $node_images) {
-    $opacity = $eqL->getIsEnable() ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
+    $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
+    echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
-        echo '<div class="eqLogicDisplayCard cursor auto" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() .
-            '" style="text-align:center;height:200px;width:160px;margin-bottom:10px;padding:5px;margin-right:10px;float:left;' .
-            $opacity . '" >';
+       echo '<div class="auto"><i class="fa fa-sign-in fa-rotate-90"></i></div>';
     }
-    else {
-        echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() .
-            '" style="text-align:center;height:200px;width:160px;margin-bottom:10px;padding:5px;margin-right:10px;float:left;' .
-            $opacity . '" >';
-    }
-
     if ($eqL->getType() == jMQTT::TYP_BRK) {
         $file = 'node_broker_' . $eqL->getDaemonState() . '.svg';
     }
@@ -61,11 +51,9 @@ function displayEqLogicCard($eqL, $node_images) {
         }
     }
 
-    echo '<center style="height:120px;padding-top:10px">';
-    echo '<img src="plugins/jMQTT/resources/images/' . $file . '" height="104" width="92" />';
-    echo "</center>";
-    echo '<span style="font-size:1.1em;position:relative;top:10px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;">' .
-        $eqL->getHumanName(true, true) . '</span>';
+    echo '<img src="plugins/jMQTT/resources/images/' . $file . '"/>';
+    echo "<br>";
+    echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
     echo '</div>';
 }
 
@@ -110,42 +98,46 @@ function displayEqLogicCard($eqL, $node_images) {
         </div>
     </div>
 
-    <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay"
-        style="border-left: solid 1px #EEE; padding-left: 25px;">
-        <div class="row">
-            <div class="col-lg-5 col-md-5 col-sm-5">
-                <legend><i class="fa fa-cog"></i> {{Gestion}}</legend>
-    	        <?php
-                displayActionCard('{{Configuration}}', 'fa-wrench', '#767676', 'data-action="gotoPluginConf"');
-                displayActionCard('{{Santé}}', 'fa-medkit', '#767676', 'data-action="healthMQTT"');
-                displayActionCard('Test', 'fa-play', '#767676', 'data-action="runDev"');
-                ?>
-    	    </div>
+    <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
+        <div class="col-lg-5 col-md-5 col-sm-5">
+            <legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
+            <div class="eqLogicThumbnailContainer">
+	        <?php
+            displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
+            displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
+            displayActionCard('Test', 'fa-play', 'data-action="runDev"', 'logoSecondary');
+            ?>
+            </div>
+	    </div>
 
-            <div class="col-lg-7 col-md-7 col-sm-7">
-                <legend><i class="fa fa-rss"></i> {{Brokers MQTT}}</legend>
-                <?php
-                displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', '#f8d800', 'data-action="add_jmqtt"');
-    
-                foreach ($eqBrokers as $eqB) {
-                    displayEqLogicCard($eqB, $node_images);
-                }
-                ?>
+        <div class="col-lg-7 col-md-7 col-sm-7">
+            <legend><i class="fas fa-rss"></i> {{Brokers MQTT}}</legend>
+            <div class="eqLogicThumbnailContainer">
+            <?php
+            displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="add_jmqtt"', 'logoSecondary');
+
+            foreach ($eqBrokers as $eqB) {
+                displayEqLogicCard($eqB, $node_images);
+            }
+            ?>
             </div>
         </div>
 
+
         <?php
         foreach ($eqBrokers as $eqB) {
-            echo '<legend><i class="fa fa-table"></i> ' . $eqB->getName() . '</legend>';
-            echo '<div class="row"><div class="col-lg-12 col-md-12 col-sm-12">';
-            displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', '#f8d800', 'data-action="add_jmqtt" brkId="' . $eqB->getId() . '"');
-            displayActionCard('{{Mode inclusion}}', 'fa-sign-in fa-rotate-90', '#f8d800', 'data-action="changeIncludeMode" brkId="' . $eqB->getId() . '"', 'card');
+            echo '<div class="col-lg-12 col-md-12 col-sm-12">';
+            echo '<legend><i class="fas fa-table"></i> ' . $eqB->getName() . '</legend>';
+            echo '<input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />';
+            echo '<div class="eqLogicThumbnailContainer">';
+            displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . $eqB->getId() . '"', 'eqLogicDisplayAction logoSecondary', true);
+            displayActionCard('{{Mode inclusion}}', 'fa-sign-in fa-rotate-90', 'data-action="changeIncludeMode" brkId="' . $eqB->getId() . '"', 'eqLogicDisplayAction logoSecondary card', true);
             if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
                 foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
                     displayEqLogicCard($eqL, $node_images);
                 }
             }
-            echo "</div></div>";
+            echo '</div></div>';
         }
         ?>
     </div>
@@ -219,19 +211,37 @@ function displayEqLogicCard($eqL, $node_images) {
 
 <?php // The !important keyword is used as some themes (such as darksobre) overrides below property with this keyword (fix #37) ?>
 <style>
-div.eqLogicDisplayCard.auto {
-	border: 8px solid #8000FF !important;
-	border-radius: 18px !important;
-	padding-top: 5px !important;
+
+#in_searchEqlogic {
+  margin-bottom: 15px;
+}
+.eqLogicThumbnailContainer div.cursor img {
+  padding-top: 0px;
+}
+.eqLogicThumbnailContainer .eqLogicDisplayCard,
+.eqLogicDisplayAction {
+  height: 155px !important;
 }
 
-div.eqLogicDisplayCard:not(auto) {
-	border-width: 1px !important;
-	border-style: solid !important;
-	border-color: #FFFFFF;
-	border-radius: 18px !important;
-	padding-top: 12px !important;
+.eqLogicDisplayCard .auto {
+    position:absolute;
+    top:0px;
+    width:100%;
+    text-align:center;
+    margin-left:-4px;
 }
+.eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
+    font-size:20px !important;
+    color: #8000FF;/*var(--logo-primary-color);*/
+}
+
+/* div.eqLogicDisplayCard:not(auto) { */
+/* 	border-width: 1px !important; */
+/* 	border-style: solid !important; */
+/* 	border-color: #FFFFFF; */
+/* 	border-radius: 18px !important; */
+/* 	padding-top: 12px !important; */
+/* } */
 
 .row div.eqLogicAction.card.include {
 	background-color: #8000FF !important;
@@ -240,9 +250,34 @@ div.eqLogicDisplayCard:not(auto) {
 .row div.eqLogicAction.card:not(.include ) {
 	background-color: #FFFFFF;
 }
+
+<?php 
+if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayCard {";
+    echo "height: 155px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+    
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayAction,";
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.auto {";
+    echo "background-color:rgba(0, 0, 0, 0) !important;";
+    echo "color:#ccc !important;";
+    echo "border: 0px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicAction {";
+    echo "background-color:rgba(0, 0, 0, 0) !important;";
+    echo "color:#ccc !important;";
+    echo "border: 0px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+}
+?>
 </style>
 
 <script>
+
  <?php
  // Initialise the automatic inclusion button display according to include_mode configuration parameter
  foreach ($eqBrokers as $eqL) {

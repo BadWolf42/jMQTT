@@ -1337,7 +1337,7 @@ class jMQTT extends eqLogic {
         event::add('jMQTT::disableIncludeMode', array('brkId' => $broker->getId()));
 
         // Restart the daemon
-        $this->startDaemon(true);
+        $broker->startDaemon(true);
     }
 
     /**
