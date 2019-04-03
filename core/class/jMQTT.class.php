@@ -20,7 +20,7 @@ require_once __DIR__ . '/../../../../core/php/core.inc.php';
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
-// @TODO : création broker -> choisir nom de connexion unique
+// @TODO : sur passage en inclusion auto, le démon ne redémarre pas si gestion auto n'est pas activée
 class jMQTT extends eqLogic {
 
     const API_TOPIC = 'api';
@@ -395,7 +395,8 @@ class jMQTT extends eqLogic {
             }
             // remove all equipments attached to the broker
             foreach ($this->byBrkId() as $eqpt) {
-                $eqpt->remove();
+                if ($this->getId() != $eqpt->getId())
+                    $eqpt->remove();
             }
         }
         else {
@@ -513,7 +514,7 @@ class jMQTT extends eqLogic {
         $return['last_launch'] = $this->getLastDaemonLaunchTime();      
         $return['state'] = $this->getDaemonState();
         if ($dependancy_info['state'] == 'ok') {
-            if ($return['state'] == 'nok')
+            if ($return['state'] == 'nok' && $return['message'] == '')
                 $return['message'] = __('Le démon est arrêté', __FILE__);
             elseif ($return['state'] == 'pok')
                 $return['message'] = __('Le broker est OFFLINE', __FILE__);
@@ -881,7 +882,7 @@ class jMQTT extends eqLogic {
         
         // Loop on jMQTT equipments and get ones that subscribed to the current message
         $elogics = array();
-        foreach (eqLogic::byType('jMQTT', false) as $eqpt) {
+        foreach (self::byBrkId() as $eqpt) {
             if ($message->topicMatchesSub($msgTopic, $eqpt->getTopic())) {
                 $elogics[] = $eqpt;
             }
@@ -1031,7 +1032,8 @@ class jMQTT extends eqLogic {
      * @return string broker status topic name
      */
     public function getMqttClientStatusTopic()  {
-        return $this->getMqttId() . '/' . jMQTT::CLIENT_STATUS;
+        // prevMqttId used: on MQTT id change, prev value shall be used to stop the daemon
+        return $this->getPrevMqttId() . '/' . jMQTT::CLIENT_STATUS;
     }
     
     /**
@@ -1256,6 +1258,7 @@ class jMQTT extends eqLogic {
     
     /**
      * Return all jMQTT objects haveing the same broker id as this object
+     * Note: this object is also returned
      * @return jMQTT[]
      */
     public function byBrkId() {
