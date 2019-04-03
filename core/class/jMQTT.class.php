@@ -249,6 +249,7 @@ class jMQTT extends eqLogic {
             $prevMqttId = $this->getPrevMqttId();
             $mqttId = $this->getMqttId();
             if ($prevMqttId != $mqttId) {
+                $this->stopDaemon();
                 $this->setPrevMqttId($mqttId);
                 $topic = $this->getBrokerTopic();
                 $this->setTopic($topic);
@@ -257,7 +258,6 @@ class jMQTT extends eqLogic {
                 $this->_post_data['action'] = self::POST_ACTION_NEW_CLIENT_ID;
                 $this->_post_data['prevMqttId'] = $prevMqttId;
                 $this->_post_data['mqttId'] = $mqttId;
-                $this->stopDaemon();
                 return;
             }
         }
