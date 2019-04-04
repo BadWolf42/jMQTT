@@ -586,9 +586,13 @@ class jMQTT extends eqLogic {
         if (is_object($cron)) {
             $cron->halt();
         }
-        $this->getMqttClientStatusCmd()->event(self::OFFLINE);
+        
+        $cmd = $this->getMqttClientStatusCmd();
+        // Status cmd may not exist on object removal for instance
+        if (is_object($cmd))
+            $cmd->event(self::OFFLINE);
     }
-       
+
 //     /**
 //      * Return daemon info of this broker type object
 //      */
@@ -628,9 +632,7 @@ class jMQTT extends eqLogic {
         $broker->_client->setWill($broker->getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
         
         $statusCmd = $broker->getMqttClientStatusCmd();
-        if ($statusCmd != null) {
-            $broker->log('debug', 'status cmd: ' . $statusCmd->getId());
-        }
+        $broker->log('debug', 'status cmd id: ' . $statusCmd->getId() . ', topic: ' . $statusCmd->getLogicalId());
             
         // Reset the last connection (to the broker) time. Will be set in the mosquittoConnect callback once connected
         $broker->setConfiguration(self::LAST_CONNECT_TIME, '');
@@ -645,7 +647,7 @@ class jMQTT extends eqLogic {
             $broker->log('warning', 'exception thrown by MQTT client: ' . $e->getMessage());
         }
         
-        $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
+        $statusCmd->event(self::OFFLINE);
         
         // Depending on the last connection time, reconnect immediately or wait 15s
         $time = $broker->getConfiguration(self::LAST_CONNECT_TIME, '');
