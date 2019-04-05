@@ -31,7 +31,7 @@ function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
-       echo '<div class="auto"><i class="fa fa-sign-in fa-rotate-90"></i></div>';
+       echo '<div class="auto"><i class="fas fa-sign-in-alt"></i></div>';
     }
     if ($eqL->getType() == jMQTT::TYP_BRK) {
         $file = 'node_broker_' . $eqL->getDaemonState() . '.svg';
@@ -213,7 +213,7 @@ function displayEqLogicCard($eqL, $node_images) {
 <style>
 
 #in_searchEqlogic {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 .eqLogicThumbnailContainer div.cursor img {
   padding-top: 0px;
@@ -223,25 +223,25 @@ function displayEqLogicCard($eqL, $node_images) {
   height: 155px !important;
 }
 
-.eqLogicDisplayCard .auto {
+.eqLogicDisplayCard.disableCard {
+    opacity: 0.35;
+}
+
+.eqLogicDisplayCard > div.auto {
     position:absolute;
-    top:0px;
+    top:5px;
     width:100%;
     text-align:center;
     margin-left:-4px;
 }
+.eqLogicDisplayCard .auto .fas {
+    transform: rotate(90deg);
+}
+
 .eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
     font-size:20px !important;
     color: #8000FF;/*var(--logo-primary-color);*/
 }
-
-/* div.eqLogicDisplayCard:not(auto) { */
-/* 	border-width: 1px !important; */
-/* 	border-style: solid !important; */
-/* 	border-color: #FFFFFF; */
-/* 	border-radius: 18px !important; */
-/* 	padding-top: 12px !important; */
-/* } */
 
 .row div.eqLogicAction.card.include {
 	background-color: #8000FF !important;
@@ -287,9 +287,13 @@ if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
 
  $("#sel_icon").change(function(){
      var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
-     document.icon_visu.src = text + '.svg';
-     document.icon_visu.onerror = "this.src='" . text + ".png'";
+     $("#icon_visu").attr("src", text + '.svg');
+     //document.icon_visu.onerror = "altimage(this)";  
      //$("#icon_visu").attr('src',text);
-     
  });
+
+ $("#icon_visu").on("error", function () {
+     $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
+   });
+  
 </script>

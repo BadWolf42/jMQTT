@@ -124,7 +124,7 @@
 
         <div class="form-group">
             <div style="text-align: center">
-                <img name="icon_visu" src="" width="160" height="200" />
+                <img id="icon_visu" src="" width="200" height="200" />
             </div>
         </div>
 
