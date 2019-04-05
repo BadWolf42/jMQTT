@@ -114,7 +114,7 @@ class jMQTT extends eqLogic {
     public static function createEquipment($broker, $name, $topic, $type) {
         $eqpt = new jMQTT();
         $eqpt->setType($type);
-        $eqpt->initEquipment($name, $topic);
+        $eqpt->initEquipment($name, $topic, 1);
         
         if (is_object($broker)) {
             $broker->log('info', 'Create equipment ' . $name . ', topic=' . $topic . ', type=' . $type);
@@ -134,14 +134,16 @@ class jMQTT extends eqLogic {
      * Initialize this equipment with the given data
      * @param string $name equipment name
      * @param string $topic subscription topic
+     * @param int $isEnable whether or not the equipment is enable (0 if not present)
      */
-    private function initEquipment($name, $topic) {
+    private function initEquipment($name, $topic, $isEnable=0) {
         log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
         $this->setEqType_name('jMQTT');
         $this->setName($name);
         
         // Topic is memorized as the LogicalId
         $this->setLogicalId($topic);
+        $this->setIsEnable($isEnable);
         $this->setTopic($topic);
         $this->setAutoAddCmd('1');
         $this->setQos('1');
@@ -384,7 +386,10 @@ class jMQTT extends eqLogic {
         $this->log('info', 'Removing equipment ' . $this->getName());
         $this->_post_data = null;
         if ($this->getType() == self::TYP_BRK) {
-            $this->stopDaemon();
+            // Disable first the broker to avoid during removal of the related eqpt to restart the daemon
+            $this->setIsEnable(0);
+            $this->save();
+
             $cron = $this->getDaemonCron();
             if (is_object($cron)) {
                 $cron->remove(true);
@@ -401,7 +406,7 @@ class jMQTT extends eqLogic {
         }
         else {
             $broker = self::getBroker($this->getBrkId());
-            if (! $broker->isIncludeMode()) {
+            if ($broker->getIsEnable() && ! $broker->isIncludeMode()) {
                 $this->_post_data = $broker;
             }
         }
