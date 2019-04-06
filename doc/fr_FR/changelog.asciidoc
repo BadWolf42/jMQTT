@@ -1,5 +1,8 @@
 == Change log
 
+.2019-04-06
+    - Transition vers style V4
+
 .2019-03-06
     - Passage en stable des évolutions des 2 versions betas précédentes
 

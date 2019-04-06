@@ -4,6 +4,45 @@ if (!isConnect('admin')) {
 }
 sendVarToJS('eqType', 'jMQTT');
 $eqLogics = eqLogic::byType('jMQTT');
+$node_images = scandir(__DIR__ . '/../../resources/images/');
+
+function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
+    echo '<div class="eqLogicAction cursor ' . $class . '"';
+    if ($attr != '')
+        echo ' ' . $attr;
+        echo '>';
+        echo '<i class="fa ' . $fa_icon . '"></i><br>';
+        echo '<span>' . $action_name . '</span>';
+        echo '</div>';
+}
+
+/**
+ * @param jMQTT $eqL
+ */
+function displayEqLogicCard($eqL, $node_images) {
+    $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
+    echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '">';
+    if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
+        echo '<div class="auto"><i class="fas fa-sign-in-alt"></i></div>';
+    }
+    $icon = 'node_' . $eqL->getConfiguration('icone');
+    $test = $icon . '.svg';
+    $file = 'node_.png';
+    if (in_array($test, $node_images)) {
+        $file = $test;
+    }
+    else {
+        $test = $icon . '.png';
+        if (in_array($test, $node_images)) {
+            $file = $test;
+        }
+    }
+    
+    echo '<img src="plugins/jMQTT/resources/images/' . $file . '"/>';
+    echo "<br>";
+    echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
+    echo '</div>';
+}
 ?>
 
 <div id="div_newCmdMsg"></div>
@@ -26,61 +65,24 @@ $eqLogics = eqLogic::byType('jMQTT');
     </div>
     
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
-	<legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
-	<div class="eqLogicThumbnailContainer">
-	    <div class="cursor eqLogicAction" data-action="add" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
-		<center style="height:100px;padding-top:10px">
-		    <i class="fa fa-plus-circle" style="font-size:6em;color:#f8d800;"></i>
-		</center>
-		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;color:#f8d800;"><center>{{Ajouter}}</center></span>
-	    </div>
+        <legend><i class="fa fa-cog"></i>  {{Gestion}}</legend>
+        <div class="eqLogicThumbnailContainer">
+            <?php
+            displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="add"', 'logoPrimary');
+            displayActionCard('{{Mode inclusion}}', 'fa-sign-in fa-rotate-90', 'data-mode="0"', 'bt_changeIncludeMode logoSecondary card');
+            displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
+            displayActionCard('{{Santé}}', 'fa-medkit', 'id="bt_healthMQTT"', 'logoSecondary');
+            ?>
+        </div>
 
+        <legend><i class="fa fa-table"></i>  {{Mes jMQTT}}</legend>
+        <div class="eqLogicThumbnailContainer">
 	    <?php
-	    // Insert the automatic inclusion button: display according to the include_mode configuration parameter is done at the end of this page
-	    ?>
-	    <div class="cursor bt_changeIncludeMode card" data-mode="0" style="background-color:#ffffff;height:140px;margin-bottom:10px;padding:5px;border-radius:2px;width:160px;margin-left:10px;">
-		<center style="height:100px;padding-top:10px"><i class="fa fa-sign-in fa-rotate-90" style="font-size : 6em;color:#f8d800;"></i></center>
-		<span style="font-size:1.1em;font-weight:bold;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;color:#f8d800;"><center></center></span>
-	    </div>
-
-	    <div class="cursor eqLogicAction" data-action="gotoPluginConf" style="background-color : #ffffff; height : 140px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;">
-		<center style="height:100px;padding-top:10px"><i class="fa fa-wrench" style="font-size:5.4em;color:#767676;"></i></center>
-		<span style="font-size:1.1em;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word"><center>{{Configuration}}</center></span>
-	    </div>
-	    
-	    <div class="cursor" id="bt_healthMQTT" style="background-color : #ffffff; height : 120px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-		<center style="height:100px;padding-top:10px"><i class="fa fa-medkit" style="font-size:6em;color:#767676;"></i></center>
-		<span style="font-size:1.1em;position:relative;top:15px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word"><center>{{Santé}}</center></span>
-	    </div>
-	</div>
-
-
-	<legend><i class="fa fa-table"></i>  {{Mes jMQTT}}
-	</legend>
-	<div class="eqLogicThumbnailContainer">
-	    <?php
-	    $dir = dirname(__FILE__) . '/../../resources/images/';
-	    $files = scandir($dir);
 	    foreach ($eqLogics as $eqLogic) {
-		$opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-		if ($eqLogic->getConfiguration('auto_add_cmd', 1)  == 1)
-		    echo '<div class="eqLogicDisplayCard cursor auto" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color:#ffffff;height:200px;margin-bottom:10px;padding:5px;width:160px;margin-left:10px;' . $opacity . '" >';
-		else
-		    echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color:#ffffff;height:200px;margin-bottom:10px;padding:5px;width:160px;margin-left:10px;' . $opacity . '" >';
-		echo '<center  style="height:120px;padding-top:10px">';
-		$test = 'node_' . $eqLogic->getConfiguration('icone') . '.png';
-		if (in_array($test, $files)) {
-		    $path = 'node_' . $eqLogic->getConfiguration('icone');
-		} else {
-		    $path = 'mqtt_icon';
-		}
-		echo '<img src="plugins/jMQTT/resources/images/' . $path . '.png" height="105" width="92" />';
-		echo "</center>";
-		echo '<span style="font-size:1.1em;position:relative;top:10px;word-break:break-all;white-space:pre-wrap;word-wrap:break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
-		echo '</div>';
-	    }
+	        displayEqLogicCard($eqLogic, $node_images);
+	    }	    
 	    ?>
-	</div>
+        </div>
     </div>
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogic" style="border-left: solid 1px #EEE; padding-left: 25px;display: none;">
 	<div class="row">
@@ -231,7 +233,7 @@ $eqLogics = eqLogic::byType('jMQTT');
 
 			<div class="form-group">
 			    <div style="text-align: center">
-				<img name="icon_visu" src="" width="160" height="200"/>
+				<img id="icon_visu" src="" width="160" height="200"/>
 			    </div>
 			</div>
 
@@ -268,35 +270,82 @@ $eqLogics = eqLogic::byType('jMQTT');
 
 <?php // The !important keyword is used as some themes (such as darksobre) overrides below property with this keyword (fix #37) ?>
 <style>
- div.eqLogicDisplayCard.auto {
-     border:8px solid #8000FF !important;
-     border-radius:18px !important;
-     padding-top:5px !important;
- }
- div.eqLogicDisplayCard:not(auto) {
-     border-width:1px !important;
-     border-style:solid !important;
-     border-color: #FFFFFF;
-     border-radius:18px !important;
-     padding-top:12px !important;
- }
- div.bt_changeIncludeMode.include {
-     background-color: #8000FF !important;
- }
- div.bt_changeIncludeMode:not(.include) {
-     background-color: #FFFFFF;
- }
+#in_searchEqlogic {
+  margin-bottom: 20px;
+}
+.eqLogicThumbnailContainer div.cursor img {
+  padding-top: 0px;
+}
+.eqLogicThumbnailContainer .eqLogicDisplayCard,
+.eqLogicDisplayAction {
+  height: 155px !important;
+}
+
+.eqLogicDisplayCard.disableCard {
+    opacity: 0.35;
+}
+
+.eqLogicDisplayCard > div.auto {
+    position:absolute;
+    top:5px;
+    width:100%;
+    text-align:center;
+    margin-left:-4px;
+}
+.eqLogicDisplayCard .auto .fas {
+    transform: rotate(90deg);
+}
+
+.eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
+    font-size:20px !important;
+    color: #8000FF;/*var(--logo-primary-color);*/
+}
+
+.row div.eqLogicAction.card.include {
+	background-color: #8000FF !important;
+}
+
+.row div.eqLogicAction.card:not(.include ) {
+	background-color: #FFFFFF;
+}
+
+<?php 
+if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayCard {";
+    echo "height: 155px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+    
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayAction,";
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.auto {";
+    echo "background-color:rgba(0, 0, 0, 0) !important;";
+    echo "color:#ccc !important;";
+    echo "border: 0px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicAction {";
+    echo "background-color:rgba(0, 0, 0, 0) !important;";
+    echo "color:#ccc !important;";
+    echo "border: 0px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+}
+?>
 </style>
 
 <script>
- <?php
- // Initialise the automatic inclusion button display according to include_mode configuration parameter
- echo 'configureIncludeModeDisplay(' . config::byKey('include_mode', 'jMQTT', 0) . ');';
- ?>
+<?php
+// Initialise the automatic inclusion button display according to include_mode configuration parameter
+echo 'configureIncludeModeDisplay(' . config::byKey('include_mode', 'jMQTT', 0) . ');';
+?>
 
- $( "#sel_icon" ).change(function(){
-     var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png';
-     //$("#icon_visu").attr('src',text);
-     document.icon_visu.src=text;
- });
+$("#sel_icon").change(function(){
+    var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
+    $("#icon_visu").attr("src", text + '.svg');
+});
+
+$("#icon_visu").on("error", function () {
+    $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
+});
 </script>

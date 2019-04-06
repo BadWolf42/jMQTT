@@ -606,7 +606,7 @@ Il est conseillé d&#8217;activer la gestion automatique du démon. Ainsi, en ca
 <p>Un équipement grisé est inactif;</p>
 </li>
 <li>
-<p>Un équipement cerclé d&#8217;une bordure bleue-mauve, ou grise si inactif, est un équipement dont l'<em>Ajout automatique des commandes</em> est activé.</p>
+<p>Un équipement présenté avec un petit icône d&#8217;inclusion superposé, est un équipement dont l'<em>Ajout automatique des commandes</em> est activé (détails dans <a href="#_onglet_equipement">Onglet Equipement</a>).</p>
 </li>
 </ul>
 </div>
@@ -670,26 +670,13 @@ Une fois les équipements découverts, il est conseillé de quitter le mode auto
 <p>Inscrit au Topic: topic de souscription auprès du broker;</p>
 </li>
 <li>
-<p>Ajout automatique des commandes: si coché, les commandes de type information seront automatiquement créés par le plugin, et l&#8217;équipement apparaitra cerclé d&#8217;une bordure dans la page de <a href="#_gestion_des_équipements">Gestion des équipements</a>. La case est cochée par défaut;</p>
+<p>Ajout automatique des commandes: si coché, les commandes de type information seront automatiquement créés par le plugin, et l&#8217;équipement apparaitra avec un petit icône d&#8217;inclusion superposé dans la page de <a href="#_gestion_des_équipements">Gestion des équipements</a>. La case est cochée par défaut;</p>
 </li>
 <li>
 <p>Qos: qualité de service souscrit;</p>
 </li>
 <li>
 <p>Catégorie du topic: sélection d&#8217;une image spécifique à l&#8217;équipement.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>Parmis le boutons en haut à gauche:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>Export</code> permet d&#8217;obtenir un fichier JSON de toutes les informations de l&#8217;équipement. Il n&#8217;y a pas de fonctionalité import, le fichier peut surtout s&#8217;avérer utile pour investiguer sur problèmes;</p>
-</li>
-<li>
-<p><code>Dupliquer</code> permet de <a href="#_dupliquer_un_équipement">Dupliquer un équipement</a>.</p>
 </li>
 </ul>
 </div>
@@ -704,6 +691,19 @@ Une fois les commandes créés, il est conseillé de décocher la case <em>Ajout
 </td>
 </tr>
 </table>
+</div>
+<div class="paragraph">
+<p>Parmis le boutons en haut à gauche:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Export</code> permet d&#8217;obtenir un fichier JSON de toutes les informations de l&#8217;équipement. Il n&#8217;y a pas de fonctionalité import, le fichier peut surtout s&#8217;avérer utile pour investiguer sur problèmes;</p>
+</li>
+<li>
+<p><code>Dupliquer</code> permet de <a href="#_dupliquer_un_équipement">Dupliquer un équipement</a>.</p>
+</li>
+</ul>
 </div>
 </div>
 <div class="sect3">
@@ -1522,6 +1522,14 @@ info <code>[Saison jMQTT][set]</code> à <em>Toujours répéter</em> pour que to
 <h2 id="_change_log">8. Change log</h2>
 <div class="sectionbody">
 <div class="ulist">
+<div class="title">2019-04-06</div>
+<ul>
+<li>
+<p>Transition vers style V4</p>
+</li>
+</ul>
+</div>
+<div class="ulist">
 <div class="title">2019-03-06</div>
 <ul>
 <li>
@@ -1955,7 +1963,7 @@ Si vous avez des topics commençant par / créés avant cette version, il faut a
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2019-02-01 07:21:08 CET
+Last updated 2019-04-06 07:58:47 CEST
 </div>
 </div>
 </body>
