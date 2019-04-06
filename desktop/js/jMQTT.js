@@ -469,15 +469,13 @@ function configureIncludeModeDisplay(mode) {
     if (mode == 1) {
         $('.bt_changeIncludeMode:not(.card)').removeClass('btn-default').addClass('btn-success');
         $('.bt_changeIncludeMode').attr('data-mode', 1);
-        $('.bt_changeIncludeMode.card span center').text('{{Arrêter l\'inclusion}}');
-        $('.bt_changeIncludeMode:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Arreter inclusion}}');
+        $('.bt_changeIncludeMode.card span').text('{{Arrêter l\'inclusion}}');
         $('.bt_changeIncludeMode').addClass('include');
         $('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
     } else {
         $('.bt_changeIncludeMode:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
         $('.bt_changeIncludeMode').attr('data-mode', 0);
-        $('.bt_changeIncludeMode:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Mode inclusion}}');
-        $('.bt_changeIncludeMode.card span center').text('{{Mode inclusion}}');
+        $('.bt_changeIncludeMode.card span').text('{{Mode inclusion}}');
         $('.bt_changeIncludeMode').removeClass('include');
         $('#div_inclusionModeMsg').hideAlert();
     }
