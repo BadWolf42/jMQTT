@@ -2,6 +2,8 @@
 
 .2019-04-06
     - Transition vers style V4
+    
+IMPORTANT: Core Jeedom 3.3.19 ou supérieur requis à partir de la version 2019-04-06.
 
 .2019-03-06
     - Passage en stable des évolutions des 2 versions betas précédentes
