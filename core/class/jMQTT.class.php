@@ -477,8 +477,8 @@ class jMQTT extends eqLogic {
         }
 
         // Return in case of invalid topic
-        if (! ctype_print($msgTopic) || empty($topicContent)) {
-            if (! jMQTTCmd::isConfigurationValid($msgTopic))
+        if (empty($topicContent) || ! jMQTTCmd::isConfigurationValid($msgTopic)) {
+            if (! empty($topicContent))
                 $msgTopic = strtoupper(bin2hex($msgTopic));
             log::add('jMQTT', 'warning', 'Message skipped: "' . $msgTopic . '" is not a valid topic');
             return;

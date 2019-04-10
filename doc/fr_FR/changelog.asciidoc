@@ -1,5 +1,8 @@
 == Change log
 
+.2019-04-10
+    - Correction de https://github.com/domotruc/jMQTT/issues/70[#70]: problème de reconnaissance des topics avec accents
+
 .2019-04-06
     - Transition vers style V4
     
