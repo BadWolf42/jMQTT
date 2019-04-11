@@ -5,7 +5,7 @@
     "usage": "Voir documentation",
     "licence" : "AGPL",
     "author" : "domotruc",
-    "require" : "2.4",
+    "require" : "3.3.19",
     "category" : "automation protocol",
     "hasDependency" : true,
     "hasOwnDeamon" : false,

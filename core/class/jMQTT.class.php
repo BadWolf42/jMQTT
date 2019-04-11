@@ -863,11 +863,12 @@ class jMQTT extends eqLogic {
         }
         
         // Return in case of invalid topic
-        if (! ctype_print($msgTopic) || empty($topicContent)) {
-            if (! jMQTTCmd::isConfigurationValid($msgTopic))
+        if (empty($topicContent) || ! jMQTTCmd::isConfigurationValid($msgTopic)) {
+            if (! empty($topicContent)) {
                 $msgTopic = strtoupper(bin2hex($msgTopic));
-                $this->log('warning', 'Message skipped: "' . $msgTopic . '" is not a valid topic');
-                return;
+            }
+            $this->log('warning', 'Message skipped: "' . $msgTopic . '" is not a valid topic');
+            return;
         }
         
         // Return in case of invalid payload (only ascii payload are supported) - fix issue #46

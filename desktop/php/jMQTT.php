@@ -285,15 +285,12 @@ if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
  }
  ?>
 
- $("#sel_icon").change(function(){
-     var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
-     $("#icon_visu").attr("src", text + '.svg');
-     //document.icon_visu.onerror = "altimage(this)";  
-     //$("#icon_visu").attr('src',text);
- });
+$("#sel_icon").change(function(){
+    var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
+    $("#icon_visu").attr("src", text + '.svg');
+});
 
- $("#icon_visu").on("error", function () {
-     $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
-   });
-  
+$("#icon_visu").on("error", function () {
+    $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
+});
 </script>

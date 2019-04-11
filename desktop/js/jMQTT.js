@@ -585,15 +585,13 @@ function configureIncludeModeDisplay(brkId, mode) {
     if (mode == 1) {
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').removeClass('btn-default').addClass('btn-success');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 1);
-        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span center').text('{{Arrêter l\'inclusion}}');
-        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Arreter inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Arrêter l\'inclusion}}');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('include');
         $('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
     } else {
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 0);
-        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').html('<i class="fa fa-sign-in fa-rotate-90"></i> {{Mode inclusion}}');
-        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span center').text('{{Mode inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Mode inclusion}}');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('include');
         $('#div_inclusionModeMsg').hideAlert();
     }

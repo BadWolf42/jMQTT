@@ -12,7 +12,7 @@ Le panneau supérieur, intitulé _Gestion_, permet:
 Le panneau inférieur, _Mes jMQTT_ affiche les équipements présents. A noter que:
    
    - Un équipement grisé est inactif;
-   - Un équipement cerclé d'une bordure bleue-mauve, ou grise si inactif, est un équipement dont l'_Ajout automatique des commandes_ est activé.
+   - Un équipement présenté avec un petit icône d'inclusion superposé, est un équipement dont l'_Ajout automatique des commandes_ est activé (détails dans <<Onglet Equipement>>).
    
 
 === Inclusion automatique des équipements
@@ -41,16 +41,16 @@ NOTE: Une fois les équipements découverts, il est conseillé de quitter le mod
 Dans le premier onglet d'un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que quatre paramètres spécifiques au plugin:
 
    - Inscrit au Topic: topic de souscription auprès du broker;
-   - Ajout automatique des commandes: si coché, les commandes de type information seront automatiquement créés par le plugin, et l'équipement apparaitra cerclé d'une bordure dans la page de <<Gestion des équipements>>. La case est cochée par défaut;
+   - Ajout automatique des commandes: si coché, les commandes de type information seront automatiquement créés par le plugin, et l'équipement apparaitra avec un petit icône d'inclusion superposé dans la page de <<Gestion des équipements>>. La case est cochée par défaut;
    - Qos: qualité de service souscrit;
    - Catégorie du topic: sélection d'une image spécifique à l'équipement.
+
+IMPORTANT: Une fois les commandes créés, il est conseillé de décocher la case _Ajout automatique des commandes_ pour éviter la création d'informations non souhaitées.
 
 Parmis le boutons en haut à gauche:
 
    - `Export` permet d'obtenir un fichier JSON de toutes les informations de l'équipement. Il n'y a pas de fonctionalité import, le fichier peut surtout s'avérer utile pour investiguer sur problèmes;
    - `Dupliquer` permet de <<Dupliquer un équipement>>.
-
-IMPORTANT: Une fois les commandes créés, il est conseillé de décocher la case _Ajout automatique des commandes_ pour éviter la création d'informations non souhaitées.
 
 ==== Onglet Commandes
 

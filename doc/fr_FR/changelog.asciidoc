@@ -1,5 +1,13 @@
 == Change log
 
+.2019-04-10
+    - Correction de https://github.com/domotruc/jMQTT/issues/70[#70]: problème de reconnaissance des topics avec accents
+
+.2019-04-06
+    - Transition vers style V4
+    
+IMPORTANT: Core Jeedom 3.3.19 ou supérieur requis à partir de la version 2019-04-06.
+
 .2019-03-06
     - Passage en stable des évolutions des 2 versions betas précédentes
 
