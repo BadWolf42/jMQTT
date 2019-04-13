@@ -20,7 +20,6 @@ require_once __DIR__ . '/../../../../core/php/core.inc.php';
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
-// @TODO : sur passage en inclusion auto, le démon ne redémarre pas si gestion auto n'est pas activée
 class jMQTT extends eqLogic {
 
     const API_TOPIC = 'api';
@@ -30,6 +29,10 @@ class jMQTT extends eqLogic {
     const CLIENT_STATUS = 'status';
     const OFFLINE = 'offline';
     const ONLINE = 'online';
+
+    const DAEMON_OK = 'ok';
+    const DAEMON_POK = 'pok';
+    const DAEMON_NOK = 'nok';
     
     /**
      * To define a standard jMQTT equipment
@@ -266,7 +269,7 @@ class jMQTT extends eqLogic {
         
         // Check if MQTT subscription parameters have changed for this equipment
         // Applies to the manual inclusion mode only as in automatic mode, # is suscribed (i.e. all topics)
-        if ($this->getBrkId() >= 0 && ! self::getBroker($this->getBrkId())->isIncludeMode()) {  // manual inclusion mode
+        if ($this->getBrkId() >= 0 && ! $this->getBroker()->isIncludeMode()) {  // manual inclusion mode
 
             $prevTopic    = $this->getLogicalId();
             $topic        = $this->getTopic();
@@ -327,7 +330,7 @@ class jMQTT extends eqLogic {
     public function postSave() {
         if ($this->_post_data['action'] == self::POST_ACTION_RESTART_DAEMON) {
             $this->log('debug', 'postSave: restart daemon, current pid is ' . getmypid());
-            self::getBroker($this->getBrkId())->startDaemon(true);
+            $this->getBroker()->startDaemon(true);
         }
     }
     
@@ -370,7 +373,9 @@ class jMQTT extends eqLogic {
         
         if ($this->getType() == self::TYP_BRK) {
             if (! is_object($this->getMqttClientStatusCmd())) {
-                jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic())->save();
+                $cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
+                $cmd->setIrremovable();
+                $cmd->save();
             }
             if ($this->getBrkId() < 0) {
                 $this->setBrkId($this->getId());
@@ -405,7 +410,7 @@ class jMQTT extends eqLogic {
             }
         }
         else {
-            $broker = self::getBroker($this->getBrkId());
+            $broker = $this->getBroker();
             if ($broker->getIsEnable() && ! $broker->isIncludeMode()) {
                 $this->_post_data = $broker;
             }
@@ -421,7 +426,49 @@ class jMQTT extends eqLogic {
             $this->startDaemon(true);
         }
     }
-
+    
+    public static function health() {
+        $return = array();
+        foreach(self::getBrokers() as $broker) {
+            $mosqHost = $broker->getConfiguration('mqttAddress', 'localhost');
+            $mosqPort = $broker->getConfiguration('mqttPort', '1883');
+            
+            $socket = socket_create(AF_INET, SOCK_STREAM, 0);
+            $state = false;
+            if ($socket !== false) {
+                $state = socket_connect ($socket , $mosqHost, $mosqPort);
+                socket_close($socket);
+            }
+        
+            $return[] = array(
+                'test' => __('Accès au broker', __FILE__) . ' ' . $broker->getName(),
+                'result' => $state ? __('OK', __FILE__) : __('NOK', __FILE__),
+                'advice' => $state ? '' : __('Vérifier les paramètres de connexion réseau', __FILE__),
+                'state' => $state
+            );
+            
+            if ($state) {
+                $info = $broker->getDaemonInfo();
+                $return[] = array(
+                    'test' => __('Configuration du broker', __FILE__) . ' ' . $broker->getName(),
+                    'result' => strtoupper($info['launchable']),
+                    'advice' => ($info['launchable'] != 'ok' ? $info['message'] : ''),
+                    'state' => ($info['launchable'] == 'ok') 
+                );
+                if (end($return)['state']) {
+                    $return[] = array(
+                        'test' => __('Connexion au broker', __FILE__) . ' ' . $broker->getName(),
+                        'result' => strtoupper($info['state']),
+                        'advice' => ($info['state'] != 'ok' ? $info['message'] : ''),
+                        'state' => ($info['state'] == 'ok')
+                    );
+                }
+            }
+        }
+        
+        return $return;
+    }
+    
     ###################################################################################################################
     ##
     ##                   PLUGIN RELATED METHODS
@@ -486,7 +533,7 @@ class jMQTT extends eqLogic {
         if ($this->getType() != self::TYP_BRK)
             return $return;
               
-        // Verify if this broker is enable
+        $return['brkId'] = $this->getId();
         
         // Is the daemon launchable
         $return['launchable'] = 'ok';
@@ -519,9 +566,9 @@ class jMQTT extends eqLogic {
         $return['last_launch'] = $this->getLastDaemonLaunchTime();      
         $return['state'] = $this->getDaemonState();
         if ($dependancy_info['state'] == 'ok') {
-            if ($return['state'] == 'nok' && $return['message'] == '')
+            if ($return['state'] == self::DAEMON_NOK && $return['message'] == '')
                 $return['message'] = __('Le démon est arrêté', __FILE__);
-            elseif ($return['state'] == 'pok')
+            elseif ($return['state'] == self::DAEMON_POK)
                 $return['message'] = __('Le broker est OFFLINE', __FILE__);
         }
 
@@ -530,18 +577,18 @@ class jMQTT extends eqLogic {
     
     /**
      * Return daemon state
-     *   - ok: daemon is running and mqtt broker is online
-     *   - pok: daemon is running but mktt broker is offline
-     *   - nok: no cron exists or cron is not running
+     *   - self::DAEMON_OK: daemon is running and mqtt broker is online
+     *   - self::DAEMON_POK: daemon is running but mktt broker is offline
+     *   - self::DAEMON_NOK: no cron exists or cron is not running
      * @return string ok or nok
      */
     public function getDaemonState() {
         $cron = $this->getDaemonCron();
         if (is_object($cron) && $cron->running()) {
-            $return = $this->getMqttClientStatusCmd()->execCmd() == self::ONLINE ? "ok" : "pok";
+            $return = $this->getMqttClientStatusCmd()->execCmd() == self::ONLINE ? self::DAEMON_OK : self::DAEMON_POK;
         }
         else
-            $return = "nok";
+            $return = self::DAEMON_NOK;
         
         return $return;
     }
@@ -578,6 +625,7 @@ class jMQTT extends eqLogic {
             $this->log('info', 'démarre le démon');
             $this->setLastDaemonLaunchTime();
             $this->save(true);
+            $this->sendDaemonStateEvent();
             $cron->run();
         }
     }
@@ -594,32 +642,20 @@ class jMQTT extends eqLogic {
         
         $cmd = $this->getMqttClientStatusCmd();
         // Status cmd may not exist on object removal for instance
-        if (is_object($cmd))
+        if (is_object($cmd)) {
             $cmd->event(self::OFFLINE);
+        }
+        
+        $this->sendDaemonStateEvent();
     }
-
-//     /**
-//      * Return daemon info of this broker type object
-//      */
-//     public static function deamon_info() {
-//         $return = array();
-//         $return['log'] = 'jMQTT';
-//         $return['state'] = 'nok';
-//         $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-//         if (is_object($cron) && $cron->running()) {
-//             $return['state'] = 'ok';
-//         }
-//         $return['launchable'] = 'ok';
-//         return $return;
-//     }
-    
+   
     /**
      * Daemon method
      * @param string[] $option $option[id]=broker id
      * @throws Exception if $option[id] is not a valid broker id
      */
     public static function daemon($option) {
-        $broker = self::getBroker($option['id']);
+        $broker = self::getBrokerFromId($option['id']);
         $broker->log('debug', 'daemon starts, pid is ' . getmypid());
 
         // Create mosquitto client
@@ -703,6 +739,13 @@ class jMQTT extends eqLogic {
      */
     public function getDaemonCron() {
         return cron::byClassAndFunction('jMQTT', 'daemon', array('id' => $this->getId()));
+    }
+    
+    /**
+     * Send a jMQTT::EventState event to the UI containing daemon info
+     */
+    private function sendDaemonStateEvent() {
+        event::add('jMQTT::EventState', $this->getDaemonInfo());
     }
     
     ###################################################################################################################
@@ -847,6 +890,9 @@ class jMQTT extends eqLogic {
      *            dispatched message
      */
     public function brokerMessageCallback($message) {
+        
+        $this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
+        
         $msgTopic = $message->topic;
         $msgValue = $message->payload;
         
@@ -965,6 +1011,11 @@ class jMQTT extends eqLogic {
                     if ($cmdlogic->getConfiguration('parseJson') == 1) {
                         jMQTTCmd::decodeJsonMessage($eqpt, $msgValue, $cmdName, $msgTopic, $cmdlogic->getId(), 0);
                     }
+                    
+                    // On reception of a the broker status topic, generate an state event
+                    if ($this->getId() == $eqpt->getId() && $cmdlogic->getTopic() == $this->getMqttClientStatusTopic()) {
+                        $this->sendDaemonStateEvent();
+                    }
                 }
             }
         }
@@ -1052,22 +1103,6 @@ class jMQTT extends eqLogic {
         return cmd::byEqLogicIdAndLogicalId($this->getId(), $this->getMqttClientStatusTopic());
     }
        
-    public static function health() {
-        $return = array();
-        $mosqHost = config::byKey('mqttAdress', 'jMQTT', 'localhost');
-        $mosqPort = config::byKey('mqttPort', 'jMQTT', '1883');
-        $socket = socket_create(AF_INET, SOCK_STREAM, 0);
-        $server = socket_connect ($socket , $mosqHost, $mosqPort);
-
-        $return[] = array(
-            'test' => __('Accès à Mosquitto', __FILE__),
-            'result' => ($server) ? __('OK', __FILE__) : __('NOK', __FILE__),
-            'advice' => __('Indique si le broker MQTT est visible sur le réseau', __FILE__),
-            'state' => $server
-        );
-        return $return;
-    }
-
     /**
      * Process the API request
      */
@@ -1084,7 +1119,7 @@ class jMQTT extends eqLogic {
      * @return string daemon log filename.
      */
     public function getDaemonLogFile() {
-        $broker = ($this->getType() == self::TYP_BRK) ? $this : self::getBroker($this->getBrkId());
+        $broker = ($this->getType() == self::TYP_BRK) ? $this : $this->getBroker();
         $this->_log = 'jMQTT_' . $broker->getMqttId();
         return $this->_log;
     }
@@ -1250,12 +1285,21 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Get this jMQTT broker object which eqLogic Id is given
+     * Get the broker object attached to this jMQTT object
+     * @return jMQTT
+     * @throws Exception if the broker is not found
+     */
+    public function getBroker() {
+        return self::getBrokerFromId($this->getBrkId());
+    }
+    
+    /**
+     * Get the jMQTT broker object which eqLogic Id is given
      * @var int $id id of the broker
      * @return jMQTT
-     * @throws Exception if $option[id] is not a valid broker id
+     * @throws Exception if $id is not a valid broker id
      */
-    public static function getBroker($id) {
+    public static function getBrokerFromId($id) {
         /** @var jMQTT $broker */
         $broker = jMQTT::byId($id);
         if (!is_object($broker)) {
@@ -1265,7 +1309,7 @@ class jMQTT extends eqLogic {
     }
     
     /**
-     * Return all jMQTT objects haveing the same broker id as this object
+     * Return all jMQTT objects having the same broker id as this object
      * Note: this object is also returned
      * @return jMQTT[]
      */
@@ -1339,7 +1383,7 @@ class jMQTT extends eqLogic {
      * @param string[] $option $option[id]=broker id
      */
     public static function disableIncludeMode($option) {
-        $broker = self::getBroker($option['id']);
+        $broker = self::getBrokerFromId($option['id']);
         $broker->log('info', 'Disable equipment automatic inclusion mode');
         $broker->setIncludeMode(0);
         $broker->save(true);
@@ -1387,7 +1431,7 @@ class jMQTT extends eqLogic {
         }
 
         // Restart the MQTT deamon to manage topic subscription
-        $this->startDaemon(true);
+        $this->startDaemon(true, true);
     }
     
     /**

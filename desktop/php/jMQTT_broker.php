@@ -142,6 +142,73 @@ function callJmqttAjax(_params) {
     $.ajax(paramsAJAX);
 }
 
+function showDaemonInfo(data) {
+	var nok = false;          
+    switch(data.launchable) {
+        case 'ok':
+            $('.bt_startDaemon').show();
+            $('.daemonLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
+            break;
+        case 'nok':
+            if(data.auto == 1) {
+                nok = true;
+            }
+            $('.bt_startDaemon').hide();
+            $('.bt_stopDaemon').hide();
+            $('.daemonLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
+            break;
+        default:
+           $('.daemonLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
+    }
+
+    switch (data.state) {
+        case 'ok':
+            $('.daemonState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
+            break;
+        case 'pok':
+            if (data.auto == 1) {
+                nok = true;
+            }
+            $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
+            break;
+        case 'nok':
+            if (data.auto == 1) {
+                nok = true;
+            }
+            $('.daemonState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
+            break;
+        default:
+            $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
+    }
+    
+    $('.daemonLastLaunch').empty().append(data.last_launch);
+    if (data.auto == 1) {
+        $('.bt_stopDaemon').hide();
+        $('.bt_changeAutoMode').removeClass('btn-success').addClass('btn-danger');
+        $('.bt_changeAutoMode').attr('data-mode',0);
+        $('.bt_changeAutoMode').html('<i class="fa fa-times"></i> {{Désactiver}}');
+    }
+    else {
+        if (data.launchable == 'ok' && data.state != 'nok') {
+            $('.bt_stopDaemon').show();
+        }
+        $('.bt_changeAutoMode').removeClass('btn-danger').addClass('btn-success');
+        $('.bt_changeAutoMode').attr('data-mode',1);
+        $('.bt_changeAutoMode').html('<i class="fa fa-magic"></i> {{Activer}}');
+    }
+    
+    if (!nok) {
+        $("#div_broker_daemon").closest('.panel').removeClass('panel-danger').addClass('panel-success');
+    }
+    else {
+        $("#div_broker_daemon").closest('.panel').removeClass('panel-success').addClass('panel-danger');
+    }
+
+    if ($("#div_broker_daemon").is(':visible')) {
+        timeout_refreshDaemonInfo = setTimeout(refreshDaemonInfo, 5000);
+    }
+}
+
 function refreshDaemonInfo() {
     var id = getUrlVars('id');
     if (id == false)
@@ -156,78 +223,17 @@ function refreshDaemonInfo() {
             handleAjaxError(request, status, error);
         },
         success: function(data) {
-            console.log(data);
-    		var nok = false;          
-            switch(data.launchable) {
-                case 'ok':
-                    $('.bt_startDaemon').show();
-                    $('.daemonLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
-                    break;
-                case 'nok':
-                    if(data.auto == 1) {
-                        nok = true;
-                    }
-                    $('.bt_startDaemon').hide();
-                    $('.bt_stopDaemon').hide();
-                    $('.daemonLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
-                    break;
-                default:
-                   $('.daemonLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
-            }
-
-            switch (data.state) {
-                case 'ok':
-                    $('.daemonState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
-                    break;
-                case 'pok':
-                    if (data.auto == 1) {
-                        nok = true;
-                    }
-                    $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
-                    break;
-                case 'nok':
-                    if (data.auto == 1) {
-                        nok = true;
-                    }
-                    $('.daemonState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
-                    break;
-                default:
-                    $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
-            }
-            
-            $('.daemonLastLaunch').empty().append(data.last_launch);
-            if (data.auto == 1) {
-                $('.bt_stopDaemon').hide();
-                $('.bt_changeAutoMode').removeClass('btn-success').addClass('btn-danger');
-                $('.bt_changeAutoMode').attr('data-mode',0);
-                $('.bt_changeAutoMode').html('<i class="fa fa-times"></i> {{Désactiver}}');
-            }
-            else {
-                if (data.launchable == 'ok' && data.state != 'nok') {
-                    $('.bt_stopDaemon').show();
-                }
-                $('.bt_changeAutoMode').removeClass('btn-danger').addClass('btn-success');
-                $('.bt_changeAutoMode').attr('data-mode',1);
-                $('.bt_changeAutoMode').html('<i class="fa fa-magic"></i> {{Activer}}');
-            }
-            
-            if (!nok) {
-                $("#div_broker_daemon").closest('.panel').removeClass('panel-danger').addClass('panel-success');
-            }
-            else {
-                $("#div_broker_daemon").closest('.panel').removeClass('panel-success').addClass('panel-danger');
-            }
-    
-            if ($("#div_broker_daemon").is(':visible')) {
-                console.log('#div_broker_daemon is visible');
-                timeout_refreshDaemonInfo = setTimeout(refreshDaemonInfo, 5000);
-            }
+            showDaemonInfo(data);
         }
     });
 }
 
 // if (document.location.hash == "#brokertab")
 //     refreshDaemonInfo();
+
+$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
+    showDaemonInfo(_options);
+});
 
 $('.bt_startDaemon').on('click',function(){
     clearTimeout(timeout_refreshDaemonInfo);

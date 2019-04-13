@@ -167,7 +167,7 @@ class jMQTTCmd extends cmd {
             return;
         
         $request = $this->getConfiguration('request', "");
-        $topic = getTopic();
+        $topic = $this->getTopic();
         $qos = $this->getConfiguration('Qos', 1);
         $retain = $this->getConfiguration('retain', 0);
 
@@ -191,7 +191,8 @@ class jMQTTCmd extends cmd {
         }
 
         $request = jeedom::evaluateExpression($request);
-        jMQTT::publishMosquitto($this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
+        $this->getEqLogic()->getBroker()->publishMosquitto(
+            $this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
         return $request;
     }
@@ -260,6 +261,13 @@ class jMQTTCmd extends cmd {
         $this->setLogicalId($this->getTopic());
     }
 
+    /**
+     * Set this command as irremovable
+     */
+    public function setIrremovable() {
+        $this->setConfiguration('irremovable', 1);
+    }
+    
     public function setTopic($topic) {
         $this->setConfiguration('topic', $topic);
     }

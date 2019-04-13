@@ -243,7 +243,7 @@ $('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
     }
     else {
         var eqL = {type: 'eqpt', brkId: $(this).attr('brkId')};
-        var prompt = "{{Nom de l'équipement ?}}"; 
+        var prompt = "{{Nom du module ?}}"; 
     }
     bootbox.prompt(prompt, function (result) {
         if (result !== null) {
@@ -270,7 +270,7 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
             bootbox.confirm('{{Etes-vous sûr de vouloir supprimer le broker}}' + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
                 if (result) {
                     bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fa fa-warning"</i>' +
-                            '</span></td><td style="vertical-align:middle">' + '{{Tous les équipements associés au broker vont être supprimés}}' +
+                            '</span></td><td style="vertical-align:middle">' + '{{Tous les modules associés au broker vont être supprimés}}' +
                             '...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
                         if (result) {
                             jeedom.eqLogic.remove({
@@ -388,6 +388,7 @@ function printEqLogic(_eqLogic) {
  * addCmdToTable callback called by plugin.template: render eqLogic commands
  */
 function addCmdToTable(_cmd) {
+    console.log(_cmd);
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
     }
@@ -438,7 +439,9 @@ function addCmdToTable(_cmd) {
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fa fa-cogs"></i></a> ';
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
         }
-        tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+        if (_cmd.configuration.irremovable == undefined) {
+            tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+        }
         tr += '<input style="width:82%;margin-bottom:2px;" class="tooltips cmdAttr form-control input-sm" data-l1key="cache" data-l2key="lifetime" placeholder="{{Lifetime cache}}" title="{{Lifetime cache}}">';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:40%;display:inline-block;"> ';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:40%;display:inline-block;">';
@@ -579,17 +582,17 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 // Management of the include button and mode
 //
 
-//Configure the display according to the given mode
+// Configure the display according to the given mode
 //If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
 function configureIncludeModeDisplay(brkId, mode) {
     if (mode == 1) {
-        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').removeClass('btn-default').addClass('btn-success');
+        //$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').removeClass('btn-default').addClass('btn-success');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 1);
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Arrêter l\'inclusion}}');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('include');
         $('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
     } else {
-        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
+        //$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 0);
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Mode inclusion}}');
         $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('include');
@@ -597,10 +600,17 @@ function configureIncludeModeDisplay(brkId, mode) {
     }
 }
 
-//Manage button clicks
-$('.eqLogicAction[data-action=changeIncludeMode]').on('click', function () {
+function setIncludeModeActivation(brkId, broker_state) {
+    if (broker_state == "ok") {
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('disableCard').on('click', changeIncludeMode);
+    }
+    else {
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('disableCard').unbind();;
+    }
+}
+
+function changeIncludeMode() {
     var el = $(this);
-    console.log(el.attr('data-mode'));
 
     // Invert the button display and show the alert message
     if (el.attr('data-mode') == 1) {
@@ -629,8 +639,17 @@ $('.eqLogicAction[data-action=changeIncludeMode]').on('click', function () {
                 return;
             }
         }
-    });
+    });    
+}
+
+// Update the broker icon and the include mode activation on reception of a new state event
+$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
+    setIncludeModeActivation(_options.brkId, _options.state);
+    $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
 });
+
+// Manage button clicks
+//$('.eqLogicAction[data-action=changeIncludeMode]').on('click', changeIncludeMode);
 
 //Called by the plugin core to inform about the automatic inclusion mode disabling
 $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', function (_event,_options) {

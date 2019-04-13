@@ -127,7 +127,7 @@ function displayEqLogicCard($eqL, $node_images) {
         <?php
         foreach ($eqBrokers as $eqB) {
             echo '<div class="col-lg-12 col-md-12 col-sm-12">';
-            echo '<legend><i class="fas fa-table"></i> ' . $eqB->getName() . '</legend>';
+            echo '<legend><i class="fas fa-table"></i> {{Modules connectés à}} ' . $eqB->getName() . '</legend>';
             echo '<input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />';
             echo '<div class="eqLogicThumbnailContainer">';
             displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . $eqB->getId() . '"', 'eqLogicDisplayAction logoSecondary', true);
@@ -251,6 +251,11 @@ function displayEqLogicCard($eqL, $node_images) {
 	background-color: #FFFFFF;
 }
 
+.eqLogicAction.disableCard {
+    opacity: 0.35;
+    cursor: default;
+}
+
 <?php 
 if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
     echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayCard {";
@@ -278,12 +283,13 @@ if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
 
 <script>
 
- <?php
- // Initialise the automatic inclusion button display according to include_mode configuration parameter
- foreach ($eqBrokers as $eqL) {
-     echo 'configureIncludeModeDisplay(' . $eqL->getId() . ',' . $eqL->getIncludeMode() . ');';
- }
- ?>
+<?php
+// Initialise the automatic inclusion button display according to include_mode configuration parameter
+foreach ($eqBrokers as $eqL) {
+    echo 'setIncludeModeActivation(' . $eqL->getId() . ',"' . $eqL->getDaemonState() . '");';
+    echo 'configureIncludeModeDisplay(' . $eqL->getId() . ',' . $eqL->getIncludeMode() . ');';
+}
+?>
 
 $("#sel_icon").change(function(){
     var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
@@ -293,4 +299,6 @@ $("#sel_icon").change(function(){
 $("#icon_visu").on("error", function () {
     $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
 });
+
+
 </script>

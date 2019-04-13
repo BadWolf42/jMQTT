@@ -28,7 +28,7 @@ try {
 
     // To change the equipment automatic inclusion mode
     if (init('action') == 'changeIncludeMode') {
-        $broker = jMQTT::getBroker(init('id'));
+        $broker = jMQTT::getBrokerFromId(init('id'));
         $broker->changeIncludeMode(init('mode'));
         ajax::success();
     }
@@ -37,7 +37,7 @@ try {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
-        $broker = jMQTT::getBroker(init('id'));
+        $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->getDaemonInfo());
     }
     
@@ -45,7 +45,7 @@ try {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
-        $broker = jMQTT::getBroker(init('id'));
+        $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->getDaemonState());
     }
     
@@ -53,7 +53,7 @@ try {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
-        $broker = jMQTT::getBroker(init('id'));
+        $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->startDaemon(true, true));
     }
     
@@ -61,7 +61,7 @@ try {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
-        $broker = jMQTT::getBroker(init('id'));
+        $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->stopDaemon());
     }
     
@@ -69,7 +69,7 @@ try {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
-        $broker = jMQTT::getBroker(init('id'));
+        $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->setDaemonAutoMode(init('mode')));
     }
     
