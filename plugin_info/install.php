@@ -87,6 +87,9 @@ function jMQTT_update() {
         }
         $eqL->save();
     }
+    
+    // Start daemons
+    jMQTT::checkAllDaemons();
 }
 
 function jMQTT_remove() {
