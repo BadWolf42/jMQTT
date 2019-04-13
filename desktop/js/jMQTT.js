@@ -282,7 +282,7 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
                                 success: function () {
                                     var url = initPluginUrl();
                                     modifyWithoutSave = false;
-                                    url += '&id=' + data.id + '&removeSuccessFull=1';
+                                    url += '&removeSuccessFull=1';
                                     loadPage(url);
                                 }
                             });                        
