@@ -372,11 +372,7 @@ class jMQTT extends eqLogic {
         }
         
         if ($this->getType() == self::TYP_BRK) {
-            if (! is_object($this->getMqttClientStatusCmd())) {
-                $cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
-                $cmd->setIrremovable();
-                $cmd->save();
-            }
+            $this->createMqttClientStatusCmd();
             if ($this->getBrkId() < 0) {
                 $this->setBrkId($this->getId());
                 $this->save(true);
@@ -1102,7 +1098,20 @@ class jMQTT extends eqLogic {
     public function getMqttClientStatusCmd() {
         return cmd::byEqLogicIdAndLogicalId($this->getId(), $this->getMqttClientStatusTopic());
     }
-       
+    
+    /**
+     * Create and save the MQTT status information command of this broker if not already existing
+     * It is the responsability of the caller to check that this object is a broker before
+     * calling the method.
+     */
+    public function createMqttClientStatusCmd() {
+        if (! is_object($this->getMqttClientStatusCmd())) {
+            $cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
+            $cmd->setIrremovable();
+            $cmd->save();
+        }
+    }
+    
     /**
      * Process the API request
      */

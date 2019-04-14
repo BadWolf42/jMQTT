@@ -69,6 +69,9 @@ function migrateToMultiBrokerVersion() {
     $broker->setBrkId($broker->getId());
     $broker->save();
     
+    // Create the MQTT status information command
+    $broker->createMqttClientStatusCmd();
+    
     foreach (eqLogic::byType('jMQTT') as $eqL) {
         /** @var jMQTT $eqL */
         $eqL->setConfiguration('prev_Qos', null);
