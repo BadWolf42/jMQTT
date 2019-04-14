@@ -19,20 +19,24 @@
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 include_file('core', 'jMQTT', 'class', 'jMQTT');
 
+define('VERSION_MULTI_BROKER', 'multi_broker');
+
 function jMQTT_install() {
 }
 
 
 function jMQTT_update() {
     
+    // multi broker support is already available => return
+    if (config::byKey('version', 'jMQTT') == VERSION_MULTI_BROKER || count(jMQTT::getBrokers()) > 0) {
+        jMQTT::checkAllDaemons();
+        return;
+    }
+
     //
     // Following: migration to multi broker support
     //
     
-    // multi broker support is already available => return
-    if (count(jMQTT::getBrokers()) > 0)
-        return;
-
     // Try to identify which equipment can be converted to the broker
     // Should be the one containing the status command
     $mqttId = config::byKey('mqttId', 'jMQTT', 'jeedom');
@@ -54,7 +58,8 @@ function jMQTT_update() {
     message::add('jMQTT', "L'équipement " . $broker->getName() . " a été " . $msg. " comme broker MQTT.");
     
     // Transfer plugin parameters
-    $conf_params = array('mqttAdress' => array('new_key' => 'mqttAddress', 'def' => 'localhost'),
+    $conf_params = array(
+        'mqttAdress' => array('new_key' => 'mqttAddress', 'def' => 'localhost'),
         'mqttPort' => '1883', 'mqttId' => 'jeedom', 'mqttUser' => '',
         'mqttPass' => '', 'mqttTopic' => array('new_key' => 'mqttIncTopic', 'def' => '#'),
         'api' => jMQTT::API_DISABLE);
@@ -87,6 +92,9 @@ function jMQTT_update() {
         }
         $eqL->save();
     }
+    
+    // Save the major version of this plugin, to be able to know which version is installed
+    config::save('version', VERSION_MULTI_BROKER, 'jMQTT');
     
     // Start daemons
     jMQTT::checkAllDaemons();
