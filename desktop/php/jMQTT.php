@@ -105,7 +105,6 @@ function displayEqLogicCard($eqL, $node_images) {
 	        <?php
             displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
             displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
-            displayActionCard('Test', 'fa-play', 'data-action="runDev"', 'logoSecondary');
             ?>
             </div>
 	    </div>

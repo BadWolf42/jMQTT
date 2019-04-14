@@ -72,31 +72,7 @@ try {
         $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->setDaemonAutoMode(init('mode')));
     }
-    
-    if (init('action') == 'dev') {
-//         foreach (eqLogic::byType('jMQTT') as $eqL) {
-//             $eqL->setConfiguration('type', null);
-//             $eqL->save();
-//         }
-//         require_once __DIR__ . '/../../plugin_info/install.php';
-//         ob_start();
-//         jMQTT_update();
-//         ob_end_clean();
-
-        foreach (eqLogic::byType('jMQTT') as $eql) {
-            /** @var jMQTT $eql */
-            $eql->setConfiguration('prev_Qos', null);
-            $eql->setConfiguration('prev_isActive', null);
-            $eql->setConfiguration('reload_d', null);
-            $eql->setConfiguration('prev_mqttId', null);
-            $eql->save(true);
-        }
         
-        
-        ajax::success();
-    }
-    
-    
     throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
