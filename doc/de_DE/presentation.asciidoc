@@ -1,7 +1,0 @@
-== Präsentation
-
-Dieses Plugin ermöglicht es, Jeedom mit einem MQTT-Broker wie Mosquitto zu verbinden, um abonnierte Nachrichten abzufragen und eigene Nachrichten zu veröffentlichen.
-
-MQTT ist ein IP-Kommunikationsprotokoll, das auf einer Client/Server-Architektur und einem Subskriptions/Veröffentlichungsmechanismus basiert. Es ist leicht, offen, einfach, Eigenschaften, die seine Demokratisierung in der Machine-to-Machine (M2M) -Kommunikation und im Internet der Dinge (IoT Internet of Things) begünstigt haben.
-
-Um mehr über MQTT zu erfahren, empfehlen wir die Artikelserie https://www.hivemq.com/mqtt-essentials/[MQTT Essentials].
