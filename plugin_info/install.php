@@ -62,7 +62,7 @@ function migrateToMultiBrokerVersion() {
             $def = $p;
         }
         $broker->setConfiguration($new_key, config::byKey($key, 'jMQTT', $def));
-        config::save($key, null, 'jMQTT');
+        config::remove($key, 'jMQTT');
     }
     
     $broker->setType(jMQTT::TYP_BRK);

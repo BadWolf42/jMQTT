@@ -48,6 +48,14 @@ window.addEventListener("popstate", function(event) {
     }
 });
 
+function callJmqttAjax(_params) {
+    var params = $.extend({global: false}, jeedom.private.default_params, _params || {});
+    var paramsAJAX = jeedom.private.getParamsAJAX(params);
+    paramsAJAX.url = 'plugins/jMQTT/core/ajax/jMQTT.ajax.php';
+    paramsAJAX.data = _params.data;
+    $.ajax(paramsAJAX);
+}
+
 // Rebuild the page URL from the current URL
 // 
 // filter: array of parameters to be removed from the URL
@@ -120,26 +128,6 @@ $("#bt_addMQTTAction").on('click', function(event) {
 $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
     $('#md_modal').dialog({title: "{{Santé jMQTT}}"});
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
-});
-
-$('.eqLogicAction[data-action=runDev]').on('click', function () {
-    $.ajax({
-        type: "POST", 
-        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php", 
-        data: {
-            action: "dev"
-        },
-        dataType: 'json',
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
-        },
-        success: function (data) { 
-            if (data.state != 'ok') {
-                $('#div_alert').showAlert({message: data.result, level: 'danger'});
-                return;
-            }
-        }
-    });
 });
 
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
@@ -251,6 +239,7 @@ $('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
                 type: eqType,
                 eqLogics: [ $.extend({name: result}, eqL) ],
                 error: function (error) {
+                    console.log(error.message);
                     $('#div_alert').showAlert({message: error.message, level: 'danger'});
                 },
                 success: function (data) {
@@ -298,7 +287,6 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
         $(this).click();
     }
 });
-
 
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
@@ -371,10 +359,21 @@ function printEqLogic(_eqLogic) {
         $('.typ-brk').show();
         $('#sel_icon_div').css("visibility", "hidden");
         $('#mqtttopic').prop('readonly', true);
-        var log = 'jMQTT_' + (_eqLogic.configuration.mqttId || 'jeedom');
+        var log = 'jMQTT_' + (_eqLogic.name || 'jeedom');
+        $('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
         $('.bt_plugin_conf_view_log').attr('data-log', log);
         $('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
         
+        jeedom.config.load({
+            configuration: $('#div_broker_log').getValues('.configKey')[0],
+            plugin: 'jMQTT',
+            error: function (error) {
+                $('#div_alert').showAlert({message: error.message, level: 'danger'});
+            },
+            success: function (data) {
+              $('#div_broker_log').setValues(data, '.configKey');
+            }
+          });
     } else {
         $('.typ-brk').hide();
         $('.typ-std').show();
@@ -383,6 +382,17 @@ function printEqLogic(_eqLogic) {
     }
 }
 
+/**
+ * saveEqLogic callback called by plugin.template before saving an eqLogic
+ *   . Pass the log level when defined (i.e. for a broker object)
+ */
+function saveEqLogic(_eqLogic) {
+    var log_level = $('#div_broker_log').getValues('.configKey')[0];
+    if (!$.isEmptyObject(log_level)) {
+        _eqLogic.loglevel =  log_level;
+    }
+    return _eqLogic;
+}
 
 /**
  * addCmdToTable callback called by plugin.template: render eqLogic commands

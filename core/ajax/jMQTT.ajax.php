@@ -72,7 +72,7 @@ try {
         $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->setDaemonAutoMode(init('mode')));
     }
-        
+    
     throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {

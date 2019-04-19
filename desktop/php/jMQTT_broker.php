@@ -46,10 +46,20 @@
                 <div id="div_broker_log">
                     <form class="form-horizontal">
                         <fieldset>
-                            <label class="col-sm-2 control-label">{{Logs}}</label>
-                            <div class="col-sm-10">
-                                <a class="btn btn-info bt_plugin_conf_view_log"
-                                    data-slaveId="-1" data-log=""></a>
+                            <label class="col-sm-3 control-label">{{Niveau log}}</label>
+                            <div class="col-sm-9">
+                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="1000" /> {{Aucun}}</label>
+                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="default" /> {{Defaut}}</label>
+                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="100" /> {{Debug}}</label>
+                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="200" /> {{Info}}</label>
+                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="300" /> {{Warning}}</label>
+                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="400" /> {{Error}}</label>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <label class="col-sm-3 control-label">{{Logs}}</label>
+                            <div class="col-sm-9">
+                                <a class="btn btn-info bt_plugin_conf_view_log" data-slaveId="-1" data-log=""></a>
                             </div>
                         </fieldset>
                     </form>
@@ -133,14 +143,6 @@
 <script>
 
 var timeout_refreshDaemonInfo = null;
-
-function callJmqttAjax(_params) {
-    var params = $.extend({global: false}, jeedom.private.default_params, _params || {});
-    var paramsAJAX = jeedom.private.getParamsAJAX(params);
-    paramsAJAX.url = 'plugins/jMQTT/core/ajax/jMQTT.ajax.php';
-    paramsAJAX.data = _params.data;
-    $.ajax(paramsAJAX);
-}
 
 function showDaemonInfo(data) {
 	var nok = false;          
