@@ -290,14 +290,4 @@ foreach ($eqBrokers as $eqL) {
 }
 ?>
 
-$("#sel_icon").change(function(){
-    var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
-    $("#icon_visu").attr("src", text + '.svg');
-});
-
-$("#icon_visu").on("error", function () {
-    $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
-});
-
-
 </script>
