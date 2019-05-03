@@ -51,7 +51,6 @@ function migrateToMultiBrokerVersion() {
         'mqttPort' => '1883', 'mqttId' => 'jeedom', 'mqttUser' => '',
         'mqttPass' => '', 'mqttTopic' => array('new_key' => 'mqttIncTopic', 'def' => '#'),
         'api' => jMQTT::API_DISABLE);
-    
     foreach ($conf_params as $key => $p) {
         if (is_array($p)) {
             $new_key = $p['new_key'];
@@ -64,6 +63,9 @@ function migrateToMultiBrokerVersion() {
         $broker->setConfiguration($new_key, config::byKey($key, 'jMQTT', $def));
         config::remove($key, 'jMQTT');
     }
+
+    // Suppress no more used parameters
+    config::remove('include_mode', 'jMQTT');
     
     $broker->setType(jMQTT::TYP_BRK);
     $broker->setBrkId($broker->getId());
@@ -77,6 +79,7 @@ function migrateToMultiBrokerVersion() {
         $eqL->setConfiguration('prev_Qos', null);
         $eqL->setConfiguration('prev_isActive', null);
         $eqL->setConfiguration('reload_d', null);
+        $eqL->setConfiguration('topic', null);
         if ($eqL->getType() == '') {
             $eqL->setType(jMQTT::TYP_EQPT);
             $eqL->setBrkId($broker->getId());

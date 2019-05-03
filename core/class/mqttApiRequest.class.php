@@ -112,8 +112,26 @@ class mqttApiRequest {
                 self::addParam(array(self::JRPC_METHOD => $this->method), self::JRPC_PARAMS, $this->params), $this->id));
         $this->broker->log('debug', 'API: jsonrpc request is ' . $request);
 
-        $jsonRes = $this->send($request);
-        $this->broker->log('debug', 'API: jsonrpc response is ' . $jsonRes);
+        // Process the request
+        switch ($this->method) {
+            // This method is not described in the documentation as it is for test purpose only
+            // Remove all equipments attached to this broker
+            case 'jMQTT::removeAllEqpts':
+                $cron = new cron();
+                $cron->setClass('jMQTT');
+                $cron->setOption(array('id' => $this->broker->getId()));
+                $cron->setFunction('removeAllEqpts');
+                $cron->setOnce(1);
+                $cron->setSchedule('* * * * *');
+                $cron->setTimeout(1);
+                $cron->save();
+                $cron->run();
+                $jsonRes = $this->newSuccessMsg('ok');
+                break;
+            default:
+                $jsonRes = $this->send($request);
+                $this->broker->log('debug', 'API: jsonrpc response is ' . $jsonRes);
+        }
 
         $arrRes = json_decode($jsonRes, true);
         if (! is_array($arrRes) || json_last_error() != JSON_ERROR_NONE || ! isset($arrRes[self::JRPC_JSONRPC]) ||
@@ -221,10 +239,10 @@ class mqttApiRequest {
      *
      * @param
      *            _result array result JSON array
-     * @return success message (JSON encoded)
+     * @return string success message (JSON encoded)
      */
     public function newSuccessMsg($_result) {
-        return json_encode(self::newJsonRpcArray(array(self::JRPC_RES => $_result), $this->id));
+        return json_encode(self::newJsonRpcArray(array(self::JRPC_RESULT => $_result), $this->id));
     }
 
     /**
@@ -245,7 +263,7 @@ class mqttApiRequest {
 
     /**
      * Create and return a new RPC JSON response array.
-     * Return array i sinitialized from the given one and following is added : JSON RPC version (2.0),
+     * Return array is initialized from the given one and following is added : JSON RPC version (2.0),
      * and the request id. (if not NULL).
      *
      * @param array $_array

@@ -99,21 +99,21 @@
                             <label class="col-lg-4 control-label">{{Identifiant de Connexion : }}</label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId"
-                                    style="margin-top: 5px" placeholder="Jeedom" />
+                                    style="margin-top: 5px" placeholder="jeedom" />
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Compte de Connexion (non obligatoire) : }}</label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser"
-                                    style="margin-top: 5px" placeholder="Jeedom" />
+                                    style="margin-top: 5px" placeholder="jeedom" />
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Mot de passe de Connexion (non obligatoire) : }}</label>
                             <div class="col-lg-4">
                                 <input type="password" class="eqLogicAttr form-control"
-                                    data-l1key="configuration" data-l2key="mqttPass" style="margin-top: 5px" placeholder="Jeedom" />
+                                    data-l1key="configuration" data-l2key="mqttPass" style="margin-top: 5px" placeholder="jeedom" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -207,6 +207,7 @@ function showDaemonInfo(data) {
     }
 
     if ($("#div_broker_daemon").is(':visible')) {
+        clearTimeout(timeout_refreshDaemonInfo);
         timeout_refreshDaemonInfo = setTimeout(refreshDaemonInfo, 5000);
     }
 }
@@ -216,13 +217,10 @@ function refreshDaemonInfo() {
     if (id == false)
         return;
 
-    callJmqttAjax({
+    callPluginAjax({
         data: {
             action: 'getDaemonInfo',
             id: id,
-        },
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
         },
         success: function(data) {
             showDaemonInfo(data);
@@ -230,22 +228,17 @@ function refreshDaemonInfo() {
     });
 }
 
-// if (document.location.hash == "#brokertab")
-//     refreshDaemonInfo();
-
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
+    console.log('2: ' + _options.state);
     showDaemonInfo(_options);
 });
 
 $('.bt_startDaemon').on('click',function(){
     clearTimeout(timeout_refreshDaemonInfo);
-    callJmqttAjax({
+    callPluginAjax({
         data: {
             action: 'daemonStart',
             id: getUrlVars('id'),
-        },
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
         },
         success: function(data) {
             refreshDaemonInfo();
@@ -255,13 +248,10 @@ $('.bt_startDaemon').on('click',function(){
 
 $('.bt_stopDaemon').on('click',function(){
     clearTimeout(timeout_refreshDaemonInfo);
-    callJmqttAjax({
+    callPluginAjax({
         data: {
             action: 'daemonStop',
             id: getUrlVars('id'),
-        },
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
         },
         success: function(data) {
             refreshDaemonInfo();
@@ -271,14 +261,11 @@ $('.bt_stopDaemon').on('click',function(){
 
 $('.bt_changeAutoMode').on('click',function(){
     clearTimeout(timeout_refreshDaemonInfo);
-    callJmqttAjax({
+    callPluginAjax({
         data: {
             action: 'daemonChangeAutoMode',
             id: getUrlVars('id'),
             mode: $(this).attr('data-mode')
-        },
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
         },
         success: function(data) {
             refreshDaemonInfo();

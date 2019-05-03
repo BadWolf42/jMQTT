@@ -34,6 +34,23 @@ class jMQTT extends eqLogic {
     const DAEMON_POK = 'pok';
     const DAEMON_NOK = 'nok';
     
+    const CONF_KEY_TYPE = 'type';
+    const CONF_KEY_BRK_ID = 'brkId';
+    const CONF_KEY_MQTT_ID = 'mqttId';
+    const CONF_KEY_MQTT_ADDRESS = 'mqttAddress';
+    const CONF_KEY_MQTT_PORT = 'mqttPort';
+    const CONF_KEY_MQTT_USER = 'mqttUser';
+    const CONF_KEY_MQTT_PASS = 'mqttPass';
+    const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
+    const CONF_KEY_QOS = 'Qos';
+    const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
+    const CONF_KEY_API = 'api';
+    const CONF_KEY_LAST_CONNECT_TIME = 'lastClientConnectTime';
+    const CONF_KEY_DAEMON_AUTO_MODE = 'daemonAutoMode';
+    
+    const CONF_KEY_OLD = 'old';
+    const CONF_KEY_NEW = 'new';
+    
     /**
      * To define a standard jMQTT equipment
      * jMQTT type is either self::TYP_EQPT or self::TYP_BRK.
@@ -49,28 +66,22 @@ class jMQTT extends eqLogic {
     const TYP_BRK = 'broker';
     
     /**
-     * Name of the plugin conf parameter storing the last successfull connexion to the broker (linux time, in s)
-     * @var string
-     */
-    const LAST_CONNECT_TIME = 'lastClientConnectTime';
-    
-    /**
-     * Possible value of $_post_data; to restart the daemon.
-     * @var integer
-     */
-    const POST_ACTION_NONE = 0;
-    
-    /**
      * Possible value of $_post_data; to restart the daemon.
      * @var integer
      */
     const POST_ACTION_RESTART_DAEMON = 1;
     
     /**
-     * Possible value of $_post_data; to restart the daemon with a new client id
+     * Possible value of $_post_data; set when the broker name has changed
      * @var integer
      */
-    const POST_ACTION_BROKER_CHANGE = 2;
+    const POST_ACTION_BROKER_NAME_CHANGED = 2;
+    
+    /**
+     * Possible value of $_post_data; set when the client id is changed
+     * @var integer
+     */
+    const POST_ACTION_BROKER_CLIENT_ID_CHANGED = 4;
     
     /**
      * Data shared between preSave and postSave, preRemove and postRemove
@@ -142,30 +153,17 @@ class jMQTT extends eqLogic {
     private function initEquipment($name, $topic, $isEnable=0) {
         log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
         $this->setEqType_name('jMQTT');
-        $this->setName($name);
-        
-        // Topic is memorized as the LogicalId
-        $this->setLogicalId($topic);
-        $this->setIsEnable($isEnable);
-        $this->setTopic($topic);
+        parent::setName($name);
+        parent::setIsEnable($isEnable);
+        parent::setLogicalId($topic);  // logical id is also modified by setTopic
         $this->setAutoAddCmd('1');
         $this->setQos('1');
-        $this->resetPreviousConfiguration();
         
         if ($this->getType() == self::TYP_BRK) {
             config::save('log::level::' . $this->getDaemonLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
         }
     }
     
-    private function resetPreviousConfiguration() {
-        $this->setPrevQos($this->getQos());
-        $this->setPrevIsEnable($this->getIsEnable());
-        if ($this->getType() == self::TYP_BRK) {
-            $this->setPrevMqttId($this->getMqttId());
-            $this->setPrevName($this->getName());
-        }
-    }
-
     /**
      * Overload the equipment copy method
      * All information are copied but: suscribed topic (left empty), enable status (left disabled) and
@@ -185,8 +183,6 @@ class jMQTT extends eqLogic {
         $eqLogicCopy->setId('');
         $eqLogicCopy->setName($_name);
         $eqLogicCopy->setIsEnable(0);
-        $eqLogicCopy->setLogicalId('');
-        $eqLogicCopy->resetPreviousConfiguration();
         $eqLogicCopy->setTopic('');
         foreach ($eqLogicCopy->getCmd() as $cmd) {
             $cmd->remove();
@@ -247,7 +243,7 @@ class jMQTT extends eqLogic {
         // FIXME: what is the reason for the logicalId test?
         if (!isset($this->id) && $this->logicalId == '') {
             $topic = '';
-            // Two brokers cannot have the same name
+            // Two brokers cannot have the same name => raise an exception if this is the case
             if ($this->getType() == self::TYP_BRK) {
                 foreach(self::getBrokers() as $broker) {
                     if ($broker->getName() == $this->getName()) {
@@ -258,89 +254,10 @@ class jMQTT extends eqLogic {
             }
             $this->initEquipment($this->getName(), $topic);
         }
-        
-        //$this->_post_data = array('action' => self::POST_ACTION_NONE);
-        
-        // For a broker, check if the MQTT client has changed. It yes:
-        //   * Set logicalId and the topic
-        //   * log file is built from the old MQTT client id
-        //   * set _post_data to restart the daemon in postAjax
-        if ($this->getType() == self::TYP_BRK) {
-            $prevMqttId = $this->getPrevMqttId();
-            $mqttId = $this->getMqttId();
-            $prevName = $this->getPrevName();
-            $name = $this->getName();
-            if ($prevMqttId != $mqttId || $prevName != $name) {
-                $this->_log = $this->getDaemonPrevLogFile(); // To write in the correct log until log is renamed
-                $this->stopDaemon();
-                //$this->setPrevMqttId($mqttId);
-                //$this->setPrevName($name);
-                $topic = $this->getBrokerTopic();
-                $this->setTopic($topic);
-                $this->setLogicalId($topic);
-                $this->_post_data['action'] = self::POST_ACTION_BROKER_CHANGE;
-                $this->_post_data['prevName'] = $prevName;
-                $this->_post_data['name'] = $name;
-                $this->_post_data['prevMqttId'] = $prevMqttId;
-                $this->_post_data['mqttId'] = $mqttId;
-                return;
-            }
-        }
-        
-        // Check if MQTT subscription parameters have changed for this equipment
-        // Applies to the manual inclusion mode only as in automatic mode, # is suscribed (i.e. all topics)
-        if ($this->getBrkId() >= 0 && ! $this->getBroker()->isIncludeMode()) {  // manual inclusion mode
 
-            $prevTopic    = $this->getLogicalId();
-            $topic        = $this->getTopic();
-            $prevQos      = $this->getPrevQos();
-            $qos          = $this->getQos();
-            $prevIsEnable = $this->getPrevIsEnable();
-            $isEnable     = $this->getIsEnable();
-
-            // Subscription topic
-            if ($prevTopic != $topic) {
-                $this->log('debug', $this->getName() . '.preSave: prevTopic=' . $prevTopic .
-                    ', topic=' . $topic);
-                $this->setLogicalId($topic);
-                $this->_post_data['action'] = self::POST_ACTION_RESTART_DAEMON;
-            }
-
-            // Quality of service
-            if ($qos != $prevQos) {
-                $this->log('debug', $this->getName() . '.preSave: prevQos=' . $prevQos . ', qos=' . $qos);
-                //$this->setPrevQos($qos);
-                $this->_post_data['action'] = self::POST_ACTION_RESTART_DAEMON;
-            }
-
-            // Equipment enable status
-            if ($isEnable != $prevIsEnable) {
-                $this->log('debug',
-                    $this->getName() . '.preSave: prevIsActive=' . $prevIsEnable . ', isActive=' . $isEnable);
-                //$this->setPrevIsEnable($isActive);
-                if ($this->getType() == self::TYP_BRK && ! $isEnable)
-                    $this->stopDaemon();
-                else
-                    $this->_post_data['action'] = self::POST_ACTION_RESTART_DAEMON;
-            }
-        }        
-    }
-
-    /**
-     * To log the traceback (utility function for debug purpose)
-     */
-    private static function log_backtrace() {
-        $e = new Exception();
-        $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
-        log::add('jMQTT', 'debug', $s);
-    }
-
-    /**
-     * To remove all equipments (for test purpose ONLY, should never be used!)
-     */
-    private static function removeAll() {
-        foreach (eqLogic::byType('jMQTT', false) as $eqpt) {
-            $eqpt->remove();
+        if (isset($this->_post_data['action']) &&
+                ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED)) {
+            $this->setTopic($this->getBrokerTopic($this->_post_data[self::CONF_KEY_NEW]));
         }
     }
 
@@ -348,13 +265,12 @@ class jMQTT extends eqLogic {
      * postSave callback to restart the deamon when deemed necessary (see also preSave)
      */
     public function postSave() {
-        if ($this->_post_data['action'] == self::POST_ACTION_RESTART_DAEMON) {
+        // Check $this->getBrkId() to avoid restarting daemon at broker creation
+        if (isset($this->_post_data['action']) && $this->getBrkId() > 0 && $this->_post_data['action'] == self::POST_ACTION_RESTART_DAEMON) {
             $this->log('debug', 'postSave: restart daemon, current pid is ' . getmypid());
-            $this->getBroker()->startDaemon(true);
-        }
-        
-        // Reset previous configuration values
-        $this->resetPreviousConfiguration();
+            $this->getBroker()->startDaemon(false, true);
+            $this->_post_data['action'] = null;
+        }      
     }
     
     /**
@@ -370,35 +286,32 @@ class jMQTT extends eqLogic {
      */
     public function postAjax() {
         
-        // Done first (before creation of MQTT client status cmd below)
-        // Done in postAjax (not in postSave) as commands coming from the MMI are saved between postSave and postAjax.
-        if ($this->_post_data['action'] ==  self::POST_ACTION_BROKER_CHANGE) {
-            $this->log('debug', 'postSave: new MQTT client id (' . $this->getMqttId() . ') restart daemon, current pid is ' . getmypid());
-            
-            // Commands of the equipment are modified to change the subscription topic if mqtt id has changed
-            if ($this->_post_data['prevMqttId'] != $this->_post_data['mqttId']) {
+        if (isset($this->_post_data['action'])) {
+            // Done first (before creation of MQTT client status cmd below)
+            // Done in postAjax (not in postSave) as commands coming from the UI are saved between postSave and postAjax.
+            if ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {               
                 /** @var jMQTTCmd[] $cmds */
                 $cmds = cmd::byEqLogicId($this->getId());
                 foreach ($cmds as $cmd) {
-                    if (strpos($this->_post_data['prevMqttId'], $cmd->getTopic()) == 0) {
-                        $cmd->setTopic(str_replace($this->_post_data['prevMqttId'], $this->_post_data['mqttId'], $cmd->getTopic()));
+                    if (strpos($this->_post_data[self::CONF_KEY_OLD], $cmd->getTopic()) == 0) {
+                        $cmd->setTopic(str_replace($this->_post_data[self::CONF_KEY_OLD], $this->_post_data[self::CONF_KEY_NEW], $cmd->getTopic()));
                         $cmd->save();
                     }
                 }
             }
-            
-            // Log file is changed if broker name has changed
-            if ($this->_post_data['prevName'] != $this->_post_data['name']) {
+                
+            if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {               
                 $old_log = $this->getDaemonLogFile();
                 $new_log = $this->getDaemonLogFile(true);
                 rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
                 config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, 'jMQTT'), 'jMQTT');
                 config::remove('log::level::' . $old_log, 'jMQTT');
             }
-            
-            if ($this->getIsEnable()) {
-                $this->startDaemon();
+                
+            if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
+                $this->startDaemon(false, true);
             }
+            $this->_post_data['action'] = null;
         }
         
         if ($this->getType() == self::TYP_BRK) {
@@ -414,12 +327,12 @@ class jMQTT extends eqLogic {
      * preRemove method to check if the daemon shall be restarted
      */
     public function preRemove() {
-        $this->log('info', 'Removing equipment ' . $this->getName());
+        $this->log('info', 'removing equipment ' . $this->getName());
         $this->_post_data = null;
         if ($this->getType() == self::TYP_BRK) {
             // Disable first the broker to avoid during removal of the broker to restart the daemon
             $this->setIsEnable(0);
-            $this->save();
+            $this->save(true);
 
             $cron = $this->getDaemonCron();
             if (is_object($cron)) {
@@ -439,6 +352,8 @@ class jMQTT extends eqLogic {
         else {
             $broker = $this->getBroker();
             if ($broker->getIsEnable() && ! $broker->isIncludeMode()) {
+                $this->log('info', 'relance le démon');
+                $broker->stopDaemon();
                 $this->_post_data = $broker;
             }
         }
@@ -450,15 +365,42 @@ class jMQTT extends eqLogic {
     public function postRemove() {
         if (is_object($this->_post_data)) {
             $this->_post_data->log('debug', 'postRemove: restart daemon');
-            $this->startDaemon(true);
+            $this->_post_data->startDaemon();
         }
+    }
+    
+    /**
+     * Remove all equipments of the given broker
+     * Called by a specific cron (see mqttApiRequest::processRequest)
+     * @param string[] $option $option[id]=broker id
+     */
+    public static function removeAllEqpts($option) {
+        
+        // let the daemon thread which run this cron action terminate the current processing
+        // before stopping the daemon
+        usleep(500000);
+        
+        // Disable first the broker to avoid during removal of the equipments to restart the daemon
+        $broker = self::getBrokerFromId($option['id']);
+        $broker->setIsEnable(0);
+        $broker->save();
+        
+        // remove all equipments attached to the broker
+        foreach ($broker->byBrkId() as $eqpt) {
+            if ($broker->getId() != $eqpt->getId())
+                $eqpt->remove();
+        }
+        
+        // Re-enable the broker
+        $broker->setIsEnable(1);
+        $broker->save();
     }
     
     public static function health() {
         $return = array();
         foreach(self::getBrokers() as $broker) {
-            $mosqHost = $broker->getConfiguration('mqttAddress', 'localhost');
-            $mosqPort = $broker->getConfiguration('mqttPort', '1883');
+            $mosqHost = $broker->getConf(self::CONF_KEY_MQTT_ADDRESS);
+            $mosqPort = $broker->getConf(self::CONF_KEY_MQTT_PORT);
             
             $socket = socket_create(AF_INET, SOCK_STREAM, 0);
             $state = false;
@@ -527,6 +469,54 @@ class jMQTT extends eqLogic {
         foreach(self::getBrokers() as $broker) {
             $broker->stopDaemon();
         }
+    }
+    /**
+     * Provides dependancy information
+     */
+    public static function dependancy_info() {
+        if (! isset(self::$_depLogFile))
+            self::$_depLogFile = __CLASS__ . '_dep';
+            
+            if (! isset(self::$_depProgresFile))
+                self::$_depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/progress_dep.txt';
+                
+                $return = array();
+                $return['log'] = log::getPathToLog(self::$_depLogFile);
+                $return['progress_file'] = self::$_depProgressFile;
+                
+                // get number of mosquitto packages installed (should be 2 or 3 at least depending
+                // on the installMosquitto config parameter)
+                $mosq = exec(system::get('cmd_check') . 'mosquitto | wc -l');
+                $minMosq = config::byKey('installMosquitto', 'jMQTT', 1) ? 3 : 2;
+                
+                // is lib PHP exists?
+                $libphp = extension_loaded('mosquitto');
+                
+                // build the state status; if nok log debug information
+                if ($mosq >= $minMosq && $libphp) {
+                    $return['state'] = 'ok';
+                }
+                else {
+                    $return['state'] = 'nok';
+                    log::add('jMQTT', 'debug', 'dependancy_info: NOK');
+                    log::add('jMQTT', 'debug',
+                        '   * Nb of mosquitto related packaged installed: ' . $mosq . ' (shall be greater equal than ' . $minMosq .
+                        ')');
+                    log::add('jMQTT', 'debug', '   * Mosquitto extension loaded: ' . $libphp);
+                }
+                
+                return $return;
+    }
+    
+    /**
+     * Provides dependancy installation script
+     */
+    public static function dependancy_install() {
+        log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
+        log::remove(self::$_depLogFile);
+        return array(
+            'script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile . ' ' .
+            config::byKey('installMosquitto', 'jMQTT', 1),'log' => log::getPathToLog(self::$_depLogFile));
     }
 
     ###################################################################################################################
@@ -603,6 +593,22 @@ class jMQTT extends eqLogic {
     }
     
     /**
+     * 
+     */
+    private function isDaemonToBeRestarted() {
+        $ret = false;
+        $broker = $this->getBroker();
+        $info = $broker->getDaemonInfo();
+        if ($info['launchable'] == 'ok' && ($info['auto'] || $info['state'] == self::DAEMON_OK)) {
+            $ret = true;
+            if ($this->getType() == self::TYP_EQPT && $broker->isIncludeMode()) {
+                $ret = false;
+            }
+        }
+        return $ret;
+    }
+    
+    /**
      * Return daemon state
      *   - self::DAEMON_OK: daemon is running and mqtt broker is online
      *   - self::DAEMON_POK: daemon is running but mktt broker is offline
@@ -612,7 +618,13 @@ class jMQTT extends eqLogic {
     public function getDaemonState() {
         $cron = $this->getDaemonCron();
         if (is_object($cron) && $cron->running()) {
-            $return = $this->getMqttClientStatusCmd()->execCmd() == self::ONLINE ? self::DAEMON_OK : self::DAEMON_POK;
+            $cmd = $this->getMqttClientStatusCmd();
+            if (is_object($cmd)) {
+                $return = $cmd->execCmd() == self::ONLINE ? self::DAEMON_OK : self::DAEMON_POK;
+            }
+            else {
+                $return  = self::DAEMON_POK;
+            }
         }
         else
             $return = self::DAEMON_NOK;
@@ -702,7 +714,7 @@ class jMQTT extends eqLogic {
         $broker->log('debug', 'status cmd id: ' . $statusCmd->getId() . ', topic: ' . $statusCmd->getLogicalId());
             
         // Reset the last connection (to the broker) time. Will be set in the mosquittoConnect callback once connected
-        $broker->setConfiguration(self::LAST_CONNECT_TIME, '');
+        $broker->setConfiguration(self::CONF_KEY_LAST_CONNECT_TIME, '');
         $broker->save(true);
        
         // Subscription and infinite loop
@@ -717,7 +729,7 @@ class jMQTT extends eqLogic {
         $statusCmd->event(self::OFFLINE);
         
         // Depending on the last connection time, reconnect immediately or wait 15s
-        $time = $broker->getConfiguration(self::LAST_CONNECT_TIME, '');
+        $time = $broker->getConf(self::CONF_KEY_LAST_CONNECT_TIME);
         if ($time == '' || (strtotime('now') - $time) < 15) {
             $broker->log('info', 'relance le démon dans 15s');
             sleep(15);
@@ -747,15 +759,15 @@ class jMQTT extends eqLogic {
      * @return int 0 or 1
      */
     public function getDaemonAutoMode() {
-        return $this->getConfiguration('daemonAutoMode', 1);
+        return $this->getConf(self::CONF_KEY_DAEMON_AUTO_MODE);
     }
     
     /**
-     * Set the daemon launch auto mode
+     * Set the daemon launch auto mode and save this object
      * @param int $mode 0 or 1
      */
-    public function setDaemonAutoMode($mode) {
-        $this->setConfiguration('daemonAutoMode', $mode);
+    public function setDaemonAutoModeAndSave($mode) {
+        $this->setConfiguration(self::CONF_KEY_DAEMON_AUTO_MODE, $mode);
         $this->save(true);
     }
     
@@ -788,8 +800,8 @@ class jMQTT extends eqLogic {
      * @return MQTT client
      */
     private function getMosquittoClient($id = '') {
-        $mosqUser = $this->getConfiguration('mqttUser', '');
-        $mosqPass = $this->getConfiguration('mqttPass', '');
+        $mosqUser = $this->getConf(self::CONF_KEY_MQTT_USER);
+        $mosqPass = $this->getConf(self::CONF_KEY_MQTT_PASS);
         
         // Création client mosquitto
         // Documentation passerelle php ici:
@@ -812,16 +824,15 @@ class jMQTT extends eqLogic {
      * @param object client client to connect
      */
     private function connectSubscribeMqttBroker($client) {
-        $mosqHost = $this->getConfiguration('mqttAddress', 'localhost');
-        $mosqPort = $this->getConfiguration('mqttPort', '1883');
-        $this->resetPreviousConfiguration();
+        $mosqHost = $this->getMqttAddress();
+        $mosqPort = $this->getMqttPort();
         
         $this->log('info',
             'Connect to mosquitto: Host=' . $mosqHost . ', Port=' . $mosqPort . ', Id=' . $this->getMqttId());
         $client->connect($mosqHost, $mosqPort, 60);
         
         if ($this->isIncludeMode()) { // auto inclusion mode
-            $topic = $this->getConfiguration('mqttIncTopic', '#');
+            $topic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
             // Subscribe to topic (root by default)
             $client->subscribe($topic, 1);
             $this->log('debug', 'Subscribe to topic "' . $topic . '" with Qos=1');
@@ -841,7 +852,6 @@ class jMQTT extends eqLogic {
         else { // manual inclusion mode
             // Loop on all equipments and subscribe
             foreach ($this->byBrkId() as $mqtt) {
-                $mqtt->resetPreviousConfiguration();
                 if ($mqtt->getIsEnable()) {
                     $topic = $mqtt->getTopic();
                     $qos = (int) $mqtt->getQos();
@@ -868,7 +878,7 @@ class jMQTT extends eqLogic {
     public function brokerConnectCallback($r, $message) {
         $this->log('debug', 'broker msg: connection response is ' . $message);
         $this->_client->publish($this->getMqttClientStatusTopic(), self::ONLINE, 1, 1);
-        $this->setConfiguration(self::LAST_CONNECT_TIME, strtotime('now'));
+        $this->setConfiguration(self::CONF_KEY_LAST_CONNECT_TIME, strtotime('now'));
         //$this->setConfiguration(self::CLIENT_STATUS, self::ONLINE);
         $this->save(true);
     }
@@ -993,7 +1003,7 @@ class jMQTT extends eqLogic {
                 
                 // Determine the name of the command.
                 // Suppress starting topic levels that are common with the equipment suscribing topic
-                $sbscrbTopicArray = explode("/", $eqpt->getLogicalId());
+                $sbscrbTopicArray = explode("/", $eqpt->getTopic());
                 $msgTopicArray = explode("/", $msgTopic);
                 foreach ($sbscrbTopicArray as $s) {
                     if ($s == '#' || $s == '+')
@@ -1064,8 +1074,8 @@ class jMQTT extends eqLogic {
      *            whether or not the message is a retained message ('0' or '1')
      */
     public function publishMosquitto($id, $eqName, $topic, $payload, $qos, $retain) {
-        $mosqHost = $this->getConfiguration('mqttAddress', 'localhost');
-        $mosqPort = $this->getConfiguration('mqttPort', '1883');
+        $mosqHost = $this->getMqttAddress();
+        $mosqPort = $this->getMqttPort();
         
         $payloadMsg = (($payload == '') ? '(null)' : $payload);
         $this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg);
@@ -1117,8 +1127,7 @@ class jMQTT extends eqLogic {
      * @return string broker status topic name
      */
     public function getMqttClientStatusTopic()  {
-        // prevMqttId used: on MQTT id change, prev value shall be used to stop the daemon
-        return $this->getPrevMqttId() . '/' . jMQTT::CLIENT_STATUS;
+        return $this->getMqttId() . '/' . jMQTT::CLIENT_STATUS;
     }
     
     /**
@@ -1142,6 +1151,8 @@ class jMQTT extends eqLogic {
         }
     }
     
+    ###################################################################################################################
+
     /**
      * Process the API request
      */
@@ -1154,28 +1165,18 @@ class jMQTT extends eqLogic {
 
     /**
      * Return the name of the log file attached to this jMQTT object.
-     * The log file is cached for optimization. If $force is set
+     * The log file is cached for optimization. If $force is set cache refresh is forced.
      * @var bool $force to force the definition of the log file name
      * @return string daemon log filename.
      */
     public function getDaemonLogFile($force=false) {
         if (!isset($this->_log) || $force) {
             $broker = ($this->getType() == self::TYP_BRK) ? $this : $this->getBroker();
-            $this->_log = 'jMQTT_' . $broker->getName();
+            $this->_log = 'jMQTT_' . str_replace(' ', '_', $broker->getName());
         }
         return $this->_log;
     }
-    
-    /**
-     * Return the name of the previous log file attached to this jMQTT object.
-     * Usefull to manage the change of log filename (when broker name is changed)
-     * @return string daemon previous log filename.
-     */
-    public function getDaemonPrevLogFile() {
-        $broker = ($this->getType() == self::TYP_BRK) ? $this : $this->getBroker();
-        return 'jMQTT_' . $broker->getPrevName();
-    }
-    
+      
     /**
      * Log messages
      * @param string $level
@@ -1190,23 +1191,190 @@ class jMQTT extends eqLogic {
      * return boolean
      */
     public function isApiEnable() {
-        return $this->getConfiguration('api', self::API_DISABLE) == self::API_ENABLE ? TRUE : FALSE;
+        return $this->getConf(self::CONF_KEY_API) == self::API_ENABLE ? TRUE : FALSE;
     }
 
+    private function addPostAction($action) {
+        if (isset($this->_post_data['action'])) {
+            $this->_post_data['action'] = $this->_post_data['action'] | $action;
+        }
+        else {
+            $this->_post_data['action'] = $action;
+        }
+    }
+    
+    private function removePostAction($action) {
+        if (isset($this->_post_data['action'])) {
+            $this->_post_data['action'] = $this->_post_data['action'] & ~$action;
+        }
+    }
+    
+    private function addRestartDaemonPostActionIfRequired($key, $newVal, $oldVal='') {
+        $ret = false;
+        if ($oldVal == '') {
+            $msg = $this->getName() . ': '. $key . ' modifié à ' . $newVal;
+        }
+        else {
+            $msg = $this->getName() . ': '. $key . ' modifié de ' . $oldVal . ' à ' . $newVal;
+        }
+        if ($this->isDaemonToBeRestarted()) {
+            $ret = true;
+            $this->getBroker()->stopDaemon();
+            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON);
+            $msg = $msg . '. Relance le démon.';
+        }
+        $this->log('info', $msg);
+        return $ret;
+    }
+    
+    private function getConf($_key) {
+        return $this->getConfiguration($_key, self::getDefaultConfiguration($_key));
+    }
+    
+    private static function getDefaultConfiguration($_key) {
+        $defValues = array(
+            self::CONF_KEY_MQTT_ADDRESS => 'localhost',
+            self::CONF_KEY_MQTT_PORT => '1883',
+            self::CONF_KEY_MQTT_ID => 'jeedom',
+            self::CONF_KEY_QOS => '1',
+            self::CONF_KEY_AUTO_ADD_CMD, '1',
+            self::CONF_KEY_DAEMON_AUTO_MODE => 1,
+            self::CONF_KEY_MQTT_INC_TOPIC => '#',
+            self::CONF_KEY_API => self::API_DISABLE,
+            self::CONF_KEY_BRK_ID => -1
+        );
+        
+        return array_key_exists($_key, $defValues) ? $defValues[$_key] : '';
+    }
+    
     /**
      * Set the log level
      * Called when saving a broker eqLogic
+     * If log level is changed, save the new value and restart the daemon
      * @param string $level
      */
     public function setLogLevel($log_level) {
-        $this->_log = $this->getDaemonPrevLogFile();
+        $this->_log = $this->getDaemonLogFile();
         $new_level = json_decode($log_level, true);
         $old_level = config::byKey('log::level::' . $this->_log, 'jMQTT');
         if (reset($new_level) != $old_level) {
             config::save('log::level::' . $this->_log, json_encode(reset($new_level)), 'jMQTT');
-            $this->log('info', 'change le niveau de log à ' . log::convertLogLevel(log::getLogLevel($this->getDaemonLogFile())));
-            $this->_post_data['action'] = self::POST_ACTION_RESTART_DAEMON;
+            $this->addRestartDaemonPostActionIfRequired('niveau de log',
+                log::convertLogLevel(log::getLogLevel($this->getDaemonLogFile())));
         }
+    }
+
+    /**
+     * Override setConfiguration to manage daemon stop/start when deemed necessary
+     * {@inheritDoc}
+     * @see eqLogic::setConfiguration()
+     */
+    public function setConfiguration($_key, $_value) {
+        $default_value = self::getDefaultConfiguration($_key);
+        $old_value = $this->getConfiguration($_key, $default_value);
+        if ($_value == '') {
+            $value = self::getDefaultConfiguration($_key);
+        }
+        else {
+            $value = $_value;
+        }
+        
+        // General case
+        $keys = array('Qos');
+        if ($this->getType() == self::TYP_BRK) {
+            $keys = $keys + array('mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api');
+        }
+        if (in_array($_key, $keys)) {
+            if ($value != $old_value) {
+                $this->addRestartDaemonPostActionIfRequired($_key, $value, $old_value);
+            }
+        }
+        
+        if ($this->getType() == self::TYP_BRK && $_key == self::CONF_KEY_MQTT_ID) {
+            if ($value != $old_value) {
+                // Note: topic (i.e. logicalId) is modified in preSave
+                $this->addPostAction(self::POST_ACTION_BROKER_CLIENT_ID_CHANGED);
+                $this->_post_data[self::CONF_KEY_OLD] = $old_value;
+                $this->_post_data[self::CONF_KEY_NEW] = $value;
+                $this->addRestartDaemonPostActionIfRequired('MQTT id', $value, $old_value);
+            }
+        }
+        return parent::setConfiguration($_key, $_value);
+    }
+        
+    public function setName($_name) {
+        if ($this->getType() == self::TYP_BRK) {
+            if ($_name != $this->name) {
+                $this->_log = $this->getDaemonLogFile(); // To write in the correct log until log is renamed
+                $this->addPostAction(self::POST_ACTION_BROKER_NAME_CHANGED);
+                $this->addRestartDaemonPostActionIfRequired('nom du broker', $_name, $this->name);
+            }
+        }
+        
+        return parent::setName($_name);
+    }
+    
+    /**
+     * Override setIsEnable to manage daemon stop/start 
+     * {@inheritDoc}
+     * @see eqLogic::setIsEnable()
+     */
+    public function setIsEnable($_isEnable) {
+        $old_isEnable = $this->isEnable;
+        parent::setIsEnable($_isEnable);
+        if (isset($this->_post_data)) {
+            if (! $_isEnable) {
+                $this->removePostAction(self::POST_ACTION_RESTART_DAEMON);
+                if ($this->getType() == self::TYP_BRK) {
+                    $this->stopDaemon();
+                    $this->setIncludeMode(0);
+                }
+            }
+        }
+        elseif ($_isEnable != $old_isEnable) {
+            $msg = $_isEnable ? 'activée' : 'désactivée';
+            if ($this->getType() == self::TYP_EQPT) {
+                $this->addRestartDaemonPostActionIfRequired('activation', $msg);
+            }
+            if ($this->getType() == self::TYP_BRK) {
+                if (! $this->addRestartDaemonPostActionIfRequired('activation', $msg)) {
+                    $this->stopDaemon();
+                    $this->setIncludeMode(0);
+                }
+            }
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * Override setLogicalId (which store the equipment registration topic) to manage daemon stop/start 
+     * {@inheritDoc}
+     * @see eqLogic::setLogicalId()
+     */
+    public function setLogicalId($_logicalId) {
+        if ($_logicalId != $this->logicalId) {
+            $this->addRestartDaemonPostActionIfRequired('topic', $_logicalId, $this->logicalId);
+        }
+        parent::setLogicalId($_logicalId);
+    }
+    
+    /**
+     * Get this jMQTT object topic
+     * It is stored as the logicalId
+     * @return string
+     */
+    public function getTopic() {
+        return $this->getLogicalId();
+    }
+    
+    /**
+     * Set this jMQTT object topic
+     * It is stored as the logicalId
+     * @var string $topic
+     */
+    public function setTopic($topic) {
+        $this->setLogicalId($topic);
     }
     
     /**
@@ -1214,7 +1382,7 @@ class jMQTT extends eqLogic {
      * @return string either jMQTT::TYPE_STD, jMQTT::TYP_BRK, or empty string if not defined
      */
     public function getType() {
-        return $this->getConfiguration('type', '');
+        return $this->getConf(self::CONF_KEY_TYPE);
     }
     
     /**
@@ -1222,7 +1390,7 @@ class jMQTT extends eqLogic {
      * @param string $type either jMQTT::TYPE_STD or jMQTT::TYP_BRK
      */
     public function setType($type) {
-        $this->setConfiguration('type', $type);
+        $this->setConfiguration(self::CONF_KEY_TYPE, $type);
     }
 
     /**
@@ -1230,7 +1398,7 @@ class jMQTT extends eqLogic {
      * @return int eqLogic Id or -1 if not defined
      */
     public function getBrkId() {
-        return $this->getConfiguration('brkId', -1);
+        return $this->getConf(self::CONF_KEY_BRK_ID);
     }
     
     /**
@@ -1238,7 +1406,7 @@ class jMQTT extends eqLogic {
      * @param int
      */
     public function setBrkId($id) {
-        $this->setConfiguration('brkId', $id);
+        $this->setConfiguration(self::CONF_KEY_BRK_ID, $id);
     }
     
     /**
@@ -1246,55 +1414,55 @@ class jMQTT extends eqLogic {
      * @return string MQTT id.
      */
     public function getMqttId() {
-        return $this->getConfiguration('mqttId', 'jeedom');
+        return $this->getConf(self::CONF_KEY_MQTT_ID);
     }
     
-    /**
-     * Get the previous MQTT client id
-     * @return string
-     */
-    public function getPrevMqttId() {
-        return $this->getCache('prevMqttId', 'jeedom');
-    }
+//     /**
+//      * Get the previous MQTT client id
+//      * @return string
+//      */
+//     public function getPrevMqttId() {
+//         return $this->getCache('prevMqttId', self::CONF_DEFAULT_MQTT_ID);
+//     }
         
-    /**
-     * Set the previous MQTT client id
-     * @return string
-     */
-    public function setPrevMqttId($prevMqttId) {
-        return $this->setCache('prevMqttId', $prevMqttId);
-    }
+//     /**
+//      * Set the previous MQTT client id
+//      * @return string
+//      */
+//     public function setPrevMqttId($prevMqttId) {
+//         return $this->setCache('prevMqttId', $prevMqttId);
+//     }
 
+//     /**
+//      * Get the previous name
+//      * @return string
+//      */
+//     public function getPrevName() {
+//         return $this->getCache('prevName');
+//     }
+    
+//     /**
+//      * Set the previous name
+//      * @return string
+//      */
+//     public function setPrevName($prevName) {
+//         return $this->setCache('prevName', $prevName);
+//     }
+            
     /**
-     * Get the previous name
+     * Get this jMQTT object broker address
      * @return string
      */
-    public function getPrevName() {
-        return $this->getCache('prevName');
+    public function getMqttAddress() {
+        return $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
     }
     
     /**
-     * Set the previous name
+     * Get this jMQTT object broker port
      * @return string
      */
-    public function setPrevName($prevName) {
-        return $this->setCache('prevName', $prevName);
-    }
-    
-    /**
-     * Get this jMQTT object topic
-     * @return string
-     */
-    public function getTopic() {
-        return $this->getConfiguration('topic', '');
-    }
-    
-    /**
-     * Set this jMQTT object topic
-     * @var string $topic
-     */
-    public function setTopic($topic) {
-        $this->setConfiguration('topic', $topic);
+    public function getMqttPort() {
+        return $this->getConf(self::CONF_KEY_MQTT_PORT);
     }
     
     /**
@@ -1302,7 +1470,7 @@ class jMQTT extends eqLogic {
      * @return string
      */
     public function getQos() {
-        return $this->getConfiguration('Qos', '1');
+        return $this->getConf(self::CONF_KEY_QOS);
     }
     
     /**
@@ -1310,23 +1478,7 @@ class jMQTT extends eqLogic {
      * @var string $Qos
      */
     public function setQos($Qos) {
-        $this->setConfiguration('Qos', $Qos);
-    }
-    
-    /**
-     * Get this jMQTT object previous Qos value
-     * @return string
-     */
-    public function getPrevQos() {
-        return $this->getCache('prevQos', '1');
-    }
-    
-    /**
-     * Set this jMQTT object previous Qos value
-     * @var string $Qos
-     */
-    public function setPrevQos($PrevQos) {
-        $this->setCache('prevQos', $PrevQos);
+        $this->setConfiguration(self::CONF_KEY_QOS, $Qos);
     }
     
     /**
@@ -1334,7 +1486,7 @@ class jMQTT extends eqLogic {
      * @return string
      */
     public function getAutoAddCmd() {
-        return $this->getConfiguration('auto_add_cmd', '1');
+        return $this->getConf(self::CONF_KEY_AUTO_ADD_CMD);
     }
 
     /**
@@ -1342,32 +1494,22 @@ class jMQTT extends eqLogic {
      * @var string $auto_add_cmd
      */
     public function setAutoAddCmd($auto_add_cmd) {
-        $this->setConfiguration('auto_add_cmd', $auto_add_cmd);
-    }
-    
-    /**
-     * Get this jMQTT object previous enable status
-     * @return string
-     */
-    public function getPrevIsEnable() {
-        return $this->getCache('prevIsEnable', '1');
-    }
-    
-    /**
-     * Set this jMQTT object previous enable status
-     * @var string $prevIsEnable
-     */
-    public function setPrevIsEnable($prevIsEnable) {
-        $this->setCache('prevIsEnable', $prevIsEnable);
+        $this->setConfiguration(self::CONF_KEY_AUTO_ADD_CMD, $auto_add_cmd);
     }
     
     /**
      * Get this jMQTT object broker topic
-     * (built from the MQTT id used by the broker client to connect to the broker)
+     * Built from the MQTT id used by the broker client to connect to the broker or from the
+     * given mqtt id if provided.
+     * @var string $mqttId
      * @return string
      */
-    public function getBrokerTopic() {
-        return $this->getMqttId() . '/#';
+    public function getBrokerTopic($mqttId='') {
+        if ($mqttId == '') {
+            $mqttId = $this->getMqttId();
+        }
+        
+        return $mqttId . '/#';
     }
 
     /**
@@ -1376,7 +1518,10 @@ class jMQTT extends eqLogic {
      * @throws Exception if the broker is not found
      */
     public function getBroker() {
-        return self::getBrokerFromId($this->getBrkId());
+        if ($this->getType() == self::TYP_BRK)
+            return $this;
+        else
+            return self::getBrokerFromId($this->getBrkId());
     }
     
     /**
@@ -1389,7 +1534,7 @@ class jMQTT extends eqLogic {
         /** @var jMQTT $broker */
         $broker = jMQTT::byId($id);
         if (!is_object($broker)) {
-            throw new Exception(__('Pas de broker avec l\'id fourni', __FILE__) . ' (id=' . 'id' . ')');
+            throw new Exception(__('Pas de broker avec l\'id fourni', __FILE__) . ' (id=' . $id . ')');
         }  
         return $broker;
     }
@@ -1415,54 +1560,6 @@ class jMQTT extends eqLogic {
         return $this->getMqttId() . '/' . self::API_TOPIC;
     }
 
-    /**
-     * Provides dependancy information
-     */
-    public static function dependancy_info() {
-        if (! isset(self::$_depLogFile))
-            self::$_depLogFile = __CLASS__ . '_dep';
-
-        if (! isset(self::$_depProgresFile))
-            self::$_depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/progress_dep.txt';
-
-        $return = array();
-        $return['log'] = log::getPathToLog(self::$_depLogFile);
-        $return['progress_file'] = self::$_depProgressFile;
-
-        // get number of mosquitto packages installed (should be 2 or 3 at least depending
-        // on the installMosquitto config parameter)
-        $mosq = exec(system::get('cmd_check') . 'mosquitto | wc -l');
-        $minMosq = config::byKey('installMosquitto', 'jMQTT', 1) ? 3 : 2;
-
-        // is lib PHP exists?
-        $libphp = extension_loaded('mosquitto');
-
-        // build the state status; if nok log debug information
-        if ($mosq >= $minMosq && $libphp) {
-            $return['state'] = 'ok';
-        }
-        else {
-            $return['state'] = 'nok';
-            log::add('jMQTT', 'debug', 'dependancy_info: NOK');
-            log::add('jMQTT', 'debug',
-                '   * Nb of mosquitto related packaged installed: ' . $mosq . ' (shall be greater equal than ' . $minMosq .
-                ')');
-            log::add('jMQTT', 'debug', '   * Mosquitto extension loaded: ' . $libphp);
-        }
-
-        return $return;
-    }
-
-    /**
-     * Provides dependancy installation script
-     */
-    public static function dependancy_install() {
-        log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
-        log::remove(self::$_depLogFile);
-        return array(
-            'script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile . ' ' .
-            config::byKey('installMosquitto', 'jMQTT', 1),'log' => log::getPathToLog(self::$_depLogFile));
-    }
     
     /**
      * Disable the equipment automatic inclusion mode and inform the desktop page
@@ -1470,15 +1567,12 @@ class jMQTT extends eqLogic {
      */
     public static function disableIncludeMode($option) {
         $broker = self::getBrokerFromId($option['id']);
-        $broker->log('info', 'Disable equipment automatic inclusion mode');
         $broker->setIncludeMode(0);
-        $broker->save(true);
-
-        // Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
-        event::add('jMQTT::disableIncludeMode', array('brkId' => $broker->getId()));
 
         // Restart the daemon
-        $broker->startDaemon(true);
+        if ($broker->isDaemonToBeRestarted()) {
+            $broker->startDaemon(true);
+        }
     }
 
     /**
@@ -1490,7 +1584,6 @@ class jMQTT extends eqLogic {
 
         // Update the include_mode configuration parameter
         $this->setIncludeMode($mode);
-        $this->save(true);
         
         // A cron process is used to reset the automatic mode after a delay
 
@@ -1502,7 +1595,6 @@ class jMQTT extends eqLogic {
 
         // Create and configure the cron process when automatic mode is enabled
         if ($mode == 1) {
-            $this->log('info', 'Enable equipment automatic inclusion mode');
             $cron = new cron();
             $cron->setClass('jMQTT');
             $cron->setOption(array('id' => $this->getId()));
@@ -1511,9 +1603,6 @@ class jMQTT extends eqLogic {
             $cron->setSchedule(cron::convertDateToCron(strtotime('now') + 150));
             $cron->setOnce(1);
             $cron->save();
-        }
-        else {
-            $this->log('info', 'Disable equipment automatic inclusion mode');
         }
 
         // Restart the MQTT deamon to manage topic subscription
@@ -1524,8 +1613,13 @@ class jMQTT extends eqLogic {
      * Set the include mode of this broker object
      * @param int $mode 0 or 1
      */
-    private function setIncludeMode($mode) {
-        $this->setConfiguration('include_mode', $mode);
+    public function setIncludeMode($mode) {
+        $this->setCache('include_mode', $mode);
+        $this->log('info', ($mode ? 'active' : 'désactive') . " le mode d'inclusion automatique");
+        if (! $mode) {
+            // Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
+            event::add('jMQTT::disableIncludeMode', array('brkId' => $this->getId()));
+        }
     }
     
     /**
@@ -1533,7 +1627,7 @@ class jMQTT extends eqLogic {
      * @return int 0 or 1
      */
     public function getIncludeMode() {
-        return $this->getConfiguration('include_mode', 0);
+        return $this->getCache('include_mode', 0);
     }
     
     /**
@@ -1542,5 +1636,14 @@ class jMQTT extends eqLogic {
      */
     private function isIncludeMode() {
         return ($this->getIncludeMode() == 1);
+    }
+
+    /**
+     * To log the traceback (utility function for debug purpose)
+     */
+    private static function log_backtrace() {
+        $e = new Exception();
+        $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
+        log::add('jMQTT', 'debug', $s);
     }
 }

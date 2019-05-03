@@ -1,4 +1,3 @@
-
 /* This file is part of Jeedom.
  *
  * Jeedom is free software: you can redistribute it and/or modify
@@ -48,12 +47,28 @@ window.addEventListener("popstate", function(event) {
     }
 });
 
-function callJmqttAjax(_params) {
-    var params = $.extend({global: false}, jeedom.private.default_params, _params || {});
-    var paramsAJAX = jeedom.private.getParamsAJAX(params);
-    paramsAJAX.url = 'plugins/jMQTT/core/ajax/jMQTT.ajax.php';
-    paramsAJAX.data = _params.data;
-    $.ajax(paramsAJAX);
+function callPluginAjax(_params) {
+    $.ajax({
+        async: true,
+        global: false,
+        type: "POST",
+        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+        data: _params.data,
+        dataType: 'json',
+        error: function (request, status, error) {
+            handleAjaxError(request, status, error);
+        },
+        success: function (data) { 
+            if (data.state != 'ok') {
+                $('#div_alert').showAlert({message: data.result, level: 'danger'});
+            }
+            else {
+                if (typeof _params.success === 'function') {
+                    _params.success(data.result);
+                }
+            }
+        }
+    });
 }
 
 // Rebuild the page URL from the current URL
@@ -294,7 +309,7 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
  *   . Show the fields depending on the type (broker or equipment)
  */
 function printEqLogic(_eqLogic) {
-
+    
     // Principle of the ordering algorithm is to associate an ordering string to
     // each command, and then ordering into alphabetical order
 
@@ -359,7 +374,7 @@ function printEqLogic(_eqLogic) {
         $('.typ-brk').show();
         $('#sel_icon_div').css("visibility", "hidden");
         $('#mqtttopic').prop('readonly', true);
-        var log = 'jMQTT_' + (_eqLogic.name || 'jeedom');
+        var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
         $('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
         $('.bt_plugin_conf_view_log').attr('data-log', log);
         $('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
@@ -398,7 +413,6 @@ function saveEqLogic(_eqLogic) {
  * addCmdToTable callback called by plugin.template: render eqLogic commands
  */
 function addCmdToTable(_cmd) {
-    console.log(_cmd);
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
     }
@@ -630,30 +644,19 @@ function changeIncludeMode() {
         configureIncludeModeDisplay(el.attr('brkId'),1);
     }
 
-    // Ajax call to inform the plugin core of the change
-    $.ajax({
-        type: "POST", 
-        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php", 
+    // Ajax call to inform the plugin core of the change   
+    callPluginAjax({
         data: {
             action: "changeIncludeMode",
             mode: el.attr('data-mode'),
             id: el.attr('brkId')
-        },
-        dataType: 'json',
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
-        },
-        success: function (data) { 
-            if (data.state != 'ok') {
-                $('#div_alert').showAlert({message: data.result, level: 'danger'});
-                return;
-            }
         }
     });    
 }
 
 // Update the broker icon and the include mode activation on reception of a new state event
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
+    showDaemonInfo(_options);
     setIncludeModeActivation(_options.brkId, _options.state);
     $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
 });

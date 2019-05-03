@@ -82,11 +82,17 @@ class jMQTTCmd extends cmd {
      */
     public function updateCmdValue($value, $jParent, $jOrder) {
 
-        // Update the configuration value that is displayed inside the equipment command tab
-        if ($this->getId() == '' || $this->getConfiguration('jParent', self::NOT_JSON_CHILD) != $jParent || $this->getConfiguration('jOrder', self::NOT_JSON_CHILD) != $jOrder) {
+        $to_save = false;
+        if ($this->getId() == '') {
+            $to_save = true;
+        }
+        if ($this->getConfiguration('jParent', self::NOT_JSON_CHILD) != $jParent || $this->getConfiguration('jOrder', self::NOT_JSON_CHILD) != $jOrder) {
             $this->setConfiguration('jParent', $jParent);
             $this->setConfiguration('jOrder', $jOrder);
-            $this->save();
+            $to_save = true;
+        }
+        if ($to_save) {
+            $this->save(); 
         }
         
         // Update the command value
