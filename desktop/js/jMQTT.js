@@ -269,37 +269,43 @@ $('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
 });
 
 $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
-    if (typeof $(this).attr('brkId') === 'undefined') {
-        if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
-            bootbox.confirm('{{Etes-vous sûr de vouloir supprimer le broker}}' + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
-                if (result) {
+    
+    function remove_jmqtt() {
+        jeedom.eqLogic.remove({
+            type: eqType,
+            id: $('.eqLogicAttr[data-l1key=id]').value(),
+            error: function (error) {
+                $('#div_alert').showAlert({message: error.message, level: 'danger'});
+            },
+            success: function () {
+                var url = initPluginUrl();
+                modifyWithoutSave = false;
+                url += '&removeSuccessFull=1';
+                loadPage(url);
+            }
+        });                                
+    }
+    
+    if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
+        var typ = $('.eqLogicAttr[data-l2key=type]').value() == 'broker' ? 'broker' : 'module';
+        bootbox.confirm('{{Etes-vous sûr de vouloir supprimer le }}' + typ + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
+            if (result) {
+                if (typ == 'broker') {
                     bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fa fa-warning"</i>' +
-                            '</span></td><td style="vertical-align:middle">' + '{{Tous les modules associés au broker vont être supprimés}}' +
-                            '...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
+                        '</span></td><td style="vertical-align:middle">' + '{{Tous les modules associés au broker vont être supprimés}}' +
+                        '...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
                         if (result) {
-                            jeedom.eqLogic.remove({
-                                type: eqType,
-                                id: $('.eqLogicAttr[data-l1key=id]').value(),
-                                error: function (error) {
-                                    $('#div_alert').showAlert({message: error.message, level: 'danger'});
-                                },
-                                success: function () {
-                                    var url = initPluginUrl();
-                                    modifyWithoutSave = false;
-                                    url += '&removeSuccessFull=1';
-                                    loadPage(url);
-                                }
-                            });                        
+                            remove_jmqtt();
                         }
                     });
                 }
-            });
-        } else {
-            $('#div_alert').showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
-        }
-    }
-    else {
-        $(this).click();
+                else {
+                    remove_jmqtt();
+                }
+            }
+        });
+    } else {
+        $('#div_alert').showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
     }
 });
 
