@@ -19,12 +19,17 @@
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 include_file('core', 'jMQTT', 'class', 'jMQTT');
 
-define('VERSION_MULTI_BROKER', 'multi_broker');
-
 /**
  * Migrate the plugin to the multi broker version
+ * Return without doing anything the multi broker version is already installed
  */
 function migrateToMultiBrokerVersion() {
+    
+    // Return if the multi broker version is already installed
+    $testId = 'HFI_(ikhj8%§Vjk';
+    if (config::byKey('mqttId', 'jMQTT', $testId) == $testId)
+        return;
+    
     // Try to identify which equipment can be converted to the broker
     // Should be the one containing the status command
     $mqttId = config::byKey('mqttId', 'jMQTT', 'jeedom');
@@ -86,25 +91,18 @@ function migrateToMultiBrokerVersion() {
         }
         $eqL->save();
     }
-    
-    // Save the major version of this plugin, to be able to know which version is installed
-    config::save('version', VERSION_MULTI_BROKER, 'jMQTT');
 }
 
 function jMQTT_install() {
-    // multi broker support is not already available => run the migration
-    if (config::byKey('version', 'jMQTT') == '' && count(jMQTT::getBrokers()) == 0) {
-        migrateToMultiBrokerVersion();
-    }
+    migrateToMultiBrokerVersion();
+
     // Start daemons
     jMQTT::checkAllDaemons();
 }
 
 function jMQTT_update() {
-    // multi broker support is not already available => run the migration
-    if (config::byKey('version', 'jMQTT') == '' && count(jMQTT::getBrokers()) == 0) {
-        migrateToMultiBrokerVersion();
-    }
+    migrateToMultiBrokerVersion();
+    
     // Start daemons
     jMQTT::checkAllDaemons();
 }
