@@ -94,14 +94,15 @@ function migrateToMultiBrokerVersion() {
 }
 
 function jMQTT_install() {
-    migrateToMultiBrokerVersion();
-
-    // Start daemons
-    jMQTT::checkAllDaemons();
+    jMQTT_update();
 }
 
 function jMQTT_update() {
     migrateToMultiBrokerVersion();
+    
+    // force the refresh of the dependancy info
+    // otherwise the cache value is kept
+    plugin::byId('jMQTT')->dependancy_info(true);
     
     // Start daemons
     jMQTT::checkAllDaemons();
