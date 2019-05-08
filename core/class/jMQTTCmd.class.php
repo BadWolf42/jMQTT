@@ -40,6 +40,7 @@ class jMQTTCmd extends cmd {
     public static function newCmd($eqLogic, $name, $topic) {
 
         $cmd = new jMQTTCmd();
+        $cmd->setEqLogic($eqLogic);
         $cmd->setEqLogic_id($eqLogic->getId());
         $cmd->setEqType('jMQTT');
         $cmd->setIsVisible(1);
@@ -51,18 +52,16 @@ class jMQTTCmd extends cmd {
         $cmd->setConfiguration('parseJson', '0');
         $cmd->setConfiguration('prevParseJson', 0);
 
-        // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
-        if (($newName = self::checkCmdName($eqLogic, $name)) !== true) {
-            $name = $newName;
-        }
-        $cmd->setName($name);
         
-        $eqLogic->log('info', 'Creating command of type info ' . $eqLogic->getName() . '|' . $name);
+        // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
+        $cmd->setName(self::checkCmdName($eqLogic, $name));
+        
+        $eqLogic->log('info', 'Creating command of type info ' . $eqLogic->getName() . '|' . $cmd->getName());
 
         // Advise the desktop page (jMQTT.js) that a new command has been added
         event::add('jMQTT::cmdAdded',
                    array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(),
-                         'cmd_name' => $name));
+                           'cmd_name' => $cmd->getName()));
 
         return $cmd;
     }
@@ -267,6 +266,12 @@ class jMQTTCmd extends cmd {
         $this->setLogicalId($this->getTopic());
     }
 
+    public function setName($name) {
+        // Since 3.3.22, the core removes / from command names
+        $name = str_replace("/", ":", $name);
+        parent::setName($name);
+    }
+    
     /**
      * Set this command as irremovable
      */
@@ -283,9 +288,9 @@ class jMQTTCmd extends cmd {
     }
     
     /**
-     * @param jMQTT jMQTT broker to log to
+     * @param jMQTT eqLogic the command belongs to
      * @param string $name
-     * @return boolean|string true if the command name is valid, corrected cmd name otherwise
+     * @return string input name if the command name is valid, corrected cmd name otherwise
      */
     private static function checkCmdName($eqLogic, $name) {
         if (! isset(self::$_cmdNameMaxLength)) {
@@ -299,6 +304,6 @@ class jMQTTCmd extends cmd {
         if (strlen($name) > self::$_cmdNameMaxLength)
             return hash("md4", $name);
         else
-            return true;
+            return $name;
     }
 }
