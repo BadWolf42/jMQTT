@@ -8,7 +8,90 @@ $eqNonBrokers = jMQTT::getNonBrokers();
 /** @var jMQTT[] $eqBrokers */
 $eqBrokers = jMQTT::getBrokers();
 $node_images = scandir(__DIR__ . '/../../resources/images/');
+?>
 
+<style>
+
+#in_searchEqlogic {
+  margin-bottom: 20px;
+}
+.eqLogicThumbnailContainer div.cursor img {
+  padding-top: 0px;
+}
+.eqLogicThumbnailContainer .eqLogicDisplayCard,
+.eqLogicDisplayAction {
+  height: 155px !important;
+}
+
+.eqLogicDisplayCard.disableCard {
+    opacity: 0.35;
+}
+
+.eqLogicDisplayCard > div.auto {
+    position:absolute;
+    top:5px;
+    width:100%;
+    text-align:center;
+    margin-left:-4px;
+}
+.eqLogicDisplayCard .auto .fas {
+    transform: rotate(90deg);
+}
+
+.eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
+    font-size:20px !important;
+    color: #8000FF;/*var(--logo-primary-color);*/
+}
+
+/* .row div.eqLogicAction.card.include { */
+/*  background-color: #8000FF !important; */
+/* } */
+.row div.eqLogicDisplayAction.card.include .fa {
+    background-color: #8000FF !important;
+    font-size: 48px !important;
+    padding: 5px;
+}
+
+.row div.eqLogicDisplayAction.card.include span {
+    font-weight: bold;
+    color: #8000FF;
+}
+
+.row div.eqLogicDisplayAction.card:not(.include ) {
+    background-color: #FFFFFF;
+}
+
+.eqLogicDisplayAction.disableCard {
+    opacity: 0.35;
+    cursor: default;
+}
+
+<?php 
+if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayCard {";
+    echo "height: 155px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+    
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayAction,";
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.auto {";
+    echo "background-color:rgba(0, 0, 0, 0) !important;";
+    echo "color:#ccc !important;";
+    echo "border: 0px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicAction {";
+    echo "background-color:rgba(0, 0, 0, 0) !important;";
+    echo "color:#ccc !important;";
+    echo "border: 0px !important;";
+    echo "min-height: 0px !important;";
+    echo "}";
+}
+?>
+</style>
+
+<?php
 /*
  * $plugin = plugin::byId('jMQTT');
  * $plugin->callInstallFunction('update', true);
@@ -208,79 +291,9 @@ function displayEqLogicCard($eqL, $node_images) {
 <?php include_file('3rdparty', 'jquery.treegrid.min', 'js', 'jMQTT'); ?>
 <?php include_file('3rdparty', 'jquery.treegrid.bootstrap3', 'js', 'jMQTT'); ?>
 
-<?php // The !important keyword is used as some themes (such as darksobre) overrides below property with this keyword (fix #37) ?>
-<style>
-
-#in_searchEqlogic {
-  margin-bottom: 20px;
-}
-.eqLogicThumbnailContainer div.cursor img {
-  padding-top: 0px;
-}
-.eqLogicThumbnailContainer .eqLogicDisplayCard,
-.eqLogicDisplayAction {
-  height: 155px !important;
-}
-
-.eqLogicDisplayCard.disableCard {
-    opacity: 0.35;
-}
-
-.eqLogicDisplayCard > div.auto {
-    position:absolute;
-    top:5px;
-    width:100%;
-    text-align:center;
-    margin-left:-4px;
-}
-.eqLogicDisplayCard .auto .fas {
-    transform: rotate(90deg);
-}
-
-.eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
-    font-size:20px !important;
-    color: #8000FF;/*var(--logo-primary-color);*/
-}
-
-.row div.eqLogicAction.card.include {
-	background-color: #8000FF !important;
-}
-
-.row div.eqLogicAction.card:not(.include ) {
-	background-color: #FFFFFF;
-}
-
-.eqLogicAction.disableCard {
-    opacity: 0.35;
-    cursor: default;
-}
-
-<?php 
-if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
-    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayCard {";
-    echo "height: 155px !important;";
-    echo "min-height: 0px !important;";
-    echo "}";
-    
-    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayAction,";
-    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.auto {";
-    echo "background-color:rgba(0, 0, 0, 0) !important;";
-    echo "color:#ccc !important;";
-    echo "border: 0px !important;";
-    echo "min-height: 0px !important;";
-    echo "}";
-
-    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicAction {";
-    echo "background-color:rgba(0, 0, 0, 0) !important;";
-    echo "color:#ccc !important;";
-    echo "border: 0px !important;";
-    echo "min-height: 0px !important;";
-    echo "}";
-}
-?>
-</style>
-
 <script>
+
+$('.eqLogicThumbnailContainer').packery();
 
 <?php
 // Initialise the automatic inclusion button display according to include_mode configuration parameter
