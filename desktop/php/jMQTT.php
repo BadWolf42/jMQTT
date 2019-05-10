@@ -43,9 +43,6 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
     color: #8000FF;/*var(--logo-primary-color);*/
 }
 
-/* .row div.eqLogicAction.card.include { */
-/*  background-color: #8000FF !important; */
-/* } */
 .row div.eqLogicDisplayAction.card.include .fa {
     background-color: #8000FF !important;
     font-size: 48px !important;
