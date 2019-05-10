@@ -40,13 +40,12 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
 
 .eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
     font-size:20px !important;
-    color: #8000FF;/*var(--logo-primary-color);*/
+    color: #8000FF;
 }
 
 .row div.eqLogicDisplayAction.card.include .fa {
-    background-color: #8000FF !important;
-    font-size: 48px !important;
-    padding: 5px;
+    color: #8000FF !important;
+    font-size: 52px !important;
 }
 
 .row div.eqLogicDisplayAction.card.include span {
