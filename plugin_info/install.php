@@ -26,10 +26,10 @@ include_file('core', 'jMQTT', 'class', 'jMQTT');
 function migrateToMultiBrokerVersion() {
     
     // Return if the multi broker version is already installed
-    $testId = 'HFI_(ikhj8%§Vjk';
-    if (config::byKey('mqttId', 'jMQTT', $testId) == $testId)
+    $res = config::searchKey('mqttId', 'jMQTT');
+    if (empty($res))
         return;
-    
+            
     // Try to identify which equipment can be converted to the broker
     // Should be the one containing the status command
     $mqttId = config::byKey('mqttId', 'jMQTT', 'jeedom');
