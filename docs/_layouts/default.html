@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-    <div id="div_summary" style="margin-top:-45px;padding-bottom: 45px;"></div>
+    <div id="div_summary" style="padding-bottom: 45px;"></div>
   </div>
   <div>
     <i class="material-icons hide-on-print" id="bt_up" style="position:fixed;bottom:10px;right:10px;cursor: pointer;font-size:3em;">keyboard_arrow_up</i>
@@ -80,23 +80,28 @@
 <script type="text/javascript" src="../assets/js/jquery-2.1.1.min.js"></script>
 <script type="text/javascript" src="../assets/js/materialize.min.js"></script>
 <script type="text/javascript" src="../assets/js/jquery.inview.min.js"></script>
-<script type="text/javascript" src="../assets/js/jquery.toc.js"></script>
+<script type="text/javascript" src="../assets/js/jquery.toc2.min.js"></script>
 <script type="text/javascript">
-  $(document).ready(function() {
-   var title = '{{site.github.project_title}}';
-   title = title.replace('plugin-','');
-   $('#doc_title').append(title[0].toUpperCase() + title.substring(1))
-   document.title = 'Documentation Jeedom | '+ title[0].toUpperCase() + title.substring(1)
-   $(".button-collapse").sideNav();
-   $('meta[name=description]').remove();
-   $('head').append( '<meta name="description" content="Ceci est la documentation du plugin "'+ title[0].toUpperCase() + title.substring(1)+'", lier à la solution domotique Jeedom.">' ); 
-   $('img').addClass('responsive-img');
-   $('#div_content table').addClass('striped');
-   init();
-   var regex = /\/([a-z]{2}_[A-Z]{2})\//g;
-   var corresp  = regex.exec(window.location.href)
-   if(corresp !== null && corresp[1]){
-    $('.sel_lang').val(corresp[1])
+var title = '{{site.github.project_title}}';
+title = title.replace('plugin-','');
+var toc_options = {
+  selector: 'h1, h2, h3',
+  scope: '#div_content',
+  toctitle: '<h2 style="padding-left:5px !important;">'+title+'</h2>'
+};
+$(document).ready(function() {
+  $('#doc_title').append(title[0].toUpperCase() + title.substring(1));
+  document.title = 'Documentation Jeedom | '+ title[0].toUpperCase() + title.substring(1);
+  $(".button-collapse").sideNav();
+  $('meta[name=description]').remove();
+  $('head').append( '<meta name="description" content="Ceci est la documentation du plugin "'+ title[0].toUpperCase() + title.substring(1)+'", lier à la solution domotique Jeedom.">' ); 
+  $('img').addClass('responsive-img');
+  $('#div_content table').addClass('striped');
+  init(toc_options);
+  var regex = /\/([a-z]{2}_[A-Z]{2})\//g;
+  var corresp  = regex.exec(window.location.href)
+  if(corresp !== null && corresp[1]){
+    $('.sel_lang').val(corresp[1]);
   }
   $('select').material_select();
   $('.sel_lang').on('change',function(){
@@ -107,72 +112,48 @@
       url += 'index';
     }
     window.location.href = url;
-  })
+  });
   $('#bt_up').on('click',function(){
     window.scrollTo(0, 0);
-  })
-  $(window).on("orientationchange", function (event) {
-    init();
   });
-  $(window).on("resize", function (event) {
-    init();
+  $(window).on("orientationchange", function(event) {
+    init(toc_options);
   });
-  function init(){
+  $(window).on("resize", function(event) {
+    init(toc_options);
+  });
+  function init(_toc_options){
     $('#div_summary2,#div_summary,#div_summary3').empty();
-    var titlePlugin = title //.charAt(0).toUpperCase() + title.substring(1).toLowerCase()
+    var titlePlugin = title; //.charAt(0).toUpperCase() + title.substring(1).toLowerCase()
     if(window.innerWidth < 992){
       $('#div_main').addClass('container');
-      $('#div_content').toc({
-        renderIn : "#div_summary2"
-      });
+      $('#div_summary2').initTOC(_toc_options);
     }else{
      $('#div_main').removeClass('container');
-     $('#div_content').toc({
-      renderIn : "#div_summary"
-    });
-   }
-    $('#div_content').toc({
-      renderIn : "#div_summary3"
-    });
-   $('#div_summary #toctitle').html('<h2 style="padding-left:5px !important;">'+titlePlugin+'</h2>');
-   $('#div_summary2 #toctitle').html('<h2 style="padding-left:5px !important;">'+titlePlugin+'</h2>');
-   $('#div_summary3 #toctitle').html('<h2 style="padding-left:5px !important;">'+titlePlugin+'</h2>');
-   $('.toclevel-2').parent().css('color', 'blue');
- }
- var i = 1, j = 1; k = 1;
- $('h1, h2, h3', $('#div_content')).each(function(){
-  if($(this)[0].tagName.toLowerCase() == 'h1'){
-    $('#'+$(this).attr('id')).text(i + ' ' + $(this).text());
-    i++; j=1; k=1;
-  } 
-  if($(this)[0].tagName.toLowerCase() == 'h2'){
-    $('#'+$(this).attr('id')).text( (i-1) + '.' + j + '. ' + $(this).text()); 
-    j++; k=1;
-  }
-  if($(this)[0].tagName.toLowerCase() == 'h3'){
-      $('#'+$(this).attr('id')).text( (i-1) + '.' + (j-1) + '.' + k + '. ' + $(this).text()); 
-      k++;
+     $('#div_summary').initTOC(_toc_options);
     }
-});  
+    $('#div_summary3').initTOC(_toc_options);
+    $('.toclevel-2').parent().css('color', 'blue');
+  }
 });
 
-  var idChapitre = null, nbrChapitre = 0, idAncre = null;
-  $('#div_content h1, #div_content h2').on('inview',function(event, isInView){
-    nbrChapitre = $('a.active').length;
-    idAncre = $(this).attr('id');
-    if(isInView){
-      $('a[href="#'+ idAncre +'"]').addClass('active');
-      if(idChapitre != null){
-        $('a[href="#'+ idChapitre +'"]').removeClass('active');
-        idChapitre = null;
-      }
-    }else if (nbrChapitre > 1){
-      $('a[href="#'+ idAncre +'"]').removeClass('active');
-    }else{
-      idChapitre = idAncre;
+var idChapitre = null, nbrChapitre = 0, idAncre = null;
+$(toc_options.scope).find(toc_options.selector).on('inview',function(event, isInView){
+  nbrChapitre = $('a.active').length;
+  idAncre = $(this).attr('id');
+  if(isInView){
+    $('a[href="#'+ idAncre +'"]').addClass('active');
+    if(idChapitre != null){
+      $('a[href="#'+ idChapitre +'"]').removeClass('active');
+      idChapitre = null;
     }
-    $('#div_summary3 a').removeClass('active');
-  });
+  }else if (nbrChapitre > 1){
+    $('a[href="#'+ idAncre +'"]').removeClass('active');
+  }else{
+    idChapitre = idAncre;
+  }
+  $('#div_summary3 a').removeClass('active');
+});
 </script>
 </body>
 </html>
