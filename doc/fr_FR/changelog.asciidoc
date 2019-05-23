@@ -1,5 +1,12 @@
 == Change log
 
+.2019-05-23
+    - Correction du lien vers la doc
+
+.2019-05-14 (beta)
+    - Amélioration https://github.com/domotruc/jMQTT/issues/63[#63]: ajout du support multi broker
+    - Amélioration https://github.com/domotruc/jMQTT/issues/54[#54]: commande information donnant le status de connexion au broker
+
 .2019-04-10
     - Correction de https://github.com/domotruc/jMQTT/issues/70[#70]: problème de reconnaissance des topics avec accents
 
