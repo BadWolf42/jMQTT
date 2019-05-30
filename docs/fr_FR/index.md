@@ -435,6 +435,9 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+#### 2019-xx (beta)
+  - Améioration [\#74](https://github.com/domotruc/jMQTT/issues/74): mise à jour de lastCommunication sur publication d'un message
+
 #### 2019-05-14 (beta)
   - Amélioration [\#63](https://github.com/domotruc/jMQTT/issues/63): ajout du support multi broker
   - Amélioration [\#54](https://github.com/domotruc/jMQTT/issues/54): commande information donnant le status de connexion au broker
