@@ -1124,6 +1124,12 @@ class jMQTT extends eqLogic {
             }
         }
         
+        $d = date('Y-m-d H:i:s');
+        $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+        if ($this->getType() == self::TYP_EQPT) {
+            $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+        }
+        
         $client->disconnect();
         
         $this->log('debug', 'Message publié');
