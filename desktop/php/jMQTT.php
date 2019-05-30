@@ -205,7 +205,7 @@ function displayEqLogicCard($eqL, $node_images) {
         <?php
         foreach ($eqBrokers as $eqB) {
             echo '<div class="col-lg-12 col-md-12 col-sm-12">';
-            echo '<legend><i class="fas fa-table"></i> {{Modules connectés à}} ' . $eqB->getName() . '</legend>';
+            echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} ' . $eqB->getName() . '</legend>';
             echo '<input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />';
             echo '<div class="eqLogicThumbnailContainer">';
             displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . $eqB->getId() . '"', 'eqLogicDisplayAction logoSecondary', true);
