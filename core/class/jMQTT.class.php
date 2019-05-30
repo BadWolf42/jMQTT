@@ -98,6 +98,12 @@ class jMQTT extends eqLogic {
     private $_client;
 
     /**
+     * Broker jMQTT object related to this object
+     * @var jMQTT broker object
+     */
+    private $_broker;
+    
+    /**
      * Log file related to this broker.
      * Set in the daemon method; it is only visible from functions
      * that are executed on the same thread as the daemon method.
@@ -794,6 +800,7 @@ class jMQTT extends eqLogic {
     
     /**
      * Create and return an MQTT client based on the plugin parameters (mqttUser and mqttPass) and the given ID
+     * This is the responsability of the caller to insure that this object is of type broker
      *
      * @param string $id
      *            id of connexion of the client to the broker
@@ -1058,7 +1065,7 @@ class jMQTT extends eqLogic {
     }
     
     /**
-     * Publish a given message to the MQTT broker
+     * Publish a given message to the MQTT broker attached to this object
      *
      * @param string $id
      *            id of the command
@@ -1074,8 +1081,8 @@ class jMQTT extends eqLogic {
      *            whether or not the message is a retained message ('0' or '1')
      */
     public function publishMosquitto($id, $eqName, $topic, $payload, $qos, $retain) {
-        $mosqHost = $this->getMqttAddress();
-        $mosqPort = $this->getMqttPort();
+        $mosqHost = $this->getBroker()->getMqttAddress();
+        $mosqPort = $this->getBroker()->getMqttPort();
         
         $payloadMsg = (($payload == '') ? '(null)' : $payload);
         $this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg);
@@ -1083,11 +1090,11 @@ class jMQTT extends eqLogic {
         // To identify the sender (in case of debug need), bvuild the client id based on the jMQTT connexion id
         // and the command id.
         // Concatenates a random string to have a unique id (in case of burst of commands, see issue #23).
-        $mosqId = $this->getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
+        $mosqId = $this->getBroker()->getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
         
         // The object variable $_client is not visible here as the current function
         // is not executed on the same thread as the deamon. So we do create a new client.
-        $client = $this->getMosquittoClient($mosqId);
+        $client = $this->getBroker()->getMosquittoClient($mosqId);
         
         $client->onConnect(
             function () use ($client, $topic, $payload, $qos, $retain) {
@@ -1171,7 +1178,7 @@ class jMQTT extends eqLogic {
      */
     public function getDaemonLogFile($force=false) {
         if (!isset($this->_log) || $force) {
-            $broker = ($this->getType() == self::TYP_BRK) ? $this : $this->getBroker();
+            $broker = $this->getBroker();
             $this->_log = 'jMQTT_' . str_replace(' ', '_', $broker->getName());
         }
         return $this->_log;
@@ -1518,10 +1525,13 @@ class jMQTT extends eqLogic {
      * @throws Exception if the broker is not found
      */
     public function getBroker() {
-        if ($this->getType() == self::TYP_BRK)
-            return $this;
-        else
-            return self::getBrokerFromId($this->getBrkId());
+        if (! isset($this->_broker)) {
+            if ($this->getType() == self::TYP_BRK)
+                $this->_broker = $this;
+            else
+                $this->_broker = self::getBrokerFromId($this->getBrkId());
+        }
+        return $this->_broker;
     }
     
     /**

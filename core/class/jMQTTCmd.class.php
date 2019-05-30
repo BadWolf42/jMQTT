@@ -196,7 +196,7 @@ class jMQTTCmd extends cmd {
         }
 
         $request = jeedom::evaluateExpression($request);
-        $this->getEqLogic()->getBroker()->publishMosquitto(
+        $this->getEqLogic()->publishMosquitto(
             $this->getId(), $this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
         return $request;
@@ -243,7 +243,7 @@ class jMQTTCmd extends cmd {
                 // Otherwise, this last value remains retained at broker level
                 $eqLogic->log('info',
                          $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
-                jMQTT::publishMosquitto($this->getId(), $eqName, $this->getTopic(), '', 1, 1);
+                $eqLogic->publishMosquitto($this->getId(), $eqName, $this->getTopic(), '', 1, 1);
             }
             else
                 $eqLogic->log('info', $cmdLogName . ': mode retain activé');
