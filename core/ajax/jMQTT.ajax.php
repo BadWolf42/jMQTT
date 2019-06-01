@@ -54,26 +54,9 @@ try {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
         $broker = jMQTT::getBrokerFromId(init('id'));
-        ajax::success($broker->startDaemon(true, true));
+        ajax::success($broker->startDaemon(true));
     }
-    
-    if (init('action') == 'daemonStop') {
-        if (!isConnect('admin')) {
-            throw new Exception(__('401 - Accès non autorisé', __FILE__));
-        }
-        $broker = jMQTT::getBrokerFromId(init('id'));
-        $broker->setIncludeMode(0);
-        ajax::success($broker->stopDaemon());
-    }
-    
-    if (init('action') == 'daemonChangeAutoMode') {
-        if (!isConnect('admin')) {
-            throw new Exception(__('401 - Accès non autorisé', __FILE__));
-        }
-        $broker = jMQTT::getBrokerFromId(init('id'));
-        ajax::success($broker->setDaemonAutoModeAndSave(init('mode')));
-    }
-    
+        
     throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {

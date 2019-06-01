@@ -1,6 +1,6 @@
 <br/>
 <div class="row">
-    <div class="col-md-8 col-sm-12">
+    <div class="col-md-6 col-sm-12">
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -15,8 +15,6 @@
                                 <th>{{Configuration}}</th>
                                 <th>{{Statut}}</th>
                                 <th>{{(Re)Démarrer}}</th>
-                                <th>{{Arrêter}}</th>
-                                <th>{{Gestion automatique}}</th>
                                 <th>{{Dernier lancement}}</th>
                             </tr>
                         </thead>
@@ -25,8 +23,6 @@
                                 <td class="daemonLaunchable"></td>
                                 <td class="daemonState"></td>
                                 <td><a class="btn btn-success btn-sm bt_startDaemon" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
-                                <td><a class="btn btn-danger btn-sm bt_stopDaemon" style="position:relative;top:-5px;"><i class="fa fa-stop"></i></a></td>
-                                <td><a class="btn btn-sm bt_changeAutoMode" style="position:relative;top:-5px;"></a></td>
                                 <td class="daemonLastLaunch"></td>
                             </tr>
                         </tbody>
@@ -35,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 col-sm-12">
+    <div class="col-md-6 col-sm-12">
         <div class="panel panel-primary" id="div_brokerLog">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -145,18 +141,13 @@
 var timeout_refreshDaemonInfo = null;
 
 function showDaemonInfo(data) {
-	var nok = false;          
     switch(data.launchable) {
         case 'ok':
             $('.bt_startDaemon').show();
             $('.daemonLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
             break;
         case 'nok':
-            if(data.auto == 1) {
-                nok = true;
-            }
             $('.bt_startDaemon').hide();
-            $('.bt_stopDaemon').hide();
             $('.daemonLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
             break;
         default:
@@ -166,46 +157,22 @@ function showDaemonInfo(data) {
     switch (data.state) {
         case 'ok':
             $('.daemonState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
+            $("#div_broker_daemon").closest('.panel').removeClass('panel-warning').removeClass('panel-danger').addClass('panel-success');
             break;
         case 'pok':
-            if (data.auto == 1) {
-                nok = true;
-            }
             $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
+            $("#div_broker_daemon").closest('.panel').removeClass('panel-danger').removeClass('panel-success').addClass('panel-warning');
             break;
         case 'nok':
-            if (data.auto == 1) {
-                nok = true;
-            }
             $('.daemonState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
+            $("#div_broker_daemon").closest('.panel').removeClass('panel-warning').removeClass('panel-success').addClass('panel-danger');
             break;
         default:
             $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
     }
     
     $('.daemonLastLaunch').empty().append(data.last_launch);
-    if (data.auto == 1) {
-        $('.bt_stopDaemon').hide();
-        $('.bt_changeAutoMode').removeClass('btn-success').addClass('btn-danger');
-        $('.bt_changeAutoMode').attr('data-mode',0);
-        $('.bt_changeAutoMode').html('<i class="fa fa-times"></i> {{Désactiver}}');
-    }
-    else {
-        if (data.launchable == 'ok' && data.state != 'nok') {
-            $('.bt_stopDaemon').show();
-        }
-        $('.bt_changeAutoMode').removeClass('btn-danger').addClass('btn-success');
-        $('.bt_changeAutoMode').attr('data-mode',1);
-        $('.bt_changeAutoMode').html('<i class="fa fa-magic"></i> {{Activer}}');
-    }
     
-    if (!nok) {
-        $("#div_broker_daemon").closest('.panel').removeClass('panel-danger').addClass('panel-success');
-    }
-    else {
-        $("#div_broker_daemon").closest('.panel').removeClass('panel-success').addClass('panel-danger');
-    }
-
     if ($("#div_broker_daemon").is(':visible')) {
         clearTimeout(timeout_refreshDaemonInfo);
         timeout_refreshDaemonInfo = setTimeout(refreshDaemonInfo, 5000);
@@ -239,33 +206,6 @@ $('.bt_startDaemon').on('click',function(){
         data: {
             action: 'daemonStart',
             id: getUrlVars('id'),
-        },
-        success: function(data) {
-            refreshDaemonInfo();
-        }
-    });
-});
-
-$('.bt_stopDaemon').on('click',function(){
-    clearTimeout(timeout_refreshDaemonInfo);
-    callPluginAjax({
-        data: {
-            action: 'daemonStop',
-            id: getUrlVars('id'),
-        },
-        success: function(data) {
-            refreshDaemonInfo();
-        }
-    });
-});
-
-$('.bt_changeAutoMode').on('click',function(){
-    clearTimeout(timeout_refreshDaemonInfo);
-    callPluginAjax({
-        data: {
-            action: 'daemonChangeAutoMode',
-            id: getUrlVars('id'),
-            mode: $(this).attr('data-mode')
         },
         success: function(data) {
             refreshDaemonInfo();

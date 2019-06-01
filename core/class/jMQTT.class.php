@@ -46,7 +46,6 @@ class jMQTT extends eqLogic {
     const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
     const CONF_KEY_API = 'api';
     const CONF_KEY_LAST_CONNECT_TIME = 'lastClientConnectTime';
-    const CONF_KEY_DAEMON_AUTO_MODE = 'daemonAutoMode';
     
     const CONF_KEY_OLD = 'old';
     const CONF_KEY_NEW = 'new';
@@ -274,7 +273,7 @@ class jMQTT extends eqLogic {
         // Check $this->getBrkId() to avoid restarting daemon at broker creation
         if (isset($this->_post_data['action']) && $this->getBrkId() > 0 && $this->_post_data['action'] == self::POST_ACTION_RESTART_DAEMON) {
             $this->log('debug', 'postSave: restart daemon, current pid is ' . getmypid());
-            $this->getBroker()->startDaemon(false, true);
+            $this->getBroker()->startDaemon(false);
             $this->_post_data['action'] = null;
         }      
     }
@@ -315,7 +314,7 @@ class jMQTT extends eqLogic {
             }
                 
             if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
-                $this->startDaemon(false, true);
+                $this->startDaemon(false);
             }
             $this->_post_data['action'] = null;
         }
@@ -551,7 +550,7 @@ class jMQTT extends eqLogic {
      * @return string[] daemon information array
      */
     public function getDaemonInfo() {
-        $return = array('message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok', 'auto' => 0);
+        $return = array('message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok');
         
         if ($this->getType() != self::TYP_BRK)
             return $return;
@@ -585,7 +584,6 @@ class jMQTT extends eqLogic {
         }
 
         $return['log'] = $this->getDaemonLogFile();
-        $return['auto'] = $this->getDaemonAutoMode();
         $return['last_launch'] = $this->getLastDaemonLaunchTime();      
         $return['state'] = $this->getDaemonState();
         if ($dependancy_info['state'] == 'ok') {
@@ -599,13 +597,13 @@ class jMQTT extends eqLogic {
     }
     
     /**
-     * 
+     * Return wether or not the daemon shall be restarted after a configuration change that impacts its processing.
      */
     private function isDaemonToBeRestarted() {
         $ret = false;
         $broker = $this->getBroker();
         $info = $broker->getDaemonInfo();
-        if ($info['launchable'] == 'ok' && ($info['auto'] || $info['state'] == self::DAEMON_OK)) {
+        if ($info['launchable'] == 'ok' && $info['state'] != self::DAEMON_NOK) {
             $ret = true;
             if ($this->getType() == self::TYP_EQPT && $broker->isIncludeMode()) {
                 $ret = false;
@@ -641,10 +639,9 @@ class jMQTT extends eqLogic {
     /**
      * Start the daemon of this broker if it is launchable
      * @param bool $restart true to stop the daemon first
-     * @param bool $force true to force the start (
      * @throws Exception if the daemon is not launchable
      */
-    public function startDaemon($restart = false, $force = false) {
+    public function startDaemon($restart = false) {
         $daemon_info = $this->getDaemonInfo();
         if ($daemon_info['launchable'] != 'ok') {
             throw new Exception(__('Le démon n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
@@ -666,12 +663,10 @@ class jMQTT extends eqLogic {
             $cron->setTimeout('1440');
             $cron->save();
         }
-        if ($daemon_info['auto'] || $force) {
-            $this->log('info', 'démarre le démon');
-            $this->setLastDaemonLaunchTime();
-            $this->sendDaemonStateEvent();
-            $cron->run();
-        }
+        $this->log('info', 'démarre le démon');
+        $this->setLastDaemonLaunchTime();
+        $this->sendDaemonStateEvent();
+        $cron->run();
     }
     
     /**
@@ -758,23 +753,6 @@ class jMQTT extends eqLogic {
      */
     public function setLastDaemonLaunchTime() {
         return $this->setCache('lastDaemonLaunchTime', date('Y-m-d H:i:s'));
-    }
-    
-    /**
-     * Return the daemon auto mode status
-     * @return int 0 or 1
-     */
-    public function getDaemonAutoMode() {
-        return $this->getConf(self::CONF_KEY_DAEMON_AUTO_MODE);
-    }
-    
-    /**
-     * Set the daemon launch auto mode and save this object
-     * @param int $mode 0 or 1
-     */
-    public function setDaemonAutoModeAndSave($mode) {
-        $this->setConfiguration(self::CONF_KEY_DAEMON_AUTO_MODE, $mode);
-        $this->save(true);
     }
     
     /**
@@ -1251,7 +1229,6 @@ class jMQTT extends eqLogic {
             self::CONF_KEY_MQTT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
             self::CONF_KEY_AUTO_ADD_CMD, '1',
-            self::CONF_KEY_DAEMON_AUTO_MODE => 1,
             self::CONF_KEY_MQTT_INC_TOPIC => '#',
             self::CONF_KEY_API => self::API_DISABLE,
             self::CONF_KEY_BRK_ID => -1
@@ -1622,7 +1599,7 @@ class jMQTT extends eqLogic {
         }
 
         // Restart the MQTT deamon to manage topic subscription
-        $this->startDaemon(true, true);
+        $this->startDaemon(true);
     }
     
     /**
