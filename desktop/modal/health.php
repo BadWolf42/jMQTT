@@ -57,7 +57,7 @@ foreach ($eqBrokers as $eqB) {
 echo '</tbody></table>';
 
 foreach ($eqBrokers as $eqB) {
-    echo '<legend><i class="fas fa-table"></i> {{Modules connectés à}} ' . $eqB->getName() . '</legend>';
+    echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} ' . $eqB->getName() . '</legend>';
     echo '<table class="table table-condensed tablesorter" id="table_healthMQTT">';
     echo '<thead><tr><th>{{Module}}</th><th>{{ID}}</th><th>{{Activé}}</th><th>{{Dernière communication}}</th><th>{{Date création}}</th></tr></thead><tbody>';
     if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
