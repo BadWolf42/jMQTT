@@ -1200,7 +1200,7 @@ class jMQTT extends eqLogic {
         }
     }
     
-    private function addRestartDaemonPostActionIfRequired($key, $newVal, $oldVal='') {
+    private function addRestartDaemonPostActionIfRequired($key, $newVal, $oldVal='', $force=false) {
         $ret = false;
         if ($oldVal == '') {
             $msg = $this->getName() . ': '. $key . ' modifié à ' . $newVal;
@@ -1208,7 +1208,7 @@ class jMQTT extends eqLogic {
         else {
             $msg = $this->getName() . ': '. $key . ' modifié de ' . $oldVal . ' à ' . $newVal;
         }
-        if ($this->isDaemonToBeRestarted()) {
+        if ($this->isDaemonToBeRestarted() || $force) {
             $ret = true;
             $this->getBroker()->stopDaemon();
             $this->addPostAction(self::POST_ACTION_RESTART_DAEMON);
@@ -1322,12 +1322,14 @@ class jMQTT extends eqLogic {
             }
         }
         elseif ($_isEnable != $old_isEnable) {
-            $msg = $_isEnable ? 'activée' : 'désactivée';
+            $newVal = $_isEnable ? 'activée' : 'désactivée';
+            $oldVal = $old_isEnable ? 'activée' : 'désactivée';
             if ($this->getType() == self::TYP_EQPT) {
-                $this->addRestartDaemonPostActionIfRequired('activation', $msg);
+                $this->addRestartDaemonPostActionIfRequired('activation', $newVal, $oldVal);
             }
             if ($this->getType() == self::TYP_BRK) {
-                if (! $this->addRestartDaemonPostActionIfRequired('activation', $msg)) {
+                $force = $_isEnable ? true : false;
+                if (! $this->addRestartDaemonPostActionIfRequired('activation', $newVal, $oldVal, $force)) {
                     $this->stopDaemon();
                     $this->setIncludeMode(0);
                 }
