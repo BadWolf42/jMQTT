@@ -294,7 +294,7 @@ class jMQTT extends eqLogic {
         if (isset($this->_post_data['action'])) {
             // Done first (before creation of MQTT client status cmd below)
             // Done in postAjax (not in postSave) as commands coming from the UI are saved between postSave and postAjax.
-            if ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {               
+            if ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
                 /** @var jMQTTCmd[] $cmds */
                 $cmds = cmd::byEqLogicId($this->getId());
                 foreach ($cmds as $cmd) {
@@ -1065,7 +1065,7 @@ class jMQTT extends eqLogic {
         $payloadMsg = (($payload == '') ? '(null)' : $payload);
         $this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg);
         
-        // To identify the sender (in case of debug need), bvuild the client id based on the jMQTT connexion id
+        // To identify the sender (in case of debug need), build the client id based on the jMQTT connexion id
         // and the command id.
         // Concatenates a random string to have a unique id (in case of burst of commands, see issue #23).
         $mosqId = $this->getBroker()->getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
@@ -1409,38 +1409,6 @@ class jMQTT extends eqLogic {
         return $this->getConf(self::CONF_KEY_MQTT_ID);
     }
     
-//     /**
-//      * Get the previous MQTT client id
-//      * @return string
-//      */
-//     public function getPrevMqttId() {
-//         return $this->getCache('prevMqttId', self::CONF_DEFAULT_MQTT_ID);
-//     }
-        
-//     /**
-//      * Set the previous MQTT client id
-//      * @return string
-//      */
-//     public function setPrevMqttId($prevMqttId) {
-//         return $this->setCache('prevMqttId', $prevMqttId);
-//     }
-
-//     /**
-//      * Get the previous name
-//      * @return string
-//      */
-//     public function getPrevName() {
-//         return $this->getCache('prevName');
-//     }
-    
-//     /**
-//      * Set the previous name
-//      * @return string
-//      */
-//     public function setPrevName($prevName) {
-//         return $this->setCache('prevName', $prevName);
-//     }
-            
     /**
      * Get this jMQTT object broker address
      * @return string
