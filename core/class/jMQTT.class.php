@@ -303,6 +303,9 @@ class jMQTT extends eqLogic {
                         $cmd->save();
                     }
                 }
+                // Send a null command to the previous status command topic to suppress the retained message
+                $this->publishMosquitto($this->getMqttClientStatusCmd()->getId(), $this->getName(),
+                    self::_getMqttClientStatusTopic($this->_post_data[self::CONF_KEY_OLD]), '', 1, 1);
             }
                 
             if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {               
@@ -1118,7 +1121,15 @@ class jMQTT extends eqLogic {
      * @return string broker status topic name
      */
     public function getMqttClientStatusTopic()  {
-        return $this->getMqttId() . '/' . jMQTT::CLIENT_STATUS;
+        return self::_getMqttClientStatusTopic($this->getMqttId());
+    }
+    
+    /**
+     * Return the MQTT topic name of the status command having $mqttId as MQTT connection id.
+     * @param string $mqttId
+     */
+    private static function _getMqttClientStatusTopic($mqttId) {
+        return $mqttId . '/' . jMQTT::CLIENT_STATUS;
     }
     
     /**
