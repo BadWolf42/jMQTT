@@ -260,21 +260,73 @@ class jMQTT extends eqLogic {
             $this->initEquipment($this->getName(), $topic);
         }
 
-        if (isset($this->_post_data['action']) &&
-                ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED)) {
-            $this->setTopic($this->getBrokerTopic($this->_post_data[self::CONF_KEY_NEW]));
+        if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
+            
+            $restart_daemon = false;
+            if ($this->getType() == self::TYP_BRK) {
+                
+                // If broker has been disabled, stop it
+                if (! $this->getIsEnable() && $this->getDaemonState() != self::DAEMON_NOK) {
+                    $this->stopDaemon();
+                }
+                
+                if ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
+                    $this->setTopic($this->getBrokerTopic($this->_post_data[self::CONF_KEY_NEW]));
+                }
+                
+                if ($this->isDaemonToBeRestarted()) {
+                    $restart_daemon = true;
+                }
+            }
+            
+            if ($this->getType() == self::TYP_EQPT) {
+                if ($this->getBroker()->isDaemonToBeRestarted() && ! $this->getBroker()->isIncludeMode()) {
+                    $restart_daemon = true;     
+                }
+            }
+            
+            foreach ($this->_post_data['msg'] as $msg) {
+                $this->log('info', $msg);
+            }
+            
+            if ($restart_daemon) {
+                $this->log('info', 'relance du démon nécessaire');
+                $this->getBroker()->stopDaemon();
+                if ($this->getType() == self::TYP_BRK) {
+                    $this->setIncludeMode(0);
+                }
+                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON);
+            }
+            else {
+                $this->removePostAction(self::POST_ACTION_RESTART_DAEMON);
+            }
         }
     }
 
     /**
-     * postSave callback to restart the deamon when deemed necessary (see also preSave)
+     * postSave callback:
+     *   - On broker name change, rename the the log file
+     *   - Start daemon (when stopped in preSave)
      */
     public function postSave() {
         // Check $this->getBrkId() to avoid restarting daemon at broker creation
-        if (isset($this->_post_data['action']) && $this->getBrkId() > 0 && $this->_post_data['action'] == self::POST_ACTION_RESTART_DAEMON) {
-            $this->log('debug', 'postSave: restart daemon, current pid is ' . getmypid());
-            $this->getBroker()->startDaemon(false);
-            $this->_post_data['action'] = null;
+        if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
+            
+            if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {
+                $old_log = $this->getDaemonLogFile();
+                $new_log = $this->getDaemonLogFile(true);
+                rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
+                config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, 'jMQTT'), 'jMQTT');
+                config::remove('log::level::' . $old_log, 'jMQTT');
+            }
+            
+            // In case of broker id change, 
+            if (! ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED)) {            
+                if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
+                    $this->getBroker()->startDaemon(false);
+                }
+                $this->_post_data['action'] = null;
+            }
         }      
     }
     
@@ -282,8 +334,7 @@ class jMQTT extends eqLogic {
      * postAjax callback:
      *   - On broker MQTT client id modification:
      *     . Update command topics
-     *     . Rename log file
-     *     . Start daemon (which was stopped on preSave 
+     *     . Start daemon (when stopped in preSave)
 
      *   - At broker equipment creation:
      *     . create the status command of a broker
@@ -294,7 +345,7 @@ class jMQTT extends eqLogic {
         if (isset($this->_post_data['action'])) {
             // Done first (before creation of MQTT client status cmd below)
             // Done in postAjax (not in postSave) as commands coming from the UI are saved between postSave and postAjax.
-            if ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
+            if ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
                 /** @var jMQTTCmd[] $cmds */
                 $cmds = cmd::byEqLogicId($this->getId());
                 foreach ($cmds as $cmd) {
@@ -308,13 +359,6 @@ class jMQTT extends eqLogic {
                     self::_getMqttClientStatusTopic($this->_post_data[self::CONF_KEY_OLD]), '', 1, 1);
             }
                 
-            if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {               
-                $old_log = $this->getDaemonLogFile();
-                $new_log = $this->getDaemonLogFile(true);
-                rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
-                config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, 'jMQTT'), 'jMQTT');
-                config::remove('log::level::' . $old_log, 'jMQTT');
-            }
                 
             if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
                 $this->startDaemon(false);
@@ -601,18 +645,11 @@ class jMQTT extends eqLogic {
     
     /**
      * Return wether or not the daemon shall be restarted after a configuration change that impacts its processing.
+     * Shall be called for a broker only
      */
     private function isDaemonToBeRestarted() {
-        $ret = false;
-        $broker = $this->getBroker();
-        $info = $broker->getDaemonInfo();
-        if ($info['launchable'] == 'ok' && $info['state'] != self::DAEMON_NOK) {
-            $ret = true;
-            if ($this->getType() == self::TYP_EQPT && $broker->isIncludeMode()) {
-                $ret = false;
-            }
-        }
-        return $ret;
+        $info = $this->getDaemonInfo();
+        return $info['launchable'] == 'ok' ? true : false;
     }
     
     /**
@@ -1173,8 +1210,7 @@ class jMQTT extends eqLogic {
      */
     public function getDaemonLogFile($force=false) {
         if (!isset($this->_log) || $force) {
-            $broker = $this->getBroker();
-            $this->_log = 'jMQTT_' . str_replace(' ', '_', $broker->getName());
+            $this->_log = 'jMQTT_' . str_replace(' ', '_', $this->getBroker()->getName());
         }
         return $this->_log;
     }
@@ -1196,12 +1232,21 @@ class jMQTT extends eqLogic {
         return $this->getConf(self::CONF_KEY_API) == self::API_ENABLE ? TRUE : FALSE;
     }
 
-    private function addPostAction($action) {
+    private function addPostAction($action, $key, $newVal, $oldVal='') {
         if (isset($this->_post_data['action'])) {
             $this->_post_data['action'] = $this->_post_data['action'] | $action;
         }
         else {
             $this->_post_data['action'] = $action;
+        }
+        
+        if ($key != '') {
+            if ($oldVal == '') {
+                $this->_post_data['msg'][] = $this->getName() . ': '. $key . ' modifié à ' . $newVal;
+            }
+            else {
+                $this->_post_data['msg'][] = $this->getName() . ': '. $key . ' modifié de ' . $oldVal . ' à ' . $newVal;
+            }
         }
     }
     
@@ -1209,24 +1254,6 @@ class jMQTT extends eqLogic {
         if (isset($this->_post_data['action'])) {
             $this->_post_data['action'] = $this->_post_data['action'] & ~$action;
         }
-    }
-    
-    private function addRestartDaemonPostActionIfRequired($key, $newVal, $oldVal='', $force=false) {
-        $ret = false;
-        if ($oldVal == '') {
-            $msg = $this->getName() . ': '. $key . ' modifié à ' . $newVal;
-        }
-        else {
-            $msg = $this->getName() . ': '. $key . ' modifié de ' . $oldVal . ' à ' . $newVal;
-        }
-        if ($this->isDaemonToBeRestarted() || $force) {
-            $ret = true;
-            $this->getBroker()->stopDaemon();
-            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON);
-            $msg = $msg . '. Relance le démon.';
-        }
-        $this->log('info', $msg);
-        return $ret;
     }
     
     private function getConf($_key) {
@@ -1260,7 +1287,7 @@ class jMQTT extends eqLogic {
         $old_level = config::byKey('log::level::' . $this->_log, 'jMQTT');
         if (reset($new_level) != $old_level) {
             config::save('log::level::' . $this->_log, json_encode(reset($new_level)), 'jMQTT');
-            $this->addRestartDaemonPostActionIfRequired('niveau de log',
+            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON,
                 log::convertLogLevel(log::getLogLevel($this->getDaemonLogFile())));
         }
     }
@@ -1287,28 +1314,32 @@ class jMQTT extends eqLogic {
         }
         if (in_array($_key, $keys)) {
             if ($value != $old_value) {
-                $this->addRestartDaemonPostActionIfRequired($_key, $value, $old_value);
+                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'activation', $value, $old_value);
             }
         }
         
+        // Specific case: MQTT id change
         if ($this->getType() == self::TYP_BRK && $_key == self::CONF_KEY_MQTT_ID) {
             if ($value != $old_value) {
                 // Note: topic (i.e. logicalId) is modified in preSave
-                $this->addPostAction(self::POST_ACTION_BROKER_CLIENT_ID_CHANGED);
+                $this->addPostAction(self::POST_ACTION_BROKER_CLIENT_ID_CHANGED, 'MQTT id', $value, $old_value);
                 $this->_post_data[self::CONF_KEY_OLD] = $old_value;
                 $this->_post_data[self::CONF_KEY_NEW] = $value;
-                $this->addRestartDaemonPostActionIfRequired('MQTT id', $value, $old_value);
             }
         }
         return parent::setConfiguration($_key, $_value);
     }
         
+    /**
+     * Overide setName to manage log file renaming (for broker)
+     * {@inheritDoc}
+     * @see eqLogic::setName()
+     */
     public function setName($_name) {
         if ($this->getType() == self::TYP_BRK) {
             if ($_name != $this->name) {
                 $this->_log = $this->getDaemonLogFile(); // To write in the correct log until log is renamed
-                $this->addPostAction(self::POST_ACTION_BROKER_NAME_CHANGED);
-                $this->addRestartDaemonPostActionIfRequired('nom du broker', $_name, $this->name);
+                $this->addPostAction(self::POST_ACTION_BROKER_NAME_CHANGED, 'nom du broker', $_name, $this->name);
             }
         }
         
@@ -1321,32 +1352,14 @@ class jMQTT extends eqLogic {
      * @see eqLogic::setIsEnable()
      */
     public function setIsEnable($_isEnable) {
-        $old_isEnable = $this->isEnable;
-        parent::setIsEnable($_isEnable);
-        if (isset($this->_post_data)) {
-            if (! $_isEnable) {
-                $this->removePostAction(self::POST_ACTION_RESTART_DAEMON);
-                if ($this->getType() == self::TYP_BRK) {
-                    $this->stopDaemon();
-                    $this->setIncludeMode(0);
-                }
-            }
-        }
-        elseif ($_isEnable != $old_isEnable) {
+        if ($_isEnable != $this->isEnable) {
             $newVal = $_isEnable ? 'activée' : 'désactivée';
-            $oldVal = $old_isEnable ? 'activée' : 'désactivée';
-            if ($this->getType() == self::TYP_EQPT) {
-                $this->addRestartDaemonPostActionIfRequired('activation', $newVal, $oldVal);
-            }
-            if ($this->getType() == self::TYP_BRK) {
-                $force = $_isEnable ? true : false;
-                if (! $this->addRestartDaemonPostActionIfRequired('activation', $newVal, $oldVal, $force)) {
-                    $this->stopDaemon();
-                    $this->setIncludeMode(0);
-                }
-            }
+            $oldVal = $this->isEnable ? 'activée' : 'désactivée';
+            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'activation', $newVal, $oldVal);
         }
-        
+
+        parent::setIsEnable($_isEnable);
+               
         return $this;
     }
     
@@ -1357,7 +1370,7 @@ class jMQTT extends eqLogic {
      */
     public function setLogicalId($_logicalId) {
         if ($_logicalId != $this->logicalId) {
-            $this->addRestartDaemonPostActionIfRequired('topic', $_logicalId, $this->logicalId);
+            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'topic', $_logicalId, $this->logicalId);
         }
         parent::setLogicalId($_logicalId);
     }
@@ -1484,7 +1497,8 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Get the broker object attached to this jMQTT object
+     * Get the broker object attached to this jMQTT object.
+     * Broker is cached for optimisation.
      * @return jMQTT
      * @throws Exception if the broker is not found
      */
