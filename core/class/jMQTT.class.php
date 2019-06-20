@@ -1314,7 +1314,7 @@ class jMQTT extends eqLogic {
         }
         if (in_array($_key, $keys)) {
             if ($value != $old_value) {
-                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'activation', $value, $old_value);
+                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, $_key, $value, $old_value);
             }
         }
         
