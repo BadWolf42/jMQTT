@@ -1310,7 +1310,7 @@ class jMQTT extends eqLogic {
         // General case
         $keys = array('Qos');
         if ($this->getType() == self::TYP_BRK) {
-            $keys = $keys + array('mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api');
+            $keys = array_merge($keys, array('mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api'));
         }
         if (in_array($_key, $keys)) {
             if ($value != $old_value) {
