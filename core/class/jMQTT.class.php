@@ -1287,7 +1287,7 @@ class jMQTT extends eqLogic {
         $old_level = config::byKey('log::level::' . $this->_log, 'jMQTT');
         if (reset($new_level) != $old_level) {
             config::save('log::level::' . $this->_log, json_encode(reset($new_level)), 'jMQTT');
-            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON,
+            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'niveau de log',
                 log::convertLogLevel(log::getLogLevel($this->getDaemonLogFile())));
         }
     }
