@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/master/doc/fr_FR/index.html">Documentation</a>   -   <a href="https://github.com/domotruc/jMQTT/blob/master/doc/fr_FR/changelog.asciidoc">Change Log</a>
+<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/#changelog">Change Log</a>
 </p>
 
 __________________
@@ -11,6 +11,7 @@ __________________
 jMQTT is a plugin for Jeedom aiming to connect Jeedom to an MQTT broker to subscribe and publish messages.
 Main functionalities are:
   * Automatic installation of the Mosquitto broker;
+  * Multi broker support
   * Automatic creation of MQTT equipments, automatic creation of information commands, options to desactivate these automatisms;
   * Manual addition of MQTT equipement;
   * Duplication of equipments;
@@ -21,5 +22,5 @@ Main functionalities are:
 __________________
 
 <p align="center">
-<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/master/doc/fr_FR/index.html">Documentation</a>   -   <a href="https://github.com/domotruc/jMQTT/blob/master/doc/fr_FR/changelog.asciidoc">Change Log</a>
+<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/#changelog">Change Log</a>
 </p>
