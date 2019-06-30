@@ -17,25 +17,49 @@
  */
 
 try {
-    require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
+    require_once __DIR__ . '/../../../../core/php/core.inc.php';
     include_file('core', 'authentification', 'php');
 
     if (!isConnect('admin')) {
-        throw new Exception(__('401 - {{Accès non autorisé}}', __FILE__));
+        throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
 
     ajax::init();
 
     // To change the equipment automatic inclusion mode
-    if (init('action') == 'setIncludeMode') {
-	jMQTT::setIncludeMode(init('state'));
-	ajax::success();
+    if (init('action') == 'changeIncludeMode') {
+        $broker = jMQTT::getBrokerFromId(init('id'));
+        $broker->changeIncludeMode(init('mode'));
+        ajax::success();
     }
 
+    if (init('action') == 'getDaemonInfo') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBrokerFromId(init('id'));
+        ajax::success($broker->getDaemonInfo());
+    }
     
+    if (init('action') == 'getDaemonState') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBrokerFromId(init('id'));
+        ajax::success($broker->getDaemonState());
+    }
+    
+    if (init('action') == 'daemonStart') {
+        if (!isConnect('admin')) {
+            throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        }
+        $broker = jMQTT::getBrokerFromId(init('id'));
+        ajax::success($broker->startDaemon(true));
+    }
+        
     throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
-    ajax::error(displayExeption($e), $e->getCode());
+    ajax::error(displayException($e), $e->getCode());
 }
 ?>

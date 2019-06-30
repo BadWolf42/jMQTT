@@ -8,9 +8,9 @@
     "require" : "3.3.19",
     "category" : "automation protocol",
     "hasDependency" : true,
-    "hasOwnDeamon" : true,
-    "changelog" : "https://github.com/domotruc/jMQTT/tree/master/doc/#language#/changelog.asciidoc",
-    "documentation" : "http://htmlpreview.github.io/?https://github.com/domotruc/jMQTT/blob/master/doc/#language#/index.html",
+    "hasOwnDeamon" : false,
+    "changelog" : "https://domotruc.github.io/jMQTT/#language#/index.html#changelog",
+    "documentation" : "https://domotruc.github.io/jMQTT/#language#/",
     "languages" : ["fr_FR","en_US","sp_SP"],
     "compatibility" : ["Jeedomboard","Smart","RPI/RPI2","Docker","DIY","mobile"]
 }

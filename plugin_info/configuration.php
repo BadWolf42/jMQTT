@@ -26,58 +26,14 @@ if (!isConnect()) {
 
 <form class="form-horizontal">
     <div class="form-group">
-	<fieldset>
-	    <div class="form-group">
-		<label class="col-sm-4 control-label">{{Installer Mosquitto localement : }}</label>
-		<div class="col-sm-2">
-		    <input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="installMosquitto" checked />
-		</div>
-            </div>
-	    <div class="form-group">
-		<label class="col-lg-4 control-label">{{IP de Mosquitto : }}</label>
-		<div class="col-lg-4">
-		    <input id="mosquitto_por" class="configKey form-control" data-l1key="mqttAdress" style="margin-top:5px" placeholder="localhost"/>
-		</div>
-	    </div>
-	    <div class="form-group">
-		<label class="col-lg-4 control-label">{{Port de Mosquitto : }}</label>
-		<div class="col-lg-4">
-		    <input id="mosquitto_por" class="configKey form-control" data-l1key="mqttPort" style="margin-top:5px" placeholder="1883"/>
-		</div>
-	    </div>
+        <fieldset>
             <div class="form-group">
-                <label class="col-lg-4 control-label">{{Identifiant de Connexion : }}</label>
-                <div class="col-lg-4">
-    		    <input id="mosquitto_por" class="configKey form-control" data-l1key="mqttId" style="margin-top:5px" placeholder="Jeedom"/>
+                <label class="col-sm-4 control-label">{{Installer Mosquitto localement : }}</label>
+                <div class="col-sm-2">
+                    <input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="installMosquitto"
+                        checked />
                 </div>
             </div>
-            <div class="form-group">
-                <label class="col-lg-4 control-label">{{Compte de Connexion (non obligatoire) : }}</label>
-                <div class="col-lg-4">
-    		    <input id="mosquitto_por" class="configKey form-control" data-l1key="mqttUser" style="margin-top:5px" placeholder="Jeedom"/>
-                </div>
-            </div>
-            <div class="form-group">
-		<label class="col-lg-4 control-label">{{Mot de passe de Connexion (non obligatoire) : }}</label>
-		<div class="col-lg-4">
-		    <input id="mosquitto_por" type="password" class="configKey form-control" data-l1key="mqttPass" style="margin-top:5px" placeholder="Jeedom"/>
-		</div>
-            </div>
-	    <div class="form-group">
-		<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipements : }}</label>
-		<div class="col-lg-4">
-		    <input id="mosquitto_por" class="configKey form-control" data-l1key="mqttTopic" style="margin-top:5px" placeholder="#"/>
-		</div>
-            </div>
-	    <div class="form-group">
-		<label class="col-lg-4 control-label">{{Accès API : }}</label>
-		<div class="col-lg-4">
-		    <select id="mosquitto_por" class="configKey form-control" data-l1key="api" style="margin-top:5px" placeholder="#">
- 			<option value="enable">{{Activé}}</option>
-			<option value="disable">{{Désactivé}}</option>
-                    </select>
-		</div>
-            </div>
-	</fieldset>
+        </fieldset>
     </div>
 </form>

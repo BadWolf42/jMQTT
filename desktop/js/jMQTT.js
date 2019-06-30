@@ -1,4 +1,3 @@
-
 /* This file is part of Jeedom.
  *
  * Jeedom is free software: you can redistribute it and/or modify
@@ -21,8 +20,8 @@ var refreshTimeout;
 //Command number: used when displaying commands as a JSON tree.
 var N_CMD;
 
-
-// To debug browser history management (pushState, ...)  
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//To debug browser history management (pushState, ...)  
 //
 //(function setOnPushStateFunction (window, history){
 //    var pushState = history.pushState;
@@ -45,6 +44,30 @@ window.addEventListener("popstate", function(event) {
         location.reload(false);
     }
 });
+
+function callPluginAjax(_params) {
+    $.ajax({
+        async: true,
+        global: false,
+        type: "POST",
+        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+        data: _params.data,
+        dataType: 'json',
+        error: function (request, status, error) {
+            handleAjaxError(request, status, error);
+        },
+        success: function (data) { 
+            if (data.state != 'ok') {
+                $('#div_alert').showAlert({message: data.result, level: 'danger'});
+            }
+            else {
+                if (typeof _params.success === 'function') {
+                    _params.success(data.result);
+                }
+            }
+        }
+    });
+}
 
 // Rebuild the page URL from the current URL
 // 
@@ -96,8 +119,8 @@ function refreshEqLogicPage() {
 
 $(document).ready(function() {
     // On page load, show the commandtab menu bar if necessary (fix #64)
-    if (document.location.toString().match('#')) {
-        $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').click();
+    if (document.location.hash == '#commandtab') {
+        $('#menu-bar').show();
     }
     
     history.replaceState({}, '', url);
@@ -115,7 +138,7 @@ $("#bt_addMQTTAction").on('click', function(event) {
     modifyWithoutSave = true;
 });
 
-$('#bt_healthMQTT').on('click', function () {
+$('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
     $('#md_modal').dialog({title: "{{Santé jMQTT}}"});
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
 });
@@ -145,13 +168,14 @@ $('#bt_classic').on('click', function() {
     $('#bt_classic').removeClass('btn-default').addClass('btn-primary');
     $('#bt_json').removeClass('btn-primary').addClass('btn-default');
 });
+
 $('#bt_json').on('click', function() {
     refreshEqLogicPage();
     $('#bt_json').removeClass('btn-default').addClass('btn-primary');
     $('#bt_classic').removeClass('btn-primary').addClass('btn-default');
 });
 
-$('.nav-tabs a[href="#eqlogictab"]').on('click', function() {
+$('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
     $('#menu-bar').hide();
 });
 
@@ -169,16 +193,23 @@ $('.nav-tabs a[role="tab"]').on('click', function() {
             history.pushState({hash: $(this)[0].hash}, '', url);
         }
     }
+    if ($(this)[0].hash == '#brokertab')
+        refreshDaemonInfo();
 });
 
 // Manage the history on eqlogic display
 $(".li_eqLogic,.eqLogicDisplayCard").on('click', function () {
     var url_id = getUrlVars('id');
     var id = $(this).attr('data-eqLogic_id');
+    var hash = document.location.hash;
     if (!is_numeric(url_id) || url_id != id) {
-        url = initPluginUrl(['id'], id);
+        if (hash == '#brokertab' && $(this).attr('jmqtt_type') != 'broker')
+            hash = '';
+        url = initPluginUrl(['id', 'hash'], id, hash);
         history.pushState({}, '', url);
     }
+    if (hash == '#brokertab')
+        refreshDaemonInfo();
 });
 
 // Manage the history on return to the plugin page
@@ -187,27 +218,103 @@ $('.eqLogicAction[data-action=returnToThumbnailDisplay]').on('click', function (
     history.pushState({}, '', url);
 });
 
-//Override plugin template to rewrite the URL to avoid keeping the successfull save message
+// Override plugin template to rewrite the URL to avoid keeping the successfull save message
 if (getUrlVars('saveSuccessFull') == 1) {
     $('#div_alert').showAlert({message: '{{Sauvegarde effectuée avec succès}}', level: 'success'});
     history.replaceState({}, '', initPluginUrl(['saveSuccessFull']));
 }
 
-//Override plugin template to rewrite the URL to avoid keeping the successfull delete message
+// Override plugin template to rewrite the URL to avoid keeping the successfull delete message
 if (getUrlVars('removeSuccessFull') == 1) {
     $('#div_alert').showAlert({message: '{{Suppression effectuée avec succès}}', level: 'success'});
     history.replaceState({}, '', initPluginUrl(['removeSuccessFull']));
 }
 
-//Configure the sortable functionality of the commands array
+// Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
+
+
+/**
+ * Add jMQTT equipment callback
+ */
+$('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
+    if (typeof $(this).attr('brkId') === 'undefined') {
+        var eqL = {type: 'broker', brkId: -1};
+        var prompt = "{{Nom du broker ?}}"; 
+    }
+    else {
+        var eqL = {type: 'eqpt', brkId: $(this).attr('brkId')};
+        var prompt = "{{Nom de l'équipement ?}}"; 
+    }
+    bootbox.prompt(prompt, function (result) {
+        if (result !== null) {
+            jeedom.eqLogic.save({
+                type: eqType,
+                eqLogics: [ $.extend({name: result}, eqL) ],
+                error: function (error) {
+                    console.log(error.message);
+                    $('#div_alert').showAlert({message: error.message, level: 'danger'});
+                },
+                success: function (data) {
+                    var url = initPluginUrl();
+                    modifyWithoutSave = false;
+                    url += '&id=' + data.id + '&saveSuccessFull=1';
+                    loadPage(url);
+                }
+            });
+        }
+    });
+});
+
+$('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
+    
+    function remove_jmqtt() {
+        jeedom.eqLogic.remove({
+            type: eqType,
+            id: $('.eqLogicAttr[data-l1key=id]').value(),
+            error: function (error) {
+                $('#div_alert').showAlert({message: error.message, level: 'danger'});
+            },
+            success: function () {
+                var url = initPluginUrl();
+                modifyWithoutSave = false;
+                url += '&removeSuccessFull=1';
+                loadPage(url);
+            }
+        });                                
+    }
+    
+    if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
+        var typ = $('.eqLogicAttr[data-l2key=type]').value() == 'broker' ? 'broker' : 'module';
+        bootbox.confirm('{{Etes-vous sûr de vouloir supprimer}}' + ' ' +
+                (typ == 'broker' ? '{{le broker}}' : "{{l'équipement}}") + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
+            if (result) {
+                if (typ == 'broker') {
+                    bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fa fa-warning"</i>' +
+                        '</span></td><td style="vertical-align:middle">' + '{{Tous les équipements associés au broker vont être supprimés}}' +
+                        '...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
+                        if (result) {
+                            remove_jmqtt();
+                        }
+                    });
+                }
+                else {
+                    remove_jmqtt();
+                }
+            }
+        });
+    } else {
+        $('#div_alert').showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
+    }
+});
 
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
- * We reorder commands if the JSON view is active.
+ *   . Reorder commands if the JSON view is active
+ *   . Show the fields depending on the type (broker or equipment)
  */
 function printEqLogic(_eqLogic) {
-
+    
     // Principle of the ordering algorithm is to associate an ordering string to
     // each command, and then ordering into alphabetical order
 
@@ -265,8 +372,47 @@ function printEqLogic(_eqLogic) {
         $("#table_cmd").sortable('enable');
         $("#table_cmd th:first").width('50px');
     }
+
+    // Show UI elements depending on the type
+    if (_eqLogic.configuration.type == 'broker') {
+        $('.typ-std').hide();
+        $('.typ-brk').show();
+        $('#sel_icon_div').css("visibility", "hidden");
+        $('#mqtttopic').prop('readonly', true);
+        var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
+        $('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
+        $('.bt_plugin_conf_view_log').attr('data-log', log);
+        $('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
+        
+        jeedom.config.load({
+            configuration: $('#div_broker_log').getValues('.configKey')[0],
+            plugin: 'jMQTT',
+            error: function (error) {
+                $('#div_alert').showAlert({message: error.message, level: 'danger'});
+            },
+            success: function (data) {
+              $('#div_broker_log').setValues(data, '.configKey');
+            }
+          });
+    } else {
+        $('.typ-brk').hide();
+        $('.typ-std').show();
+        $('#sel_icon_div').css("visibility", "visible");
+        $('#mqtttopic').prop('readonly', false);
+    }
 }
 
+/**
+ * saveEqLogic callback called by plugin.template before saving an eqLogic
+ *   . Pass the log level when defined (i.e. for a broker object)
+ */
+function saveEqLogic(_eqLogic) {
+    var log_level = $('#div_broker_log').getValues('.configKey')[0];
+    if (!$.isEmptyObject(log_level)) {
+        _eqLogic.loglevel =  log_level;
+    }
+    return _eqLogic;
+}
 
 /**
  * addCmdToTable callback called by plugin.template: render eqLogic commands
@@ -322,7 +468,9 @@ function addCmdToTable(_cmd) {
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fa fa-cogs"></i></a> ';
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
         }
-        tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+        if (_cmd.configuration.irremovable == undefined) {
+            tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+        }
         tr += '<input style="width:82%;margin-bottom:2px;" class="tooltips cmdAttr form-control input-sm" data-l1key="cache" data-l2key="lifetime" placeholder="{{Lifetime cache}}" title="{{Lifetime cache}}">';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:40%;display:inline-block;"> ';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:40%;display:inline-block;">';
@@ -463,61 +611,68 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 // Management of the include button and mode
 //
 
-//Configure the display according to the given mode
+// Configure the display according to the given mode
 //If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
-function configureIncludeModeDisplay(mode) {
+function configureIncludeModeDisplay(brkId, mode) {
     if (mode == 1) {
-        $('.bt_changeIncludeMode:not(.card)').removeClass('btn-default').addClass('btn-success');
-        $('.bt_changeIncludeMode').attr('data-mode', 1);
-        $('.bt_changeIncludeMode.card span').text('{{Arrêter l\'inclusion}}');
-        $('.bt_changeIncludeMode').addClass('include');
+        //$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').removeClass('btn-default').addClass('btn-success');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 1);
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Arrêter l\'inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('include');
         $('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
     } else {
-        $('.bt_changeIncludeMode:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
-        $('.bt_changeIncludeMode').attr('data-mode', 0);
-        $('.bt_changeIncludeMode.card span').text('{{Mode inclusion}}');
-        $('.bt_changeIncludeMode').removeClass('include');
+        //$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 0);
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Mode inclusion}}');
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('include');
         $('#div_inclusionModeMsg').hideAlert();
     }
 }
 
-//Manage button clicks
-$('.bt_changeIncludeMode').on('click', function () {
+function setIncludeModeActivation(brkId, broker_state) {
+    if (broker_state == "ok") {
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('disableCard').on('click', changeIncludeMode);
+    }
+    else {
+        $('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('disableCard').unbind();;
+    }
+}
+
+function changeIncludeMode() {
     var el = $(this);
 
     // Invert the button display and show the alert message
     if (el.attr('data-mode') == 1) {
-        configureIncludeModeDisplay(0);
+        configureIncludeModeDisplay(el.attr('brkId'),0);
     }
     else {
-        configureIncludeModeDisplay(1);
+        configureIncludeModeDisplay(el.attr('brkId'),1);
     }
 
-    // Ajax call to inform the plugin core of the change
-    $.ajax({
-        type: "POST", 
-        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php", 
+    // Ajax call to inform the plugin core of the change   
+    callPluginAjax({
         data: {
-            action: "setIncludeMode",
-            state: el.attr('data-mode')
-        },
-        dataType: 'json',
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
-        },
-        success: function (data) { 
-            if (data.state != 'ok') {
-                $('#div_alert').showAlert({message: data.result, level: 'danger'});
-                return;
-            }
+            action: "changeIncludeMode",
+            mode: el.attr('data-mode'),
+            id: el.attr('brkId')
         }
-    });
+    });    
+}
+
+// Update the broker icon and the include mode activation on reception of a new state event
+$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
+    showDaemonInfo(_options);
+    setIncludeModeActivation(_options.brkId, _options.state);
+    $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
 });
+
+// Manage button clicks
+//$('.eqLogicAction[data-action=changeIncludeMode]').on('click', changeIncludeMode);
 
 //Called by the plugin core to inform about the automatic inclusion mode disabling
 $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', function (_event,_options) {
     // Change display accordingly
-    configureIncludeModeDisplay(0);
+    configureIncludeModeDisplay(_options['brkId'], 0);
 });
 
 /**

@@ -3,21 +3,13 @@ gen-doc = asciidoctor
 
 DOC_PATH = doc/fr_FR
 
-all: desktop/js/jMQTT.min.js doc
+all: desktop/js/jMQTT.min.js docs/assets/js/jquery.toc2.min.js
 
 %.min.js: %.js
 	$(minify-js) --js $< --js_output_file $@
 
-doc: $(DOC_PATH)/index.html doc/*/index.html
-
-$(DOC_PATH)/index.html: $(DOC_PATH)/*.asciidoc
-	$(gen-doc) -n -a toclevels=4 -a toc=left -a icons=font@ $(DOC_PATH)/index.asciidoc -o $@
-	cp $@ doc/de_DE/.
-	cp $@ doc/en_US/.
-	cp $@ doc/es_ES/.
-	cp $@ doc/id_ID/.
-	cp $@ doc/it_IT/.
-	cp $@ doc/ru_RU/.
+doc:
+	cd docs; bundle exec jekyll serve
 
 chmod:
 	find . -type f -exec chmod 664 {} \;
