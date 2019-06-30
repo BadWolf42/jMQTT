@@ -379,9 +379,10 @@ class jMQTT extends eqLogic {
      * preRemove method to check if the daemon shall be restarted
      */
     public function preRemove() {
-        $this->log('info', 'removing equipment ' . $this->getName());
         $this->_post_data = null;
         if ($this->getType() == self::TYP_BRK) {
+            $this->log('info', 'removing broker ' . $this->getName());
+            
             // Disable first the broker to avoid during removal of the broker to restart the daemon
             $this->setIsEnable(0);
             $this->save(true);
@@ -402,8 +403,9 @@ class jMQTT extends eqLogic {
             }
         }
         else {
+            $this->log('info', 'removing equipment ' . $this->getName());
             $broker = $this->getBroker();
-            if ($broker->getIsEnable() && ! $broker->isIncludeMode()) {
+            if ($this->getIsEnable() && $broker->getIsEnable() && ! $broker->isIncludeMode()) {
                 $this->log('info', 'relance le démon');
                 $broker->stopDaemon();
                 $this->_post_data = $broker;
