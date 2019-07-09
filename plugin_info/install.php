@@ -86,11 +86,9 @@ function migrateToMultiBrokerVersion() {
     
     foreach (eqLogic::byType('jMQTT') as $eqL) {
         /** @var jMQTT $eqL */
-        $eqL = null;
         try {
             log::add('jMQTT', 'debug', 'export before of ' . $eqL->getName());
-            $s = print_r($eqL->full_export(), true);
-            log::add('jMQTT', 'debug', $s);
+            log::add('jMQTT', 'debug', json_encode($eqL->full_export()));
 
             $eqL->setConfiguration('prev_Qos', null);
             $eqL->setConfiguration('prev_isActive', null);
@@ -103,8 +101,7 @@ function migrateToMultiBrokerVersion() {
             $eqL->save(true);
 
             log::add('jMQTT', 'debug', 'export after of ' . $eqL->getName());
-            $s = print_r($eqL->full_export(), true);
-            log::add('jMQTT', 'debug', $s);
+            log::add('jMQTT', 'debug', json_encode($eqL->full_export()));
         }
         catch (Exception $e) {
             log::add('jMQTT', 'debug', 'catch exception ' . $e->getMessage());
