@@ -413,6 +413,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-07-09
+
+  - Ajout de traces dans la fonction de migration vers multi broker
+
 ##### 2019-06-30
 
   - Passage en stable des améliorations des 2 betas précédentes
