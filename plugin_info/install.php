@@ -86,6 +86,7 @@ function migrateToMultiBrokerVersion() {
     
     foreach (eqLogic::byType('jMQTT') as $eqL) {
         /** @var jMQTT $eqL */
+        $eqL = null;
         try {
             log::add('jMQTT', 'debug', 'export before of ' . $eqL->getName());
             $s = print_r($eqL->full_export(), true);
