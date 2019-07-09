@@ -207,6 +207,19 @@ class jMQTT extends eqLogic {
 
         return $eqLogicCopy;
     }
+    
+    /**
+     * Return a full export (inc. commands) of this eqLogic as an array.
+     * @return array
+     */
+    public function full_export() {
+        $return = $this->toArray();
+        $return['cmd'] = array();
+        foreach ($this->getCmd() as $cmd) {
+            $return['cmd'][] = $cmd->full_export();
+        }
+        return $return;
+    }
 
     /**
      * Return jMQTT objects of type broker

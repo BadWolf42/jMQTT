@@ -65,6 +65,22 @@ class jMQTTCmd extends cmd {
 
         return $cmd;
     }
+    
+    /**
+     * Return a full export of this command as an array.
+     * @return array
+     */
+    public function full_export() {
+        $cmd = clone $this;
+        $cmdValue = $cmd->getCmdValue();
+        if (is_object($cmdValue)) {
+            $cmd->setValue($cmdValue->getName());
+        } else {
+            $cmd->setValue('');
+        }
+        $return = utils::o2a($cmd);
+        return $return;
+    }
 
     /**
      * preRemove method to log that a command is removed

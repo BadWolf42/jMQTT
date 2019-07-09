@@ -27,8 +27,10 @@ function migrateToMultiBrokerVersion() {
     
     // Return if the multi broker version is already installed
     $res = config::searchKey('mqttId', 'jMQTT');
-    if (empty($res))
+    if (empty($res)) {
+        log::add('jMQTT', 'debug', 'multi-broker version is already installed');
         return;
+    }
             
     // Try to identify which equipment can be converted to the broker
     // Should be the one containing the status command
@@ -48,7 +50,9 @@ function migrateToMultiBrokerVersion() {
         $msg = 'sélectionné';
     }
     
-    message::add('jMQTT', "L'équipement " . $broker->getName() . " a été " . $msg. " comme broker MQTT.");
+    $msg = "L'équipement " . $broker->getName() . " a été " . $msg. " comme broker MQTT.";
+    message::add('jMQTT', $msg);
+    log::add('jMQTT', 'debug', $msg);
     
     // Transfer plugin parameters
     $conf_params = array(
@@ -75,22 +79,37 @@ function migrateToMultiBrokerVersion() {
     
     $broker->setType(jMQTT::TYP_BRK);
     $broker->setBrkId($broker->getId());
-    $broker->save();
+    $broker->save(true);
     
     // Create the MQTT status information command
     $broker->createMqttClientStatusCmd();
     
     foreach (eqLogic::byType('jMQTT') as $eqL) {
         /** @var jMQTT $eqL */
-        $eqL->setConfiguration('prev_Qos', null);
-        $eqL->setConfiguration('prev_isActive', null);
-        $eqL->setConfiguration('reload_d', null);
-        $eqL->setConfiguration('topic', null);
-        if ($eqL->getType() == '') {
-            $eqL->setType(jMQTT::TYP_EQPT);
-            $eqL->setBrkId($broker->getId());
+        try {
+            log::add('jMQTT', 'debug', 'export before of ' . $eqL->getName());
+            $s = print_r($eqL->full_export(), true);
+            log::add('jMQTT', 'debug', $s);
+
+            $eqL->setConfiguration('prev_Qos', null);
+            $eqL->setConfiguration('prev_isActive', null);
+            $eqL->setConfiguration('reload_d', null);
+            $eqL->setConfiguration('topic', null);
+            if ($eqL->getType() == '') {
+                $eqL->setType(jMQTT::TYP_EQPT);
+                $eqL->setBrkId($broker->getId());
+            }
+            $eqL->save(true);
+
+            log::add('jMQTT', 'debug', 'export after of ' . $eqL->getName());
+            $s = print_r($eqL->full_export(), true);
+            log::add('jMQTT', 'debug', $s);
         }
-        $eqL->save();
+        catch (Exception $e) {
+            log::add('jMQTT', 'debug', 'catch exception ' . $e->getMessage());
+            $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
+            log::add('jMQTT', 'debug', $s);
+        }
     }
 }
 
