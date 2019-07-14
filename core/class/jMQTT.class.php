@@ -103,6 +103,12 @@ class jMQTT extends eqLogic {
     private $_broker;
     
     /**
+     * Status command of the broker related to this object
+     * @var jMQTTCmd
+     */
+    private $_statusCmd;
+    
+    /**
      * Log file related to this broker.
      * Set in the daemon method; it is only visible from functions
      * that are executed on the same thread as the daemon method.
@@ -308,7 +314,7 @@ class jMQTT extends eqLogic {
                 if ($this->getType() == self::TYP_BRK) {
                     $this->setIncludeMode(0);
                 }
-                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON);
+                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, '', '');
             }
             else {
                 $this->removePostAction(self::POST_ACTION_RESTART_DAEMON);
@@ -783,6 +789,7 @@ class jMQTT extends eqLogic {
         }
         
         $statusCmd->event(self::OFFLINE);
+        $broker->sendDaemonStateEvent();
         
         // Depending on the last connection time, reconnect immediately or wait 15s
         $time = $broker->getConf(self::CONF_KEY_LAST_CONNECT_TIME);
@@ -820,6 +827,7 @@ class jMQTT extends eqLogic {
     
     /**
      * Send a jMQTT::EventState event to the UI containing daemon info
+     * The method shall be called on a broker equipment eqLogic
      */
     private function sendDaemonStateEvent() {
         event::add('jMQTT::EventState', $this->getDaemonInfo());
@@ -919,7 +927,8 @@ class jMQTT extends eqLogic {
         $this->log('debug', 'broker msg: connection response is ' . $message);
         $this->_client->publish($this->getMqttClientStatusTopic(), self::ONLINE, 1, 1);
         $this->setConfiguration(self::CONF_KEY_LAST_CONNECT_TIME, strtotime('now'));
-        //$this->setConfiguration(self::CLIENT_STATUS, self::ONLINE);
+        $this->getMqttClientStatusCmd()->event(self::ONLINE);
+        $this->sendDaemonStateEvent();
         $this->save(true);
     }
     
@@ -927,7 +936,8 @@ class jMQTT extends eqLogic {
         $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
         $this->log('debug', 'broker msg: disconnected ' . $msg);
         $this->_client->publish($this->getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
-        //$this->setConfiguration(self::CLIENT_STATUS, self::OFFLINE);
+        $this->getMqttClientStatusCmd()->event(self::OFFLINE);
+        $this->sendDaemonStateEvent();
     }
     
     public function brokerSubscribeCallback($mid, $qosCount) {
@@ -1189,7 +1199,10 @@ class jMQTT extends eqLogic {
      * @return cmd status information command.
      */
     public function getMqttClientStatusCmd() {
-        return cmd::byEqLogicIdAndLogicalId($this->getId(), $this->getMqttClientStatusTopic());
+        if (! is_object($this->_statusCmd)) {
+            $this->_statusCmd = cmd::byEqLogicIdAndLogicalId($this->getId(), $this->getMqttClientStatusTopic());
+        }
+        return $this->_statusCmd;
     }
     
     /**

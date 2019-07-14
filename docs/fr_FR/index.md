@@ -413,6 +413,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-07-14
+
+  - Correction de [\#77](https://github.com/domotruc/jMQTT/issues/77): le broker reste offline
+
 ##### 2019-07-09
 
   - Ajout de traces dans la fonction de migration vers multi broker
