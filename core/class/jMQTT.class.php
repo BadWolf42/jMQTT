@@ -154,6 +154,18 @@ class jMQTT extends eqLogic {
 
         return $eqpt;
     }
+    
+    /**
+     * Clean this equipment from parameters that are no more used due to plugin evolution
+     */
+    public function cleanEquipment() {
+        $this->setConfiguration('prev_Qos', null);
+        $this->setConfiguration('prev_isActive', null);
+        $this->setConfiguration('previousIsEnable', null);
+        $this->setConfiguration('previousIsVisible', null);
+        $this->setConfiguration('reload_d', null);
+        $this->setConfiguration('topic', null);
+    }
 
     /**
      * Initialize this equipment with the given data
@@ -247,16 +259,17 @@ class jMQTT extends eqLogic {
      * @return jMQTT[int][int] array of arrays of jMQTT objects
      */
     public static function getNonBrokers() {
-        $type = json_encode(array('type' => self::TYP_EQPT));
-        /** @var jMQTT[] $non_brokers */
-        $non_brokers = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1));
+        /** @var jMQTT[] $eqls */
+        $eqls = self::byType(jMQTT::class);
         $returns = array();
-        foreach ($non_brokers as $non_broker) {
-            $returns[$non_broker->getBrkId()][] = $non_broker;
+        foreach ($eqls as $eql) {
+            if ($eql->getType() != self::TYP_BRK) {
+                $returns[$eql->getBrkId()][] = $eql;
+            }
         }
         return $returns;
     }
-    
+        
     /**
      * Overload preSave to manage changes in subscription parameters to the MQTT broker
      */
@@ -299,7 +312,7 @@ class jMQTT extends eqLogic {
             }
             
             if ($this->getType() == self::TYP_EQPT) {
-                if ($this->getBroker()->isDaemonToBeRestarted() && ! $this->getBroker()->isIncludeMode()) {
+                if ($this->getBroker()->isDaemonToBeRestarted(true)) {
                     $restart_daemon = true;     
                 }
             }
@@ -665,12 +678,24 @@ class jMQTT extends eqLogic {
     }
     
     /**
-     * Return wether or not the daemon shall be restarted after a configuration change that impacts its processing.
-     * Shall be called for a broker only
+     * Return whether or not the daemon shall be restarted after a configuration change that impacts its processing.
+     * If $isIncludeMode is true and the broker is in automatic inclusion mode returns false. Otherwise output depends
+     * on the launchable status of the broker.
+     * 
+     * Shall be called for a broker only.
+     * 
+     * @param bool $isIncludeMode whether or not the automatic inclusion mode of the broker shall be taken into
+     *              account in the assessement.
+     * @return boolean
      */
-    private function isDaemonToBeRestarted() {
-        $info = $this->getDaemonInfo();
-        return $info['launchable'] == 'ok' ? true : false;
+    public function isDaemonToBeRestarted($isIncludeMode=false) {
+        if ($isIncludeMode && $this->getBroker()->isIncludeMode()) {
+            return false;
+        }
+        else {
+            $info = $this->getDaemonInfo();
+            return $info['launchable'] == 'ok' ? true : false;
+        }
     }
     
     /**
@@ -1550,11 +1575,14 @@ class jMQTT extends eqLogic {
         /** @var jMQTT $broker */
         $broker = jMQTT::byId($id);
         if (!is_object($broker)) {
-            throw new Exception(__('Pas de broker avec l\'id fourni', __FILE__) . ' (id=' . $id . ')');
-        }  
+            throw new Exception(__('Pas d\'équipement avec l\'id fourni', __FILE__) . ' (id=' . $id . ')');
+        } 
+        if ($broker->getType() != self::TYP_BRK) {
+            throw new Exception(__('L\'équipement n\'est pas de type broker', __FILE__) . ' (id=' . $id . ')');
+        }
         return $broker;
     }
-    
+       
     /**
      * Return all jMQTT objects having the same broker id as this object
      * Note: this object is also returned

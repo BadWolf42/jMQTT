@@ -7,6 +7,14 @@ sendVarToJS('eqType', 'jMQTT');
 $eqNonBrokers = jMQTT::getNonBrokers();
 /** @var jMQTT[] $eqBrokers */
 $eqBrokers = jMQTT::getBrokers();
+
+$eqBrokersName = array();
+foreach ($eqBrokers as $id => $eqL) {
+    $eqBrokersName[$id] = $eqL->getName();
+}
+sendVarToJS('eqBrokers', $eqBrokersName);
+
+$has_orphans = false;
 $node_images = scandir(__DIR__ . '/../../resources/images/');
 ?>
 
@@ -60,6 +68,11 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
 .eqLogicDisplayAction.disableCard {
     opacity: 0.35;
     cursor: default;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.4;
 }
 
 <?php 
@@ -162,15 +175,20 @@ function displayEqLogicCard($eqL, $node_images) {
                 <?php
                 foreach ($eqNonBrokers as $id => $nonBrokers) {
                     if (array_key_exists($id, $eqBrokers)) {
-                        echo '<li><i class="fa fa-table"></i><span> ' . $eqBrokers[$id]->getName() . '</span>';
-                        echo '<ul class="nav nav-list bs-sidenav sub-nav-list">';
-                        foreach ($nonBrokers as $eqL) {
-                            $opacity = ($eqL->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
-                            echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() .
-                            '" style="' . $opacity . '"><a>' . $eqL->getHumanName(true) . '</a></li>';
-                        }
-                        echo '</ul></li>';
+                        $broker_name = $eqBrokers[$id]->getName();
                     }
+                    else {
+                        $has_orphans = true;
+                        $broker_name = '{{orphelins}}';
+                    }
+                    echo '<li><i class="fa fa-table"></i><span> ' . $broker_name . '</span>';
+                    echo '<ul class="nav nav-list bs-sidenav sub-nav-list">';
+                    foreach ($nonBrokers as $eqL) {
+                        $opacity = ($eqL->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
+                        echo '<li class="cursor li_eqLogic" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() .
+                        '" style="' . $opacity . '"><a>' . $eqL->getHumanName(true) . '</a></li>';
+                    }
+                    echo '</ul></li>';
                 }
                 ?>
             </ul>
@@ -217,16 +235,31 @@ function displayEqLogicCard($eqL, $node_images) {
             }
             echo '</div></div>';
         }
+        
+        if ($has_orphans) {
+            echo '<div class="col-lg-12 col-md-12 col-sm-12">';
+            echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';
+            echo '<input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />';
+            echo '<div class="eqLogicThumbnailContainer">';
+            foreach ($eqNonBrokers as $id => $nonBrokers) {
+                if (! array_key_exists($id, $eqBrokers)) {
+                    foreach ($nonBrokers as $eqL) {
+                        displayEqLogicCard($eqL, $node_images);
+                    }
+                }
+            }
+            echo '</div></div>';
+        }
         ?>
     </div>
 
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogic"
         style="border-left: solid 1px #EEE; padding-left: 25px; display: none;">
         <div class="row">
-            <a class="btn btn-success eqLogicAction pull-right" data-action="save"><i class="fa fa-check-circle"></i>{{Sauvegarder}}</a>
+            <a class="btn btn-success eqLogicAction pull-right toDisable" data-action="save"><i class="fa fa-check-circle"></i>{{Sauvegarder}}</a>
             <a class="btn btn-danger eqLogicAction pull-right" data-action="remove_jmqtt"><i class="fa fa-minus-circle"></i> {{Supprimer}}</a>
-            <a class="btn btn-default eqLogicAction pull-right" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
-            <a class="btn btn-default eqLogicAction pull-right typ-std" data-action="copy" style="display: none;"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>
+            <a class="btn btn-default eqLogicAction pull-right toDisable" data-action="configure"><i class="fa fa-cogs"></i> {{Configuration avancée}}</a>
+            <a class="btn btn-default eqLogicAction pull-right typ-std toDisable" data-action="copy" style="display: none;"><i class="fa fa-files-o"></i> {{Dupliquer}}</a>
             <a class="btn btn-default eqLogicAction pull-right" data-action="export"><i class="fa fa-sign-out"></i> Export</a>
             <a class="btn btn-default eqLogicAction pull-left" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a>
             <ul class="nav nav-tabs pull-left" role="tablist">
@@ -241,7 +274,7 @@ function displayEqLogicCard($eqL, $node_images) {
         </div>
         <div id="menu-bar" style="display: none;">
             <div class="form-actions">
-                <a class="btn btn-success btn-sm cmdAction" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i>
+                <a class="btn btn-success btn-sm cmdAction toDisable" id="bt_addMQTTAction"><i class="fa fa-plus-circle"></i>
                     {{Ajouter une commande action}}</a>
                 <div class="btn-group pull-right" data-toggle="buttons">
                     <a id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off"
@@ -256,10 +289,10 @@ function displayEqLogicCard($eqL, $node_images) {
             <div role="tabpanel" class="tab-pane active" id="eqlogictab">
                 <?php include_file('desktop', 'jMQTT_eqpt', 'php', 'jMQTT'); ?>
 	        </div>
-            <div role="tabpanel" class="tab-pane" id="brokertab">
+            <div role="tabpanel" class="tab-pane toDisable" id="brokertab">
                 <?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>                
             </div>
-            <div role="tabpanel" class="tab-pane" id="commandtab">
+            <div role="tabpanel" class="tab-pane toDisable" id="commandtab">
                 <table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
                     <thead>
                         <tr>

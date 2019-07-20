@@ -1,6 +1,6 @@
 <form class="form-horizontal">
     <fieldset>
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Nom de l'équipement}}</label>
             <div class="col-sm-3">
                 <input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display: none;" />
@@ -8,7 +8,7 @@
                 <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement jMQTT}}" />
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Objet parent}}</label>
             <div class="col-sm-3">
                 <select class="form-control eqLogicAttr" data-l1key="object_id">
@@ -21,7 +21,7 @@
                 </select>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Catégorie}}</label>
             <div class="col-sm-8">
                 <?php
@@ -36,7 +36,7 @@
                 </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label"></label>
             <div class="col-sm-8">
                 <label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked />{{Activer}}</label>
@@ -44,14 +44,24 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Commentaire}}</label>
             <div class="col-sm-3">
                 <textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="commentaire"></textarea>
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group typ-std">
+            <label class="col-sm-3 control-label">{{Broker associé}}</label>
+            <div class="col-sm-2">
+                <select id="broker" class="form-control input-sm"></select>
+            </div>
+            <div class="col-sm-1">
+              <a class="btn btn-success btn-sm eqLogicAction" data-action="move_broker"><i class="icon jeedomapp-done"></i></a>
+            </div>
+        </div>
+
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Inscrit au Topic}}</label>
             <div class="col-sm-3">
                 <input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="logicalId"
@@ -59,7 +69,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label>
             <div class="col-sm-3">
                 <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" checked />
@@ -67,10 +77,10 @@
         </div>
 
 
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Qos}}</label>
             <div id="mqttqos" class="col-sm-3">
-                <select style="width: 40pxpx;" class="eqLogicAttr form-control input-sm" data-l1key="configuration"
+                <select style="width: 50px;" class="eqLogicAttr form-control input-sm" data-l1key="configuration"
                     data-l2key="Qos">
                     <option value="0">0</option>
                     <option value="1" selected>1</option>
@@ -79,14 +89,14 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Dernière communication}}</label>
             <div class="col-sm-3">
                 <span class="eqLogicAttr" data-l1key="status" data-l2key="lastCommunication"></span>
             </div>
         </div>
 
-        <div id='sel_icon_div' class="form-group">
+        <div id='sel_icon_div' class="form-group toDisable typ-std">
             <label class="col-sm-3 control-label">{{Catégorie du topic}}</label>
             <div class="col-sm-3">
                 <select id="sel_icon" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">

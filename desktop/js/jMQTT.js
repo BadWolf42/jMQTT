@@ -47,7 +47,7 @@ window.addEventListener("popstate", function(event) {
 
 function callPluginAjax(_params) {
     $.ajax({
-        async: true,
+        async: _params.async == undefined ? true : _params.async,
         global: false,
         type: "POST",
         url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
@@ -308,6 +308,30 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
     }
 });
 
+$('.eqLogicAction[data-action=move_broker]').on('click', function () {
+    var id = $('.eqLogicAttr[data-l1key=id]').value();
+    var brk_id = $('#broker').val();
+    if (id != undefined && brk_id != undefined) {
+        bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fa fa-warning"</i>' +
+            '</span></td><td style="vertical-align:middle">' + "{{Vous êtes sur le point de changer l'équipement de broker}}" +
+            '.<br>' + '{{Êtes vous sûr ?}}' + '</td></tr></table>', function (result) {
+            if (result) {
+                callPluginAjax({
+                    async: false,
+                    data: {
+                        action: 'moveToBroker',
+                        id: id,
+                        brk_id: brk_id
+                    },
+                    success: function (data) {
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    }
+});
+
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
  *   . Reorder commands if the JSON view is active
@@ -374,10 +398,16 @@ function printEqLogic(_eqLogic) {
     }
 
     // Show UI elements depending on the type
-    if (_eqLogic.configuration.type == 'broker') {
+    if (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0 ||
+            (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) {
+        $('.toDisable').addClass('disabled');
+        $('.typ-brk').hide();
+        $('.typ-std').show();
+    }
+    else if (_eqLogic.configuration.type == 'broker') {
+        $('.toDisable').removeClass('disabled');
         $('.typ-std').hide();
         $('.typ-brk').show();
-        $('#sel_icon_div').css("visibility", "hidden");
         $('#mqtttopic').prop('readonly', true);
         var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
         $('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
@@ -394,12 +424,21 @@ function printEqLogic(_eqLogic) {
               $('#div_broker_log').setValues(data, '.configKey');
             }
           });
-    } else {
+    }
+    else if (_eqLogic.configuration.type == 'eqpt') {
+        $('.toDisable').removeClass('disabled');
         $('.typ-brk').hide();
         $('.typ-std').show();
-        $('#sel_icon_div').css("visibility", "visible");
         $('#mqtttopic').prop('readonly', false);
     }
+    
+    // Initialise the broker dropbox
+    var brokers = $("#broker");
+    brokers.empty();
+    $.each( eqBrokers, function(key, name) {
+        brokers.append(new Option(name, key));
+    });
+    brokers.val(_eqLogic.configuration.brkId);
 }
 
 /**

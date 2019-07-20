@@ -90,14 +90,11 @@ function migrateToMultiBrokerVersion() {
             log::add('jMQTT', 'debug', 'export before of ' . $eqL->getName());
             log::add('jMQTT', 'debug', json_encode($eqL->full_export()));
 
-            $eqL->setConfiguration('prev_Qos', null);
-            $eqL->setConfiguration('prev_isActive', null);
-            $eqL->setConfiguration('reload_d', null);
-            $eqL->setConfiguration('topic', null);
             if ($eqL->getType() == '') {
                 $eqL->setType(jMQTT::TYP_EQPT);
                 $eqL->setBrkId($broker->getId());
             }
+            $eqL->cleanEquipment();
             $eqL->save(true);
 
             log::add('jMQTT', 'debug', 'export after of ' . $eqL->getName());
