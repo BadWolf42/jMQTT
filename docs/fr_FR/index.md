@@ -51,10 +51,14 @@ L'icône de chaque broker présente dans son coin supérieur droit un point de c
 Viennent ensuite pour chaque broker, un panneau occupant toute la largeur de la page et présentant les équipements connectés au broker nommé dans la légende du panneau. Outre les équipements, le panneau comprend :
   - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
   - Un icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
-  
+
 A noter qu'un équipement :
   - Grisé est inactif;
   - Présenté avec un petit icône d’inclusion superposé, est un équipement dont l'*Ajout automatique des commandes* est activé (détails dans [Onglet Equipement](#onglet-equipement)).
+  
+> **Important**
+> 
+> Un panneau intitulé _Equipement orphelins_ pourrait aussi être présent suite à la migration vers la version supportant le multi-brokers. Il regroupe les équipements qui n'ont pas été migrés automatiquement. Editer chacun d'eux et les associer à l'équipement broker de votre installation (unique normalement après migration), voir paramètre _Broker associé_ au chapitre [Paramètres de l'équipement](#paramètres-de-léquipement).
 
 ## Ajout d'un équipement broker
 
@@ -71,14 +75,14 @@ Nous nous attachons ici à décrire l'onglet spécifique.
 Par défaut, un équipement broker est configuré pour s’inscrire au broker Mosquitto installé localement sur la machine hébergeant Jeedom. Si cette configuration convient, activer l'équipement dans l'onglet _Equipement_ et sauvegarder. Revenir sur l'onglet _Broker_, le status du démon devrait passer à OK.
 
 Pour particulariser la configuration du plugin, les paramètres sont:
-  - IP de Mosquitto: adresse IP du broker (par défaut localhost i.e. la machine hébergeant Jeedom);
-  - Port de Mosquitto: port du broker (1883 par défaut);
-  - Identifiant de connexion: identifiant avec lequel l'équipement broker s’inscrit auprès du broker MQTT (jeedom par défaut).
+  - _IP de Mosquitto_ : adresse IP du broker (par défaut localhost i.e. la machine hébergeant Jeedom);
+  - _Port de Mosquitto_ : port du broker (1883 par défaut);
+  - _Identifiant de connexion_ : identifiant avec lequel l'équipement broker s’inscrit auprès du broker MQTT (jeedom par défaut).
     - **Attention**: cet identifiant doit être unique par client et par broker. Sinon les clients portant le même identifiant vont se déconnecter l’un-l’autre à chaque connection.
     - Cet identifiant est utilisé dans le nom du topic des commandes info *status* et *api* que l'on retrouve dans l'onglet *Commandes*. Les topics seront automatiquement renommés si l'identifiant est modifié. 
-  - Compte et mot de passe de connexion: compte et mot de passe de connexion au broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du broker, sauf bien-sûr si vous modifiez la configuration de ce dernier pour activer l’authentification et dans ce cas vous savez ce que vous faites).
-  - Topic de souscription en mode inclusion automatique des équipements: topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (défaut \#, i.e. tous les topics).
-  - Accès API: à activer pour utiliser l'[API](#api).
+  - _Compte et mot de passe de connexion_ : compte et mot de passe de connexion au broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du broker, sauf bien-sûr si vous modifiez la configuration de ce dernier pour activer l’authentification et dans ce cas vous savez ce que vous faites).
+  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (défaut \#, i.e. tous les topics).
+  - _Accès API_ : à activer pour utiliser l'[API](#api).
 
 La sauvegarde de la configuration relance le démon et la souscription au broker MQTT avec les nouveaux paramètres.
 
@@ -121,17 +125,19 @@ Ce chapitre est applicable à tous les équipements jMQTT, y compris les équipm
 
 ### Onglet Equipement
 
-Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que quatre paramètres spécifiques au plugin:
+Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin:
 
-  - Inscrit au Topic: topic de souscription auprès du broker MQTT. Pour un équipement de type broker, ce paramètre n'est pas modifiable, il est imposé par l'identifiant de connexion au broker, voir [Onglet Broker](#onglet-broker);
+  - _Broker associé_ : broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites.
 
-  - Ajout automatique des commandes: si coché, les [commandes de type information](#commandes-de-type-information) seront automatiquement créés par le plugin, et l’équipement apparaitra avec un petit icône d’inclusion superposé dans la page de [Gestion des équipements](#gestion-des-équipements). La case est cochée par défaut;
+  - _Inscrit au Topic_ : topic de souscription auprès du broker MQTT. Pour un équipement de type broker, ce paramètre n'est pas modifiable, il est imposé par l'identifiant de connexion au broker, voir [Onglet Broker](#onglet-broker);
 
-  - Qos: qualité de service souscrit;
+  - _Ajout automatique des commandes_ : si coché, les [commandes de type information](#commandes-de-type-information) seront automatiquement créés par le plugin, et l’équipement apparaitra avec un petit icône d’inclusion superposé dans la page de [Gestion des équipements](#gestion-des-équipements). La case est cochée par défaut;
 
-  - Catégorie du topic: sélection d’une image spécifique à l’équipement. Pour un équipement broker, ce paramètre n'est pas disponible car l'image est imposée.
+  - _Qos_ : qualité de service souscrit;
+
+  - _Catégorie du topic_ : sélection d’une image spécifique à l’équipement. Pour un équipement broker, ce paramètre n'est pas disponible car l'image est imposée.
   
-  - Dernière communication: date de dernière communication avec le broker MQTT, que ce soit en réception (commande information) ou publication (commande action).
+  - _Dernière communication_ : date de dernière communication avec le broker MQTT, que ce soit en réception (commande information) ou publication (commande action).
 
 > **Important**
 > 
@@ -412,6 +418,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 <a id="changelog"></a>
 
 # Registre des évolutions
+
+##### 2019-07-23
+
+  - Amélioration [\#78](https://github.com/domotruc/jMQTT/issues/78): ajout fonctionnalité permettant de changer un équipement de broker  
 
 ##### 2019-07-14
 
