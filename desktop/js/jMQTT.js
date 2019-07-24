@@ -193,8 +193,6 @@ $('.nav-tabs a[role="tab"]').on('click', function() {
             history.pushState({hash: $(this)[0].hash}, '', url);
         }
     }
-    if ($(this)[0].hash == '#brokertab')
-        refreshDaemonInfo();
 });
 
 // Manage the history on eqlogic display
@@ -208,8 +206,6 @@ $(".li_eqLogic,.eqLogicDisplayCard").on('click', function () {
         url = initPluginUrl(['id', 'hash'], id, hash);
         history.pushState({}, '', url);
     }
-    if (hash == '#brokertab')
-        refreshDaemonInfo();
 });
 
 // Manage the history on return to the plugin page

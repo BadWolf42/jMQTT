@@ -181,7 +181,7 @@ function showDaemonInfo(data) {
 
 function refreshDaemonInfo() {
     var id = getUrlVars('id');
-    if (id == false)
+    if (id == false || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
 
     callPluginAjax({
@@ -195,8 +195,19 @@ function refreshDaemonInfo() {
     });
 }
 
+
+// Observe attribute change of #brokertab. When tab is made visible, trigger refreshDaemonInfo
+var observer = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+      if ($("#brokertab").is(':visible')) {
+          refreshDaemonInfo();
+      }
+  });    
+});
+observer.observe($("#brokertab")[0], {attributes: true});
+
+
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
-    console.log('2: ' + _options.state);
     showDaemonInfo(_options);
 });
 
