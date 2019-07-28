@@ -46,7 +46,6 @@ class jMQTTCmd extends cmd {
         $cmd->setIsVisible(1);
         $cmd->setIsHistorized(0);
         $cmd->setSubType('string');
-        $cmd->setLogicalId($topic);
         $cmd->setType('info');
         $cmd->setTopic($topic);
         $cmd->setConfiguration('parseJson', '0');
@@ -160,7 +159,7 @@ class jMQTTCmd extends cmd {
         foreach ($_jsonArray as $id => $value) {
             $jsonTopic = $_topic    . '{' . $id . '}';
             $jsonName  = $_cmdName  . '{' . $id . '}';
-            $cmd = jMQTTCmd::byEqLogicIdAndLogicalId($_eqLogic->getId(), $jsonTopic);
+            $cmd = jMQTTCmd::byEqLogicIdAndTopic($_eqLogic->getId(), $jsonTopic);
 
             // If no command has been found, create one
             if (!is_object($cmd)) {
@@ -277,9 +276,6 @@ class jMQTTCmd extends cmd {
             else
                 $eqLogic->log('info', $cmdLogName . ': parseJson is disabled');
         }
-
-        // Insure Logical ID is always equal to the topic (fix issue #18)
-        $this->setLogicalId($this->getTopic());
     }
 
     public function setName($name) {
@@ -301,6 +297,26 @@ class jMQTTCmd extends cmd {
     
     public function getTopic() {
         return $this->getConfiguration('topic');
+    }
+    
+    public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $single=true) {
+        $conf = substr(json_encode(array('topic' => $topic)), 1, -1);
+        $conf = str_replace('\\', '\\\\', $conf);
+        
+        $values = array(
+            'configuration' => '%' . $conf . '%',
+            'eqLogic_id' => $eqLogic_id,
+        );
+        $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
+		FROM cmd
+		WHERE eqLogic_id=:eqLogic_id';
+        $sql .= ' AND configuration LIKE :configuration ORDER BY id';
+        $cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        
+        if (count($cmds) == 0)
+            return null;
+        else
+            return $single ? $cmds[0] : $cmds;
     }
     
     /**

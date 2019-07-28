@@ -1092,7 +1092,7 @@ class jMQTT extends eqLogic {
                 }
                 
                 /** @var jMQTTCmd $cmdlogic command related to the current message */
-                $cmdlogic = jMQTTCmd::byEqLogicIdAndLogicalId($eqpt->getId(), $msgTopic);
+                $cmdlogic = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic);
                 
                 // If no command has been found, try to create one
                 if (! is_object($cmdlogic)) {
@@ -1225,7 +1225,7 @@ class jMQTT extends eqLogic {
      */
     public function getMqttClientStatusCmd() {
         if (! is_object($this->_statusCmd)) {
-            $this->_statusCmd = cmd::byEqLogicIdAndLogicalId($this->getId(), $this->getMqttClientStatusTopic());
+            $this->_statusCmd = jMQTTCmd::byEqLogicIdAndTopic($this->getId(), $this->getMqttClientStatusTopic());
         }
         return $this->_statusCmd;
     }
