@@ -419,6 +419,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-08-22 (beta)
+
+  - Support php 7.3
+
 ##### 2019-07-23
 
   - Amélioration [\#78](https://github.com/domotruc/jMQTT/issues/78): ajout fonctionnalité permettant de changer un équipement de broker  
