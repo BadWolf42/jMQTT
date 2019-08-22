@@ -422,6 +422,7 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 ##### 2019-08-22 (beta)
 
   - Support php 7.3
+  - Correction de [\#79](https://github.com/domotruc/jMQTT/issues/77): message d'alerte "L'équipement n'est pas de type broker"
 
 ##### 2019-07-23
 
