@@ -21,15 +21,23 @@
  */
 class jMQTTCmd extends cmd {
 
-    // Constant value to be affected to Parent and Order configuration parameters, for commands
-    // that do not derive from a JSON structure
-    const NOT_JSON_CHILD = -1;
+    /**
+     * Possible value of $_post_action.
+     * @var integer
+     */
+    const POST_ACTION_INIT_JSON_VALUE = 1;
     
     /**
      * @var int maximum length of command name supported by the database scheme
      */
     private static $_cmdNameMaxLength;
-
+    
+    /**
+     * Data shared between preSave and postSave
+     * @var int $_post_action value among constants POST_ACTION* 
+     */
+    private $_post_action;
+    
     /**
      * Create a new command. Command IS NOT saved.
      * @param jMQTT $eqLogic jMQTT equipment the command belongs to
@@ -48,21 +56,27 @@ class jMQTTCmd extends cmd {
         $cmd->setSubType('string');
         $cmd->setType('info');
         $cmd->setTopic($topic);
-        $cmd->setConfiguration('parseJson', '0');
-        $cmd->setConfiguration('prevParseJson', 0);
-
         
         // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
         $cmd->setName(self::checkCmdName($eqLogic, $name));
         
-        $eqLogic->log('info', 'Creating command of type info ' . $eqLogic->getName() . '|' . $cmd->getName());
-
+        $cmd->eventNewCmd(true);
+        
+        return $cmd;
+    }
+    
+    /**
+     * Inform that a command has been created (in the log and to the ui though an event)
+     * @param bool $reload indicate if the desktop page shall be reloaded
+     */
+    private function eventNewCmd($reload=false) {
+        $eqLogic = $this->getEqLogic();
+        $eqLogic->log('info', 'Creating command of type ' . $this->getType() . ' ' . $this->getLogName());
+        
         // Advise the desktop page (jMQTT.js) that a new command has been added
         event::add('jMQTT::cmdAdded',
-                   array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(),
-                           'cmd_name' => $cmd->getName()));
-
-        return $cmd;
+            array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(),
+                'cmd_name' => $this->getName(), 'reload' => $reload));        
     }
     
     /**
@@ -85,97 +99,60 @@ class jMQTTCmd extends cmd {
      * preRemove method to log that a command is removed
      */
     public function preRemove() {
-        $this->getEqLogic()->log('info', 'Removing command ' . $this->getEqLogic()->getName() . '|' . $this->getName());
+        $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
     }
 
     /**
-     * Update this command value, inform all stakeholders, and save when necessary
+     * Update this command value, and inform all stakeholders about the new value
      * @param string $value new command value
-     * @param int $jParent cmd id of the parent. Set NOT_JSON_CHILD if not a JSON structure.
-     * @param int $jOrder order of the command. Set NOT_JSON_CHILD if not a JSON structure.
      */
-    public function updateCmdValue($value, $jParent, $jOrder) {
-
-        $to_save = false;
-        if ($this->getId() == '') {
-            $to_save = true;
-        }
-        if ($this->getConfiguration('jParent', self::NOT_JSON_CHILD) != $jParent || $this->getConfiguration('jOrder', self::NOT_JSON_CHILD) != $jOrder) {
-            $this->setConfiguration('jParent', $jParent);
-            $this->setConfiguration('jOrder', $jOrder);
-            $to_save = true;
-        }
-        if ($to_save) {
-            $this->save(); 
-        }
-        
-        // Update the command value
+    public function updateCmdValue($value) {
         $this->event($value);
-
-        $this->getEqLogic()->log('info', '-> ' . $this->getEqLogic()->getName() . '|' . $this->getName() . ' ' . $value);
+        $this->getEqLogic()->log('info', '-> ' . $this->getLogName() . ' ' . $value);
     }
-
+    
     /**
-     * Returns weather or not a given parameter is valid and can be processed by the setConfiguration method
+     * Update this command value knowing that this command is derived from a JSON payload
+     * Inform all stakeholders about the new value
+     * @param array $jsonArray associative array
+     */
+    public function updateJsonCmdValue($jsonArray) {
+        $topic = $this->getTopic();
+        $indexes = substr($topic, strpos($topic, '{'));
+        $indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
+        $indexes = explode('|', $indexes);
+        $value = self::get_array_value($jsonArray, $indexes);
+        if (isset($value)) {
+            $this->updateCmdValue(json_encode($value));
+        }
+        else {
+            $this->getEqLogic()->log('warning', 'Erreur de décodage JSON sur la commande ' . $this->getLogName());
+        }
+    }
+    
+    /**
+     * Decode and return the JSON payload being received by this command
+     * @param string $payload JSON payload being received
+     * @return null|array|object null if the JSON payload cannot de decoded
+     */
+    public function decodeJsonMsg($payload) {
+        $jsonArray = json_decode($payload, true);
+        if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
+            return $jsonArray;
+        else {
+            $this->getEqLogic()->log('warning', 'Erreur de format JSON sur la commande ' . $this->getLogName() .
+                ': ' . json_last_error_msg());
+            return null;
+        }
+    }
+    
+    /**
+     * Returns whether or not a given parameter is valid and can be processed by the setConfiguration method
      * @param string $value given configuration parameter value
      * @return boolean TRUE of the parameter is valid, FALSE if not
      */
     public static function isConfigurationValid($value) {
         return (json_encode(array('v' => $value), JSON_UNESCAPED_UNICODE) !== FALSE);
-    }
-
-    /**
-     * Decode the given message as a JSON structure and update command values.
-     * If the given message is not a JSON valid structure, nothing is done.
-     * Commands are created when they do not exist.
-     * If the given JSON message contains other JSON structure, routine is called recursively.
-     * @param eqLogic $_eqLogic current equipment
-     * @param string $_msgValue message value
-     * @param string $_cmdName command name prefix
-     * @param string $_topic mqtt topic prefix
-     * @param int $_jParent cmd id of the parent (in case of JSON payload)
-     */
-    public static function decodeJsonMessage($_eqLogic, $_msgValue, $_cmdName, $_topic, $_jParent) {
-        $jsonArray = json_decode($_msgValue, true);
-        if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
-            self::decodeJsonArray($_eqLogic, $jsonArray, $_cmdName, $_topic, $_jParent);
-    }
-
-    /**
-     * Decode the given JSON array and update command values.
-     * Commands are created when they do not exist.
-     * If the given JSON structure contains other JSON structure, call this routine recursively.
-     * @param eqLogic $_eqLogic current equipment
-     * @param array $_jsonArray JSON decoded array to parse
-     * @param string $_cmdName command name prefix
-     * @param string $_topic mqtt topic prefix
-     * @param int $_jParent cmd id of the parent (in case of JSON payload)
-     */
-    public static function decodeJsonArray($_eqLogic, $_jsonArray, $_cmdName, $_topic, $_jParent) {
-
-        // Current index in the JSON structure: starts from 0
-        $jOrder = 0;
-
-        foreach ($_jsonArray as $id => $value) {
-            $jsonTopic = $_topic    . '{' . $id . '}';
-            $jsonName  = $_cmdName  . '{' . $id . '}';
-            $cmd = jMQTTCmd::byEqLogicIdAndTopic($_eqLogic->getId(), $jsonTopic);
-
-            // If no command has been found, create one
-            if (!is_object($cmd)) {
-                $cmd = jMQTTCmd::newCmd($_eqLogic, $jsonName, $jsonTopic);
-            }
-
-            if (is_object($cmd)) {
-                // json_encode is used as it works whatever the type of $value (array, boolean, ...)
-                $cmd->updateCmdValue(json_encode($value), $_jParent, $jOrder);
-
-                // If the current command is a JSON structure that shall be decoded, call this routine recursively
-                if ($cmd->getConfiguration('parseJson') == '1' && is_array($value))
-                    self::decodeJsonArray($_eqLogic, $value, $jsonName, $jsonTopic, $cmd->getId());
-            }
-            $jOrder++;
-        }
     }
 
     /**
@@ -217,22 +194,16 @@ class jMQTTCmd extends cmd {
         return $request;
     }
 
-    /*
-     * Override preSave:
-     *    . To detect changes on the retain flag: when retain mode is exited, send a null
-     *      payload to the broker to erase the retained topic (implementation of Issue #1).
-     *    . To update the Logical Id: usefull for action commands (fix issue #18).
+    /**
+     * preSave callback called by the core before saving this command in the DB
      */
     public function preSave() {
 
         /** @var jMQTT $eqLogic */
         $eqLogic       = $this->getEqLogic();
-        $eqName        = $eqLogic->getName();
-        $cmdLogName    = $eqName  . '|' . $this->getName();
+        $cmdLogName    = $this->getLogName();
         $prevRetain    = $this->getConfiguration('prev_retain', 0);
         $retain        = $this->getConfiguration('retain', 0);
-        $parseJson     = $this->getConfiguration('parseJson', '0');
-        $prevParseJson = $this->getConfiguration('prevParseJson', 1);
         
         // If request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
         // the desktop interface - fix issue #28)
@@ -242,11 +213,21 @@ class jMQTTCmd extends cmd {
                 $this->setConfiguration($key, $conf);
         }
 
-        // If an action command is being created, initialize correctly the prev_retain flag (fix issue #13)
-        if ($this->getId() == '' && $this->getType() == 'action') {
-            $eqLogic->log('info', 'Creating action command ' . $cmdLogName);
-            $prevRetain = $retain;
-            $this->setConfiguration('prev_retain', $retain);
+        // Creation of a command
+        if ($this->getId() == '') {
+            
+            // Action command: initialize correctly the prev_retain flag (fix issue #13)
+            if ($this->getType() == 'action') {
+                $prevRetain = $retain;
+                $this->setConfiguration('prev_retain', $retain);
+                $this->eventNewCmd(false);
+            }
+            
+            // Information command: if deriving from a JSON payload, set a flag to initiliaze its value in postSave
+            if ($this->getType() == 'info' && $this->isJson()) {
+                $this->addPostAction(self::POST_ACTION_INIT_JSON_VALUE);
+                $this->eventNewCmd(false);
+            }
         }
 
         if ($retain != $prevRetain) {
@@ -258,23 +239,31 @@ class jMQTTCmd extends cmd {
                 // Otherwise, this last value remains retained at broker level
                 $eqLogic->log('info',
                          $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
-                $eqLogic->publishMosquitto($this->getId(), $eqName, $this->getTopic(), '', 1, 1);
+                $eqLogic->publishMosquitto($this->getId(), $eqLogic->getName(), $this->getTopic(), '', 1, 1);
             }
             else
                 $eqLogic->log('info', $cmdLogName . ': mode retain activé');
         }
-
-        if ($parseJson != $prevParseJson && $this->getType() == 'info') {
-            // Acknowledge parseJson change
-            $this->setConfiguration('prevParseJson', $parseJson);
-
-            if ($parseJson) {
-                $eqLogic->log('info', $cmdLogName . ': parseJson is enabled');
-                jMQTTCmd::decodeJsonMessage($this->getEqLogic(), $this->execCmd(), $this->getName(),
-                    $this->getTopic(), $this->getId());
+    }
+    
+    /**
+     * Callback called by the core after having saved this command in the DB
+     */
+    public function postSave() {
+        // When requested, initialize the value of a new command deriving from a JSON payload 
+        if (isset($this->_post_action)) {
+            
+            if ($this->_post_action & self::POST_ACTION_INIT_JSON_VALUE) {
+                $root_topic = substr($this->getTopic(), 0, strpos($this->getTopic(), '{'));
+                
+                /** @var jMQTTCmd $root_cmd root JSON command */
+                $root_cmd = jMQTTCmd::byEqLogicIdAndTopic($this->getEqLogic_id(), $root_topic, false);
+                
+                $jsonArray = $root_cmd->decodeJsonMsg($root_cmd->execCmd());
+                if (isset($jsonArray)) {
+                    $this->updateJsonCmdValue($jsonArray);
+                }
             }
-            else
-                $eqLogic->log('info', $cmdLogName . ': parseJson is disabled');
         }
     }
 
@@ -299,8 +288,8 @@ class jMQTTCmd extends cmd {
         return $this->getConfiguration('topic');
     }
     
-    public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $single=true) {
-        $conf = substr(json_encode(array('topic' => $topic)), 1, -1);
+    public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
+        $conf = substr(json_encode(array('topic' => $topic)), 1, -2);
         $conf = str_replace('\\', '\\\\', $conf);
         
         $values = array(
@@ -316,7 +305,59 @@ class jMQTTCmd extends cmd {
         if (count($cmds) == 0)
             return null;
         else
-            return $single ? $cmds[0] : $cmds;
+            return $multiple ? $cmds : $cmds[0];
+    }
+    
+    /**
+     * Return the $array element designated by $indexes.
+     * Example: to retrieve $array['1']['name'], call get_array_value($array, array('1', 'name'))
+     * @param array $array
+     * @param array $indexes
+     * @return NULL|unknown
+     */
+    private static function get_array_value($array, $indexes) {
+        if (count($array) == 0 || count($indexes) == 0) {
+            return null;
+        }
+        
+        $index = array_shift($indexes);
+        if(!array_key_exists($index, $array)){
+            return null;
+        }
+        
+        $value = $array[$index];
+        if (count($indexes) == 0) {
+            return $value;
+        }
+        else {
+            return self::get_array_value($value, $indexes);
+        }
+    }
+    
+    /**
+     * Return whether or not this command is derived from a Json payload
+     * @return boolean
+     */
+    private function isJson() {
+        return strpos($this->getTopic(), '{') !== false;
+    }
+    
+    /**
+     * Return the name of this command for logging purpose
+     * (basically, return concatenation of the eqLogic name and the cmd name)
+     * @return string
+     */
+    private function getLogName() {
+        return $this->getEqLogic()->getName()  . '|' . $this->getName();
+    }
+    
+    private function addPostAction($action) {
+        if (isset($this->_post_action)) {
+            $this->_post_action = $this->_post_action | $action;
+        }
+        else {
+            $this->_post_action = $action;
+        }
     }
     
     /**

@@ -17,9 +17,6 @@
 //To memorise page refresh timeout when set
 var refreshTimeout;
 
-//Command number: used when displaying commands as a JSON tree.
-var N_CMD;
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //To debug browser history management (pushState, ...)  
 //
@@ -248,7 +245,6 @@ $('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
                 type: eqType,
                 eqLogics: [ $.extend({name: result}, eqL) ],
                 error: function (error) {
-                    console.log(error.message);
                     $('#div_alert').showAlert({message: error.message, level: 'danger'});
                 },
                 success: function (data) {
@@ -335,62 +331,140 @@ $('.eqLogicAction[data-action=move_broker]').on('click', function () {
  */
 function printEqLogic(_eqLogic) {
     
+    // Initialize the command counter
+    var n_cmd = 1;
+    
+    // Is the JSON view is active
+    var is_json_view = $('#bt_json.active').length != 0;
+
     // Principle of the ordering algorithm is to associate an ordering string to
     // each command, and then ordering into alphabetical order
 
-    // Encode the given number in base 36, on 3 caracters width
-    function toString36(_n) {
-        var ret = parseInt(_n).toString(36);
-        if (ret.length < 3)
-            ret = "0".repeat(3-ret.length) + ret;
-        return ret;
+    function isChild(_c) {
+        return _c.configuration.topic.search('{')  >= 0;
     }
 
-    // Return the ordering string of the given command
-    function computeOrder(_c) {
-        if (_c.sOrder != undefined)
-            return _c.sOrder;
-        var sParent = '';
-        if (_c.configuration.jParent != undefined && _c.configuration.jParent >= 0) {
-            var tmp = _eqLogic.cmd.filter(function (c) { return c.id == _c.configuration.jParent; });
-            sParent = computeOrder(tmp[0]);
-        }
-        if (_c.configuration.jOrder == undefined || _c.configuration.jOrder < 0)
-            sOrder = toString36(_c.order);
-        else
-            sOrder = toString36(_c.configuration.jOrder);
-        return sParent + sOrder;
-    }
-
+    //    // Encode the given number in base 36, on 3 caracters width
+//    function toString36(_n) {
+//        var ret = parseInt(_n).toString(36);
+//        if (ret.length < 3)
+//            ret = "0".repeat(3-ret.length) + ret;
+//        return ret;
+//    }
+//    
+//
+//    // Return the ordering string of the given command
+//    function computeOrder(_c) {
+//        if (_c.sOrder != undefined)
+//            return _c.sOrder;
+//        var sParent = '';
+//        if (isChild(_c)) {
+//            var tmp = _eqLogic.cmd.filter(function (c) { return c.id == _c.configuration.jParent; });
+//            sParent = computeOrder(tmp[0]);
+//        }
+//        
+//        if (_c.configuration.jOrder == undefined || _c.configuration.jOrder < 0)
+//            sOrder = toString36(_c.order);
+//        else
+//            sOrder = toString36(_c.configuration.jOrder);
+//        return sParent + sOrder;
+//    }
+    
     // JSON view button is active
-    if ($('#bt_json.active').length) {
-
-        // Initialize the counter used
-        N_CMD = 1;
+    if (is_json_view) {
 
         // Compute the ordering string of each commands
-        for (var c of _eqLogic.cmd) {
-            c.sOrder = computeOrder(c);
+        // On JSON view, we completely rebuild the command table
+        var new_cmd = new Array();
+        
+        function pushCmd(c, parent_id) {
+            c.treegrid_id = n_cmd++;
+            if (parent_id > 0) {
+                c.treegrid_parent_id = parent_id;
+            }
+            new_cmd.push(c);
+        }
+        
+        function addCmd(topic, payload, parent_id) {
+            var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
+            var exist_cmds = _eqLogic.cmd.filter(function (c) { return c.configuration.topic == topic; });
+            if (exist_cmds.length > 0) {
+                exist_cmds[0].value = val;
+                pushCmd(exist_cmds[0], parent_id);
+            }
+            else {
+                pushCmd({
+                    configuration: {
+                        topic: topic
+                    },
+                    isHistorized: "0",
+                    isVisible: "1",
+                    json: payload,  // FIXME: to keep?
+                    type: 'info',
+                    subType: 'string',
+                    value: val
+                }, parent_id);
+            }
+        }
+        
+        // FIXME: to_add à garder?
+        function crossJson(topic, payload, parent_id=-1, to_add=false) {
+            if (to_add) {
+                addCmd(topic, payload, parent_id);
+            }
+            var this_id = n_cmd-1;
+            for (i in payload) {
+                if (typeof payload[i] === 'object') {
+                    crossJson(topic + '{' + i + '}', payload[i], this_id, true);
+                }
+                else {
+                    addCmd(topic + '{' + i + '}', payload[i], this_id);
+                }
+            }
         }
 
-        // Sort the command array
-        _eqLogic.cmd.sort(function(c1, c2) {
-            if (c1.sOrder < c2.sOrder)
-                return -1;
-            if (c1.sOrder > c2.sOrder)
-                return 1;
-            return 0;
-        });
+        for (var c of _eqLogic.cmd) {
+            if (!isChild(c)) {
+                pushCmd(c);
+                if (c.type == 'info') {
+                    jeedom.cmd.execute({
+                        async: false, id: c.id, cache: 0, notify: false,
+                        success: function(result) {
+                            c.value = result;
+                        }});
+                    try {
+                        c.json = JSON.parse(c.value);
+                    }
+                    catch (e) {}
+    
+                    if (typeof c.json === 'object') {
+                        crossJson(c.configuration.topic, c.json);
+                    }
+                }
+            }
+        }
+        
+        _eqLogic.cmd = new_cmd;
 
-        // Disable the sortable functionality and enlarge the Id column width
+        // Sort the command array
+//        _eqLogic.cmd.sort(function(c1, c2) {
+//            if (c1.sOrder < c2.sOrder)
+//                return -1;
+//            if (c1.sOrder > c2.sOrder)
+//                return 1;
+//            return 0;
+//        });
+
+        // JSON view: disable the sortable functionality
         $("#table_cmd").sortable('disable');
-        $("#table_cmd th:first").width('120px');
     }
     else {
-        // Classical view: enable the sortable functionality and adapt the Id
-        // column width
+        for (var c of _eqLogic.cmd) {
+            c.treegrid_id = n_cmd++;
+        }
+        
+        // Classical view: enable the sortable functionality
         $("#table_cmd").sortable('enable');
-        $("#table_cmd th:first").width('50px');
     }
 
     // Show UI elements depending on the type
@@ -409,6 +483,8 @@ function printEqLogic(_eqLogic) {
         $('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
         $('.bt_plugin_conf_view_log').attr('data-log', log);
         $('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
+        
+        refreshDaemonInfo();
         
         jeedom.config.load({
             configuration: $('#div_broker_log').getValues('.configKey')[0],
@@ -446,6 +522,13 @@ function saveEqLogic(_eqLogic) {
     if (!$.isEmptyObject(log_level)) {
         _eqLogic.loglevel =  log_level;
     }
+    
+    for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
+        if (_eqLogic.cmd[i].id == "" && _eqLogic.cmd[i].name == "") {
+            _eqLogic.cmd.splice(i, 1);
+        }
+    }
+    
     return _eqLogic;
 }
 
@@ -460,30 +543,33 @@ function addCmdToTable(_cmd) {
         _cmd.configuration = {};
     }
 
+    // Is the JSON view is active
+    var is_json_view = $('#bt_json.active').length != 0;
+
     if (init(_cmd.type) == 'info') {
         // FIXME: is this disabled variable usefull?
         var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
-
-        var tr = '<tr class="cmd';
-        if ($('#bt_json.active').length) {
-            tr += ' treegrid-' + N_CMD;
-            if (_cmd.configuration.jParent >= 0) {
-                tr += ' treegrid-parent-' + $('.cmd[data-cmd_id=' + _cmd.configuration.jParent + ']').attr('class').split('treegrid-')[1]
+       
+        var tr = '<tr class="cmd treegrid-' + _cmd.treegrid_id;
+        if (is_json_view) {
+            if (_cmd.treegrid_parent_id > 0) {
+                tr += ' treegrid-parent-' + _cmd.treegrid_parent_id;
             }
         }
         tr += '" data-cmd_id="' + init(_cmd.id) + '">';
-        tr += '<td><span class="cmdAttr" data-l1key="id"></span>';
+        tr += '<td class="fitwidth"><span class="cmdAttr" data-l1key="id"></span>';
 
         // TRICK: For the JSON view include the "order" value in a hidden
         // element
         // so that the original/natural order is kept when saving
-        if ($('#bt_json.active').length) {
-            tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span></td>'
+        if (is_json_view) {
+            tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span></td>';
         }
-        else
-            tr += '</td>'
+        else {
+            tr += '</td>';
+        }
 
-                tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="name" style="height:65px;" placeholder="{{Nom de l\'info}}" /></td>';
+        tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="name" style="height:65px;" placeholder="{{Nom de l\'info}}" /></td>';
         tr += '<td>';
         tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '"></span>';
@@ -491,7 +577,7 @@ function addCmdToTable(_cmd) {
         tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;" ' + disabled + ' placeholder="{{Topic}}" readonly=true />';
         tr += '</td><td>';
         tr += '<textarea class="form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
-        tr += '</td><td>';
+        tr += '</td><td class="fitwidth">';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="{{Unité}}"></td><td>';
         tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
         tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span> ';
@@ -503,12 +589,12 @@ function addCmdToTable(_cmd) {
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fa fa-cogs"></i></a> ';
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
         }
-        if (_cmd.configuration.irremovable == undefined) {
-            tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+        if (_cmd.id != undefined && _cmd.configuration.irremovable == undefined) {
+            tr += ' <a class="btn btn-default btn-xs cmdAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i></a>';
         }
-        tr += '<input style="width:82%;margin-bottom:2px;" class="tooltips cmdAttr form-control input-sm" data-l1key="cache" data-l2key="lifetime" placeholder="{{Lifetime cache}}" title="{{Lifetime cache}}">';
-        tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:40%;display:inline-block;"> ';
-        tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:40%;display:inline-block;">';
+//        tr += '<input style="width:82%;margin-bottom:2px;" class="tooltips cmdAttr form-control input-sm" data-l1key="cache" data-l2key="lifetime" placeholder="{{Lifetime cache}}" title="{{Lifetime cache}}">';
+//        tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:40%;display:inline-block;"> ';
+//        tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:40%;display:inline-block;">';
         tr += '</td></tr>';
 
         $('#table_cmd tbody').append(tr);
@@ -519,24 +605,34 @@ function addCmdToTable(_cmd) {
         jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
 
         function refreshValue(val) {
-            $('.cmd[data-cmd_id=' + _cmd.id + '] .form-control[data-key=value]').value(val);
+            $('.treegrid-' + _cmd.treegrid_id + ' .form-control[data-key=value]').value(val);
         }
 
-        jeedom.cmd.execute({
-            id: _cmd.id,
-            cache: 0,
-            notify: false,
-            success: function(result) {
-                refreshValue(result);
-        }});
-        jeedom.cmd.update[_cmd.id] = function(_options) {
-            refreshValue(_options.display_value);
+        // Display the value. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
+        // See below for CLASSIC view.
+        refreshValue(_cmd.value);
+        
+        if (_cmd.id != undefined) {
+            // Get and display the value in CLASSIC view (for JSON view, see few lines above)
+            if (! is_json_view) {
+                jeedom.cmd.execute({
+                    id: _cmd.id,
+                    cache: 0,
+                    notify: false,
+                    success: function(result) {
+                        refreshValue(result);
+                }});
+            }
+            
+            // Set the update value callback
+            jeedom.cmd.update[_cmd.id] = function(_options) {
+                refreshValue(_options.display_value);
+            }
         }
-        N_CMD++;
     }
 
     if (init(_cmd.type) == 'action') {
-        var tr = '<tr class="cmd treegrid-' + N_CMD + '" data-cmd_id="' + init(_cmd.id) + '">';
+        var tr = '<tr class="cmd treegrid-' +  _cmd.treegrid_id + '" data-cmd_id="' + init(_cmd.id) + '">';
         tr += '<td>';
         tr += '<span class="cmdAttr" data-l1key="id"></span>';
         tr += '</td>';
@@ -574,7 +670,7 @@ function addCmdToTable(_cmd) {
             tr += '<a class="btn btn-default btn-xs cmdAction expertModeVisible" data-action="configure"><i class="fa fa-cogs"></i></a> ';
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
         }
-        tr += '<i class="fa fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i></td>';
+        tr += '<a class="btn btn-default btn-xs cmdAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i></a></td>';
         tr += '</tr>';
         
         $('#table_cmd tbody').append(tr);
@@ -592,14 +688,14 @@ function addCmdToTable(_cmd) {
                 jeedom.cmd.changeType(tr, init(_cmd.subType));
             }
         });
-        N_CMD++;
     }
 
     // If JSON view is active, build the tree
-    if ($('#bt_json.active').length) {
+    if (is_json_view) {
         $('.tree').treegrid({
-            expanderExpandedClass: 'glyphicon glyphicon-minus',
-            expanderCollapsedClass: 'glyphicon glyphicon-plus'
+            initialState: 'collapsed'
+//            expanderExpandedClass: 'glyphicon glyphicon-minus',
+//            expanderCollapsedClass: 'glyphicon glyphicon-plus'
         });
     }
 }
@@ -611,18 +707,19 @@ function addCmdToTable(_cmd) {
  * @param _options['eqlogic_name'] string name of the eqLogic command is added to
  * @param _options['eqlogic_id'] int id of the eqLogic command is added to
  * @param _options['cmd_name'] string name of the new command
+ * @param _options['reload'] bool whether or not a reload of the page is requested
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options) {
-
+    
     if ($('#div_newCmdMsg.alert').length == 0)
-        var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{a été ajoutée à l\'équipement}}' +
+        var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{est ajoutée à l\'équipement}}' +
         ' <b>' + _options['eqlogic_name'] + '</b>.';
     else
-        var msg = '{{Plusieurs commandes ont été ajoutée à l\'équipement}} <b>' + _options['eqlogic_name'] + '</b>.';
+        var msg = '{{Plusieurs commandes sont ajoutées à l\'équipement}} <b>' + _options['eqlogic_name'] + '</b>.';
 
     // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
     if (modifyWithoutSave || $('.li_eqLogic.active').attr('data-eqLogic_id') != _options['eqlogic_id'] ||
-            $('div[role="dialog"]').filter(':visible').length != 0) {
+            $('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
         $('#div_newCmdMsg').showAlert({message: msg, level: 'warning'});
     }
     // Otherwise: display an alert message and reload the page

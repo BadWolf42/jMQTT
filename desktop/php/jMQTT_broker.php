@@ -195,7 +195,6 @@ function refreshDaemonInfo() {
     });
 }
 
-
 // Observe attribute change of #brokertab. When tab is made visible, trigger refreshDaemonInfo
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
@@ -205,7 +204,6 @@ var observer = new MutationObserver(function(mutations) {
   });    
 });
 observer.observe($("#brokertab")[0], {attributes: true});
-
 
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
     showDaemonInfo(_options);

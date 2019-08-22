@@ -1091,13 +1091,14 @@ class jMQTT extends eqLogic {
                     $cmdName = $cmdName . '/' . current($msgTopicArray);
                 }
                 
-                /** @var jMQTTCmd $cmdlogic command related to the current message */
-                $cmdlogic = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic);
+                /** @var array[jMQTTCmd] $cmdlogics array of the commands related to the current message */
+                $cmdlogics = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
                 
                 // If no command has been found, try to create one
-                if (! is_object($cmdlogic)) {
+                if (is_null($cmdlogics)) {
                     if ($eqpt->getAutoAddCmd()) {
-                        $cmdlogic = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
+                        $cmdlogics = array(jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic));
+                        $cmdlogics[0]->save();
                     }
                     else {
                         $this->log('debug',
@@ -1106,25 +1107,30 @@ class jMQTT extends eqLogic {
                     }
                 }
                 
-                if (is_object($cmdlogic)) {
+                if (is_array($cmdlogics)) {
                     
                     // If the found command is an action command, skip
-                    if ($cmdlogic->getType() == 'action') {
+                    if ($cmdlogics[0]->getType() == 'action') {
                         $this->log('debug',
-                            $eqpt->getName() . '|' . $cmdlogic->getName() . ' is an action command: skip');
+                            $eqpt->getName() . '|' . $cmdlogics[0]->getName() . ' is an action command: skip');
                         continue;
                     }
                     
                     // Update the command value
-                    $cmdlogic->updateCmdValue($msgValue, jMQTTCmd::NOT_JSON_CHILD, jMQTTCmd::NOT_JSON_CHILD);
+                    $cmdlogics[0]->updateCmdValue($msgValue);
                     
-                    // Decode the JSON payload if requested
-                    if ($cmdlogic->getConfiguration('parseJson') == 1) {
-                        jMQTTCmd::decodeJsonMessage($eqpt, $msgValue, $cmdName, $msgTopic, $cmdlogic->getId(), 0);
+                    // Update JSON derived commands if any
+                    if (count($cmdlogics) > 1) {
+                        $jsonArray = $cmdlogics[0]->decodeJsonMsg($msgValue);
+                        if (isset($jsonArray)) {
+                            for ($i=1 ; $i<count($cmdlogics) ; $i++) {
+                                $cmdlogics[$i]->updateJsonCmdValue($jsonArray);
+                            }
+                        }
                     }
-                    
+                                        
                     // On reception of a the broker status topic, generate an state event
-                    if ($this->getId() == $eqpt->getId() && $cmdlogic->getTopic() == $this->getMqttClientStatusTopic()) {
+                    if ($this->getId() == $eqpt->getId() && $cmdlogics[0]->getTopic() == $this->getMqttClientStatusTopic()) {
                         $this->sendDaemonStateEvent();
                     }
                 }

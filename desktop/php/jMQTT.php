@@ -75,6 +75,10 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
     opacity: 0.4;
 }
 
+td.fitwidth {
+    white-space: nowrap;
+}
+
 <?php 
 if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
     echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayCard {";
@@ -296,14 +300,14 @@ function displayEqLogicCard($eqL, $node_images) {
                 <table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
                     <thead>
                         <tr>
-                            <th style="width: 50px;">#</th>
-                            <th style="width: 250px;">{{Nom}}</th>
-                            <th style="width: 60px;">{{Sous-Type}}</th>
-                            <th style="width: 300px;">{{Topic}}</th>
-                            <th style="width: 300px;">{{Valeur}}</th>
-                            <th style="width: 60px;">{{Unité}}</th>
-                            <th style="width: 150px;">{{Paramètres}}</th>
-                            <th style="width: 150px;"></th>
+                            <th style="width:1px;">#</th>
+                            <th style="width:250px;">{{Nom}}</th>
+                            <th style="width:60px;">{{Sous-Type}}</th>
+                            <th style="width:300px;">{{Topic}}</th>
+                            <th style="width:300px;">{{Valeur}}</th>
+                            <th style="width:1px;">{{Unité}}</th>
+                            <th style="width:150px;">{{Paramètres}}</th>
+                            <th style="width:130px;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -314,7 +318,7 @@ function displayEqLogicCard($eqL, $node_images) {
     </div>
 </div>
 
-<?php include_file('desktop', 'jMQTT.min', 'js', 'jMQTT'); ?>
+<?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
 <?php include_file('3rdparty', 'jquery.treegrid', 'css', 'jMQTT'); ?>
 <?php include_file('3rdparty', 'jquery.treegrid.min', 'js', 'jMQTT'); ?>

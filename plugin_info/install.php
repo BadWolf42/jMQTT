@@ -28,7 +28,7 @@ function migrateToMultiBrokerVersion() {
     // Return if the multi broker version is already installed
     $res = config::searchKey('mqttId', 'jMQTT');
     if (empty($res)) {
-        log::add('jMQTT', 'debug', 'multi-broker version is already installed');
+        log::add('jMQTT', 'info', 'multi-broker version is already installed');
         return;
     }
             
@@ -108,12 +108,20 @@ function migrateToMultiBrokerVersion() {
     }
 }
 
+function migrateToJsonVersion() {
+    /** @var cmd $cmd */
+    foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
+        log::add('jMQTT', 'debug', $cmd->getName());
+    }
+}
+
 function jMQTT_install() {
     jMQTT_update();
 }
 
 function jMQTT_update() {
     migrateToMultiBrokerVersion();
+    migrateToJsonVersion();
     
     // force the refresh of the dependancy info
     // otherwise the cache value is kept
