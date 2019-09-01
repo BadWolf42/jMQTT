@@ -419,6 +419,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-09-01
+
+  - Ajout support debian buster et php 7.3
+
 ##### 2019-08-22 (beta)
 
   - Support php 7.3

@@ -62,9 +62,10 @@ echo "*"
 echo "* Install php mosquitto wrapper"
 echo "*"
 php_ver=`php -version`
-php_ver=${php_ver:4:1}
+php_ver=${php_ver:4:3}
+php_ver_maj=${php_ver:0:1}
 
-if [ ${php_ver} = 5 ]; then
+if [ ${php_ver_maj} = 5 ]; then
 	echo "> Version 5 of PHP detected"
 	PHP_DEV_LIB="php5-dev"
 	PHP_CLI_DIR="/etc/php5/cli/"
@@ -72,12 +73,12 @@ if [ ${php_ver} = 5 ]; then
 	PHP_APACHE_DIR="/etc/php5/apache2/"
 	FPM_SERVER="php5-fpm"
 	APACHE_SERVER="apache2"
-elif [ ${php_ver} = 7 ]; then
+elif [ ${php_ver_maj} = 7 ]; then
 	echo "> Version 7 of PHP detected"
-	PHP_DEV_LIB="php7.0-dev"
-	PHP_CLI_DIR="/etc/php/7.0/cli/"
-	PHP_FPM_DIR="/etc/php/7.0/fpm/"
-	PHP_APACHE_DIR="/etc/php/7.0/apache2/"
+	PHP_DEV_LIB="php${php_ver}-dev"
+	PHP_CLI_DIR="/etc/php/${php_ver}/cli/"
+	PHP_FPM_DIR="/etc/php/${php_ver}/fpm/"
+	PHP_APACHE_DIR="/etc/php/${php_ver}/apache2/"
 	FPM_SERVER="php7-fpm"
 	APACHE_SERVER="apache2"
 else
