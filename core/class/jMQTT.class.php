@@ -1152,8 +1152,16 @@ class jMQTT extends eqLogic {
         $mosqHost = $this->getBroker()->getMqttAddress();
         $mosqPort = $this->getBroker()->getMqttPort();
         
-        $payloadMsg = (($payload == '') ? '(null)' : $payload);
-        $this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadMsg);
+        if (is_bool($payload)) {
+            // Fix #80
+            // One can wonder why not encoding systematically the message?
+            // Answer is that it does not work in some cases:
+            //   * If payload is empty => "(null)" is sent instead of (null)
+            //   * If payload contains ", they are backslashed \"
+            $payload = json_encode($payload);
+        }
+        $payloadLogMsg = ($payload === '') ? '(null)' : $payload;
+        $this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadLogMsg);
         
         // To identify the sender (in case of debug need), build the client id based on the jMQTT connexion id
         // and the command id.
