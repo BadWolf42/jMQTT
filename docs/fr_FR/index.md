@@ -419,6 +419,16 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-09-01
+
+  - Ajout support debian buster et php 7.3
+  - Correction de [\#80](https://github.com/domotruc/jMQTT/issues/80): problème avec les commandes action dont la payload a pour valeur true ou false
+
+##### 2019-08-22 (beta)
+
+  - Support php 7.3
+  - Correction de [\#79](https://github.com/domotruc/jMQTT/issues/79): message d'alerte "L'équipement n'est pas de type broker"
+
 ##### 2019-07-23
 
   - Amélioration [\#78](https://github.com/domotruc/jMQTT/issues/78): ajout fonctionnalité permettant de changer un équipement de broker  
