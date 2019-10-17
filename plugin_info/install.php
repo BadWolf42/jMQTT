@@ -20,8 +20,19 @@ require_once __DIR__ . '/../../../core/php/core.inc.php';
 include_file('core', 'jMQTT', 'class', 'jMQTT');
 
 /**
+ * jMQTT plugin version configuration parameter key name
+ */
+define("VERSION", 'version');
+
+/**
+ * Possible values of the version jMQTT plugin parameter: see migrateToJsonVersion below
+ */
+define("CURRENT_VERSION", 1);
+
+
+/**
  * Migrate the plugin to the multi broker version
- * Return without doing anything the multi broker version is already installed
+ * Return without doing anything if the multi broker version is already installed
  */
 function migrateToMultiBrokerVersion() {
     
@@ -106,13 +117,33 @@ function migrateToMultiBrokerVersion() {
             log::add('jMQTT', 'debug', $s);
         }
     }
+
+    log::add('jMQTT', 'info', 'migration to multi-broker version done');
 }
 
+/**
+ * Migrate the plugin to the new JSON version (implementing #76)
+ * Return without doing anything if the new JSON version is already installed
+ */
 function migrateToJsonVersion() {
+    $version = config::byKey(VERSION, 'jMQTT', 0);
+    if ($version > 0) {
+        log::add('jMQTT', 'info', 'json#76 version is already installed');
+        return;
+    }
+    
     /** @var cmd $cmd */
     foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
-        log::add('jMQTT', 'debug', $cmd->getName());
+        log::add('jMQTT', 'debug', 'migrate info command ' . $cmd->getName());
+        $cmd->setConfiguration('parseJson', null);
+        $cmd->setConfiguration('prevParseJson', null);
+        $cmd->setConfiguration('jParent', null);
+        $cmd->setConfiguration('jOrder', null);
+        $cmd->save();
     }
+    
+    config::save(VERSION, CURRENT_VERSION, 'jMQTT');
+    log::add('jMQTT', 'info', 'migration to json#76 version done');
 }
 
 function jMQTT_install() {

@@ -559,8 +559,7 @@ function addCmdToTable(_cmd) {
         tr += '" data-cmd_id="' + init(_cmd.id) + '">';
         tr += '<td class="fitwidth"><span class="cmdAttr" data-l1key="id"></span>';
 
-        // TRICK: For the JSON view include the "order" value in a hidden
-        // element
+        // TRICK: For the JSON view include the "order" value in a hidden element
         // so that the original/natural order is kept when saving
         if (is_json_view) {
             tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span></td>';
@@ -578,23 +577,21 @@ function addCmdToTable(_cmd) {
         tr += '</td><td>';
         tr += '<textarea class="form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
         tr += '</td><td class="fitwidth">';
-        tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="{{Unité}}"></td><td>';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="parseJson"/>{{parseJson}}</label></span> ';	
-        tr += '</td>';
-        tr += '<td>';
+        tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="{{Unité}}"></td><td>';        
         if (is_numeric(_cmd.id)) {
+            tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
+            tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span> ';
+            tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span> ';
+            tr += '</td><td>';
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fa fa-cogs"></i></a> ';
             tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
+        }
+        else {
+            tr += '</td><td>';
         }
         if (_cmd.id != undefined && _cmd.configuration.irremovable == undefined) {
             tr += ' <a class="btn btn-default btn-xs cmdAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i></a>';
         }
-//        tr += '<input style="width:82%;margin-bottom:2px;" class="tooltips cmdAttr form-control input-sm" data-l1key="cache" data-l2key="lifetime" placeholder="{{Lifetime cache}}" title="{{Lifetime cache}}">';
-//        tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:40%;display:inline-block;"> ';
-//        tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:40%;display:inline-block;">';
         tr += '</td></tr>';
 
         $('#table_cmd tbody').append(tr);

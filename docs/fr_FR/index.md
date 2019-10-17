@@ -170,23 +170,23 @@ Reprenons l’exemple de la payload MQTT publiant les messages simples suivants:
 
 Le plugin créé les informations suivantes:
 
-| Nom                | Sous-Type | Topic              | Valeur   |
-| ------------------ | --------- | ------------------ | -------- |
-| boiler:brand       | info      | boiler/brand       | viesmann |
-| boiler:burner      | info      | boiler/burner      | 0        |
-| boiler:temp        | info      | boiler/temp        | 70.0     |
-| boiler:ext\_temp   | info      | boiler/ext\_temp   | 19.3     |
-| boiler:hw:setpoint | info      | boiler/hw/setpoint | 50       |
-| boiler:hw:temp     | info      | boiler/hw/temp     | 49.0     |
+| Nom         | Sous-Type | Topic              | Valeur   |
+| ----------- | --------- | ------------------ | -------- |
+| brand       | info      | boiler/brand       | viesmann |
+| burner      | info      | boiler/burner      | 0        |
+| temp        | info      | boiler/temp        | 70.0     |
+| ext\_temp   | info      | boiler/ext\_temp   | 19.3     |
+| hw:setpoint | info      | boiler/hw/setpoint | 50       |
+| hw:temp     | info      | boiler/hw/temp     | 49.0     |
 
 > **Note**
 > 
 >   * Le nom de la commande est initialisée automatiquement par le plugin à partir du topic. Il peut ensuite être modifié comme souhaité.
 >   * Jeedom, dans sa version actuelle, limite la longueur des noms de commande à 45 caractères. Dans le cas de commandes de longueur supérieure, jMQTT remplace leurs noms par leur code de hashage md4 sur 32 caractères (e.g. 5182636929901af7fa5fd97da5e279e1). L’utilisateur devra alors remplacer ces noms par le nommage de son choix.
 
-**Payload JSON.**
+**Payload JSON**
 
-Dans le cas d’une payload JSON, le plugin peut décoder le contenu et créer les informations associées, et ceci indépendamment de l’état de la case *Ajout automatique des commandes* de l’Onglet Equipement. Cette fonctionnalité doit être activée manuellement pour chaque commande information de ce type.
+Dans le cas d’une payload JSON, le plugin sait décoder le contenu et créer les informations associées, et ceci indépendamment de l’état de la case *Ajout automatique des commandes* de l’Onglet Equipement.
 
 Prenons l’exemple de la payload JSON suivante:
 
@@ -194,30 +194,47 @@ Prenons l’exemple de la payload JSON suivante:
 
 Au premier message reçu, jMQTT créé automatiquement l’information suivante:
 
-| Nom              | Sous-Type | Topic            | Valeur                                                                          | Paramètres      |
-| ---------------- | --------- | ---------------- | ------------------------------------------------------------------------------- | --------------- |
-| esp:temperatures | info      | esp/temperatures | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} | `[ ]` parseJSON |
+| Nom          | Sous-Type | Topic            | Valeur                                                                          |
+| ------------ | --------- | ---------------- | ------------------------------------------------------------------------------- |
+| temperatures | info      | esp/temperatures | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
 
-En cochant l’option *parseJSON*, les informations complémentaires sont instantanément créés, ce qui donne:
 
-| Nom                      | Sous-Type | Topic                        | Valeur                                                                          | Paramètres      |
-| ------------------------ | --------- | ---------------------------- | ------------------------------------------------------------------------------- | --------------- |
-| esp:temperatures         | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} | `[X]` parseJSON |
-| temperatures{device}     | info      | esp/temperatures{device}     | "ESP32"                                                                         | `[ ]` parseJSON |
-| temperatures{sensorType} | info      | esp/temperatures{sensorType} | "Temperature"                                                                   | `[ ]` parseJSON |
-| temperatures{values}     | info      | esp/temperatures{values}     | \[9.5, 18.2, 20.6\]                                                             | `[ ]` parseJSON |
+En basculant dans la vue JSON, via le bouton dédié en haut à droite de la page, et en dépliant complêtement l'arbre manuellement, nous obtenons:
 
-Enfin, le vecteur des températures peut également être séparé en cochant la case *parseJSON*, pour finalement obtenir:
+| # |   | Nom                      | Sous-Type | Topic                        | Valeur                                                                          |
+| - | - |------------------------- | --------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| > |   | temperatures             | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+|   |   |                          | info      | esp/temperatures{device}     | "ESP32"                                                                         |
+|   |   |                          | info      | esp/temperatures{sensorType} | "Temperature"                                                                   |
+|   | > |                          | info      | esp/temperatures{values}     | \[9.5, 18.2, 20.6\]                                                             |
+|   |   |                          | info      | esp/temperatures{values}{0}  | 9.5                                                                             |
+|   |   |                          | info      | esp/temperatures{values}{1}  | 18.2                                                                            |
+|   |   |                          | info      | esp/temperatures{values}{2}  | 20.6                                                                            |
 
-| Nom                      | Sous-Type | Topic                        | Valeur                                                                          | Paramètres      |
-| ------------------------ | --------- | ---------------------------- | ------------------------------------------------------------------------------- | --------------- |
-| esp:temperatures         | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} | `[X]` parseJSON |
-| temperatures{device}     | info      | esp/temperatures{device}     | "ESP32"                                                                         | `[ ]` parseJSON |
-| temperatures{sensorType} | info      | esp/temperatures{sensorType} | "Temperature"                                                                   | `[ ]` parseJSON |
-| temperatures{values}     | info      | esp/temperatures{values}     | \[9.5, 18.2, 20.6\]                                                             | `[X]` parseJSON |
-| temperatures{values}{0}  | info      | esp/temperatures{values}{0}  | 9.5                                                                             | `[ ]` parseJSON |
-| temperatures{values}{1}  | info      | esp/temperatures{values}{1}  | 18.2                                                                            | `[ ]` parseJSON |
-| temperatures{values}{2}  | info      | esp/temperatures{values}{2}  | 20.6                                                                            | `[ ]` parseJSON |
+Seule la première ligne est une commande, reconnaissable parce qu'elle a un id, un nom et des paramètres.
+
+Pour créer des commandes associées à chaque température, il suffit de saisir un nom dans chaque commande (par exemple _temp0_, _temp1_ et _temp2_) et de sauvegarder.
+
+L'affichage bascule dans la vue normale, montrant toutes les commandes de l'équipement ; dans notre cas:
+
+| Nom          | Sous-Type | Topic                        | Valeur                                                                          |
+| ------------ | --------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| temp0        | info      | esp/temperatures{values}{0}  | 9.5                                                                             |
+| temp1        | info      | esp/temperatures{values}{1}  | 18.2                                                                            |
+| temp2        | info      | esp/temperatures{values}{2}  | 20.6                                                                            |
+| temperatures | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+
+Si nous rebasculons dans la vue JSON, nous obtenons alors:
+
+| # |   | Nom                      | Sous-Type | Topic                        | Valeur                                                                          |
+| - | - |------------------------- | --------- | ---------------------------- | ------------------------------------------------------------------------------- |
+| > |   | temperatures             | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+|   |   |                          | info      | esp/temperatures{device}     | "ESP32"                                                                         |
+|   |   |                          | info      | esp/temperatures{sensorType} | "Temperature"                                                                   |
+|   | > |                          | info      | esp/temperatures{values}     | \[9.5, 18.2, 20.6\]                                                             |
+|   |   | temp0                    | info      | esp/temperatures{values}{0}  | 9.5                                                                             |
+|   |   | temp1                    | info      | esp/temperatures{values}{1}  | 18.2                                                                            |
+|   |   | temp2                    | info      | esp/temperatures{values}{2}  | 20.6                                                                            |
 
 > **Note**
 > 
@@ -294,7 +311,7 @@ La configuration suivante publiera le code couleur sélectionnée via un widget 
 
 Deux boutons en haut à droite de la page permettent de choisir entre 2 types du vue:
   - La vue **Classic** montre les commandes dans l’ordre d’affichage sur la tuile du Dashboard. Elle permet de les réordonner par glissé/déposé;
-  - La vue **JSON** affiche un arbre hiérarchique permettant de naviguer dans les commandes JSON, de les déplier/replier. Dans cette vue, l’ordonnancement des commandes via glissé/déposé est désactivée.
+  - La vue **JSON** affiche un arbre hiérarchique permettant de naviguer à l'intérieur des payload JSON, de les déplier/replier, et de créer les commandes information souhaitées (se reporter au paragraphe _Payload JSON_) de la section [Commandes de type Information](#commandes-de-type-information)). Dans cette vue, l’ordonnancement des commandes via glissé/déposé est désactivée.
 
 ## Ajout manuel d'un équipement
 
@@ -347,7 +364,7 @@ Où:
   - `Paramètres additionels` (optionnel) : paramètres relatifs à la méthode de la requête, voir [API JSON RPC](http://jeedom.github.io/core/fr_FR/jsonrpc_api);
   - `Topic de retour` (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête. Si absent, la réponse n’est pas publiée.
 
-**Exemple:.**
+**Exemple:**
 
 Le tableau suivant fournit quelques exemples:
 
