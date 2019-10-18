@@ -337,38 +337,9 @@ function printEqLogic(_eqLogic) {
     // Is the JSON view is active
     var is_json_view = $('#bt_json.active').length != 0;
 
-    // Principle of the ordering algorithm is to associate an ordering string to
-    // each command, and then ordering into alphabetical order
-
     function isChild(_c) {
         return _c.configuration.topic.search('{')  >= 0;
     }
-
-    //    // Encode the given number in base 36, on 3 caracters width
-//    function toString36(_n) {
-//        var ret = parseInt(_n).toString(36);
-//        if (ret.length < 3)
-//            ret = "0".repeat(3-ret.length) + ret;
-//        return ret;
-//    }
-//    
-//
-//    // Return the ordering string of the given command
-//    function computeOrder(_c) {
-//        if (_c.sOrder != undefined)
-//            return _c.sOrder;
-//        var sParent = '';
-//        if (isChild(_c)) {
-//            var tmp = _eqLogic.cmd.filter(function (c) { return c.id == _c.configuration.jParent; });
-//            sParent = computeOrder(tmp[0]);
-//        }
-//        
-//        if (_c.configuration.jOrder == undefined || _c.configuration.jOrder < 0)
-//            sOrder = toString36(_c.order);
-//        else
-//            sOrder = toString36(_c.configuration.jOrder);
-//        return sParent + sOrder;
-//    }
     
     // JSON view button is active
     if (is_json_view) {
@@ -446,15 +417,6 @@ function printEqLogic(_eqLogic) {
         
         _eqLogic.cmd = new_cmd;
 
-        // Sort the command array
-//        _eqLogic.cmd.sort(function(c1, c2) {
-//            if (c1.sOrder < c2.sOrder)
-//                return -1;
-//            if (c1.sOrder > c2.sOrder)
-//                return 1;
-//            return 0;
-//        });
-
         // JSON view: disable the sortable functionality
         $("#table_cmd").sortable('disable');
     }
@@ -515,19 +477,26 @@ function printEqLogic(_eqLogic) {
 
 /**
  * saveEqLogic callback called by plugin.template before saving an eqLogic
- *   . Pass the log level when defined (i.e. for a broker object)
  */
 function saveEqLogic(_eqLogic) {
+
+    // pass the log level when defined (i.e. for a broker object)
     var log_level = $('#div_broker_log').getValues('.configKey')[0];
     if (!$.isEmptyObject(log_level)) {
         _eqLogic.loglevel =  log_level;
     }
     
+    // remove non existing commands added for the JSON view and add new commands at the end
+    var max_order = Math.max.apply(Math, _eqLogic.cmd.map(function(cmd) { return cmd.order; }));    
     for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
-        if (_eqLogic.cmd[i].id == "" && _eqLogic.cmd[i].name == "") {
-            _eqLogic.cmd.splice(i, 1);
+        if (_eqLogic.cmd[i].id == "") {
+            if (_eqLogic.cmd[i].name == "")
+                _eqLogic.cmd.splice(i, 1);
+            else
+                _eqLogic.cmd[i].order = max_order+1;
         }
     }
+    console.log(_eqLogic.cmd);
     
     return _eqLogic;
 }
@@ -690,7 +659,7 @@ function addCmdToTable(_cmd) {
     // If JSON view is active, build the tree
     if (is_json_view) {
         $('.tree').treegrid({
-            initialState: 'collapsed'
+            initialState: 'expanded'
 //            expanderExpandedClass: 'glyphicon glyphicon-minus',
 //            expanderCollapsedClass: 'glyphicon glyphicon-plus'
         });
