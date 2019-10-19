@@ -436,6 +436,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-10-19
+
+  - Amelioration [\#76](https://github.com/domotruc/jMQTT/issues/76): pour les payloads JSON, il est maintenant possible de choisir individuellement les valeurs qui sont des commandes info. 
+
 ##### 2019-09-01
 
   - Ajout support debian buster et php 7.3
