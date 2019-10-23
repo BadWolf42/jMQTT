@@ -496,6 +496,7 @@ function saveEqLogic(_eqLogic) {
                 _eqLogic.cmd[i].order = max_order+1;
         }
     }
+    console.log(_eqLogic.cmd);
     
     return _eqLogic;
 }

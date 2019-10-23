@@ -288,30 +288,18 @@ class jMQTTCmd extends cmd {
         return $this->getConfiguration('topic');
     }
     
-    /**
-     * @param int $eqLogic_id of the eqLogic
-     * @param string $topic topic to search
-     * @param boolean $multiple true if the cmd related topic and associated JSON derived commands are requested
-     * @return NULL|jMQTTCmd|array(jMQTTCmd)
-     */
     public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
+        $conf = substr(json_encode(array('topic' => $topic)), 1, -2);
+        $conf = str_replace('\\', '\\\\', $conf);
         
         $values = array(
-            'topic' => $topic,
+            'configuration' => '%' . $conf . '%',
             'eqLogic_id' => $eqLogic_id,
-        );     
-        
+        );
         $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
 		FROM cmd
-		WHERE eqLogic_id=:eqLogic_id AND ';
-        if ($multiple) {
-            $values['topic_json'] = '"' . $topic . '{%';
-		    $sql .= '(JSON_EXTRACT(configuration, "$.topic")=:topic OR JSON_EXTRACT(configuration, "$.topic") LIKE :topic_json)
-		        ORDER BY JSON_EXTRACT(configuration, "$.topic")';
-        }
-        else {
-            $sql .= 'JSON_EXTRACT(configuration, "$.topic")=:topic';
-        }
+		WHERE eqLogic_id=:eqLogic_id';
+        $sql .= ' AND configuration LIKE :configuration ORDER BY id';
         $cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
         
         if (count($cmds) == 0)

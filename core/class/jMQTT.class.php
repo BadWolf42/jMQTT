@@ -1094,13 +1094,10 @@ class jMQTT extends eqLogic {
                 /** @var array[jMQTTCmd] $cmdlogics array of the commands related to the current message */
                 $cmdlogics = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
                 
-                // If the command associated to the topic has not been found, try to create one
-                if (is_null($cmdlogics) || $cmdlogics[0]->getTopic() != $msgTopic) {
+                // If no command has been found, try to create one
+                if (is_null($cmdlogics)) {
                     if ($eqpt->getAutoAddCmd()) {
-                        if (is_null($cmdlogics)) {
-                            $cmdlogics = [];
-                        }
-                        array_unshift($cmdlogics, jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic));
+                        $cmdlogics = array(jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic));
                         $cmdlogics[0]->save();
                     }
                     else {
@@ -1120,8 +1117,7 @@ class jMQTT extends eqLogic {
                     }
                     
                     // Update the command value
-                    if ($cmdlogics[0]->getTopic() == $msgTopic)
-                        $cmdlogics[0]->updateCmdValue($msgValue);
+                    $cmdlogics[0]->updateCmdValue($msgValue);
                     
                     // Update JSON derived commands if any
                     if (count($cmdlogics) > 1) {
