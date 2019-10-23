@@ -493,6 +493,7 @@ function saveEqLogic(_eqLogic) {
             _eqLogic.cmd.splice(i, 1);
         }
     }
+    console.log(_eqLogic.cmd);
     
     return _eqLogic;
 }
