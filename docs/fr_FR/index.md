@@ -238,7 +238,8 @@ Si nous rebasculons dans la vue JSON, nous obtenons alors:
 
 > **Note**
 > 
-> Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le champ Topic pour associer la bonne valeur.
+>   * Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le champ Topic pour associer la bonne valeur.
+>   * Une fois les commandes filles d'une commande JSON créé, il est possible de supprimer la commande mère sans affecter la mise à jour des commandes filles. 
 
 #### Commandes de type Action
 
@@ -435,6 +436,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 <a id="changelog"></a>
 
 # Registre des évolutions
+
+##### 2019-10-22
+
+  - Correction de [\#82](https://github.com/domotruc/jMQTT/issues/82): erreur de décodage JSON suite version 2019-10-19
 
 ##### 2019-10-19
 
