@@ -487,10 +487,13 @@ function saveEqLogic(_eqLogic) {
     }
     
     // remove non existing commands added for the JSON view and add new commands at the end
-//    var max_order = Math.max.apply(Math, _eqLogic.cmd.map(function(cmd) { return cmd.order; }));    
+    var max_order = Math.max.apply(Math, _eqLogic.cmd.map(function(cmd) { return cmd.order; }));    
     for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
-        if (_eqLogic.cmd[i].id == "" && _eqLogic.cmd[i].name == "") {
-            _eqLogic.cmd.splice(i, 1);
+        if (_eqLogic.cmd[i].id == "") {
+            if (_eqLogic.cmd[i].name == "")
+                _eqLogic.cmd.splice(i, 1);
+            else
+                _eqLogic.cmd[i].order = max_order+1;
         }
     }
     
