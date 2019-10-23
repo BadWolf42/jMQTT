@@ -288,18 +288,35 @@ class jMQTTCmd extends cmd {
         return $this->getConfiguration('topic');
     }
     
+    /**
+     * Return the list of commands of the given equipment which topic is related to the given one
+     * (i.e. equal to the given one if multiple is false, or having the given topic as mother JSON related
+     * topic if multiple is true)
+     * For JSON related topic, mother command is always returned first if existing.
+     * 
+     * @param int $eqLogic_id of the eqLogic
+     * @param string $topic topic to search
+     * @param boolean $multiple true if the cmd related topic and associated JSON derived commands are requested
+     * @return NULL|jMQTTCmd|array(jMQTTCmd)
+     */
     public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
         $conf = substr(json_encode(array('topic' => $topic)), 1, -2);
         $conf = str_replace('\\', '\\\\', $conf);
         
         $values = array(
-            'configuration' => '%' . $conf . '%',
+            'topic' => '%' . $conf . '"%',
             'eqLogic_id' => $eqLogic_id,
         );
-        $sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		WHERE eqLogic_id=:eqLogic_id';
-        $sql .= ' AND configuration LIKE :configuration ORDER BY id';
+        $sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND ';
+            
+        if ($multiple) {
+            $values['topic_json'] = '%' . $conf . '{%';
+            // Union is used to have the mother command returned first
+            $sql .= 'configuration LIKE :topic UNION ' . $sql . 'configuration LIKE :topic_json';
+        }
+        else {
+            $sql .= 'configuration LIKE :topic';
+        }
         $cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
         
         if (count($cmds) == 0)
