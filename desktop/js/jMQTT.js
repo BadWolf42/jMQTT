@@ -120,7 +120,7 @@ $(document).ready(function() {
         $('#menu-bar').show();
     }
     
-    history.replaceState({}, '', url);
+    //history.replaceState({}, '', url);
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {

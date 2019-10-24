@@ -3,7 +3,10 @@ gen-doc = asciidoctor
 
 DOC_PATH = doc/fr_FR
 
-all: desktop/js/jMQTT.min.js docs/assets/js/jquery.toc2.min.js
+all: desktop/js/jMQTT-min.js docs/assets/js/jquery.toc2.min.js
+
+%-min.js: %.js
+	$(minify-js) --js $< --js_output_file $@
 
 %.min.js: %.js
 	$(minify-js) --js $< --js_output_file $@
