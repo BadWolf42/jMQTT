@@ -17,31 +17,6 @@
 //To memorise page refresh timeout when set
 var refreshTimeout;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//To debug browser history management (pushState, ...)  
-//
-//(function setOnPushStateFunction (window, history){
-//    var pushState = history.pushState;
-//    history.pushState = function(state) {
-//        if (typeof window.onpushstate === 'function') {
-//            window.onpushstate({ state: state });
-//        }
-//        return pushState.apply(history, arguments);
-//    }
-//})(window, window.history);
-//
-//
-//window.onpushstate = function(event) {
-//    console.log("onpushstate: location=" + document.location + ", state=" + JSON.stringify(event.state));
-//};
-
-// Workaround on Firefox : from times to times event.state is null which prevent the browser to reload the page
-window.addEventListener("popstate", function(event) {
-    if (event.state == null) {
-        location.reload(false);
-    }
-});
-
 function callPluginAjax(_params) {
     $.ajax({
         async: _params.async == undefined ? true : _params.async,
@@ -94,16 +69,29 @@ function initPluginUrl(filter=['id', 'saveSuccessFull','removeSuccessFull', 'has
     return url;
 }
 
-//Function to refresh the page
-//Ask confirmation if the page has been modified
+// Function to refresh the page
+// Ask confirmation if the page has been modified
 function refreshEqLogicPage() {
     function refreshPage() {
-        if ($('#ul_eqLogic .li_eqLogic.active').attr('data-eqLogic_id') != undefined)
-            $('#ul_eqLogic .li_eqLogic.active').click();
-        else
+        if ($('.eqLogicAttr[data-l1key=id]').value() != "") {
+            tab = null
+            //console.log(document.location);
+            if (document.location.toString().match('#')) {
+                tab = '#' + document.location.toString().split('#')[1];
+                if (tab != '#') {
+                    tab = $('a[href="' + tab + '"]')
+                } else {
+                    tab = null
+                }
+            }            
+            $('.eqLogicDisplayCard[data-eqlogic_id="' + $('.eqLogicAttr[data-l1key=id]').value() + '"]').click();
+            if (tab) tab.click();
+        }
+        else {
             $('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
+        }
     }
-
+    //console.log('refreshEqLogicPage: ' + $('.eqLogicAttr[data-l1key=id]').value());
     if (modifyWithoutSave) {
         bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
             if (result)
@@ -119,8 +107,6 @@ $(document).ready(function() {
     if (document.location.hash == '#commandtab') {
         $('#menu-bar').show();
     }
-    
-    //history.replaceState({}, '', url);
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {
@@ -180,52 +166,8 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
     $('#menu-bar').show();
 });
 
-$('.nav-tabs a[role="tab"]').on('click', function() {
-    if (document.location.hash != $(this)[0].hash) {
-        url = initPluginUrl(['hash'], '', $(this)[0].hash);
-        if (document.location.hash == '' && $(this)[0].hash == '#eqlogictab') {
-            history.replaceState({hash: $(this)[0].hash}, '', url);
-        }
-        else {
-            history.pushState({hash: $(this)[0].hash}, '', url);
-        }
-    }
-});
-
-// Manage the history on eqlogic display
-$(".li_eqLogic,.eqLogicDisplayCard").on('click', function () {
-    var url_id = getUrlVars('id');
-    var id = $(this).attr('data-eqLogic_id');
-    var hash = document.location.hash;
-    if (!is_numeric(url_id) || url_id != id) {
-        if (hash == '#brokertab' && $(this).attr('jmqtt_type') != 'broker')
-            hash = '';
-        url = initPluginUrl(['id', 'hash'], id, hash);
-        history.pushState({}, '', url);
-    }
-});
-
-// Manage the history on return to the plugin page
-$('.eqLogicAction[data-action=returnToThumbnailDisplay]').on('click', function () {
-    url = initPluginUrl();
-    history.pushState({}, '', url);
-});
-
-// Override plugin template to rewrite the URL to avoid keeping the successfull save message
-if (getUrlVars('saveSuccessFull') == 1) {
-    $('#div_alert').showAlert({message: '{{Sauvegarde effectuée avec succès}}', level: 'success'});
-    history.replaceState({}, '', initPluginUrl(['saveSuccessFull']));
-}
-
-// Override plugin template to rewrite the URL to avoid keeping the successfull delete message
-if (getUrlVars('removeSuccessFull') == 1) {
-    $('#div_alert').showAlert({message: '{{Suppression effectuée avec succès}}', level: 'success'});
-    history.replaceState({}, '', initPluginUrl(['removeSuccessFull']));
-}
-
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
-
 
 /**
  * Add jMQTT equipment callback
@@ -639,7 +581,7 @@ function addCmdToTable(_cmd) {
         // $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
         var tr = $('#table_cmd tbody tr:last');
         jeedom.eqLogic.builSelectCmd({
-            id: $(".li_eqLogic.active").attr('data-eqLogic_id'),
+            id: $('.eqLogicAttr[data-l1key=id]').value(),
             filter: {type: 'info'},
             error: function (error) {
                 $('#div_alert').showAlert({message: error.message, level: 'danger'});
@@ -759,9 +701,6 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_opt
     setIncludeModeActivation(_options.brkId, _options.state);
     $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
 });
-
-// Manage button clicks
-//$('.eqLogicAction[data-action=changeIncludeMode]').on('click', changeIncludeMode);
 
 //Called by the plugin core to inform about the automatic inclusion mode disabling
 $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', function (_event,_options) {
