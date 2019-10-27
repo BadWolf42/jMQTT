@@ -22,6 +22,7 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
 
 .eqLogicThumbnailContainer div.eqLogicDisplayAction {
     padding-top: 25px !important;
+    height: 168px;
 }
 
 .eqLogicDisplayCard.disableCard {

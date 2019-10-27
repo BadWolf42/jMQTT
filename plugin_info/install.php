@@ -151,6 +151,9 @@ function jMQTT_install() {
 }
 
 function jMQTT_update() {
+    // Stop the plugin
+    jMQTT::stop();
+    
     migrateToMultiBrokerVersion();
     migrateToJsonVersion();
     
@@ -158,8 +161,8 @@ function jMQTT_update() {
     // otherwise the cache value is kept
     plugin::byId('jMQTT')->dependancy_info(true);
     
-    // Start daemons
-    jMQTT::checkAllDaemons();
+    // Start the plugin
+    jMQTT::start();
 }
 
 function jMQTT_remove() {

@@ -436,45 +436,39 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
-##### 2019-10-23
+##### 2019-10-27
+   - Compatibilité v4
+   - Force la relance des démons sur mise à jour plugin
 
+##### 2019-10-23
   - Correction de [\#82](https://github.com/domotruc/jMQTT/issues/82): erreur de décodage JSON suite version 2019-10-19
 
-
 ##### 2019-10-19
-
   - Amélioration [\#76](https://github.com/domotruc/jMQTT/issues/76): pour les payloads JSON, il est maintenant possible de choisir individuellement les valeurs qui sont des commandes info. 
 
 ##### 2019-09-01
-
   - Ajout support debian buster et php 7.3
   - Correction de [\#80](https://github.com/domotruc/jMQTT/issues/80): problème avec les commandes action dont la payload a pour valeur true ou false
 
 ##### 2019-08-22 (beta)
-
   - Support php 7.3
   - Correction de [\#79](https://github.com/domotruc/jMQTT/issues/79): message d'alerte "L'équipement n'est pas de type broker"
 
 ##### 2019-07-23
-
   - Amélioration [\#78](https://github.com/domotruc/jMQTT/issues/78): ajout fonctionnalité permettant de changer un équipement de broker  
 
 ##### 2019-07-14
-
   - Correction de [\#77](https://github.com/domotruc/jMQTT/issues/77): le broker reste offline
 
 ##### 2019-07-09
-
   - Ajout de traces dans la fonction de migration vers multi broker
 
 ##### 2019-06-30
-
   - Passage en stable des améliorations des 2 betas précédentes
 
 ##### 2019-05-31 (beta)
   - Amélioration [\#74](https://github.com/domotruc/jMQTT/issues/74): mise à jour de lastCommunication sur publication d'un message
   - Amélioration [\#73](https://github.com/domotruc/jMQTT/issues/73): remplacement de Dernière Activité par Dernière Communication
-  
 
 ##### 2019-05-14 (beta)
   - Amélioration [\#63](https://github.com/domotruc/jMQTT/issues/63): ajout du support multi broker
@@ -484,7 +478,6 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
   - Correction de [\#70](https://github.com/domotruc/jMQTT/issues/70): problème de reconnaissance des topics avec accents
 
 ##### 2019-04-06
-
   - Transition vers style V4
 
 > **Important**
@@ -492,173 +485,120 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 > Core Jeedom 3.3.19 ou supérieur requis à partir de la version 2019-04-06.
 
 ##### 2019-03-06
-
   - Passage en stable des évolutions des 2 versions betas précédentes
 
 ##### 2019-03-05 (beta)
-
   - Amélioration documentation (commandes slider)
   - Rend les boutons avancer/reculer du navigateur fonctionnels
   - Correction mineure pour compatibilité avec core 3.3
 
 ##### 2019-03-01 (beta)
-
   - Correction de [\#69](https://github.com/domotruc/jMQTT/issues/69): message de confirmation de fermeture de page inopportun
 
 ##### 2019-02-20
-
   - Amélioration [\#68](https://github.com/domotruc/jMQTT/issues/68): amélioration robustesse aux deconnections intempestives
 
 ##### 2018-02-16
-
   - Passage en stable des évolutions des 4 versions betas précédentes
 
 ##### 2019-02-09 (beta)
-
   - Amélioration [\#67](https://github.com/domotruc/jMQTT/issues/67): visualisation de la mise à jour des valeurs dans le panneau commande
-
   - Amélioration [\#66](https://github.com/domotruc/jMQTT/issues/66): amélioration perfo en ne sauvant pas les commandes sur maj valeur
-
   - Amélioration de la documentation ([\#65](https://github.com/domotruc/jMQTT/issues/65))
 
 ##### 2018-12-27 (beta)
-
   - Correction de [\#64](https://github.com/domotruc/jMQTT/issues/64): problème affichage barre de bouton du panneau commandes
 
 ##### 2018-12-08 (beta)
-
   - Correction de [\#62](https://github.com/domotruc/jMQTT/issues/62): Erreur sur jMQTT::daemon() : Using $this when not in object context
 
 ##### 2018-11-11 (beta)
-
   - Amélioration code pour besoin de tests
 
 ##### 2018-11-04
-
   - Correction de [\#58](https://github.com/domotruc/jMQTT/issues/58): MySql duplicate entry error sur topic dépassant 45 caractères. Voir documentation, chapitre [Commandes de type Information](#commandes-de-type-information).
-
   - Amélioration initialisation équipement sur création manuelle de façon à afficher les paramètres pas défaut comme Qos
-
   - Ajout du chapitre exemple dans la documentation
 
 ##### 2018-10-24
-
   - Amélioration script installation des dépendances pour corriger [\#59](https://github.com/domotruc/jMQTT/issues/59)
-
   - Correction typo dans message affiché à l’utilisateur (équipment ⇒ équipement), merci Gwladys
 
 ##### 2018-09-16
-
   - Correction de [\#57](https://github.com/domotruc/jMQTT/issues/57): perte de connexion du démon sur rafale de message (merci jmc)
 
 ##### 2018-06-12
-
   - Intégration des évolutions des 3 versions betas précédentes
 
 ##### 2018-06-11 (beta)
-
   - Correction bugs mineurs relatif à [\#53](https://github.com/domotruc/jMQTT/issues/53):
-    
       - Lorsque le topic de retour n’est pas défini ⇒ affiche une erreur;
-    
       - Lorsque l’encodage JSON de la requête est incorrect ⇒ affiche un message d’erreur plus clair.
 
 ##### 2018-06-10 (beta)
-
   - Complément à l’amélioration [\#53](https://github.com/domotruc/jMQTT/issues/53):
-    
       - Ajoute un paramètre pour activer/désactiver l’API dans la configuration plugin;
-    
       - topic jeedom/jeeAPI changé en jeedom/api;
-    
       - Mise à jour doc.
 
 ##### 2018-06-07 (beta)
-
   - Amélioration [\#53](https://github.com/domotruc/jMQTT/issues/53): api MQTT
 
 ##### 2018-06-03
-
   - Intégration des évolutions des 3 versions betas précédentes
 
 ##### 2018-06-03 (beta)
-
   - Amélioration [\#55](https://github.com/domotruc/jMQTT/issues/55): ajout d’une vue de visualisation hiérarchique JSON dans le panneau des commandes
 
 ##### 2018-05-26 (beta)
-
   - Amélioration [\#45](https://github.com/domotruc/jMQTT/issues/45): décodage immédiat des payloads JSON sur activation de parseJSON
-
   - Amélioration [\#52](https://github.com/domotruc/jMQTT/issues/52): activer l’export d’un équipement dans un fichier json
 
 ##### 2018-05-24 (beta)
-
   - Amélioration [\#51](https://github.com/domotruc/jMQTT/issues/51): ajoute des messages d’alerte informant sur la création de commandes
-
   - Amélioration [\#50](https://github.com/domotruc/jMQTT/issues/50): ajoute un bouton d’actualisation dans la page équipement
-
   - Correction [\#49](https://github.com/domotruc/jMQTT/issues/49): pas de demande de confirmation de sortie de page sur modifications de certains paramètres
 
 ##### 2018-05-11
-
   - Correction [\#47](https://github.com/domotruc/jMQTT/issues/47): erreur "call to undefined function mb\_check\_encoding"
 
 ##### 2018-05-10
-
   - Intégration des évolutions des 2 versions beta précédentes
 
 ##### 2018-05-10 (beta)
-
   - Correction [\#46](https://github.com/domotruc/jMQTT/issues/46): mauvaise payload avec caractères non ASCII corrompt la commande information associée
-
   - Amélioration [\#44](https://github.com/domotruc/jMQTT/issues/44): amélioration de l’affichage dans le panneau de commandes
 
 ##### 2018-05-08 (beta)
-
   - Correction [\#42](https://github.com/domotruc/jMQTT/issues/42): log erroné sur création d’une commande info
-
   - Correction [\#41](https://github.com/domotruc/jMQTT/issues/41): retour de jMQTT dans la catégorie protocole domotique (au lieu de passerelle domotique).
-
   - Amélioration [\#43](https://github.com/domotruc/jMQTT/issues/43): logguer qu’un équipement ou une commande est supprimé.
 
 ##### 2018-04-29
-
   - Amélioration [\#40](https://github.com/domotruc/jMQTT/issues/40): ajout du champ "valeur de la commande par defaut" (voir [post de vincnet68 sur le forum](https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740)).
-
   - MAJ icone et fichier info.json suite évolution processus de publication sur le market (mail <partenaire@jeedom.com> du 16/04/2018).
 
 ##### 2018-02-15
-
   - Amélioration [\#36](https://github.com/domotruc/jMQTT/issues/36): le mode inclusion automatique d’équipements s’active maintenant via un bouton d’inclusion depuis la page du plugin et se désactive automatiquement après 2 à 3 min.
-
   - Correction [\#37](https://github.com/domotruc/jMQTT/issues/37): la bordure mettant en évidence un équipement dont l’ajout automatique de commandes est actif, est correctement affichée quelque soit le thème.
 
 ##### 2018-02-06
-
   - Amélioration [\#26](https://github.com/domotruc/jMQTT/issues/26): ajout d’une case à cocher dans l’équipement permettant de désactiver la création automatique des commandes de type information.
 
 ##### 2018-02-05
-
   - Correction [\#30](https://github.com/domotruc/jMQTT/issues/30): les commandes action n’étaient pas envoyées immédiatement depuis des scénarios.
-
   - Correction [\#25](https://github.com/domotruc/jMQTT/issues/25): les commandes avec Qos=2 n’étaient pas envoyées.
-
   - Correction [\#28](https://github.com/domotruc/jMQTT/issues/28): rend possible la définition de commandes action JSON (voir exemples dans la documentation: [Commandes de type Action](#commandes-de-type-action)).
-
   - Correction [\#31](https://github.com/domotruc/jMQTT/issues/31): message de log erroné sur accusé de réception de souscription.
 
 ##### 2018-01-26
-
   - Correction [\#23](https://github.com/domotruc/jMQTT/issues/23): sur une rafale de commande, seule la dernière était envoyée.
 
 ##### 2018-01-24
-
   - Amélioration [\#19](https://github.com/domotruc/jMQTT/issues/19): ajoute une option pour ne pas installer Mosquitto localement.
 
 ##### 2018-01-15
-
   - Amélioration [\#10](https://github.com/domotruc/jMQTT/issues/10): duplication d’équipement (voir la doc).
-
   - Correction [\#15](https://github.com/domotruc/jMQTT/issues/15): les topics commençant par / n’étaient pas souscrits après désactivation du mode manuel
 
 > **Important**
@@ -666,49 +606,32 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 > Si vous avez des topics commençant par / créés avant cette version, il faut ajouter le / en début de topic souscrit dans les équipements concernés. Les commandes de types info vont être recréer par le plugin, il faudra supprimer les anciennes (celles dont le topic ne commencent pas par /). En cas de doutes, de questions, n’hésiter pas à poster sur le forum.
 
   - Correction [\#13](https://github.com/domotruc/jMQTT/issues/13): commande null systématiquement envoyée sur création d’une commande action.
-
   - Correction [\#14](https://github.com/domotruc/jMQTT/issues/14): le champ de sélection value, sous le nom d’une commande de type action, est supprimé car il n’avait pas d’effet.
-
   - Amélioration [\#17](https://github.com/domotruc/jMQTT/issues/17): autorise les équipements avec topic vide.
-
   - Correction [\#18](https://github.com/domotruc/jMQTT/issues/18): arrête de créer une commande info relative à une commande action.
 
 ##### 2018-01-08
-
   - Correction [\#9](https://github.com/domotruc/jMQTT/issues/9): l’installation se bloque à 80% au redémarrage du serveur apache.
 
 ##### 2018-01-06
-
   - Correction [\#7](https://github.com/domotruc/jMQTT/issues/7): erreur "Le nom de l’équipement ne peut pas être vide" et arrêt du démon sur réception d’un topic commençant par /.
-
   - Amélioration de l’installation: ajout du statut de progression, lisibilité fichier de log
-
   - Correction [\#1](https://github.com/domotruc/jMQTT/issues/1): dernière valeur maintenue retain au niveau du broker sur suppression du mode retain d’une commande.
-
   - Correction [\#6](https://github.com/domotruc/jMQTT/issues/6): case inversion cochée par défaut pour information binaire.
 
 ##### 2018-01-04
-
   - MAJ du README côté GitHub
 
 ##### 2018-01-03
-
   - MAJ de la documentation
 
 ##### 2018-01-01
-
   - Supprime les tentatives de reconnexion toutes les secondes sur problème de connexion au broker: rend maintenant la main au core Jeedom qui relancera le démon (et donc la reconnexion) toutes les 5min.
-
   - Correction bug sur authentification auprès du broker (merci Nicolas)
-
   - Message d’erreur sur définition d’un topic vide
-
   - MAJ fichier internationalisation
-
   - Changement de la couleur de l’icône et des images du plugin (jaune au lieu de bleu)
-
   - MAJ liens de la doc
 
 ##### 2017-12-26
-
   - Version initiale

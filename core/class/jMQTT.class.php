@@ -542,7 +542,7 @@ class jMQTT extends eqLogic {
     /**
      * callback to start this plugin
      */
-    public function start() {
+    public static function start() {
         log::add('jMQTT', 'info', 'démarre le plugin');
         self::checkAllDaemons();
     }
@@ -550,7 +550,7 @@ class jMQTT extends eqLogic {
     /**
      * callback to stop this plugin
      */
-    public function stop() {
+    public static function stop() {
         log::add('jMQTT', 'info', 'arrête le plugin');
         foreach(self::getBrokers() as $broker) {
             $broker->stopDaemon();
