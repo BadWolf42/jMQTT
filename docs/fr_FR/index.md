@@ -38,15 +38,14 @@ Depuis la version prenant en charge la connexion à plusieurs brokers, jMQTT pr�
   - les équipements de type broker gérant la connexions avec les brokers MQTT, appelés équipements broker dans la suite;
   - les équipements "standards", appélés simplement équipements dans la suite, 
 
-Le panneau supérieur gauche, intitulé *Gestion*, permet d'accéder :
-  - A la [Configuration du plugin](#configuration-du-plugin)
-  - A la page [Santé du plugin](#santé-du-plugin).
-
-Le panneau supérieur droit, *Brokers MQTT*, affiche les équipements de type broker gérant la connexions avec les brokers MQTT. Un icône `+` permet l'[ajout d'un équipement broker](#ajout-dun-équipement-broker).
-L'icône de chaque broker présente dans son coin supérieur droit un point de couleur indiquant l'état de la connexion au broker:
-  - Vert: la connexion au broker est nominale;
-  - Orange: le démon tourne mais la connexion au broker n'est pas établie;
-  - Rouge: le démon est arrêté.
+Le panneau supérieur gauche, intitulé *Gestion plugin et brokers*, permet de configurer le plugin, et d'afficher les équipements de type broker gérant la connexion avec les brokers MQTT. Dans l'ordre d'affichage des icônes:
+  - L'icône *Configuration* permet d'accéder à la [Configuration du plugin](#configuration-du-plugin);
+  - L'icône *Santé* permet d'accéder à la page [Santé du plugin](#santé-du-plugin);
+  - L'icône **+** permet l'[ajout d'un équipement broker](#ajout-dun-équipement-broker);
+  - Les icônes des équipements broker, présentant dans leur coin supérieur droit un point de couleur indiquant l'état de la connexion au broker:
+     * Vert: la connexion au broker est nominale;
+     * Orange: le démon tourne mais la connexion au broker n'est pas établie;
+     * Rouge: le démon est arrêté.
 
 Viennent ensuite pour chaque broker, un panneau occupant toute la largeur de la page et présentant les équipements connectés au broker nommé dans la légende du panneau. Outre les équipements, le panneau comprend :
   - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
@@ -58,7 +57,7 @@ A noter qu'un équipement :
   
 > **Important**
 > 
-> Un panneau intitulé _Equipement orphelins_ pourrait aussi être présent suite à la migration vers la version supportant le multi-brokers. Il regroupe les équipements qui n'ont pas été migrés automatiquement. Editer chacun d'eux et les associer à l'équipement broker de votre installation (unique normalement après migration), voir paramètre _Broker associé_ au chapitre [Paramètres de l'équipement](#paramètres-de-léquipement).
+> Un panneau intitulé _Equipement orphelins_ pourrait aussi être présent suite à la migration vers la version supportant le multi-brokers. Il regroupe les équipements qui n'ont pas été migrés automatiquement. Editer chacun d'eux et les associer à l'équipement broker de votre installation (qui est unique normalement après migration), voir paramètre _Broker associé_ au chapitre [Paramètres de l'équipement](#paramètres-de-léquipement).
 
 ## Ajout d'un équipement broker
 
