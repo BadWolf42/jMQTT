@@ -106,6 +106,12 @@ $(document).ready(function() {
     if (document.location.hash == '#commandtab') {
         $('#menu-bar').show();
     }
+    
+    // Done here, otherwise the refresh button remains selected
+    $('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
+        event.stopPropagation();
+        refreshEqLogicPage();
+    });
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {
@@ -140,13 +146,6 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
         calcul.atCaret('insert', result.human);
         modifyWithoutSave = true
     });
-});
-
-// Refresh the page on click on the refresh button, and classic and JSON button
-$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
-    event.stopPropagation();
-    refreshEqLogicPage();
-    $(this).parent.removeClass('active');
 });
 
 $('#bt_classic').on('click', function() {
