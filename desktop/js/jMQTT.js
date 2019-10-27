@@ -75,7 +75,6 @@ function refreshEqLogicPage() {
     function refreshPage() {
         if ($('.eqLogicAttr[data-l1key=id]').value() != "") {
             tab = null
-            //console.log(document.location);
             if (document.location.toString().match('#')) {
                 tab = '#' + document.location.toString().split('#')[1];
                 if (tab != '#') {
@@ -83,7 +82,7 @@ function refreshEqLogicPage() {
                 } else {
                     tab = null
                 }
-            }            
+            }      
             $('.eqLogicDisplayCard[data-eqlogic_id="' + $('.eqLogicAttr[data-l1key=id]').value() + '"]').click();
             if (tab) tab.click();
         }
@@ -144,7 +143,11 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 });
 
 // Refresh the page on click on the refresh button, and classic and JSON button
-$('.eqLogicAction[data-action=refreshPage]').on('click', refreshEqLogicPage);
+$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
+    event.stopPropagation();
+    refreshEqLogicPage();
+    $(this).parent.removeClass('active');
+});
 
 $('#bt_classic').on('click', function() {
     refreshEqLogicPage();
@@ -490,14 +493,14 @@ function addCmdToTable(_cmd) {
             tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span> ';
             tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span> ';
             tr += '</td><td>';
-            tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fa fa-cogs"></i></a> ';
-            tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
+            tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
+            tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
         }
         else {
             tr += '</td><td>';
         }
         if (_cmd.id != undefined && _cmd.configuration.irremovable == undefined) {
-            tr += ' <a class="btn btn-default btn-xs cmdAction pull-right" data-action="remove"><i class="fa fa-minus-circle"></i></a>';
+            tr += ' <a class="btn btn-default btn-xs cmdAction pull-right" data-action="remove"><i class="fas fa-minus-circle"></i></a>';
         }
         tr += '</td></tr>';
 
