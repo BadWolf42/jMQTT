@@ -180,8 +180,8 @@ function showDaemonInfo(data) {
 }
 
 function refreshDaemonInfo() {
-    var id = getUrlVars('id');
-    if (id == false || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
+    var id = $('.eqLogicAttr[data-l1key=id]').value();
+    if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
 
     callPluginAjax({
@@ -210,11 +210,15 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_opt
 });
 
 $('.bt_startDaemon').on('click',function(){
+    var id = $('.eqLogicAttr[data-l1key=id]').value();
+    if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
+        return;
+
     clearTimeout(timeout_refreshDaemonInfo);
     callPluginAjax({
         data: {
             action: 'daemonStart',
-            id: getUrlVars('id'),
+            id: id,
         },
         success: function(data) {
             refreshDaemonInfo();
