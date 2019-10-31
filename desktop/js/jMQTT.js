@@ -275,91 +275,167 @@ $('.eqLogicAction[data-action=move_broker]').on('click', function () {
  */
 function printEqLogic(_eqLogic) {
     
-    // Initialize the command counter
+    // Initialize the command counter of the next command to be added
     var n_cmd = 1;
     
     // Is the JSON view is active
     var is_json_view = $('#bt_json.active').length != 0;
 
-    function isChild(_c) {
-        return _c.configuration.topic.search('{')  >= 0;
-    }
-    
     // JSON view button is active
     if (is_json_view) {
 
         // Compute the ordering string of each commands
         // On JSON view, we completely rebuild the command table
-        var new_cmd = new Array();
+        var new_cmds = new Array();
         
-        function pushCmd(c, parent_id) {
+        /**
+         * Add a command to the JSON commands tree
+         */
+        function addCmd(c, parent_id=-1) {
             c.treegrid_id = n_cmd++;
             if (parent_id > 0) {
                 c.treegrid_parent_id = parent_id;
             }
-            new_cmd.push(c);
+            new_cmds.push(c);
         }
         
-        function addCmd(topic, payload, parent_id) {
+        /**
+         * Check if the topic of the given command is equal to the given topic
+         * @return true or false
+         */
+        function hasTopic(c, topic) {
+            return c.configuration.topic == topic;
+        }
+        
+        /**
+         * Check if the given command is in the given array
+         * @return found command or undefined
+         */        
+        function inArray(cmds, cmd) {
+            return cmds.find(function (c) { return c == cmd });
+        }
+        
+        /**
+         * Check if the given topic is in the given array
+         * @return found command or undefined
+         */        
+        function existingCmd(cmds, topic) {
+            var exist_cmds = cmds.filter(function (c) { return hasTopic(c, topic); });
+            if (exist_cmds.length > 0)
+                return exist_cmds[0];
+            else
+                return undefined;
+        }
+        
+        /**
+         * Add the given topic/payload to the command array.
+         * If the command already exists, add the existing command. Otherwise create a no name command.
+         */
+        function addPayload(topic, payload, parent_id) {
             var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
-            var exist_cmds = _eqLogic.cmd.filter(function (c) { return c.configuration.topic == topic; });
-            if (exist_cmds.length > 0) {
-                exist_cmds[0].value = val;
-                pushCmd(exist_cmds[0], parent_id);
-            }
-            else {
-                pushCmd({
+            var c =  existingCmd(_eqLogic.cmd, topic);
+            //console.log('addPayload: topic=' + topic + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
+            if (c === undefined) {
+                addCmd({
                     configuration: {
                         topic: topic
                     },
                     isHistorized: "0",
                     isVisible: "1",
-                    json: payload,  // FIXME: to keep?
                     type: 'info',
                     subType: 'string',
                     value: val
                 }, parent_id);
             }
+            else {
+                c.value = val;
+                addCmd(c, parent_id);
+            }
         }
         
-        // FIXME: to_add à garder?
-        function crossJson(topic, payload, parent_id=-1, to_add=false) {
-            if (to_add) {
-                addCmd(topic, payload, parent_id);
-            }
+        /**
+         * Add to the JSON command tree the given command identified by its topic and JSON payload
+         * plus the commands deriving from the JSON payload
+         */
+        function recursiveAddJsonPayload(topic, payload, parent_id=-1) {
+            //console.log('recursiveAddJsonPayload: topic=' + topic + ', payload=' + JSON.stringify(payload));
+            addPayload(topic, payload, parent_id);
             var this_id = n_cmd-1;
             for (i in payload) {
                 if (typeof payload[i] === 'object') {
-                    crossJson(topic + '{' + i + '}', payload[i], this_id, true);
+                    recursiveAddJsonPayload(topic + '{' + i + '}', payload[i], this_id);
                 }
                 else {
-                    addCmd(topic + '{' + i + '}', payload[i], this_id);
+                    addPayload(topic + '{' + i + '}', payload[i], this_id);
                 }
             }
         }
 
-        for (var c of _eqLogic.cmd) {
-            if (!isChild(c)) {
-                pushCmd(c);
-                if (c.type == 'info') {
+        /**
+         * Add commands from their topic
+         */
+        function recursiveAddCmdFromTopic(topic) {
+            //console.log('recursiveAddCmdFromTopic: ' + topic);
+            var parent_id = -1;
+            
+            // For commands deriving from a JSON payload (i.e. topic contains {), start the
+            // addition from the father command
+            var n = topic.lastIndexOf('{');
+            if (n >= 0) {
+                father_topic = topic.substring(0, n);
+                // Call recursively this method iwth the father topic
+                recursiveAddCmdFromTopic(father_topic);
+                // We need to get the treegrid id of the father command to be able to add this
+                // command to tree in the next step
+                var c = existingCmd(new_cmds, father_topic);
+                if (c !== undefined)
+                    parent_id = c.treegrid_id;
+            }
+            
+            // Add this command to the tree if not previously added
+            var c = existingCmd(new_cmds, topic);
+            if (c === undefined) {
+                c = existingCmd(_eqLogic.cmd, topic);
+                if (c !== undefined) {
+                    // Get the payload associated to the command
                     jeedom.cmd.execute({
                         async: false, id: c.id, cache: 0, notify: false,
                         success: function(result) {
                             c.value = result;
                         }});
                     try {
-                        c.json = JSON.parse(c.value);
+                        var parsed_json_value = JSON.parse(c.value);
                     }
                     catch (e) {}
-    
-                    if (typeof c.json === 'object') {
-                        crossJson(c.configuration.topic, c.json);
+                    
+                    // Add the command: in case of JSON payload, call recursiveAddJsonPayload to add
+                    // also the derived commands
+                    if (typeof parsed_json_value === 'object') {
+                        recursiveAddJsonPayload(c.configuration.topic, parsed_json_value, parent_id);
+                    }
+                    else {
+                        addCmd(c, parent_id);
                     }
                 }
             }
         }
         
-        _eqLogic.cmd = new_cmd;
+        // Main loop on the existing command: objective is to add to the JSON command tree all the
+        // existing commands plus the commands that can be created from JSON payloads
+        for (var c of _eqLogic.cmd) {
+            if (!inArray(new_cmds, c)) {
+                if (c.type == 'info') {
+                    //console.log('loop: add info ' + c.configuration.topic);
+                    recursiveAddCmdFromTopic(c.configuration.topic);
+                }
+                else {
+                    // Action commands are added directly
+                    addCmd(c);
+                }
+            }
+        }
+        
+        _eqLogic.cmd = new_cmds;
 
         // JSON view: disable the sortable functionality
         $("#table_cmd").sortable('disable');
@@ -624,7 +700,7 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
         var msg = '{{Plusieurs commandes sont ajoutées à l\'équipement}} <b>' + _options['eqlogic_name'] + '</b>.';
 
     // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
-    if (modifyWithoutSave || $('.li_eqLogic.active').attr('data-eqLogic_id') != _options['eqlogic_id'] ||
+    if (modifyWithoutSave || ( $('.eqLogic').is(":visible") && $('.eqLogicAttr[data-l1key=id]').value() != _options['eqlogic_id'] ) ||
             $('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
         $('#div_newCmdMsg').showAlert({message: msg, level: 'warning'});
     }
@@ -722,8 +798,7 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
 
     // If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
     // Otherwise: display an alert message and reload the page
-    if (modifyWithoutSave || $('.li_eqLogic.active').attr('data-eqLogic_id') != undefined ||
-            $('div[role="dialog"]').filter(':visible').length != 0) {
+    if (modifyWithoutSave || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
         $('#div_newEqptMsg').showAlert({message: msg + '.', level: 'warning'});
     }
     else {

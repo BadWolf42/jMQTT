@@ -436,9 +436,13 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-10-31
+  - Corrige [\#85](https://github.com/domotruc/jMQTT/issues/85): disparition de commandes JSON
+  - Corrige [\#86](https://github.com/domotruc/jMQTT/issues/86): disparition statuts démon et erreur id sur relance démon en core v3
+
 ##### 2019-10-27
-   - Compatibilité v4
-   - Force la relance des démons sur mise à jour plugin
+  - Compatibilité v4
+  - Force la relance des démons sur mise à jour plugin
 
 ##### 2019-10-23
   - Correction de [\#82](https://github.com/domotruc/jMQTT/issues/82): erreur de décodage JSON suite version 2019-10-19
