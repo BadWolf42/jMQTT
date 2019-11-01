@@ -436,6 +436,9 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-11-01
+  - Corrige [\#87](https://github.com/domotruc/jMQTT/issues/87): icônes pour plier/déplier les noeuds JSON devenus invisibles en core v4
+
 ##### 2019-10-31
   - Corrige [\#85](https://github.com/domotruc/jMQTT/issues/85): disparition de commandes JSON
   - Corrige [\#86](https://github.com/domotruc/jMQTT/issues/86): disparition statuts démon et erreur id sur relance démon en core v3

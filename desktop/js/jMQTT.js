@@ -675,9 +675,9 @@ function addCmdToTable(_cmd) {
     // If JSON view is active, build the tree
     if (is_json_view) {
         $('.tree').treegrid({
-            initialState: 'expanded'
-//            expanderExpandedClass: 'glyphicon glyphicon-minus',
-//            expanderCollapsedClass: 'glyphicon glyphicon-plus'
+            initialState: 'expanded',
+            expanderExpandedClass: 'fas fa-minus',
+            expanderCollapsedClass: 'fas fa-plus'
         });
     }
 }
