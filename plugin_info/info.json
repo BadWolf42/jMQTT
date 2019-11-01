@@ -12,5 +12,5 @@
     "changelog" : "https://domotruc.github.io/jMQTT/#language#/index.html#changelog",
     "documentation" : "https://domotruc.github.io/jMQTT/#language#/",
     "languages" : ["fr_FR","en_US","sp_SP"],
-    "compatibility" : ["Jeedomboard","Smart","RPI/RPI2","Docker","DIY","mobile"]
+    "compatibility" : ["Jeedomboard","Smart","RPI/RPI2","Docker","DIY","v4"]
 }
