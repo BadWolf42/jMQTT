@@ -71,12 +71,22 @@ class jMQTTCmd extends cmd {
      */
     private function eventNewCmd($reload=false) {
         $eqLogic = $this->getEqLogic();
-        $eqLogic->log('info', 'Creating command of type ' . $this->getType() . ' ' . $this->getLogName());
+        $eqLogic->log('info', 'Création commande ' . $this->getType() . ' ' . $this->getLogName());
         
         // Advise the desktop page (jMQTT.js) that a new command has been added
         event::add('jMQTT::cmdAdded',
             array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(),
                 'cmd_name' => $this->getName(), 'reload' => $reload));        
+    }
+    
+    private function eventTopicMismatch() {
+        $eqLogic = $this->getEqLogic();
+        $eqLogic->log('warning', 'Le topic de la commande ' . $this->getLogName() .
+            " est incompatible du topic de l'équipement associé");
+        
+        // Advise the desktop page (jMQTT.js) of the topic mismatch
+        event::add('jMQTT::cmdTopicMismatch',
+            array('eqlogic_name' => $eqLogic->getName(), 'cmd_name' => $this->getName()));
     }
     
     /**
@@ -259,10 +269,23 @@ class jMQTTCmd extends cmd {
                 /** @var jMQTTCmd $root_cmd root JSON command */
                 $root_cmd = jMQTTCmd::byEqLogicIdAndTopic($this->getEqLogic_id(), $root_topic, false);
                 
-                $jsonArray = $root_cmd->decodeJsonMsg($root_cmd->execCmd());
-                if (isset($jsonArray)) {
-                    $this->updateJsonCmdValue($jsonArray);
+                if (isset($root_cmd)) {
+                    $value = $root_cmd->execCmd();
+                    if (! empty($value)) {
+                        $jsonArray = $root_cmd->decodeJsonMsg($value);
+                        if (isset($jsonArray)) {
+                            $this->updateJsonCmdValue($jsonArray);
+                        }
+                    }
                 }
+            }
+        }
+        
+        // For info commands, check that the topic is compatible with the subscription command
+        // of the related equipment
+        if ($this->getType() == 'info') {
+            if (! $this->topicMatchesSubscription($this->getEqLogic()->getTopic())) {
+                $this->eventTopicMismatch();
             }
         }
     }
@@ -375,6 +398,18 @@ class jMQTTCmd extends cmd {
         else {
             $this->_post_action = $action;
         }
+    }
+    
+    /**
+     * Returns true if the topic of this command matches the given subscription description
+     * @param string $subscription subscription to match
+     * @return boolean
+     */
+    public function topicMatchesSubscription($subscription) {
+        $topic = $this->getTopic();
+        $i = strpos($topic, '{');
+        return Mosquitto\Message::topicMatchesSub($i === false ? $topic : substr($topic, 0, $i),
+            $subscription);
     }
     
     /**

@@ -195,7 +195,7 @@ class jMQTT extends eqLogic {
      */
     public function copy($_name) {
 
-        log::add('jMQTT', 'info', 'Copying equipment ' . $this->getName() . ' as ' . $_name);
+        $this->log('info', 'Copying equipment ' . $this->getName() . ' as ' . $_name);
 
         // Clone the equipment and change properties that shall be changed
         // . new id will be given at saving
@@ -213,14 +213,15 @@ class jMQTT extends eqLogic {
         $eqLogicCopy->save();
 
         // Clone commands, only action type commands
+        /** @var jMQTTCmd $cmd */
         foreach ($this->getCmd() as $cmd) {
-            if ($cmd->getType() == 'action') {
-                $cmdCopy = clone $cmd;
-                $cmdCopy->setId('');
-                $cmdCopy->setEqLogic_id($eqLogicCopy->getId());
-                $cmdCopy->save();
-                log::add('jMQTT', 'info', 'Cloning action command "' . $cmd->getName());
-            }
+            /** @var jMQTTCmd $cmdCopy */
+            $cmdCopy = clone $cmd;
+            $cmdCopy->setId('');
+            $cmdCopy->setEqLogic_id($eqLogicCopy->getId());
+            $cmdCopy->setEqLogic($eqLogicCopy);
+            $cmdCopy->save();
+            $this->log('info', 'Cloning ' . $cmd->getType() . ' command ' . $cmd->getName());
         }
 
         return $eqLogicCopy;
@@ -1471,7 +1472,7 @@ class jMQTT extends eqLogic {
     
     /**
      * Get this jMQTT object type
-     * @return string either jMQTT::TYPE_STD, jMQTT::TYP_BRK, or empty string if not defined
+     * @return string either jMQTT::TYPE_EQPT, jMQTT::TYP_BRK, or empty string if not defined
      */
     public function getType() {
         return $this->getConf(self::CONF_KEY_TYPE);

@@ -558,7 +558,7 @@ function addCmdToTable(_cmd) {
         tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '"></span>';
         tr += '</td><td>';
-        tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;" ' + disabled + ' placeholder="{{Topic}}" readonly=true />';
+        tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;" ' + disabled + ' placeholder="{{Topic}}"/>';
         tr += '</td><td>';
         tr += '<textarea class="form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true />';
         tr += '</td><td class="fitwidth">';
@@ -683,6 +683,23 @@ function addCmdToTable(_cmd) {
 }
 
 /**
+ * Management of cmdTopicMismatch event sent by the plugin core
+ * @param _event string event name
+ * @param _options['eqlogic_name'] string name of the eqLogic command is added to
+ * @param _options['cmd_name'] string name of the new command
+ */
+$('body').off('jMQTT::cmdTopicMismatch').on('jMQTT::cmdTopicMismatch', function(_event,_options) {
+    if ($('#div_cmdMsg').is(':empty') || $('#div_cmdMsg').is(':hidden'))
+        var msg = '{{La commande}} <b>' + _options['cmd_name'] + "</b> {{a un topic incompatible du topic d'inscription de l\'équipement}}" +
+        ' <b>' + _options['eqlogic_name'] + '</b>.';
+    else
+        var msg = "{{Plusieurs commandes ont des topics incompatibles du topic d'inscription de l\'équipement}} <b>" + _options['eqlogic_name'] + '</b>.';
+    
+    $('#div_cmdMsg').showAlert({message: msg, level: 'warning'});
+});
+
+
+/**
  * Management of the display when an information command is added
  * Triggerred when the plugin core send a jMQTT::cmdAdded event
  * @param _event string event name
@@ -692,8 +709,7 @@ function addCmdToTable(_cmd) {
  * @param _options['reload'] bool whether or not a reload of the page is requested
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options) {
-    
-    if ($('#div_newCmdMsg.alert').length == 0)
+    if ($('#div_cmdMsg').is(':empty') || $('#div_cmdMsg').is(':hidden'))
         var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{est ajoutée à l\'équipement}}' +
         ' <b>' + _options['eqlogic_name'] + '</b>.';
     else
@@ -702,11 +718,11 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
     // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
     if (modifyWithoutSave || ( $('.eqLogic').is(":visible") && $('.eqLogicAttr[data-l1key=id]').value() != _options['eqlogic_id'] ) ||
             $('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
-        $('#div_newCmdMsg').showAlert({message: msg, level: 'warning'});
+        $('#div_cmdMsg').showAlert({message: msg, level: 'warning'});
     }
     // Otherwise: display an alert message and reload the page
     else {
-        $('#div_newCmdMsg').showAlert({
+        $('#div_cmdMsg').showAlert({
             message: msg + ' {{La page va se réactualiser automatiquement}}.',
             level: 'warning'
         });

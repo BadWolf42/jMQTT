@@ -149,7 +149,7 @@ function displayEqLogicCard($eqL, $node_images) {
 
 ?>
 
-<div id="div_newCmdMsg"></div>
+<div id="div_cmdMsg"></div>
 <div id="div_newEqptMsg"></div>
 <div id="div_inclusionModeMsg"></div>
 <div class="row row-overflow">
@@ -222,8 +222,10 @@ function displayEqLogicCard($eqL, $node_images) {
     </div>
         <div id="menu-bar" style="display: none;">
             <div class="form-actions">
-                <a class="btn btn-success btn-sm cmdAction toDisable" id="bt_addMQTTAction"><i class="fas fa-plus-circle"></i>
+                <a class="btn btn-default btn-sm toDisable" id="bt_addMQTTAction"><i class="fas fa-plus-circle"></i>
                     {{Ajouter une commande action}}</a>
+                <a class="btn btn-default btn-sm toDisable" id="bt_addMQTTInfo"><i class="fas fa-plus-circle"></i>
+                    {{Ajouter une commande info}}</a>
                 <div class="btn-group pull-right" data-toggle="buttons">
                     <a id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off"
                         checked><i class="fas fa-list-alt"></i> Classic </a> <a id="bt_json"

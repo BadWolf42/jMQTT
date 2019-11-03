@@ -437,6 +437,10 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 # Registre des évolutions
 
 ##### 2019-11-01
+  - Amélioration [\#29](https://github.com/domotruc/jMQTT/issues/29): ajouter manuellement des commandes "info" et éditer leurs topics.
+    Cette modification est expérimentale et sera maintenu selon les retours qui en sont faits [ici](https://community.jeedom.com/t/ajout-manuel-de-commandes-info-et-edition-de-leurs-topics/6534?u=domotruc).
+
+##### 2019-11-01
   - Corrige [\#87](https://github.com/domotruc/jMQTT/issues/87): icônes pour plier/déplier les noeuds JSON devenus invisibles en core v4
 
 ##### 2019-10-31
@@ -451,7 +455,11 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
   - Correction de [\#82](https://github.com/domotruc/jMQTT/issues/82): erreur de décodage JSON suite version 2019-10-19
 
 ##### 2019-10-19
-  - Amélioration [\#76](https://github.com/domotruc/jMQTT/issues/76): pour les payloads JSON, il est maintenant possible de choisir individuellement les valeurs qui sont des commandes info. 
+  - Amélioration [\#76](https://github.com/domotruc/jMQTT/issues/76): pour les payloads JSON, il est maintenant possible de choisir individuellement les valeurs qui sont des commandes info.
+
+> **Important**
+> 
+> Cette version modifie complêtement la gestion des payloads JSON (disparition du parseJSON), bien lire le chapitre de la documentation s'y rapportant, [ici](#commandes-de-type-information).
 
 ##### 2019-09-01
   - Ajout support debian buster et php 7.3
