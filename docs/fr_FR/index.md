@@ -436,9 +436,13 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
+##### 2019-11-24
+  - Corrige [\#90](https://github.com/domotruc/jMQTT/issues/90): filtrage des valeurs null dans une payload JSON
+  - Corrige [\#92](https://github.com/domotruc/jMQTT/issues/92): topic comprenant des caractères spéciaux
+
 ##### 2019-11-03
   - Amélioration [\#29](https://github.com/domotruc/jMQTT/issues/29): ajouter manuellement des commandes "info" et éditer leurs topics.
-    Cette modification est expérimentale et sera maintenu selon les retours qui en sont faits [ici](https://community.jeedom.com/t/ajout-manuel-de-commandes-info-et-edition-de-leurs-topics/6534?u=domotruc).
+    Cette modification est expérimentale et sera maintenue selon les retours qui en sont faits [ici](https://community.jeedom.com/t/ajout-manuel-de-commandes-info-et-edition-de-leurs-topics/6534?u=domotruc).
 
 ##### 2019-11-01
   - Corrige [\#87](https://github.com/domotruc/jMQTT/issues/87): icônes pour plier/déplier les noeuds JSON devenus invisibles en core v4
