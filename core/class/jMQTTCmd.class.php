@@ -131,13 +131,7 @@ class jMQTTCmd extends cmd {
         $indexes = substr($topic, strpos($topic, '{'));
         $indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
         $indexes = explode('|', $indexes);
-        $value = self::get_array_value($jsonArray, $indexes);
-        if (isset($value)) {
-            $this->updateCmdValue(json_encode($value));
-        }
-        else {
-            $this->getEqLogic()->log('warning', 'Erreur de décodage JSON sur la commande ' . $this->getLogName());
-        }
+        $this->updateCmdValue(json_encode(self::get_array_value($jsonArray, $indexes)));
     }
     
     /**
@@ -323,7 +317,8 @@ class jMQTTCmd extends cmd {
      * @return NULL|jMQTTCmd|array(jMQTTCmd)
      */
     public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
-        $conf = substr(json_encode(array('topic' => $topic)), 1, -2);
+        // JSON_UNESCAPED_UNICODE used to correct #92
+        $conf = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -2);
         $conf = str_replace('\\', '\\\\', $conf);
         
         $values = array(
