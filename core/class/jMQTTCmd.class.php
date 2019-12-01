@@ -131,7 +131,10 @@ class jMQTTCmd extends cmd {
         $indexes = substr($topic, strpos($topic, '{'));
         $indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
         $indexes = explode('|', $indexes);
-        $this->updateCmdValue(json_encode(self::get_array_value($jsonArray, $indexes)));
+        $value = self::get_array_value($jsonArray, $indexes);
+        if ($value !== false) {
+            $this->updateCmdValue(json_encode($value));
+        }
     }
     
     /**
@@ -348,16 +351,16 @@ class jMQTTCmd extends cmd {
      * Example: to retrieve $array['1']['name'], call get_array_value($array, array('1', 'name'))
      * @param array $array
      * @param array $indexes
-     * @return NULL|unknown
+     * @return false|mixed false if index is not found in $array
      */
     private static function get_array_value($array, $indexes) {
         if (count($array) == 0 || count($indexes) == 0) {
-            return null;
+            return false;
         }
         
         $index = array_shift($indexes);
         if(!array_key_exists($index, $array)){
-            return null;
+            return false;
         }
         
         $value = $array[$index];

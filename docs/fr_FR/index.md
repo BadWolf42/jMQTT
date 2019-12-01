@@ -436,7 +436,7 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
-##### 2019-11-24
+##### 2019-12-01
   - Corrige [\#90](https://github.com/domotruc/jMQTT/issues/90): filtrage des valeurs null dans une payload JSON
   - Corrige [\#92](https://github.com/domotruc/jMQTT/issues/92): topic comprenant des caractères spéciaux
 
