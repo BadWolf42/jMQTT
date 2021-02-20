@@ -190,9 +190,6 @@ class jMQTTCmd extends cmd {
                 if ($_options != null)  {
                     $replace = array('#title#', '#message#');
                     $replaceBy = array($_options['title'], $_options['message']);
-                    if ( $_options['title'] == '') {
-                        throw new Exception(__('Le sujet du message ne peut pas être vide', __FILE__));
-                    }
                     $request = str_replace($replace, $replaceBy, $request);
                 }
                 break;
