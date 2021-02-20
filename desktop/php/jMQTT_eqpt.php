@@ -90,6 +90,13 @@
         </div>
 
         <div class="form-group toDisable">
+            <label class="col-sm-3 control-label">{{Type de piles}}</label>
+            <div class="col-sm-3">
+                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" placeholder="{{Doit être indiqué sous la forme : 3xAA}}"/>
+            </div>
+        </div>
+
+        <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Dernière communication}}</label>
             <div class="col-sm-3">
                 <span class="eqLogicAttr" data-l1key="status" data-l2key="lastCommunication"></span>
