@@ -1188,41 +1188,37 @@ class jMQTT extends eqLogic {
         // is not executed on the same thread as the deamon. So we do create a new client.
         $client = $this->getBroker()->getMosquittoClient($mosqId);
         
+        $messageId = 0;
+
         $client->onConnect(
-            function () use ($client, $topic, $payload, $qos, $retain) {
+            function () use ($client, $topic, $payload, $qos, $retain, &$messageId) {
                 $this->log('debug',
                     'Publication du message ' . $topic . ' ' . $payload . ' (pid=' . getmypid() . ', qos=' . $qos .
                     ', retain=' . $retain . ')');
-                $client->publish($topic, $payload, $qos, (($retain) ? true : false));
-                
-                // exitLoop instead of disconnect:
-                // . otherwise disconnect too early for Qos=2 see below (issue #25)
-                // . to correct issue #30 (action commands not run immediately on scenarios)
-                $client->exitLoop();
+                $messageId = $client->publish($topic, $payload, $qos, (($retain) ? true : false));
+            });
+
+        $client->onPublish(
+            function ($publishedId) use ($client, &$messageId) {
+                if($publishedId == $messageId) {
+                    $client->disconnect();
+                }
             });
         
         // Connect to the broker
         $client->connect($mosqHost, $mosqPort, 60);
         
         // Loop around to permit the library to do its work
-        // This function will call the callback defined in `onConnect()` and exit properly
-        // when the message is sent and the broker disconnected.
+        // This function will call the callback defined in `onConnect()` and publish the message
+        // once the message is published, `onPublish()` is called to disconnect properly the client
+        // then this loopForever ends by itself once disconnected
         $client->loopForever();
-        
-        // For Qos=2, it is nessary to loop around more to permit the library to do its work (see issue #25)
-        if ($qos == 2) {
-            for ($i = 0; $i < 30; $i ++) {
-                $client->loop(1);
-            }
-        }
         
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
         if ($this->getType() == self::TYP_EQPT) {
             $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
         }
-        
-        $client->disconnect();
         
         $this->log('debug', 'Message publié');
     }
