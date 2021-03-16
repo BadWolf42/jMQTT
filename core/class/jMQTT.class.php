@@ -127,6 +127,106 @@ class jMQTT extends eqLogic {
     private static $_depProgressFile;
 
     /**
+     * Return one or all templates content (from json files) as an array.
+     * @param string $_template template name to look for
+     * @return array
+     */
+	public static function templateParameters($_template = ''){
+		$return = array();
+		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+				if (is_json($content)) {
+					$return += json_decode($content, true);
+				}
+			} catch (Exception $e) {
+				
+			}
+		}
+		if (isset($_template) && $_template != '') {
+			if (isset($return[$_template])) {
+				return $return[$_template];
+			}
+			return array();
+		}
+		return $return;
+	}
+
+    /**
+     * apply a template (from json) to the current equipement.
+     * @param string $_template name of the template to apply
+     */
+    public function applyTemplate($_template, $_topic, $_keepCmd = true){
+
+        if ($this->getType() != self::TYP_EQPT) {
+            return true;
+        }
+
+		$template = self::templateParameters($_template);
+		if (!is_array($template)) {
+			return true;
+		}
+
+        //put temporary logicalId to format string to avoid cmd alert that not match cmd topic
+        $this->setLogicalId($template['logicalId']);
+
+        //import template
+        $this->import($template, $_keepCmd);
+
+        # complete eqpt topic
+        $this->setLogicalId(sprintf($template['logicalId'], $_topic));
+        $this->save($true); // direct save to avoid not mathcing topic alert
+
+        # complete cmd topics
+        foreach ($this->getCmd() as $cmd) {
+            $cmd->setConfiguration('topic', sprintf($cmd->getConfiguration('topic'), $_topic));
+            $cmd->save();
+        }
+	}
+
+    /**
+     * create a template from the current equipement (to json).
+     * @param string $_template name of the template to create
+     */
+    public function createTemplate($_template){
+
+        if ($this->getType() != self::TYP_EQPT) {
+            return true;
+        }
+
+        // Export
+        $exportedTemplate[$_template] = $this->export();
+
+        // Looking for baseTopic from equipement
+        $baseTopic = $this->getLogicalId();
+        if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
+        if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
+
+        // Add string format for logicalId (Topic of eqpt)
+        $exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getLogicalId());
+
+        // convert topic to string format
+        foreach ($exportedTemplate[$_template]['cmd'] as $key => $cmd) {
+            if(isset($cmd['configuration']['topic'])) {
+                $exportedTemplate[$_template]['cmd'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $cmd['configuration']['topic']);
+            }
+        }
+
+        // Rename 'cmd' to 'commands' for Jeedom import ...
+        // (Why Jeedom used different names in export() and in import() ?!)
+        $exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
+        unset($exportedTemplate[$_template]['cmd']);
+
+        // Remove brkId from eqpt configuration
+        unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
+
+        // Convert and save to file
+        $jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $formatedTemplateName = preg_replace('/[^a-zA-Z0-9_]+/', '', $_template);
+        file_put_contents(dirname(__FILE__) . '/../config/template/' . $formatedTemplateName . '.json', $jsonExport);
+	}
+
+    /**
      * Create a new equipment given its name, subscription topic, type and broker the equipment is related to.
      * IMPORTANT: broker can be null, and then this is the responsability of the caller to attach the new equipment to a broker.
      * Equipment is enabled, and saved.
