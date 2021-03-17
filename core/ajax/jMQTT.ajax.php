@@ -26,6 +26,28 @@ try {
 
     ajax::init();
 
+    if (init('action') == 'getTemplateList') {
+        ajax::success(jMQTT::templateParameters());
+    }
+
+    if (init('action') == 'applyTemplate') {
+        $eqpt = jMQTT::byId(init('id'));
+        if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
+            throw new Exception(__('Pas d\'équipement jMQTT avec l\'id fourni', __FILE__) . ' (id=' . init('id') . ')');
+        }
+        $eqpt->applyTemplate(init('name'), init('topic'), init('keepCmd'));
+        ajax::success();
+    }
+
+    if (init('action') == 'createTemplate') {
+        $eqpt = jMQTT::byId(init('id'));
+        if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
+            throw new Exception(__('Pas d\'équipement jMQTT avec l\'id fourni', __FILE__) . ' (id=' . init('id') . ')');
+        }
+        $eqpt->createTemplate(init('name'));
+        ajax::success();
+    }
+
     // To change the equipment automatic inclusion mode
     if (init('action') == 'changeIncludeMode') {
         $new_broker = jMQTT::getBrokerFromId(init('id'));

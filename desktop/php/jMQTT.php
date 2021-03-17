@@ -201,11 +201,12 @@ function displayEqLogicCard($eqL, $node_images) {
     <div class="col-xs-12 eqLogic" style="display: none;">
       <div class="row">
         <div class="input-group pull-right" style="display:inline-flex">
-            <a class="btn btn-success eqLogicAction toDisable roundedLeft" data-action="save"><i class="fas fa-check-circle"></i>{{Sauvegarder}}</a>
-            <a class="btn btn-danger eqLogicAction" data-action="remove_jmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
-            <a class="btn btn-default eqLogicAction toDisable" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
-            <a class="btn btn-default eqLogicAction typ-std toDisable" data-action="copy" style="display: none;"><i class="fas fa-file"></i> {{Dupliquer}}</a>
-            <a class="btn btn-default eqLogicAction roundedRight" data-action="export"><i class="fas fa-sign-out-alt"></i> Export</a>
+            <a class="btn btn-warning btn-sm eqLogicAction applyTemplate typ-std roundedLeft"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
+            <a class="btn btn-primary btn-sm eqLogicAction createTemplate typ-std"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+            <a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
+            <a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
+            <a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
+            <a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove_jmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
         </div>
         <div class="input-group pull-left" style="display:inline-flex">
             <ul class="nav nav-tabs" role="tablist">

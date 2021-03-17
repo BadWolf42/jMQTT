@@ -268,6 +268,79 @@ $('.eqLogicAction[data-action=move_broker]').on('click', function () {
     }
 });
 
+$('.applyTemplate').off('click').on('click', function () {
+    callPluginAjax({
+        data: {
+            action: "getTemplateList",
+        },
+        success: function (dataresult) {
+            var dialog_message = '<label class="control-label">{{Choisissez un template : }}</label> ';
+            dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="applyTemplateSelector">';
+            for(var i in dataresult){ dialog_message += '<option value="'+i+'">'+i+'</option>'; }
+            dialog_message += '</select><br>';
+
+            dialog_message += '<label class="control-label">{{Saisissez le Topic de base : }}</label> ';
+            var currentTopic = $('.eqLogicAttr[data-l1key=logicalId]').value();
+            if (currentTopic.endsWith("#") || currentTopic.endsWith("+")) {currentTopic = currentTopic.substr(0,currentTopic.length-1);}
+            if (currentTopic.endsWith("/")) {currentTopic = currentTopic.substr(0,currentTopic.length-1);}
+            dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'
+
+            dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ' +
+            '<div class="radio">' +
+            '<label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label>' +
+            '</div><div class="radio">' +
+            '<label><input type="radio" name="applyTemplateCommand" value="0">{{Les supprimer d\'abord}}</label> ' +
+            '</div>';
+
+            bootbox.confirm({
+                title: '{{Appliquer un Template}}',
+                message: dialog_message,
+                callback: function (result){ if (result) {
+                    callPluginAjax({
+                        data: {
+                            action: "applyTemplate",
+                            id: $('.eqLogicAttr[data-l1key=id]').value(),
+                            name : $("#applyTemplateSelector").val(),
+                            topic: $("#applyTemplateTopic").val(),
+                            keepCmd: $("[name='applyTemplateCommand']:checked").val()
+                        },
+                        success: function (dataresult) {
+                            $('.eqLogicDisplayCard[data-eqLogic_id='+$('.eqLogicAttr[data-l1key=id]').value()+']').click();
+                        }
+                    });
+                }}
+            });
+        }
+    });
+});
+
+$('.createTemplate').off('click').on('click', function () {
+    callPluginAjax({
+        data: {
+            action: "getTemplateList",
+        },
+        success: function (dataresult) {
+            bootbox.prompt({
+                title: "Nom du nouveau template ?",
+                callback: function (result) {
+                    if (result !== null) {
+                        callPluginAjax({
+                            data: {
+                                action: "createTemplate",
+                                id: $('.eqLogicAttr[data-l1key=id]').value(),
+                                name : result
+                            },
+                            success: function (dataresult) {
+                                $('.eqLogicDisplayCard[data-eqLogic_id='+$('.eqLogicAttr[data-l1key=id]').value()+']').click();
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    });
+});
+
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
  *   . Reorder commands if the JSON view is active
