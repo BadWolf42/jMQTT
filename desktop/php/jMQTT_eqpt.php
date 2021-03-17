@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <div class="form-group toDisable">
+        <div class="form-group toDisable typ-std">
             <label class="col-sm-3 control-label">{{Type de piles}}</label>
             <div class="col-sm-3">
                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" placeholder="{{Doit être indiqué sous la forme : 3xAA}}"/>
@@ -139,7 +139,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group typ-std">
             <div style="text-align: center">
                 <img id="icon_visu" src="" width="200" height="200" />
             </div>
