@@ -1284,35 +1284,48 @@ class jMQTT extends eqLogic {
         // Concatenates a random string to have a unique id (in case of burst of commands, see issue #23).
         $mosqId = $this->getBroker()->getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
         
-        // The object variable $_client is not visible here as the current function
-        // is not executed on the same thread as the deamon. So we do create a new client.
-        $client = $this->getBroker()->getMosquittoClient($mosqId);
-        
-        $messageId = 0;
+        $mosqUser = $this->getConf(self::CONF_KEY_MQTT_USER);
+        $mosqPass = $this->getConf(self::CONF_KEY_MQTT_PASS);
 
-        $client->onConnect(
-            function () use ($client, $topic, $payload, $qos, $retain, &$messageId) {
-                $this->log('debug',
-                    'Publication du message ' . $topic . ' ' . $payload . ' (pid=' . getmypid() . ', qos=' . $qos .
-                    ', retain=' . $retain . ')');
-                $messageId = $client->publish($topic, $payload, $qos, (($retain) ? true : false));
-            });
+        if (!function_exists('mb_escapeshellarg')) {
+            function mb_escapeshellarg($arg) {
+                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+                    return '"' . str_replace(array('"', '%'), array('', ''), $arg) . '"';
+                else
+                    return "'" . str_replace("'", "'\\''", $arg) . "'";
+            }
+        }
 
-        $client->onPublish(
-            function ($publishedId) use ($client, &$messageId) {
-                if($publishedId == $messageId) {
-                    $client->disconnect();
-                }
-            });
-        
-        // Connect to the broker
-        $client->connect($mosqHost, $mosqPort, 60);
-        
-        // Loop around to permit the library to do its work
-        // This function will call the callback defined in `onConnect()` and publish the message
-        // once the message is published, `onPublish()` is called to disconnect properly the client
-        // then this loopForever ends by itself once disconnected
-        $client->loopForever();
+        $sysCmd='mosquitto_pub';
+        $sysCmd.=' -h '.mb_escapeshellarg($mosqHost);
+        $sysCmd.=' -p '.mb_escapeshellarg($mosqPort);
+        if ($mosqUser != '') {
+            $sysCmd.=' -u '.mb_escapeshellarg($mosqUser);
+            $sysCmd.=' -P '.mb_escapeshellarg($mosqPass);
+        }
+        $sysCmd.=' -t '.mb_escapeshellarg($topic);
+        $sysCmd.=' -i '.mb_escapeshellarg($mosqId);
+        $sysCmd.=' -q '.mb_escapeshellarg($qos);
+        if($retain){
+            $sysCmd.=' -r';
+        }
+        $sysCmd.=' -m '.mb_escapeshellarg($payload);
+
+        $sysCmd.=' 2>&1';
+
+        $this->log('debug', 'Publication du message ' . $topic . ' ' . $payload . ' (pid=' . getmypid() . ', qos=' . $qos . ', retain=' . $retain . ')');
+        $this->log('debug', '$sysCmd='.$sysCmd);
+
+
+        $output=null;
+        $retval=null;
+
+        exec($sysCmd, $output, $retval);
+
+        if($retval != 0){
+            $this->log('error', 'Publication échouée ( '.$retval.' : '.$output[count($output)-1].')');
+            throw new ErrorException('Publication échouée ( '.$retval.' : '.$output[count($output)-1].')');
+        }
         
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
