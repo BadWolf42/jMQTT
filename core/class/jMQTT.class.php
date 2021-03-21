@@ -665,7 +665,7 @@ class jMQTT extends eqLogic {
         if (! isset(self::$_depLogFile))
             self::$_depLogFile = __CLASS__ . '_dep';
             
-            if (! isset(self::$_depProgresFile))
+            if (! isset(self::$_depProgressFile))
                 self::$_depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/progress_dep.txt';
                 
                 $return = array();
