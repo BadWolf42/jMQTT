@@ -222,7 +222,8 @@ class jMQTT extends eqLogic {
 
         // Convert and save to file
         $jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-        $formatedTemplateName = preg_replace('/[^a-zA-Z0-9_]+/', '', $_template);
+        $formatedTemplateName = str_replace(' ', '_', $_template);
+        $formatedTemplateName = preg_replace('/[^a-zA-Z0-9_]+/', '', $formatedTemplateName);
         file_put_contents(dirname(__FILE__) . '/../config/template/' . $formatedTemplateName . '.json', $jsonExport);
 	}
 
