@@ -119,7 +119,7 @@ class jMQTTCmd extends cmd {
     public function updateCmdValue($value) {
         $this->event($value);
         $this->getEqLogic()->log('info', '-> ' . $this->getLogName() . ' ' . $value);
-        if ($this->getGeneric_type() == 'BATTERY') {
+        if (in_array(strtolower($this->getName()), array('battery', 'batterie')) || $this->getGeneric_type() == 'BATTERY') {
             if ($this->getSubType() == 'binary') {
                 $this->getEqLogic()->batteryStatus($value ? 100 : 10);
             } else {
