@@ -90,9 +90,9 @@
         </div>
 
         <div class="form-group toDisable typ-std">
-            <label class="col-sm-3 control-label">{{Type de piles}}</label>
+            <label class="col-sm-3 control-label">{{Type d'alimentation}}</label>
             <div class="col-sm-3">
-                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" placeholder="{{Doit être indiqué sous la forme : 3xAA}}"/>
+                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" placeholder="{{Doit être indiqué sous la forme : Secteur, 1xCR123A, 3xAA, ...}}"/>
             </div>
         </div>
 
