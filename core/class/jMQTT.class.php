@@ -1952,6 +1952,6 @@ class jMQTT extends eqLogic {
 		return $output;
 	}
 	public static function DECtoHEX($d) {
-		return("#".substr("000000".dechex($n),-6));
+		return("#".substr("000000".dechex($d),-6));
 	}
 }
