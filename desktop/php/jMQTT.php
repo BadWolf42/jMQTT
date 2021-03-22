@@ -29,18 +29,18 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
     opacity: 0.35;
 }
 
-.eqLogicDisplayCard > div.auto {
+.eqLogicDisplayCard > div.jmqttauto {
     position:absolute;
     top:25px;
     width:100%;
     text-align:center;
     margin-left:-4px;
 }
-.eqLogicDisplayCard .auto .fas {
+.eqLogicDisplayCard .jmqttauto .fas {
     transform: rotate(90deg);
 }
 
-.eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
+.eqLogicThumbnailContainer .eqLogicDisplayCard .jmqttauto i {
     font-size:20px !important;
     color: #8000FF;
 }
@@ -81,7 +81,7 @@ if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
     echo "}";
     
     echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayAction,";
-    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.auto {";
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.jmqttauto {";
     echo "background-color:rgba(0, 0, 0, 0) !important;";
     echo "color:#ccc !important;";
     echo "border: 0px !important;";
