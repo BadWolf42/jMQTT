@@ -118,6 +118,9 @@ class jMQTTCmd extends cmd {
      */
     public function updateCmdValue($value) {
         if(in_array(strtolower($this->getName()), ["color","colour","couleur","rgb"]) || $this->getGeneric_type() == "LIGHT_COLOR") {
+		if(is_numeric($value)) {
+			$value=jMQTT::DECtoHEX($value);
+		} else {
 			$json=json_decode($value);
 			if($json != null){
 				if(isset($json->x) && isset($json->y)){
@@ -125,10 +128,9 @@ class jMQTTCmd extends cmd {
 				} elseif(isset($json->r) && isset($json->g) && isset($json->b)) {
 					$value=jMQTT::RGBtoHTML($json->r,$json->g,$json->b);
 				}
-			} else {
-				$value=jMQTT::DECtoHEX($value);
 			}
 		}
+	}
         $this->event($value);
         $this->getEqLogic()->log('info', '-> ' . $this->getLogName() . ' ' . $value);
         if (in_array(strtolower($this->getName()), ['battery', 'batterie']) || $this->getGeneric_type() == 'BATTERY') {
