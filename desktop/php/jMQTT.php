@@ -29,18 +29,18 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
     opacity: 0.35;
 }
 
-.eqLogicDisplayCard > div.auto {
+.eqLogicDisplayCard > div.jmqttauto {
     position:absolute;
     top:25px;
     width:100%;
     text-align:center;
     margin-left:-4px;
 }
-.eqLogicDisplayCard .auto .fas {
+.eqLogicDisplayCard .jmqttauto .fas {
     transform: rotate(90deg);
 }
 
-.eqLogicThumbnailContainer .eqLogicDisplayCard .auto i {
+.eqLogicThumbnailContainer .eqLogicDisplayCard .jmqttauto i {
     font-size:20px !important;
     color: #8000FF;
 }
@@ -81,7 +81,7 @@ if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
     echo "}";
     
     echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayAction,";
-    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.auto {";
+    echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.jmqttauto {";
     echo "background-color:rgba(0, 0, 0, 0) !important;";
     echo "color:#ccc !important;";
     echo "border: 0px !important;";
@@ -121,7 +121,12 @@ function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
-       echo '<div class="auto"><i class="fas fa-sign-in-alt"></i></div>';
+       echo '<i class="fas fa-sign-in-alt" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
+    }
+    if ($eqL->getIsVisible()) {
+        echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
+    } else {
+        echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
     }
     if ($eqL->getType() == jMQTT::TYP_BRK) {
         $file = 'node_broker_' . $eqL->getDaemonState() . '.svg';
@@ -141,7 +146,7 @@ function displayEqLogicCard($eqL, $node_images) {
         }
     }
 
-    echo '<img src="plugins/jMQTT/resources/images/' . $file . '"/>';
+    echo '<img class="lazy" src="plugins/jMQTT/resources/images/' . $file . '"/>';
     echo "<br>";
     echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
     echo '</div>';
@@ -265,7 +270,7 @@ function displayEqLogicCard($eqL, $node_images) {
     </div>
 </div>
 
-<?php include_file('desktop', 'jMQTT-min', 'js', 'jMQTT'); ?>
+<?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
 <?php include_file('3rdparty', 'jquery.treegrid', 'css', 'jMQTT'); ?>
 <?php include_file('3rdparty', 'jquery.treegrid.min', 'js', 'jMQTT'); ?>
