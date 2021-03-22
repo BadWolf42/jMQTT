@@ -175,7 +175,7 @@ class jMQTT extends eqLogic {
 
         # complete eqpt topic
         $this->setLogicalId(sprintf($template['logicalId'], $_topic));
-        $this->save($true); // direct save to avoid not mathcing topic alert
+        $this->save(true); // direct save to avoid not mathcing topic alert
 
         # complete cmd topics
         foreach ($this->getCmd() as $cmd) {
