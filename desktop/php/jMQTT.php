@@ -121,7 +121,12 @@ function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
-       echo '<div class="auto"><i class="fas fa-sign-in-alt"></i></div>';
+       echo '<i class="fas fa-sign-in-alt" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
+    }
+    if ($eqL->getIsVisible()) {
+        echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
+    } else {
+        echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
     }
     if ($eqL->getType() == jMQTT::TYP_BRK) {
         $file = 'node_broker_' . $eqL->getDaemonState() . '.svg';
@@ -141,7 +146,7 @@ function displayEqLogicCard($eqL, $node_images) {
         }
     }
 
-    echo '<img src="plugins/jMQTT/resources/images/' . $file . '"/>';
+    echo '<img class="lazy" src="plugins/jMQTT/resources/images/' . $file . '"/>';
     echo "<br>";
     echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
     echo '</div>';
