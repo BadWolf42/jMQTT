@@ -201,6 +201,9 @@ class jMQTTCmd extends cmd {
                     $request = str_replace($replace, $replaceBy, $request);
                 }
                 break;
+            case 'select':
+                $request = str_replace('#select#', $_options['select'], $request);
+                break;
         }
 
         $request = jeedom::evaluateExpression($request);
