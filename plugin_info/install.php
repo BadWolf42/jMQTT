@@ -88,7 +88,7 @@ function migrateToMultiBrokerVersion() {
     config::remove('include_mode', 'jMQTT');
     config::remove('status', 'jMQTT');
     
-    $broker->setType(jMQTT::TYP_BRK);
+    $broker->setConfType(jMQTT::TYP_BRK);
     $broker->setBrkId($broker->getId());
     $broker->save(true);
     
@@ -102,7 +102,7 @@ function migrateToMultiBrokerVersion() {
             log::add('jMQTT', 'debug', json_encode($eqL->full_export()));
 
             if ($eqL->getType() == '') {
-                $eqL->setType(jMQTT::TYP_EQPT);
+                $eqL->setConfType(jMQTT::TYP_EQPT);
                 $eqL->setBrkId($broker->getId());
             }
             $eqL->cleanEquipment();
