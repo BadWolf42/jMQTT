@@ -101,7 +101,7 @@ function migrateToMultiBrokerVersion() {
             log::add('jMQTT', 'debug', 'export before of ' . $eqL->getName());
             log::add('jMQTT', 'debug', json_encode($eqL->full_export()));
 
-            if ($eqL->getType() == '') {
+            if ($eqL->getConfType() == '') {
                 $eqL->setConfType(jMQTT::TYP_EQPT);
                 $eqL->setBrkId($broker->getId());
             }
