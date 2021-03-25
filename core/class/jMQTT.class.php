@@ -1593,6 +1593,7 @@ class jMQTT extends eqLogic {
      * @param string $type either jMQTT::TYPE_STD or jMQTT::TYP_BRK
      */
     public function setConfType($type) {
+	if($type != jMQTT::TYPE_STD && $type != jMQTT::TYP_BRK) return;
         $this->setConfiguration(self::CONF_KEY_TYPE, $type);
     }
 
