@@ -91,7 +91,7 @@ try {
         $old_broker_id = $eqpt->getBrkId();
         $new_broker = jMQTT::getBrokerFromId(init('brk_id'));
         log::add('jMQTT', 'info', 'déplace l\'équipement ' . $eqpt->getName() . ' vers le broker ' . $new_broker->getName());
-        $eqpt->setType(jMQTT::TYP_EQPT);
+        $eqpt->setConfType(jMQTT::TYP_EQPT);
         $eqpt->setBrkId($new_broker->getId());
         $eqpt->cleanEquipment();
         $eqpt->save(true);
