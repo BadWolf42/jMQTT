@@ -239,7 +239,7 @@ class jMQTT extends eqLogic {
      */
     public static function createEquipment($broker, $name, $topic, $type) {
         $eqpt = new jMQTT();
-        $eqpt->setType($type);
+        $eqpt->setConfType($type);
         $eqpt->initEquipment($name, $topic, 1);
         
         if (is_object($broker)) {
@@ -1592,7 +1592,7 @@ class jMQTT extends eqLogic {
      * Set this jMQTT object type
      * @param string $type either jMQTT::TYPE_STD or jMQTT::TYP_BRK
      */
-    public function setType($type) {
+    public function setConfType($type) {
         $this->setConfiguration(self::CONF_KEY_TYPE, $type);
     }
 
