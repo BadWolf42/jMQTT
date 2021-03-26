@@ -158,7 +158,7 @@ class jMQTT extends eqLogic {
      */
     public function applyTemplate($_template, $_topic, $_keepCmd = true){
 
-        if ($this->getConfType() != self::TYP_EQPT) {
+        if ($this->getType() != self::TYP_EQPT) {
             return true;
         }
 
@@ -190,7 +190,7 @@ class jMQTT extends eqLogic {
      */
     public function createTemplate($_template){
 
-        if ($this->getConfType() != self::TYP_EQPT) {
+        if ($this->getType() != self::TYP_EQPT) {
             return true;
         }
 
@@ -239,7 +239,7 @@ class jMQTT extends eqLogic {
      */
     public static function createEquipment($broker, $name, $topic, $type) {
         $eqpt = new jMQTT();
-        $eqpt->setConfType($type);
+        $eqpt->setType($type);
         $eqpt->initEquipment($name, $topic, 1);
         
         if (is_object($broker)) {
@@ -283,7 +283,7 @@ class jMQTT extends eqLogic {
         $this->setAutoAddCmd('1');
         $this->setQos('1');
         
-        if ($this->getConfType() == self::TYP_BRK) {
+        if ($this->getType() == self::TYP_BRK) {
             config::save('log::level::' . $this->getDaemonLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
         }
     }
@@ -365,7 +365,7 @@ class jMQTT extends eqLogic {
         $eqls = self::byType(jMQTT::class);
         $returns = array();
         foreach ($eqls as $eql) {
-            if ($eql->getConfType() != self::TYP_BRK) {
+            if ($eql->getType() != self::TYP_BRK) {
                 $returns[$eql->getBrkId()][] = $eql;
             }
         }
@@ -383,7 +383,7 @@ class jMQTT extends eqLogic {
         if (!isset($this->id) && $this->logicalId == '') {
             $topic = '';
             // Two brokers cannot have the same name => raise an exception if this is the case
-            if ($this->getConfType() == self::TYP_BRK) {
+            if ($this->getType() == self::TYP_BRK) {
                 foreach(self::getBrokers() as $broker) {
                     if ($broker->getName() == $this->getName()) {
                         throw new Exception(__('Un broker portant le même nom existe déjà : ', __FILE__) . $this->getName());
@@ -397,7 +397,7 @@ class jMQTT extends eqLogic {
         if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
             
             $restart_daemon = false;
-            if ($this->getConfType() == self::TYP_BRK) {
+            if ($this->getType() == self::TYP_BRK) {
                 
                 // If broker has been disabled, stop it
                 if (! $this->getIsEnable() && $this->getDaemonState() != self::DAEMON_NOK) {
@@ -413,7 +413,7 @@ class jMQTT extends eqLogic {
                 }
             }
             
-            if ($this->getConfType() == self::TYP_EQPT) {
+            if ($this->getType() == self::TYP_EQPT) {
                 if ($this->getBroker()->isDaemonToBeRestarted(true)) {
                     $restart_daemon = true;     
                 }
@@ -426,7 +426,7 @@ class jMQTT extends eqLogic {
             if ($restart_daemon) {
                 $this->log('info', 'relance du démon nécessaire');
                 $this->getBroker()->stopDaemon();
-                if ($this->getConfType() == self::TYP_BRK) {
+                if ($this->getType() == self::TYP_BRK) {
                     $this->setIncludeMode(0);
                 }
                 $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, '', '');
@@ -500,7 +500,7 @@ class jMQTT extends eqLogic {
             $this->_post_data['action'] = null;
         }
         
-        if ($this->getConfType() == self::TYP_BRK) {
+        if ($this->getType() == self::TYP_BRK) {
             $this->createMqttClientStatusCmd();
             if ($this->getBrkId() < 0) {
                 $this->setBrkId($this->getId());
@@ -514,7 +514,7 @@ class jMQTT extends eqLogic {
      */
     public function preRemove() {
         $this->_post_data = null;
-        if ($this->getConfType() == self::TYP_BRK) {
+        if ($this->getType() == self::TYP_BRK) {
             $this->log('info', 'removing broker ' . $this->getName());
             
             // Disable first the broker to avoid during removal of the broker to restart the daemon
@@ -735,7 +735,7 @@ class jMQTT extends eqLogic {
     public function getDaemonInfo() {
         $return = array('message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok');
         
-        if ($this->getConfType() != self::TYP_BRK)
+        if ($this->getType() != self::TYP_BRK)
             return $return;
               
         $return['brkId'] = $this->getId();
@@ -1330,7 +1330,7 @@ class jMQTT extends eqLogic {
         
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
-        if ($this->getConfType() == self::TYP_EQPT) {
+        if ($this->getType() == self::TYP_EQPT) {
             $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
         }
         
@@ -1496,7 +1496,7 @@ class jMQTT extends eqLogic {
         
         // General case
         $keys = array('Qos');
-        if ($this->getConfType() == self::TYP_BRK) {
+        if ($this->getType() == self::TYP_BRK) {
             $keys = array_merge($keys, array('mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api'));
         }
         if (in_array($_key, $keys)) {
@@ -1506,7 +1506,7 @@ class jMQTT extends eqLogic {
         }
         
         // Specific case: MQTT id change
-        if ($this->getConfType() == self::TYP_BRK && $_key == self::CONF_KEY_MQTT_ID) {
+        if ($this->getType() == self::TYP_BRK && $_key == self::CONF_KEY_MQTT_ID) {
             if ($value != $old_value) {
                 // Note: topic (i.e. logicalId) is modified in preSave
                 $this->addPostAction(self::POST_ACTION_BROKER_CLIENT_ID_CHANGED, 'MQTT id', $value, $old_value);
@@ -1523,7 +1523,7 @@ class jMQTT extends eqLogic {
      * @see eqLogic::setName()
      */
     public function setName($_name) {
-        if ($this->getConfType() == self::TYP_BRK) {
+        if ($this->getType() == self::TYP_BRK) {
             if ($_name != $this->name) {
                 $this->_log = $this->getDaemonLogFile(); // To write in the correct log until log is renamed
                 $this->addPostAction(self::POST_ACTION_BROKER_NAME_CHANGED, 'nom du broker', $_name, $this->name);
@@ -1584,7 +1584,7 @@ class jMQTT extends eqLogic {
      * Get this jMQTT object type
      * @return string either jMQTT::TYPE_EQPT, jMQTT::TYP_BRK, or empty string if not defined
      */
-    public function getConfType() {
+    public function getType() {
         return $this->getConf(self::CONF_KEY_TYPE);
     }
     
@@ -1592,8 +1592,8 @@ class jMQTT extends eqLogic {
      * Set this jMQTT object type
      * @param string $type either jMQTT::TYP_EQPT or jMQTT::TYP_BRK
      */
-    public function setConfType($type) {
-	if($type != jMQTT::TYP_EQPT && $type != jMQTT::TYP_BRK) return;
+    public function setType($type) {
+		if($type != self::TYP_EQPT && $type != self::TYP_BRK) return;
         $this->setConfiguration(self::CONF_KEY_TYPE, $type);
     }
 
@@ -1692,7 +1692,7 @@ class jMQTT extends eqLogic {
      */
     public function getBroker() {
         if (! isset($this->_broker)) {
-            if ($this->getConfType() == self::TYP_BRK)
+            if ($this->getType() == self::TYP_BRK)
                 $this->_broker = $this;
             else
                 $this->_broker = self::getBrokerFromId($this->getBrkId());
@@ -1712,7 +1712,7 @@ class jMQTT extends eqLogic {
         if (!is_object($broker)) {
             throw new Exception(__('Pas d\'équipement avec l\'id fourni', __FILE__) . ' (id=' . $id . ')');
         } 
-        if ($broker->getConfType() != self::TYP_BRK) {
+        if ($broker->getType() != self::TYP_BRK) {
             throw new Exception(__('L\'équipement n\'est pas de type broker', __FILE__) . ' (id=' . $id . ')');
         }
         return $broker;
