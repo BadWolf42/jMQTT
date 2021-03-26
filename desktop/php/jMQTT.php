@@ -119,7 +119,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
  */
 function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
-    echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getConfType() . '">';
+    echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
        echo '<i class="fas fa-sign-in-alt" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
     }
@@ -128,7 +128,7 @@ function displayEqLogicCard($eqL, $node_images) {
     } else {
         echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
     }
-    if ($eqL->getConfType() == jMQTT::TYP_BRK) {
+    if ($eqL->getType() == jMQTT::TYP_BRK) {
         $file = 'node_broker_' . $eqL->getDaemonState() . '.svg';
     }
     else {
