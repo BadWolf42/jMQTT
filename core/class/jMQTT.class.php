@@ -1285,8 +1285,8 @@ class jMQTT extends eqLogic {
         // Concatenates a random string to have a unique id (in case of burst of commands, see issue #23).
         $mosqId = $this->getBroker()->getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
         
-        $mosqUser = $this->getConf(self::CONF_KEY_MQTT_USER);
-        $mosqPass = $this->getConf(self::CONF_KEY_MQTT_PASS);
+        $mosqUser = $this->getBroker()->getConf(self::CONF_KEY_MQTT_USER);
+        $mosqPass = $this->getBroker()->getConf(self::CONF_KEY_MQTT_PASS);
 
         if (!function_exists('mb_escapeshellarg')) {
             function mb_escapeshellarg($arg) {
