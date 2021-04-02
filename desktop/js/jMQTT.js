@@ -360,7 +360,7 @@ $('#checkAll').on('click', function () {
  */
 function printEqLogic(_eqLogic) {
     
-    // Initialize the command counter of the next command to be added
+    // Initialize the counter of the next root level command to be added
     var n_cmd = 1;
     
     // Is the JSON view is active
@@ -375,13 +375,27 @@ function printEqLogic(_eqLogic) {
         
         /**
          * Add a command to the JSON commands tree
+         * @return treegrid_id of the added cmd
          */
-        function addCmd(c, parent_id=-1) {
-            c.treegrid_id = n_cmd++;
-            if (parent_id > 0) {
+        function addCmd(c, parent_id='') {
+            if (parent_id !== '') {
                 c.treegrid_parent_id = parent_id;
+                var m_cmd = 0;
+                //we need to find existing childrens of this parent
+                //and find higher existing number
+                new_cmds.forEach(function (c) {
+                    if (c.treegrid_parent_id === parent_id) {
+                        var id_number = parseInt(c.treegrid_id.substring(parent_id.length + 1)); // keep only end part of id and parse it
+                        if (id_number > m_cmd) m_cmd = id_number;
+                    }
+                });
+                c.treegrid_id = parent_id + '.' + (m_cmd + 1).toString();
+            }
+            else {
+                c.treegrid_id = (n_cmd++).toString();
             }
             new_cmds.push(c);
+            return c.treegrid_id;
         }
         
         /**
@@ -415,13 +429,14 @@ function printEqLogic(_eqLogic) {
         /**
          * Add the given topic/payload to the command array.
          * If the command already exists, add the existing command. Otherwise create a no name command.
+         * @return treegrid_id of the added payload
          */
         function addPayload(topic, payload, parent_id) {
             var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
             var c =  existingCmd(_eqLogic.cmd, topic);
             //console.log('addPayload: topic=' + topic + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
             if (c === undefined) {
-                addCmd({
+                return addCmd({
                     configuration: {
                         topic: topic
                     },
@@ -434,7 +449,7 @@ function printEqLogic(_eqLogic) {
             }
             else {
                 c.value = val;
-                addCmd(c, parent_id);
+                return addCmd(c, parent_id);
             }
         }
         
@@ -442,10 +457,9 @@ function printEqLogic(_eqLogic) {
          * Add to the JSON command tree the given command identified by its topic and JSON payload
          * plus the commands deriving from the JSON payload
          */
-        function recursiveAddJsonPayload(topic, payload, parent_id=-1) {
+        function recursiveAddJsonPayload(topic, payload, parent_id='') {
             //console.log('recursiveAddJsonPayload: topic=' + topic + ', payload=' + JSON.stringify(payload));
-            addPayload(topic, payload, parent_id);
-            var this_id = n_cmd-1;
+            var this_id = addPayload(topic, payload, parent_id);
             for (i in payload) {
                 if (typeof payload[i] === 'object') {
                     recursiveAddJsonPayload(topic + '{' + i + '}', payload[i], this_id);
@@ -461,7 +475,7 @@ function printEqLogic(_eqLogic) {
          */
         function recursiveAddCmdFromTopic(topic) {
             //console.log('recursiveAddCmdFromTopic: ' + topic);
-            var parent_id = -1;
+            var parent_id = '';
             
             // For commands deriving from a JSON payload (i.e. topic contains {), start the
             // addition from the father command
@@ -527,7 +541,7 @@ function printEqLogic(_eqLogic) {
     }
     else {
         for (var c of _eqLogic.cmd) {
-            c.treegrid_id = n_cmd++;
+            c.treegrid_id = (n_cmd++).toString();
         }
         
         // Classical view: enable the sortable functionality
@@ -622,7 +636,7 @@ function addCmdToTable(_cmd) {
        
         var tr = '<tr class="cmd treegrid-' + _cmd.treegrid_id;
         if (is_json_view) {
-            if (_cmd.treegrid_parent_id > 0) {
+            if (_cmd.treegrid_parent_id !== undefined) {
                 tr += ' treegrid-parent-' + _cmd.treegrid_parent_id;
             }
         }
@@ -765,13 +779,13 @@ function addCmdToTable(_cmd) {
     }
 
     // If JSON view is active, build the tree
-    if (is_json_view) {
-        $('.tree').treegrid({
-            initialState: 'expanded',
-            expanderExpandedClass: 'fas fa-minus',
-            expanderCollapsedClass: 'fas fa-plus'
-        });
-    }
+    // if (is_json_view) {
+    //     $('.tree').treegrid({
+    //         initialState: 'expanded',
+    //         expanderExpandedClass: 'fas fa-minus',
+    //         expanderCollapsedClass: 'fas fa-plus'
+    //     });
+    // }
 }
 
 /**
