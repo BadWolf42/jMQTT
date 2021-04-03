@@ -621,6 +621,8 @@ function saveEqLogic(_eqLogic) {
  */
 function addCmdToTable(_cmd) {
     const indent_size = 16;
+    const expander_expanded_class = 'fas fa-minus';
+    const expander_collapsed_class = 'fas fa-plus';
 
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
@@ -782,6 +784,47 @@ function addCmdToTable(_cmd) {
                 jeedom.cmd.changeType(tr, init(_cmd.subType));
             }
         });
+    }
+
+    if (is_json_view) {
+        // add event on expander click
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .tree-expander').click(function() {
+            var $this = $(this); // "this" but in jQuery
+            var tree_id = this.parentNode.parentNode.getAttribute('tree-id'); // find tree-id in TR (2 DOM level up)
+
+            if ($this.hasClass(expander_expanded_class)) { // if expanded
+                $this.removeClass(expander_expanded_class).addClass(expander_collapsed_class);
+
+                $('#table_cmd [tree-parent-id^="' + tree_id + '"]').hide(); // hide all childs and sub-childs
+            }
+            else if ($this.hasClass(expander_collapsed_class)) { // if collapsed
+
+                $this.removeClass(expander_collapsed_class).addClass(expander_expanded_class);
+
+                /**
+                 * Display childs if their own parent are expanded
+                 */
+                function recursiveDisplayChilds(tree_parent_id) {
+                    // if parent is expanded
+                    if ($('#table_cmd [tree-id="' + tree_parent_id + '"] .tree-expander').hasClass(expander_expanded_class)) {
+                        // for each direct child
+                        $('#table_cmd [tree-parent-id="' + tree_parent_id + '"]').each(function () {
+                            // show
+                            $(this).show();
+                            // process child of it
+                            recursiveDisplayChilds(this.getAttribute('tree-id'));
+                        });
+                    }
+                }
+
+                recursiveDisplayChilds(tree_id);
+            }
+        });
+
+        //if there is a parent_id, we need to enable his expander
+        if(_cmd.tree_parent_id !== undefined){
+            $('#table_cmd [tree-id="' + _cmd.tree_parent_id + '"] .tree-expander').addClass(expander_expanded_class);
+        }
     }
 }
 
