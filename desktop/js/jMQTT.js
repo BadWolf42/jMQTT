@@ -644,7 +644,7 @@ function addCmdToTable(_cmd) {
                 tr += ' tree-parent-id="' + _cmd.tree_parent_id + '"';
             }
         }
-        tr += ' data-cmd_id="' + init(_cmd.id) + '">';
+        tr += ' data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
         tr += '<td class="fitwidth">';
 
         // Add Indent block
@@ -721,10 +721,12 @@ function addCmdToTable(_cmd) {
                 refreshValue(_options.display_value);
             }
         }
+
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').show(); // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
     }
 
     if (init(_cmd.type) == 'action') {
-        var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '">';
+        var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
         tr += '<td>';
         tr += '<span class="cmdAttr" data-l1key="id"></span>';
         tr += '</td>';
@@ -784,6 +786,8 @@ function addCmdToTable(_cmd) {
                 jeedom.cmd.changeType(tr, init(_cmd.subType));
             }
         });
+
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').show(); // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
     }
 
     if (is_json_view) {
