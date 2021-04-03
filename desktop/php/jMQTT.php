@@ -272,9 +272,6 @@ function displayEqLogicCard($eqL, $node_images) {
 
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
-<?php include_file('3rdparty', 'jquery.treegrid', 'css', 'jMQTT'); ?>
-<?php include_file('3rdparty', 'jquery.treegrid.min', 'js', 'jMQTT'); ?>
-<?php include_file('3rdparty', 'jquery.treegrid.bootstrap3', 'js', 'jMQTT'); ?>
 
 <script>
 
