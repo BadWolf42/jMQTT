@@ -727,7 +727,7 @@ function addCmdToTable(_cmd) {
 
     if (init(_cmd.type) == 'action') {
         var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
-        tr += '<td>';
+        tr += '<td class="fitwidth">';
         tr += '<span class="cmdAttr" data-l1key="id"></span>';
         tr += '</td>';
         tr += '<td>';
