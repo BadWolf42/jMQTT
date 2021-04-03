@@ -620,6 +620,8 @@ function saveEqLogic(_eqLogic) {
  * addCmdToTable callback called by plugin.template: render eqLogic commands
  */
 function addCmdToTable(_cmd) {
+    const indent_size = 16;
+
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
     }
@@ -634,23 +636,27 @@ function addCmdToTable(_cmd) {
         // FIXME: is this disabled variable usefull?
         var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
        
-        var tr = '<tr class="cmd tree-' + _cmd.tree_id;
+        var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '"';
         if (is_json_view) {
             if (_cmd.tree_parent_id !== undefined) {
-                tr += ' tree-parent-' + _cmd.tree_parent_id;
+                tr += ' tree-parent-id="' + _cmd.tree_parent_id + '"';
             }
         }
-        tr += '" data-cmd_id="' + init(_cmd.id) + '">';
-        tr += '<td class="fitwidth"><span class="cmdAttr" data-l1key="id"></span>';
+        tr += ' data-cmd_id="' + init(_cmd.id) + '">';
+        tr += '<td class="fitwidth">';
 
-        // TRICK: For the JSON view include the "order" value in a hidden element
-        // so that the original/natural order is kept when saving
+        // Add Indent block
         if (is_json_view) {
-            tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span></td>';
+            var tree_level = (_cmd.tree_id.match(/\./g) || []).length
+            tr += '<span class="tree-indent" style="display:inline-block; width: ' + (tree_level*indent_size).toString() + 'px;"></span>';
+            tr += '<span class="tree-expander" style="display:inline-block; width: ' + (indent_size).toString() + 'px;"></span>';
+
+            // TRICK: For the JSON view include the "order" value in a hidden element
+            // so that the original/natural order is kept when saving
+            tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span>';
         }
-        else {
-            tr += '</td>';
-        }
+        tr += '<span class="cmdAttr" data-l1key="id"></span>';
+        tr += '</td>';
 
         tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="name" style="height:65px;" placeholder="{{Nom de l\'info}}"></textarea></td>';
         tr += '<td>';
@@ -682,14 +688,14 @@ function addCmdToTable(_cmd) {
         tr += '</td></tr>';
 
         $('#table_cmd tbody').append(tr);
-        $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
         if (isset(_cmd.type)) {
-            $('#table_cmd tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type));
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]').value(init(_cmd.type));
         }
-        jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
+        jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
         function refreshValue(val) {
-            $('.tree-' + _cmd.tree_id + ' .form-control[data-key=value]').value(val);
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(val);
         }
 
         // Display the value. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
@@ -716,7 +722,7 @@ function addCmdToTable(_cmd) {
     }
 
     if (init(_cmd.type) == 'action') {
-        var tr = '<tr class="cmd tree-' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '">';
+        var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '">';
         tr += '<td>';
         tr += '<span class="cmdAttr" data-l1key="id"></span>';
         tr += '</td>';
@@ -762,8 +768,8 @@ function addCmdToTable(_cmd) {
         tr += '</tr>';
         
         $('#table_cmd tbody').append(tr);
-        // $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
-        var tr = $('#table_cmd tbody tr:last');
+        // $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
+        var tr = $('#table_cmd [tree-id="' + _cmd.tree_id + '"]');
         jeedom.eqLogic.builSelectCmd({
             id: $('.eqLogicAttr[data-l1key=id]').value(),
             filter: {type: 'info'},
