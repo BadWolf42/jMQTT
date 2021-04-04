@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/#changelog">Change Log</a>
+<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="https://Domochip.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://Domochip.github.io/jMQTT/fr_FR/#changelog">Change Log</a>
 </p>
 
 __________________
@@ -22,5 +22,5 @@ Main functionalities are:
 __________________
 
 <p align="center">
-<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://domotruc.github.io/jMQTT/fr_FR/#changelog">Change Log</a>
+<a href="https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675">Forum</a>   -   <a href="https://Domochip.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://Domochip.github.io/jMQTT/fr_FR/#changelog">Change Log</a>
 </p>
