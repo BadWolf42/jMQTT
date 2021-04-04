@@ -398,7 +398,7 @@ Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Identi
 
 # Problèmes connus
 
-Les problèmes connus en cours d’investigation sont sur GitHub: [Issues jMQTT](https://github.com/Domochip/jMQTT/issues).
+Les problèmes connus en cours d’investigation sont sur GitHub: [Issues jMQTT](https://github.com/domochip/jMQTT/issues).
 
 Il peut arriver que l’installation des dépendances se bloque, se référer au chapitre [Configuration du plugin](#configuration-du-plugin).
 
@@ -448,30 +448,30 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
   - Modify tree ids generation ( 1, 1.1, 1.1.1)
 
 ##### 2021-03-31 (beta)
-  - Merge pull request [#26](https://github.com/Domochip/jMQTT/pull/26) from Domochip/dev: Add checkbox to Display/Hide all commands
+  - Merge pull request [#26](https://github.com/domochip/jMQTT/pull/26) from domochip/dev: Add checkbox to Display/Hide all commands
   - Add checkbox to check all the checkbox "show" (Afficher) of the cmd
 
 ##### 2021-03-31 (master)
-  - Merge pull request [#25](https://github.com/Domochip/jMQTT/pull/25) from Domochip/dev: Fix empty MQTT user/password during publish
-  - Merge pull request [#22](https://github.com/Domochip/jMQTT/pull/22) from Domochip/dev: Rollback getType by getConfType, Rollback setType by setConfType
+  - Merge pull request [#25](https://github.com/domochip/jMQTT/pull/25) from domochip/dev: Fix empty MQTT user/password during publish
+  - Merge pull request [#22](https://github.com/domochip/jMQTT/pull/22) from domochip/dev: Rollback getType by getConfType, Rollback setType by setConfType
 
 ##### 2021-03-25
-  - Merge pull request [#18](https://github.com/Domochip/jMQTT/pull/18) from Domochip/dev: Bugfix
-  - Merge pull request [#17](https://github.com/Domochip/jMQTT/pull/17) from Domochip/beta: Fix All commands greyed out
-  - Merge pull request [#16](https://github.com/Domochip/jMQTT/pull/16) from Domochip/dev: Change getType by getConfType, Change setType by setConfType & setConfType security, only set const types
-  - Merge pull request [#11](https://github.com/Domochip/jMQTT/pull/11) from foulek57/dev: Dev / Typo
+  - Merge pull request [#18](https://github.com/domochip/jMQTT/pull/18) from domochip/dev: Bugfix
+  - Merge pull request [#17](https://github.com/domochip/jMQTT/pull/17) from domochip/beta: Fix All commands greyed out
+  - Merge pull request [#16](https://github.com/domochip/jMQTT/pull/16) from domochip/dev: Change getType by getConfType, Change setType by setConfType & setConfType security, only set const types
+  - Merge pull request [#11](https://github.com/domochip/jMQTT/pull/11) from foulek57/dev: Dev / Typo
 
 ##### 2021-03-23
-  - Merge pull request [#7](https://github.com/Domochip/jMQTT/pull/7) from NebzHB/patch-6: New list (from mika41), Add files via upload, Re-enable disabled icons
-  - Merge pull request [#10](https://github.com/Domochip/jMQTT/pull/10) from NebzHB/patch-10: Don't use the minified js
-  - Merge pull request [#9](https://github.com/Domochip/jMQTT/pull/9) from NebzHB/patch-9: Fix for 4.2 (from mika41)
-  - Merge pull request [#8](https://github.com/Domochip/jMQTT/pull/8) from NebzHB/patch-7: Add Secteur
-  - Merge pull request [#6](https://github.com/Domochip/jMQTT/pull/6) from NebzHB/patch-5: Convert color into html color, Add color conversion methods, Manage decimal color first, Fix dectohex
-  - Merge pull request [#5](https://github.com/Domochip/jMQTT/pull/5) from NebzHB/patch-4: Better small icons and show visible + lazy img
-  - Merge pull request [#4](https://github.com/Domochip/jMQTT/pull/4) from NebzHB/patch-3: Ordered and Indented Object list (rooms)
-  - Merge pull request [#3](https://github.com/Domochip/jMQTT/pull/3) from NebzHB/patch-2: Add #select# replace in message
-  - Merge pull request [#2](https://github.com/Domochip/jMQTT/pull/2) from NebzHB/patch-1: Add doubleclick topic autofill (in certain cases) + min max listValue
-  - Merge pull request [#1](https://github.com/Domochip/jMQTT/pull/1) from foulek57/patch-1: Correct missing letter in dependancy_info()
+  - Merge pull request [#7](https://github.com/domochip/jMQTT/pull/7) from NebzHB/patch-6: New list (from mika41), Add files via upload, Re-enable disabled icons
+  - Merge pull request [#10](https://github.com/domochip/jMQTT/pull/10) from NebzHB/patch-10: Don't use the minified js
+  - Merge pull request [#9](https://github.com/domochip/jMQTT/pull/9) from NebzHB/patch-9: Fix for 4.2 (from mika41)
+  - Merge pull request [#8](https://github.com/domochip/jMQTT/pull/8) from NebzHB/patch-7: Add Secteur
+  - Merge pull request [#6](https://github.com/domochip/jMQTT/pull/6) from NebzHB/patch-5: Convert color into html color, Add color conversion methods, Manage decimal color first, Fix dectohex
+  - Merge pull request [#5](https://github.com/domochip/jMQTT/pull/5) from NebzHB/patch-4: Better small icons and show visible + lazy img
+  - Merge pull request [#4](https://github.com/domochip/jMQTT/pull/4) from NebzHB/patch-3: Ordered and Indented Object list (rooms)
+  - Merge pull request [#3](https://github.com/domochip/jMQTT/pull/3) from NebzHB/patch-2: Add #select# replace in message
+  - Merge pull request [#2](https://github.com/domochip/jMQTT/pull/2) from NebzHB/patch-1: Add doubleclick topic autofill (in certain cases) + min max listValue
+  - Merge pull request [#1](https://github.com/domochip/jMQTT/pull/1) from foulek57/patch-1: Correct missing letter in dependancy_info()
 
 ##### 2021-03-21
   - Better template file naming

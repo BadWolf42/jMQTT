@@ -9,8 +9,8 @@
     "category" : "automation protocol",
     "hasDependency" : true,
     "hasOwnDeamon" : false,
-    "changelog" : "https://Domochip.github.io/jMQTT/#language#/index.html#changelog",
-    "documentation" : "https://Domochip.github.io/jMQTT/#language#/",
+    "changelog" : "https://domochip.github.io/jMQTT/#language#/index.html#changelog",
+    "documentation" : "https://domochip.github.io/jMQTT/#language#/",
     "languages" : ["fr_FR","en_US","sp_SP"],
     "compatibility" : ["Jeedomboard","Smart","RPI/RPI2","Docker","DIY","v4"]
 }
