@@ -258,7 +258,7 @@ function displayEqLogicCard($eqL, $node_images) {
                             <th style="width:300px;">{{Topic}}</th>
                             <th style="width:300px;">{{Valeur}}</th>
                             <th style="width:1px;">{{Unité}}</th>
-                            <th style="width:150px;">{{Paramètres}}<label class="checkbox-inline" style="margin-left:15px;"><input type="checkbox" id="checkAll" class="checkbox-inline" checked="">Cocher/Décocher</label></th>
+                            <th style="width:150px;">{{Paramètres}}<label class="checkbox-inline" style="margin-left:15px; display: none;"><input type="checkbox" id="checkAll" class="checkbox-inline" checked="">Cocher/Décocher</label></th>
                             <th style="width:130px;"></th>
                         </tr>
                     </thead>
