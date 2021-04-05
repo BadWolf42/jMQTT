@@ -121,7 +121,7 @@ function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
-       echo '<i class="fas fa-sign-in-alt" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
+       echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
     }
     if ($eqL->getIsVisible()) {
         echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
