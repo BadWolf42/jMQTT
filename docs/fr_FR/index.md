@@ -34,7 +34,7 @@ Après installation du plugin, l’activer. Celui-ci prend quelques minutes pour
 
 La page de gestion des équipements est accessible via le menu `Plugins → Protocole domotique → jMQTT`.
 
-Depuis la version prenant en charge la connexion à plusieurs brokers, jMQTT présente 2 types d'équipements:
+jMQTT présente 2 types d'équipements:
   - les équipements de type broker gérant la connexions avec les brokers MQTT, appelés équipements broker dans la suite;
   - les équipements "standards", appélés simplement équipements dans la suite, 
 
@@ -53,7 +53,8 @@ Viennent ensuite pour chaque broker, un panneau occupant toute la largeur de la 
 
 A noter qu'un équipement :
   - Grisé est inactif;
-  - Présenté avec un petit icône d’inclusion superposé, est un équipement dont l'*Ajout automatique des commandes* est activé (détails dans [Onglet Equipement](#onglet-equipement)).
+  - Présenté avec un petit icône d’inclusion superposé, est un équipement dont l'*Ajout automatique des commandes* est activé (détails dans [Onglet Equipement](#onglet-equipement));
+  - Est présenté avec un petit icône d'oeil barré ou non indiquant qu'il est non visible ou visible.
   
 > **Important**
 > 
@@ -61,7 +62,7 @@ A noter qu'un équipement :
 
 ## Ajout d'un équipement broker
 
-Pour commencer à utiliser le plugin, il est nécessaire de créer un équipement broker au moins. Dans la page de [Gestion des équipements](#gestion-des-équipements), cliquer sur le bouton **+** *Ajouter un broker* et saisir son nom.
+Pour commencer à utiliser le plugin, il est nécessaire de créer au moins un équipement broker. Dans la page de [Gestion des équipements](#gestion-des-équipements), cliquer sur le bouton **+** *Ajouter un broker* et saisir son nom.
 
 Dans la foulée de sa création, un message indique que la commande *status* a été ajoutée à l'équipement. Celle-ci, que nous retrouvons dans le panneau *Commandes*, donne l'état de connexion au broker MQTT de l'équipement broker. Elle prend 2 valeurs : *online* et *offline*. Elle est publiée de manière persistante auprès du broker. Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion. Il peut aussi servir en interne Jeedom pour monitorer la connexion au broker via un scénario.
 
@@ -77,10 +78,10 @@ Pour particulariser la configuration du plugin, les paramètres sont:
   - _IP de Mosquitto_ : adresse IP du broker (par défaut localhost i.e. la machine hébergeant Jeedom);
   - _Port de Mosquitto_ : port du broker (1883 par défaut);
   - _Identifiant de connexion_ : identifiant avec lequel l'équipement broker s’inscrit auprès du broker MQTT (jeedom par défaut).
-    - **Attention**: cet identifiant doit être unique par client et par broker. Sinon les clients portant le même identifiant vont se déconnecter l’un-l’autre à chaque connection.
-    - Cet identifiant est utilisé dans le nom du topic des commandes info *status* et *api* que l'on retrouve dans l'onglet *Commandes*. Les topics seront automatiquement renommés si l'identifiant est modifié. 
+    > - **Attention**: cet identifiant doit être unique par client et par broker. Sinon les clients portant le même identifiant vont se déconnecter l’un-l’autre à chaque connection.
+    - Cet identifiant est utilisé dans le nom du topic des commandes info *status* et *api* que l'on retrouve dans l'onglet *Commandes*. Les topics sont automatiquement mis à jour si l'identifiant est modifié. 
   - _Compte et mot de passe de connexion_ : compte et mot de passe de connexion au broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du broker, sauf bien-sûr si vous modifiez la configuration de ce dernier pour activer l’authentification et dans ce cas vous savez ce que vous faites).
-  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (défaut \#, i.e. tous les topics).
+  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
   - _Accès API_ : à activer pour utiliser l'[API](#api).
 
 La sauvegarde de la configuration relance le démon et la souscription au broker MQTT avec les nouveaux paramètres.
@@ -126,7 +127,7 @@ Ce chapitre est applicable à tous les équipements jMQTT, y compris les équipm
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin:
 
-  - _Broker associé_ : broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites.
+  - _Broker associé_ : broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites;
 
   - _Inscrit au Topic_ : topic de souscription auprès du broker MQTT. Pour un équipement de type broker, ce paramètre n'est pas modifiable, il est imposé par l'identifiant de connexion au broker, voir [Onglet Broker](#onglet-broker);
 
@@ -134,9 +135,12 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
 
   - _Qos_ : qualité de service souscrit;
 
+  - _Type d'alimentation_ : paramètre libre vous permettant de préciser le type d'alimentation de l'équipement (non disponible pour un équipement broker);
+
+  - _Dernière communication_ : date de dernière communication avec le broker MQTT, que ce soit en réception (commande information) ou publication (commande action);
+
   - _Catégorie du topic_ : sélection d’une image spécifique à l’équipement. Pour un équipement broker, ce paramètre n'est pas disponible car l'image est imposée.
   
-  - _Dernière communication_ : date de dernière communication avec le broker MQTT, que ce soit en réception (commande information) ou publication (commande action).
 
 > **Important**
 > 
@@ -144,7 +148,9 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
 
 Concernant les boutons en haut à droite:
 
-  - `Export` permet d’obtenir un fichier JSON de toutes les informations de l’équipement. Il n’y a pas de fonctionalité import, le fichier peut surtout s’avérer utile pour investiguer sur problèmes;
+  - `Appliquer Template` TODO;
+
+  - `Créer Template` TODO;
 
   - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement). Cette fonction n'est pas disponible pour un équipement broker.
 
@@ -436,55 +442,52 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 # Registre des évolutions
 
-##### 2021-04-04 (beta)
-  - Modify all links to documentation, changelog and repository
+##### (beta)
+  - Mises à jour du README et de la documentation
+  - Correction : bug du numéro de commande action sur 2 lignes
+  - Amélioration des performances de la vue JSON : Ajout des lignes commandes comme non visibles d'abord
+  - Amélioration des performances de la vue JSON : Suppression de la librairie jQuery-TreeGrid et réécriture complète de la gestion de l'arborescence
+  - Amélioration [PR#26](https://github.com/Domochip/jMQTT/pull/26): Ajout d'une case à cocher afin d'afficher/masquer toutes les commandes (Amélioration cachée pour le moment)
 
-##### 2021-04-03 (beta)
-  - Fix missing nowrap on id if actions only
-  - Add TR as hiden to speed up JSON view
-  - Add tree Show/Hide
-  - Use tree-id attributes instead of class
-  - Remove TreeGrid library and all references
-  - Modify tree ids generation ( 1, 1.1, 1.1.1)
+##### 2021-03-31
+  - Correction : Bug lors de la publication de message avec username/password pour le broker
 
-##### 2021-03-31 (beta)
-  - Merge pull request [#26](https://github.com/domochip/jMQTT/pull/26) from domochip/dev: Add checkbox to Display/Hide all commands
-  - Add checkbox to check all the checkbox "show" (Afficher) of the cmd
-
-##### 2021-03-31 (master)
-  - Merge pull request [#25](https://github.com/domochip/jMQTT/pull/25) from domochip/dev: Fix empty MQTT user/password during publish
-  - Merge pull request [#22](https://github.com/domochip/jMQTT/pull/22) from domochip/dev: Rollback getType by getConfType, Rollback setType by setConfType
+##### 2021-03-26
+  - Correction [PR#22](https://github.com/Domochip/jMQTT/pull/22): Bug grisant toutes les commandes à la création d'un équipement jMQTT (revert d'une partie de la PR#17)
 
 ##### 2021-03-25
-  - Merge pull request [#18](https://github.com/domochip/jMQTT/pull/18) from domochip/dev: Bugfix
-  - Merge pull request [#17](https://github.com/domochip/jMQTT/pull/17) from domochip/beta: Fix All commands greyed out
-  - Merge pull request [#16](https://github.com/domochip/jMQTT/pull/16) from domochip/dev: Change getType by getConfType, Change setType by setConfType & setConfType security, only set const types
-  - Merge pull request [#11](https://github.com/domochip/jMQTT/pull/11) from foulek57/dev: Dev / Typo
+  - Correction [PR#17](https://github.com/Domochip/jMQTT/pull/17) [PR#19](https://github.com/Domochip/jMQTT/pull/19): Bug grisant toutes les commandes si l'on place un équipement jMQTT sur une Vue
+  - Correction [PR#11](https://github.com/Domochip/jMQTT/pull/11): Typo dans le code d'application de template
 
 ##### 2021-03-23
-  - Merge pull request [#7](https://github.com/domochip/jMQTT/pull/7) from NebzHB/patch-6: New list (from mika41), Add files via upload, Re-enable disabled icons
-  - Merge pull request [#10](https://github.com/domochip/jMQTT/pull/10) from NebzHB/patch-10: Don't use the minified js
-  - Merge pull request [#9](https://github.com/domochip/jMQTT/pull/9) from NebzHB/patch-9: Fix for 4.2 (from mika41)
-  - Merge pull request [#8](https://github.com/domochip/jMQTT/pull/8) from NebzHB/patch-7: Add Secteur
-  - Merge pull request [#6](https://github.com/domochip/jMQTT/pull/6) from NebzHB/patch-5: Convert color into html color, Add color conversion methods, Manage decimal color first, Fix dectohex
-  - Merge pull request [#5](https://github.com/domochip/jMQTT/pull/5) from NebzHB/patch-4: Better small icons and show visible + lazy img
-  - Merge pull request [#4](https://github.com/domochip/jMQTT/pull/4) from NebzHB/patch-3: Ordered and Indented Object list (rooms)
-  - Merge pull request [#3](https://github.com/domochip/jMQTT/pull/3) from NebzHB/patch-2: Add #select# replace in message
-  - Merge pull request [#2](https://github.com/domochip/jMQTT/pull/2) from NebzHB/patch-1: Add doubleclick topic autofill (in certain cases) + min max listValue
-  - Merge pull request [#1](https://github.com/domochip/jMQTT/pull/1) from foulek57/patch-1: Correct missing letter in dependancy_info()
+  - Amélioration [PR#7](https://github.com/Domochip/jMQTT/pull/7): Ajout de nouvelles icones d'équipement (de mika41)
+  - Correction [PR#10](https://github.com/Domochip/jMQTT/pull/10): Désactivation de l'utilisation du js minifié
+  - Correction [PR#9](https://github.com/Domochip/jMQTT/pull/9): Correction problème d'affichage pour Jeedom 4.2 (de mika41)
+  - Amélioration [PR#8](https://github.com/Domochip/jMQTT/pull/8): Ajout de Secteur dans le placeholder de Type d'alimentation
+  - Amélioration [PR#6](https://github.com/Domochip/jMQTT/pull/6): Conversion des couleurs en HTML sur les commandes nommées "color","colour","couleur" ou "rgb"
+  - Amélioration [PR#5](https://github.com/Domochip/jMQTT/pull/5): Mise en place de petites icones de visibilité et mode incluson sur les équipement + lazy image
+  - Amélioration [PR#4](https://github.com/Domochip/jMQTT/pull/4): Utilisation d'une liste ordonnée et indentée pour le choix de l'Objet parent
+  - Amélioration [PR#3](https://github.com/Domochip/jMQTT/pull/3): AJout du remplacement de #select#
+  - Amélioration [PR#2](https://github.com/Domochip/jMQTT/pull/2): Remplissage du topic de l'équipement sur double-click + ajout des champs min, max et listValue
 
 ##### 2021-03-21
-  - Better template file naming
-  - Avoid "invalid function argument provided"
-  - Merge remote-tracking branch 'origin/eqpt_template': Add template management
-  - Display batterytype and icon on eqpt only
+  - Amélioration du nommage des fichiers template
+  - Remontée du niveau de batterie à partir des commandes nommées "battery" ou "batterie" en plus du type générique batterie
+  - Correction [PR#1](https://github.com/Domochip/jMQTT/pull/1): typo dans le code de vérification des dépendances 
+
+##### 2021-03-20
+  - Correction : Changement du code de publication de message pour réduire les erreurs "invalid function argument provided"
+
+##### 2021-03-17
+  - Ajout de la gestion des templates
+  - Correction : Affichage des "Type d'alimentation" et "Catégorie du topic" sur les Equipements uniquement (pas les brokers)
 
 ##### 2021-02-20
-  - Report battery level from battery generic_type cmd
-  - Add battery model field
-  - Fix textarea for jeedom 4.1 display bug
-  - Remove title check
-  - Better message publish code
+  - Remontée du niveau de batterie des équipements depuis la commande tagguée 'Batterie' en Type générique
+  - Ajout du champ "Type d'alimentation" sur les équipements
+  - Changement du code de publication de message
+  - Correction : Bug d'affichage des champs de saisie des commandes (textarea) pour Jeedom 4.1
+  - Correction : Le Titre n'est plus obligatoire lors d'envoi de message par une commande action de type message
 
 ##### 2019-12-02
   - Corrige [domotruc\#94](https://github.com/domotruc/jMQTT/issues/94): non rafraichissement de payload json ayant la valeur false
