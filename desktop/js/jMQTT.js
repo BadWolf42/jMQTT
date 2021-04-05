@@ -14,6 +14,13 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Missing stopPropagation for textarea in command list
+// cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821
+// Will be removed after PR integrated to Jeedom release
+$('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
+    event.stopPropagation()
+});
+
 //To memorise page refresh timeout when set
 var refreshTimeout;
 
