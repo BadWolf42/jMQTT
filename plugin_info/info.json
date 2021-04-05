@@ -4,7 +4,7 @@
     "description" : "Ce plugin connecte Jeedom à un broker MQTT comme Mosquitto afin, de récupérer les messages souscrits, et de publier ses propres messages.<br/>Il supporte la découverte automatique des équipements mais également leur création manuelle.",
     "usage": "Voir documentation",
     "licence" : "AGPL",
-    "author" : "domotruc",
+    "author" : "Domochip (created by domotruc)",
     "require" : "3.3.19",
     "category" : "automation protocol",
     "hasDependency" : true,
