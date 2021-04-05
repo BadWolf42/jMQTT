@@ -133,7 +133,8 @@ class jMQTTCmd extends cmd {
         }
         $this->event($value);
         $this->getEqLogic()->log('info', '-> ' . $this->getLogName() . ' ' . $value);
-        if (in_array(strtolower($this->getName()), ['battery', 'batterie']) || $this->getGeneric_type() == 'BATTERY') {
+
+        if (preg_match('/(battery|batterie)$/i', $this->getName()) || $this->getGeneric_type() == 'BATTERY') {
             if ($this->getSubType() == 'binary') {
                 $this->getEqLogic()->batteryStatus($value ? 100 : 10);
             } else {
