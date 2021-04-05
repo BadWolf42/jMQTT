@@ -178,7 +178,7 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
-// Restrict "Configuration commande" modal popup when double-click on command without id
+// Restrict "cmd.configure" modal popup when double-click on command without id
 $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
     event.stopPropagation()
 });

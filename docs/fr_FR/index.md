@@ -443,7 +443,12 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 # Registre des évolutions
 
 ##### (beta)
-  - Mises à jour du README et de la documentation
+  - Mises à jour du README, de la documentation et des informations du plugin
+  - Correction : la fenêtre "Configuration commande" ne s'affiche plus lors du double-click sur un champ textarea d'une commande (PR faite auprès de Jeedom Core en parallèle)
+  - Correction : la fenêtre "Configuration commande" ne s'affiche plus sur les commandes qui ne sont pas encore sauvegardées (pas d'ID)
+  - Amélioration du style des combobox sur les équipements
+  - Rotation du symbole d'inclusion sur la liste des équipements
+  - Descente du champ Commentaire
   - Correction : bug du numéro de commande action sur 2 lignes
   - Amélioration des performances de la vue JSON : Ajout des lignes commandes comme non visibles d'abord
   - Amélioration des performances de la vue JSON : Suppression de la librairie jQuery-TreeGrid et réécriture complète de la gestion de l'arborescence
