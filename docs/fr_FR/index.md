@@ -455,6 +455,7 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
   - Amélioration des performances de la vue JSON : Ajout des lignes commandes comme non visibles d'abord
   - Amélioration des performances de la vue JSON : Suppression de la librairie jQuery-TreeGrid et réécriture complète de la gestion de l'arborescence
   - Amélioration [PR#26](https://github.com/Domochip/jMQTT/pull/26): Ajout d'une case à cocher afin d'afficher/masquer toutes les commandes (Amélioration cachée pour le moment)
+  - Prise en compte de la formule de calcul pour la remontée de batterie
 
 ##### 2021-03-31
   - Correction : Bug lors de la publication de message avec username/password pour le broker
