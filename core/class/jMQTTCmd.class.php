@@ -138,6 +138,10 @@ class jMQTTCmd extends cmd {
             if ($this->getSubType() == 'binary') {
                 $this->getEqLogic()->batteryStatus($value ? 100 : 10);
             } else {
+                if ($this->getConfiguration('calculValueOffset') != '') {
+                    $_value = $value;
+                    $value = jeedom::evaluateExpression(str_replace('#value#', $_value, $this->getConfiguration('calculValueOffset')));
+                }
                 $this->getEqLogic()->batteryStatus($value);
             }
             $this->getEqLogic()->log('info', '-> Update battery status');
