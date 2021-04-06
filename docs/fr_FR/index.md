@@ -440,4 +440,6 @@ Attention, quelque soit la solution, il est important de configurer la *Gestion 
 
 <a id="changelog"></a>
 
+# Registre des évolutions
+
 [Voir ici](changelog)
