@@ -14,6 +14,13 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Missing stopPropagation for textarea in command list
+// cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821
+// Will be removed after PR integrated to Jeedom release
+$('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
+    event.stopPropagation()
+});
+
 //To memorise page refresh timeout when set
 var refreshTimeout;
 
@@ -170,6 +177,11 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
 
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
+
+// Restrict "cmd.configure" modal popup when double-click on command without id
+$('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
+    event.stopPropagation()
+});
 
 /**
  * Add jMQTT equipment callback
@@ -349,6 +361,10 @@ $('.createTemplate').off('click').on('click', function () {
     });
 });
 
+$('#checkAll').on('click', function () {
+    $('.cmdAttr[data-l1key=isVisible]').prop('checked', this.checked);
+});
+
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
  *   . Reorder commands if the JSON view is active
@@ -356,7 +372,7 @@ $('.createTemplate').off('click').on('click', function () {
  */
 function printEqLogic(_eqLogic) {
     
-    // Initialize the command counter of the next command to be added
+    // Initialize the counter of the next root level command to be added
     var n_cmd = 1;
     
     // Is the JSON view is active
@@ -371,13 +387,27 @@ function printEqLogic(_eqLogic) {
         
         /**
          * Add a command to the JSON commands tree
+         * @return tree_id of the added cmd
          */
-        function addCmd(c, parent_id=-1) {
-            c.treegrid_id = n_cmd++;
-            if (parent_id > 0) {
-                c.treegrid_parent_id = parent_id;
+        function addCmd(c, parent_id='') {
+            if (parent_id !== '') {
+                c.tree_parent_id = parent_id;
+                var m_cmd = 0;
+                //we need to find existing childrens of this parent
+                //and find higher existing number
+                new_cmds.forEach(function (c) {
+                    if (c.tree_parent_id === parent_id) {
+                        var id_number = parseInt(c.tree_id.substring(parent_id.length + 1)); // keep only end part of id and parse it
+                        if (id_number > m_cmd) m_cmd = id_number;
+                    }
+                });
+                c.tree_id = parent_id + '.' + (m_cmd + 1).toString();
+            }
+            else {
+                c.tree_id = (n_cmd++).toString();
             }
             new_cmds.push(c);
+            return c.tree_id;
         }
         
         /**
@@ -411,13 +441,14 @@ function printEqLogic(_eqLogic) {
         /**
          * Add the given topic/payload to the command array.
          * If the command already exists, add the existing command. Otherwise create a no name command.
+         * @return tree_id of the added payload
          */
         function addPayload(topic, payload, parent_id) {
             var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
             var c =  existingCmd(_eqLogic.cmd, topic);
             //console.log('addPayload: topic=' + topic + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
             if (c === undefined) {
-                addCmd({
+                return addCmd({
                     configuration: {
                         topic: topic
                     },
@@ -430,7 +461,7 @@ function printEqLogic(_eqLogic) {
             }
             else {
                 c.value = val;
-                addCmd(c, parent_id);
+                return addCmd(c, parent_id);
             }
         }
         
@@ -438,10 +469,9 @@ function printEqLogic(_eqLogic) {
          * Add to the JSON command tree the given command identified by its topic and JSON payload
          * plus the commands deriving from the JSON payload
          */
-        function recursiveAddJsonPayload(topic, payload, parent_id=-1) {
+        function recursiveAddJsonPayload(topic, payload, parent_id='') {
             //console.log('recursiveAddJsonPayload: topic=' + topic + ', payload=' + JSON.stringify(payload));
-            addPayload(topic, payload, parent_id);
-            var this_id = n_cmd-1;
+            var this_id = addPayload(topic, payload, parent_id);
             for (i in payload) {
                 if (typeof payload[i] === 'object') {
                     recursiveAddJsonPayload(topic + '{' + i + '}', payload[i], this_id);
@@ -457,7 +487,7 @@ function printEqLogic(_eqLogic) {
          */
         function recursiveAddCmdFromTopic(topic) {
             //console.log('recursiveAddCmdFromTopic: ' + topic);
-            var parent_id = -1;
+            var parent_id = '';
             
             // For commands deriving from a JSON payload (i.e. topic contains {), start the
             // addition from the father command
@@ -466,11 +496,11 @@ function printEqLogic(_eqLogic) {
                 father_topic = topic.substring(0, n);
                 // Call recursively this method iwth the father topic
                 recursiveAddCmdFromTopic(father_topic);
-                // We need to get the treegrid id of the father command to be able to add this
+                // We need to get the tree id of the father command to be able to add this
                 // command to tree in the next step
                 var c = existingCmd(new_cmds, father_topic);
                 if (c !== undefined)
-                    parent_id = c.treegrid_id;
+                    parent_id = c.tree_id;
             }
             
             // Add this command to the tree if not previously added
@@ -523,7 +553,7 @@ function printEqLogic(_eqLogic) {
     }
     else {
         for (var c of _eqLogic.cmd) {
-            c.treegrid_id = n_cmd++;
+            c.tree_id = (n_cmd++).toString();
         }
         
         // Classical view: enable the sortable functionality
@@ -602,6 +632,10 @@ function saveEqLogic(_eqLogic) {
  * addCmdToTable callback called by plugin.template: render eqLogic commands
  */
 function addCmdToTable(_cmd) {
+    const indent_size = 16;
+    const expander_expanded_class = 'fas fa-minus';
+    const expander_collapsed_class = 'fas fa-plus';
+
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
     }
@@ -616,23 +650,27 @@ function addCmdToTable(_cmd) {
         // FIXME: is this disabled variable usefull?
         var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
        
-        var tr = '<tr class="cmd treegrid-' + _cmd.treegrid_id;
+        var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '"';
         if (is_json_view) {
-            if (_cmd.treegrid_parent_id > 0) {
-                tr += ' treegrid-parent-' + _cmd.treegrid_parent_id;
+            if (_cmd.tree_parent_id !== undefined) {
+                tr += ' tree-parent-id="' + _cmd.tree_parent_id + '"';
             }
         }
-        tr += '" data-cmd_id="' + init(_cmd.id) + '">';
-        tr += '<td class="fitwidth"><span class="cmdAttr" data-l1key="id"></span>';
+        tr += ' data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
+        tr += '<td class="fitwidth">';
 
-        // TRICK: For the JSON view include the "order" value in a hidden element
-        // so that the original/natural order is kept when saving
+        // Add Indent block
         if (is_json_view) {
-            tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span></td>';
+            var tree_level = (_cmd.tree_id.match(/\./g) || []).length
+            tr += '<span class="tree-indent" style="display:inline-block; width: ' + (tree_level*indent_size).toString() + 'px;"></span>';
+            tr += '<span class="tree-expander" style="display:inline-block; width: ' + (indent_size).toString() + 'px;"></span>';
+
+            // TRICK: For the JSON view include the "order" value in a hidden element
+            // so that the original/natural order is kept when saving
+            tr += '<span style="display:none;" class="cmdAttr" data-l1key="order"></span>';
         }
-        else {
-            tr += '</td>';
-        }
+        tr += '<span class="cmdAttr" data-l1key="id"></span>';
+        tr += '</td>';
 
         tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="name" style="height:65px;" placeholder="{{Nom de l\'info}}"></textarea></td>';
         tr += '<td>';
@@ -664,14 +702,14 @@ function addCmdToTable(_cmd) {
         tr += '</td></tr>';
 
         $('#table_cmd tbody').append(tr);
-        $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
         if (isset(_cmd.type)) {
-            $('#table_cmd tbody tr:last .cmdAttr[data-l1key=type]').value(init(_cmd.type));
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]').value(init(_cmd.type));
         }
-        jeedom.cmd.changeType($('#table_cmd tbody tr:last'), init(_cmd.subType));
+        jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
         function refreshValue(val) {
-            $('.treegrid-' + _cmd.treegrid_id + ' .form-control[data-key=value]').value(val);
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(val);
         }
 
         // Display the value. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
@@ -695,11 +733,13 @@ function addCmdToTable(_cmd) {
                 refreshValue(_options.display_value);
             }
         }
+
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').show(); // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
     }
 
     if (init(_cmd.type) == 'action') {
-        var tr = '<tr class="cmd treegrid-' +  _cmd.treegrid_id + '" data-cmd_id="' + init(_cmd.id) + '">';
-        tr += '<td>';
+        var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
+        tr += '<td class="fitwidth">';
         tr += '<span class="cmdAttr" data-l1key="id"></span>';
         tr += '</td>';
         tr += '<td>';
@@ -744,8 +784,8 @@ function addCmdToTable(_cmd) {
         tr += '</tr>';
         
         $('#table_cmd tbody').append(tr);
-        // $('#table_cmd tbody tr:last').setValues(_cmd, '.cmdAttr');
-        var tr = $('#table_cmd tbody tr:last');
+        // $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
+        var tr = $('#table_cmd [tree-id="' + _cmd.tree_id + '"]');
         jeedom.eqLogic.builSelectCmd({
             id: $('.eqLogicAttr[data-l1key=id]').value(),
             filter: {type: 'info'},
@@ -758,15 +798,49 @@ function addCmdToTable(_cmd) {
                 jeedom.cmd.changeType(tr, init(_cmd.subType));
             }
         });
+
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').show(); // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
     }
 
-    // If JSON view is active, build the tree
     if (is_json_view) {
-        $('.tree').treegrid({
-            initialState: 'expanded',
-            expanderExpandedClass: 'fas fa-minus',
-            expanderCollapsedClass: 'fas fa-plus'
+        // add event on expander click
+        $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .tree-expander').click(function() {
+            var $this = $(this); // "this" but in jQuery
+            var tree_id = this.parentNode.parentNode.getAttribute('tree-id'); // find tree-id in TR (2 DOM level up)
+
+            if ($this.hasClass(expander_expanded_class)) { // if expanded
+                $this.removeClass(expander_expanded_class).addClass(expander_collapsed_class);
+
+                $('#table_cmd [tree-parent-id^="' + tree_id + '"]').hide(); // hide all childs and sub-childs
+            }
+            else if ($this.hasClass(expander_collapsed_class)) { // if collapsed
+
+                $this.removeClass(expander_collapsed_class).addClass(expander_expanded_class);
+
+                /**
+                 * Display childs if their own parent are expanded
+                 */
+                function recursiveDisplayChilds(tree_parent_id) {
+                    // if parent is expanded
+                    if ($('#table_cmd [tree-id="' + tree_parent_id + '"] .tree-expander').hasClass(expander_expanded_class)) {
+                        // for each direct child
+                        $('#table_cmd [tree-parent-id="' + tree_parent_id + '"]').each(function () {
+                            // show
+                            $(this).show();
+                            // process child of it
+                            recursiveDisplayChilds(this.getAttribute('tree-id'));
+                        });
+                    }
+                }
+
+                recursiveDisplayChilds(tree_id);
+            }
         });
+
+        //if there is a parent_id, we need to enable his expander
+        if(_cmd.tree_parent_id !== undefined){
+            $('#table_cmd [tree-id="' + _cmd.tree_parent_id + '"] .tree-expander').addClass(expander_expanded_class);
+        }
     }
 }
 

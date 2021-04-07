@@ -121,7 +121,7 @@ function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
-       echo '<i class="fas fa-sign-in-alt" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
+       echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
     }
     if ($eqL->getIsVisible()) {
         echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
@@ -258,7 +258,7 @@ function displayEqLogicCard($eqL, $node_images) {
                             <th style="width:300px;">{{Topic}}</th>
                             <th style="width:300px;">{{Valeur}}</th>
                             <th style="width:1px;">{{Unité}}</th>
-                            <th style="width:150px;">{{Paramètres}}</th>
+                            <th style="width:150px;">{{Paramètres}}<label class="checkbox-inline" style="margin-left:15px; display: none;"><input type="checkbox" id="checkAll" class="checkbox-inline" checked="">Cocher/Décocher</label></th>
                             <th style="width:130px;"></th>
                         </tr>
                     </thead>
@@ -272,9 +272,6 @@ function displayEqLogicCard($eqL, $node_images) {
 
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
-<?php include_file('3rdparty', 'jquery.treegrid', 'css', 'jMQTT'); ?>
-<?php include_file('3rdparty', 'jquery.treegrid.min', 'js', 'jMQTT'); ?>
-<?php include_file('3rdparty', 'jquery.treegrid.bootstrap3', 'js', 'jMQTT'); ?>
 
 <script>
 

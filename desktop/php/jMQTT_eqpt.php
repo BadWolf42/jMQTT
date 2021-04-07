@@ -44,17 +44,10 @@
             </div>
         </div>
 
-        <div class="form-group toDisable">
-            <label class="col-sm-3 control-label">{{Commentaire}}</label>
-            <div class="col-sm-3">
-                <textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="commentaire"></textarea>
-            </div>
-        </div>
-
         <div class="form-group typ-std">
             <label class="col-sm-3 control-label">{{Broker associé}}</label>
             <div class="col-sm-2">
-                <select id="broker" class="form-control input-sm"></select>
+                <select id="broker" class="eqLogicAttr form-control"></select>
             </div>
             <div class="col-sm-1">
               <a class="btn btn-success btn-sm eqLogicAction" data-action="move_broker"><i class="icon jeedomapp-done"></i></a>
@@ -79,8 +72,8 @@
 
         <div class="form-group toDisable">
             <label class="col-sm-3 control-label">{{Qos}}</label>
-            <div id="mqttqos" class="col-sm-3">
-                <select style="width: 50px;" class="eqLogicAttr form-control input-sm" data-l1key="configuration"
+            <div id="mqttqos" class="col-sm-1">
+                <select class="eqLogicAttr form-control" data-l1key="configuration"
                     data-l2key="Qos">
                     <option value="0">0</option>
                     <option value="1" selected>1</option>
@@ -100,6 +93,13 @@
             <label class="col-sm-3 control-label">{{Dernière communication}}</label>
             <div class="col-sm-3">
                 <span class="eqLogicAttr" data-l1key="status" data-l2key="lastCommunication"></span>
+            </div>
+        </div>
+
+        <div class="form-group toDisable">
+            <label class="col-sm-3 control-label">{{Commentaire}}</label>
+            <div class="col-sm-3">
+                <textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="commentaire"></textarea>
             </div>
         </div>
 
