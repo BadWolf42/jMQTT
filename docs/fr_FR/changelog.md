@@ -1,6 +1,8 @@
 # Registre des évolutions
 
 ##### beta
+
+#### 2021-04-07
   - Mises à jour du README, de la documentation et des informations du plugin
   - Amélioration de la remontée du niveau de batterie : la valeur ne doit pas être un JSON (JSON pas encore éclaté d'un auto-inclusion) ou vide
   - Amélioration de la remontée du niveau de batterie : commande dont le nom termine par "battery" ou "batterie" ou taggué avec le type générique batterie
