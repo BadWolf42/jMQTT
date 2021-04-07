@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## beta
+  - Correction de la conversion de texte transformé en entier dans les payload (Ex : {"bidule":"007"} -> {"bidule":7})
+
 ## 2021-04-07
   - Mises à jour du README, de la documentation et des informations du plugin
   - Amélioration de la remontée du niveau de batterie : la valeur ne doit pas être un JSON (JSON pas encore éclaté d'un auto-inclusion) ou vide
