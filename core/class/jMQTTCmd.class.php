@@ -243,7 +243,7 @@ class jMQTTCmd extends cmd {
         // the desktop interface - fix issue #28)
         foreach(array('request') as $key) {
             $conf = $this->getConfiguration($key);
-            if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK)) !== FALSE))
+            if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
                 $this->setConfiguration($key, $conf);
         }
 
