@@ -138,7 +138,7 @@ class jMQTTCmd extends cmd {
             if ($this->getSubType() == 'binary') {
                 $this->getEqLogic()->batteryStatus($value ? 100 : 10);
             } else {
-                $this->getEqLogic()->batteryStatus($this->getValue());
+                $this->getEqLogic()->batteryStatus($this->getCache('value'));
             }
             $this->getEqLogic()->log('info', '-> Update battery status');
         }
