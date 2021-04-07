@@ -4,6 +4,7 @@
   - Mises à jour du README, de la documentation et des informations du plugin
   - Amélioration de la remontée du niveau de batterie : la valeur ne doit pas être un JSON (JSON pas encore éclaté d'un auto-inclusion) ou vide
   - Amélioration de la remontée du niveau de batterie : commande dont le nom termine par "battery" ou "batterie" ou taggué avec le type générique batterie
+  - Amélioration de la remontée du niveau de batterie : prise en compte des formules, limites, etc.
   - Correction : la fenêtre "Configuration commande" ne s'affiche plus lors du double-click sur un champ textarea d'une commande (PR faite auprès de Jeedom Core en parallèle)
   - Correction : la fenêtre "Configuration commande" ne s'affiche plus sur les commandes qui ne sont pas encore sauvegardées (pas d'ID)
   - Amélioration du style des combobox sur les équipements
@@ -13,7 +14,6 @@
   - Amélioration des performances de la vue JSON : Ajout des lignes commandes comme non visibles d'abord
   - Amélioration des performances de la vue JSON : Suppression de la librairie jQuery-TreeGrid et réécriture complète de la gestion de l'arborescence
   - Amélioration [PR#26](https://github.com/Domochip/jMQTT/pull/26): Ajout d'une case à cocher afin d'afficher/masquer toutes les commandes (Amélioration cachée pour le moment)
-  - Prise en compte de la formule de calcul pour la remontée de batterie
 
 ##### 2021-03-31
   - Correction : Bug lors de la publication de message avec username/password pour le broker
