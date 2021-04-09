@@ -110,7 +110,7 @@ function refreshEqLogicPage() {
 
 $(document).ready(function() {
     // On page load, show the commandtab menu bar if necessary (fix #64)
-    if (document.location.hash == '#commandtab') {
+    if (document.location.hash == '#commandtab' && $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
         $('#menu-bar').show();
     }
     
@@ -172,7 +172,9 @@ $('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', 
 });
 
 $('.nav-tabs a[href="#commandtab"]').on('click', function() {
-    $('#menu-bar').show();
+    if($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
+        $('#menu-bar').show();
+    }
 });
 
 // Configure the sortable functionality of the commands array

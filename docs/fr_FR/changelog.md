@@ -3,6 +3,7 @@
 ## beta
   - Correction de la conversion de texte transformé en entier dans les payload (Ex : {"bidule":"007"} -> {"bidule":7})
   - Les équipements de type broker ne sont plus en mode ajout automatique à la création
+  - on ne peux plus ajouter/supprimer de commandes sur les équipements de type Broker
 
 ## 2021-04-07
   - Mises à jour du README, de la documentation et des informations du plugin
