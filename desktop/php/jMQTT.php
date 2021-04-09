@@ -244,9 +244,9 @@ function displayEqLogicCard($eqL, $node_images) {
         <div class="tab-content" style="height: calc(100% - 120px); overflow: auto; overflow-x: hidden;">
             <div role="tabpanel" class="tab-pane active" id="eqlogictab">
                 <?php include_file('desktop', 'jMQTT_eqpt', 'php', 'jMQTT'); ?>
-	        </div>
+            </div>
             <div role="tabpanel" class="tab-pane toDisable" id="brokertab">
-                <?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>                
+                <?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
             </div>
             <div role="tabpanel" class="tab-pane toDisable" id="commandtab">
                 <table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
