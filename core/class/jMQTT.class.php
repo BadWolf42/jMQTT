@@ -280,7 +280,12 @@ class jMQTT extends eqLogic {
         parent::setName($name);
         parent::setIsEnable($isEnable);
         parent::setLogicalId($topic);  // logical id is also modified by setTopic
-        $this->setAutoAddCmd('1');
+        if ($this->getType() == self::TYP_BRK) {
+            $this->setAutoAddCmd('0');
+        }
+        else {
+            $this->setAutoAddCmd('1');
+        }
         $this->setQos('1');
         
         if ($this->getType() == self::TYP_BRK) {
