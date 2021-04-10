@@ -5,6 +5,7 @@
   - Les équipements de type broker ne sont plus en mode ajout automatique à la création
   - on ne peux plus ajouter/supprimer de commandes sur les équipements de type Broker
   - Ajout dans la santé du plugin du champ "Inscrit au Topic" sur chaque équipement
+  - l'API JSON RPC over MQTT est maintenant désactivé par défaut
 
 ## 2021-04-07
   - Mises à jour du README, de la documentation et des informations du plugin
