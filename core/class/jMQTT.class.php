@@ -728,10 +728,32 @@ class jMQTT extends eqLogic {
             }
 
             if (!$brokerexists) {
+
                 $brokername = 'local';
 
                 //looking for broker name conflict
-                // TODO
+                $brokernameconflict = $false;
+                foreach(self::getBrokers() as $broker) {
+                    if ($broker->getName() == $brokername) {
+                        $brokernameconflict = true;
+                        break;
+                    }
+                }
+                if ($brokernameconflict) {
+                    $i = 0;
+                    do {
+                        $i++;
+                        $brokernameconflict = $false;
+                        $brokername = 'local'.$i;
+                        foreach(self::getBrokers() as $broker) {
+                            if ($broker->getName() == $brokername) {
+                                $brokernameconflict = true;
+                                break;
+                            }
+                        }
+                    } while ($brokernameconflict);
+                }
+
                 log::add('jMQTT', 'info', 'Création du broker '.$brokername);
                 $broker = new jMQTT();
                 $broker->setType(self::TYP_BRK);
