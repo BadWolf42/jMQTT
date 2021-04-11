@@ -135,6 +135,9 @@ if [ -n PHP_DEV_LIB ]; then
 	fi
 fi
 
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+php -r 'include "../core/class/jMQTT.class.php"; jMQTT::post_dependancy_install();'
+
 rm ${PROGRESS_FILE}
 
 echo "********************************************************"

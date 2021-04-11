@@ -712,6 +712,26 @@ class jMQTT extends eqLogic {
             config::byKey('installMosquitto', 'jMQTT', 1),'log' => log::getPathToLog(self::$_depLogFile));
     }
 
+    /**
+     * Create first broker eqpt if mosquitto has been installed
+     */
+    public static function post_dependancy_install() {
+        log::add('jMQTT', 'info', 'Post-Installation des dépendances');
+        if (config::byKey('installMosquitto', 'jMQTT', 1)) {
+            $brokerexists = false;
+            foreach(self::getBrokers() as $broker) {
+                if ($broker->getMqttAddress() == self::getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS)) {
+                    $brokerexists = true;
+                }
+            }
+
+            if (!$brokerexists) {
+                log::add('jMQTT', 'info', 'Création du broker local');
+                // TODO
+            }
+        }
+    }
+
     ###################################################################################################################
     ##
     ##                   DAEMON RELATED METHODS
