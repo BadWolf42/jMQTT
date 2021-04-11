@@ -717,7 +717,9 @@ class jMQTT extends eqLogic {
      */
     public static function post_dependancy_install() {
         log::add('jMQTT', 'info', 'Post-Installation des dépendances');
+        // if Mosquitto is installed
         if (config::byKey('installMosquitto', 'jMQTT', 1)) {
+            //looking for broker pointing to local mosquitto
             $brokerexists = false;
             foreach(self::getBrokers() as $broker) {
                 if ($broker->getMqttAddress() == self::getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS)) {
@@ -726,8 +728,18 @@ class jMQTT extends eqLogic {
             }
 
             if (!$brokerexists) {
-                log::add('jMQTT', 'info', 'Création du broker local');
+                $brokername = 'local';
+
+                //looking for broker name conflict
                 // TODO
+                log::add('jMQTT', 'info', 'Création du broker '.$brokername);
+                $broker = new jMQTT();
+                $broker->setType(self::TYP_BRK);
+                $broker->initEquipment($brokername, self::getDefaultConfiguration(self::CONF_KEY_MQTT_ID).'/#', '1');
+                $broker->save();
+                $broker->setBrkId($broker->getId());
+                $broker->save();
+                $broker->createMqttClientStatusCmd();
             }
         }
     }
