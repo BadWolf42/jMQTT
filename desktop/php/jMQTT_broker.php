@@ -124,8 +124,8 @@
                             <label class="col-lg-4 control-label">{{Accès API : }}</label>
                             <div class="col-lg-4">
                                 <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="api" style="margin-top: 5px">
-                                    <option value="enable">{{Activé}}</option>
                                     <option value="disable">{{Désactivé}}</option>
+                                    <option value="enable">{{Activé}}</option>
                                 </select>
                             </div>
                         </div>

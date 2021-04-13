@@ -280,7 +280,12 @@ class jMQTT extends eqLogic {
         parent::setName($name);
         parent::setIsEnable($isEnable);
         parent::setLogicalId($topic);  // logical id is also modified by setTopic
-        $this->setAutoAddCmd('1');
+        if ($this->getType() == self::TYP_BRK) {
+            $this->setAutoAddCmd('0');
+        }
+        else {
+            $this->setAutoAddCmd('1');
+        }
         $this->setQos('1');
         
         if ($this->getType() == self::TYP_BRK) {
@@ -705,6 +710,60 @@ class jMQTT extends eqLogic {
         return array(
             'script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile . ' ' .
             config::byKey('installMosquitto', 'jMQTT', 1),'log' => log::getPathToLog(self::$_depLogFile));
+    }
+
+    /**
+     * Create first broker eqpt if mosquitto has been installed
+     */
+    public static function post_dependancy_install() {
+        log::add('jMQTT', 'info', 'Post-Installation des dépendances');
+        // if Mosquitto is installed
+        if (config::byKey('installMosquitto', 'jMQTT', 1)) {
+            //looking for broker pointing to local mosquitto
+            $brokerexists = false;
+            foreach(self::getBrokers() as $broker) {
+                if ($broker->getMqttAddress() == self::getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS)) {
+                    $brokerexists = true;
+                }
+            }
+
+            if (!$brokerexists) {
+
+                $brokername = 'local';
+
+                //looking for broker name conflict
+                $brokernameconflict = $false;
+                foreach(self::getBrokers() as $broker) {
+                    if ($broker->getName() == $brokername) {
+                        $brokernameconflict = true;
+                        break;
+                    }
+                }
+                if ($brokernameconflict) {
+                    $i = 0;
+                    do {
+                        $i++;
+                        $brokernameconflict = $false;
+                        $brokername = 'local'.$i;
+                        foreach(self::getBrokers() as $broker) {
+                            if ($broker->getName() == $brokername) {
+                                $brokernameconflict = true;
+                                break;
+                            }
+                        }
+                    } while ($brokernameconflict);
+                }
+
+                log::add('jMQTT', 'info', 'Création du broker '.$brokername);
+                $broker = new jMQTT();
+                $broker->setType(self::TYP_BRK);
+                $broker->initEquipment($brokername, self::getDefaultConfiguration(self::CONF_KEY_MQTT_ID).'/#', '1');
+                $broker->save();
+                $broker->setBrkId($broker->getId());
+                $broker->save();
+                $broker->createMqttClientStatusCmd();
+            }
+        }
     }
 
     ###################################################################################################################
