@@ -174,7 +174,7 @@ function displayEqLogicCard($eqL, $node_images) {
     
         <?php
         foreach ($eqBrokers as $eqB) {
-            echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} ' . $eqB->getName() . '</legend>';
+            echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} <b>' . $eqB->getName() . '</b></legend>';
             echo '<div class="eqLogicThumbnailContainer">';
             displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . 
                 $eqB->getId() . '"', 'logoSecondary', true);
