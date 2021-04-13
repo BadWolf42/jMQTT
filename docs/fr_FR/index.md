@@ -1,109 +1,101 @@
 # Présentation
 
-Ce plugin permet de connecter Jeedom à un ou plusieurs brokers MQTT comme Mosquitto afin de recevoir les messages souscrits et de publier ses propres messages.
+MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.  
+Il apporte une très grande souplesse dans les échanges d'information entre capteurs/actionneurs/systèmes domotique/etc.
 
-MQTT est un protocole de communication sur IP, basé sur une architecture client/serveur et un mécanisme de souscription/publication. Il est léger, ouvert, simple, caractéristiques qui ont favorisées sa démocratisation dans la communication Machine to Machine (M2M) et l’internet des objets (IoT - Internet of Things).
+Ce plugin permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
 
-Pour tout savoir sur MQTT, la série d’article [MQTT Essentials](https://www.hivemq.com/mqtt-essentials/) est à recommander.
+Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :  
+[![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)  
+Crédit : François Riotte
 
-# Démarrage facile
 
-La façon la plus rapide d'être opérationnel avec jMQTT est de le laisser installer le broker MQTT sur la machine hébergeant Jeedom et de configurer ses modules MQTT pour qu'ils se connectent à ce broker.
+Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https://www.hivemq.com/mqtt-essentials/).
 
-La configuration côté jMQTT est alors très simple:
-  1. Installer et activer le plugin en laissant les paramètres par défaut;
-  2. Ajouter un équipement broker et l'activer en laissant également tous les paramètres par défaut.
+# Démarrage rapide
+
+Par défaut, jMQTT installe le broker Mosquitto sur la machine hébergeant Jeedom.  
+Il vous suffira ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à ce broker (IP de votre Jeedom).
+
+La configuration jMQTT est alors très simple:
+  1. Installer et activer le plugin en laissant les paramètres par défaut
 
 # Configuration du plugin
 
 > **Important**
-> 
-> Pour ne pas installer le broker Mosquitto localement, c’est à dire sur la machine hébergeant Jeedom, commencer par décocher la case *Installer Mosquitto localement*, sans oublier de sauvegarder la configuration.
+> Pour ne pas installer le broker Mosquitto sur la machine hébergeant Jeedom, commencer par décocher la case *Installer Mosquitto localement*, sans oublier de sauvegarder la configuration.
 
-Après installation du plugin, l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep` qui apparaît au bout d’un moment en rafraîchissant la page.
-
-> **Tip**
-> 
-> Configurer le niveau de log minimum à Info pour que le fichier de log apparaisse la première fois et avoir des informations intéressantes. Sauvegarder et relancer le démon pour rendre le changement actif.
-
-> **Important**
-> 
-> Il peut arriver que l’installation du plugin se bloque. Cela se produit si le serveur apache est relancé pendant l’installation (voir log `jMQTT_dep`). Pour se débloquer, se connecter à sa station Jeedom et supprimer le fichier `/tmp/jeedom/jMQTT/progress_dep.txt`.
+Après installation du plugin, l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep`.
 
 # Gestion des équipements
 
-La page de gestion des équipements est accessible via le menu `Plugins → Protocole domotique → jMQTT`.
+Le plugin jMQTT est disponible dans le menu : `Plugins → Protocole domotique → jMQTT`.
 
-jMQTT présente 2 types d'équipements:
-  - les équipements de type broker gérant la connexions avec les brokers MQTT, appelés équipements broker dans la suite;
-  - les équipements "standards", appélés simplement équipements dans la suite, 
+jMQTT posséde 2 types d'équipements:
+  - les **équipements de type broker** gérant la connexion avec les brokers MQTT, appelés équipements broker dans la suite;
+  - les **équipements "classiques"**, appélés simplement équipements dans la suite, 
 
-Le panneau supérieur gauche, intitulé *Gestion plugin et brokers*, permet de configurer le plugin, et d'afficher les équipements de type broker gérant la connexion avec les brokers MQTT. Dans l'ordre d'affichage des icônes:
-  - L'icône *Configuration* permet d'accéder à la [Configuration du plugin](#configuration-du-plugin);
-  - L'icône *Santé* permet d'accéder à la page [Santé du plugin](#santé-du-plugin);
-  - L'icône **+** permet l'[ajout d'un équipement broker](#ajout-dun-équipement-broker);
-  - Les icônes des équipements broker, présentant dans leur coin supérieur droit un point de couleur indiquant l'état de la connexion au broker:
-     * Vert: la connexion au broker est nominale;
-     * Orange: le démon tourne mais la connexion au broker n'est pas établie;
-     * Rouge: le démon est arrêté.
+Le panneau supérieur gauche, intitulé *Gestion plugin et brokers*, permet de configurer le plugin, et de lister les équipements broker.  
+![Gestion plugin et brokers](../images/gestion_plugin_et_brokers.png)
 
-Viennent ensuite pour chaque broker, un panneau occupant toute la largeur de la page et présentant les équipements connectés au broker nommé dans la légende du panneau. Outre les équipements, le panneau comprend :
+Sur les équipements broker, un point de couleur indique l'état de la connexion au broker :  
+![Status broker](../images/broker_status.png)  
+* Vert: la connexion au broker est opérationnelle
+* Orange: le démon tourne mais la connexion au broker n'est pas établie
+* Rouge: le démon est arrêté
+
+Ensuite, pour chaque broker, un panneau présente les équipements connectés à celui-ci.  
+![eqpt panel](../images/eqpt_panel.png)  
+Se trouve également sur ce panneau :
   - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
-  - Un icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
+  - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
 
-A noter qu'un équipement :
-  - Grisé est inactif;
-  - Présenté avec un petit icône d’inclusion superposé, est un équipement dont l'*Ajout automatique des commandes* est activé (détails dans [Onglet Equipement](#onglet-equipement));
-  - Est présenté avec un petit icône d'oeil barré ou non indiquant qu'il est non visible ou visible.
+Un équipement :
+  - Grisé est inactif
+  - Présenté avec une petite icône d’inclusion superposée, est un équipement dont l'*Ajout automatique des commandes* est activé (détails dans [Onglet Equipement](#onglet-equipement))
+  - Présenté avec une petite icône d'oeil barré ou non indique qu'il est non visible ou visible
   
-> **Important**
-> 
-> Un panneau intitulé _Equipement orphelins_ pourrait aussi être présent suite à la migration vers la version supportant le multi-brokers. Il regroupe les équipements qui n'ont pas été migrés automatiquement. Editer chacun d'eux et les associer à l'équipement broker de votre installation (qui est unique normalement après migration), voir paramètre _Broker associé_ au chapitre [Paramètres de l'équipement](#paramètres-de-léquipement).
+## Equipement broker
+### Ajout
 
-## Ajout d'un équipement broker
+Dans la page de [Gestion des équipements](#gestion-des-équipements), cliquer sur le bouton **+** *Ajouter un broker* et saisir son nom.
 
-Pour commencer à utiliser le plugin, il est nécessaire de créer au moins un équipement broker. Dans la page de [Gestion des équipements](#gestion-des-équipements), cliquer sur le bouton **+** *Ajouter un broker* et saisir son nom.
+Suite à sa création, un message indique que la commande *status* a été ajoutée à l'équipement. Celle-ci donne l'état de connexion au broker MQTT de l'équipement broker. Elle prend 2 valeurs : *online* et *offline*. Elle est publiée de manière persistante auprès du broker. Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion. Il peut aussi servir en interne Jeedom pour monitorer la connexion au broker via un scénario.
 
-Dans la foulée de sa création, un message indique que la commande *status* a été ajoutée à l'équipement. Celle-ci, que nous retrouvons dans le panneau *Commandes*, donne l'état de connexion au broker MQTT de l'équipement broker. Elle prend 2 valeurs : *online* et *offline*. Elle est publiée de manière persistante auprès du broker. Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion. Il peut aussi servir en interne Jeedom pour monitorer la connexion au broker via un scénario.
+### Configuration
 
-Un équipement broker se comporte comme un équipement "standard" et présente donc les onglets _Equipements_ et _Commandes_ que ce dernier : nous nous reporterons donc au chapitre [Paramètres de l'équipement](#paramètres-de-léquipement) concernant la description de ces onglets.
+Par défaut, un équipement broker est configuré pour s’inscrire au broker Mosquitto installé localement. Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le status du démon devrait passer à OK.
 
-Nous nous attachons ici à décrire l'onglet spécifique.
-
-### Onglet Broker
-
-Par défaut, un équipement broker est configuré pour s’inscrire au broker Mosquitto installé localement sur la machine hébergeant Jeedom. Si cette configuration convient, activer l'équipement dans l'onglet _Equipement_ et sauvegarder. Revenir sur l'onglet _Broker_, le status du démon devrait passer à OK.
-
-Pour particulariser la configuration du plugin, les paramètres sont:
+Pour modifier les informations de connexion au broker, les paramètres sont:
   - _IP de Mosquitto_ : adresse IP du broker (par défaut localhost i.e. la machine hébergeant Jeedom);
   - _Port de Mosquitto_ : port du broker (1883 par défaut);
   - _Identifiant de connexion_ : identifiant avec lequel l'équipement broker s’inscrit auprès du broker MQTT (jeedom par défaut).
-    > - **Attention**: cet identifiant doit être unique par client et par broker. Sinon les clients portant le même identifiant vont se déconnecter l’un-l’autre à chaque connection.
-    - Cet identifiant est utilisé dans le nom du topic des commandes info *status* et *api* que l'on retrouve dans l'onglet *Commandes*. Les topics sont automatiquement mis à jour si l'identifiant est modifié. 
-  - _Compte et mot de passe de connexion_ : compte et mot de passe de connexion au broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du broker, sauf bien-sûr si vous modifiez la configuration de ce dernier pour activer l’authentification et dans ce cas vous savez ce que vous faites).
-  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements de manière automatique, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
+    - Cet identifiant est aussi utilisé dans les topics des commandes info *status* et *api*. Les topics sont automatiquement mis à jour si l'identifiant est modifié. 
+  - _Compte et mot de passe de connexion_ : compte et mot de passe de connexion au broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du broker).
+  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
   - _Accès API_ : à activer pour utiliser l'[API](#api).
+
+> **Attention**: _L'identifiant de connexion_ doit être unique par client par broker. Sinon les clients portant le même identifiant vont se déconnecter mutellement.
 
 La sauvegarde de la configuration relance le démon et la souscription au broker MQTT avec les nouveaux paramètres.
 
-> **Tip**
-> 
->
-> - Dès que l'équipement broker est activé (via la case à cocher de l'onglet _Equipement_), son démon est lancé, se connecte au broker MQTT et traite les messages souscrits;
-> - En cas de déconnection intempestive au broker MQTT (consécutive à un problème réseau par exemple), le démon tentera une reconnection immédiatement, puis toutes les 15s.
-> - Pour déconnecter un équipement broker du broker MQTT, ainsi que tous les équipements associés à cet équipement broker, il faut le désactiver (via la case à cocher de l'onglet _Equipement_).
+**Info**
 
-A noter que l'équipement broker possède son propre fichier de log suffixé par le nom de l'équipement. Si l'équipement est renommé, le fichier de log le sera également.
+ - Dès que l'équipement broker est activé, son démon est lancé, se connecte au broker MQTT et traite les messages;
+ - Si vous désactivez un équipement broker, les équipements associés ne recevront et n'enverront plus de messages.
+ - En cas de déconnection intempestive au broker MQTT, le démon tentera une reconnection immédiatement, puis toutes les 15s.
 
+Chaque équipement broker possède son propre fichier de log suffixé par le nom de l'équipement. Si l'équipement est renommé, le fichier de log le sera également.
 
 
-## Inclusion automatique des équipements
+## Equipement
+### Inclusion automatique
 
 Le mode inclusion automatique permet la découverte et la création automatique des équipements. Il s’active, pour le broker concerné, en cliquant sur le bouton *Mode inclusion*. Il se désactive en recliquant sur le même bouton, ou automatiquement après 2 à 3 min.
 
 Le plugin souscrit auprès du broker le topic configuré dans [l'onglet broker](#onglet-broker) (\# par défaut, i.e. tous les topics) de l'équipement broker concerné. A réception d’un message auquel aucun équipement n’a souscrit, le plugin crée automatiquement un équipement associé au topic de premier niveau.
 
-Prenons comme exemple une payload MQTT publiant les messages suivants:
+Prenons comme exemple les messages MQTT suivants:
 
     boiler/brand "viesmann"
     boiler/burner 0
@@ -119,10 +111,6 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 > 
 > Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d’équipements non souhaités, notamment dans les situations suivantes : publication de messages (si un équipement broker reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le broker, tests de nouveaux équipements, …​
 
-## Paramètres de l’équipement
-
-Ce chapitre est applicable à tous les équipements jMQTT, y compris les équipments de type broker.
-
 ### Onglet Equipement
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin:
@@ -131,7 +119,7 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
 
   - _Inscrit au Topic_ : topic de souscription auprès du broker MQTT. Pour un équipement de type broker, ce paramètre n'est pas modifiable, il est imposé par l'identifiant de connexion au broker, voir [Onglet Broker](#onglet-broker);
 
-  - _Ajout automatique des commandes_ : si coché, les [commandes de type information](#commandes-de-type-information) seront automatiquement créés par le plugin, et l’équipement apparaitra avec un petit icône d’inclusion superposé dans la page de [Gestion des équipements](#gestion-des-équipements). La case est cochée par défaut;
+  - _Ajout automatique des commandes_ : si coché, les [commandes de type information](#commandes-de-type-information) seront automatiquement créés par le plugin, et l’équipement apparaitra avec une petite icône d’inclusion superposé dans la page de [Gestion des équipements](#gestion-des-équipements). La case est cochée par défaut;
 
   - _Qos_ : qualité de service souscrit;
 
@@ -152,7 +140,7 @@ Concernant les boutons en haut à droite:
 
   - `Créer Template` TODO;
 
-  - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement). Cette fonction n'est pas disponible pour un équipement broker.
+  - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement).
 
 ### Onglet Commandes
 
@@ -382,6 +370,25 @@ Le tableau suivant fournit quelques exemples:
 
 # FAQ
 
+## Le broker n'est pas disponible suite à l'installation du plugin
+ 
+ Il peut arriver que l’installation du plugin se bloque. Cela se produit si le serveur est relancé pendant l’installation (voir log `jMQTT_dep`). 
+ Pour se débloquer, se connecter au Jeedom et supprimer le fichier `/tmp/jeedom/jMQTT/progress_dep.txt`.
+
+## J'ai changé le niveau de log mais je n'ai pas plus de détails
+
+Si vous changez le niveau de log, le démon doit être relancé.
+Pour cela, il faut désactiver puis réactiver l'équipement Broker concerné.
+
+## Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
+
+Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Identifiant de connexion* dans l'[onglet broker](#onglet-broker) de l'équipement broker concerné.
+
+# Problèmes inconnus
+
+Les problèmes en cours d’investigation sont sur GitHub: [Issues jMQTT](https://github.com/domochip/jMQTT/issues).  
+
+
 ## Quelles données fournir pour investigation en cas de problèmes ?
 
 En cas de problèmes à l’installation, fournir les fichiers de log jMQTT (niveau Debug) et jMQTT\_dep.
@@ -397,16 +404,6 @@ En cas de problèmes à l’utilisation, fournir:
 En remplaçant, si besoin, `localhost` par le nom ou l’ip de la machine hébergeant le broker MQTT concerné.
 
 Si le broker requiert une authentification, il faudra ajouter `-u username` et `-p password` avant le `-v`.
-
-## Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
-
-Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Identifiant de connexion* dans l'[onglet broker](#onglet-broker) de l'équipement broker concerné.
-
-# Problèmes connus
-
-Les problèmes connus en cours d’investigation sont sur GitHub: [Issues jMQTT](https://github.com/domochip/jMQTT/issues).
-
-Il peut arriver que l’installation des dépendances se bloque, se référer au chapitre [Configuration du plugin](#configuration-du-plugin).
 
 # Exemples d’utilisation
 
