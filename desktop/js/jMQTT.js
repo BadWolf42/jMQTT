@@ -649,12 +649,15 @@ function addCmdToTable(_cmd) {
     var is_json_view = $('#bt_json.active').length != 0;
 
     if (!isset(_cmd.tree_id)) {
-        if (! is_json_view) {
-            if ($('.cmd').last().attr('tree-id') === undefined) {
-                _cmd.tree_id = 1;
-            } else {
-                _cmd.tree_id = parseInt($('.cmd').last().attr('tree-id')) + 1;
-            }
+        //looking for all tree-id, keep part before the first dot, convert to Int
+        var root_tree_ids = $('[tree-id]').map((pos,e) => parseInt(e.getAttribute("tree-id").split('.')[0]))
+
+        //if some tree-id has been found
+        if (root_tree_ids.length > 0) {
+            _cmd.tree_id = Math.max.apply(null, root_tree_ids) + 1; //use the highest one plus one
+        }
+        else {
+            _cmd.tree_id = 1; // else this is the first one
         }
     }
 	
