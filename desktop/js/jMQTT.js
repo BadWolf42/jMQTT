@@ -645,7 +645,11 @@ function addCmdToTable(_cmd) {
         _cmd.configuration = {};
     }
     if (!isset(_cmd.tree_id)) {
-        _cmd.tree_id = parseInt($('.cmd').last().attr('tree-id')) + 1;
+        if ($('.cmd').last().attr('tree-id') === undefined) {
+            _cmd.tree_id = 1;
+        } else {
+            _cmd.tree_id = parseInt($('.cmd').last().attr('tree-id')) + 1;
+        }
     }
     // Is the JSON view is active
     var is_json_view = $('#bt_json.active').length != 0;
