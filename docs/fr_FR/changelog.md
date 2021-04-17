@@ -2,6 +2,7 @@
 
 ## beta
  - Réécriture des premiers chapitre de la documentation
+ - Le bouton de suppression de commandes s'affiche sur les nouvelles commandes en mode "classic"
 
 ## 2021-04-13
   - Correction de la conversion de texte transformé en entier dans les payload (Ex : {"bidule":"007"} -> {"bidule":7})
