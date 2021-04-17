@@ -654,10 +654,10 @@ function addCmdToTable(_cmd) {
 
         //if some tree-id has been found
         if (root_tree_ids.length > 0) {
-            _cmd.tree_id = Math.max.apply(null, root_tree_ids) + 1; //use the highest one plus one
+            _cmd.tree_id = (Math.max.apply(null, root_tree_ids) + 1).toString(); //use the highest one plus one
         }
         else {
-            _cmd.tree_id = 1; // else this is the first one
+            _cmd.tree_id = '1'; // else this is the first one
         }
     }
 	
