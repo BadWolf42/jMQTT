@@ -1,6 +1,6 @@
 # Registre des évolutions
 
-## beta
+## 2021-04-18
  - Réécriture des premiers chapitre de la documentation
  - Le bouton de suppression de commandes s'affiche sur les nouvelles commandes en mode "classic"
  - Les champs compte et mot de passe de connexion n'ont plus d'autocomplete
