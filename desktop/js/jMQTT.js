@@ -698,7 +698,7 @@ function addCmdToTable(_cmd) {
         else {
             tr += '</td><td>';
         }
-        if (_cmd.id != undefined && _cmd.configuration.irremovable == undefined) {
+        if (_cmd.configuration.irremovable == undefined) {
             tr += ' <a class="btn btn-default btn-xs cmdAction pull-right" data-action="remove"><i class="fas fa-minus-circle"></i></a>';
         }
         tr += '</td></tr>';
