@@ -655,7 +655,6 @@ function addCmdToTable(_cmd) {
             } else {
                 _cmd.tree_id = parseInt($('.cmd').last().attr('tree-id')) + 1;
             }
-            console.log(_cmd.tree_id);
         }
     }
 	
