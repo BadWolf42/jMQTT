@@ -644,16 +644,21 @@ function addCmdToTable(_cmd) {
     if (!isset(_cmd.configuration)) {
         _cmd.configuration = {};
     }
-    if (!isset(_cmd.tree_id)) {
-        if ($('.cmd').last().attr('tree-id') === undefined) {
-            _cmd.tree_id = 1;
-        } else {
-            _cmd.tree_id = parseInt($('.cmd').last().attr('tree-id')) + 1;
-        }
-    }
+    
     // Is the JSON view is active
     var is_json_view = $('#bt_json.active').length != 0;
 
+    if (!isset(_cmd.tree_id)) {
+        if (! is_json_view) {
+            if ($('.cmd').last().attr('tree-id') === undefined) {
+                _cmd.tree_id = 1;
+            } else {
+                _cmd.tree_id = parseInt($('.cmd').last().attr('tree-id')) + 1;
+            }
+            console.log(_cmd.tree_id);
+        }
+    }
+	
     if (init(_cmd.type) == 'info') {
         // FIXME: is this disabled variable usefull?
         var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
