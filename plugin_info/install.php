@@ -31,12 +31,16 @@ define("CURRENT_VERSION", 2);
 
 
 /**
- * No version number
+ * version 0
  * Migrate the plugin to the multi broker version
  * Return without doing anything if the multi broker version is already installed
  */
 function migrateToMultiBrokerVersion() {
-    
+    $version = config::byKey(VERSION, 'jMQTT', 0);
+    if ($version >= 0) {
+        return;
+    }
+
     // Return if the multi broker version is already installed
     $res = config::searchKey('mqttId', 'jMQTT');
     if (empty($res)) {
@@ -160,6 +164,7 @@ function disableAutoAddCmdOnBrokers() {
     //disable auto_add_cmd on Brokers eqpt because auto_add is removed for them
     foreach ((jMQTT::getBrokers()) as $broker) {
         $broker->setAutoAddCmd('0');
+        $broker->save();
     }
     
     log::add('jMQTT', 'info', 'migration to no auto_add_cmd for broker done');
