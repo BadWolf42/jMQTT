@@ -454,7 +454,9 @@ class jMQTT extends eqLogic {
             if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {
                 $old_log = $this->getDaemonLogFile();
                 $new_log = $this->getDaemonLogFile(true);
-                rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
+                if (file_exists(log::getPathToLog($old_log))) {
+                    rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
+                }
                 config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, 'jMQTT'), 'jMQTT');
                 config::remove('log::level::' . $old_log, 'jMQTT');
             }
