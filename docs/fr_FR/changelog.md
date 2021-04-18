@@ -1,7 +1,10 @@
 # Registre des évolutions
 
-## beta
+## 2021-04-18
  - Réécriture des premiers chapitre de la documentation
+ - Le bouton de suppression de commandes s'affiche sur les nouvelles commandes en mode "classic"
+ - Les champs compte et mot de passe de connexion n'ont plus d'autocomplete
+ - Correction [Issue#35](https://github.com/Domochip/jMQTT/issues/35): Bug d'ajout de commande action puis info...
 
 ## 2021-04-13
   - Correction de la conversion de texte transformé en entier dans les payload (Ex : {"bidule":"007"} -> {"bidule":7})

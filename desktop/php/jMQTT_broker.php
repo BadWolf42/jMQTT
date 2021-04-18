@@ -102,14 +102,14 @@
                             <label class="col-lg-4 control-label">{{Compte de Connexion (non obligatoire) : }}</label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser"
-                                    style="margin-top: 5px" placeholder="jeedom" />
+                                    autocomplete="off" style="margin-top: 5px" placeholder="jeedom" />
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Mot de passe de Connexion (non obligatoire) : }}</label>
                             <div class="col-lg-4">
-                                <input type="password" class="eqLogicAttr form-control"
-                                    data-l1key="configuration" data-l2key="mqttPass" style="margin-top: 5px" placeholder="jeedom" />
+                                <input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPass"
+                                    autocomplete="off" style="margin-top: 5px" placeholder="jeedom" />
                             </div>
                         </div>
                         <div class="form-group">

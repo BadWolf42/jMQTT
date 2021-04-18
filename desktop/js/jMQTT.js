@@ -644,10 +644,23 @@ function addCmdToTable(_cmd) {
     if (!isset(_cmd.configuration)) {
         _cmd.configuration = {};
     }
-
+    
     // Is the JSON view is active
     var is_json_view = $('#bt_json.active').length != 0;
 
+    if (!isset(_cmd.tree_id)) {
+        //looking for all tree-id, keep part before the first dot, convert to Int
+        var root_tree_ids = $('[tree-id]').map((pos,e) => parseInt(e.getAttribute("tree-id").split('.')[0]))
+
+        //if some tree-id has been found
+        if (root_tree_ids.length > 0) {
+            _cmd.tree_id = (Math.max.apply(null, root_tree_ids) + 1).toString(); //use the highest one plus one
+        }
+        else {
+            _cmd.tree_id = '1'; // else this is the first one
+        }
+    }
+	
     if (init(_cmd.type) == 'info') {
         // FIXME: is this disabled variable usefull?
         var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
@@ -698,7 +711,7 @@ function addCmdToTable(_cmd) {
         else {
             tr += '</td><td>';
         }
-        if (_cmd.id != undefined && _cmd.configuration.irremovable == undefined) {
+        if (!is_json_view && _cmd.configuration.irremovable == undefined) {
             tr += ' <a class="btn btn-default btn-xs cmdAction pull-right" data-action="remove"><i class="fas fa-minus-circle"></i></a>';
         }
         tr += '</td></tr>';
