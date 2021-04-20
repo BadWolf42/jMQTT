@@ -17,6 +17,7 @@
  */
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
 
+include_file('3rdparty', 'mosquitto_topic_matches_sub', 'php', 'jMQTT');
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
@@ -1074,7 +1075,7 @@ class jMQTT extends eqLogic {
             $this->log('debug', 'Subscribe to topic "' . $topic . '" with Qos=1');
             
             if ($this->isApiEnable()) {
-                if (! Mosquitto\Message::topicMatchesSub($this->getMqttApiTopic(), $topic)) {
+                if (! mosquitto_topic_matches_sub($topic, $this->getMqttApiTopic())) {
                     $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
                     $client->subscribe($this->getMqttApiTopic(), '1');
                 }
@@ -1211,7 +1212,7 @@ class jMQTT extends eqLogic {
         // Loop on jMQTT equipments and get ones that subscribed to the current message
         $elogics = array();
         foreach (self::byBrkId() as $eqpt) {
-            if ($message->topicMatchesSub($msgTopic, $eqpt->getTopic())) {
+            if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) {
                 $elogics[] = $eqpt;
             }
         }
