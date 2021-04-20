@@ -39,6 +39,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
     }
 
     $spos = 0;
+	$previoussubchar = '';
 
     while (strlen($sub) > 0){
         if (strlen($topic) > 0 && ($topic[0] == '+' || $topic[0] == '#')){  // PHP transcoding : strlen added
