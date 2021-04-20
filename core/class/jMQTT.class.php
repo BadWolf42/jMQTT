@@ -734,7 +734,7 @@ class jMQTT extends eqLogic {
                 $brokername = 'local';
 
                 //looking for broker name conflict
-                $brokernameconflict = $false;
+                $brokernameconflict = false;
                 foreach(self::getBrokers() as $broker) {
                     if ($broker->getName() == $brokername) {
                         $brokernameconflict = true;
@@ -745,7 +745,7 @@ class jMQTT extends eqLogic {
                     $i = 0;
                     do {
                         $i++;
-                        $brokernameconflict = $false;
+                        $brokernameconflict = false;
                         $brokername = 'local'.$i;
                         foreach(self::getBrokers() as $broker) {
                             if ($broker->getName() == $brokername) {
