@@ -434,8 +434,7 @@ class jMQTTCmd extends cmd {
     public function topicMatchesSubscription($subscription) {
         $topic = $this->getTopic();
         $i = strpos($topic, '{');
-        return Mosquitto\Message::topicMatchesSub($i === false ? $topic : substr($topic, 0, $i),
-            $subscription);
+        return mosquitto_topic_matches_sub($subscription, $i === false ? $topic : substr($topic, 0, $i));
     }
     
     /**
