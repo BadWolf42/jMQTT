@@ -704,18 +704,22 @@ class jMQTT extends jMQTTBase {
      * Create first broker eqpt if mosquitto has been installed
      */
     public static function post_dependancy_install() {
-        log::add('jMQTT', 'info', 'Post-Installation des dépendances');
+        echo "Starting post_dependancy_install()\n";
         // if Mosquitto is installed
         if (config::byKey('installMosquitto', 'jMQTT', 1)) {
+            echo "Mosquitto installation requested => looking for Broker eqpt\n";
+
             //looking for broker pointing to local mosquitto
             $brokerexists = false;
             foreach(self::getBrokers() as $broker) {
                 if ($broker->getMqttAddress() == self::getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS)) {
                     $brokerexists = true;
+                    echo "Broker eqpt already exists\n";
                 }
             }
 
             if (!$brokerexists) {
+                echo "Broker eqpt not found\n";
 
                 $brokername = 'local';
 
@@ -742,7 +746,7 @@ class jMQTT extends jMQTTBase {
                     } while ($brokernameconflict);
                 }
 
-                log::add('jMQTT', 'info', 'Création du broker '.$brokername);
+                echo 'Creation of Broker eqpt. name : ' . $brokername . "\n";
                 $broker = new jMQTT();
                 $broker->setType(self::TYP_BRK);
                 $broker->initEquipment($brokername, self::getDefaultConfiguration(self::CONF_KEY_MQTT_ID).'/#', '1');
@@ -750,6 +754,7 @@ class jMQTT extends jMQTTBase {
                 $broker->setBrkId($broker->getId());
                 $broker->save();
                 $broker->createMqttClientStatusCmd();
+                echo "Done\n";
             }
         }
     }
