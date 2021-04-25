@@ -14,7 +14,7 @@ touch ${PROGRESS_FILE}
 echo 0 > ${PROGRESS_FILE}
 
 echo "********************************************************"
-echo "*              Dependancy installation               *"
+echo "*              dependancies Installation               *"
 echo "********************************************************"
 echo "> Progress file: " ${PROGRESS_FILE}
 echo "> Install Mosquitto: " ${INSTALL_MOSQUITTO}

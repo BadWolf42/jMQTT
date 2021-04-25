@@ -16,12 +16,13 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
+require_once __DIR__  . '/jMQTTBase.class.php';
 
 include_file('3rdparty', 'mosquitto_topic_matches_sub', 'php', 'jMQTT');
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
-class jMQTT extends eqLogic {
+class jMQTT extends jMQTTBase {
 
     const API_TOPIC = 'api';
     const API_ENABLE = 'enable';
