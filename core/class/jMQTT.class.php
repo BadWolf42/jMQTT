@@ -117,16 +117,6 @@ class jMQTT extends jMQTTBase {
      * @var Mosquitto\Client $_client
      */
     private $_log;
-    
-    /**
-     * @var string Dependancy installation log file
-     */
-    private static $_depLogFile;
-
-    /**
-     * @var string Dependancy installation progress value log file
-     */
-    private static $_depProgressFile;
 
     /**
      * Return one or all templates content (from json files) as an array.
@@ -671,49 +661,43 @@ class jMQTT extends jMQTTBase {
      * Provides dependancy information
      */
     public static function dependancy_info() {
-        if (! isset(self::$_depLogFile))
-            self::$_depLogFile = __CLASS__ . '_dep';
-            
-            if (! isset(self::$_depProgressFile))
-                self::$_depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/progress_dep.txt';
-                
-                $return = array();
-                $return['log'] = log::getPathToLog(self::$_depLogFile);
-                $return['progress_file'] = self::$_depProgressFile;
-                
-                // get number of mosquitto packages installed (should be 2 or 3 at least depending
-                // on the installMosquitto config parameter)
-                $mosq = exec(system::get('cmd_check') . 'mosquitto | wc -l');
-                $minMosq = config::byKey('installMosquitto', 'jMQTT', 1) ? 3 : 2;
-                
-                // is lib PHP exists?
-                $libphp = extension_loaded('mosquitto');
-                
-                // build the state status; if nok log debug information
-                if ($mosq >= $minMosq && $libphp) {
-                    $return['state'] = 'ok';
-                }
-                else {
-                    $return['state'] = 'nok';
-                    log::add('jMQTT', 'debug', 'dependancy_info: NOK');
-                    log::add('jMQTT', 'debug',
-                        '   * Nb of mosquitto related packaged installed: ' . $mosq . ' (shall be greater equal than ' . $minMosq .
-                        ')');
-                    log::add('jMQTT', 'debug', '   * Mosquitto extension loaded: ' . $libphp);
-                }
-                
-                return $return;
+        $depLogFile = __CLASS__ . '_dep';
+        $depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/dependancy';
+
+        $return = array();
+        $return['log'] = log::getPathToLog($depLogFile);
+        $return['progress_file'] = $depProgressFile;
+        
+        $return['state'] = 'ok';
+        if (exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "python3\-requests"') < 1) {
+            log::add(__CLASS__, 'debug', 'dependancy_info : debian python3-requests package is missing');
+            $return['state'] = 'nok';
+        }
+        if (exec(system::getCmdSudo() . 'pip3 list | grep -E "paho-mqtt|websocket\-client" | wc -l') < 2) {
+            log::add(__CLASS__, 'debug', 'dependancy_info : python3 paho-mqtt or websocket-client library is missing');
+            $return['state'] = 'nok';
+        }
+        if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
+            log::add(__CLASS__, 'debug', 'dependancy_info : debian mosquitto package is missing');
+            $return['state'] = 'nok';
+        }
+  
+        return $return;
     }
     
     /**
      * Provides dependancy installation script
      */
     public static function dependancy_install() {
-        log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . self::$_depLogFile . ')');
-        log::remove(self::$_depLogFile);
+        $depLogFile = __CLASS__ . '_dep';
+        $depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/dependancy';
+
+        log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . $depLogFile . ')');
+        log::remove($depLogFile);
         return array(
-            'script' => dirname(__FILE__) . '/../../resources/install_#stype#.sh ' . self::$_depProgressFile . ' ' .
-            config::byKey('installMosquitto', 'jMQTT', 1),'log' => log::getPathToLog(self::$_depLogFile));
+            'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
+            'log' => log::getPathToLog($depLogFile)
+        );
     }
 
     /**
