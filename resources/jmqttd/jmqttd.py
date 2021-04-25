@@ -44,20 +44,38 @@ class MqttClient:
 		self.q = queue
 		self.id = message['id']
 
-		self.mqttstatustopic = message['statustopic']
 		self.mqtthostname = message['hostname']
-		self.mqttport = message['port']
-		self.mqttsubscribedtopics = {}
 
+		self.mqttport = 1883
+		if 'port' in message:
+			self.mqttport = message['port']
+
+		self.mqttclientid = ''
+		if 'clientid' in message:
+			self.mqttclientid = message['clientid']
+
+		self.mqttusername = ''
+		if 'username' in message:
+			self.mqttusername = message['username']
+
+		self.mqttpassword = ''
+		if 'password' in message:
+			self.mqttpassword = message['password']
+
+		self.mqttstatustopic = ''
+		if 'statustopic' in message:
+			self.mqttstatustopic = message['statustopic']
+
+		self.mqttsubscribedtopics = {}
 		self.connected = False
 
 		# Create MQTT Client
-		self.mqttclient = mqtt.Client()
-		if 'username' in message and message['username'] != '':
-			if 'password' in message and message['password'] != '':
-				self.mqttclient.username_pw_set(message['username'], message['password'])
+		self.mqttclient = mqtt.Client(self.mqttclientid)
+		if self.mqttusername != '':
+			if self.mqttpassword != '':
+				self.mqttclient.username_pw_set(self.mqttusername, self.mqttpassword)
 			else:
-				self.mqttclient.username_pw_set(message['username'])
+				self.mqttclient.username_pw_set(self.mqttusername)
 		self.mqttclient.reconnect_delay_set(5, 15)
 		self.mqttclient.on_connect = self.on_connect
 		self.mqttclient.on_disconnect = self.on_disconnect
@@ -122,7 +140,8 @@ class MqttClient:
 		self.mqttthread.start()
 
 	def stop(self):
-		self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True).wait_for_publish()
+		if self.mqttstatustopic != '':
+			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True).wait_for_publish()
 		self.mqttclient.disconnect()
 		self.mqttthread.join()
 	
@@ -251,7 +270,7 @@ def cmd_handler(message):
 	# ------------------------------ newMqttClient ------------------------------
 	if message['cmd'] == 'newMqttClient':
 		#Make more controls on received message
-		if not (message.keys() >= {'callback', 'hostname', 'port', 'clientid', 'statustopic'}):
+		if not (message.keys() >= {'callback', 'hostname'}):
 			logging.error('Id ' + str(message['id']) + ' !!! newMqttClient - missing parameter : ' + json.dumps(message))
 			return
 
