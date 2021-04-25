@@ -40,15 +40,15 @@ apt-get install -y python3-requests python3-pip
 echo 60 > ${PROGRESS_FILE}
 
 echo "*"
-echo "* Install python3 python3-requests library"
+echo "* Install python3 paho-mqtt library"
 echo "*"
-apt-get install -y python3-requests python3-pip
+pip3 install --upgrade paho-mqtt
 echo 70 > ${PROGRESS_FILE}
 
 echo "*"
 echo "* Install python3 websocket-client library"
 echo "*"
-apt-get install -y websocket-client
+pip3 install --upgrade websocket-client
 echo 80 > ${PROGRESS_FILE}
 
 echo "*"
