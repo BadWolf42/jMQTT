@@ -102,11 +102,21 @@ class jMQTTBase extends eqLogic {
       if (file_exists($pid_file1)) {
          $pid1 = intval(trim(file_get_contents($pid_file1)));
          system::kill($pid1, false);
+         //wait up to 10 seconds for python daemon stop
+         for ($i = 1; $i <= 40; $i++) {
+            if (! @posix_getsid($pid1)) break;
+            usleep(250000);
+         }
       }
       $pid_file2 = jeedom::getTmpFolder(get_called_class()) . '/jmqttd.php.pid';
       if (file_exists($pid_file2)) {
          $pid2 = intval(trim(file_get_contents($pid_file2)));
          system::kill($pid2, false);
+         //wait up to 10 seconds for php daemon stop
+         for ($i = 1; $i <= 40; $i++) {
+            if (! @posix_getsid($pid2)) break;
+            usleep(250000);
+         }
       }
       system::fuserk(config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT));
       system::fuserk(config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT));
