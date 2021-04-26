@@ -949,25 +949,27 @@ class jMQTT extends jMQTTBase {
     }
    
     public static function on_daemon_connect($id) {
-        log::add(__CLASS__, 'debug', 'Le client MQTT est connécté à Jeedom.');
         self::byId(intval($id))->setCache('DaemonConnected', true);
     }
     public static function on_daemon_disconnect($id) {
-        log::add(__CLASS__, 'debug', 'Le client MQTT s\'est déconnécté de Jeedom.');
         self::byId(intval($id))->setCache('DaemonConnected', false);
     }
     public static function on_mqtt_connect($id) {
-        log::add(__CLASS__, 'debug', 'Le client MQTT est connécté au Broker.');
-        self::byId(intval($id))->setCache('MQTTClientConnected', true);
+        $broker = self::byId(intval($id));
+        $broker->setCache('MQTTClientConnected', true);
+        $broker->getMqttClientStatusCmd()->event(self::ONLINE);
+        $broker->sendDaemonStateEvent();
     }
     public static function on_mqtt_disconnect($id) {
-        log::add(__CLASS__, 'debug', 'Le client MQTT s\'est déconnécté du Broker.');
         $broker = self::byId(intval($id));
         $broker->setCache('MQTTClientConnected', false);
         $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
         $broker->sendDaemonStateEvent();
     }
-
+    public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
+        $broker = self::byId(intval($id));
+        $broker->brokerMessageCallback($topic, $payload);
+    }
        
     /**
      * Return the last deamon launch time
@@ -997,64 +999,17 @@ class jMQTT extends jMQTTBase {
     ##                   MQTT BROKER METHODS
     ##
     ###################################################################################################################
-    
-    public function brokerConnectCallback($r, $message) {
-        $this->log('debug', 'broker msg: connection response is ' . $message);
-        $this->_client->publish($this->getMqttClientStatusTopic(), self::ONLINE, 1, 1);
-        $this->getMqttClientStatusCmd()->event(self::ONLINE);
-        $this->sendDaemonStateEvent();
-        $this->save(true);
-    }
-    
-    public function brokerDisconnectCallback($r) {
-        $msg = ($r == 0) ? 'on client request' : 'unexpectedly';
-        $this->log('debug', 'broker msg: disconnected ' . $msg);
-        $this->_client->publish($this->getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
-        $this->getMqttClientStatusCmd()->event(self::OFFLINE);
-        $this->sendDaemonStateEvent();
-    }
-    
-    public function brokerSubscribeCallback($mid, $qosCount) {
-        // Note: qosCount is not representative, do not display it (fix #31)
-        $this->log('debug', 'broker msg: topic subscription accepted, mid=' . $mid);
-    }
-    
-    public function brokerUnsubscribeCallback($mid) {
-        $this->log('debug', 'broker msg: topic unsubscription accepted, mid=' . $mid);
-    }
-    
-    public function brokerLogCallback($level, $str) {
-        switch ($level) {
-            case Mosquitto\Client::LOG_DEBUG:
-                $logLevel = 'debug';
-                break;
-            case Mosquitto\Client::LOG_INFO:
-            case Mosquitto\Client::LOG_NOTICE:
-                $logLevel = 'info';
-                break;
-            case Mosquitto\Client::LOG_WARNING:
-                $logLevel = 'warning';
-                break;
-            default:
-                $logLevel = 'error';
-                break;
-        }
-        
-        $this->log($logLevel, 'broker msg: ' . $str);
-    }
+
     
     /**
-     * Callback called each time a subscribed topic is dispatched by the broker.
+     * Callback called each time a message matching subscribed topic is received from the broker.
      *
      * @param $message string
      *            dispatched message
      */
-    public function brokerMessageCallback($message) {
+    public function brokerMessageCallback($msgTopic, $msgValue) {
         
         $this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
-        
-        $msgTopic = $message->topic;
-        $msgValue = $message->payload;
         
         // In case of topic starting with /, remove the starting character (fix Issue #7)
         // And set the topic prefix (fix issue #15)
