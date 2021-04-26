@@ -945,10 +945,14 @@ class jMQTT extends jMQTTBase {
     }
    
     public static function on_daemon_connect($id) {
-        self::getBrokerFromId(intval($id))->setCache('DaemonConnected', true);
+        $broker = self::getBrokerFromId(intval($id));
+        $broker->setCache('DaemonConnected', true);
     }
     public static function on_daemon_disconnect($id) {
-        self::getBrokerFromId(intval($id))->setCache('DaemonConnected', false);
+        $broker = self::getBrokerFromId(intval($id));
+        $broker->setCache('DaemonConnected', false);
+        // if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
+        self::on_mqtt_disconnect($id);
     }
     public static function on_mqtt_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
