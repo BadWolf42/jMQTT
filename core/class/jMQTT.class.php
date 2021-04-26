@@ -946,25 +946,25 @@ class jMQTT extends jMQTTBase {
     }
    
     public static function on_daemon_connect($id) {
-        self::byId(intval($id))->setCache('DaemonConnected', true);
+        self::getBrokerFromId(intval($id))->setCache('DaemonConnected', true);
     }
     public static function on_daemon_disconnect($id) {
-        self::byId(intval($id))->setCache('DaemonConnected', false);
+        self::getBrokerFromId(intval($id))->setCache('DaemonConnected', false);
     }
     public static function on_mqtt_connect($id) {
-        $broker = self::byId(intval($id));
+        $broker = self::getBrokerFromId(intval($id));
         $broker->setCache('MQTTClientConnected', true);
         $broker->getMqttClientStatusCmd()->event(self::ONLINE);
         $broker->sendDaemonStateEvent();
     }
     public static function on_mqtt_disconnect($id) {
-        $broker = self::byId(intval($id));
+        $broker = self::getBrokerFromId(intval($id));
         $broker->setCache('MQTTClientConnected', false);
         $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
         $broker->sendDaemonStateEvent();
     }
     public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
-        $broker = self::byId(intval($id));
+        $broker = self::getBrokerFromId(intval($id));
         $broker->brokerMessageCallback($topic, $payload);
     }
        
