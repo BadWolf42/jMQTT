@@ -650,6 +650,11 @@ class jMQTT extends jMQTTBase {
     public static function deamon_stop() {
         log::add(__CLASS__, 'info', 'arrête le daemon');
         parent::deamon_stop();
+        // TODO review termination of processes to allow normal callback to operate
+        foreach(self::getBrokers() as $broker) {
+            $broker->setCache('DaemonConnected', false);
+            $broker->setCache('MQTTClientConnected', false);
+        }
     }
     /**
      * Provides dependancy information
@@ -973,7 +978,7 @@ class jMQTT extends jMQTTBase {
         $broker = self::getBrokerFromId(intval($id));
         $broker->brokerMessageCallback($topic, $payload);
     }
-       
+
     /**
      * Return the last deamon launch time
      * @return string date or unknown
