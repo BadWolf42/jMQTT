@@ -456,7 +456,7 @@ class jMQTT extends jMQTTBase {
             // In case of broker id change, 
             if (! ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED)) {            
                 if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
-                    $this->getBroker()->startDaemon(false);
+                    $this->getBroker()->startDaemon();
                 }
                 $this->_post_data['action'] = null;
             }
@@ -494,7 +494,7 @@ class jMQTT extends jMQTTBase {
                 
                 
             if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
-                $this->startDaemon(false);
+                $this->startDaemon();
             }
             $this->_post_data['action'] = null;
         }
@@ -643,7 +643,7 @@ class jMQTT extends jMQTTBase {
      * callback to start daemon
      */
     public static function deamon_start() {
-        log::add('jMQTT', 'info', 'démarre le plugin');
+        log::add('jMQTT', 'info', 'démarre le daemon');
         parent::deamon_start();
         self::checkAllDaemons();
     }
@@ -652,7 +652,7 @@ class jMQTT extends jMQTTBase {
      * callback to stop daemon
      */
     public static function deamon_stop() {
-        log::add('jMQTT', 'info', 'arrête le plugin');
+        log::add('jMQTT', 'info', 'arrête le daemon');
         parent::deamon_stop();
     }
     /**
@@ -770,7 +770,7 @@ class jMQTT extends jMQTTBase {
         foreach(self::getBrokers() as $broker) {
             if ($broker->getDaemonState() == "nok") {
                 try {
-                    log::add('jMQTT', 'info', 'vérifie le démon ' . $broker->getName());
+                    log::add('jMQTT', 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
                     $broker->startDaemon();
                 }
                 catch (Exception $e) {}
@@ -876,46 +876,70 @@ class jMQTT extends jMQTTBase {
     
     /**
      * Start the daemon of this broker if it is launchable
-     * @param bool $restart true to stop the daemon first
      * @throws Exception if the daemon is not launchable
      */
-    public function startDaemon($restart = false) {
+    public function startDaemon() {
         $daemon_info = $this->getDaemonInfo();
         if ($daemon_info['launchable'] != 'ok') {
-            throw new Exception(__('Le démon n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
+            throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
         }
-        
-        if ($restart) {
-            $this->stopDaemon();
-            sleep(1);
-        }
-        $cron = $this->getDaemonCron();
-        if (!is_object($cron)) {
-            $cron = new cron();
-            $cron->setClass(__CLASS__);
-            $cron->setFunction('daemon');
-            $cron->setOption(array('id' => $this->getId()));
-            $cron->setEnable(1);
-            $cron->setDeamon(1);
-            $cron->setSchedule('* * * * *');
-            $cron->setTimeout('1440');
-            $cron->save();
-        }
-        $this->log('info', 'démarre le démon');
+
+        $this->log('info', 'démarre le client MQTT ');
         $this->setLastDaemonLaunchTime();
         $this->sendDaemonStateEvent();
-        $cron->run();
+        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
+
+        
+        // Subscribe to all necessary topics
+        if ($this->isIncludeMode()) { // auto inclusion mode
+            $topic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
+            // Subscribe to topic (root by default)
+            self::subscribe_mqtt_topic($this->getId(), $topic, 1);
+            $this->log('debug', 'Subscribe to topic "' . $topic . '" with Qos=1');
+            
+            if ($this->isApiEnable()) {
+                if (! mosquitto_topic_matches_sub($topic, $this->getMqttApiTopic())) {
+                    $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
+                    self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
+                }
+                else
+                    $this->log('info', 'No need to subscribe to the API topic "' . $this->getMqttApiTopic() . '"');
+            }
+            else {
+                $this->log('info', 'API is disable');
+            }
+        }
+        else { // manual inclusion mode
+            // Loop on all equipments and subscribe
+            foreach ($this->byBrkId() as $mqtt) {
+                if ($mqtt->getIsEnable()) {
+                    $topic = $mqtt->getTopic();
+                    $qos = (int) $mqtt->getQos();
+                    if (empty($topic)) {
+                        $this->log('info', 'Equipment ' . $mqtt->getName() . ': no subscription (empty topic)');
+                    }
+                    else {
+                        $this->log('info', 'Equipment ' . $mqtt->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
+                        self::subscribe_mqtt_topic($this->getId(), $topic, $qos);
+                    }
+                }
+            }
+            
+            if ($this->isApiEnable()) {
+                $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
+                self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
+            } else {
+                $this->log('info', 'API is disable');
+            }
+        }
     }
     
     /**
      * Stop the daemon of this broker type object
      */
     public function stopDaemon() {
-        $this->log('info', 'arrête le démon');
-        $cron = $this->getDaemonCron();
-        if (is_object($cron)) {
-            $cron->halt();
-        }
+        $this->log('info', 'arrête le client MQTT');
+        self::remove_mqtt_client($this->getId());
         
         $cmd = $this->getMqttClientStatusCmd();
         // Status cmd may not exist on object removal for instance
@@ -995,14 +1019,6 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Return the cron object related to this broker object 
-     * @return cron|NULL
-     */
-    public function getDaemonCron() {
-        return cron::byClassAndFunction('jMQTT', 'daemon', array('id' => $this->getId()));
-    }
-    
-    /**
      * Send a jMQTT::EventState event to the UI containing daemon info
      * The method shall be called on a broker equipment eqLogic
      */
@@ -1056,48 +1072,6 @@ class jMQTT extends jMQTTBase {
             'Connect to mosquitto: Host=' . $mosqHost . ', Port=' . $mosqPort . ', Id=' . $this->getMqttId());
         $client->connect($mosqHost, $mosqPort, 60);
         
-        if ($this->isIncludeMode()) { // auto inclusion mode
-            $topic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
-            // Subscribe to topic (root by default)
-            $client->subscribe($topic, 1);
-            $this->log('debug', 'Subscribe to topic "' . $topic . '" with Qos=1');
-            
-            if ($this->isApiEnable()) {
-                if (! mosquitto_topic_matches_sub($topic, $this->getMqttApiTopic())) {
-                    $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
-                    $client->subscribe($this->getMqttApiTopic(), '1');
-                }
-                else
-                    $this->log('info', 'No need to subscribe to the API topic "' . $this->getMqttApiTopic() . '"');
-            }
-            else {
-                $this->log('info', 'API is disable');
-            }
-        }
-        else { // manual inclusion mode
-            // Loop on all equipments and subscribe
-            foreach ($this->byBrkId() as $mqtt) {
-                if ($mqtt->getIsEnable()) {
-                    $topic = $mqtt->getTopic();
-                    $qos = (int) $mqtt->getQos();
-                    if (empty($topic)) {
-                        $this->log('info', 'Equipment ' . $mqtt->getName() . ': no subscription (empty topic)');
-                    }
-                    else {
-                        $this->log('info',
-                            'Equipment ' . $mqtt->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
-                        $client->subscribe($topic, $qos);
-                    }
-                }
-            }
-            
-            if ($this->isApiEnable()) {
-                $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
-                $client->subscribe($this->getMqttApiTopic(), '1');
-            } else {
-                $this->log('info', 'API is disable');
-            }
-        }
     }
     
     public function brokerConnectCallback($r, $message) {
@@ -1800,7 +1774,7 @@ class jMQTT extends jMQTTBase {
 
         // Restart the daemon
         if ($broker->isDaemonToBeRestarted()) {
-            $broker->startDaemon(true);
+            $broker->startDaemon();
         }
     }
 
@@ -1835,7 +1809,7 @@ class jMQTT extends jMQTTBase {
         }
 
         // Restart the MQTT deamon to manage topic subscription
-        $this->startDaemon(true);
+        $this->startDaemon();
     }
     
     /**
