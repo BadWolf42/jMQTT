@@ -25,15 +25,25 @@ if (!isConnect()) {
 ?>
 
 <form class="form-horizontal">
-    <div class="form-group">
-        <fieldset>
-            <div class="form-group">
-                <label class="col-sm-4 control-label">{{Installer Mosquitto localement : }}</label>
-                <div class="col-sm-2">
-                    <input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="installMosquitto"
-                        checked />
-                </div>
+    <fieldset>
+        <div class="form-group">
+            <label class="col-sm-5 control-label">{{Installer Mosquitto localement : }}</label>
+            <div class="col-sm-3">
+                <input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="installMosquitto"
+                    checked />
             </div>
-        </fieldset>
-    </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-5 control-label">{{Port démon python}}</label>
+            <div class="col-sm-3">
+                <input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTT::DEFAULT_PYTHON_PORT; ?>"/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-5 control-label">{{Port démon websocket}}</label>
+            <div class="col-sm-3">
+                <input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTT::DEFAULT_WEBSOCKET_PORT; ?>"/>
+            </div>
+        </div>
+    </fieldset>
 </form>
