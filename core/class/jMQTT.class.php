@@ -771,7 +771,7 @@ class jMQTT extends jMQTTBase {
                 }
                 catch (Exception $e) {}
             }
-        }   
+        }
     }
        
     /**
@@ -849,15 +849,14 @@ class jMQTT extends jMQTTBase {
     /**
      * Return daemon state
      *   - self::DAEMON_OK: daemon is running and mqtt broker is online
-     *   - self::DAEMON_POK: daemon is running but mktt broker is offline
+     *   - self::DAEMON_POK: daemon is running but mqtt broker is offline
      *   - self::DAEMON_NOK: no cron exists or cron is not running
      * @return string ok or nok
      */
     public function getDaemonState() {
         if ($this->getCache('DaemonConnected', false)) {
-            $cmd = $this->getMqttClientStatusCmd();
-            if (is_object($cmd)) {
-                $return = $cmd->execCmd() == self::ONLINE ? self::DAEMON_OK : self::DAEMON_POK;
+            if ($this->getCache('MQTTClientConnected', false)) {
+                $return = self::DAEMON_OK;
             }
             else {
                 $return  = self::DAEMON_POK;
