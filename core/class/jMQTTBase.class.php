@@ -146,7 +146,7 @@ class jMQTTBase extends eqLogic {
    public static function new_mqtt_client($id, $hostname, $port = 1883, $clientid = '', $statustopic = '', $username = '', $password = '') {
       $params['cmd']='newMqttClient';
       $params['id']=$id;
-      $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/template/core/php/jmqttd.php';
+      $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
       $params['hostname']=$hostname;
       $params['port']=$port;
       $params['clientid']=$clientid;
