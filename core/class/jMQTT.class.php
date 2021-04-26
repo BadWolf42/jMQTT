@@ -487,8 +487,7 @@ class jMQTT extends jMQTTBase {
                     }
                 }
                 // Send a null command to the previous status command topic to suppress the retained message
-                $this->publishMosquitto($this->getMqttClientStatusCmd()->getId(), $this->getName(),
-                    self::_getMqttClientStatusTopic($this->_post_data[self::CONF_KEY_OLD]), '', 1, 1);
+                $this->publishMosquitto($this->getName(), self::_getMqttClientStatusTopic($this->_post_data[self::CONF_KEY_OLD]), '', 1, 1);
             }
                 
                 
@@ -1004,8 +1003,10 @@ class jMQTT extends jMQTTBase {
     /**
      * Callback called each time a message matching subscribed topic is received from the broker.
      *
-     * @param $message string
-     *            dispatched message
+     * @param $msgTopic string
+     *            topic of the message
+     * @param $msgValue string
+     *            payload of the message
      */
     public function brokerMessageCallback($msgTopic, $msgValue) {
         
@@ -1154,8 +1155,6 @@ class jMQTT extends jMQTTBase {
     /**
      * Publish a given message to the MQTT broker attached to this object
      *
-     * @param string $id
-     *            id of the command
      * @param string $eqName
      *            equipment name (for log purpose)
      * @param string $topic
@@ -1167,9 +1166,7 @@ class jMQTT extends jMQTTBase {
      * @param string $retain
      *            whether or not the message is a retained message ('0' or '1')
      */
-    public function publishMosquitto($id, $eqName, $topic, $payload, $qos, $retain) {
-        $mosqHost = $this->getBroker()->getMqttAddress();
-        $mosqPort = $this->getBroker()->getMqttPort();
+    public function publishMosquitto($eqName, $topic, $payload, $qos, $retain) {
         
         if (is_bool($payload)) {
             // Fix #80
@@ -1182,59 +1179,15 @@ class jMQTT extends jMQTTBase {
         $payloadLogMsg = ($payload === '') ? '(null)' : $payload;
         $this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadLogMsg);
         
-        // To identify the sender (in case of debug need), build the client id based on the jMQTT connexion id
-        // and the command id.
-        // Concatenates a random string to have a unique id (in case of burst of commands, see issue #23).
-        $mosqId = $this->getBroker()->getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
-        
-        $mosqUser = $this->getBroker()->getConf(self::CONF_KEY_MQTT_USER);
-        $mosqPass = $this->getBroker()->getConf(self::CONF_KEY_MQTT_PASS);
+        $this->log('debug', 'Publication du message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
-        if (!function_exists('mb_escapeshellarg')) {
-            function mb_escapeshellarg($arg) {
-                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
-                    return '"' . str_replace(array('"', '%'), array('', ''), $arg) . '"';
-                else
-                    return "'" . str_replace("'", "'\\''", $arg) . "'";
-            }
-        }
-
-        $sysCmd='mosquitto_pub';
-        $sysCmd.=' -h '.mb_escapeshellarg($mosqHost);
-        $sysCmd.=' -p '.mb_escapeshellarg($mosqPort);
-        if ($mosqUser != '') {
-            $sysCmd.=' -u '.mb_escapeshellarg($mosqUser);
-            $sysCmd.=' -P '.mb_escapeshellarg($mosqPass);
-        }
-        $sysCmd.=' -t '.mb_escapeshellarg($topic);
-        $sysCmd.=' -i '.mb_escapeshellarg($mosqId);
-        $sysCmd.=' -q '.mb_escapeshellarg($qos);
-        if($retain){
-            $sysCmd.=' -r';
-        }
-        $sysCmd.=' -m '.mb_escapeshellarg($payload);
-
-        $sysCmd.=' 2>&1';
-
-        $this->log('debug', 'Publication du message ' . $topic . ' ' . $payload . ' (pid=' . getmypid() . ', qos=' . $qos . ', retain=' . $retain . ')');
-        $this->log('debug', '$sysCmd='.$sysCmd);
-
-
-        $output=null;
-        $retval=null;
-
-        exec($sysCmd, $output, $retval);
-
-        if($retval != 0){
-            $this->log('error', 'Publication échouée ( '.$retval.' : '.$output[count($output)-1].')');
-            throw new ErrorException('Publication échouée ( '.$retval.' : '.$output[count($output)-1].')');
-        }
+        self::send_mqtt_message($this->getBroker()->getId(), $topic, $payload, $qos, $retain);
         
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
-        if ($this->getType() == self::TYP_EQPT) {
-            $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
-        }
+        // if ($this->getType() == self::TYP_EQPT) {
+        //     $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+        // }
         
         $this->log('debug', 'Message publié');
     }

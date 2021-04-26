@@ -204,7 +204,7 @@ class mqttApiRequest {
             'API: ' . $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG] . ' (err. code is ' .
             $_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE] . ')');
         if (isset($this->ret_topic))
-            $this->broker->publishMosquitto('api', 'api', $this->ret_topic, json_encode($_arrErr), '1', '0');
+            $this->broker->publishMosquitto('api', $this->ret_topic, json_encode($_arrErr), '1', '0');
     }
 
     /**
@@ -215,7 +215,7 @@ class mqttApiRequest {
      */
     protected function publishSuccess($_jsonRes) {
         if (isset($this->ret_topic))
-            $this->broker->publishMosquitto('api', 'api', $this->ret_topic, $_jsonRes, '1', '0');
+            $this->broker->publishMosquitto('api', $this->ret_topic, $_jsonRes, '1', '0');
         else
             $this->broker->log('warning',
                 'API: the response is not published as the response topic was not defined in the request.');
