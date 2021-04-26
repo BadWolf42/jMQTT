@@ -763,17 +763,20 @@ class jMQTT extends jMQTTBase {
      * Check all daemons (start them if needed)
      */
     public static function checkAllDaemons() {
-        foreach(self::getBrokers() as $broker) {
-            if ($broker->getDaemonState() == "nok") {
-                try {
-                    log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
-                    $broker->startDaemon();
+        $daemon_info = self::deamon_info();
+        if ($daemon_info['state'] == 'ok') {
+            foreach(self::getBrokers() as $broker) {
+                if ($broker->getDaemonState() == "nok") {
+                    try {
+                        log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
+                        $broker->startDaemon();
+                    }
+                    catch (Exception $e) {}
                 }
-                catch (Exception $e) {}
             }
         }
     }
-       
+
     /**
      * Return daemon information
      * @return string[] daemon information array
