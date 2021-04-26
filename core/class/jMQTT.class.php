@@ -489,8 +489,8 @@ class jMQTT extends jMQTTBase {
                 // Send a null command to the previous status command topic to suppress the retained message
                 $this->publishMosquitto($this->getName(), self::_getMqttClientStatusTopic($this->_post_data[self::CONF_KEY_OLD]), '', 1, 1);
             }
-                
-                
+
+
             if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
                 $this->startDaemon();
             }
@@ -639,7 +639,7 @@ class jMQTT extends jMQTTBase {
      * callback to start daemon
      */
     public static function deamon_start() {
-        log::add('jMQTT', 'info', 'démarre le daemon');
+        log::add(__CLASS__, 'info', 'démarre le daemon');
         parent::deamon_start();
         self::checkAllDaemons();
     }
@@ -648,7 +648,7 @@ class jMQTT extends jMQTTBase {
      * callback to stop daemon
      */
     public static function deamon_stop() {
-        log::add('jMQTT', 'info', 'arrête le daemon');
+        log::add(__CLASS__, 'info', 'arrête le daemon');
         parent::deamon_stop();
     }
     /**
@@ -766,7 +766,7 @@ class jMQTT extends jMQTTBase {
         foreach(self::getBrokers() as $broker) {
             if ($broker->getDaemonState() == "nok") {
                 try {
-                    log::add('jMQTT', 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
+                    log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
                     $broker->startDaemon();
                 }
                 catch (Exception $e) {}
@@ -788,7 +788,7 @@ class jMQTT extends jMQTTBase {
         
         // Is the daemon launchable
         $return['launchable'] = 'ok';
-        $dependancy_info = plugin::byId('jMQTT')->dependancy_info();
+        $dependancy_info = plugin::byId(__CLASS__)->dependancy_info();
         if ($dependancy_info['state'] == 'ok') {
             if (!$this->getIsEnable()) {
                 $return['launchable'] = 'nok';
@@ -1250,7 +1250,7 @@ class jMQTT extends jMQTTBase {
      */
     public function getDaemonLogFile($force=false) {
         if (!isset($this->_log) || $force) {
-            $this->_log = 'jMQTT_' . str_replace(' ', '_', $this->getBroker()->getName());
+            $this->_log = __CLASS__ . '_' . str_replace(' ', '_', $this->getBroker()->getName());
         }
         return $this->_log;
     }
@@ -1620,7 +1620,7 @@ class jMQTT extends jMQTTBase {
         // A cron process is used to reset the automatic mode after a delay
 
         // If the cron process is already defined, remove it
-        $cron = cron::byClassAndFunction('jMQTT', 'disableIncludeMode', array('id' => $this->getId()));
+        $cron = cron::byClassAndFunction(__CLASS__, 'disableIncludeMode', array('id' => $this->getId()));
         if (is_object($cron)) {
             $cron->remove();
         }
@@ -1628,7 +1628,7 @@ class jMQTT extends jMQTTBase {
         // Create and configure the cron process when automatic mode is enabled
         if ($mode == 1) {
             $cron = new cron();
-            $cron->setClass('jMQTT');
+            $cron->setClass(__CLASS__);
             $cron->setOption(array('id' => $this->getId()));
             $cron->setFunction('disableIncludeMode');
             // Add 150s => actual delay between 2 and 3min
@@ -1676,7 +1676,7 @@ class jMQTT extends jMQTTBase {
     private static function log_backtrace() {
         $e = new Exception();
         $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
-        log::add('jMQTT', 'debug', $s);
+        log::add(__CLASS__, 'debug', $s);
     }
     
 	/**
