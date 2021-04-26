@@ -633,29 +633,27 @@ class jMQTT extends jMQTTBase {
     
     /**
      * cron callback
-     * check daemons are started
+     * check daemons are up and connected to Websocket
      */
     public function cron() {
-        //log::add('jMQTT', 'info', 'démarre le plugin');
         self::checkAllDaemons();
     }
     
     /**
-     * callback to start this plugin
+     * callback to start daemon
      */
-    public static function start() {
+    public static function deamon_start() {
         log::add('jMQTT', 'info', 'démarre le plugin');
+        parent::deamon_start();
         self::checkAllDaemons();
     }
     
     /**
-     * callback to stop this plugin
+     * callback to stop daemon
      */
-    public static function stop() {
+    public static function deamon_stop() {
         log::add('jMQTT', 'info', 'arrête le plugin');
-        foreach(self::getBrokers() as $broker) {
-            $broker->stopDaemon();
-        }
+        parent::deamon_stop();
     }
     /**
      * Provides dependancy information
