@@ -113,20 +113,20 @@ class jMQTTBase extends eqLogic {
       sleep(1);
    }
 
-   public static function on_daemon_connect() {
-      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_daemon_connect()" in the class \''.get_called_class().'\' to handle daemon connect event.');
+   public static function on_daemon_connect($id) {
+      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_daemon_connect($id)" in the class \''.get_called_class().'\' to handle daemon connect event.');
    }
-   public static function on_daemon_disconnect() {
-      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_daemon_disconnect()" in the class \''.get_called_class().'\' to handle daemon disconnect event.');
+   public static function on_daemon_disconnect($id) {
+      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_daemon_disconnect($id)" in the class \''.get_called_class().'\' to handle daemon disconnect event.');
    }
-   public static function on_mqtt_connect() {
-      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_mqtt_connect()" in the class \''.get_called_class().'\' to handle mqtt connect event.');
+   public static function on_mqtt_connect($id) {
+      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_mqtt_connect($id)" in the class \''.get_called_class().'\' to handle mqtt connect event.');
    }
-   public static function on_mqtt_disconnect() {
-      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_mqtt_disconnect()" in the class \''.get_called_class().'\' to handle mqtt disconnect event.');
+   public static function on_mqtt_disconnect($id) {
+      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_mqtt_disconnect($id)" in the class \''.get_called_class().'\' to handle mqtt disconnect event.');
    }
-   public static function on_mqtt_message() {
-      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_mqtt_message()" in the class \''.get_called_class().'\' to handle mqtt messages.');
+   public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
+      log::add(get_called_class(), 'debug', 'You need to implement "public static function on_mqtt_message($id, $topic, $payload, $qos, $retain)" in the class \''.get_called_class().'\' to handle mqtt messages.');
    }
    
 
