@@ -518,10 +518,8 @@ class jMQTT extends jMQTTBase {
             $this->setIsEnable(0);
             $this->save(true);
 
-            $cron = $this->getDaemonCron();
-            if (is_object($cron)) {
-                $cron->remove(true);
-            }
+            self::remove_mqtt_client($this->getId());
+
             // suppress the log file
             if (file_exists(log::getPathToLog($this->getDaemonLogFile()))) {
                 unlink(log::getPathToLog($this->getDaemonLogFile()));
