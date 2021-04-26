@@ -47,7 +47,6 @@ class jMQTT extends jMQTTBase {
     const CONF_KEY_QOS = 'Qos';
     const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
     const CONF_KEY_API = 'api';
-    const CONF_KEY_LAST_CONNECT_TIME = 'lastClientConnectTime';
     
     const CONF_KEY_OLD = 'old';
     const CONF_KEY_NEW = 'new';
@@ -963,61 +962,12 @@ class jMQTT extends jMQTTBase {
     }
     public static function on_mqtt_disconnect($id) {
         log::add(__CLASS__, 'debug', 'Le client MQTT s\'est déconnécté du Broker.');
-        self::byId(intval($id))->setCache('MQTTClientConnected', false);
-    }
-
-    /**
-     * Daemon method
-     * @param string[] $option $option[id]=broker id
-     * @throws Exception if $option[id] is not a valid broker id
-     */
-    public static function daemon($option) {
-        $broker = self::getBrokerFromId($option['id']);
-        $broker->log('debug', 'daemon starts, pid is ' . getmypid());
-
-        // Create mosquitto client
-        $broker->_client = $broker->getMosquittoClient($broker->getMqttId());
-        
-        // Set callbacks
-        $broker->_client->onConnect(array($broker, 'brokerConnectCallback'));
-        $broker->_client->onDisconnect(array($broker, 'brokerDisconnectCallback'));
-        $broker->_client->onSubscribe(array($broker, 'brokerSubscribeCallback'));
-        $broker->_client->onUnsubscribe(array($broker, 'brokerUnsubscribeCallback'));
-        $broker->_client->onMessage(array($broker, 'brokerMessageCallback'));
-        $broker->_client->onLog(array($broker, 'brokerLogCallback'));
-
-        // Defines last will terminaison message
-        $broker->_client->setWill($broker->getMqttClientStatusTopic(), self::OFFLINE, 1, 1);
-        
-        $statusCmd = $broker->getMqttClientStatusCmd();
-        $broker->log('debug', 'status cmd id: ' . $statusCmd->getId() . ', topic: ' . $statusCmd->getLogicalId());
-            
-        // Reset the last connection (to the broker) time. Will be set in the mosquittoConnect callback once connected
-        $broker->setConfiguration(self::CONF_KEY_LAST_CONNECT_TIME, '');
-        $broker->save(true);
-       
-        // Subscription and infinite loop
-        try {
-            $broker->connectSubscribeMqttBroker($broker->_client);
-            $broker->_client->loopForever();
-        }
-        catch (Exception $e) {
-            $broker->log('warning', 'exception thrown by MQTT client: ' . $e->getMessage());
-        }
-        
-        $statusCmd->event(self::OFFLINE);
+        $broker = self::byId(intval($id));
+        $broker->setCache('MQTTClientConnected', false);
+        $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
         $broker->sendDaemonStateEvent();
-        
-        // Depending on the last connection time, reconnect immediately or wait 15s
-        $time = $broker->getConf(self::CONF_KEY_LAST_CONNECT_TIME);
-        if ($time == '' || (strtotime('now') - $time) < 15) {
-            $broker->log('info', 'relance le démon dans 15s');
-            sleep(15);
-        }
-        else {
-            $broker->log('info', 'relance le démon immédiatement');
-        }
     }
+
        
     /**
      * Return the last deamon launch time
@@ -1048,52 +998,9 @@ class jMQTT extends jMQTTBase {
     ##
     ###################################################################################################################
     
-    /**
-     * Create and return an MQTT client based on the plugin parameters (mqttUser and mqttPass) and the given ID
-     * This is the responsability of the caller to insure that this object is of type broker
-     *
-     * @param string $id
-     *            id of connexion of the client to the broker
-     * @return MQTT client
-     */
-    private function getMosquittoClient($id = '') {
-        $mosqUser = $this->getConf(self::CONF_KEY_MQTT_USER);
-        $mosqPass = $this->getConf(self::CONF_KEY_MQTT_PASS);
-        
-        // Création client mosquitto
-        // Documentation passerelle php ici:
-        // https://github.com/mqtt/mqtt.github.io/wiki/mosquitto-php
-        $client = ($id == '') ? new Mosquitto\Client() : new Mosquitto\Client($id);
-        
-        // Credential configuration when needed
-        if ($mosqUser != '') {
-            $client->setCredentials($mosqUser, $mosqPass);
-        }
-        
-        // Automatic reconnexion delay
-        $client->setReconnectDelay(1, 16, true);
-        
-        return $client;
-    }
-    
-    /**
-     * Connect to this broker and suscribes topics
-     * @param object client client to connect
-     */
-    private function connectSubscribeMqttBroker($client) {
-        $mosqHost = $this->getMqttAddress();
-        $mosqPort = $this->getMqttPort();
-        
-        $this->log('info',
-            'Connect to mosquitto: Host=' . $mosqHost . ', Port=' . $mosqPort . ', Id=' . $this->getMqttId());
-        $client->connect($mosqHost, $mosqPort, 60);
-        
-    }
-    
     public function brokerConnectCallback($r, $message) {
         $this->log('debug', 'broker msg: connection response is ' . $message);
         $this->_client->publish($this->getMqttClientStatusTopic(), self::ONLINE, 1, 1);
-        $this->setConfiguration(self::CONF_KEY_LAST_CONNECT_TIME, strtotime('now'));
         $this->getMqttClientStatusCmd()->event(self::ONLINE);
         $this->sendDaemonStateEvent();
         $this->save(true);
