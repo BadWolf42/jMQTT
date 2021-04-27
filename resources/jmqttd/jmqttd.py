@@ -374,11 +374,6 @@ def signal_handler(signum=None, frame=None):
 
 def shutdown():
 	logging.debug("Shutdown")
-	logging.debug("Removing PID file " + str(_pidfile))
-	try:
-		os.remove(_pidfile)
-	except:
-		pass
 	try:
 		jeedomsocket.close()
 	except:
@@ -391,6 +386,11 @@ def shutdown():
 		for id in list(jmqttclients):
 			jmqttclients[id].stop()
 			del jmqttclients[id]
+	except:
+		pass
+	logging.debug("Removing PID file " + str(_pidfile))
+	try:
+		os.remove(_pidfile)
 	except:
 		pass
 	logging.debug("Exit 0")
