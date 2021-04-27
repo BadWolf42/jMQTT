@@ -104,7 +104,7 @@ class MqttClient:
 
 	def on_message(self, client, userdata, message):
 		logging.info('Id ' + str(self.id) + ' : message received (topic="' + message.topic + '", payload="' + message.payload.decode('utf-8') + '", QoS='+ str(message.qos) + ', retain=' + str(message.retain) + ')')
-		self.q.put('{"cmd":"messageIn","topic":"'+ message.topic +'","payload":"' + message.payload.decode('utf-8') + '","qos":' + str(message.qos) + ',"retain":' + str(message.retain) + '}')
+		self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":message.payload.decode('utf-8'), "qos":message.qos, "retain":message.retain}))
 
 	def is_connected(self):
 		return str(self.connected).lower()
