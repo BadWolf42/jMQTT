@@ -62,6 +62,30 @@ class jMQTTBase extends eqLogic {
          throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
       }
 
+      // Check python daemon port is available
+      $output=null;
+      $retval=null;
+      exec(system::getCmdSudo() . 'fuser ' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . '/tcp', $output, $retval);
+      if ($retval == 0 && count($output) > 0) {
+         $pid = trim($output[0]);
+         exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
+         if ($retval == 0 && count($output) > 0) $commandline = $output[0];
+         log::add(get_called_class(), 'error', 'Le port du démon python (' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par le pid ' . $pid . ' : ' . $commandline);
+         throw new Exception(__('Le port du démon python (' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par un autre process', __FILE__));
+      }
+
+      // Check websocket daemon port is available
+      $output=null;
+      $retval=null;
+      exec(system::getCmdSudo() . 'fuser ' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . '/tcp', $output, $retval);
+      if ($retval == 0 && count($output) > 0) {
+         $pid = trim($output[0]);
+         exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
+         if ($retval == 0 && count($output) > 0) $commandline = $output[0];
+         log::add(get_called_class(), 'error', 'Le port du démon websocket (' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par le pid ' . $pid . ' : ' . $commandline);
+         throw new Exception(__('Le port du démon websocket (' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par un autre process', __FILE__));
+      }
+
       $path1 = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
       $cmd1 = 'python3 ' . $path1 . '/jmqttd.py';
       $cmd1 .= ' --plugin ' . get_called_class();
@@ -90,7 +114,7 @@ class jMQTTBase extends eqLogic {
          $i++;
       }
       if ($i >= 10) {
-         log::add(get_called_class(), 'error', __('Impossible de lancer le démon jMQTT pour le plugin '.get_called_class().', vérifiez le log',__FILE__), 'unableStartDaemon');
+         log::add(get_called_class(), 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
          return false;
       }
       message::removeAll(get_called_class(), 'unableStartDaemon');
@@ -118,8 +142,6 @@ class jMQTTBase extends eqLogic {
             usleep(250000);
          }
       }
-      system::fuserk(config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT));
-      system::fuserk(config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT));
    }
 
    public static function on_daemon_connect($id) {
