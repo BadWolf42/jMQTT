@@ -120,7 +120,6 @@ class jMQTTBase extends eqLogic {
       }
       system::fuserk(config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT));
       system::fuserk(config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT));
-      sleep(1);
    }
 
    public static function on_daemon_connect($id) {
