@@ -303,14 +303,11 @@ class jeedom_utils():
 
 # ------------------------------------------------------------------------------
 
-JEEDOM_SOCKET_MESSAGE = Queue()
-
 class jeedom_socket_handler(StreamRequestHandler):
 	def handle(self):
-		global JEEDOM_SOCKET_MESSAGE
 		logging.debug("Client connected to [%s:%d]" % self.client_address)
 		lg = self.rfile.readline()
-		JEEDOM_SOCKET_MESSAGE.put(lg)
+		self.server.queue.put(lg)
 		logging.debug("Message read from socket: " + str(lg.strip()))
 		self.netAdapterClientConnected = False
 		logging.debug("Client disconnected from [%s:%d]" % self.client_address)
@@ -320,11 +317,16 @@ class jeedom_socket():
 	def __init__(self,address='localhost', port=55000):
 		self.address = address
 		self.port = port
+		self.queue = None
 		socketserver.TCPServer.allow_reuse_address = True
 
 	def open(self):
+		if self.queue is not None:
+			logging.warning("Socket interface already started")
+			return
 		self.netAdapter = TCPServer((self.address, self.port), jeedom_socket_handler)
 		if self.netAdapter:
+			self.queue = Queue()
 			logging.debug("Socket interface started")
 			threading.Thread(target=self.loopNetServer, args=()).start()
 		else:
