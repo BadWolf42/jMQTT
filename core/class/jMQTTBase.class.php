@@ -71,8 +71,7 @@ class jMQTTBase extends eqLogic {
          unset($output);
          exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
          if ($retval == 0 && count($output) > 0) $commandline = $output[0];
-         log::add(get_called_class(), 'error', 'Le port du démon python (' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par le pid ' . $pid . ' : ' . $commandline);
-         throw new Exception(__('Le port du démon python (' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par un autre process', __FILE__));
+         throw new Exception(__('Le port du démon python (' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
       }
 
       // Check websocket daemon port is available
@@ -84,8 +83,7 @@ class jMQTTBase extends eqLogic {
          unset($output);
          exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
          if ($retval == 0 && count($output) > 0) $commandline = $output[0];
-         log::add(get_called_class(), 'error', 'Le port du démon websocket (' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par le pid ' . $pid . ' : ' . $commandline);
-         throw new Exception(__('Le port du démon websocket (' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par un autre process', __FILE__));
+         throw new Exception(__('Le port du démon websocket (' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
       }
 
       $path1 = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
