@@ -144,8 +144,6 @@ function shutdown() {
     log::add($plugin, 'debug', 'Removing PID file ' . $pidfile);
     $server->loop->stop();
     unlink($pidfile);
-    log::add($plugin, 'debug', 'Exit 0');
-    exit;
 }
 
 pcntl_async_signals(TRUE);
@@ -154,3 +152,5 @@ pcntl_signal(SIGINT, 'shutdown');
 
 log::add($plugin, 'debug', 'Listening on: [127.0.0.1:' . $socketport . ']');
 $server->run();
+
+log::add($plugin, 'debug', 'Exit 0');
