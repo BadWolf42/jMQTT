@@ -1,5 +1,10 @@
 # Registre des évolutions
 
+## 2021-04-27
+  - Correction [PR#40](https://github.com/Domochip/jMQTT/pull/40): gestion du cas d'erreur de renommage du log d'un broker lorsque le log n'existe pas encore
+  - Désactivation et retrait de l'Ajout automatique des commandes pour les équipements de type broker
+  - Remplacement de la fonction topicMatchesSub de Mosquitto-PHP par un portage PHP de la fonction mosquitto_topic_matches_sub
+
 ## 2021-04-18
  - Réécriture des premiers chapitre de la documentation
  - Le bouton de suppression de commandes s'affiche sur les nouvelles commandes en mode "classic"

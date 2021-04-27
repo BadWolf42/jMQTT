@@ -25,17 +25,22 @@ include_file('core', 'jMQTT', 'class', 'jMQTT');
 define("VERSION", 'version');
 
 /**
- * Possible values of the version jMQTT plugin parameter: see migrateToJsonVersion below
+ * Current Update version
  */
-define("CURRENT_VERSION", 1);
+define("CURRENT_VERSION", 2);
 
 
 /**
+ * version 0
  * Migrate the plugin to the multi broker version
  * Return without doing anything if the multi broker version is already installed
  */
 function migrateToMultiBrokerVersion() {
-    
+    $version = config::byKey(VERSION, 'jMQTT', 0);
+    if ($version >= 0) {
+        return;
+    }
+
     // Return if the multi broker version is already installed
     $res = config::searchKey('mqttId', 'jMQTT');
     if (empty($res)) {
@@ -122,13 +127,13 @@ function migrateToMultiBrokerVersion() {
 }
 
 /**
+ * version 1
  * Migrate the plugin to the new JSON version (implementing #76)
  * Return without doing anything if the new JSON version is already installed
  */
 function migrateToJsonVersion() {
     $version = config::byKey(VERSION, 'jMQTT', 0);
-    if ($version > 0) {
-        log::add('jMQTT', 'info', 'json#76 version is already installed');
+    if ($version >= 1) {
         return;
     }
     
@@ -142,8 +147,27 @@ function migrateToJsonVersion() {
         $cmd->save();
     }
     
-    config::save(VERSION, CURRENT_VERSION, 'jMQTT');
     log::add('jMQTT', 'info', 'migration to json#76 version done');
+}
+
+/**
+ * version 2
+ * Migrate the plugin to the new version with no auto_add_cmd on broker
+ * Return without doing anything if the new version is already installed
+ */
+function disableAutoAddCmdOnBrokers() {
+    $version = config::byKey(VERSION, 'jMQTT', 0);
+    if ($version >= 2) {
+        return;
+    }
+    
+    //disable auto_add_cmd on Brokers eqpt because auto_add is removed for them
+    foreach ((jMQTT::getBrokers()) as $broker) {
+        $broker->setAutoAddCmd('0');
+        $broker->save();
+    }
+    
+    log::add('jMQTT', 'info', 'migration to no auto_add_cmd for broker done');
 }
 
 function jMQTT_install() {
@@ -156,7 +180,11 @@ function jMQTT_update() {
     
     migrateToMultiBrokerVersion();
     migrateToJsonVersion();
-    
+    disableAutoAddCmdOnBrokers();
+
+    // Update version next to upgrade operations
+    config::save(VERSION, CURRENT_VERSION, 'jMQTT');
+
     // force the refresh of the dependancy info
     // otherwise the cache value is kept
     plugin::byId('jMQTT')->dependancy_info(true);
