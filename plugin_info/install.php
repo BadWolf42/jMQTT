@@ -176,7 +176,7 @@ function jMQTT_install() {
 
 function jMQTT_update() {
     // Stop the plugin
-    jMQTT::deamon_stop();
+    plugin::byId('jMQTT')->deamon_stop();
     
     migrateToMultiBrokerVersion();
     migrateToJsonVersion();
@@ -190,7 +190,7 @@ function jMQTT_update() {
     plugin::byId('jMQTT')->dependancy_info(true);
     
     // Start the plugin
-    jMQTT::deamon_start();
+    plugin::byId('jMQTT')->deamon_start();
 }
 
 function jMQTT_remove() {
