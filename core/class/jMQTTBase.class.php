@@ -68,6 +68,7 @@ class jMQTTBase extends eqLogic {
       exec(system::getCmdSudo() . 'fuser ' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . '/tcp', $output, $retval);
       if ($retval == 0 && count($output) > 0) {
          $pid = trim($output[0]);
+         unset($output);
          exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
          if ($retval == 0 && count($output) > 0) $commandline = $output[0];
          log::add(get_called_class(), 'error', 'Le port du démon python (' . config::byKey('pythonsocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par le pid ' . $pid . ' : ' . $commandline);
@@ -80,6 +81,7 @@ class jMQTTBase extends eqLogic {
       exec(system::getCmdSudo() . 'fuser ' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . '/tcp', $output, $retval);
       if ($retval == 0 && count($output) > 0) {
          $pid = trim($output[0]);
+         unset($output);
          exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
          if ($retval == 0 && count($output) > 0) $commandline = $output[0];
          log::add(get_called_class(), 'error', 'Le port du démon websocket (' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est utilisé par le pid ' . $pid . ' : ' . $commandline);
