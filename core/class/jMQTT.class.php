@@ -799,7 +799,7 @@ class jMQTT extends jMQTTBase {
         }
 
         $return['log'] = $this->getMqttClientLogFile();
-        $return['last_launch'] = $this->getLastDaemonLaunchTime();      
+        $return['last_launch'] = $this->getLastMqttClientLaunchTime();      
         $return['state'] = $this->getMqttClientState();
         if ($daemon_info['state'] == 'ok') {
             if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
@@ -958,11 +958,11 @@ class jMQTT extends jMQTTBase {
     }
 
     /**
-     * Return the last deamon launch time
+     * Return the last MQTT Client launch time
      * @return string date or unknown
      */
-    public function getLastDaemonLaunchTime() {
-        return $this->getCache('lastDaemonLaunchTime', __('Inconnue', __FILE__));
+    public function getLastMqttClientLaunchTime() {
+        return $this->getCache('lastMqttClientLaunchTime', __('Inconnue', __FILE__));
     }
 
     /**
