@@ -66,10 +66,10 @@ class jMQTT extends jMQTTBase {
     const TYP_BRK = 'broker';
     
     /**
-     * Possible value of $_post_data; to restart the daemon.
+     * Possible value of $_post_data; to restart the MQTT Client.
      * @var integer
      */
-    const POST_ACTION_RESTART_DAEMON = 1;
+    const POST_ACTION_RESTART_MQTTCLIENT = 1;
     
     /**
      * Possible value of $_post_data; set when the broker name has changed
@@ -85,7 +85,7 @@ class jMQTT extends jMQTTBase {
     
     /**
      * Data shared between preSave and postSave, preRemove and postRemove
-     * @var jMQTT|jMQTT::POST_ACTION_RESTART_DAEMON|jMQTT::POST_ACTION_RESTART_DAEMON|jMQTT::POST_ACTION_NEW_CLIENT_ID
+     * @var jMQTT|jMQTT::POST_ACTION_RESTART_MQTTCLIENT|jMQTT::POST_ACTION_NEW_CLIENT_ID
      */
     private $_post_data;
     
@@ -417,10 +417,10 @@ class jMQTT extends jMQTTBase {
                 if ($this->getType() == self::TYP_BRK) {
                     $this->setIncludeMode(0);
                 }
-                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, '', '');
+                $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, '', '');
             }
             else {
-                $this->removePostAction(self::POST_ACTION_RESTART_DAEMON);
+                $this->removePostAction(self::POST_ACTION_RESTART_MQTTCLIENT);
             }
         }
     }
@@ -446,7 +446,7 @@ class jMQTT extends jMQTTBase {
             
             // In case of broker id change, 
             if (! ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED)) {            
-                if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
+                if ($this->_post_data['action'] & self::POST_ACTION_RESTART_MQTTCLIENT) {
                     $this->getBroker()->startDaemon();
                 }
                 $this->_post_data['action'] = null;
@@ -483,7 +483,7 @@ class jMQTT extends jMQTTBase {
             }
 
 
-            if ($this->_post_data['action'] & self::POST_ACTION_RESTART_DAEMON) {
+            if ($this->_post_data['action'] & self::POST_ACTION_RESTART_MQTTCLIENT) {
                 $this->startDaemon();
             }
             $this->_post_data['action'] = null;
@@ -917,7 +917,7 @@ class jMQTT extends jMQTTBase {
     public function stopDaemon() {
         $this->log('info', 'arrête le client MQTT');
         self::remove_mqtt_client($this->getId());
-        
+    
         $cmd = $this->getMqttClientStatusCmd();
         // Status cmd may not exist on object removal for instance
         if (is_object($cmd)) {
@@ -1313,7 +1313,7 @@ class jMQTT extends jMQTTBase {
         $old_level = config::byKey('log::level::' . $this->_log, 'jMQTT');
         if (reset($new_level) != $old_level) {
             config::save('log::level::' . $this->_log, json_encode(reset($new_level)), 'jMQTT');
-            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'niveau de log',
+            $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'niveau de log',
                 log::convertLogLevel(log::getLogLevel($this->getDaemonLogFile())));
         }
     }
@@ -1340,7 +1340,7 @@ class jMQTT extends jMQTTBase {
         }
         if (in_array($_key, $keys)) {
             if ($value != $old_value) {
-                $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, $_key, $value, $old_value);
+                $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, $_key, $value, $old_value);
             }
         }
         
@@ -1381,7 +1381,7 @@ class jMQTT extends jMQTTBase {
         if ($_isEnable != $this->isEnable) {
             $newVal = $_isEnable ? 'activée' : 'désactivée';
             $oldVal = $this->isEnable ? 'activée' : 'désactivée';
-            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'activation', $newVal, $oldVal);
+            $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'activation', $newVal, $oldVal);
         }
 
         parent::setIsEnable($_isEnable);
@@ -1396,7 +1396,7 @@ class jMQTT extends jMQTTBase {
      */
     public function setLogicalId($_logicalId) {
         if ($_logicalId != $this->logicalId) {
-            $this->addPostAction(self::POST_ACTION_RESTART_DAEMON, 'topic', $_logicalId, $this->logicalId);
+            $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'topic', $_logicalId, $this->logicalId);
         }
         parent::setLogicalId($_logicalId);
     }
