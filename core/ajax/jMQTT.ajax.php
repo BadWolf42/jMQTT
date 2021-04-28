@@ -55,7 +55,7 @@ try {
         ajax::success();
     }
 
-    if (init('action') == 'getDaemonInfo') {
+    if (init('action') == 'getMqttClientInfo') {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
@@ -63,7 +63,7 @@ try {
         ajax::success($new_broker->getMqttClientInfo());
     }
     
-    if (init('action') == 'getDaemonState') {
+    if (init('action') == 'getMqttClientState') {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
@@ -71,7 +71,7 @@ try {
         ajax::success($new_broker->getMqttClientState());
     }
     
-    if (init('action') == 'daemonStart') {
+    if (init('action') == 'startMqttClient') {
         if (!isConnect('admin')) {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }

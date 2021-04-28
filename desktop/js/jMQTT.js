@@ -579,7 +579,7 @@ function printEqLogic(_eqLogic) {
         $('.bt_plugin_conf_view_log').attr('data-log', log);
         $('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
         
-        refreshDaemonInfo();
+        refreshMqttClientInfo();
         
         jeedom.config.load({
             configuration: $('#div_broker_log').getValues('.configKey')[0],
@@ -968,7 +968,7 @@ function changeIncludeMode() {
 
 // Update the broker icon and the include mode activation on reception of a new state event
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
-    showDaemonInfo(_options);
+    showMqttClientInfo(_options);
     setIncludeModeActivation(_options.brkId, _options.state);
     $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
 });
