@@ -130,7 +130,7 @@ class MqttClient:
 
 	def publish(self, topic, payload, qos, retain):
 		self.mqttclient.publish(topic, payload, qos, retain)
-		logging.info('Id ' + str(self.id) + ' : Sending message to broker (topic="' + topic + '", payload="' + payload + '", QoS='+ str(qos) + ', retain=' + str(retain) + ')')
+		logging.info('Id ' + str(self.id) + ' : Sending message to broker (topic="' + topic + '", payload="' + str(payload) + '", QoS='+ str(qos) + ', retain=' + str(retain) + ')')
 
 	def start(self):
 		try:
