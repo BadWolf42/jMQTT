@@ -542,7 +542,7 @@ class jMQTT extends jMQTTBase {
      */
     public function postRemove() {
         if (is_object($this->_post_data)) {
-            $this->_post_data->log('debug', 'postRemove: restart daemon');
+            $this->_post_data->log('debug', 'postRemove: restart MQTT Client');
             $this->_post_data->startMqttClient();
         }
     }
@@ -558,7 +558,7 @@ class jMQTT extends jMQTTBase {
         // before stopping the daemon
         usleep(500000);
         
-        // Disable first the broker to avoid during removal of the equipments to restart the daemon
+        // Disable first the broker to avoid during removal of the equipments to restart the MQTT Client
         $broker = self::getBrokerFromId($option['id']);
         $broker->setIsEnable(0);
         $broker->save();
@@ -595,7 +595,7 @@ class jMQTT extends jMQTTBase {
             );
             
             if ($state) {
-                $info = $broker->getDaemonInfo();
+                $info = $broker->getMqttClientInfo();
                 $return[] = array(
                     'test' => __('Configuration du broker', __FILE__) . ' ' . $broker->getName(),
                     'result' => strtoupper($info['launchable']),
@@ -773,10 +773,10 @@ class jMQTT extends jMQTTBase {
     }
 
     /**
-     * Return daemon information
-     * @return string[] daemon information array
+     * Return MQTT Client information
+     * @return string[] MQTT Client information array
      */
-    public function getDaemonInfo() {
+    public function getMqttClientInfo() {
         $return = array('message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok');
         
         if ($this->getType() != self::TYP_BRK)
@@ -827,7 +827,7 @@ class jMQTT extends jMQTTBase {
             return false;
         }
         else {
-            $info = $this->getDaemonInfo();
+            $info = $this->getMqttClientInfo();
             return $info['launchable'] == 'ok' ? true : false;
         }
     }
@@ -859,7 +859,7 @@ class jMQTT extends jMQTTBase {
      * @throws Exception if the MQTT Client is not launchable
      */
     public function startMqttClient() {
-        $daemon_info = $this->getDaemonInfo();
+        $daemon_info = $this->getMqttClientInfo();
         if ($daemon_info['launchable'] != 'ok') {
             throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
         }
@@ -977,7 +977,7 @@ class jMQTT extends jMQTTBase {
      * The method shall be called on a broker equipment eqLogic
      */
     private function sendDaemonStateEvent() {
-        event::add('jMQTT::EventState', $this->getDaemonInfo());
+        event::add('jMQTT::EventState', $this->getMqttClientInfo());
     }
     
     ###################################################################################################################
