@@ -27,7 +27,7 @@ define("VERSION", 'version');
 /**
  * Current Update version
  */
-define("CURRENT_VERSION", 2);
+define("CURRENT_VERSION", 3);
 
 
 /**
@@ -170,6 +170,28 @@ function disableAutoAddCmdOnBrokers() {
     log::add('jMQTT', 'info', 'migration to no auto_add_cmd for broker done');
 }
 
+/**
+ * version 3
+ * Migrate the plugin to the new daemon version
+ * Return without doing anything if the new version is already installed
+ */
+function removePreviousDaemonCrons() {
+    $version = config::byKey(VERSION, 'jMQTT', 0);
+    if ($version >= 3) {
+        return;
+    }
+    
+    // remove all jMQTT old daemon crons
+    do {
+        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+        if (is_object($cron)) $cron->remove(true);
+        else break;
+    }
+    while (true);
+
+    log::add('jMQTT', 'info', 'removal of previous daemon cron done');
+}
+
 function jMQTT_install() {
     jMQTT_update();
 }
@@ -181,6 +203,7 @@ function jMQTT_update() {
     migrateToMultiBrokerVersion();
     migrateToJsonVersion();
     disableAutoAddCmdOnBrokers();
+    removePreviousDaemonCrons();
 
     // Update version next to upgrade operations
     config::save(VERSION, CURRENT_VERSION, 'jMQTT');
@@ -194,14 +217,7 @@ function jMQTT_update() {
 }
 
 function jMQTT_remove() {
-    do {
-        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-        if (is_object($cron))
-            $cron->remove(true);
-            else
-                break;
-    }
-    while (true);
+    
 }
 
 ?>
