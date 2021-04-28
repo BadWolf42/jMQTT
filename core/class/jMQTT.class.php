@@ -50,6 +50,9 @@ class jMQTT extends jMQTTBase {
     
     const CONF_KEY_OLD = 'old';
     const CONF_KEY_NEW = 'new';
+
+    const CACHE_DAEMON_CONNECTED = 'daemonConnected';
+    const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
     
     /**
      * To define a standard jMQTT equipment
@@ -384,7 +387,7 @@ class jMQTT extends jMQTTBase {
 
         if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
             
-            $restart_mqtt_client = false;
+            $restart_mqttclient = false;
             if ($this->getType() == self::TYP_BRK) {
                 
                 // If broker has been disabled, stop it
@@ -397,13 +400,13 @@ class jMQTT extends jMQTTBase {
                 }
                 
                 if ($this->isDaemonToBeRestarted()) {
-                    $restart_mqtt_client = true;
+                    $restart_mqttclient = true;
                 }
             }
             
             if ($this->getType() == self::TYP_EQPT) {
                 if ($this->getBroker()->isDaemonToBeRestarted(true)) {
-                    $restart_mqtt_client = true;     
+                    $restart_mqttclient = true;     
                 }
             }
             
@@ -411,7 +414,7 @@ class jMQTT extends jMQTTBase {
                 $this->log('info', $msg);
             }
             
-            if ($restart_mqtt_client) {
+            if ($restart_mqttclient) {
                 $this->log('info', 'relance du Client MQTT nécessaire');
                 $this->getBroker()->stopDaemon();
                 if ($this->getType() == self::TYP_BRK) {
@@ -830,13 +833,15 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Return daemon state
+     * Return MQTT Client state
      *   - self::MQTTCLIENT_OK: daemon is running and mqtt broker is online
      *   - self::MQTTCLIENT_POK: daemon is running but mqtt broker is offline
      *   - self::MQTTCLIENT_NOK: no cron exists or cron is not running
      * @return string ok or nok
      */
     public function getMqttClientState() {
+        if ($this->getCache(self::CACHE_DAEMON_CONNECTED, false)) {
+            if ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false)) {
                 $return = self::MQTTCLIENT_OK;
             }
             else {
@@ -927,23 +932,23 @@ class jMQTT extends jMQTTBase {
    
     public static function on_daemon_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache('DaemonConnected', true);
+        $broker->setCache(self::CACHE_DAEMON_CONNECTED, true);
     }
     public static function on_daemon_disconnect($id) {
         $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache('DaemonConnected', false);
+        $broker->setCache(self::CACHE_DAEMON_CONNECTED, false);
         // if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
         self::on_mqtt_disconnect($id);
     }
     public static function on_mqtt_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache('MQTTClientConnected', true);
+        $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true);
         $broker->getMqttClientStatusCmd()->event(self::ONLINE);
         $broker->sendDaemonStateEvent();
     }
     public static function on_mqtt_disconnect($id) {
         $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache('MQTTClientConnected', false);
+        $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
         $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
         $broker->sendDaemonStateEvent();
     }
