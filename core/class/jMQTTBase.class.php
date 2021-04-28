@@ -86,6 +86,7 @@ class jMQTTBase extends eqLogic {
          throw new Exception(__('Le port du démon websocket (' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_PYTHON_PORT) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
       }
 
+      // Start Python daemon
       $path1 = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
       $cmd1 = 'python3 ' . $path1 . '/jmqttd.py';
       $cmd1 .= ' --plugin ' . get_called_class();
@@ -96,6 +97,7 @@ class jMQTTBase extends eqLogic {
       log::add(get_called_class(), 'info', 'Lancement du démon python jMQTT pour le plugin '.get_called_class());
       $result1 = exec($cmd1 . ' >> ' . log::getPathToLog(get_called_class().'_daemon') . ' 2>&1 &');
 
+      // Start WebSocket daemon 
       $path2 = realpath(dirname(__FILE__) . '/../../core/php/');
       $cmd2 = 'php ' . $path2 . '/jmqttd.php';
       $cmd2 .= ' --plugin ' . get_called_class();
@@ -136,7 +138,7 @@ class jMQTTBase extends eqLogic {
       if (file_exists($pid_file2)) {
          $pid2 = intval(trim(file_get_contents($pid_file2)));
          system::kill($pid2, false);
-         //wait up to 10 seconds for php daemon stop
+         //wait up to 10 seconds for websocket daemon stop
          for ($i = 1; $i <= 40; $i++) {
             if (! @posix_getsid($pid2)) break;
             usleep(250000);
