@@ -834,8 +834,8 @@ class jMQTT extends jMQTTBase {
     
     /**
      * Return MQTT Client state
-     *   - self::MQTTCLIENT_OK: daemon is running and mqtt broker is online
-     *   - self::MQTTCLIENT_POK: daemon is running but mqtt broker is offline
+     *   - self::MQTTCLIENT_OK: MQTT Client is running and mqtt broker is online
+     *   - self::MQTTCLIENT_POK: MQTT Client is running but mqtt broker is offline
      *   - self::MQTTCLIENT_NOK: no cron exists or cron is not running
      * @return string ok or nok
      */
@@ -859,13 +859,13 @@ class jMQTT extends jMQTTBase {
      * @throws Exception if the MQTT Client is not launchable
      */
     public function startMqttClient() {
-        $daemon_info = $this->getMqttClientInfo();
-        if ($daemon_info['launchable'] != 'ok') {
+        $mqttclient_info = $this->getMqttClientInfo();
+        if ($mqttclient_info['launchable'] != 'ok') {
             throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
         }
 
         $this->log('info', 'démarre le client MQTT ');
-        $this->setLastDaemonLaunchTime();
+        $this->setLastMqttClientLaunchTime();
         $this->sendDaemonStateEvent();
         self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
 
@@ -966,9 +966,9 @@ class jMQTT extends jMQTTBase {
     }
 
     /**
-     * Set the last deamon launch time to the current time
+     * Set the last MQTT Client launch time to the current time
      */
-    public function setLastDaemonLaunchTime() {
+    public function setLastMqttClientLaunchTime() {
         return $this->setCache('lastDaemonLaunchTime', date('Y-m-d H:i:s'));
     }
     
