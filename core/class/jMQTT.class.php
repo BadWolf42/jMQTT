@@ -866,7 +866,7 @@ class jMQTT extends jMQTTBase {
 
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
-        $this->sendDaemonStateEvent();
+        $this->sendMqttClientStateEvent();
         self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
 
         
@@ -927,7 +927,7 @@ class jMQTT extends jMQTTBase {
             $cmd->event(self::OFFLINE);
         }
         
-        $this->sendDaemonStateEvent();
+        $this->sendMqttClientStateEvent();
     }
    
     public static function on_daemon_connect($id) {
@@ -944,13 +944,13 @@ class jMQTT extends jMQTTBase {
         $broker = self::getBrokerFromId(intval($id));
         $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true);
         $broker->getMqttClientStatusCmd()->event(self::ONLINE);
-        $broker->sendDaemonStateEvent();
+        $broker->sendMqttClientStateEvent();
     }
     public static function on_mqtt_disconnect($id) {
         $broker = self::getBrokerFromId(intval($id));
         $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
         $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
-        $broker->sendDaemonStateEvent();
+        $broker->sendMqttClientStateEvent();
     }
     public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
         $broker = self::getBrokerFromId(intval($id));
@@ -973,10 +973,10 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Send a jMQTT::EventState event to the UI containing daemon info
+     * Send a jMQTT::EventState event to the UI containing MQTT Client info
      * The method shall be called on a broker equipment eqLogic
      */
-    private function sendDaemonStateEvent() {
+    private function sendMqttClientStateEvent() {
         event::add('jMQTT::EventState', $this->getMqttClientInfo());
     }
     
@@ -1132,7 +1132,7 @@ class jMQTT extends jMQTTBase {
                                         
                     // On reception of a the broker status topic, generate an state event
                     if ($this->getId() == $eqpt->getId() && $cmdlogics[0]->getTopic() == $this->getMqttClientStatusTopic()) {
-                        $this->sendDaemonStateEvent();
+                        $this->sendMqttClientStateEvent();
                     }
                 }
             }
