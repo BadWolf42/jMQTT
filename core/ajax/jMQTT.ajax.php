@@ -60,7 +60,7 @@ try {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
         $new_broker = jMQTT::getBrokerFromId(init('id'));
-        ajax::success($new_broker->getDaemonInfo());
+        ajax::success($new_broker->getMqttClientInfo());
     }
     
     if (init('action') == 'getDaemonState') {
@@ -68,7 +68,7 @@ try {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
         $new_broker = jMQTT::getBrokerFromId(init('id'));
-        ajax::success($new_broker->getDaemonState());
+        ajax::success($new_broker->getMqttClientState());
     }
     
     if (init('action') == 'daemonStart') {
@@ -76,7 +76,7 @@ try {
             throw new Exception(__('401 - Accès non autorisé', __FILE__));
         }
         $new_broker = jMQTT::getBrokerFromId(init('id'));
-        ajax::success($new_broker->startDaemon(true));
+        ajax::success($new_broker->startMqttClient(true));
     }
 
     if (init('action') == 'moveToBroker') {
@@ -96,14 +96,14 @@ try {
         $eqpt->cleanEquipment();
         $eqpt->save(true);
         
-        // Restart the new daemon
-        if ($new_broker->isDaemonToBeRestarted()) {
-            $new_broker->startDaemon(true);
+        // Restart the new MQTT Client
+        if ($new_broker->isMqttClientToBeRestarted()) {
+            $new_broker->startMqttClient(true);
         }
         if ($old_broker_id > 0) {
             $old_broker = jMQTT::getBrokerFromId($old_broker_id);
-            if ($old_broker->isDaemonToBeRestarted()) {
-                $old_broker->startDaemon(true);
+            if ($old_broker->isMqttClientToBeRestarted()) {
+                $old_broker->startMqttClient(true);
             }
         }
         
