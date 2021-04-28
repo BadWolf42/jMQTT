@@ -141,7 +141,7 @@ class MqttClient:
 
 	def stop(self):
 		if self.mqttstatustopic != '':
-			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True).wait_for_publish()
+			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
 		self.mqttclient.disconnect()
 		self.mqttthread.join()
 	
