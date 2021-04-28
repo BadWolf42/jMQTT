@@ -106,16 +106,14 @@ class jMQTTBase extends eqLogic {
       log::add(get_called_class(), 'info', 'Lancement du démon websocket jMQTT pour le plugin '.get_called_class());
       $result2 = exec($cmd2 . ' >> ' . log::getPathToLog(get_called_class()) . ' 2>&1 &');
 
-      $i = 0;
-      while ($i < 10) {
+      //wait up to 10 seconds for daemons start
+      for ($i = 1; $i <= 40; $i++) {
          $daemon_info = self::deamon_info();
-         if ($daemon_info['state'] == 'ok') {
-            break;
-         }
-         sleep(1);
-         $i++;
+         if ($daemon_info['state'] == 'ok') break;
+         usleep(250000);
       }
-      if ($i >= 10) {
+
+      if ($daemon_info['state'] != 'ok') {
          log::add(get_called_class(), 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
          return false;
       }
