@@ -399,13 +399,13 @@ class jMQTT extends jMQTTBase {
                     $this->setTopic($this->getBrokerTopic($this->_post_data[self::CONF_KEY_NEW]));
                 }
                 
-                if ($this->isDaemonToBeRestarted()) {
+                if ($this->isMqttClientToBeRestarted()) {
                     $restart_mqttclient = true;
                 }
             }
             
             if ($this->getType() == self::TYP_EQPT) {
-                if ($this->getBroker()->isDaemonToBeRestarted(true)) {
+                if ($this->getBroker()->isMqttClientToBeRestarted(true)) {
                     $restart_mqttclient = true;     
                 }
             }
@@ -812,7 +812,7 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Return whether or not the daemon shall be restarted after a configuration change that impacts its processing.
+     * Return whether or not the MQTT Client shall be restarted after a configuration change that impacts its processing.
      * If $isIncludeMode is true and the broker is in automatic inclusion mode returns false. Otherwise output depends
      * on the launchable status of the broker.
      * 
@@ -822,7 +822,7 @@ class jMQTT extends jMQTTBase {
      *              account in the assessement.
      * @return boolean
      */
-    public function isDaemonToBeRestarted($isIncludeMode=false) {
+    public function isMqttClientToBeRestarted($isIncludeMode=false) {
         if ($isIncludeMode && $this->getBroker()->isIncludeMode()) {
             return false;
         }
@@ -1591,7 +1591,7 @@ class jMQTT extends jMQTTBase {
         $broker->setIncludeMode(0);
 
         // Restart the daemon
-        if ($broker->isDaemonToBeRestarted()) {
+        if ($broker->isMqttClientToBeRestarted()) {
             $broker->startMqttClient();
         }
     }
