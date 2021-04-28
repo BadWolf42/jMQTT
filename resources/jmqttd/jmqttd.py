@@ -440,7 +440,8 @@ logging.info('PID file : '+str(_pidfile))
 logging.debug('Apikey : '+str(_apikey))
 
 if os.path.isfile(_pidfile):
-	logging.error('PID File "' + _pidfile + '" already exists. This daemon already runs. Exit 0')
+	logging.debug('PID File "' + _pidfile + '" already exists.')
+	logging.error('This daemon already runs! Exit 0')
 	sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
