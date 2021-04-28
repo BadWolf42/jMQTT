@@ -384,7 +384,7 @@ class jMQTT extends jMQTTBase {
 
         if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
             
-            $restart_daemon = false;
+            $restart_mqtt_client = false;
             if ($this->getType() == self::TYP_BRK) {
                 
                 // If broker has been disabled, stop it
@@ -397,13 +397,13 @@ class jMQTT extends jMQTTBase {
                 }
                 
                 if ($this->isDaemonToBeRestarted()) {
-                    $restart_daemon = true;
+                    $restart_mqtt_client = true;
                 }
             }
             
             if ($this->getType() == self::TYP_EQPT) {
                 if ($this->getBroker()->isDaemonToBeRestarted(true)) {
-                    $restart_daemon = true;     
+                    $restart_mqtt_client = true;     
                 }
             }
             
@@ -411,8 +411,8 @@ class jMQTT extends jMQTTBase {
                 $this->log('info', $msg);
             }
             
-            if ($restart_daemon) {
-                $this->log('info', 'relance du démon nécessaire');
+            if ($restart_mqtt_client) {
+                $this->log('info', 'relance du Client MQTT nécessaire');
                 $this->getBroker()->stopDaemon();
                 if ($this->getType() == self::TYP_BRK) {
                     $this->setIncludeMode(0);
