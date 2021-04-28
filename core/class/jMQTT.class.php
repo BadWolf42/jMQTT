@@ -272,7 +272,7 @@ class jMQTT extends jMQTTBase {
         $this->setQos('1');
         
         if ($this->getType() == self::TYP_BRK) {
-            config::save('log::level::' . $this->getDaemonLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
+            config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
         }
     }
     
@@ -435,8 +435,8 @@ class jMQTT extends jMQTTBase {
         if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
             
             if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {
-                $old_log = $this->getDaemonLogFile();
-                $new_log = $this->getDaemonLogFile(true);
+                $old_log = $this->getMqttClientLogFile();
+                $new_log = $this->getMqttClientLogFile(true);
                 if (file_exists(log::getPathToLog($old_log))) {
                     rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
                 }
@@ -513,10 +513,10 @@ class jMQTT extends jMQTTBase {
             self::remove_mqtt_client($this->getId());
 
             // suppress the log file
-            if (file_exists(log::getPathToLog($this->getDaemonLogFile()))) {
-                unlink(log::getPathToLog($this->getDaemonLogFile()));
+            if (file_exists(log::getPathToLog($this->getMqttClientLogFile()))) {
+                unlink(log::getPathToLog($this->getMqttClientLogFile()));
             }
-            config::remove('log::level::' . $this->getDaemonLogFile(), 'jMQTT');
+            config::remove('log::level::' . $this->getMqttClientLogFile(), 'jMQTT');
             // remove all equipments attached to the broker
             foreach ($this->byBrkId() as $eqpt) {
                 if ($this->getId() != $eqpt->getId())
@@ -795,7 +795,7 @@ class jMQTT extends jMQTTBase {
             $return['message'] = __('Démon non démarré', __FILE__);
         }
 
-        $return['log'] = $this->getDaemonLogFile();
+        $return['log'] = $this->getMqttClientLogFile();
         $return['last_launch'] = $this->getLastDaemonLaunchTime();      
         $return['state'] = $this->getDaemonState();
         if ($daemon_info['state'] == 'ok') {
@@ -1234,7 +1234,7 @@ class jMQTT extends jMQTTBase {
      * @var bool $force to force the definition of the log file name
      * @return string daemon log filename.
      */
-    public function getDaemonLogFile($force=false) {
+    public function getMqttClientLogFile($force=false) {
         if (!isset($this->_log) || $force) {
             $this->_log = __CLASS__ . '_' . str_replace(' ', '_', $this->getBroker()->getName());
         }
@@ -1247,7 +1247,7 @@ class jMQTT extends jMQTTBase {
      * @param string $msg
      */
     public function log($level, $msg) {
-        log::add($this->getDaemonLogFile(), $level, $msg);
+        log::add($this->getMqttClientLogFile(), $level, $msg);
     }
     
     /**
@@ -1308,13 +1308,13 @@ class jMQTT extends jMQTTBase {
      * @param string $level
      */
     public function setLogLevel($log_level) {
-        $this->_log = $this->getDaemonLogFile();
+        $this->_log = $this->getMqttClientLogFile();
         $new_level = json_decode($log_level, true);
         $old_level = config::byKey('log::level::' . $this->_log, 'jMQTT');
         if (reset($new_level) != $old_level) {
             config::save('log::level::' . $this->_log, json_encode(reset($new_level)), 'jMQTT');
             $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'niveau de log',
-                log::convertLogLevel(log::getLogLevel($this->getDaemonLogFile())));
+                log::convertLogLevel(log::getLogLevel($this->getMqttClientLogFile())));
         }
     }
 
@@ -1364,7 +1364,7 @@ class jMQTT extends jMQTTBase {
     public function setName($_name) {
         if ($this->getType() == self::TYP_BRK) {
             if ($_name != $this->name) {
-                $this->_log = $this->getDaemonLogFile(); // To write in the correct log until log is renamed
+                $this->_log = $this->getMqttClientLogFile(); // To write in the correct log until log is renamed
                 $this->addPostAction(self::POST_ACTION_BROKER_NAME_CHANGED, 'nom du broker', $_name, $this->name);
             }
         }
