@@ -392,7 +392,7 @@ class jMQTT extends jMQTTBase {
                 
                 // If broker has been disabled, stop it
                 if (! $this->getIsEnable() && $this->getMqttClientState() != self::MQTTCLIENT_NOK) {
-                    $this->stopDaemon();
+                    $this->stopMqttClient();
                 }
                 
                 if ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
@@ -416,7 +416,7 @@ class jMQTT extends jMQTTBase {
             
             if ($restart_mqttclient) {
                 $this->log('info', 'relance du Client MQTT nécessaire');
-                $this->getBroker()->stopDaemon();
+                $this->getBroker()->stopMqttClient();
                 if ($this->getType() == self::TYP_BRK) {
                     $this->setIncludeMode(0);
                 }
@@ -450,7 +450,7 @@ class jMQTT extends jMQTTBase {
             // In case of broker id change, 
             if (! ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED)) {            
                 if ($this->_post_data['action'] & self::POST_ACTION_RESTART_MQTTCLIENT) {
-                    $this->getBroker()->startDaemon();
+                    $this->getBroker()->startMqttClient();
                 }
                 $this->_post_data['action'] = null;
             }
@@ -487,7 +487,7 @@ class jMQTT extends jMQTTBase {
 
 
             if ($this->_post_data['action'] & self::POST_ACTION_RESTART_MQTTCLIENT) {
-                $this->startDaemon();
+                $this->startMqttClient();
             }
             $this->_post_data['action'] = null;
         }
@@ -531,7 +531,7 @@ class jMQTT extends jMQTTBase {
             $broker = $this->getBroker();
             if ($this->getIsEnable() && $broker->getIsEnable() && ! $broker->isIncludeMode()) {
                 $this->log('info', 'relance le démon');
-                $broker->stopDaemon();
+                $broker->stopMqttClient();
                 $this->_post_data = $broker;
             }
         }
@@ -543,7 +543,7 @@ class jMQTT extends jMQTTBase {
     public function postRemove() {
         if (is_object($this->_post_data)) {
             $this->_post_data->log('debug', 'postRemove: restart daemon');
-            $this->_post_data->startDaemon();
+            $this->_post_data->startMqttClient();
         }
     }
     
@@ -764,7 +764,7 @@ class jMQTT extends jMQTTBase {
                 if ($broker->getMqttClientState() == "nok") {
                     try {
                         log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
-                        $broker->startDaemon();
+                        $broker->startMqttClient();
                     }
                     catch (Exception $e) {}
                 }
@@ -855,10 +855,10 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Start the daemon of this broker if it is launchable
-     * @throws Exception if the daemon is not launchable
+     * Start the MQTT Client of this broker if it is launchable
+     * @throws Exception if the MQTT Client is not launchable
      */
-    public function startDaemon() {
+    public function startMqttClient() {
         $daemon_info = $this->getDaemonInfo();
         if ($daemon_info['launchable'] != 'ok') {
             throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
@@ -915,9 +915,9 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Stop the daemon of this broker type object
+     * Stop the MQTT Client of this broker type object
      */
-    public function stopDaemon() {
+    public function stopMqttClient() {
         $this->log('info', 'arrête le client MQTT');
         self::remove_mqtt_client($this->getId());
     
@@ -1592,7 +1592,7 @@ class jMQTT extends jMQTTBase {
 
         // Restart the daemon
         if ($broker->isDaemonToBeRestarted()) {
-            $broker->startDaemon();
+            $broker->startMqttClient();
         }
     }
 
@@ -1627,7 +1627,7 @@ class jMQTT extends jMQTTBase {
         }
 
         // Restart the MQTT deamon to manage topic subscription
-        $this->startDaemon();
+        $this->startMqttClient();
     }
     
     /**
