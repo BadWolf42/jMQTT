@@ -969,7 +969,7 @@ class jMQTT extends jMQTTBase {
      * Set the last MQTT Client launch time to the current time
      */
     public function setLastMqttClientLaunchTime() {
-        return $this->setCache('lastDaemonLaunchTime', date('Y-m-d H:i:s'));
+        return $this->setCache('lastMqttClientLaunchTime', date('Y-m-d H:i:s'));
     }
     
     /**
@@ -1235,7 +1235,7 @@ class jMQTT extends jMQTTBase {
      * Return the name of the log file attached to this jMQTT object.
      * The log file is cached for optimization. If $force is set cache refresh is forced.
      * @var bool $force to force the definition of the log file name
-     * @return string daemon log filename.
+     * @return string MQTT Client log filename.
      */
     public function getMqttClientLogFile($force=false) {
         if (!isset($this->_log) || $force) {
@@ -1307,7 +1307,7 @@ class jMQTT extends jMQTTBase {
     /**
      * Set the log level
      * Called when saving a broker eqLogic
-     * If log level is changed, save the new value and restart the daemon
+     * If log level is changed, save the new value and restart the MQTT Client
      * @param string $level
      */
     public function setLogLevel($log_level) {
@@ -1322,7 +1322,7 @@ class jMQTT extends jMQTTBase {
     }
 
     /**
-     * Override setConfiguration to manage daemon stop/start when deemed necessary
+     * Override setConfiguration to manage MQTT Client stop/start when deemed necessary
      * {@inheritDoc}
      * @see eqLogic::setConfiguration()
      */
@@ -1376,7 +1376,7 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Override setIsEnable to manage daemon stop/start 
+     * Override setIsEnable to manage MQTT Client stop/start 
      * {@inheritDoc}
      * @see eqLogic::setIsEnable()
      */
@@ -1393,7 +1393,7 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
-     * Override setLogicalId (which store the equipment registration topic) to manage daemon stop/start 
+     * Override setLogicalId (which store the equipment registration topic) to manage MQTT Client stop/start 
      * {@inheritDoc}
      * @see eqLogic::setLogicalId()
      */
@@ -1590,7 +1590,7 @@ class jMQTT extends jMQTTBase {
         $broker = self::getBrokerFromId($option['id']);
         $broker->setIncludeMode(0);
 
-        // Restart the daemon
+        // Restart the MQTT Client
         if ($broker->isMqttClientToBeRestarted()) {
             $broker->startMqttClient();
         }
