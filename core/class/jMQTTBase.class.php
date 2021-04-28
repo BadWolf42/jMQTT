@@ -6,8 +6,8 @@ include_file('3rdparty', 'mosquitto_topic_matches_sub', 'php', 'jMQTT');
 
 class jMQTTBase extends eqLogic {
 
-   const DEFAULT_PYTHON_PORT = 55666;
-   const DEFAULT_WEBSOCKET_PORT = 55667;
+   const DEFAULT_PYTHON_PORT = 1025;
+   const DEFAULT_WEBSOCKET_PORT = 1026;
 
    public static function dependancy_info() {
       return jMQTT::dependancy_info();
