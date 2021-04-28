@@ -32,9 +32,9 @@ class jMQTT extends jMQTTBase {
     const OFFLINE = 'offline';
     const ONLINE = 'online';
 
-    const DAEMON_OK = 'ok';
-    const DAEMON_POK = 'pok';
-    const DAEMON_NOK = 'nok';
+    const MQTTCLIENT_OK = 'ok';
+    const MQTTCLIENT_POK = 'pok';
+    const MQTTCLIENT_NOK = 'nok';
     
     const CONF_KEY_TYPE = 'type';
     const CONF_KEY_BRK_ID = 'brkId';
@@ -89,14 +89,6 @@ class jMQTT extends jMQTTBase {
      */
     private $_post_data;
     
-    /**
-     * MQTT client.
-     * Set in the daemon method; it is only visible from functions
-     * that are executed on the same thread as the daemon method.
-     * @var Mosquitto\Client $_client
-     */
-    private $_client;
-
     /**
      * Broker jMQTT object related to this object
      * @var jMQTT broker object
@@ -396,7 +388,7 @@ class jMQTT extends jMQTTBase {
             if ($this->getType() == self::TYP_BRK) {
                 
                 // If broker has been disabled, stop it
-                if (! $this->getIsEnable() && $this->getDaemonState() != self::DAEMON_NOK) {
+                if (! $this->getIsEnable() && $this->getDaemonState() != self::MQTTCLIENT_NOK) {
                     $this->stopDaemon();
                 }
                 
@@ -789,39 +781,27 @@ class jMQTT extends jMQTTBase {
               
         $return['brkId'] = $this->getId();
         
-        // Is the daemon launchable
+        // Is the MQTT Client launchable
         $return['launchable'] = 'ok';
-        $dependancy_info = plugin::byId(__CLASS__)->dependancy_info();
-        if ($dependancy_info['state'] == 'ok') {
+        $daemon_info = $this->deamon_info();
+        if ($daemon_info['state'] == 'ok') {
             if (!$this->getIsEnable()) {
                 $return['launchable'] = 'nok';
                 $return['message'] = __("L'équipement est désactivé", __FILE__);
             }
-            if (config::byKey('enableCron', 'core', 1, true) == 0) {
-                $return['launchable'] = 'nok';
-                $return['message'] = __('Les crons et démons sont désactivés', __FILE__);
-            }
-            if (!jeedom::isStarted()) {
-                $return['launchable'] = 'nok';
-                $return['message'] = __('Jeedom n\'est pas encore démarré', __FILE__);
-            }
         }
         else {
             $return['launchable'] = 'nok';
-            if ($dependancy_info['state'] == 'in_progress') {
-                $return['message'] = __('Dépendances en cours d\'installation', __FILE__);
-            } else {
-                $return['message'] = __('Dépendances non installées', __FILE__);
-            }
+            $return['message'] = __('Démon non démarré', __FILE__);
         }
 
         $return['log'] = $this->getDaemonLogFile();
         $return['last_launch'] = $this->getLastDaemonLaunchTime();      
         $return['state'] = $this->getDaemonState();
-        if ($dependancy_info['state'] == 'ok') {
-            if ($return['state'] == self::DAEMON_NOK && $return['message'] == '')
+        if ($daemon_info['state'] == 'ok') {
+            if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
                 $return['message'] = __('Le démon est arrêté', __FILE__);
-            elseif ($return['state'] == self::DAEMON_POK)
+            elseif ($return['state'] == self::MQTTCLIENT_POK)
                 $return['message'] = __('Le broker est OFFLINE', __FILE__);
         }
 
@@ -851,22 +831,22 @@ class jMQTT extends jMQTTBase {
     
     /**
      * Return daemon state
-     *   - self::DAEMON_OK: daemon is running and mqtt broker is online
-     *   - self::DAEMON_POK: daemon is running but mqtt broker is offline
-     *   - self::DAEMON_NOK: no cron exists or cron is not running
+     *   - self::MQTTCLIENT_OK: daemon is running and mqtt broker is online
+     *   - self::MQTTCLIENT_POK: daemon is running but mqtt broker is offline
+     *   - self::MQTTCLIENT_NOK: no cron exists or cron is not running
      * @return string ok or nok
      */
     public function getDaemonState() {
         if ($this->getCache('DaemonConnected', false)) {
             if ($this->getCache('MQTTClientConnected', false)) {
-                $return = self::DAEMON_OK;
+                $return = self::MQTTCLIENT_OK;
             }
             else {
-                $return  = self::DAEMON_POK;
+                $return  = self::MQTTCLIENT_POK;
             }
         }
         else
-            $return = self::DAEMON_NOK;
+            $return = self::MQTTCLIENT_NOK;
         
         return $return;
     }
