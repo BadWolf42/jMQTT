@@ -388,7 +388,7 @@ class jMQTT extends jMQTTBase {
             if ($this->getType() == self::TYP_BRK) {
                 
                 // If broker has been disabled, stop it
-                if (! $this->getIsEnable() && $this->getDaemonState() != self::MQTTCLIENT_NOK) {
+                if (! $this->getIsEnable() && $this->getMqttClientState() != self::MQTTCLIENT_NOK) {
                     $this->stopDaemon();
                 }
                 
@@ -758,7 +758,7 @@ class jMQTT extends jMQTTBase {
         $daemon_info = self::deamon_info();
         if ($daemon_info['state'] == 'ok') {
             foreach(self::getBrokers() as $broker) {
-                if ($broker->getDaemonState() == "nok") {
+                if ($broker->getMqttClientState() == "nok") {
                     try {
                         log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
                         $broker->startDaemon();
@@ -797,7 +797,7 @@ class jMQTT extends jMQTTBase {
 
         $return['log'] = $this->getMqttClientLogFile();
         $return['last_launch'] = $this->getLastDaemonLaunchTime();      
-        $return['state'] = $this->getDaemonState();
+        $return['state'] = $this->getMqttClientState();
         if ($daemon_info['state'] == 'ok') {
             if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
                 $return['message'] = __('Le démon est arrêté', __FILE__);
@@ -836,9 +836,7 @@ class jMQTT extends jMQTTBase {
      *   - self::MQTTCLIENT_NOK: no cron exists or cron is not running
      * @return string ok or nok
      */
-    public function getDaemonState() {
-        if ($this->getCache('DaemonConnected', false)) {
-            if ($this->getCache('MQTTClientConnected', false)) {
+    public function getMqttClientState() {
                 $return = self::MQTTCLIENT_OK;
             }
             else {
