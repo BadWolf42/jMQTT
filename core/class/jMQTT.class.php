@@ -431,10 +431,10 @@ class jMQTT extends jMQTTBase {
     /**
      * postSave callback:
      *   - On broker name change, rename the the log file
-     *   - Start daemon (when stopped in preSave)
+     *   - Start MQTT Client (when stopped in preSave)
      */
     public function postSave() {
-        // Check $this->getBrkId() to avoid restarting daemon at broker creation
+        // Check $this->getBrkId() to avoid restarting MQTT Client at broker creation
         if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
             
             if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {
@@ -461,7 +461,7 @@ class jMQTT extends jMQTTBase {
      * postAjax callback:
      *   - On broker MQTT client id modification:
      *     . Update command topics
-     *     . Start daemon (when stopped in preSave)
+     *     . Start MQTT Client (when stopped in preSave)
 
      *   - At broker equipment creation:
      *     . create the status command of a broker
@@ -502,14 +502,14 @@ class jMQTT extends jMQTTBase {
     }
 
     /**
-     * preRemove method to check if the daemon shall be restarted
+     * preRemove method to check if the MQTT Client shall be restarted
      */
     public function preRemove() {
         $this->_post_data = null;
         if ($this->getType() == self::TYP_BRK) {
             $this->log('info', 'removing broker ' . $this->getName());
             
-            // Disable first the broker to avoid during removal of the broker to restart the daemon
+            // Disable first the broker to avoid during removal of the broker to restart the MQTT Client
             $this->setIsEnable(0);
             $this->save(true);
 
