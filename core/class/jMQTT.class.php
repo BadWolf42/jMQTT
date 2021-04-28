@@ -530,7 +530,7 @@ class jMQTT extends jMQTTBase {
             $this->log('info', 'removing equipment ' . $this->getName());
             $broker = $this->getBroker();
             if ($this->getIsEnable() && $broker->getIsEnable() && ! $broker->isIncludeMode()) {
-                $this->log('info', 'relance le démon');
+                $this->log('info', 'relance le Client MQTT');
                 $broker->stopMqttClient();
                 $this->_post_data = $broker;
             }
@@ -803,7 +803,7 @@ class jMQTT extends jMQTTBase {
         $return['state'] = $this->getMqttClientState();
         if ($daemon_info['state'] == 'ok') {
             if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
-                $return['message'] = __('Le démon est arrêté', __FILE__);
+                $return['message'] = __('Le Client MQTT est arrêté', __FILE__);
             elseif ($return['state'] == self::MQTTCLIENT_POK)
                 $return['message'] = __('Le broker est OFFLINE', __FILE__);
         }
