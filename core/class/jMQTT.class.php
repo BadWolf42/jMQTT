@@ -624,10 +624,10 @@ class jMQTT extends jMQTTBase {
     
     /**
      * cron callback
-     * check daemons are up and connected to Websocket
+     * check MQTT Clients are up and connected to Websocket
      */
     public function cron() {
-        self::checkAllDaemons();
+        self::checkAllMqttClients();
     }
     
     /**
@@ -636,7 +636,7 @@ class jMQTT extends jMQTTBase {
     public static function deamon_start() {
         log::add(__CLASS__, 'info', 'démarre le daemon');
         parent::deamon_start();
-        self::checkAllDaemons();
+        self::checkAllMqttClients();
     }
     
     /**
@@ -750,14 +750,14 @@ class jMQTT extends jMQTTBase {
 
     ###################################################################################################################
     ##
-    ##                   DAEMON RELATED METHODS
+    ##                   MQTT CLIENT RELATED METHODS
     ##
     ###################################################################################################################
     
     /**
-     * Check all daemons (start them if needed)
+     * Check all MQTT Clients (start them if needed)
      */
-    public static function checkAllDaemons() {
+    public static function checkAllMqttClients() {
         $daemon_info = self::deamon_info();
         if ($daemon_info['state'] == 'ok') {
             foreach(self::getBrokers() as $broker) {
