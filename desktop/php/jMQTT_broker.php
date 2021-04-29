@@ -4,11 +4,11 @@
         <div class="panel panel-success">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    <i class="fa fa-university"></i> {{Démon}}
+                    <i class="fa fa-university"></i> {{Client MQTT}}
                 </h3>
             </div>
             <div class="panel-body">
-                <div id="div_broker_daemon">
+                <div id="div_broker_mqttclient">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -20,10 +20,10 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="daemonLaunchable"></td>
-                                <td class="daemonState"></td>
-                                <td><a class="btn btn-success btn-sm bt_startDaemon" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
-                                <td class="daemonLastLaunch"></td>
+                                <td class="mqttClientLaunchable"></td>
+                                <td class="mqttClientState"></td>
+                                <td><a class="btn btn-success btn-sm bt_startMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
+                                <td class="mqttClientLastLaunch"></td>
                             </tr>
                         </tbody>
                     </table>                                    
@@ -138,90 +138,90 @@
 
 <script>
 
-var timeout_refreshDaemonInfo = null;
+var timeout_refreshMqttClientInfo = null;
 
-function showDaemonInfo(data) {
+function showMqttClientInfo(data) {
     switch(data.launchable) {
         case 'ok':
-            $('.bt_startDaemon').show();
-            $('.daemonLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
+            $('.bt_startMqttClient').show();
+            $('.mqttClientLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
             break;
         case 'nok':
-            $('.bt_startDaemon').hide();
-            $('.daemonLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
+            $('.bt_startMqttClient').hide();
+            $('.mqttClientLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
             break;
         default:
-           $('.daemonLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
+           $('.mqttClientLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
     }
 
     switch (data.state) {
         case 'ok':
-            $('.daemonState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
-            $("#div_broker_daemon").closest('.panel').removeClass('panel-warning').removeClass('panel-danger').addClass('panel-success');
+            $('.mqttClientState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
+            $("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-danger').addClass('panel-success');
             break;
         case 'pok':
-            $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
-            $("#div_broker_daemon").closest('.panel').removeClass('panel-danger').removeClass('panel-success').addClass('panel-warning');
+            $('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
+            $("#div_broker_mqttclient").closest('.panel').removeClass('panel-danger').removeClass('panel-success').addClass('panel-warning');
             break;
         case 'nok':
-            $('.daemonState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
-            $("#div_broker_daemon").closest('.panel').removeClass('panel-warning').removeClass('panel-success').addClass('panel-danger');
+            $('.mqttClientState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
+            $("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-success').addClass('panel-danger');
             break;
         default:
-            $('.daemonState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
+            $('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
     }
     
-    $('.daemonLastLaunch').empty().append(data.last_launch);
+    $('.mqttClientLastLaunch').empty().append(data.last_launch);
     
-    if ($("#div_broker_daemon").is(':visible')) {
-        clearTimeout(timeout_refreshDaemonInfo);
-        timeout_refreshDaemonInfo = setTimeout(refreshDaemonInfo, 5000);
+    if ($("#div_broker_mqttclient").is(':visible')) {
+        clearTimeout(timeout_refreshMqttClientInfo);
+        timeout_refreshMqttClientInfo = setTimeout(refreshMqttClientInfo, 5000);
     }
 }
 
-function refreshDaemonInfo() {
+function refreshMqttClientInfo() {
     var id = $('.eqLogicAttr[data-l1key=id]').value();
     if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
 
     callPluginAjax({
         data: {
-            action: 'getDaemonInfo',
+            action: 'getMqttClientInfo',
             id: id,
         },
         success: function(data) {
-            showDaemonInfo(data);
+            showMqttClientInfo(data);
         }
     });
 }
 
-// Observe attribute change of #brokertab. When tab is made visible, trigger refreshDaemonInfo
+// Observe attribute change of #brokertab. When tab is made visible, trigger refreshMqttClientInfo
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
       if ($("#brokertab").is(':visible')) {
-          refreshDaemonInfo();
+          refreshMqttClientInfo();
       }
   });    
 });
 observer.observe($("#brokertab")[0], {attributes: true});
 
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
-    showDaemonInfo(_options);
+    showMqttClientInfo(_options);
 });
 
-$('.bt_startDaemon').on('click',function(){
+$('.bt_startMqttClient').on('click',function(){
     var id = $('.eqLogicAttr[data-l1key=id]').value();
     if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
 
-    clearTimeout(timeout_refreshDaemonInfo);
+    clearTimeout(timeout_refreshMqttClientInfo);
     callPluginAjax({
         data: {
-            action: 'daemonStart',
+            action: 'startMqttClient',
             id: id,
         },
         success: function(data) {
-            refreshDaemonInfo();
+            refreshMqttClientInfo();
         }
     });
 });

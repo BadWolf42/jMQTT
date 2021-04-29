@@ -36,10 +36,17 @@ log::add($plugin, 'info', 'Plugin : ' . $plugin);
 log::add($plugin, 'info', 'Socket port : ' . $socketport);
 log::add($plugin, 'info', 'PID file : ' . $pidfile);
 
-// Create/overwrite pid file
+//Check for daemon already running
+if (file_exists($pidfile)) {
+    log::add($plugin, 'debug', 'PID File "' . $pidfile . '" already exists.');
+    log::add($plugin, 'error', 'This daemon already runs! Exit 0');
+    exit(0);
+}
+
+// Create pid file
 $pid = posix_getpid();
 log::add($plugin, 'debug', 'Writing PID ' . $pid . ' to ' . $pidfile);
-$fp = fopen($pidfile, 'w+');
+$fp = fopen($pidfile, 'x');
 if($fp == false){
     log::add($plugin, 'error', 'Can\'t open pidfile => Exit');
     return;
