@@ -129,7 +129,7 @@ function displayEqLogicCard($eqL, $node_images) {
         echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
     }
     if ($eqL->getType() == jMQTT::TYP_BRK) {
-        $file = 'node_broker_' . $eqL->getDaemonState() . '.svg';
+        $file = 'node_broker_' . $eqL->getMqttClientState() . '.svg';
     }
     else {
         $icon = 'node_' . $eqL->getConfiguration('icone');
@@ -280,7 +280,7 @@ function displayEqLogicCard($eqL, $node_images) {
 <?php
 // Initialise the automatic inclusion button display according to include_mode configuration parameter
 foreach ($eqBrokers as $eqL) {
-    echo 'setIncludeModeActivation(' . $eqL->getId() . ',"' . $eqL->getDaemonState() . '");';
+    echo 'setIncludeModeActivation(' . $eqL->getId() . ',"' . $eqL->getMqttClientState() . '");';
     echo 'configureIncludeModeDisplay(' . $eqL->getId() . ',' . $eqL->getIncludeMode() . ');';
 }
 ?>

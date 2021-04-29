@@ -130,7 +130,7 @@ class MqttClient:
 
 	def publish(self, topic, payload, qos, retain):
 		self.mqttclient.publish(topic, payload, qos, retain)
-		logging.info('Id ' + str(self.id) + ' : Sending message to broker (topic="' + topic + '", payload="' + payload + '", QoS='+ str(qos) + ', retain=' + str(retain) + ')')
+		logging.info('Id ' + str(self.id) + ' : Sending message to broker (topic="' + topic + '", payload="' + str(payload) + '", QoS='+ str(qos) + ', retain=' + str(retain) + ')')
 
 	def start(self):
 		try:
@@ -141,7 +141,7 @@ class MqttClient:
 
 	def stop(self):
 		if self.mqttstatustopic != '':
-			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True).wait_for_publish()
+			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
 		self.mqttclient.disconnect()
 		self.mqttthread.join()
 	
@@ -438,6 +438,11 @@ logging.info('Log level : '+str(_log_level))
 logging.info('Socket port : '+str(_socket_port))
 logging.info('PID file : '+str(_pidfile))
 logging.debug('Apikey : '+str(_apikey))
+
+if os.path.isfile(_pidfile):
+	logging.debug('PID File "' + _pidfile + '" already exists.')
+	logging.error('This daemon already runs! Exit 0')
+	sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
