@@ -1168,7 +1168,7 @@ class jMQTT extends jMQTTBase {
         
         $this->log('debug', 'Publication du message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
-        self::send_mqtt_message($this->getBroker()->getId(), $topic, $payload, $qos, $retain);
+        self::publish_mqtt_message($this->getBroker()->getId(), $topic, $payload, $qos, $retain);
         
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));

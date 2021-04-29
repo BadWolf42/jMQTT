@@ -208,7 +208,7 @@ class jMQTTBase extends eqLogic {
       get_called_class()::send_to_mqtt_daemon($params);
    }
 
-   public static function send_mqtt_message($id, $topic, $payload, $qos = 1, $retain = false) {
+   public static function publish_mqtt_message($id, $topic, $payload, $qos = 1, $retain = false) {
       $params['cmd']='messageOut';
       $params['id']=$id;
       $params['topic']=$topic;
