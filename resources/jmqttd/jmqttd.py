@@ -89,7 +89,7 @@ class MqttClient:
 		if self.mqttstatustopic != '':
 			client.will_set(self.mqttstatustopic, 'offline', 1, True)
 			client.publish(self.mqttstatustopic, 'online', 1, True)
-		logging.info('Id ' + str(self.id) + ' : Connected to broker ' + self.mqtthostname + ':' + str(self.mqttport))
+		logging.info('Id %d : Connected to broker %s:%d', self.id, self.mqtthostname, self.mqttport)
 		for topic in self.mqttsubscribedtopics:
 			self.subscribe_topic(topic, self.mqttsubscribedtopics[topic])
 		self.q.put('{"cmd":"connection","state":' + self.is_connected() + '}')
@@ -98,12 +98,12 @@ class MqttClient:
 		self.connected = False
 		self.q.put('{"cmd":"connection","state":' + self.is_connected() + '}')
 		if rc == mqtt.MQTT_ERR_SUCCESS:
-			logging.info('Id ' + str(self.id) + ' : Disconnected from broker.')
+			logging.info('Id %d : Disconnected from broker.', self.id)
 		else:
-			logging.error('Id ' + str(self.id) + ' : Unexpected disconnection from broker!')
+			logging.error('Id %d : Unexpected disconnection from broker!', self.id)
 
 	def on_message(self, client, userdata, message):
-		logging.info('Id ' + str(self.id) + ' : message received (topic="' + message.topic + '", payload="' + message.payload.decode('utf-8') + '", QoS='+ str(message.qos) + ', retain=' + str(message.retain) + ')')
+		logging.info('Id %d : Message received (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, message.topic, message.payload.decode('utf-8'), message.qos, message.retain)
 		self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":message.payload.decode('utf-8'), "qos":message.qos, "retain":message.retain}))
 
 	def is_connected(self):
@@ -113,24 +113,24 @@ class MqttClient:
 		res = self.mqttclient.subscribe(topic, qos)
 		if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
 			self.mqttsubscribedtopics[topic] = qos
-			logging.info('Id ' + str(self.id) + ' : Topic subscribed "' + topic + '"')
+			logging.info('Id %d : Topic subscribed "%s"', self.id, topic)
 		else:
-			logging.error('Id ' + str(self.id) + ' : Topic subscription failed "' + topic + '"')
+			logging.error('Id %d : Topic subscription failed "%s"', self.id, topic)
 
 	def unsubscribe_topic(self, topic):
 		if topic in self.mqttsubscribedtopics:
 			res = self.mqttclient.unsubscribe(topic)
 			if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
 				del self.mqttsubscribedtopics[topic]
-				logging.info('Id ' + str(self.id) + ' : Topic unsubscribed "' + topic + '"')
+				logging.info('Id %d : Topic unsubscribed "%s"', self.id, topic)
 			else:
-				logging.error('Id ' + str(self.id) + ' : Topic unsubscription failed "' + topic + '"')
+				logging.error('Id %d : Topic unsubscription failed "%s"', self.id, topic)
 		else:
-			logging.info('Id ' + str(self.id) + ' : Can\'t unsubscribe not subscribed topic "' + topic)
+			logging.info('Id %d : Can\'t unsubscribe not subscribed topic "%s"', self.id, topic)
 
 	def publish(self, topic, payload, qos, retain):
 		self.mqttclient.publish(topic, payload, qos, retain)
-		logging.info('Id ' + str(self.id) + ' : Sending message to broker (topic="' + topic + '", payload="' + str(payload) + '", QoS='+ str(qos) + ', retain=' + str(retain) + ')')
+		logging.info('Id %d : Sending message to broker (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, topic, payload, qos, retain)
 
 	def start(self):
 		try:
@@ -182,7 +182,7 @@ class WebSocketClient:
 			try:
 				msg = self.q.get(block=True, timeout=0.1)
 				self.wsclient.send(msg)
-				logging.info('Id ' + str(self.id) + ' : Sending message to Jeedom ' + msg)
+				logging.info('Id %d : Sending message to Jeedom : %s', self.id, msg)
 			except:
 				pass
 			if self.stopworker and self.q.empty():
@@ -190,17 +190,17 @@ class WebSocketClient:
 
 	def on_open(self, ws):
 		ws.send('{"cmd":"connection","state":' + str(self.fnismqttconnected()) + '}')
-		logging.info('Id ' + str(self.id) + ' : Connected to Jeedom using ' + self.wscallback)
+		logging.info('Id %d : Connected to Jeedom using %s', self.id, self.wscallback)
 
 	def on_message(self, ws, message):
-		logging.debug('Id ' + str(self.id) + ' : Received a message through WebSocket !!!')
+		logging.debug('Id %d : Received a message through WebSocket', self.id)
 
 	def on_error(self, ws, error):
 		if not isinstance(error, AttributeError) or not self.stopautorestart:
-			logging.error('Id ' + str(self.id) + ' : WebSocket client encountered an Error!')
+			logging.error('Id %d : WebSocket client encountered an Error!', self.id)
 
 	def on_close(self, ws):
-		logging.info('Id ' + str(self.id) + ' : Disconnected from Jeedom')
+		logging.info('Id %d : Disconnected from Jeedom', self.id)
 
 	def start(self):
 		self.stopautorestart = False
@@ -234,10 +234,10 @@ class jMqttClient:
 def cmd_handler(message):
 	# Make some controls on received message
 	if 'id' not in message:
-		logging.error('!!! id is missing !!! : ' + json.dumps(message))
+		logging.error('!!! id is missing !!! : %s', json.dumps(message))
 		return
 	if 'cmd' not in message:
-		logging.error('!!! cmd is missing !!! : ' + json.dumps(message))
+		logging.error('!!! cmd is missing !!! : %s', json.dumps(message))
 		return
 
 	
@@ -246,66 +246,66 @@ def cmd_handler(message):
 		try:
 			message['id'] = int(message['id'])
 		except:
-			logging.error('!!! Incorrect id provided : ' + message['id'])
+			logging.error('!!! Incorrect id provided : %d', message['id'])
 			return
 	if 'port' in message and type(message['port']) is str:
 		try:
 			message['port'] = int(message['port'])
 		except:
-			logging.error('Id ' + str(message['id']) + ' !!! Incorrect port provided : ' + message['port'])
+			logging.error('Id %d !!! Incorrect port provided : %s', message['id'], message['port'])
 			return
 	if 'qos' in message and type(message['qos']) is str:
 		try:
 			message['qos'] = int(message['qos'])
 		except:
-			logging.error('Id ' + str(message['id']) + ' !!! Incorrect qos provided : ' + message['qos'])
+			logging.error('Id %d !!! Incorrect qos provided : %s', message['id'], message['qos'])
 			return
 	if 'retain' in message and type(message['retain']) is str:
 		try:
 			message['retain'] = bool(message['retain'])
 		except:
-			logging.error('Id ' + str(message['id']) + ' !!! Incorrect retain provided : ' + message['retain'])
+			logging.error('Id %d !!! Incorrect retain provided : %s', message['id'], json.dumps(message))
 			return
 
 	# ------------------------------ newMqttClient ------------------------------
 	if message['cmd'] == 'newMqttClient':
 		#Make more controls on received message
 		if not (message.keys() >= {'callback', 'hostname'}):
-			logging.error('Id ' + str(message['id']) + ' !!! newMqttClient - missing parameter : ' + json.dumps(message))
+			logging.error('Id %d !!! newMqttClient - missing parameter : %s', message['id'], json.dumps(message))
 			return
 
 		# if jmqttclient already exists then remove it first
 		if message['id'] in jmqttclients:
-			logging.info('Id ' + str(message['id']) + ' : Client already exists. Starting removal')
+			logging.info('Id %d : Client already exists. Starting removal', message['id'])
 			jmqttclients[message['id']].stop()
 			del jmqttclients[message['id']]
 
 		# create requested jmqttclient
-		logging.info('Id ' + str(message['id']) + ' : Starting Client creation')
+		logging.info('Id %d : Starting Client creation', message['id'])
 		newjMqttClient = jMqttClient(message)
 		jmqttclients[message['id']] = newjMqttClient
-		
+
 
 	# ------------------------------ removeMqttClient ------------------------------
 	elif message['cmd'] == 'removeMqttClient':
 
 		# if jmqttclient exists then remove it
 		if message['id'] in jmqttclients:
-			logging.info('Id ' + str(message['id']) + ' : Starting Client removal')
+			logging.info('Id %d : Starting Client removal', message['id'])
 			jmqttclients[message['id']].stop()
 			del jmqttclients[message['id']]
 		else:
-			logging.info('Id ' + str(message['id']) + ' : No client found with this Id')
-			
+			logging.info('Id %d : No client found with this Id', message['id'])
+
 
 	# ------------------------------ subscribeTopic ------------------------------
 	elif message['cmd'] == 'subscribeTopic':
 		#Make more controls on received message
 		if not (message.keys() >= {'topic', 'qos'}):
-			logging.error('Id ' + str(message['id']) + ' !!! subscribeTopic - missing parameter : ' + json.dumps(message))
+			logging.error('Id %d !!! subscribeTopic - missing parameter : %s', message['id'], json.dumps(message))
 			return
 		if message['topic'] == '':
-			logging.error('Id ' + str(message['id']) + ' !!! subscribeTopic - topic cannot be empty : ' + json.dumps(message))
+			logging.error('Id %d !!! subscribeTopic - topic cannot be empty : %s', message['id'], json.dumps(message))
 			return
 
 		if message['id'] in jmqttclients:
@@ -315,10 +315,10 @@ def cmd_handler(message):
 	elif message['cmd'] == 'unsubscribeTopic':
 		#Make more controls on received message
 		if not (message.keys() >= {'topic'}):
-			logging.error('Id ' + str(message['id']) + ' !!! unsubscribeTopic - missing parameter : ' + json.dumps(message))
+			logging.error('Id %d !!! unsubscribeTopic - missing parameter : %s', message['id'], json.dumps(message))
 			return
 		if message['topic'] == '':
-			logging.error('Id ' + str(message['id']) + ' !!! unsubscribeTopic - topic cannot be empty : ' + json.dumps(message))
+			logging.error('Id %d !!! unsubscribeTopic - topic cannot be empty : %s', message['id'], json.dumps(message))
 			return
 
 		if message['id'] in jmqttclients:
@@ -327,20 +327,20 @@ def cmd_handler(message):
 	# ------------------------------ messageOut ------------------------------
 	elif message['cmd'] == 'messageOut':
 		if not (message.keys() >= {'topic','payload','qos','retain'}):
-			logging.error('Id ' + str(message['id']) + ' !!! messageOut - missing parameter : ' + json.dumps(message))
+			logging.error('Id %d !!! messageOut - missing parameter : %s', message['id'], json.dumps(message))
 			return
 		if message['topic'] == '':
-			logging.error('Id ' + str(message['id']) + ' !!! messageOut - topic cannot be empty : ' + json.dumps(message))
+			logging.error('Id %d !!! messageOut - topic cannot be empty : %s', message['id'], json.dumps(message))
 			return
 		if message['qos'] < 0 or message['qos'] > 2:
-			logging.error('Id ' + str(message['id']) + ' !!! messageOut - qos wrong value : ' + json.dumps(message))
+			logging.error('Id %d !!! messageOut - qos wrong value : %s', message['id'], json.dumps(message))
 			return
 
 		if message['id'] in jmqttclients:
 			jmqttclients[message['id']].mqtt.publish(message['topic'], message['payload'], message['qos'], message['retain'])
 
 	else:
-		logging.error('Unknown cmd : ' + json.dumps(message))
+		logging.error('Unknown cmd : %s', json.dumps(message))
 
 
 def listen():
@@ -354,14 +354,14 @@ def listen():
 		except:
 			pass
 		else:
-			logging.debug('jeedom_socket received message : ' + jeedom_msg)
+			logging.debug('jeedom_socket received message : %s', jeedom_msg)
 			try:
 				message = json.loads(jeedom_msg)
 			except:
 				logging.debug('jeedom_socket received message is not a correct JSON')
 			else:
 				if message['apikey'] != _apikey:
-					logging.error("Invalid apikey from socket : " + str(message))
+					logging.error("Invalid apikey from socket : %s", message)
 					return
 				cmd_handler(message)
 
@@ -369,15 +369,16 @@ def listen():
 # ----------------------------------------------------------------------------
 
 def signal_handler(signum=None, frame=None):
-	logging.debug("Signal %i caught, exiting..." % int(signum))
+	logging.debug("Signal %d caught, exiting...", signum)
 	shutdown()
 
 def shutdown():
 	logging.debug("Shutdown")
 	try:
 		jeedomsocket.close()
+		logging.debug("Socket closed")
 	except:
-		pass
+		logging.debug("Failed to close socket")
 	# try:
 	# 	jeedom_serial.close()
 	# except:
@@ -388,11 +389,11 @@ def shutdown():
 			del jmqttclients[id]
 	except:
 		pass
-	logging.debug("Removing PID file " + str(_pidfile))
 	try:
 		os.remove(_pidfile)
+		logging.debug("Removed PID file %s", _pidfile)
 	except:
-		pass
+		logging.debug("Failed to remove PID file %s", _pidfile)
 	logging.debug("Exit 0")
 	sys.stdout.flush()
 	os._exit(0)
@@ -433,11 +434,11 @@ if args.pid:
 jeedom_utils.set_log_level(_log_level)
 
 logging.info('Start jMQTT python daemon')
-logging.info('Plugin : '+str(_plugin))
-logging.info('Log level : '+str(_log_level))
-logging.info('Socket port : '+str(_socket_port))
-logging.info('PID file : '+str(_pidfile))
-logging.debug('Apikey : '+str(_apikey))
+logging.info('Plugin     : %s', _plugin)
+logging.info('Log level  : %s', _log_level)
+logging.info('Socket port: %s', _socket_port)
+logging.info('PID file   : %s', _pidfile)
+logging.debug('Apikey    : %s', _apikey)
 
 if os.path.isfile(_pidfile):
 	logging.debug('PID File "' + _pidfile + '" already exists.')
@@ -454,5 +455,5 @@ try:
 	jeedomsocket = jeedom_socket(port=_socket_port,address=_socket_host)
 	listen()
 except Exception as e:
-	logging.error('Fatal error : '+str(e))
+	logging.exception('Fatal unhandled Exception')
 	shutdown()
