@@ -315,16 +315,17 @@ class jeedom_socket():
 	def __init__(self,address='localhost', port=55000):
 		self.address = address
 		self.port = port
-		self.queue = None
+		self.queue = Queue()
+		self.get = self.queue.get
+		self.netAdapter = None
 		socketserver.TCPServer.allow_reuse_address = True
 
 	def open(self):
-		if self.queue is not None:
+		if self.netAdapter is not None:
 			logging.warning("Socket interface already started")
 			return
 		self.netAdapter = TCPServer((self.address, self.port), jeedom_socket_handler)
 		if self.netAdapter:
-			self.queue = Queue()
 			self.netAdapter.queue = self.queue
 			logging.debug("Socket interface started")
 			threading.Thread(target=self.loopNetServer, args=()).start()

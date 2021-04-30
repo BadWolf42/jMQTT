@@ -351,11 +351,12 @@ def listen():
 	jeedomsocket.open()
 	while True:
 		try:
-			jeedom_msg = jeedomsocket.queue.get(block=True, timeout=0.1).decode('utf-8')
+			jeedom_msg = jeedomsocket.get(block=True, timeout=0.1).decode('utf-8')
 		except KeyboardInterrupt:
 			shutdown()
 		except:
-			pass
+			if logging.isEnabledFor(logging.DEBUG):
+				logging.exception('Exception in listen:')
 		else:
 			logging.debug('jeedom_socket received message : %s', jeedom_msg)
 			try:
