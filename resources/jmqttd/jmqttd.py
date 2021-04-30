@@ -460,5 +460,5 @@ try:
 	jeedomsocket = jeedom_socket(port=_socket_port,address=_socket_host)
 	listen()
 except Exception as e:
-	logging.exception('Fatal unhandled Exception')
+	logging.exception('Fatal unhandled Exception : %s', e)
 	shutdown()
