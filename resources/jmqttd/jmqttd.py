@@ -34,7 +34,6 @@ import gc
 try:
 	from jeedom.jeedom import jeedom_socket
 	from jeedom.jeedom import jeedom_utils
-	from jeedom.jeedom import JEEDOM_SOCKET_MESSAGE
 except ImportError:
 	print("Error: importing module jeedom.jeedom")
 	sys.exit(1)
@@ -349,11 +348,10 @@ def cmd_handler(message):
 
 
 def listen():
-	global JEEDOM_SOCKET_MESSAGE
 	jeedomsocket.open()
 	while True:
 		try:
-			jeedom_msg = JEEDOM_SOCKET_MESSAGE.get(block=True, timeout=0.1).decode('utf-8')
+			jeedom_msg = jeedomsocket.queue.get(block=True, timeout=0.1).decode('utf-8')
 		except KeyboardInterrupt:
 			shutdown()
 		except:
