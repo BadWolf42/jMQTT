@@ -1,6 +1,8 @@
 # Registre des évolutions
 
 ## Beta
+ATTENTION :  De gros changements ont été apporté au plugin
+En cas de problème, merci d'ouvrir un thread sur [community ici](https://community.jeedom.com/tag/plugin-jmqtt) ou une issue sur [Github ici](https://github.com/Domochip/jMQTT/issues)
  - Changement complet de moteur MQTT
  - Passage au nouveau démon (PHPWebSocket + Python) utilisant la gestion fournie par Jeedom Core
  - Structure de classes permettant l'utilisation dans de futurs plugins satellites
