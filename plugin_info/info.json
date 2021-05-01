@@ -8,7 +8,7 @@
     "require" : "3.3.24",
     "category" : "automation protocol",
     "hasDependency" : true,
-    "hasOwnDeamon" : false,
+    "hasOwnDeamon" : true,
     "issue" : "https://github.com/Domochip/jMQTT/issues",
     "changelog" : "https://domochip.github.io/jMQTT/fr_FR/changelog",
     "documentation" : "https://domochip.github.io/jMQTT/fr_FR/",
