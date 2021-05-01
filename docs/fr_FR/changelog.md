@@ -1,5 +1,12 @@
 # Registre des évolutions
 
+## Beta
+ - Changement complet de moteur MQTT
+ - Passage au nouveau démon (PHPWebSocket + Python) utilisant la gestion fournie par Jeedom Core
+ - Structure de classes permettant l'utilisation dans de futurs plugins satellites
+ - Nouvelles dépendances plus légères et maintenues
+ - Renommage de l'ancienne partie Daemon en MqttClient
+
 ## 2021-04-27
   - Correction [PR#40](https://github.com/Domochip/jMQTT/pull/40): gestion du cas d'erreur de renommage du log d'un broker lorsque le log n'existe pas encore
   - Désactivation et retrait de l'Ajout automatique des commandes pour les équipements de type broker
