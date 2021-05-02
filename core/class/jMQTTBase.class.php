@@ -114,6 +114,8 @@ class jMQTTBase extends eqLogic {
       }
 
       if ($daemon_info['state'] != 'ok') {
+         // If only one of both daemon runs we still need to stop
+         self::deamon_stop();
          log::add(get_called_class(), 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
          return false;
       }
