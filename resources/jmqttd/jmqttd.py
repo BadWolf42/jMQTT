@@ -40,7 +40,7 @@ except ImportError:
 
 class MqttClient:
 	def __init__(self, queue, message):
-		logging.debug('MqttClient.init(): message=%r', message)
+#		logging.debug('MqttClient.init(): message=%r', message)
 		self.q = queue
 		self.id = message['id']
 
@@ -87,9 +87,10 @@ class MqttClient:
 		if 'paholog' in message and message['paholog'] != '':
 			self.mqttpaholog = message['paholog']
 
-
 		self.mqttsubscribedtopics = {}
 		self.connected = False
+
+#		logging.debug('MqttClient.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
 
 		# Create MQTT Client
 		self.mqttclient = mqtt.Client(self.mqttclientid)
