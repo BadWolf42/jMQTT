@@ -174,16 +174,30 @@ class jMQTTBase extends eqLogic {
       socket_close($socket);
    }
 
-   public static function new_mqtt_client($id, $hostname, $port = 1883, $clientid = '', $statustopic = '', $username = '', $password = '') {
+   public static function new_mqtt_client($id, $hostname, $port = 0, $clientid = '', $statustopic = '',
+                                          $username = '', $password = '', $tls = False,
+                                          $tlscafile = '', $tlsinsecure = True, $paholog='') {
       $params['cmd']='newMqttClient';
       $params['id']=$id;
       $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
       $params['hostname']=$hostname;
-      $params['port']=$port;
+         if ($port != 0) {
+               $params['port']=$port;
+         } else {
+            if ($tls) {
+               $params['port']=8883;
+            } else {
+               $params['port']=1883;
+            }
+         }
       $params['clientid']=$clientid;
       $params['statustopic']=$statustopic;
       $params['username']=$username;
       $params['password']=$password;
+      $params['tls']=$tls; // Enable TLS communcation with broker (default TLS port is 8883)
+      $params['tlscafile']=$tlscafile; // string path to the Certificate Authority certificate files that are to be treated as trusted by this client
+      $params['tlsinsecure']=$tlsinsecure; // Bool: True -> Check connection against provided CA certificate.
+      $params['paholog']=$paholog;
       get_called_class()::send_to_mqtt_daemon($params);
    }
 
