@@ -78,9 +78,9 @@ class MqttClient:
 			else:
 				logging.warning('Unable to read CA file "%s"', message['tlscafile'])
 
-		self.mqtttlsinsecure = True
-		if 'tlsinsecure' in message:
-			self.mqtttlsinsecure = message['tlsinsecure']
+		self.mqtttlssecure = False
+		if 'tlssecure' in message:
+			self.mqtttlssecure = message['tlssecure']
 
 		self.mqttpaholog = ''
 		if 'paholog' in message and message['paholog'] != '':
@@ -93,7 +93,7 @@ class MqttClient:
 		# Create MQTT Client
 		self.mqttclient = mqtt.Client(self.mqttclientid)
 		# Enable special Paho logging functions
-		if self.mqttpaholog != ''
+		if self.mqttpaholog != '':
 			self.mqttclient.enable_logger(jeedom_utils.convert_log_level(self.mqttpaholog))
 		if self.mqttusername != '':
 			if self.mqttpassword != '':
@@ -102,7 +102,7 @@ class MqttClient:
 				self.mqttclient.username_pw_set(self.mqttusername)
 		if self.mqtttls:
 			self.mqttclient.tls_set(self.mqtttlscafile)
-			self.mqttclient.tls_insecure_set(self.mqtttlsinsecure)
+			self.mqttclient.tls_insecure_set(not self.mqtttlssecure)
 #TODO Expose in "message" other parameters of tls_set()?
 #	Default values:
 #		certfile=None, keyfile=None, cert_reqs=ssl.CERT_REQUIRED,
