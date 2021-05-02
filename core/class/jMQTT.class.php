@@ -45,7 +45,7 @@ class jMQTT extends jMQTTBase {
     const CONF_KEY_MQTT_PASS = 'mqttPass';
     const CONF_KEY_MQTT_TLS = 'mqttTls';
     const CONF_KEY_MQTT_TLS_CA = 'mqttTlsCaFile';
-    const CONF_KEY_MQTT_TLS_INSECURE = 'mqttTlsInsecure';
+    const CONF_KEY_MQTT_TLS_INSECURE = 'mqttTlsSecure';
     const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
 
     const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
