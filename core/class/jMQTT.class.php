@@ -43,6 +43,11 @@ class jMQTT extends jMQTTBase {
     const CONF_KEY_MQTT_PORT = 'mqttPort';
     const CONF_KEY_MQTT_USER = 'mqttUser';
     const CONF_KEY_MQTT_PASS = 'mqttPass';
+    const CONF_KEY_MQTT_TLS = 'mqttTls';
+    const CONF_KEY_MQTT_TLS_CA = 'mqttTlsCaFile';
+    const CONF_KEY_MQTT_TLS_INSECURE = 'mqttTlsInsecure';
+    const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
+
     const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
     const CONF_KEY_QOS = 'Qos';
     const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
@@ -867,8 +872,10 @@ class jMQTT extends jMQTTBase {
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
         $this->sendMqttClientStateEvent();
-        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
-
+        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(),
+                              $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS)
+//TODO Use new TLS/PahoLog options here
+                              );
         
         // Subscribe to all necessary topics
         if ($this->isIncludeMode()) { // auto inclusion mode
@@ -1339,6 +1346,7 @@ class jMQTT extends jMQTTBase {
         // General case
         $keys = array('Qos');
         if ($this->getType() == self::TYP_BRK) {
+//FIXME? Use declared CONST instead of litteral strings?
             $keys = array_merge($keys, array('mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api'));
         }
         if (in_array($_key, $keys)) {

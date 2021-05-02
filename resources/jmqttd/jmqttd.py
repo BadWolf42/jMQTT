@@ -52,6 +52,8 @@ class MqttClient:
 		self.mqttclientid = ''
 		if 'clientid' in message:
 			self.mqttclientid = message['clientid']
+		else:
+			logging.warning('Client ID should be defined, expect strange behaviors...')
 
 		self.mqttusername = ''
 		if 'username' in message:
@@ -65,16 +67,82 @@ class MqttClient:
 		if 'statustopic' in message:
 			self.mqttstatustopic = message['statustopic']
 
+		self.mqtttls = False
+		if 'tls' in message:
+			self.mqtttls = message['tls']
+
+		self.mqtttlscafile = ''
+		if 'tlscafile' in message and message['tlscafile'] != '':
+			if os.access(message['tlscafile'], os.R_OK):
+				self.mqtttlscafile = message['tlscafile']
+			else:
+				logging.warning('Unable to read CA file "%s"', message['tlscafile'])
+
+		self.mqtttlsinsecure = True
+		if 'tlsinsecure' in message:
+			self.mqtttlsinsecure = message['tlsinsecure']
+
+		self.mqttpaholog = ''
+		if 'paholog' in message and message['paholog'] != '':
+			self.mqttpaholog = message['paholog']
+
+
 		self.mqttsubscribedtopics = {}
 		self.connected = False
 
 		# Create MQTT Client
 		self.mqttclient = mqtt.Client(self.mqttclientid)
+		# Enable special Paho logging functions
+		if self.mqttpaholog != ''
+			self.mqttclient.enable_logger(jeedom_utils.convert_log_level(self.mqttpaholog))
 		if self.mqttusername != '':
 			if self.mqttpassword != '':
 				self.mqttclient.username_pw_set(self.mqttusername, self.mqttpassword)
 			else:
 				self.mqttclient.username_pw_set(self.mqttusername)
+		if self.mqtttls:
+			self.mqttclient.tls_set(self.mqtttlscafile)
+			self.mqttclient.tls_insecure_set(self.mqtttlsinsecure)
+#TODO Expose in "message" other parameters of tls_set()?
+#	Default values:
+#		certfile=None, keyfile=None, cert_reqs=ssl.CERT_REQUIRED,
+#		tls_version=ssl.PROTOCOL_TLS, ciphers=None
+#
+#	ca_certs : a string path to the Certificate Authority certificate files
+#		that are to be treated as trusted by this client. If this is the only
+#		option given then the client will operate in a similar manner to a web
+#		browser. That is to say it will require the broker to have a
+#		certificate signed by the Certificate Authorities in ca_certs and will
+#		communicate using TLS v1,2, but will not attempt any form of
+#		authentication. This provides basic network encryption but may not be
+#		sufficient depending on how the broker is configured.
+#		By default, on Python 2.7.9+ or 3.4+, the default certification
+#		authority of the system is used. On older Python version this parameter
+#		is mandatory.
+#	certfile and keyfile are strings pointing to the PEM encoded client
+#		certificate and private keys respectively. If these arguments are not
+#		None then they will be used as client information for TLS based
+#		authentication.  Support for this feature is broker dependent. Note
+#		that if either of these files in encrypted and needs a password to
+#		decrypt it, Python will ask for the password at the command line. It is
+#		not currently possible to define a callback to provide the password.
+#	cert_reqs allows the certificate requirements that the client imposes
+#		on the broker to be changed. By default this is ssl.CERT_REQUIRED,
+#		which means that the broker must provide a certificate.
+#			CERT_NONE - no certificates from the other side are required (or will
+#				be looked at if provided)
+#			CERT_OPTIONAL - certificates are not required, but if provided will be
+#				validated, and if validation fails, the connection will
+#				also fail
+#			CERT_REQUIRED - certificates are required, and will be validated, and
+#				if validation fails, the connection will also fail
+#	tls_version allows the version of the SSL/TLS protocol used to be
+#		specified. By default TLS v1.2 is used. Previous versions are allowed
+#		but not recommended due to possible security problems.
+#	ciphers is a string specifying which encryption ciphers are allowable
+#		for this connection, or None to use the defaults. See:
+#		https://www.openssl.org/docs/manmaster/man1/openssl-ciphers.html#CIPHER-STRINGS
+
 		self.mqttclient.reconnect_delay_set(5, 15)
 		self.mqttclient.on_connect = self.on_connect
 		self.mqttclient.on_disconnect = self.on_disconnect
