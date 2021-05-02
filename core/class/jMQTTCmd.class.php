@@ -106,13 +106,6 @@ class jMQTTCmd extends cmd {
     }
 
     /**
-     * preRemove method to log that a command is removed
-     */
-    public function preRemove() {
-        $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
-    }
-
-    /**
      * Update this command value, and inform all stakeholders about the new value
      * @param string $value new command value
      */
@@ -311,6 +304,13 @@ class jMQTTCmd extends cmd {
                 $this->eventTopicMismatch();
             }
         }
+    }
+
+    /**
+     * preRemove method to log that a command is removed
+     */
+    public function preRemove() {
+        $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
     }
 
     public function setName($name) {
