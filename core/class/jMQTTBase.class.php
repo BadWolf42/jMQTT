@@ -196,7 +196,8 @@ class jMQTTBase extends eqLogic {
       $params['password']=$password;
       $params['tls']=$tls; // Enable TLS communcation with broker (default TLS port is 8883)
       $params['tlscafile']=$tlscafile; // string path to the Certificate Authority certificate files that are to be treated as trusted by this client
-      $params['tlssecure']=!$tlssecure; // Bool: True -> Check connection against provided CA certificate.
+      $params['tlssecure']=$tlssecure; // Bool: True -> Check connection against provided CA certificate.
+
       $params['paholog']=$paholog;
       get_called_class()::send_to_mqtt_daemon($params);
    }

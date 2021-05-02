@@ -1300,14 +1300,16 @@ class jMQTT extends jMQTTBase {
     private static function getDefaultConfiguration($_key) {
         $defValues = array(
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
-            self::CONF_KEY_MQTT_PORT => '1883',
             self::CONF_KEY_MQTT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
+            self::CONF_KEY_MQTT_TLS => '0',
+            self::CONF_KEY_MQTT_TLS_CA => '',
+            self::CONF_KEY_MQTT_TLS_SECURE => '0',
+            self::CONF_KEY_MQTT_PAHO_LOG => '',
             self::CONF_KEY_AUTO_ADD_CMD, '1',
             self::CONF_KEY_MQTT_INC_TOPIC => '#',
             self::CONF_KEY_API => self::API_DISABLE,
             self::CONF_KEY_BRK_ID => -1
-//FIXME? Check if needed other default configs here
         );
 
         return array_key_exists($_key, $defValues) ? $defValues[$_key] : '';
@@ -1348,8 +1350,12 @@ class jMQTT extends jMQTTBase {
         // General case
         $keys = array('Qos');
         if ($this->getType() == self::TYP_BRK) {
-//FIXME? Use declared CONST instead of litteral strings?
-            $keys = array_merge($keys, array('mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api'));
+            $keys = array_merge($keys, array(
+                          self::CONF_KEY_MQTT_ADDRESS, self::CONF_KEY_MQTT_PORT,
+                          self::CONF_KEY_MQTT_USER, self::CONF_KEY_MQTT_PASS,
+                          self::CONF_KEY_MQTT_TLS, self::CONF_KEY_MQTT_TLS_CA,
+                          self::CONF_KEY_MQTT_TLS_SECURE, self::CONF_KEY_MQTT_PAHO_LOG,
+                          self::CONF_KEY_MQTT_INC_TOPIC, self::CONF_KEY_API));
         }
         if (in_array($_key, $keys)) {
             if ($value != $old_value) {
