@@ -47,6 +47,7 @@ class jMQTT extends jMQTTBase {
     const CONF_KEY_QOS = 'Qos';
     const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
     const CONF_KEY_API = 'api';
+    const CONF_KEY_LOGLEVEL = 'loglevel';
     
     const CONF_KEY_OLD = 'old';
     const CONF_KEY_NEW = 'new';
@@ -92,6 +93,12 @@ class jMQTT extends jMQTTBase {
      */
     private $_post_data;
     
+    /**
+     * Data shared between preSave and postSave
+     * @var array values from preSave used for postSave actions
+     */
+    private $_preSaveInformations;
+
     /**
      * Broker jMQTT object related to this object
      * @var jMQTT broker object
@@ -364,141 +371,179 @@ class jMQTT extends jMQTTBase {
     }
         
     /**
-     * Overload preSave to manage changes in subscription parameters to the MQTT broker
+     * Overload preSave to apply some checks/initialization and prepare postSave
      */
     public function preSave() {
 
-        // Initialise the equipment at creation if not already initialized (this is the case 
-        // when equipment is created manually from the user interface)
-        // FIXME: what is the reason for the logicalId test?
-        if (!isset($this->id) && $this->logicalId == '') {
-            $topic = '';
-            // Two brokers cannot have the same name => raise an exception if this is the case
-            if ($this->getType() == self::TYP_BRK) {
-                foreach(self::getBrokers() as $broker) {
-                    if ($broker->getName() == $this->getName()) {
-                        throw new Exception(__('Un broker portant le même nom existe déjà : ', __FILE__) . $this->getName());
-                    }
-                }
-                $topic = $this->getBrokerTopic();
-            }
-            $this->initEquipment($this->getName(), $topic);
+        //Check Type: No Type => self::TYP_EQPT
+        if ($this->getType() != self::TYP_BRK && $this->getType() != self::TYP_EQPT){
+            $this->setType(self::TYP_EQPT);
         }
 
-        if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
-            
-            $restart_mqttclient = false;
-            if ($this->getType() == self::TYP_BRK) {
-                
-                // If broker has been disabled, stop it
-                if (! $this->getIsEnable() && $this->getMqttClientState() != self::MQTTCLIENT_NOK) {
-                    $this->stopMqttClient();
-                }
-                
-                if ($this->_post_data['action'] &  self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
-                    $this->setTopic($this->getBrokerTopic($this->_post_data[self::CONF_KEY_NEW]));
-                }
-                
-                if ($this->isMqttClientToBeRestarted()) {
-                    $restart_mqttclient = true;
+        // Check eqType_name: should be __CLASS__
+        if ($this->eqType_name != __CLASS__) {
+            $this->setEqType_name(__CLASS__);
+        }
+
+        // -------- Broker eqpt --------
+        if ($this->getType() == self::TYP_BRK) {
+
+            // Check for a broker eqpt with the same name (which is not this)
+            foreach(self::getBrokers() as $broker) {
+                if ($broker->getName() == $this->getName() && $broker->getId() != $this->getId()) {
+                    throw new Exception(__('Un broker portant le même nom existe déjà : ', __FILE__) . $this->getName());
                 }
             }
-            
-            if ($this->getType() == self::TYP_EQPT) {
-                if ($this->getBroker()->isMqttClientToBeRestarted(true)) {
-                    $restart_mqttclient = true;     
-                }
+
+            // --- New eqpt ---
+            if (!isset($this->id)) {
             }
-            
-            foreach ($this->_post_data['msg'] as $msg) {
-                $this->log('info', $msg);
-            }
-            
-            if ($restart_mqttclient) {
-                $this->log('info', 'relance du Client MQTT nécessaire');
-                $this->getBroker()->stopMqttClient();
-                if ($this->getType() == self::TYP_BRK) {
-                    $this->setIncludeMode(0);
-                }
-                $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, '', '');
-            }
+            // --- Existing eqpt ---
             else {
-                $this->removePostAction(self::POST_ACTION_RESTART_MQTTCLIENT);
+
             }
+        }
+        // -------- Normal eqpt --------
+        else{
+
+            // --- New eqpt ---
+            if (!isset($this->id)) {
+                //TODO : Will be removed later by default values
+                $this->setQos('1');
+                $this->setAutoAddCmd('1');
+            }
+            // --- Existing eqpt ---
+            else {
+
+            }
+        }
+
+
+        // It's time to gather informations that will be used in postSave
+        if (!isset($this->id)) $this->_preSaveInformations = null; // New eqpt => Nothing to collect
+        else { // Existing eqpt
+
+            // load eqLogic from DB
+            $eqLogic = self::byId($this->getId());
+            $this->_preSaveInformations = array(
+                'name' => $eqLogic->getName(),
+                'isEnable' => $this->getIsEnable(),
+                self::CONF_KEY_LOGLEVEL => $this->getConf(self::CONF_KEY_LOGLEVEL),
+                self::CONF_KEY_MQTT_ID => $this->getConf(self::CONF_KEY_MQTT_ID),
+                self::CONF_KEY_MQTT_ADDRESS => $this->getConf(self::CONF_KEY_MQTT_ADDRESS),
+                self::CONF_KEY_MQTT_PORT => $this->getConf(self::CONF_KEY_MQTT_PORT),
+                self::CONF_KEY_MQTT_USER => $this->getConf(self::CONF_KEY_MQTT_USER),
+                self::CONF_KEY_MQTT_PASS => $this->getConf(self::CONF_KEY_MQTT_PASS),
+                self::CONF_KEY_MQTT_INC_TOPIC => $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC),
+                self::CONF_KEY_QOS => $this->getConf(self::CONF_KEY_QOS),
+                self::CONF_KEY_API => $this->getConf(self::CONF_KEY_API),
+                'logicalId' => $this->getLogicalId()
+            );
         }
     }
 
     /**
-     * postSave callback:
-     *   - On broker name change, rename the the log file
-     *   - Start MQTT Client (when stopped in preSave)
+     * postSave apply changes to MqttClient and log
      */
     public function postSave() {
-        // Check $this->getBrkId() to avoid restarting MQTT Client at broker creation
-        if (isset($this->_post_data['action']) && $this->getBrkId() > 0) {
-            
-            if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {
-                $old_log = $this->getMqttClientLogFile();
-                $new_log = $this->getMqttClientLogFile(true);
-                if (file_exists(log::getPathToLog($old_log))) {
-                    rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
-                }
-                config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, 'jMQTT'), 'jMQTT');
-                config::remove('log::level::' . $old_log, 'jMQTT');
-            }
-            
-            // In case of broker id change, 
-            if (! ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED)) {            
-                if ($this->_post_data['action'] & self::POST_ACTION_RESTART_MQTTCLIENT) {
-                    $this->getBroker()->startMqttClient();
-                }
-                $this->_post_data['action'] = null;
-            }
-        }      
-    }
-    
-    /**
-     * postAjax callback:
-     *   - On broker MQTT client id modification:
-     *     . Update command topics
-     *     . Start MQTT Client (when stopped in preSave)
 
-     *   - At broker equipment creation:
-     *     . create the status command of a broker
-     *     . define brkId of a broker
-     */
-    public function postAjax() {
-        
-        if (isset($this->_post_data['action'])) {
-            // Done first (before creation of MQTT client status cmd below)
-            // Done in postAjax (not in postSave) as commands coming from the UI are saved between postSave and postAjax.
-            if ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
-                /** @var jMQTTCmd[] $cmds */
-                $cmds = cmd::byEqLogicId($this->getId());
-                foreach ($cmds as $cmd) {
-                    if (strpos($this->_post_data[self::CONF_KEY_OLD], $cmd->getTopic()) == 0) {
-                        $cmd->setTopic(str_replace($this->_post_data[self::CONF_KEY_OLD], $this->_post_data[self::CONF_KEY_NEW], $cmd->getTopic()));
-                        $cmd->save();
-                    }
-                }
-                // Send a null command to the previous status command topic to suppress the retained message
-                $this->publishMosquitto($this->getName(), self::_getMqttClientStatusTopic($this->_post_data[self::CONF_KEY_OLD]), '', 1, 1);
-            }
-
-
-            if ($this->_post_data['action'] & self::POST_ACTION_RESTART_MQTTCLIENT) {
-                $this->startMqttClient();
-            }
-            $this->_post_data['action'] = null;
-        }
-        
+        // -------- Broker eqpt --------
         if ($this->getType() == self::TYP_BRK) {
-            $this->createMqttClientStatusCmd();
-            if ($this->getBrkId() < 0) {
-                $this->setBrkId($this->getId());
-                $this->save(true);
+
+            // --- New eqpt ---
+            if (is_null($this->_preSaveInformations)) {
+
+                if ($this->getIsEnable()) {
+                    $this->startMqttClient();
+                }
             }
-        }        
+            // --- Existing eqpt ---
+            else {
+
+                //TODO looks for changes
+
+                //TODO LogLevel change
+                // $this->_log = $this->getMqttClientLogFile();
+                // $new_level = json_decode($log_level, true);
+                // $old_level = config::byKey('log::level::' . $this->_log, 'jMQTT');
+                // if (reset($new_level) != $old_level) {
+                //     config::save('log::level::' . $this->_log, json_encode(reset($new_level)), 'jMQTT');
+                //     $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'niveau de log',
+                //         log::convertLogLevel(log::getLogLevel($this->getMqttClientLogFile())));
+                // }
+
+                //TODO isEnable
+                // if ($_isEnable != $this->isEnable) {
+                //     $newVal = $_isEnable ? 'activée' : 'désactivée';
+                //     $oldVal = $this->isEnable ? 'activée' : 'désactivée';
+                //     $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'activation', $newVal, $oldVal);
+                // }
+
+                //TODO Name
+                // Part1
+                // if ($this->getType() == self::TYP_BRK) {
+                //     if ($_name != $this->name) {
+                //         $this->_log = $this->getMqttClientLogFile(); // To write in the correct log until log is renamed
+                //         $this->addPostAction(self::POST_ACTION_BROKER_NAME_CHANGED, 'nom du broker', $_name, $this->name);
+                //     }
+                // }
+                // Part2
+                // if ($this->_post_data['action'] & self::POST_ACTION_BROKER_NAME_CHANGED) {
+                //     $old_log = $this->getMqttClientLogFile();
+                //     $new_log = $this->getMqttClientLogFile(true);
+                //     if (file_exists(log::getPathToLog($old_log))) {
+                //         rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
+                //     }
+                //     config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, 'jMQTT'), 'jMQTT');
+                //     config::remove('log::level::' . $old_log, 'jMQTT');
+                // }
+
+                //TODO 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api'
+
+                //TODO ClientId
+                //startMqttClient then
+                // if ($this->_post_data['action'] & self::POST_ACTION_BROKER_CLIENT_ID_CHANGED) {
+                //     /** @var jMQTTCmd[] $cmds */
+                //     $cmds = cmd::byEqLogicId($this->getId());
+                //     foreach ($cmds as $cmd) {
+                //         if (strpos($this->_post_data[self::CONF_KEY_OLD], $cmd->getTopic()) == 0) {
+                //             $cmd->setTopic(str_replace($this->_post_data[self::CONF_KEY_OLD], $this->_post_data[self::CONF_KEY_NEW], $cmd->getTopic()));
+                //             $cmd->save();
+                //         }
+                //     }
+                //     // Send a null command to the previous status command topic to suppress the retained message
+                //     $this->publishMosquitto($this->getName(), self::_getMqttClientStatusTopic($this->_post_data[self::CONF_KEY_OLD]), '', 1, 1);
+                // }
+
+            }
+        }
+        // -------- Normal eqpt --------
+        else{
+
+            // --- New eqpt ---
+            if (is_null($this->_preSaveInformations)) {
+                
+                if ($this->getTopic() != '') {
+                    self::subscribe_mqtt_topic($this->getBroker()->getId(), $this->getTopic(), $this->getQos());
+                }
+            }
+            // --- Existing eqpt ---
+            else {
+
+                //TODO looks for changes
+
+                //TODO isEnable
+
+                //TODO logicalId
+                // if ($_logicalId != $this->logicalId) {
+                //     $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'topic', $_logicalId, $this->logicalId);
+                // }
+
+                //TODO QoS
+
+            }
+        }
+ 
     }
 
     /**
@@ -864,6 +909,9 @@ class jMQTT extends jMQTTBase {
             throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
         }
 
+        //TODO : check if it's OK
+        $this->createMqttClientStatusCmd();
+
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
         $this->sendMqttClientStateEvent();
@@ -875,7 +923,7 @@ class jMQTT extends jMQTTBase {
             $topic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
             // Subscribe to topic (root by default)
             self::subscribe_mqtt_topic($this->getId(), $topic, 1);
-            $this->log('debug', 'Subscribe to topic "' . $topic . '" with Qos=1');
+            $this->log('debug', 'Subscribe to Inclusion Mode topic "' . $topic . '" with Qos=1');
             
             if ($this->isApiEnable()) {
                 if (! mosquitto_topic_matches_sub($topic, $this->getMqttApiTopic())) {
@@ -1260,30 +1308,6 @@ class jMQTT extends jMQTTBase {
     public function isApiEnable() {
         return $this->getConf(self::CONF_KEY_API) == self::API_ENABLE ? TRUE : FALSE;
     }
-
-    private function addPostAction($action, $key, $newVal, $oldVal='') {
-        if (isset($this->_post_data['action'])) {
-            $this->_post_data['action'] = $this->_post_data['action'] | $action;
-        }
-        else {
-            $this->_post_data['action'] = $action;
-        }
-        
-        if ($key != '') {
-            if ($oldVal == '') {
-                $this->_post_data['msg'][] = $this->getName() . ': '. $key . ' modifié à ' . $newVal;
-            }
-            else {
-                $this->_post_data['msg'][] = $this->getName() . ': '. $key . ' modifié de ' . $oldVal . ' à ' . $newVal;
-            }
-        }
-    }
-    
-    private function removePostAction($action) {
-        if (isset($this->_post_data['action'])) {
-            $this->_post_data['action'] = $this->_post_data['action'] & ~$action;
-        }
-    }
     
     private function getConf($_key) {
         return $this->getConfiguration($_key, self::getDefaultConfiguration($_key));
@@ -1311,97 +1335,7 @@ class jMQTT extends jMQTTBase {
      * @param string $level
      */
     public function setLogLevel($log_level) {
-        $this->_log = $this->getMqttClientLogFile();
-        $new_level = json_decode($log_level, true);
-        $old_level = config::byKey('log::level::' . $this->_log, 'jMQTT');
-        if (reset($new_level) != $old_level) {
-            config::save('log::level::' . $this->_log, json_encode(reset($new_level)), 'jMQTT');
-            $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'niveau de log',
-                log::convertLogLevel(log::getLogLevel($this->getMqttClientLogFile())));
-        }
-    }
-
-    /**
-     * Override setConfiguration to manage MQTT Client stop/start when deemed necessary
-     * {@inheritDoc}
-     * @see eqLogic::setConfiguration()
-     */
-    public function setConfiguration($_key, $_value) {
-        $default_value = self::getDefaultConfiguration($_key);
-        $old_value = $this->getConfiguration($_key, $default_value);
-        if ($_value == '') {
-            $value = self::getDefaultConfiguration($_key);
-        }
-        else {
-            $value = $_value;
-        }
-        
-        // General case
-        $keys = array('Qos');
-        if ($this->getType() == self::TYP_BRK) {
-            $keys = array_merge($keys, array('mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api'));
-        }
-        if (in_array($_key, $keys)) {
-            if ($value != $old_value) {
-                $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, $_key, $value, $old_value);
-            }
-        }
-        
-        // Specific case: MQTT id change
-        if ($this->getType() == self::TYP_BRK && $_key == self::CONF_KEY_MQTT_ID) {
-            if ($value != $old_value) {
-                // Note: topic (i.e. logicalId) is modified in preSave
-                $this->addPostAction(self::POST_ACTION_BROKER_CLIENT_ID_CHANGED, 'MQTT id', $value, $old_value);
-                $this->_post_data[self::CONF_KEY_OLD] = $old_value;
-                $this->_post_data[self::CONF_KEY_NEW] = $value;
-            }
-        }
-        return parent::setConfiguration($_key, $_value);
-    }
-        
-    /**
-     * Overide setName to manage log file renaming (for broker)
-     * {@inheritDoc}
-     * @see eqLogic::setName()
-     */
-    public function setName($_name) {
-        if ($this->getType() == self::TYP_BRK) {
-            if ($_name != $this->name) {
-                $this->_log = $this->getMqttClientLogFile(); // To write in the correct log until log is renamed
-                $this->addPostAction(self::POST_ACTION_BROKER_NAME_CHANGED, 'nom du broker', $_name, $this->name);
-            }
-        }
-        
-        return parent::setName($_name);
-    }
-    
-    /**
-     * Override setIsEnable to manage MQTT Client stop/start 
-     * {@inheritDoc}
-     * @see eqLogic::setIsEnable()
-     */
-    public function setIsEnable($_isEnable) {
-        if ($_isEnable != $this->isEnable) {
-            $newVal = $_isEnable ? 'activée' : 'désactivée';
-            $oldVal = $this->isEnable ? 'activée' : 'désactivée';
-            $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'activation', $newVal, $oldVal);
-        }
-
-        parent::setIsEnable($_isEnable);
-               
-        return $this;
-    }
-    
-    /**
-     * Override setLogicalId (which store the equipment registration topic) to manage MQTT Client stop/start 
-     * {@inheritDoc}
-     * @see eqLogic::setLogicalId()
-     */
-    public function setLogicalId($_logicalId) {
-        if ($_logicalId != $this->logicalId) {
-            $this->addPostAction(self::POST_ACTION_RESTART_MQTTCLIENT, 'topic', $_logicalId, $this->logicalId);
-        }
-        parent::setLogicalId($_logicalId);
+        $this->setConfiguration(self::CONF_KEY_LOGLEVEL, reset(json_decode($log_level, true)));
     }
     
     /**
