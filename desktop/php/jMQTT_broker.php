@@ -26,7 +26,7 @@
                                 <td class="mqttClientLastLaunch"></td>
                             </tr>
                         </tbody>
-                    </table>                                    
+                    </table>
                 </div>
             </div>
         </div>
@@ -129,7 +129,7 @@
                             <label class="col-lg-4 control-label">{{Chemin vers le fichier CA du Broker (obligatoire s'il faut vérifier la CA) : }}</label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile"
-                                    autocomplete="off" style="margin-top: 5px" placeholder="jeedom" />
+                                    autocomplete="off" style="margin-top: 5px" placeholder="/.../ca.crt" />
                             </div>
                         </div>
 
@@ -191,9 +191,9 @@ function showMqttClientInfo(data) {
         default:
             $('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
     }
-    
+
     $('.mqttClientLastLaunch').empty().append(data.last_launch);
-    
+
     if ($("#div_broker_mqttclient").is(':visible')) {
         clearTimeout(timeout_refreshMqttClientInfo);
         timeout_refreshMqttClientInfo = setTimeout(refreshMqttClientInfo, 5000);
@@ -222,7 +222,7 @@ var observer = new MutationObserver(function(mutations) {
       if ($("#brokertab").is(':visible')) {
           refreshMqttClientInfo();
       }
-  });    
+  });
 });
 observer.observe($("#brokertab")[0], {attributes: true});
 

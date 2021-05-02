@@ -4,12 +4,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Jeedom is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
@@ -216,7 +216,7 @@ class MqttClient:
 			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
 		self.mqttclient.disconnect()
 		self.mqttthread.join()
-	
+
 class WebSocketClient:
 	def __init__(self, queue, message, fnismqttconnected):
 		self.q = queue
@@ -224,7 +224,7 @@ class WebSocketClient:
 		self.apikey = message['apikey']
 		self.wscallback = message['callback']
 		self.fnismqttconnected = fnismqttconnected
-		
+
 		# Create WebSocket Client
 		self.wsclient = websocket.WebSocketApp(
 			url=self.wscallback,
@@ -312,7 +312,7 @@ def cmd_handler(message):
 		logging.error('!!! cmd is missing !!! : %s', json.dumps(message))
 		return
 
-	
+
 	# Make some automatic convertions on received message
 	if type(message['id']) is str:
 		try:
