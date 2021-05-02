@@ -40,6 +40,7 @@ except ImportError:
 
 class MqttClient:
 	def __init__(self, queue, message):
+		logging.debug('MqttClient.init(): message=%r', message)
 		self.q = queue
 		self.id = message['id']
 
@@ -69,18 +70,18 @@ class MqttClient:
 
 		self.mqtttls = False
 		if 'tls' in message:
-			self.mqtttls = message['tls']
+			self.mqtttls = message['tls'] == '1'
 
-		self.mqtttlscafile = ''
+		self.mqtttlscafile = None
 		if 'tlscafile' in message and message['tlscafile'] != '':
 			if os.access(message['tlscafile'], os.R_OK):
 				self.mqtttlscafile = message['tlscafile']
 			else:
 				logging.warning('Unable to read CA file "%s"', message['tlscafile'])
 
-		self.mqtttlssecure = False
+		self.mqtttlsinsecure = False
 		if 'tlssecure' in message:
-			self.mqtttlssecure = message['tlssecure']
+			self.mqtttlsinsecure = message['tlssecure'] != '1'
 
 		self.mqttpaholog = ''
 		if 'paholog' in message and message['paholog'] != '':
@@ -102,7 +103,7 @@ class MqttClient:
 				self.mqttclient.username_pw_set(self.mqttusername)
 		if self.mqtttls:
 			self.mqttclient.tls_set(self.mqtttlscafile)
-			self.mqttclient.tls_insecure_set(not self.mqtttlssecure)
+			self.mqttclient.tls_insecure_set(self.mqtttlsinsecure)
 #TODO Expose in "message" other parameters of tls_set()?
 #	Default values:
 #		certfile=None, keyfile=None, cert_reqs=ssl.CERT_REQUIRED,
