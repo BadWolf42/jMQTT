@@ -36,7 +36,7 @@ define("CURRENT_VERSION", 3);
  * Return without doing anything if the multi broker version is already installed
  */
 function migrateToMultiBrokerVersion() {
-    $version = config::byKey(VERSION, 'jMQTT', 0);
+    $version = config::byKey(VERSION, 'jMQTT', -1);
     if ($version >= 0) {
         return;
     }
@@ -132,7 +132,7 @@ function migrateToMultiBrokerVersion() {
  * Return without doing anything if the new JSON version is already installed
  */
 function migrateToJsonVersion() {
-    $version = config::byKey(VERSION, 'jMQTT', 0);
+    $version = config::byKey(VERSION, 'jMQTT', -1);
     if ($version >= 1) {
         return;
     }
@@ -156,7 +156,7 @@ function migrateToJsonVersion() {
  * Return without doing anything if the new version is already installed
  */
 function disableAutoAddCmdOnBrokers() {
-    $version = config::byKey(VERSION, 'jMQTT', 0);
+    $version = config::byKey(VERSION, 'jMQTT', -1);
     if ($version >= 2) {
         return;
     }
@@ -176,7 +176,7 @@ function disableAutoAddCmdOnBrokers() {
  * Return without doing anything if the new version is already installed
  */
 function removePreviousDaemonCrons() {
-    $version = config::byKey(VERSION, 'jMQTT', 0);
+    $version = config::byKey(VERSION, 'jMQTT', -1);
     if ($version >= 3) {
         return;
     }
@@ -192,6 +192,30 @@ function removePreviousDaemonCrons() {
     log::add('jMQTT', 'info', 'removal of previous daemon cron done');
 }
 
+/**
+ * version 3
+ * Trigger installation of new dependancies
+ * Return without doing anything if the new version is already installed
+ */
+function installNewDependancies() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 3) {
+        return;
+    }
+    
+    //Jeedom Core Bug : the main thread will end by running the previous version dependancy_info()
+    // (the old one says dependancies are met and it's cached...)
+    // Even if we invalidate dependancies infos in cache, it's back just after
+    // plugin::byId('jMQTT')->dependancy_info(true);
+
+    // So best option is to remove an old daemon dependancy
+    exec(system::getCmdSudo() . 'apt-get -y remove mosquitto-clients libmosquitto-dev');
+
+    // Trigger dependancies installation to speed up things
+    plugin::byId('jMQTT')->dependancy_install();
+    log::add('jMQTT', 'info', 'dependancies installation triggered');
+}
+
 function jMQTT_install() {
     jMQTT_update();
 }
@@ -200,20 +224,18 @@ function jMQTT_update() {
     // Stop the plugin
     plugin::byId('jMQTT')->deamon_stop();
     
+    // VERSION = 0
     migrateToMultiBrokerVersion();
+    // VERSION = 1
     migrateToJsonVersion();
+    // VERSION = 2
     disableAutoAddCmdOnBrokers();
+    // VERSION = 3
     removePreviousDaemonCrons();
+    installNewDependancies();
 
     // Update version next to upgrade operations
     config::save(VERSION, CURRENT_VERSION, 'jMQTT');
-
-    // force the refresh of the dependancy info
-    // otherwise the cache value is kept
-    plugin::byId('jMQTT')->dependancy_info(true);
-    
-    // Start the plugin
-    plugin::byId('jMQTT')->deamon_start();
 }
 
 function jMQTT_remove() {
