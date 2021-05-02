@@ -20,23 +20,17 @@
  * Extends the cmd core class
  */
 class jMQTTCmd extends cmd {
-
-    /**
-     * Possible value of $_post_action.
-     * @var integer
-     */
-    const POST_ACTION_INIT_JSON_VALUE = 1;
     
     /**
      * @var int maximum length of command name supported by the database scheme
      */
     private static $_cmdNameMaxLength;
-    
+
     /**
      * Data shared between preSave and postSave
-     * @var int $_post_action value among constants POST_ACTION* 
+     * @var array values from preSave used fro postSave actions
      */
-    private $_post_action;
+    private $_preSaveInformations;
     
     /**
      * Create a new command. Command IS NOT saved.
@@ -225,12 +219,16 @@ class jMQTTCmd extends cmd {
      */
     public function preSave() {
 
-        /** @var jMQTT $eqLogic */
-        $eqLogic       = $this->getEqLogic();
-        $cmdLogName    = $this->getLogName();
-        $prevRetain    = $this->getConfiguration('prev_retain', 0);
-        $retain        = $this->getConfiguration('retain', 0);
-        
+        // save required informations from the cmd in DB for the postSave
+        if ($this->getId() != '') {
+            $cmd = self::byId($this->getId());
+            $this->_preSaveInformations = array(
+                'retain' => $cmd->getConfiguration('retain', 0)
+            );
+        }
+        else $this->_preSaveInformations = null;
+
+
         // If request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
         // the desktop interface - fix issue #28)
         foreach(array('request') as $key) {
@@ -238,48 +236,19 @@ class jMQTTCmd extends cmd {
             if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
                 $this->setConfiguration($key, $conf);
         }
-
-        // Creation of a command
-        if ($this->getId() == '') {
-            
-            // Action command: initialize correctly the prev_retain flag (fix issue #13)
-            if ($this->getType() == 'action') {
-                $prevRetain = $retain;
-                $this->setConfiguration('prev_retain', $retain);
-                $this->eventNewCmd(false);
-            }
-            
-            // Information command: if deriving from a JSON payload, set a flag to initiliaze its value in postSave
-            if ($this->getType() == 'info' && $this->isJson()) {
-                $this->addPostAction(self::POST_ACTION_INIT_JSON_VALUE);
-                $this->eventNewCmd(false);
-            }
-        }
-
-        if ($retain != $prevRetain) {
-            // Acknowledge the retain mode change
-            $this->setConfiguration('prev_retain', $retain);
-
-            if ($prevRetain) {
-                // A null payload shall be sent to the broker to erase the last retained value
-                // Otherwise, this last value remains retained at broker level
-                $eqLogic->log('info',
-                         $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
-                $eqLogic->publishMosquitto($eqLogic->getName(), $this->getTopic(), '', 1, 1);
-            }
-            else
-                $eqLogic->log('info', $cmdLogName . ': mode retain activé');
-        }
     }
     
     /**
      * Callback called by the core after having saved this command in the DB
      */
     public function postSave() {
-        // When requested, initialize the value of a new command deriving from a JSON payload 
-        if (isset($this->_post_action)) {
-            
-            if ($this->_post_action & self::POST_ACTION_INIT_JSON_VALUE) {
+
+        // If _preSaveInformations is null, It's a fresh new cmd.
+        if (is_null($this->_preSaveInformations)) {
+
+            // Type Info and deriving from a JSON payload : Initialize value from "root" cmd
+            if ($this->getType() == 'info' && $this->isJson()) {
+                
                 $root_topic = substr($this->getTopic(), 0, strpos($this->getTopic(), '{'));
                 
                 /** @var jMQTTCmd $root_cmd root JSON command */
@@ -295,8 +264,30 @@ class jMQTTCmd extends cmd {
                     }
                 }
             }
+
+            $this->eventNewCmd(false);
         }
-        
+        else { // the cmd has been updated
+
+            // If retain mode changed
+            if ($this->_preSaveInformations['retain'] != $this->getConfiguration('retain', 0)) {
+
+                $eqLogic = $this->getEqLogic();
+                $cmdLogName = $this->getLogName();
+
+                // It's enabled now
+                if ($this->getConfiguration('retain', 0)) {
+                    $eqLogic->log('info', $cmdLogName . ': mode retain activé');
+                }
+                else{
+                    // A null payload should be sent to the broker to erase the last retained value
+                    // Otherwise, this last value remains retained at broker level
+                    $eqLogic->log('info', $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
+                    $eqLogic->publishMosquitto($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+                }
+            }
+        }
+       
         // For info commands, check that the topic is compatible with the subscription command
         // of the related equipment
         if ($this->getType() == 'info') {
@@ -414,15 +405,6 @@ class jMQTTCmd extends cmd {
      */
     private function getLogName() {
         return $this->getEqLogic()->getName()  . '|' . $this->getName();
-    }
-    
-    private function addPostAction($action) {
-        if (isset($this->_post_action)) {
-            $this->_post_action = $this->_post_action | $action;
-        }
-        else {
-            $this->_post_action = $action;
-        }
     }
     
     /**
