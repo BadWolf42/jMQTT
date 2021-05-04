@@ -219,22 +219,37 @@ class jMQTTCmd extends cmd {
      */
     public function preSave() {
 
-        // save required informations from the cmd in DB for the postSave
-        if ($this->getId() != '') {
-            $cmd = self::byId($this->getId());
-            $this->_preSaveInformations = array(
-                'retain' => $cmd->getConfiguration('retain', 0)
-            );
-        }
-        else $this->_preSaveInformations = null;
-
-
         // If request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
         // the desktop interface - fix issue #28)
         foreach(array('request') as $key) {
             $conf = $this->getConfiguration($key);
             if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
                 $this->setConfiguration($key, $conf);
+        }
+
+        // Specific command : status for Broker eqpt
+        if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+            if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
+            $this->setTopic($this->getEqLogic()->getMqttClientStatusTopic());
+        }
+
+        // --- New cmd ---
+        if (!isset($this->id)) {
+
+        }
+        // --- Existing cmd ---
+        else {
+
+        }
+
+        // It's time to gather informations that will be used in postSave
+        if (!isset($this->id)) $this->_preSaveInformations = null;
+        else {
+            $cmd = self::byId($this->getId());
+            $this->_preSaveInformations = array(
+                'retain' => $cmd->getConfiguration('retain', 0),
+                'brokerStatusTopic' => $cmd->getTopic()
+            );
         }
     }
     
@@ -284,6 +299,16 @@ class jMQTTCmd extends cmd {
                     // Otherwise, this last value remains retained at broker level
                     $eqLogic->log('info', $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
                     $eqLogic->publishMosquitto($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+                }
+            }
+
+            // Specific command : status for Broker eqpt
+            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+                // If it's topic changed
+                if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
+                    // Just try to remove the previous 
+                    $eqLogic = $this->getEqLogic();
+                    $eqLogic->publishMosquitto($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
                 }
             }
         }
