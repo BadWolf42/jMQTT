@@ -369,6 +369,24 @@ class jMQTT extends jMQTTBase {
         }
         return $returns;
     }
+
+    /**
+     * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
+     */
+    public function unsubscribeEqLogicTopic($topic){
+        if (empty($topic)) return;
+
+        //Find eqLogic using the same topic (which is stored in logicalId)
+        $eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
+        $count = 0;
+        foreach ($eqLogics as $eqLogic) {
+            // If it's attached to the same broker and enabled and it's not "me"
+            if ($eqLogic->getBrkId() == $this->getBrkId() && $eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) $count++;
+        }
+
+        //if there is no other eqLogic using the same topic, we can unsubscribe
+        if (!$count) self::unsubscribe_mqtt_topic($this->getBrkId(), $topic);
+    }
         
     /**
      * Overload preSave to apply some checks/initialization and prepare postSave
@@ -538,7 +556,7 @@ class jMQTT extends jMQTTBase {
             if (is_null($this->_preSaveInformations)) {
                 
                 // Enabled & Topic => subscribe
-                if ($this->getIsEnable() && $this->getTopic() != '') self::subscribe_mqtt_topic($this->getBroker()->getId(), $this->getTopic(), $this->getQos());
+                if ($this->getIsEnable() && $this->getTopic() != '') self::subscribe_mqtt_topic($this->getBrkId(), $this->getTopic(), $this->getQos());
             }
             // --- Existing eqpt ---
             else {
@@ -551,31 +569,35 @@ class jMQTT extends jMQTTBase {
                     if ($this->getIsEnable()) $subscribeRequested = true;
                     else {
                         if(!$unsubscribed){
-                            //TODO Need to unsubscribe previous topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
-                            //TODO $this->unsubscribe...()
+                            //Unsubscribe previous topic (if topic changed too)
+                            $this->unsubscribeEqLogicTopic($this->_preSaveInformations['topic']);
                             $unsubscribed = true;
                         }
                     }
                 }
 
-                //TODO topic, QoS
-                if ($this->_preSaveInformations['topic'] != $this->getTopic() || $this->_preSaveInformations[self::CONF_KEY_QOS] != $this->getConf(self::CONF_KEY_QOS)) {
+                // topic changed
+                if ($this->_preSaveInformations['topic'] != $this->getTopic()) {
                     if(!$unsubscribed){
-                        //TODO Need to unsubscribe previous topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
-                        //TODO $this->unsubscribe...()
+                        //Unsubscribed previous topic
+                        $this->unsubscribeEqLogicTopic($this->_preSaveInformations['topic']);
                         $unsubscribed = true;
                     }
                     $subscribeRequested = true;
                 }
 
-                // In the end, does topic need to be subscribed
-                if($subscribeRequested && $this->getIsEnable()){
-                    self::subscribe_mqtt_topic($this->getBroker()->getId(), $this->getTopic(), $this->getQos());
+                // QoS changed
+                if ($this->_preSaveInformations[self::CONF_KEY_QOS] != $this->getConf(self::CONF_KEY_QOS)) {
+                    // resubscribe will take new QoS over
+                    $subscribeRequested = true;
                 }
 
+                // In the end, does topic need to be subscribed
+                if($subscribeRequested && $this->getIsEnable()){
+                    self::subscribe_mqtt_topic($this->getBrkId(), $this->getTopic(), $this->getQos());
+                }
             }
         }
- 
     }
 
     /**
@@ -838,7 +860,7 @@ class jMQTT extends jMQTTBase {
         $daemon_info = self::deamon_info();
         if ($daemon_info['state'] == 'ok') {
             foreach(self::getBrokers() as $broker) {
-                if ($broker->getMqttClientState() == "nok") {
+                if ($broker->getIsEnable() && $broker->getMqttClientState() == "nok") {
                     try {
                         log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
                         $broker->startMqttClient();
@@ -1248,7 +1270,7 @@ class jMQTT extends jMQTTBase {
         
         $this->log('debug', 'Publication du message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
-        self::publish_mqtt_message($this->getBroker()->getId(), $topic, $payload, $qos, $retain);
+        self::publish_mqtt_message($this->getBrkId(), $topic, $payload, $qos, $retain);
         
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
@@ -1411,6 +1433,7 @@ class jMQTT extends jMQTTBase {
      * @return int eqLogic Id or -1 if not defined
      */
     public function getBrkId() {
+        if ($this->getType() == self::TYP_BRK) return $this->getId();
         return $this->getConf(self::CONF_KEY_BRK_ID);
     }
     
