@@ -153,9 +153,18 @@ function shutdown() {
     unlink($pidfile);
 }
 
-pcntl_async_signals(TRUE);
 pcntl_signal(SIGTERM, 'shutdown');
 pcntl_signal(SIGINT, 'shutdown');
+
+// if PHP 7.1.0 or above
+if (PHP_MAJOR_VERSION >= 8 || (PHP_MAJOR_VERSION == 7 && PHP_MINOR_VERSION >= 1)) {
+    //Enable the new async signal handling
+    pcntl_async_signals(TRUE);
+}
+else { // older PHP version
+    //Use the older manual dispatch in $server->loop
+    $server->loop->addPeriodicTimer(0.25,function(){ pcntl_signal_dispatch(); });
+}
 
 log::add($plugin, 'debug', 'Listening on: [127.0.0.1:' . $socketport . ']');
 $server->run();
