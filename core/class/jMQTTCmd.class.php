@@ -230,7 +230,7 @@ class jMQTTCmd extends cmd {
         // Specific command : status for Broker eqpt
         if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
             if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
-            $this->setTopic($this->getEqLogic()->getMqttClientStatusTopic());
+            $this->setTopic($this->getEqLogic()->getMqttClientStatusTopic()); // just for display as it's not used to start the MqttClient
         }
 
         // --- New cmd ---
@@ -306,7 +306,7 @@ class jMQTTCmd extends cmd {
             if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
                 // If it's topic changed
                 if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
-                    // Just try to remove the previous 
+                    // Just try to remove the previous status topic
                     $eqLogic = $this->getEqLogic();
                     $eqLogic->publishMosquitto($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
                 }
