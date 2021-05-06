@@ -912,6 +912,7 @@ class jMQTT extends jMQTTBase {
      *              account in the assessement.
      * @return boolean
      */
+    // TODO Remove this function
     public function isMqttClientToBeRestarted($isIncludeMode=false) {
         if ($isIncludeMode && $this->getBroker()->isIncludeMode()) {
             return false;
