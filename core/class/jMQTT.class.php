@@ -1011,6 +1011,8 @@ class jMQTT extends jMQTTBase {
         $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
         $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
         $broker->sendMqttClientStateEvent();
+        // include Mode is just a subscription so it is removed
+        $broker->setIncludeMode(0);
     }
     public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
         $broker = self::getBrokerFromId(intval($id));
