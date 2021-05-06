@@ -954,36 +954,11 @@ class jMQTT extends jMQTTBase {
             throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
         }
 
-        //TODO : check if it's OK
-        // $this->createMqttClientStatusCmd(); //not required anymore? (postSave)
-
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
         $this->sendMqttClientStateEvent();
         self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
 
-        
-        // // Subscribe to all necessary topics
-        // if ($this->isIncludeMode()) { // auto inclusion mode
-        //     $topic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
-        //     // Subscribe to topic (root by default)
-        //     self::subscribe_mqtt_topic($this->getId(), $topic, 1);
-        //     $this->log('debug', 'Subscribe to Inclusion Mode topic "' . $topic . '" with Qos=1');
-            
-        //     if ($this->isApiEnable()) {
-        //         if (! mosquitto_topic_matches_sub($topic, $this->getMqttApiTopic())) {
-        //             $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
-        //             self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
-        //         }
-        //         else
-        //             $this->log('info', 'No need to subscribe to the API topic "' . $this->getMqttApiTopic() . '"');
-        //     }
-        //     else {
-        //         $this->log('info', 'API is disable');
-        //     }
-        // }
-        // else { // manual inclusion mode
-            // Loop on all equipments and subscribe
         foreach (self::byBrkId($this->getId()) as $mqtt) {
             if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
                 $topic = $mqtt->getTopic();
@@ -1004,7 +979,6 @@ class jMQTT extends jMQTTBase {
         } else {
             $this->log('info', 'API is disable');
         }
-        // }
     }
     
     /**
