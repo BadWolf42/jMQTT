@@ -1586,8 +1586,16 @@ class jMQTT extends jMQTTBase {
             $cron->remove();
         }
 
-        // Create and configure the cron process when automatic mode is enabled
+        $includeTopic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
+        $qos = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
+
+        // If includeMode needs to be enabled
         if ($mode == 1) {
+            // Subscribe include topic
+            self::subscribe_mqtt_topic($this->getId(), $includeTopic, $qos);
+            $this->log('debug', 'Subscribe to Inclusion Mode topic "' . $includeTopic . '" with Qos=1');
+            
+            // Create and configure the cron process to disable include mode later
             $cron = new cron();
             $cron->setClass(__CLASS__);
             $cron->setOption(array('id' => $this->getId()));
@@ -1597,15 +1605,18 @@ class jMQTT extends jMQTTBase {
             $cron->setOnce(1);
             $cron->save();
         }
-
-        // Restart the MQTT deamon to manage topic subscription
-        $this->startMqttClient();
+        // includeMode needs to be disabled
+        else {
+            // Unsubscribe include topic
+            $this->unsubscribeEqLogicTopic($includeTopic);
+        }
     }
     
     /**
      * Set the include mode of this broker object
      * @param int $mode 0 or 1
      */
+    // TODO evaluate merge with changeIncludeMode
     public function setIncludeMode($mode) {
         $this->setCache('include_mode', $mode);
         $this->log('info', ($mode ? 'active' : 'désactive') . " le mode d'inclusion automatique");
