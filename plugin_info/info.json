@@ -16,5 +16,5 @@
 		"forum":"https://community.jeedom.com/tag/plugin-jmqtt"
 	},
     "languages" : ["fr_FR","en_US","sp_SP"],
-    "compatibility" : ["Jeedomboard","Smart","RPI/RPI2","Docker","DIY","v4"]
+    "compatibility" : ["miniplus","smart","rpi","docker","diy","v4"]
 }
