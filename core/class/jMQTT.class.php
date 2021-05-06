@@ -1636,13 +1636,4 @@ class jMQTT extends jMQTTBase {
     private function isIncludeMode() {
         return ($this->getIncludeMode() == 1);
     }
-
-    /**
-     * To log the traceback (utility function for debug purpose)
-     */
-    private static function log_backtrace() {
-        $e = new Exception();
-        $s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
-        log::add(__CLASS__, 'debug', $s);
-    }
 }
