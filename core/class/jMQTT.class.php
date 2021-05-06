@@ -513,8 +513,7 @@ class jMQTT extends jMQTTBase {
                 // ClientId changed
                 if ($this->_preSaveInformations[self::CONF_KEY_MQTT_ID] != $this->getConf(self::CONF_KEY_MQTT_ID)) {
 
-                    // Just Need to restart MqttClient (it needs to know about the new willTopic aka StatusCmdTopic here)
-                    // (jMQTTCmd logic will fix values in cmd->save done after eqLogic->postSave)
+                    // Just Need to restart MqttClient (it needs to know about the new willTopic)
                     if (!$stopped) {
                         $this->stopMqttClient();
                         $stopped = true;
@@ -599,7 +598,7 @@ class jMQTT extends jMQTTBase {
             }
 
             // Disable all equipments attached to the broker
-            foreach ($this->byBrkId() as $eqpt) {
+            foreach (self::byBrkId($this->getId()) as $eqpt) {
                 if ($this->getId() != $eqpt->getId()) {
                     $eqpt->setIsEnable(0);
                     $eqpt->save();
@@ -627,7 +626,7 @@ class jMQTT extends jMQTTBase {
             config::remove('log::level::' . $log, 'jMQTT');
 
             // Remove all equipments attached to the removed broker
-            foreach ($this->byBrkId() as $eqpt) {
+            foreach (self::byBrkId($this->getId()) as $eqpt) {
                 $eqpt->remove();
             }
         }
@@ -655,7 +654,7 @@ class jMQTT extends jMQTTBase {
         $broker->save();
         
         // remove all equipments attached to the broker
-        foreach ($broker->byBrkId() as $eqpt) {
+        foreach (self::byBrkId($broker->getId()) as $eqpt) {
             if ($broker->getId() != $eqpt->getId())
                 $eqpt->remove();
         }
@@ -956,7 +955,7 @@ class jMQTT extends jMQTTBase {
         }
 
         //TODO : check if it's OK
-        $this->createMqttClientStatusCmd();
+        // $this->createMqttClientStatusCmd(); //not required anymore? (postSave)
 
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
@@ -964,48 +963,48 @@ class jMQTT extends jMQTTBase {
         self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
 
         
-        // Subscribe to all necessary topics
-        if ($this->isIncludeMode()) { // auto inclusion mode
-            $topic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
-            // Subscribe to topic (root by default)
-            self::subscribe_mqtt_topic($this->getId(), $topic, 1);
-            $this->log('debug', 'Subscribe to Inclusion Mode topic "' . $topic . '" with Qos=1');
+        // // Subscribe to all necessary topics
+        // if ($this->isIncludeMode()) { // auto inclusion mode
+        //     $topic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
+        //     // Subscribe to topic (root by default)
+        //     self::subscribe_mqtt_topic($this->getId(), $topic, 1);
+        //     $this->log('debug', 'Subscribe to Inclusion Mode topic "' . $topic . '" with Qos=1');
             
-            if ($this->isApiEnable()) {
-                if (! mosquitto_topic_matches_sub($topic, $this->getMqttApiTopic())) {
-                    $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
-                    self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
-                }
-                else
-                    $this->log('info', 'No need to subscribe to the API topic "' . $this->getMqttApiTopic() . '"');
-            }
-            else {
-                $this->log('info', 'API is disable');
-            }
-        }
-        else { // manual inclusion mode
+        //     if ($this->isApiEnable()) {
+        //         if (! mosquitto_topic_matches_sub($topic, $this->getMqttApiTopic())) {
+        //             $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
+        //             self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
+        //         }
+        //         else
+        //             $this->log('info', 'No need to subscribe to the API topic "' . $this->getMqttApiTopic() . '"');
+        //     }
+        //     else {
+        //         $this->log('info', 'API is disable');
+        //     }
+        // }
+        // else { // manual inclusion mode
             // Loop on all equipments and subscribe
-            foreach ($this->byBrkId() as $mqtt) {
-                if ($mqtt->getIsEnable()) {
-                    $topic = $mqtt->getTopic();
-                    $qos = (int) $mqtt->getQos();
-                    if (empty($topic)) {
-                        $this->log('info', 'Equipment ' . $mqtt->getName() . ': no subscription (empty topic)');
-                    }
-                    else {
-                        $this->log('info', 'Equipment ' . $mqtt->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
-                        self::subscribe_mqtt_topic($this->getId(), $topic, $qos);
-                    }
+        foreach (self::byBrkId($this->getId()) as $mqtt) {
+            if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
+                $topic = $mqtt->getTopic();
+                $qos = (int) $mqtt->getQos();
+                if (empty($topic)) {
+                    $this->log('info', 'Equipment ' . $mqtt->getName() . ': no subscription (empty topic)');
+                }
+                else {
+                    $this->log('info', 'Equipment ' . $mqtt->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
+                    self::subscribe_mqtt_topic($this->getId(), $topic, $qos);
                 }
             }
-            
-            if ($this->isApiEnable()) {
-                $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
-                self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
-            } else {
-                $this->log('info', 'API is disable');
-            }
         }
+        
+        if ($this->isApiEnable()) {
+            $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
+            self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
+        } else {
+            $this->log('info', 'API is disable');
+        }
+        // }
     }
     
     /**
@@ -1125,7 +1124,7 @@ class jMQTT extends jMQTTBase {
         
         // Loop on jMQTT equipments and get ones that subscribed to the current message
         $elogics = array();
-        foreach (self::byBrkId() as $eqpt) {
+        foreach (self::byBrkId($this->getId()) as $eqpt) {
             if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) {
                 $elogics[] = $eqpt;
             }
@@ -1535,12 +1534,11 @@ class jMQTT extends jMQTTBase {
     }
        
     /**
-     * Return all jMQTT objects having the same broker id as this object
-     * Note: this object is also returned
+     * Return all jMQTT objects attached to the specified broker id
      * @return jMQTT[]
      */
-    public function byBrkId() {
-        $brkId = json_encode(array('brkId' => $this->getBrkId()));
+    public static function byBrkId($id) {
+        $brkId = json_encode(array('brkId' => $id));
         /** @var jMQTT[] $eqpts */
         $returns = self::byTypeAndSearhConfiguration(jMQTT::class, substr($brkId, 1, -1));
         return $returns;
