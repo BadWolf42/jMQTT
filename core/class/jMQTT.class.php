@@ -1560,12 +1560,7 @@ class jMQTT extends jMQTTBase {
      */
     public static function disableIncludeMode($option) {
         $broker = self::getBrokerFromId($option['id']);
-        $broker->setIncludeMode(0);
-
-        // Restart the MQTT Client
-        if ($broker->isMqttClientToBeRestarted()) {
-            $broker->startMqttClient();
-        }
+        $broker->changeIncludeMode(0);
     }
 
     /**
