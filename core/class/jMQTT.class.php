@@ -70,30 +70,6 @@ class jMQTT extends jMQTTBase {
     const TYP_BRK = 'broker';
     
     /**
-     * Possible value of $_post_data; to restart the MQTT Client.
-     * @var integer
-     */
-    const POST_ACTION_RESTART_MQTTCLIENT = 1;
-    
-    /**
-     * Possible value of $_post_data; set when the broker name has changed
-     * @var integer
-     */
-    const POST_ACTION_BROKER_NAME_CHANGED = 2;
-    
-    /**
-     * Possible value of $_post_data; set when the client id is changed
-     * @var integer
-     */
-    const POST_ACTION_BROKER_CLIENT_ID_CHANGED = 4;
-    
-    /**
-     * Data shared between preSave and postSave, preRemove and postRemove
-     * @var jMQTT|jMQTT::POST_ACTION_RESTART_MQTTCLIENT|jMQTT::POST_ACTION_NEW_CLIENT_ID
-     */
-    private $_post_data;
-    
-    /**
      * Data shared between preSave and postSave
      * @var array values from preSave used for postSave actions
      */
