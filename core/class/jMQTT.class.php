@@ -1014,14 +1014,6 @@ class jMQTT extends jMQTTBase {
     public function stopMqttClient() {
         $this->log('info', 'arrête le client MQTT');
         self::remove_mqtt_client($this->getId());
-    
-        $cmd = $this->getMqttClientStatusCmd();
-        // Status cmd may not exist on object removal for instance
-        if (is_object($cmd)) {
-            $cmd->event(self::OFFLINE);
-        }
-        
-        $this->sendMqttClientStateEvent();
     }
 
     public static function on_daemon_connect($id) {
