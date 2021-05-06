@@ -376,6 +376,9 @@ class jMQTT extends jMQTTBase {
     public function unsubscribeEqLogicTopic($topic){
         if (empty($topic)) return;
 
+        // If broker is disabled, don't need to send unsubscribe
+        if(!$this->getBroker()->getIsEnable()) return;
+
         //Find eqLogic using the same topic (which is stored in logicalId)
         $eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
         $count = 0;
@@ -604,35 +607,32 @@ class jMQTT extends jMQTTBase {
      * preRemove method to check if the MQTT Client shall be restarted
      */
     public function preRemove() {
-        $this->_post_data = null;
+
+        // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == self::TYP_BRK) {
             $this->log('info', 'removing broker ' . $this->getName());
             
-            // Disable first the broker to avoid during removal of the broker to restart the MQTT Client
+            // Disable first the broker to Stop MqttClient
             $this->setIsEnable(0);
-            $this->save(true);
+            $this->save();
 
-            self::remove_mqtt_client($this->getId());
-
-            // suppress the log file
-            if (file_exists(log::getPathToLog($this->getMqttClientLogFile()))) {
-                unlink(log::getPathToLog($this->getMqttClientLogFile()));
+            // Wait up to 10s for MqttClient stopped
+            for ($i=0; $i < 40; $i++) { 
+                if ($this->getMqttClientState() == self::MQTTCLIENT_NOK) break;
+                usleep(250000);
             }
-            config::remove('log::level::' . $this->getMqttClientLogFile(), 'jMQTT');
-            // remove all equipments attached to the broker
+
+            // Disable all equipments attached to the broker
             foreach ($this->byBrkId() as $eqpt) {
-                if ($this->getId() != $eqpt->getId())
-                    $eqpt->remove();
+                if ($this->getId() != $eqpt->getId()) {
+                    $eqpt->setIsEnable(0);
+                    $eqpt->save();
+                }
             }
         }
+        // ------------------------ Normal eqpt ------------------------
         else {
             $this->log('info', 'removing equipment ' . $this->getName());
-            $broker = $this->getBroker();
-            if ($this->getIsEnable() && $broker->getIsEnable() && ! $broker->isIncludeMode()) {
-                $this->log('info', 'relance le Client MQTT');
-                $broker->stopMqttClient();
-                $this->_post_data = $broker;
-            }
         }
     }
 
@@ -640,9 +640,25 @@ class jMQTT extends jMQTTBase {
      * postRemove callback to restart the deamon when deemed necessary (see also preRemove)
      */
     public function postRemove() {
-        if (is_object($this->_post_data)) {
-            $this->_post_data->log('debug', 'postRemove: restart MQTT Client');
-            $this->_post_data->startMqttClient();
+        // ------------------------ Broker eqpt ------------------------
+        if ($this->getType() == self::TYP_BRK) {
+
+            // Suppress the log file
+            $log = $this->getMqttClientLogFile();
+            if (file_exists(log::getPathToLog($log))) {
+                unlink(log::getPathToLog($log));
+            }
+            config::remove('log::level::' . $log, 'jMQTT');
+
+            // Remove all equipments attached to the removed broker
+            foreach ($this->byBrkId() as $eqpt) {
+                $eqpt->remove();
+            }
+        }
+        // ------------------------ Normal eqpt ------------------------
+        else {
+            //If eqpt were enabled, just need to unsubscribe
+            if($this->getIsEnable()) $this->unsubscribeEqLogicTopic($this->getTopic());
         }
     }
     
@@ -1031,7 +1047,7 @@ class jMQTT extends jMQTTBase {
         
         $this->sendMqttClientStateEvent();
     }
-   
+
     public static function on_daemon_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
         $broker->setCache(self::CACHE_DAEMON_CONNECTED, true);
@@ -1280,7 +1296,7 @@ class jMQTT extends jMQTTBase {
         
         $this->log('debug', 'Message publié');
     }
-    
+
     /**
      * Return the MQTT topic name of this broker status command
      * @return string broker status topic name
