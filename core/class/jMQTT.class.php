@@ -1127,8 +1127,8 @@ class jMQTT extends jMQTTBase {
                 foreach ($sbscrbTopicArray as $s) {
                     if ($s == '#' || $s == '+')
                         break;
-                        else
-                            next($msgTopicArray);
+                    else
+                        next($msgTopicArray);
                 }
                 $cmdName = current($msgTopicArray) === false ? end($msgTopicArray) : current($msgTopicArray);
                 while (next($msgTopicArray) !== false) {
@@ -1148,9 +1148,7 @@ class jMQTT extends jMQTTBase {
                         $cmdlogics[0]->save();
                     }
                     else {
-                        $this->log('debug',
-                            'Command ' . $eqpt->getName() . '|' . $cmdName .
-                            ' not created as automatic command creation is disabled');
+                        $this->log('debug', 'Command ' . $eqpt->getName() . '|' . $cmdName . ' not created as automatic command creation is disabled');
                     }
                 }
                 
@@ -1158,8 +1156,7 @@ class jMQTT extends jMQTTBase {
                     
                     // If the found command is an action command, skip
                     if ($cmdlogics[0]->getType() == 'action') {
-                        $this->log('debug',
-                            $eqpt->getName() . '|' . $cmdlogics[0]->getName() . ' is an action command: skip');
+                        $this->log('debug', $eqpt->getName() . '|' . $cmdlogics[0]->getName() . ' is an action command: skip');
                         continue;
                     }
                     
