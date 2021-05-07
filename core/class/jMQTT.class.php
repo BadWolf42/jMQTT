@@ -1236,17 +1236,9 @@ class jMQTT extends jMQTTBase {
      * @return string broker status topic name
      */
     public function getMqttClientStatusTopic()  {
-        return self::_getMqttClientStatusTopic($this->getMqttId());
+        return $this->getMqttId() . '/' . jMQTT::CLIENT_STATUS;
     }
-    
-    /**
-     * Return the MQTT topic name of the status command having $mqttId as MQTT connection id.
-     * @param string $mqttId
-     */
-    private static function _getMqttClientStatusTopic($mqttId) {
-        return $mqttId . '/' . jMQTT::CLIENT_STATUS;
-    }
-    
+
     /**
      * Return the MQTT status information command of this broker
      * @return cmd status information command.
