@@ -114,6 +114,8 @@ class jMQTTBase extends eqLogic {
       }
 
       if ($daemon_info['state'] != 'ok') {
+         // If only one of both daemon runs we still need to stop
+         self::deamon_stop();
          log::add(get_called_class(), 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
          return false;
       }
@@ -209,6 +211,7 @@ class jMQTTBase extends eqLogic {
    }
 
    public static function subscribe_mqtt_topic($id, $topic, $qos = 1) {
+      if (empty($topic)) return;
       $params['cmd']='subscribeTopic';
       $params['id']=$id;
       $params['topic']=$topic;
@@ -217,6 +220,7 @@ class jMQTTBase extends eqLogic {
    }
 
    public static function unsubscribe_mqtt_topic($id, $topic) {
+      if (empty($topic)) return;
       $params['cmd']='unsubscribeTopic';
       $params['id']=$id;
       $params['topic']=$topic;
@@ -224,6 +228,7 @@ class jMQTTBase extends eqLogic {
    }
 
    public static function publish_mqtt_message($id, $topic, $payload, $qos = 1, $retain = false) {
+      if (empty($topic)) return;
       $params['cmd']='messageOut';
       $params['id']=$id;
       $params['topic']=$topic;
