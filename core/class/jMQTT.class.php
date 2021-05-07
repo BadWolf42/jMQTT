@@ -1082,9 +1082,9 @@ class jMQTT extends jMQTTBase {
         $this->log('debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
         
         // If this is the API topic, process the request
-        // Do not return, which means that the message can be registered
         if ($msgTopic == $this->getMqttApiTopic()) {
             $this->processApiRequest($msgValue);
+            return;
         }
         
         $msgTopicArray = explode("/", $topicContent);
