@@ -1450,21 +1450,6 @@ class jMQTT extends jMQTTBase {
     public function setAutoAddCmd($auto_add_cmd) {
         $this->setConfiguration(self::CONF_KEY_AUTO_ADD_CMD, $auto_add_cmd);
     }
-    
-    /**
-     * Get this jMQTT object broker topic
-     * Built from the MQTT id used by the broker client to connect to the broker or from the
-     * given mqtt id if provided.
-     * @var string $mqttId
-     * @return string
-     */
-    public function getBrokerTopic($mqttId='') {
-        if ($mqttId == '') {
-            $mqttId = $this->getMqttId();
-        }
-        
-        return $mqttId . '/#';
-    }
 
     /**
      * Get the broker object attached to this jMQTT object.
