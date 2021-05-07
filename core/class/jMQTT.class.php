@@ -1101,7 +1101,7 @@ class jMQTT extends jMQTTBase {
         // automatic inclusion mode is active => create a new equipment
         // subscribing to all sub-topics starting with the first topic of the
         // current message
-        if (empty($elogics) && $this->isIncludeMode()) {
+        if (empty($elogics) && $this->getIncludeMode()) {
             $eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#', self::TYP_EQPT);
             $elogics[] = $eqpt;
         }
@@ -1585,13 +1585,5 @@ class jMQTT extends jMQTTBase {
      */
     public function getIncludeMode() {
         return $this->getCache('include_mode', 0);
-    }
-    
-    /**
-     * Return whether or not the include mode of this broker object is active
-     * @return bool
-     */
-    private function isIncludeMode() {
-        return ($this->getIncludeMode() == 1);
     }
 }
