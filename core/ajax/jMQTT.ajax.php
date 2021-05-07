@@ -96,17 +96,6 @@ try {
         $eqpt->cleanEquipment();
         $eqpt->save(true);
         
-        // Restart the new MQTT Client
-        if ($new_broker->isMqttClientToBeRestarted()) {
-            $new_broker->startMqttClient(true);
-        }
-        if ($old_broker_id > 0) {
-            $old_broker = jMQTT::getBrokerFromId($old_broker_id);
-            if ($old_broker->isMqttClientToBeRestarted()) {
-                $old_broker->startMqttClient(true);
-            }
-        }
-        
         ajax::success();
     }
     

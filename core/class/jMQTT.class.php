@@ -349,24 +349,26 @@ class jMQTT extends jMQTTBase {
     /**
      * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
      */
-    public function unsubscribeEqLogicTopic($topic){
+    public function unsubscribeEqLogicTopic($topic, $brkId = null){
         if (empty($topic)) return;
 
+        if (is_null($brkId)) $brkId = $this->getBrkId();
+
         // If broker is disabled, don't need to send unsubscribe
-        if(!$this->getBroker()->getIsEnable()) return;
+        if(!self::getBrokerFromId($brkId)->getIsEnable()) return;
 
         //Find eqLogic using the same topic (which is stored in logicalId)
         $eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
         $count = 0;
         foreach ($eqLogics as $eqLogic) {
             // If it's attached to the same broker and enabled and it's not "me"
-            if ($eqLogic->getBrkId() == $this->getBrkId() && $eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) $count++;
+            if ($eqLogic->getBrkId() == $brkId && $eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) $count++;
         }
 
         //if there is no other eqLogic using the same topic, we can unsubscribe
-        if (!$count) self::unsubscribe_mqtt_topic($this->getBrkId(), $topic);
+        if (!$count) self::unsubscribe_mqtt_topic($brkId, $topic);
     }
-        
+
     /**
      * Overload preSave to apply some checks/initialization and prepare postSave
      */
@@ -434,7 +436,8 @@ class jMQTT extends jMQTTBase {
                 self::CONF_KEY_MQTT_INC_TOPIC => $eqLogic->getConf(self::CONF_KEY_MQTT_INC_TOPIC),
                 self::CONF_KEY_QOS => $eqLogic->getConf(self::CONF_KEY_QOS),
                 self::CONF_KEY_API => $eqLogic->getConf(self::CONF_KEY_API),
-                'topic' => $eqLogic->getTopic()
+                'topic' => $eqLogic->getTopic(),
+                self::CONF_KEY_BRK_ID => $eqLogic->getBrkId()
             );
         }
     }
@@ -552,6 +555,15 @@ class jMQTT extends jMQTTBase {
                             $unsubscribed = true;
                         }
                     }
+                }
+
+                // brkId changed (action moveToBroker in jMQTT.ajax.php)
+                if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] != $this->getConf(self::CONF_KEY_BRK_ID)) {
+
+                    //need to unsubscribe the topic on the PREVIOUS Broker
+                    $this->unsubscribeEqLogicTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+                    //and subscribe on the new broker
+                    $subscribeRequested = true;
                 }
 
                 // topic changed
@@ -899,28 +911,6 @@ class jMQTT extends jMQTTBase {
         }
 
         return $return;
-    }
-    
-    /**
-     * Return whether or not the MQTT Client shall be restarted after a configuration change that impacts its processing.
-     * If $isIncludeMode is true and the broker is in automatic inclusion mode returns false. Otherwise output depends
-     * on the launchable status of the broker.
-     * 
-     * Shall be called for a broker only.
-     * 
-     * @param bool $isIncludeMode whether or not the automatic inclusion mode of the broker shall be taken into
-     *              account in the assessement.
-     * @return boolean
-     */
-    // TODO Remove this function
-    public function isMqttClientToBeRestarted($isIncludeMode=false) {
-        if ($isIncludeMode && $this->getBroker()->isIncludeMode()) {
-            return false;
-        }
-        else {
-            $info = $this->getMqttClientInfo();
-            return $info['launchable'] == 'ok' ? true : false;
-        }
     }
     
     /**
