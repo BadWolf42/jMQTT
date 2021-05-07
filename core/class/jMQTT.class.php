@@ -1002,7 +1002,7 @@ class jMQTT extends jMQTTBase {
         $broker->getMqttClientStatusCmd()->event(self::OFFLINE);
         $broker->sendMqttClientStateEvent();
         // include Mode is just a subscription so it is removed
-        $broker->setIncludeMode(0);
+        $broker->changeIncludeMode(0);
     }
     public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
         $broker = self::getBrokerFromId(intval($id));
@@ -1538,7 +1538,12 @@ class jMQTT extends jMQTTBase {
     public function changeIncludeMode($mode) {
 
         // Update the include_mode configuration parameter
-        $this->setIncludeMode($mode);
+        $this->setCache('include_mode', $mode);
+        $this->log('info', ($mode ? 'active' : 'désactive') . " le mode d'inclusion automatique");
+        if (! $mode) {
+            // Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
+            event::add('jMQTT::disableIncludeMode', array('brkId' => $this->getId()));
+        }
         
         // A cron process is used to reset the automatic mode after a delay
 
@@ -1573,21 +1578,7 @@ class jMQTT extends jMQTTBase {
             $this->unsubscribeEqLogicTopic($includeTopic);
         }
     }
-    
-    /**
-     * Set the include mode of this broker object
-     * @param int $mode 0 or 1
-     */
-    // TODO evaluate merge with changeIncludeMode
-    public function setIncludeMode($mode) {
-        $this->setCache('include_mode', $mode);
-        $this->log('info', ($mode ? 'active' : 'désactive') . " le mode d'inclusion automatique");
-        if (! $mode) {
-            // Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
-            event::add('jMQTT::disableIncludeMode', array('brkId' => $this->getId()));
-        }
-    }
-    
+
     /**
      * Return this broker object include mode parameter
      * @return int 0 or 1
