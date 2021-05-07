@@ -221,8 +221,6 @@ function jMQTT_install() {
 }
 
 function jMQTT_update() {
-    // Stop the plugin
-    plugin::byId('jMQTT')->deamon_stop();
     
     // VERSION = 0
     migrateToMultiBrokerVersion();
