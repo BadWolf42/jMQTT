@@ -1178,11 +1178,6 @@ class jMQTT extends jMQTTBase {
                             }
                         }
                     }
-                                        
-                    // On reception of a the broker status topic, generate an state event
-                    if ($this->getId() == $eqpt->getId() && $cmdlogics[0]->getTopic() == $this->getMqttClientStatusTopic()) {
-                        $this->sendMqttClientStateEvent();
-                    }
                 }
             }
         }
