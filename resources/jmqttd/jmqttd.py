@@ -53,6 +53,8 @@ class MqttClient:
 		self.mqttclientid = ''
 		if 'clientid' in message:
 			self.mqttclientid = message['clientid']
+		else:
+			logging.warning('Client ID should be defined, expect strange behaviors...')
 
 		self.mqttusername = ''
 		if 'username' in message:
