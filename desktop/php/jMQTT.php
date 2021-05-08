@@ -59,6 +59,11 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
     background-color: #FFFFFF;
 }
 
+.row div.eqLogic div.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .eqLogicDisplayAction.disableCard {
     opacity: 0.35;
     cursor: default;
