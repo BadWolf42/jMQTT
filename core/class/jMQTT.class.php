@@ -52,6 +52,7 @@ class jMQTT extends jMQTTBase {
     const CONF_KEY_OLD = 'old';
     const CONF_KEY_NEW = 'new';
 
+    const CACHE_INCLUDE_MODE = 'include_mode';
     const CACHE_DAEMON_CONNECTED = 'daemonConnected';
     const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
     
@@ -1482,8 +1483,8 @@ class jMQTT extends jMQTTBase {
      */
     public function changeIncludeMode($mode) {
 
-        // Update the include_mode configuration parameter
-        $this->setCache('include_mode', $mode);
+        // Update the include mode value
+        $this->setCache(self::CACHE_INCLUDE_MODE, $mode);
         $this->log('info', ($mode ? 'active' : 'désactive') . " le mode d'inclusion automatique");
         if (! $mode) {
             // Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
@@ -1529,6 +1530,6 @@ class jMQTT extends jMQTTBase {
      * @return int 0 or 1
      */
     public function getIncludeMode() {
-        return $this->getCache('include_mode', 0);
+        return $this->getCache(CACHE_INCLUDE_MODE, 0);
     }
 }

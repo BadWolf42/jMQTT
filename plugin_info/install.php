@@ -96,7 +96,7 @@ function migrateToMultiBrokerVersion() {
     }
 
     // Suppress no more used parameters
-    config::remove('include_mode', 'jMQTT');
+    config::remove(jMQTT::CACHE_INCLUDE_MODE, 'jMQTT');
     config::remove('status', 'jMQTT');
     
     $broker->setType(jMQTT::TYP_BRK);
