@@ -325,7 +325,7 @@ class jMQTT extends jMQTTBase {
     /**
      * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
      */
-    public function unsubscribeEqLogicTopic($topic, $brkId = null){
+    public function unsubscribeTopic($topic, $brkId = null){
         if (empty($topic)) return;
 
         if (is_null($brkId)) $brkId = $this->getBrkId();
@@ -343,7 +343,10 @@ class jMQTT extends jMQTTBase {
         }
 
         //if there is no other eqLogic using the same topic, we can unsubscribe
-        if (!$count) self::unsubscribe_mqtt_topic($brkId, $topic);
+        if (!$count) {
+            $this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': unsubscribes from "' . $topic . '"');
+            self::unsubscribe_mqtt_topic($brkId, $topic);
+        }
     }
 
     /**
@@ -501,7 +504,7 @@ class jMQTT extends jMQTTBase {
                     // If MqttClient not stopped and includeMode is enabled
                     if (!$stopped && $this->getIncludeMode()) {
                         //Unsubscribe previous include topic
-                        $this->unsubscribeEqLogicTopic($this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC]);
+                        $this->unsubscribeTopic($this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC]);
                         //Subscribe the new one
                         self::subscribe_mqtt_topic($this->getBrkId(), $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC), $this->getQos());
                     }
@@ -514,11 +517,12 @@ class jMQTT extends jMQTTBase {
                         // If API is now enabled
                         if ($this->isApiEnable()) {
                             //Subscribe API topic
+                            $this->log('info', 'Broker ' . $this->getName() . ': subscribes to "' . $this->getMqttApiTopic() . '" with Qos=' . $this->getQos());
                             self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), $this->getQos());
                         }
                         else {
                             //Unsubscribe API topic
-                            $this->unsubscribeEqLogicTopic($this->getMqttApiTopic());
+                            $this->unsubscribeTopic($this->getMqttApiTopic());
                         }
                     }
                 }
@@ -550,7 +554,7 @@ class jMQTT extends jMQTTBase {
                     else {
                         if(!$unsubscribed){
                             //Unsubscribe previous topic (if topic changed too)
-                            $this->unsubscribeEqLogicTopic($this->_preSaveInformations['topic']);
+                            $this->unsubscribeTopic($this->_preSaveInformations['topic']);
                             $unsubscribed = true;
                         }
                     }
@@ -560,7 +564,7 @@ class jMQTT extends jMQTTBase {
                 if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] != $this->getConf(self::CONF_KEY_BRK_ID)) {
 
                     //need to unsubscribe the topic on the PREVIOUS Broker
-                    $this->unsubscribeEqLogicTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+                    $this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
                     //and subscribe on the new broker
                     $subscribeRequested = true;
                 }
@@ -569,7 +573,7 @@ class jMQTT extends jMQTTBase {
                 if ($this->_preSaveInformations['topic'] != $this->getTopic()) {
                     if(!$unsubscribed){
                         //Unsubscribed previous topic
-                        $this->unsubscribeEqLogicTopic($this->_preSaveInformations['topic']);
+                        $this->unsubscribeTopic($this->_preSaveInformations['topic']);
                         $unsubscribed = true;
                     }
                     $subscribeRequested = true;
@@ -644,7 +648,7 @@ class jMQTT extends jMQTTBase {
         // ------------------------ Normal eqpt ------------------------
         else {
             //If eqpt were enabled, just need to unsubscribe
-            if($this->getIsEnable()) $this->unsubscribeEqLogicTopic($this->getTopic());
+            if($this->getIsEnable()) $this->unsubscribeTopic($this->getTopic());
         }
     }
     
@@ -1543,7 +1547,7 @@ class jMQTT extends jMQTTBase {
         // includeMode needs to be disabled
         else {
             // Unsubscribe include topic
-            $this->unsubscribeEqLogicTopic($includeTopic);
+            $this->unsubscribeTopic($includeTopic);
         }
     }
 
