@@ -375,7 +375,6 @@ class jMQTT extends jMQTTBase {
             }
             // --- Existing eqpt ---
             else {
-
             }
         }
         // ------------------------ Normal eqpt ------------------------
@@ -383,11 +382,9 @@ class jMQTT extends jMQTTBase {
 
             // --- New eqpt ---
             if (!isset($this->id)) {
-
             }
             // --- Existing eqpt ---
             else {
-
             }
         }
 
@@ -409,7 +406,7 @@ class jMQTT extends jMQTTBase {
                 self::CONF_KEY_MQTT_PASS => $this->getConf(self::CONF_KEY_MQTT_PASS),
                 self::CONF_KEY_MQTT_INC_TOPIC => $eqLogic->getConf(self::CONF_KEY_MQTT_INC_TOPIC),
                 self::CONF_KEY_QOS => $eqLogic->getConf(self::CONF_KEY_QOS),
-                self::CONF_KEY_API => $eqLogic->getConf(self::CONF_KEY_API),
+                self::CONF_KEY_API => $eqLogic->isApiEnable(),
                 'topic' => $eqLogic->getTopic(),
                 self::CONF_KEY_BRK_ID => $eqLogic->getBrkId()
             );
@@ -424,7 +421,7 @@ class jMQTT extends jMQTTBase {
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == self::TYP_BRK) {
 
-            // --- New eqpt ---
+            // --- New broker ---
             if (is_null($this->_preSaveInformations)) {
 
                 // Create log of this broker
@@ -436,7 +433,7 @@ class jMQTT extends jMQTTBase {
                 // Enabled => Start MqttClient
                 if ($this->getIsEnable()) $this->startMqttClient();
             }
-            // --- Existing eqpt ---
+            // --- Existing broker ---
             else {
 
                 $stopped = false;
@@ -474,14 +471,11 @@ class jMQTT extends jMQTTBase {
                     //TODO Verify if Stop/Start is required
                 }
 
-                //TODO Later: IncludeModeTopic and api enabled need to be managed differently
-                // 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', 'mqttIncTopic', 'api' changed
+                // 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass' changed
                 if ($this->_preSaveInformations[self::CONF_KEY_MQTT_ADDRESS] != $this->getConf(self::CONF_KEY_MQTT_ADDRESS) ||
                     $this->_preSaveInformations[self::CONF_KEY_MQTT_PORT] != $this->getConf(self::CONF_KEY_MQTT_PORT) ||
                     $this->_preSaveInformations[self::CONF_KEY_MQTT_USER] != $this->getConf(self::CONF_KEY_MQTT_USER) ||
-                    $this->_preSaveInformations[self::CONF_KEY_MQTT_PASS] != $this->getConf(self::CONF_KEY_MQTT_PASS) ||
-                    $this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC) ||
-                    $this->_preSaveInformations[self::CONF_KEY_API] != $this->getConf(self::CONF_KEY_API))
+                    $this->_preSaveInformations[self::CONF_KEY_MQTT_PASS] != $this->getConf(self::CONF_KEY_MQTT_PASS))
                 {
                     if (!$stopped) {
                         $this->stopMqttClient();
@@ -493,12 +487,39 @@ class jMQTT extends jMQTTBase {
                 // ClientId changed
                 if ($this->_preSaveInformations[self::CONF_KEY_MQTT_CLIENT_ID] != $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID)) {
 
-                    // Just Need to restart MqttClient (it needs to know about the new willTopic)
+                    // Just Need to restart MqttClient (it needs to reconnect using new ClientId and know about the new willTopic)
                     if (!$stopped) {
                         $this->stopMqttClient();
                         $stopped = true;
                     }
                     $startRequested = true;
+                }
+
+                // IncludeModeTopic changed
+                if ($this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC)) {
+                    // If MqttClient not stopped and includeMode is enabled
+                    if (!$stopped && $this->getIncludeMode()) {
+                        //Unsubscribe previous include topic
+                        $this->unsubscribeEqLogicTopic($this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC]);
+                        //Subscribe the new one
+                        self::subscribe_mqtt_topic($this->getBrkId(), $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC), $this->getQos());
+                    }
+                }
+
+                // APIEnabled changed
+                if ($this->_preSaveInformations[self::CONF_KEY_API] != $this->isApiEnable()) {
+                    // If MqttClient not stopped
+                    if (!$stopped) {
+                        // If API is now enabled
+                        if ($this->isApiEnable()) {
+                            //Subscribe API topic
+                            self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), $this->getQos());
+                        }
+                        else {
+                            //Unsubscribe API topic
+                            $this->unsubscribeEqLogicTopic($this->getMqttApiTopic());
+                        }
+                    }
                 }
 
                 // In the end, does MqttClient need to be Started
