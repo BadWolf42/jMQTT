@@ -563,7 +563,7 @@ function printEqLogic(_eqLogic) {
     }
 
     // Show UI elements depending on the type
-    if (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0 ||
+    if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0)) ||
             (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) {
         $('.toDisable').addClass('disabled');
         $('.typ-brk').hide();
