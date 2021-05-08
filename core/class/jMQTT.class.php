@@ -475,8 +475,6 @@ class jMQTT extends jMQTTBase {
                 // LogLevel change
                 if ($this->_preSaveInformations[self::CONF_KEY_LOGLEVEL] != $this->getConf(self::CONF_KEY_LOGLEVEL)) {
                     config::save('log::level::' . $this->getMqttClientLogFile(), $this->getConf(self::CONF_KEY_LOGLEVEL), __CLASS__);
-
-                    //TODO Verify if Stop/Start is required
                 }
 
                 // Name changed
@@ -489,8 +487,6 @@ class jMQTT extends jMQTTBase {
                     }
                     config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, __CLASS__), __CLASS__);
                     config::remove('log::level::' . $old_log, __CLASS__);
-
-                    //TODO Verify if Stop/Start is required
                 }
 
                 // 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass' changed
