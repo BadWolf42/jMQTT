@@ -29,6 +29,7 @@ import websocket
 import paho.mqtt.client as mqtt
 from threading import Thread
 from queue import Queue
+from queue import Empty
 import gc
 
 try:
@@ -432,11 +433,14 @@ def listen():
 	jeedomsocket.open()
 	while True:
 		try:
-			jeedom_msg = jeedomsocket.queue.get(block=True, timeout=0.1).decode('utf-8')
+			jeedom_msg = jeedomsocket.get(block=True, timeout=0.1).decode('utf-8')
+		except Empty:
+			pass
 		except KeyboardInterrupt:
 			shutdown()
 		except:
-			pass
+			if logging.isEnabledFor(logging.DEBUG):
+				logging.exception('Exception in listen:')
 		else:
 			logging.debug('jeedom_socket received message : %s', jeedom_msg)
 			try:
