@@ -203,22 +203,25 @@ class jMQTT extends jMQTTBase {
      * @param jMQTT $broker broker the equipment is related to
      * @param string $name equipment name
      * @param string $topic subscription topic
-     * @param string $type jMQTT type (either jMQTT::TYP_EQPT or jMQTT::TYP_BRK)
      * return new jMQTT object
      */
-    public static function createEquipment($broker, $name, $topic, $type) {
+    public static function createEquipment($broker, $name, $topic) {
         $eqpt = new jMQTT();
-        $eqpt->setType($type);
-        $eqpt->initEquipment($name, $topic, 1);
+        $eqpt->setType(self::TYP_EQPT);
+
+        log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
+        $eqpt->setName($name);
+        $eqpt->setIsEnable(1);
+        $eqpt->setTopic($topic);
+        $eqpt->setAutoAddCmd('1'); //TODO make it not needed anymore by default values (getConf)
+        $eqpt->setQos('1'); //TODO make it not needed anymore by default values (getConf)
         
         if (is_object($broker)) {
-            $broker->log('info', 'Create equipment ' . $name . ', topic=' . $topic . ', type=' . $type);
+            $broker->log('info', 'Create equipment ' . $name . ', topic=' . $topic);
             $eqpt->setBrkId($broker->getId());
         }
         $eqpt->save();
-        
-        // NOTE: the status command is created in the postSave method
-        
+
         // Advise the desktop page (jMQTT.js) that a new equipment has been added
         event::add('jMQTT::eqptAdded', array('eqlogic_name' => $name));
 
@@ -237,21 +240,6 @@ class jMQTT extends jMQTTBase {
         $this->setConfiguration('topic', null);
     }
 
-    /**
-     * Initialize this equipment with the given data
-     * @param string $name equipment name
-     * @param string $topic subscription topic
-     * @param int $isEnable whether or not the equipment is enable (0 if not present)
-     */
-    private function initEquipment($name, $topic, $isEnable=0) {
-        log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
-        parent::setName($name);
-        parent::setIsEnable($isEnable);
-        parent::setLogicalId($topic);  // logical id is also modified by setTopic
-        $this->setAutoAddCmd('1');
-        $this->setQos('1');
-    }
-    
     /**
      * Overload the equipment copy method
      * All information are copied but: suscribed topic (left empty), enable status (left disabled) and
@@ -1095,7 +1083,7 @@ class jMQTT extends jMQTTBase {
         // subscribing to all sub-topics starting with the first topic of the
         // current message
         if (empty($elogics) && $this->getIncludeMode()) {
-            $eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#', self::TYP_EQPT);
+            $eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#');
             $elogics[] = $eqpt;
         }
         

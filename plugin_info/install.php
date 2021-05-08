@@ -54,7 +54,13 @@ function migrateToMultiBrokerVersion() {
     $topic = $mqttId . '/' . jMQTT::CLIENT_STATUS;
     $cmds = cmd::byLogicalId($topic, 'info');
     if (count($cmds) == 0) {
-        $broker = jMQTT::createEquipment(null, $mqttId, $mqttId . '/#', jMQTT::TYP_BRK);
+        // $broker = jMQTT::createEquipment(null, $mqttId, $mqttId . '/#', jMQTT::TYP_BRK);
+        $eqpt = new jMQTT();
+        $eqpt->setType(jMQTT::TYP_BRK);
+        $eqpt->setName($mqttId);
+        $eqpt->setIsEnable(1);
+        $eqpt->save();
+
         $msg = 'créé';
     }
     else {
