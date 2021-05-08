@@ -323,6 +323,24 @@ class jMQTT extends jMQTTBase {
     }
 
     /**
+     * subscribe topic
+     */
+    public function subscribeTopic($topic, $qos){
+
+        // If broker eqpt is disabled, don't need to send subscribe
+        $broker = $this->getBroker();
+        if(!$broker->getIsEnable()) return;
+
+        if (empty($topic)){
+            $this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': no subscription (empty topic)');
+            return;
+        }
+
+        $this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
+        self::subscribe_mqtt_topic($this->getBrkId(), $topic, $qos);
+    }
+
+    /**
      * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
      */
     public function unsubscribeTopic($topic, $brkId = null){
@@ -506,7 +524,7 @@ class jMQTT extends jMQTTBase {
                         //Unsubscribe previous include topic
                         $this->unsubscribeTopic($this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC]);
                         //Subscribe the new one
-                        self::subscribe_mqtt_topic($this->getBrkId(), $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC), $this->getQos());
+                        $this->subscribeTopic($this->getConf(self::CONF_KEY_MQTT_INC_TOPIC), $this->getQos());
                     }
                 }
 
@@ -517,8 +535,7 @@ class jMQTT extends jMQTTBase {
                         // If API is now enabled
                         if ($this->isApiEnable()) {
                             //Subscribe API topic
-                            $this->log('info', 'Broker ' . $this->getName() . ': subscribes to "' . $this->getMqttApiTopic() . '" with Qos=' . $this->getQos());
-                            self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), $this->getQos());
+                            $this->subscribeTopic($this->getMqttApiTopic(), $this->getQos());
                         }
                         else {
                             //Unsubscribe API topic
@@ -539,8 +556,8 @@ class jMQTT extends jMQTTBase {
             // --- New eqpt ---
             if (is_null($this->_preSaveInformations)) {
                 
-                // Enabled & Topic => subscribe
-                if ($this->getIsEnable() && $this->getTopic() != '') self::subscribe_mqtt_topic($this->getBrkId(), $this->getTopic(), $this->getQos());
+                // Enabled => subscribe
+                if ($this->getIsEnable()) $this->subscribeTopic($this->getTopic(), $this->getQos());
             }
             // --- Existing eqpt ---
             else {
@@ -587,7 +604,7 @@ class jMQTT extends jMQTTBase {
 
                 // In the end, does topic need to be subscribed
                 if($subscribeRequested && $this->getIsEnable()){
-                    self::subscribe_mqtt_topic($this->getBrkId(), $this->getTopic(), $this->getQos());
+                    $this->subscribeTopic($this->getTopic(), $this->getQos());
                 }
             }
         }
@@ -954,21 +971,13 @@ class jMQTT extends jMQTTBase {
 
         foreach (self::byBrkId($this->getId()) as $mqtt) {
             if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
-                $topic = $mqtt->getTopic();
-                $qos = (int) $mqtt->getQos();
-                if (empty($topic)) {
-                    $this->log('info', 'Equipment ' . $mqtt->getName() . ': no subscription (empty topic)');
-                }
-                else {
-                    $this->log('info', 'Equipment ' . $mqtt->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
-                    self::subscribe_mqtt_topic($this->getId(), $topic, $qos);
-                }
+                $this->subscribeTopic($mqtt->getTopic(), $mqtt->getQos());
             }
         }
         
         if ($this->isApiEnable()) {
             $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
-            self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
+            $this->subscribeTopic($this->getMqttApiTopic(), '1');
         } else {
             $this->log('info', 'API is disabled');
         }
@@ -1526,14 +1535,13 @@ class jMQTT extends jMQTTBase {
         }
 
         $includeTopic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
-        $qos = $this->getQos();
 
         // If includeMode needs to be enabled
         if ($mode == 1) {
             // Subscribe include topic
-            self::subscribe_mqtt_topic($this->getId(), $includeTopic, $qos);
-            $this->log('debug', 'Subscribe to Inclusion Mode topic "' . $includeTopic . '" with Qos=1');
-            
+            $this->log('debug', 'Subscribe to Inclusion Mode topic');
+            $this->subscribeTopic($includeTopic, $this->getQos());
+
             // Create and configure the cron process to disable include mode later
             $cron = new cron();
             $cron->setClass(__CLASS__);
