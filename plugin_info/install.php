@@ -210,10 +210,6 @@ function installNewDependancies() {
 
     // So best option is to remove an old daemon dependancy
     exec(system::getCmdSudo() . 'apt-get -y remove mosquitto-clients libmosquitto-dev');
-
-    // Trigger dependancies installation to speed up things
-    plugin::byId('jMQTT')->dependancy_install();
-    log::add('jMQTT', 'info', 'dependancies installation triggered');
 }
 
 function jMQTT_install() {
