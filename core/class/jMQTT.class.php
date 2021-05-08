@@ -263,7 +263,7 @@ class jMQTT extends jMQTTBase {
         }
         $eqLogicCopy->save();
 
-        // Clone commands, only action type commands
+        // Clone commands
         /** @var jMQTTCmd $cmd */
         foreach ($this->getCmd() as $cmd) {
             /** @var jMQTTCmd $cmdCopy */
@@ -392,10 +392,10 @@ class jMQTT extends jMQTTBase {
                 }
             }
 
-            // --- New eqpt ---
+            // --- New broker ---
             if (!isset($this->id)) {
             }
-            // --- Existing eqpt ---
+            // --- Existing broker ---
             else {
             }
         }
