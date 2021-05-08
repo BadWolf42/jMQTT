@@ -1450,11 +1450,11 @@ class jMQTT extends jMQTTBase {
      * @throws Exception if the broker is not found
      */
     public function getBroker() {
+
+        if ($this->getType() == self::TYP_BRK) return $this;
+
         if (! isset($this->_broker)) {
-            if ($this->getType() == self::TYP_BRK)
-                $this->_broker = $this;
-            else
-                $this->_broker = self::getBrokerFromId($this->getBrkId());
+            $this->_broker = self::getBrokerFromId($this->getBrkId());
         }
         return $this->_broker;
     }
