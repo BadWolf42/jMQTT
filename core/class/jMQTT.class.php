@@ -38,7 +38,7 @@ class jMQTT extends jMQTTBase {
     
     const CONF_KEY_TYPE = 'type';
     const CONF_KEY_BRK_ID = 'brkId';
-    const CONF_KEY_MQTT_ID = 'mqttId';
+    const CONF_KEY_MQTT_CLIENT_ID = 'mqttId';
     const CONF_KEY_MQTT_ADDRESS = 'mqttAddress';
     const CONF_KEY_MQTT_PORT = 'mqttPort';
     const CONF_KEY_MQTT_USER = 'mqttUser';
@@ -401,7 +401,7 @@ class jMQTT extends jMQTTBase {
                 'name' => $eqLogic->getName(),
                 'isEnable' => $eqLogic->getIsEnable(),
                 self::CONF_KEY_LOGLEVEL => $eqLogic->getConf(self::CONF_KEY_LOGLEVEL),
-                self::CONF_KEY_MQTT_ID => $eqLogic->getConf(self::CONF_KEY_MQTT_ID),
+                self::CONF_KEY_MQTT_CLIENT_ID => $eqLogic->getConf(self::CONF_KEY_MQTT_CLIENT_ID),
                 self::CONF_KEY_MQTT_ADDRESS => $eqLogic->getConf(self::CONF_KEY_MQTT_ADDRESS),
                 self::CONF_KEY_MQTT_PORT => $eqLogic->getConf(self::CONF_KEY_MQTT_PORT),
                 self::CONF_KEY_MQTT_USER => $eqLogic->getConf(self::CONF_KEY_MQTT_USER),
@@ -490,7 +490,7 @@ class jMQTT extends jMQTTBase {
                 }
 
                 // ClientId changed
-                if ($this->_preSaveInformations[self::CONF_KEY_MQTT_ID] != $this->getConf(self::CONF_KEY_MQTT_ID)) {
+                if ($this->_preSaveInformations[self::CONF_KEY_MQTT_CLIENT_ID] != $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID)) {
 
                     // Just Need to restart MqttClient (it needs to know about the new willTopic)
                     if (!$stopped) {
@@ -923,7 +923,7 @@ class jMQTT extends jMQTTBase {
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
         $this->sendMqttClientStateEvent();
-        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
+        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttClientId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
 
         foreach (self::byBrkId($this->getId()) as $mqtt) {
             if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
@@ -1204,7 +1204,7 @@ class jMQTT extends jMQTTBase {
      * @return string broker status topic name
      */
     public function getMqttClientStatusTopic()  {
-        return $this->getMqttId() . '/' . jMQTT::CLIENT_STATUS;
+        return $this->getMqttClientId() . '/' . jMQTT::CLIENT_STATUS;
     }
 
     /**
@@ -1282,7 +1282,7 @@ class jMQTT extends jMQTTBase {
         $defValues = array(
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
             self::CONF_KEY_MQTT_PORT => '1883',
-            self::CONF_KEY_MQTT_ID => 'jeedom',
+            self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
             self::CONF_KEY_AUTO_ADD_CMD, '1',
             self::CONF_KEY_MQTT_INC_TOPIC => '#',
@@ -1359,8 +1359,8 @@ class jMQTT extends jMQTTBase {
      * Get the MQTT client id used by jMQTT to connect to the broker (default value = jeedom)
      * @return string MQTT id.
      */
-    public function getMqttId() {
-        return $this->getConf(self::CONF_KEY_MQTT_ID);
+    public function getMqttClientId() {
+        return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID);
     }
     
     /**
@@ -1462,7 +1462,7 @@ class jMQTT extends jMQTTBase {
      * @return string API topic
      */
     private function getMqttApiTopic() {
-        return $this->getMqttId() . '/' . self::API_TOPIC;
+        return $this->getMqttClientId() . '/' . self::API_TOPIC;
     }
 
     
