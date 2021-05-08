@@ -1530,6 +1530,6 @@ class jMQTT extends jMQTTBase {
      * @return int 0 or 1
      */
     public function getIncludeMode() {
-        return $this->getCache(CACHE_INCLUDE_MODE, 0);
+        return $this->getCache(self::CACHE_INCLUDE_MODE, 0);
     }
 }
