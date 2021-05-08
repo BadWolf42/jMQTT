@@ -213,8 +213,6 @@ class jMQTT extends jMQTTBase {
         $eqpt->setName($name);
         $eqpt->setIsEnable(1);
         $eqpt->setTopic($topic);
-        $eqpt->setAutoAddCmd('1'); //TODO make it not needed anymore by default values (getConf)
-        $eqpt->setQos('1'); //TODO make it not needed anymore by default values (getConf)
         
         if (is_object($broker)) {
             $broker->log('info', 'Create equipment ' . $name . ', topic=' . $topic);
@@ -385,9 +383,7 @@ class jMQTT extends jMQTTBase {
 
             // --- New eqpt ---
             if (!isset($this->id)) {
-                //TODO : Will be removed later by default values
-                $this->setQos('1');
-                $this->setAutoAddCmd('1');
+
             }
             // --- Existing eqpt ---
             else {
@@ -823,7 +819,6 @@ class jMQTT extends jMQTTBase {
                 $broker->setType(self::TYP_BRK);
                 $broker->setName($brokername);
                 $broker->setIsEnable(1);
-                $broker->setQos('1');
                 $broker->save();
 
                 echo "Done\n";
