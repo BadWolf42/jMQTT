@@ -441,7 +441,7 @@ class jMQTT extends jMQTTBase {
 
                 // isEnable changed
                 if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
-                    if ($this->getIsEnable()) $startNeeded = true; //If nothing happens in between, it will be restarted
+                    if ($this->getIsEnable()) $startRequested = true; //If nothing happens in between, it will be restarted
                     else {
                         if (!$stopped) {
                             $this->stopMqttClient();
