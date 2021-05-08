@@ -230,6 +230,7 @@ class jMQTTCmd extends cmd {
         // Specific command : status for Broker eqpt
         if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
             if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
+            if ($this->getSubType() != 'string') $this->setSubType('string');
             $this->setTopic($this->getEqLogic()->getMqttClientStatusTopic()); // just for display as it's not used to start the MqttClient
         }
 
