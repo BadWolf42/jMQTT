@@ -74,75 +74,115 @@
     <div class="panel-body">
         <div id="div_broker_configuration"></div>
         <div class="form-actions">
+            <!-- <div class="form-group pull-right">
+                <span class="btn btn-success btn-file" style="width:100%;" title="Uploader un fichier">
+                    <i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
+                </span>
+            </div> -->
             <form class="form-horizontal">
                 <div class="form-group">
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{IP de Mosquitto : }}</label>
+                            <label class="col-lg-4 control-label">{{IP/Nom de Domaine du Broker}} <sup><i class="fa fa-question-circle tooltips"
+                            title="IP/Nom de Domaine du Broker, par défaut 'localhost' i.e. la machine hébergeant Jeedom.
+                            <br/>Pour MQTT sécurisé (TLS) avec validation du certificat, le certificat doit être valide pour le contenu de ce champ."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttAddress"
                                     style="margin-top: 5px" placeholder="localhost" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Port de Mosquitto : }}</label>
+                            <label class="col-lg-4 control-label">{{Port du Broker}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Port réseau sur lequel écoute le Broker.<br/>Par défaut le port 1883 est utilisé pour MQTT en clair et 8883 pour MQTT sécurisé (TLS)."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPort"
                                     style="margin-top: 5px" placeholder="Par défaut 1883 sans TLS et 8883 avec TLS" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Identifiant de Connexion : }}</label>
+                            <label class="col-lg-4 control-label">{{Identifiant de Connexion}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT. Par défaut la valeur est 'jeedom'.
+                            <br/>Cet identifiant est aussi utilisé dans les topics des commandes info status et api.
+                            <br/>Les topics sont automatiquement mis à jour si l’identifiant est modifié.
+                            <br/>Il est important que cet identifiant ne soit utilisé que par jMQTT sur ce Broker."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId"
                                     style="margin-top: 5px" placeholder="jeedom" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Compte de Connexion (non obligatoire) : }}</label>
+                            <label class="col-lg-4 control-label">{{Compte de Connexion}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Utilisateur permettant de se connecter au Broker.<br/>Non obligatoire, vide par défaut."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser"
-                                    autocomplete="off" style="margin-top: 5px" placeholder="jeedom" />
+                                    autocomplete="off" style="margin-top: 5px" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Mot de passe de Connexion (non obligatoire) : }}</label>
+                            <label class="col-lg-4 control-label">{{Mot de passe de Connexion}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Mot de passe permettant de se connecter au Broker.<br/>Non obligatoire, vide par défaut."></i></sup></label>
                             <div class="col-lg-4">
                                 <input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPass"
-                                    autocomplete="off" style="margin-top: 5px" placeholder="jeedom" />
+                                    autocomplete="off" style="margin-top: 5px" />
                             </div>
                         </div>
-
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Activer TLS : }}</label>
+                            <label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipements}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Seul les Topics correspondants pourront être souscrits sur ce Broker. '#' par défaut, i.e. tous les Topics.
+                            <br/>Ne pas modifier sans en comprendre les implications."></i></sup></label>
                             <div class="col-lg-4">
-                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
+                                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic"
+                                    style="margin-top: 5px" placeholder="#" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Vérifier la CA du Broker : }}</label>
+                            <label class="col-lg-4 control-label">{{MQTT sécurisé (TLS)}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation.
+                            <br/>Ne pas modifier sans en comprendre les implications."></i></sup></label>
+                            <div class="col-lg-4">
+                                <select id="fTls" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls" style="margin-top: 5px">
+                                    <option value="disable">{{Désactivé}}</option>
+                                    <option value="enable">{{Activé - Authorités Publiques}}</option>
+                                    <option value="custom">{{Activé - Authorités Personnalisées}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="dTlsSecure" class="form-group">
+                            <label class="col-lg-4 control-label">{{Vérifier l'Authorité}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Vérifie que le certificat du Broker est valide et correspond bien à ce Broker (IP/FQDN & CA)."></i></sup></label>
                             <div class="col-lg-4">
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsSecure">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Chemin vers le fichier CA du Broker (obligatoire s'il faut vérifier la CA) : }}</label>
+                        <div id="dTlsCaFile" class="form-group">
+<?php
+    $dir = dirname(__FILE__) . '/../../data/certs';
+?>
+                            <label class="col-lg-4 control-label">{{Authorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Selectionner l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
                             <div class="col-lg-4">
-                                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile"
-                                    autocomplete="off" style="margin-top: 5px" placeholder="/.../ca.crt" />
+                                <!-- <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="width:90%; margin-top: 5px"> -->
+                                <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
+<?php
+    foreach (ls($dir, '*') as $file) {
+        if (strpos($file,'.crt') !== false) {
+            echo '                                    <option value="' . $file . '">' .$file . '</option>';
+        }
+    }
+?>
+                                </select>
+                               <!-- <span class="btn btn-danger" style="" title="Supprimer le Certificat selectionné">
+                                    <a class="mqttDeleteFile"><i class="fas fa-trash"></i></a>
+                                </span>
+                                <span class="btn btn-success btn-file" style="width:5%;" title="Uploader un Certificat">
+                                    <i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
+                                </span>
+                                <div class="eventDisplayMini"></div> -->
                             </div>
                         </div>
-
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique
-                                des équipements : }}</label>
-                            <div class="col-lg-4">
-                                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic"
-                                    style="margin-top: 5px" placeholder="{{# par défaut - ne pas modifier sans connaître}}" />
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Accès API : }}</label>
+                            <label class="col-lg-4 control-label">{{Accès API}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation."></i></sup></label>
                             <div class="col-lg-4">
                                 <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="api" style="margin-top: 5px">
                                     <option value="disable">{{Désactivé}}</option>
@@ -150,6 +190,19 @@
                                 </select>
                             </div>
                         </div>
+                        <!-- <div class="form-group">
+                            <label class="col-lg-4 control-label">{{PAHO Logging}} </label>
+                            <div class="col-lg-4">
+                                <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPahoLog" style="margin-top: 5px">
+                                    <option value="">None</option>
+                                    <option value="debug">logging.DEBUG</option>
+                                    <option value="info">logging.INFO</option>
+                                    <option value="warning">logging.WARNING</option>
+                                    <option value="error">logging.ERROR</option>
+                                    <option value="critical">logging.CRITICAL</option>
+                                </select>
+                            </div>
+                        </div> -->
                     </fieldset>
                 </div>
             </form>
@@ -258,5 +311,63 @@ $('#div_broker_log').on('click','.bt_plugin_conf_view_log',function() {
     }
 });
 
+$('#fTls').change(function(){
+    if ($("#fTls").val() == 'disable') {
+        $('#dTlsSecure').hide();
+    } else {
+        $('#dTlsSecure').show();
+    }
+    if ($("#fTls").val() == 'custom') {
+        $('#dTlsCaFile').show();
+    } else {
+        $('#dTlsCaFile').hide();
+    }
+});
+
+$('#mqttUploadFile').fileupload({
+  dataType: 'json',
+  replaceFileInput: false,
+  done: function (e, data) {
+    if (data.result.state != 'ok') {
+      $('.eventDisplayMini').showAlert({message: data.result.result, level: 'danger'});
+      return;
+    }
+   $('.eventDisplayMini').showAlert({message: '{{Fichier(s) ajouté(s) avec succès}}', level: 'success'});
+   // $('#md_modal').dialog('close');
+	// $('#md_modal').dialog({title: "{{Gestion des jingles SqueezeboxControl}}"});
+	// $('#md_modal').load('index.php?v=d&plugin=squeezeboxcontrol&modal=jingle').dialog('open');
+  }
+});
+
+$('.mqttDeleteFile').on('click', function (){
+var oriname = $("#fTlsCaFile").val()
+ $.ajax({
+	type: "POST",
+	url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+	data: {
+		action: "filedelete",
+		dir: "certs",
+		name: oriname
+	},
+	global : false,
+	dataType: 'json',
+	error: function(request, status, error) {
+		handleAjaxError(request, status, error);
+	},
+	success: function(data) {
+		if (data.state != 'ok') {
+			$('.eventDisplayMini').showAlert({message:  data.result,level: 'danger'});
+			setTimeout(function() { deleteAlertMini() }, 2000);
+			return;
+		}
+		$('.eventDisplayMini').showAlert({message:  'Suppression effectuée' ,level: 'success'});
+		setTimeout(function() { deleteAlertMini() }, 2000);
+		modifyWithoutSave=false;
+		// $('#md_modal').dialog('close');
+		// $('#md_modal').dialog({title: "{{Gestion des jingles SqueezeboxControl}}"});
+		// $('#md_modal').load('index.php?v=d&plugin=squeezeboxcontrol&modal=jingle').dialog('open');
+	}
+});
+});
 </script>
 

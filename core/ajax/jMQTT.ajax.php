@@ -110,7 +110,60 @@ try {
         ajax::success();
     }
     
+    if (init('action') == 'fileupload') {
+        if (!isset($_FILES['file'])) {
+            throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+        }
+        $extension = strtolower(strrchr($_FILES['file']['name'], '.'));
+        if (!in_array($extension, array('.crt', '.key', '.json'))) {
+            throw new Exception('Extension du fichier non autorisée : ' . $extension);
+        }
+        if (filesize($_FILES['file']['tmp_name']) > 500000) {
+            throw new Exception(__('Le fichier est trop gros (maximum 500ko)', __FILE__));
+        }
+        if (init('dir') == 'template') {
+//TODO Check if Tempate folder location corresponds to Jeedom best practices
+            $uploaddir = __DIR__ . '/../../core/config/template';
+        } elseif (init('dir') == 'certs') {
+            $uploaddir = __DIR__ . '/../../data/certs';
+        } else {
+            throw new Exception(__('Téléversement invalide', __FILE__));
+        }
+        if (!file_exists($uploaddir)) {
+            mkdir($uploaddir);
+        }
+        if (!file_exists($uploaddir)) {
+            throw new Exception(__('Répertoire de téléversement non trouvé : ', __FILE__) . $uploaddir);
+        }
+        if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
+            throw new Exception(__('Impossible de téléverser le fichier car il existe déjà, supprimer le fichier avant de recommencer.', __FILE__));
+        }
+        if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $_FILES['file']['name'])) {
+            throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
+        }
+        if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
+            throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
+        }
+        ajax::success();
+    }
     
+    if (init('action') == 'filedelete') {
+        if (init('dir') == 'template') {
+//TODO Check if Tempate folder location corresponds to Jeedom best practices
+            $uploaddir = __DIR__ . '/../../core/config/template';
+        } elseif (init('dir') == 'certs') {
+            $uploaddir = __DIR__ . '/../../data/certs';
+        } else {
+            throw new Exception(__('Suppression invalide', __FILE__));
+        }
+        if (!file_exists($uploaddir . '/' . init('name'))) {
+            throw new Exception(__('Impossible de supprimer le fichier, car il n\'existe pas.', __FILE__));
+        } else {
+            unlink($uploaddir . '/' . init('name'));
+        }
+        ajax::success();
+    }
+
     throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {

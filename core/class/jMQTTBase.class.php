@@ -177,29 +177,37 @@ class jMQTTBase extends eqLogic {
    }
 
    public static function new_mqtt_client($id, $hostname, $port = 0, $clientid = '', $statustopic = '',
-                                          $username = '', $password = '', $tls = False,
-                                          $tlscafile = '', $tlssecure = False, $paholog='') {
+                                          $username = '', $password = '', $tls = 'disable',
+                                          $tlscafile = '', $tlssecure = '0', $paholog='') {
       $params['cmd']='newMqttClient';
       $params['id']=$id;
       $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
       $params['hostname']=$hostname;
-         if ($port != 0) {
-               $params['port']=$port;
-         } else {
-            if ($tls) {
-               $params['port']=8883;
-            } else {
-               $params['port']=1883;
-            }
-         }
       $params['clientid']=$clientid;
       $params['statustopic']=$statustopic;
       $params['username']=$username;
       $params['password']=$password;
-      $params['tls']=$tls; // Enable TLS communcation with broker (default TLS port is 8883)
-      $params['tlscafile']=$tlscafile; // string path to the Certificate Authority certificate files that are to be treated as trusted by this client
-      $params['tlssecure']=$tlssecure; // Bool: True -> Check connection against provided CA certificate.
-
+      if ($tls == 'enable') { // Enable TLS communcation with broker with Public CA
+         $params['tls']=True;
+         $params['tlssecure']=$tlssecure;
+      } elseif ($tls == 'custom') { // Enable TLS communcation with broker with Custom CA
+         $params['tls']=True;
+         if ($tlscafile != '')
+            $params['tlscafile']=dirname(__FILE__) . '/../../data/certs/'.$tlscafile; // string path to the Certificate Authority certificate files that are to be treated as trusted by this client
+         $params['tlssecure']=$tlssecure;
+      } else { // No TLS
+         $params['tls']=False;
+         $params['tlssecure']='0';
+      }
+      if ($port != 0) {
+         $params['port']=$port;
+      } else {
+         if ($params['tls']) {
+            $params['port']=8883;
+         } else {
+            $params['port']=1883;
+         }
+      }
       $params['paholog']=$paholog;
       get_called_class()::send_to_mqtt_daemon($params);
    }

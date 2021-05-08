@@ -53,8 +53,6 @@ class MqttClient:
 		self.mqttclientid = ''
 		if 'clientid' in message:
 			self.mqttclientid = message['clientid']
-		else:
-			logging.warning('Client ID should be defined, expect strange behaviors...')
 
 		self.mqttusername = ''
 		if 'username' in message:
@@ -70,7 +68,7 @@ class MqttClient:
 
 		self.mqtttls = False
 		if 'tls' in message:
-			self.mqtttls = message['tls'] == '1'
+			self.mqtttls = message['tls']
 
 		self.mqtttlscafile = None
 		if 'tlscafile' in message and message['tlscafile'] != '':
@@ -96,7 +94,13 @@ class MqttClient:
 		self.mqttclient = mqtt.Client(self.mqttclientid)
 		# Enable special Paho logging functions
 		if self.mqttpaholog != '':
-			self.mqttclient.enable_logger(jeedom_utils.convert_log_level(self.mqttpaholog))
+			logger = logging.getLogger()
+			# logger.setlevel(jeedom_utils.convert_log_level(level))
+			# logger.setFormatter(logging.Formatter('[%(asctime)-15s][%(levelname)s] : %(message)s'))
+			# logging.basicConfig(level=,format=FORMAT, datefmt="%Y-%m-%d %H:%M:%S")
+			self.mqttclient.enable_logger(logger)
+		else:
+			self.mqttclient.disable_logger()
 		if self.mqttusername != '':
 			if self.mqttpassword != '':
 				self.mqttclient.username_pw_set(self.mqttusername, self.mqttpassword)
@@ -347,6 +351,11 @@ def cmd_handler(message):
 		if not (message.keys() >= {'callback', 'hostname'}):
 			logging.error('Id %d !!! newMqttClient - missing parameter : %s', message['id'], json.dumps(message))
 			return
+
+		if 'tls' in message and message['tls'] and 'tlscafile' in message and message['tlscafile'] != '':
+			if not os.access(message['tlscafile'], os.R_OK):
+				logging.warning('Unable to read CA file "%s"', message['tlscafile'])
+				return
 
 		# if jmqttclient already exists then remove it first
 		if message['id'] in jmqttclients:

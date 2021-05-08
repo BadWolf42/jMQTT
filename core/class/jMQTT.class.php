@@ -1307,7 +1307,7 @@ class jMQTT extends jMQTTBase {
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
             self::CONF_KEY_MQTT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
-            self::CONF_KEY_MQTT_TLS => '0',
+            self::CONF_KEY_MQTT_TLS => 'disable',
             self::CONF_KEY_MQTT_TLS_CA => '',
             self::CONF_KEY_MQTT_TLS_SECURE => '0',
             self::CONF_KEY_MQTT_PAHO_LOG => '',
