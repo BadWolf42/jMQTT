@@ -330,8 +330,9 @@ class jMQTT extends jMQTTBase {
 
         if (is_null($brkId)) $brkId = $this->getBrkId();
 
-        // If broker is disabled, don't need to send unsubscribe
-        if(!self::getBrokerFromId($brkId)->getIsEnable()) return;
+        // If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send unsubscribe
+        $broker = self::getBrokerFromId($brkId);
+        if(!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_POK || $broker->getMqttClientState() == self::MQTTCLIENT_NOK) return;
 
         //Find eqLogic using the same topic (which is stored in logicalId)
         $eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
@@ -965,7 +966,7 @@ class jMQTT extends jMQTTBase {
             $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
             self::subscribe_mqtt_topic($this->getId(), $this->getMqttApiTopic(), '1');
         } else {
-            $this->log('info', 'API is disable');
+            $this->log('info', 'API is disabled');
         }
     }
     
