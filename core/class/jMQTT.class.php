@@ -206,10 +206,9 @@ class jMQTT extends jMQTTBase {
      * return new jMQTT object
      */
     public static function createEquipment($broker, $name, $topic) {
-        $eqpt = new jMQTT();
-        $eqpt->setType(self::TYP_EQPT);
 
         log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
+        $eqpt = new jMQTT();
         $eqpt->setName($name);
         $eqpt->setIsEnable(1);
         $eqpt->setTopic($topic);
