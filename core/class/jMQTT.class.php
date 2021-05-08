@@ -1197,7 +1197,7 @@ class jMQTT extends jMQTTBase {
      * @param string $retain
      *            whether or not the message is a retained message ('0' or '1')
      */
-    public function publishMosquitto($eqName, $topic, $payload, $qos, $retain) {
+    public function publish($eqName, $topic, $payload, $qos, $retain) {
         
         if (is_bool($payload)) {
             // Fix #80

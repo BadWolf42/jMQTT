@@ -209,7 +209,7 @@ class jMQTTCmd extends cmd {
         }
 
         $request = jeedom::evaluateExpression($request);
-        $this->getEqLogic()->publishMosquitto($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
+        $this->getEqLogic()->publish($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
         return $request;
     }
@@ -298,7 +298,7 @@ class jMQTTCmd extends cmd {
                     // A null payload should be sent to the broker to erase the last retained value
                     // Otherwise, this last value remains retained at broker level
                     $eqLogic->log('info', $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
-                    $eqLogic->publishMosquitto($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+                    $eqLogic->publish($eqLogic->getName(), $this->getTopic(), '', 1, 1);
                 }
             }
 
@@ -308,7 +308,7 @@ class jMQTTCmd extends cmd {
                 if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
                     // Just try to remove the previous status topic
                     $eqLogic = $this->getEqLogic();
-                    $eqLogic->publishMosquitto($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
+                    $eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
                 }
             }
         }
