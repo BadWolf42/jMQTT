@@ -156,7 +156,7 @@
 
         <div class="form-group typ-std">
             <div style="text-align: center">
-                <img id="icon_visu" src="" width="200" height="200" />
+                <img id="icon_visu" src="" height="200" />
             </div>
         </div>
 
