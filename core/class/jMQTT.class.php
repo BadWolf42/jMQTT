@@ -245,21 +245,11 @@ class jMQTT extends jMQTTBase {
      */
     private function initEquipment($name, $topic, $isEnable=0) {
         log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
-        $this->setEqType_name('jMQTT');
         parent::setName($name);
         parent::setIsEnable($isEnable);
         parent::setLogicalId($topic);  // logical id is also modified by setTopic
-        if ($this->getType() == self::TYP_BRK) {
-            $this->setAutoAddCmd('0');
-        }
-        else {
-            $this->setAutoAddCmd('1');
-        }
+        $this->setAutoAddCmd('1');
         $this->setQos('1');
-        
-        if ($this->getType() == self::TYP_BRK) {
-            config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
-        }
     }
     
     /**
@@ -452,6 +442,9 @@ class jMQTT extends jMQTTBase {
 
             // --- New eqpt ---
             if (is_null($this->_preSaveInformations)) {
+
+                // Create log of this broker
+                config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
 
                 // Create Status cmd
                 $this->createMqttClientStatusCmd();
@@ -840,11 +833,11 @@ class jMQTT extends jMQTTBase {
                 echo 'Creation of Broker eqpt. name : ' . $brokername . "\n";
                 $broker = new jMQTT();
                 $broker->setType(self::TYP_BRK);
-                $broker->initEquipment($brokername, self::getDefaultConfiguration(self::CONF_KEY_MQTT_ID).'/#', '1');
+                $broker->setName($brokername);
+                $broker->setIsEnable(1);
+                $broker->setQos('1');
                 $broker->save();
-                $broker->setBrkId($broker->getId());
-                $broker->save();
-                $broker->createMqttClientStatusCmd();
+
                 echo "Done\n";
             }
         }
