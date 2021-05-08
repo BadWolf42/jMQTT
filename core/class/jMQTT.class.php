@@ -664,34 +664,7 @@ class jMQTT extends jMQTTBase {
             if($this->getIsEnable()) $this->unsubscribeTopic($this->getTopic());
         }
     }
-    
-    /**
-     * Remove all equipments of the given broker
-     * Called by a specific cron (see mqttApiRequest::processRequest)
-     * @param string[] $option $option[id]=broker id
-     */
-    public static function removeAllEqpts($option) {
-        
-        // let the daemon thread which run this cron action terminate the current processing
-        // before stopping the daemon
-        usleep(500000);
-        
-        // Disable first the broker to avoid during removal of the equipments to restart the MQTT Client
-        $broker = self::getBrokerFromId($option['id']);
-        $broker->setIsEnable(0);
-        $broker->save();
-        
-        // remove all equipments attached to the broker
-        foreach (self::byBrkId($broker->getId()) as $eqpt) {
-            if ($broker->getId() != $eqpt->getId())
-                $eqpt->remove();
-        }
-        
-        // Re-enable the broker
-        $broker->setIsEnable(1);
-        $broker->save();
-    }
-    
+
     public static function health() {
         $return = array();
         foreach(self::getBrokers() as $broker) {
