@@ -436,7 +436,7 @@ class jMQTT extends jMQTTBase {
             // --- Existing broker ---
             else {
 
-                $stopped = false;
+                $stopped = ($this->getMqttClientState() == self::MQTTCLIENT_NOK);
                 $startRequested = false;
 
                 // isEnable changed
