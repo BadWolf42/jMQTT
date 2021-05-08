@@ -1192,6 +1192,7 @@ class jMQTT extends jMQTTBase {
         
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+        //TODO Find if it's the Jeedom logic
         // if ($this->getType() == self::TYP_EQPT) {
         //     $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
         // }
