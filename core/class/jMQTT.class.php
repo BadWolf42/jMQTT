@@ -1504,7 +1504,7 @@ class jMQTT extends jMQTTBase {
         }
 
         $includeTopic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
-        $qos = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
+        $qos = $this->getQos();
 
         // If includeMode needs to be enabled
         if ($mode == 1) {
