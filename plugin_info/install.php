@@ -27,7 +27,7 @@ define("VERSION", 'version');
 /**
  * Current Update version
  */
-define("CURRENT_VERSION", 3);
+define("CURRENT_VERSION", 4);
 
 
 /**
@@ -222,6 +222,28 @@ function installNewDependancies() {
     log::add('jMQTT', 'info', 'dependancies installation triggered');
 }
 
+function tagBrokersStatusCmd() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 4) {
+        return;
+    }
+
+    // for each brokers
+    foreach ((jMQTT::getBrokers()) as $broker) {
+        // for each cmd of this broker
+        foreach (jMQTTCmd::byEqLogicId($broker->getId()) as $cmd) {
+            // if name is 'status'
+            if ($cmd->getName() == jMQTT::CLIENT_STATUS) {
+                //set logicalId to status (new method to manage broker status cmd)
+                $cmd->setLogicalId(jMQTT::CLIENT_STATUS);
+                $cmd->save();
+            }
+        }
+    }
+
+    log::add('jMQTT', 'info', 'Brokers status command tagged');
+}
+
 function jMQTT_install() {
     jMQTT_update();
 }
@@ -239,6 +261,8 @@ function jMQTT_update() {
     // VERSION = 3
     removePreviousDaemonCrons();
     installNewDependancies();
+    // VERSION = 4
+    tagBrokersStatusCmd();
 
     // Update version next to upgrade operations
     config::save(VERSION, CURRENT_VERSION, 'jMQTT');
