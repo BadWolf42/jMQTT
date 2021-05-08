@@ -928,6 +928,12 @@ class jMQTT extends jMQTTBase {
      * @throws Exception if the MQTT Client is not launchable
      */
     public function startMqttClient() {
+
+        // if daemon is not ok, do Nothing
+        $daemon_info = self::deamon_info();
+        if ($daemon_info['state'] != 'ok') return;
+        
+        //If MqttClient is not launchable (daemon is running), throw exception to get message
         $mqttclient_info = $this->getMqttClientInfo();
         if ($mqttclient_info['launchable'] != 'ok') {
             throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
