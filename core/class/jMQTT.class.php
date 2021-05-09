@@ -1329,7 +1329,8 @@ class jMQTT extends jMQTTBase {
      * @param string $level
      */
     public function setLogLevel($log_level) {
-        $this->setConfiguration(self::CONF_KEY_LOGLEVEL, reset(json_decode($log_level, true)));
+        $decodedLogLevel = json_decode($log_level, true);
+        $this->setConfiguration(self::CONF_KEY_LOGLEVEL, reset($decodedLogLevel));
     }
     
     /**
