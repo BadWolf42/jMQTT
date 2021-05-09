@@ -78,7 +78,11 @@ class jMQTTdLogic implements MessageComponentInterface {
         log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon connected successfully to WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
 
         if(method_exists($this->plugin, 'on_daemon_connect')) {
-            $this->plugin::on_daemon_connect($conn->httpRequest->getHeader('id')[0]);
+            try {
+                $this->plugin::on_daemon_connect($conn->httpRequest->getHeader('id')[0]);
+            } catch (Throwable $t) {
+                log::add($this->plugin, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
+            }
         }
     }
 
@@ -101,18 +105,30 @@ class jMQTTdLogic implements MessageComponentInterface {
             case 'connection':
                 if ($message['state']) {
                     if(method_exists($this->plugin, 'on_mqtt_connect')) {
-                        $this->plugin::on_mqtt_connect($from->httpRequest->getHeader('id')[0]);
+                        try {
+                            $this->plugin::on_mqtt_connect($from->httpRequest->getHeader('id')[0]);
+                        } catch (Throwable $t) {
+                            log::add($this->plugin, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
+                        }
                     }
                 }
                 else {
                     if(method_exists($this->plugin, 'on_mqtt_disconnect')) {
-                        $this->plugin::on_mqtt_disconnect($from->httpRequest->getHeader('id')[0]);
+                        try {
+                            $this->plugin::on_mqtt_disconnect($from->httpRequest->getHeader('id')[0]);
+                        } catch (Throwable $t) {
+                            log::add($this->plugin, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
+                        }
                     }
                 }
                 break;
             case 'messageIn':
                 if(method_exists($this->plugin, 'on_mqtt_message')) {
-                    $this->plugin::on_mqtt_message($from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
+                    try {
+                        $this->plugin::on_mqtt_message($from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
+                    } catch (Throwable $t) {
+                        log::add($this->plugin, 'error', sprintf('on_mqtt_message raised an Exception : %s', $t->getMessage()));
+                    }
                 }
                 break;
             default:
@@ -125,7 +141,11 @@ class jMQTTdLogic implements MessageComponentInterface {
         log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon disconnected from WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
 
         if(method_exists($this->plugin, 'on_daemon_disconnect')) {
-            $this->plugin::on_daemon_disconnect($conn->httpRequest->getHeader('id')[0]);
+            try {
+                $this->plugin::on_daemon_disconnect($conn->httpRequest->getHeader('id')[0]);
+            } catch (Throwable $t) {
+                log::add($this->plugin, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
+            }
         }
     }
 
@@ -133,9 +153,13 @@ class jMQTTdLogic implements MessageComponentInterface {
         log::add($this->plugin, 'error', sprintf('Id %d : Unexpected error between WebSocket Daemon and Python Daemon', $conn->httpRequest->getHeader('id')[0], $e->getMessage()));
 
         if(method_exists($this->plugin, 'on_daemon_disconnect')) {
-            $this->plugin::on_daemon_disconnect($conn->httpRequest->getHeader('id')[0]);
+            try {
+                $this->plugin::on_daemon_disconnect($conn->httpRequest->getHeader('id')[0]);
+            } catch (Throwable $t) {
+                log::add($this->plugin, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
+            }
         }
-        
+
         $conn->close();
     }
 }
