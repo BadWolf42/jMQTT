@@ -126,6 +126,27 @@
                                     autocomplete="off" style="margin-top: 5px" />
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label">{{Activer TLS : }}</label>
+                            <div class="col-lg-4">
+                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label">{{Vérifier la CA du Broker : }}</label>
+                            <div class="col-lg-4">
+                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsSecure">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label">{{Chemin vers le fichier CA du Broker (obligatoire s'il faut vérifier la CA) : }}</label>
+                            <div class="col-lg-4">
+                                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile"
+                                    autocomplete="off" style="margin-top: 5px" placeholder="/.../ca.crt" />
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipements}} <sup><i class="fa fa-question-circle tooltips"
                             title="Seul les Topics correspondants pourront être souscrits sur ce Broker. '#' par défaut, i.e. tous les Topics.
