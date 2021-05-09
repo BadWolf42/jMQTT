@@ -142,13 +142,13 @@
                             <div class="col-lg-4">
                                 <select id="fTls" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls" style="margin-top: 5px">
                                     <option value="disable">{{Désactivé}}</option>
-                                    <option value="enable">{{Activé - Authorités Publiques}}</option>
-                                    <option value="custom">{{Activé - Authorités Personnalisées}}</option>
+                                    <option value="enable">{{Activé - Autorités Publiques}}</option>
+                                    <option value="custom">{{Activé - Autorité Personnalisée}}</option>
                                 </select>
                             </div>
                         </div>
                         <div id="dTlsSecure" class="form-group">
-                            <label class="col-lg-4 control-label">{{Vérifier l'Authorité}} <sup><i class="fa fa-question-circle tooltips"
+                            <label class="col-lg-4 control-label">{{Vérifier l'Autorité}} <sup><i class="fa fa-question-circle tooltips"
                             title="Vérifie que le certificat du Broker est valide et correspond bien à ce Broker (IP/FQDN & CA)."></i></sup></label>
                             <div class="col-lg-4">
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsSecure">
@@ -158,8 +158,8 @@
 <?php
     $dir = dirname(__FILE__) . '/../../data/certs';
 ?>
-                            <label class="col-lg-4 control-label">{{Authorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Selectionner l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Selectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
                             <div class="col-lg-4">
                                 <!-- <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="width:90%; margin-top: 5px"> -->
                                 <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">

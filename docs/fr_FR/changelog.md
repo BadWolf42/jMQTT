@@ -9,6 +9,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Nouvelles dépendances plus légères et maintenues
  - Renommage de l'ancienne partie Daemon en MqttClient
  - Retrait de Ratchet des sources et ajout au méchanisme d'installation de dépendances
+ - Ajout du support de TLS et modification de la documentation en conséquence
 
 ## 2021-04-27
   - Correction [PR#40](https://github.com/Domochip/jMQTT/pull/40): gestion du cas d'erreur de renommage du log d'un broker lorsque le log n'existe pas encore
