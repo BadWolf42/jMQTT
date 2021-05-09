@@ -958,7 +958,7 @@ class jMQTT extends jMQTTBase {
 
         foreach (self::byBrkId($this->getId()) as $mqtt) {
             if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
-                $this->subscribeTopic($mqtt->getTopic(), $mqtt->getQos());
+                $mqtt->subscribeTopic($mqtt->getTopic(), $mqtt->getQos());
             }
         }
         
