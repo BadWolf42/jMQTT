@@ -114,9 +114,7 @@ class jMQTT extends jMQTTBase {
 				if (is_json($content)) {
 					$return += json_decode($content, true);
 				}
-			} catch (Exception $e) {
-				
-			}
+			} catch (Throwable $e) {}
 		}
 		if (isset($_template) && $_template != '') {
 			if (isset($return[$_template])) {
@@ -870,7 +868,7 @@ class jMQTT extends jMQTTBase {
                         log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
                         $broker->startMqttClient();
                     }
-                    catch (Exception $e) {}
+                    catch (Throwable $e) {}
                 }
             }
         }
@@ -1267,7 +1265,7 @@ class jMQTT extends jMQTTBase {
         try {
             $request = new mqttApiRequest($msg, $this);
             $request->processRequest();
-        } catch (Exception $e) {}
+        } catch (Throwable $e) {}
     }
 
     /**

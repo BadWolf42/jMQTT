@@ -145,7 +145,7 @@ class jMQTTCmd extends cmd {
             $value = self::get_array_value($jsonArray, $indexes);
             $this->updateCmdValue(json_encode($value));
         }
-        catch (Exception $e) {
+        catch (Throwable $e) {
             // Should never occur
             $this->getEqLogic()->log('info', 'valeur de la commande ' . $this->getLogName() . ' non trouvée');
         }
