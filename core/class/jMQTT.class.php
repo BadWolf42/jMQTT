@@ -1313,7 +1313,7 @@ class jMQTT extends jMQTTBase {
             self::CONF_KEY_MQTT_PORT => '1883',
             self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
-            self::CONF_KEY_AUTO_ADD_CMD, '1',
+            self::CONF_KEY_AUTO_ADD_CMD => '1',
             self::CONF_KEY_MQTT_INC_TOPIC => '#',
             self::CONF_KEY_API => self::API_DISABLE,
             self::CONF_KEY_BRK_ID => -1
