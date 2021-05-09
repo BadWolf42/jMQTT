@@ -235,7 +235,7 @@ class jMQTTCmd extends cmd {
         }
 
         // --- New cmd ---
-        if (!isset($this->id)) {
+        if ($this->getId() == '') {
 
         }
         // --- Existing cmd ---
@@ -244,7 +244,7 @@ class jMQTTCmd extends cmd {
         }
 
         // It's time to gather informations that will be used in postSave
-        if (!isset($this->id)) $this->_preSaveInformations = null;
+        if ($this->getId() == '') $this->_preSaveInformations = null;
         else {
             $cmd = self::byId($this->getId());
             $this->_preSaveInformations = array(

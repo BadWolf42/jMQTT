@@ -398,7 +398,7 @@ class jMQTT extends jMQTTBase {
             }
 
             // --- New broker ---
-            if (!isset($this->id)) {
+            if ($this->getId() == '') {
             }
             // --- Existing broker ---
             else {
@@ -408,7 +408,7 @@ class jMQTT extends jMQTTBase {
         else{
 
             // --- New eqpt ---
-            if (!isset($this->id)) {
+            if ($this->getId() == '') {
             }
             // --- Existing eqpt ---
             else {
@@ -417,7 +417,7 @@ class jMQTT extends jMQTTBase {
 
 
         // It's time to gather informations that will be used in postSave
-        if (!isset($this->id)) $this->_preSaveInformations = null; // New eqpt => Nothing to collect
+        if ($this->getId() == '') $this->_preSaveInformations = null; // New eqpt => Nothing to collect
         else { // Existing eqpt
 
             // load eqLogic from DB
