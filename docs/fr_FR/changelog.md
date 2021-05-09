@@ -9,6 +9,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Structure de classes permettant l'utilisation dans de futurs plugins satellites
  - Nouvelles dépendances plus légères et maintenues
  - Renommage de l'ancienne partie Daemon en MqttClient
+ - Retrait de Ratchet des sources et ajout au méchanisme d'installation de dépendances
  - Amélioration de la gestion des erreurs dans le daemon WebSocket PHP
 
 ## 2021-04-27

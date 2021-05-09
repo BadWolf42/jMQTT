@@ -566,11 +566,13 @@ function printEqLogic(_eqLogic) {
     if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0)) ||
             (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) {
         $('.toDisable').addClass('disabled');
+        $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
         $('.typ-brk').hide();
         $('.typ-std').show();
     }
     else if (_eqLogic.configuration.type == 'broker') {
         $('.toDisable').removeClass('disabled');
+        $('.eqLogicAction[data-action="configure"]').addClass('roundedLeft');
         $('.typ-std').hide();
         $('.typ-brk').show();
         $('#mqtttopic').prop('readonly', true);
@@ -594,6 +596,7 @@ function printEqLogic(_eqLogic) {
     }
     else if (_eqLogic.configuration.type == 'eqpt') {
         $('.toDisable').removeClass('disabled');
+        $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
         $('.typ-brk').hide();
         $('.typ-std').show();
         $('#mqtttopic').prop('readonly', false);
@@ -1008,3 +1011,4 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
         }
     }
 });
+

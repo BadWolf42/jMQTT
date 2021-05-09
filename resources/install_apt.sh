@@ -23,7 +23,7 @@ echo "*"
 echo "* Synchronize the package index"
 echo "*"
 apt-get update
-echo 30 > ${PROGRESS_FILE}
+echo 20 > ${PROGRESS_FILE}
 
 echo "*"
 echo "* Install Mosquitto"
@@ -31,6 +31,22 @@ echo "*"
 if [ ${INSTALL_MOSQUITTO} -eq 1 ]; then
     apt-get -y install mosquitto
 fi
+echo 40 > ${PROGRESS_FILE}
+
+echo "*"
+echo "* Install Ratchet PHP library"
+echo "*"
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+cd ../3rdparty
+rm -r vendor
+rm composer.json
+rm composer.lock
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+sudo -u www-data php ./composer.phar require --working-dir=. --no-cache symfony/http-foundation
+sudo -u www-data php ./composer.phar require --working-dir=. --no-cache cboden/ratchet
+rm composer.phar
 echo 50 > ${PROGRESS_FILE}
 
 echo "*"
