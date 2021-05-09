@@ -46,15 +46,12 @@ class jMQTTCmd extends cmd {
         $cmd->setEqLogic_id($eqLogic->getId());
         $cmd->setEqType('jMQTT');
         $cmd->setIsVisible(1);
-        $cmd->setIsHistorized(0);
-        $cmd->setSubType('string');
         $cmd->setType('info');
+        $cmd->setSubType('string');
         $cmd->setTopic($topic);
         
         // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
         $cmd->setName(self::checkCmdName($eqLogic, $name));
-        
-        $cmd->eventNewCmd(true);
         
         return $cmd;
     }
@@ -65,7 +62,7 @@ class jMQTTCmd extends cmd {
      */
     private function eventNewCmd($reload=false) {
         $eqLogic = $this->getEqLogic();
-        $eqLogic->log('info', 'Création commande ' . $this->getType() . ' ' . $this->getLogName());
+        $eqLogic->log('info', 'Command added ' . $this->getType() . ' ' . $this->getLogName());
         
         // Advise the desktop page (jMQTT.js) that a new command has been added
         event::add('jMQTT::cmdAdded',
@@ -281,7 +278,7 @@ class jMQTTCmd extends cmd {
                 }
             }
 
-            $this->eventNewCmd(false);
+            $this->eventNewCmd();
         }
         else { // the cmd has been updated
 
