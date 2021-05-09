@@ -91,21 +91,9 @@ try {
         $old_broker_id = $eqpt->getBrkId();
         $new_broker = jMQTT::getBrokerFromId(init('brk_id'));
         log::add('jMQTT', 'info', 'déplace l\'équipement ' . $eqpt->getName() . ' vers le broker ' . $new_broker->getName());
-        $eqpt->setType(jMQTT::TYP_EQPT);
         $eqpt->setBrkId($new_broker->getId());
         $eqpt->cleanEquipment();
-        $eqpt->save(true);
-        
-        // Restart the new MQTT Client
-        if ($new_broker->isMqttClientToBeRestarted()) {
-            $new_broker->startMqttClient(true);
-        }
-        if ($old_broker_id > 0) {
-            $old_broker = jMQTT::getBrokerFromId($old_broker_id);
-            if ($old_broker->isMqttClientToBeRestarted()) {
-                $old_broker->startMqttClient(true);
-            }
-        }
+        $eqpt->save();
         
         ajax::success();
     }

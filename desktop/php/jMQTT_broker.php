@@ -92,24 +92,24 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Identifiant de Connexion : }}</label>
+                            <label class="col-lg-4 control-label">{{Identifiant : }}</label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId"
                                     style="margin-top: 5px" placeholder="jeedom" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Compte de Connexion (non obligatoire) : }}</label>
+                            <label class="col-lg-4 control-label">{{Nom d'utilisateur : }}</label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser"
-                                    autocomplete="off" style="margin-top: 5px" placeholder="jeedom" />
+                                    autocomplete="off" style="margin-top: 5px" placeholder="{{Si nécessaire pour le broker}}" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Mot de passe de Connexion (non obligatoire) : }}</label>
+                            <label class="col-lg-4 control-label">{{Mot de passe : }}</label>
                             <div class="col-lg-4">
                                 <input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPass"
-                                    autocomplete="off" style="margin-top: 5px" placeholder="jeedom" />
+                                    autocomplete="off" style="margin-top: 5px" placeholder="{{Si nécessaire pour le broker}}" />
                             </div>
                         </div>
                         <div class="form-group">
@@ -125,7 +125,7 @@
                             <div class="col-lg-4">
                                 <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="api" style="margin-top: 5px">
                                     <option value="disable">{{Désactivé}}</option>
-                                    <option value="enable">{{Activé}}</option>
+                                    <option value="enable">{{Activé}} (topic : {Identifiant}/api)</option>
                                 </select>
                             </div>
                         </div>

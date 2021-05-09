@@ -46,15 +46,12 @@ class jMQTTCmd extends cmd {
         $cmd->setEqLogic_id($eqLogic->getId());
         $cmd->setEqType('jMQTT');
         $cmd->setIsVisible(1);
-        $cmd->setIsHistorized(0);
-        $cmd->setSubType('string');
         $cmd->setType('info');
+        $cmd->setSubType('string');
         $cmd->setTopic($topic);
         
         // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
         $cmd->setName(self::checkCmdName($eqLogic, $name));
-        
-        $cmd->eventNewCmd(true);
         
         return $cmd;
     }
@@ -65,7 +62,7 @@ class jMQTTCmd extends cmd {
      */
     private function eventNewCmd($reload=false) {
         $eqLogic = $this->getEqLogic();
-        $eqLogic->log('info', 'Création commande ' . $this->getType() . ' ' . $this->getLogName());
+        $eqLogic->log('info', 'Command added ' . $this->getType() . ' ' . $this->getLogName());
         
         // Advise the desktop page (jMQTT.js) that a new command has been added
         event::add('jMQTT::cmdAdded',
@@ -145,7 +142,7 @@ class jMQTTCmd extends cmd {
             $value = self::get_array_value($jsonArray, $indexes);
             $this->updateCmdValue(json_encode($value));
         }
-        catch (Exception $e) {
+        catch (Throwable $e) {
             // Should never occur
             $this->getEqLogic()->log('info', 'valeur de la commande ' . $this->getLogName() . ' non trouvée');
         }
@@ -209,7 +206,7 @@ class jMQTTCmd extends cmd {
         }
 
         $request = jeedom::evaluateExpression($request);
-        $this->getEqLogic()->publishMosquitto($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
+        $this->getEqLogic()->publish($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
 
         return $request;
     }
@@ -219,22 +216,38 @@ class jMQTTCmd extends cmd {
      */
     public function preSave() {
 
-        // save required informations from the cmd in DB for the postSave
-        if ($this->getId() != '') {
-            $cmd = self::byId($this->getId());
-            $this->_preSaveInformations = array(
-                'retain' => $cmd->getConfiguration('retain', 0)
-            );
-        }
-        else $this->_preSaveInformations = null;
-
-
         // If request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
         // the desktop interface - fix issue #28)
         foreach(array('request') as $key) {
             $conf = $this->getConfiguration($key);
             if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
                 $this->setConfiguration($key, $conf);
+        }
+
+        // Specific command : status for Broker eqpt
+        if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+            if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
+            if ($this->getSubType() != 'string') $this->setSubType('string');
+            $this->setTopic($this->getEqLogic()->getMqttClientStatusTopic()); // just for display as it's not used to start the MqttClient
+        }
+
+        // --- New cmd ---
+        if ($this->getId() == '') {
+
+        }
+        // --- Existing cmd ---
+        else {
+
+        }
+
+        // It's time to gather informations that will be used in postSave
+        if ($this->getId() == '') $this->_preSaveInformations = null;
+        else {
+            $cmd = self::byId($this->getId());
+            $this->_preSaveInformations = array(
+                'retain' => $cmd->getConfiguration('retain', 0),
+                'brokerStatusTopic' => $cmd->getTopic()
+            );
         }
     }
     
@@ -265,7 +278,7 @@ class jMQTTCmd extends cmd {
                 }
             }
 
-            $this->eventNewCmd(false);
+            $this->eventNewCmd();
         }
         else { // the cmd has been updated
 
@@ -283,14 +296,24 @@ class jMQTTCmd extends cmd {
                     // A null payload should be sent to the broker to erase the last retained value
                     // Otherwise, this last value remains retained at broker level
                     $eqLogic->log('info', $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
-                    $eqLogic->publishMosquitto($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+                    $eqLogic->publish($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+                }
+            }
+
+            // Specific command : status for Broker eqpt
+            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+                // If it's topic changed
+                if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
+                    // Just try to remove the previous status topic
+                    $eqLogic = $this->getEqLogic();
+                    $eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
                 }
             }
         }
        
         // For info commands, check that the topic is compatible with the subscription command
         // of the related equipment
-        if ($this->getType() == 'info') {
+        if ($this->getType() == 'info' && $this->getEqLogic()->getType() == jMQTT::TYP_EQPT) {
             if (! $this->topicMatchesSubscription($this->getEqLogic()->getTopic())) {
                 $this->eventTopicMismatch();
             }

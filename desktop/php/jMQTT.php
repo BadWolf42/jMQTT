@@ -125,7 +125,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
-    if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
+    if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) {
        echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
     }
     if ($eqL->getIsVisible()) {

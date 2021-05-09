@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <div class="form-group toDisable">
+        <div class="form-group toDisable typ-std">
             <label class="col-sm-3 control-label">{{Inscrit au Topic}}</label>
             <div class="col-sm-3">
                 <input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="logicalId"
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div class="form-group toDisable  typ-std">
+        <div class="form-group toDisable typ-std">
             <label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label>
             <div class="col-sm-3">
                 <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" checked />
