@@ -792,9 +792,12 @@ class jMQTT extends jMQTTBase {
             //looking for broker pointing to local mosquitto
             $brokerexists = false;
             foreach(self::getBrokers() as $broker) {
-                if ($broker->getMqttAddress() == self::getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS)) {
+                $hn = $broker->getMqttAddress();
+                $ip = gethostbyname($hn);
+                if ($hn == '' || $hn == self::getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS) || substr($ip, 0, 4) == '127.') {
                     $brokerexists = true;
                     echo "Broker eqpt already exists\n";
+                    break;
                 }
             }
 
