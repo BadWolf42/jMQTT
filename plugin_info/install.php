@@ -214,7 +214,17 @@ function installNewDependancies() {
     // Even if we invalidate dependancies infos in cache, it's back just after
     // plugin::byId('jMQTT')->dependancy_info(true);
 
-    // So best option is to remove an old daemon dependancy
+    // So best option is to remove old daemon dependancies
+    // Uninstall pecl/Mosquitto
+    exec(system::getCmdSudo() . 'pecl uninstall Mosquitto-alpha');
+    // Remove mosquitto.so from php.ini files
+    $cliIniFilePath = php_ini_loaded_file();
+    $fpmIniFilePath = str_replace('cli', 'fpm', $cliIniFilePath);
+    $apache2IniFilePath = str_replace('cli', 'apache2', $cliIniFilePath);
+    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $cliIniFilePath);
+    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $fpmIniFilePath);
+    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $apache2IniFilePath);
+    // Uninstall Mosquitto libraries and clients
     exec(system::getCmdSudo() . 'apt-get -y remove mosquitto-clients libmosquitto-dev');
 }
 
