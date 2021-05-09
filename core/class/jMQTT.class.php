@@ -1289,7 +1289,12 @@ class jMQTT extends jMQTTBase {
      * @param string $msg
      */
     public function log($level, $msg) {
-        log::add($this->getMqttClientLogFile(), $level, $msg);
+        // log can't be written during removal of an eqLogic next to his broker eqLogic removal
+        // the name of the broker can't be found (and log file has already been deleted)
+        try {
+            $log = $this->getMqttClientLogFile();
+            log::add($log, $level, $msg);
+        } catch (Throwable $t) {} // nothing to do in that particular case
     }
     
     /**
