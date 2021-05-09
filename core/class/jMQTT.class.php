@@ -75,7 +75,12 @@ class jMQTT extends jMQTTBase {
      * @var array values from preSave used for postSave actions
      */
     private $_preSaveInformations;
-
+    
+    /**
+     * Data shared between preRemove and postRemove
+     * @var array values from preRemove used for postRemove actions
+     */
+    private $_preRemoveInformations;
     /**
      * Broker jMQTT object related to this object
      * @var jMQTT broker object
@@ -637,6 +642,12 @@ class jMQTT extends jMQTTBase {
         else {
             $this->log('info', 'removing equipment ' . $this->getName());
         }
+
+        
+        // load eqLogic from DB
+        $this->_preRemoveInformations = array(
+            'id' => $this->getId()
+        );
     }
 
     /**
@@ -653,8 +664,8 @@ class jMQTT extends jMQTTBase {
             }
             config::remove('log::level::' . $log, 'jMQTT');
 
-            // Remove all equipments attached to the removed broker
-            foreach (self::byBrkId($this->getId()) as $eqpt) {
+            // Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
+            foreach (self::byBrkId($this->_preRemoveInformations['id']) as $eqpt) {
                 $eqpt->remove();
             }
         }
