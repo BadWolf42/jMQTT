@@ -67,15 +67,15 @@ Suite à sa création, un message indique que la commande *status* a été ajout
 Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement. Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le status du démon devrait passer à OK.
 
 Pour modifier les informations de connexion au Broker, les paramètres sont:
-  - _IP/Nom de Domaine du Broker_ : adresse IP du Broker (par défaut localhost i.e. la machine hébergeant Jeedom);
-  - _Port du Broker_ : port du Broker (1883 par défaut);
-  - _Identifiant de Connexion_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
-    - Cet identifiant est aussi utilisé dans les topics des commandes info *status* et *api*. Les topics sont automatiquement mis à jour si l'identifiant est modifié.
-  - _Compte et Mot de passe de Connexion_ : compte et mot de passe de connexion au Broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du Broker).
-  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
-  - _MQTT Sécurisé (TLS)_ : permet le chiffrement TLS des communications avec le Broker. Trois options sont offertes : Désactivé, Activé en utilisant les Autorités Publiques et Activé en utilisant un Autorité Personnalisée. Bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls)
-  - _Vérifier l'Autorité_ : visible si TLS est activé, vérifie que le certificat du Broker est valide et correspond bien à ce Broker (IP/FQDN & CA).
-  - _Autorité Personnalisée_ : visible si TLS est activé et utilise un Autorité Personnalisée, sélectionne l'autorité de certification attendue pour le Broker. Les fichiers disponibles dans la liste déroulante doivent être dans le répertoire data/certs/ du plugin.
+  - _IP/Nom de Domaine du Broker_ : adresse IP du Broker (par défaut localhost i.e. la machine hébergeant Jeedom) ;
+  - _Port du Broker_ : port du Broker (1883 par défaut) ;
+  - _Identifiant de Connexion_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut) ;
+    - Cet identifiant est aussi utilisé dans les topics des commandes info *status* et *api*. Les topics sont automatiquement mis à jour si l'identifiant est modifié ;
+  - _Compte et Mot de passe de Connexion_ : compte et mot de passe de connexion au Broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du Broker) ;
+  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics) ;
+  - _MQTT Sécurisé (TLS)_ : permet le chiffrement des communications avec le Broker. Trois options sont offertes : Désactivé, Activé en utilisant les Autorités Publiques et Activé en utilisant un Autorité Personnalisée. Bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls) ;
+  - _Vérifier l'Autorité_ : visible si TLS est activé, vérifie que le certificat du Broker est valide et correspond bien (IP/FQDN & CA) ;
+  - _Autorité Personnalisée_ : visible si TLS est activé et utilise un Autorité Personnalisée, sélectionne l'autorité de certification attendue pour le Broker. Les fichiers disponibles dans la liste déroulante doivent être dans le répertoire data/certs/ du plugin ;
   - _Accès API_ : à activer pour utiliser l'[API](#api).
 
 > **Attention**: _L'identifiant de connexion_ doit être unique par client par Broker. Sinon les clients portant le même identifiant vont se déconnecter mutuellement.
@@ -344,7 +344,7 @@ Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion
 
 L’objectif du MQTTS (Chiffrement des flux MQTT en TLS) est d’établir une communication chiffrée de bout en bout entre un Broker et des clients MQTTS, afin de garantir la confidentialité des échanges.
 
-Il existe de nombreux Broker MQTT gratuits ou payants disponibles en ligne pour connecter un large ensemble d'équipements IoT, par exemple :
+Il existe en ligne de nombreux Broker MQTT, gratuits ou payants, pour connecter un large ensemble d'équipements IoT, par exemple :
  - [AdafruitIO](https://io.adafruit.com/) : Connect your existing project to the Internet to log, stream, and interact with the data it produces.
  - [AWS IoT Core](https://docs.aws.amazon.com/fr_fr/iot/latest/developerguide/mqtt.html) : AWS IoT fournit les services cloud qui connectent vos appareils IoT à d'autres appareils et services cloud AWS.
  - [CloudMQTT](https://www.cloudmqtt.com/) : Hosted message Broker for the Internet of Things.
