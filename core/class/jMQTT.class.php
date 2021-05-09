@@ -616,16 +616,15 @@ class jMQTT extends jMQTTBase {
 
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == self::TYP_BRK) {
+
+            // If current eqLogic is a Broker, MqttClientState has been lost because cache has been destroyed by eqLogic::remove()
+
             $this->log('info', 'removing broker ' . $this->getName());
             
             // Disable first the broker to Stop MqttClient
-            $this->setIsEnable(0);
-            $this->save();
-
-            // Wait up to 10s for MqttClient stopped
-            for ($i=0; $i < 40; $i++) { 
-                if ($this->getMqttClientState() == self::MQTTCLIENT_NOK) break;
-                usleep(250000);
+            if ($this->getIsEnable()) {
+                $this->setIsEnable(0);
+                $this->save();
             }
 
             // Disable all equipments attached to the broker
@@ -988,10 +987,16 @@ class jMQTT extends jMQTTBase {
         $broker->setCache(self::CACHE_DAEMON_CONNECTED, true);
     }
     public static function on_daemon_disconnect($id) {
-        $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache(self::CACHE_DAEMON_CONNECTED, false);
-        // if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
-        self::on_mqtt_disconnect($id);
+        // handle exception where eqLogic has been already removed
+        // (removal of broker eqLogic is not able to wait for disconnect first)
+        try {
+            $broker = self::getBrokerFromId(intval($id));
+        } catch (\Throwable $th) {}
+        if ($broker) {
+            $broker->setCache(self::CACHE_DAEMON_CONNECTED, false);
+            // if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
+            self::on_mqtt_disconnect($id);
+        }
     }
     public static function on_mqtt_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
@@ -1003,7 +1008,7 @@ class jMQTT extends jMQTTBase {
         $broker = self::getBrokerFromId(intval($id));
         $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
         $statusCmd = $broker->getMqttClientStatusCmd();
-        if (!is_bool($statusCmd)) $statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+        if ($statusCmd) $statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
         $broker->sendMqttClientStateEvent();
         // if includeMode is enabled, disbale it
         if ($broker->getIncludeMode()) $broker->changeIncludeMode(0);
