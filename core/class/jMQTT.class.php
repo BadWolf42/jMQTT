@@ -43,6 +43,12 @@ class jMQTT extends jMQTTBase {
     const CONF_KEY_MQTT_PORT = 'mqttPort';
     const CONF_KEY_MQTT_USER = 'mqttUser';
     const CONF_KEY_MQTT_PASS = 'mqttPass';
+    const CONF_KEY_MQTT_TLS = 'mqttTls';
+    const CONF_KEY_MQTT_TLS_SECURE = 'mqttTlsSecure';
+    const CONF_KEY_MQTT_TLS_CA = 'mqttTlsCaFile';
+    const CONF_KEY_MQTT_TLS_CLI_CERT= 'mqttTlsClientCertFile';
+    const CONF_KEY_MQTT_TLS_CLI_KEY = 'mqttTlsClientKeyFile';
+    const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
     const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
     const CONF_KEY_QOS = 'Qos';
     const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
@@ -429,6 +435,12 @@ class jMQTT extends jMQTTBase {
                 self::CONF_KEY_MQTT_PORT => $eqLogic->getConf(self::CONF_KEY_MQTT_PORT),
                 self::CONF_KEY_MQTT_USER => $eqLogic->getConf(self::CONF_KEY_MQTT_USER),
                 self::CONF_KEY_MQTT_PASS => $this->getConf(self::CONF_KEY_MQTT_PASS),
+                self::CONF_KEY_MQTT_TLS => $this->getConf(self::CONF_KEY_MQTT_TLS),
+                self::CONF_KEY_MQTT_TLS_SECURE => $this->getConf(self::CONF_KEY_MQTT_TLS_SECURE),
+                self::CONF_KEY_MQTT_TLS_CA => $this->getConf(self::CONF_KEY_MQTT_TLS_CA),
+                self::CONF_KEY_MQTT_TLS_CLI_CERT => $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT),
+                self::CONF_KEY_MQTT_TLS_CLI_KEY => $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY),
+                self::CONF_KEY_MQTT_PAHO_LOG => $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG),
                 self::CONF_KEY_MQTT_INC_TOPIC => $eqLogic->getConf(self::CONF_KEY_MQTT_INC_TOPIC),
                 self::CONF_KEY_QOS => $eqLogic->getConf(self::CONF_KEY_QOS),
                 self::CONF_KEY_API => $eqLogic->isApiEnable(),
@@ -492,17 +504,21 @@ class jMQTT extends jMQTTBase {
                     config::remove('log::level::' . $old_log, __CLASS__);
                 }
 
-                // 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass' changed
-                if ($this->_preSaveInformations[self::CONF_KEY_MQTT_ADDRESS] != $this->getConf(self::CONF_KEY_MQTT_ADDRESS) ||
-                    $this->_preSaveInformations[self::CONF_KEY_MQTT_PORT] != $this->getConf(self::CONF_KEY_MQTT_PORT) ||
-                    $this->_preSaveInformations[self::CONF_KEY_MQTT_USER] != $this->getConf(self::CONF_KEY_MQTT_USER) ||
-                    $this->_preSaveInformations[self::CONF_KEY_MQTT_PASS] != $this->getConf(self::CONF_KEY_MQTT_PASS))
-                {
-                    if (!$stopped) {
-                        $this->stopMqttClient();
-                        $stopped = true;
+                // 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', etc changed
+                $checkChanged = array(self::CONF_KEY_MQTT_ADDRESS,      self::CONF_KEY_MQTT_PORT,
+                                      self::CONF_KEY_MQTT_USER,         self::CONF_KEY_MQTT_PASS,
+                                      self::CONF_KEY_MQTT_TLS,          self::CONF_KEY_MQTT_TLS_SECURE,
+                                      self::CONF_KEY_MQTT_TLS_CA,       self::CONF_KEY_MQTT_TLS_CLI_CERT,
+                                      self::CONF_KEY_MQTT_TLS_CLI_KEY,  self::CONF_KEY_MQTT_PAHO_LOG);
+                foreach ($checkKeys as $key) {
+                    if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
+                        if (!$stopped) {
+                            $this->stopMqttClient();
+                            $stopped = true;
+                        }
+                        $startRequested = true;
+                        break;
                     }
-                    $startRequested = true;
                 }
 
                 // ClientId changed
@@ -963,7 +979,13 @@ class jMQTT extends jMQTTBase {
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
         $this->sendMqttClientStateEvent();
-        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttClientId(), $this->getMqttClientStatusTopic(), $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS));
+//TODO This function has way too much arguments, Rework it!!!
+        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttClientId(), $this->getMqttClientStatusTopic(),
+                              $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS),
+                              $this->getConf(self::CONF_KEY_MQTT_TLS), $this->getConf(self::CONF_KEY_MQTT_TLS_CA),
+                              $this->getConf(self::CONF_KEY_MQTT_TLS_SECURE), $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT),
+                              $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY), $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG)
+                              );
 
         foreach (self::byBrkId($this->getId()) as $mqtt) {
             if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
@@ -1328,9 +1350,15 @@ class jMQTT extends jMQTTBase {
     private static function getDefaultConfiguration($_key) {
         $defValues = array(
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
-            self::CONF_KEY_MQTT_PORT => '1883',
+            self::CONF_KEY_MQTT_PORT => '',
             self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
+            self::CONF_KEY_MQTT_TLS => 'disable',
+            self::CONF_KEY_MQTT_TLS_CA => '',
+            self::CONF_KEY_MQTT_TLS_SECURE => '0',
+            self::CONF_KEY_MQTT_TLS_CLI_CERT => '',
+            self::CONF_KEY_MQTT_TLS_CLI_KEY => '',
+            self::CONF_KEY_MQTT_PAHO_LOG => '',
             self::CONF_KEY_AUTO_ADD_CMD => '1',
             self::CONF_KEY_MQTT_INC_TOPIC => '#',
             self::CONF_KEY_API => self::API_DISABLE,

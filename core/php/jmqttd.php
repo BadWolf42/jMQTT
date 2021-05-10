@@ -32,9 +32,9 @@ else {
 }
 
 log::add($plugin, 'info', 'Start jMQTT websocket daemon');
-log::add($plugin, 'info', 'Plugin : ' . $plugin);
-log::add($plugin, 'info', 'Socket port : ' . $socketport);
-log::add($plugin, 'info', 'PID file : ' . $pidfile);
+log::add($plugin, 'info', 'Plugin     : ' . $plugin);
+log::add($plugin, 'info', 'Socket port: ' . $socketport);
+log::add($plugin, 'info', 'PID file   : ' . $pidfile);
 
 //Check for daemon already running
 if (file_exists($pidfile)) {
