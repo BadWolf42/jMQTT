@@ -872,7 +872,7 @@ class jMQTT extends jMQTTBase {
         $daemon_info = self::deamon_info();
         if ($daemon_info['state'] == 'ok') {
             foreach(self::getBrokers() as $broker) {
-                if ($broker->getIsEnable() && $broker->getMqttClientState() == "nok") {
+                if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
                     try {
                         log::add(__CLASS__, 'info', 'Starting MqttClient for ' . $broker->getName());
                         $broker->startMqttClient();
@@ -1224,18 +1224,21 @@ class jMQTT extends jMQTTBase {
         $payloadLogMsg = ($payload === '') ? '(null)' : $payload;
         $this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadLogMsg);
         
-        $this->log('debug', 'Publication du message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
+        $this->log('debug', 'Publishing message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
-        self::publish_mqtt_message($this->getBrkId(), $topic, $payload, $qos, $retain);
-        
-        $d = date('Y-m-d H:i:s');
-        $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+        if ($this->getBroker()->getMqttClientState() == self::MQTTCLIENT_OK) {
+            self::publish_mqtt_message($this->getBrkId(), $topic, $payload, $qos, $retain);
+            
+            $d = date('Y-m-d H:i:s');
+            $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
 
-        if ($this->getType() == self::TYP_EQPT) {
-            $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+            if ($this->getType() == self::TYP_EQPT) {
+                $this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+            }
+            
+            $this->log('debug', 'Message published');
         }
-        
-        $this->log('debug', 'Message publié');
+        else $this->log('warning', 'Message cannot be published, daemon is not connected to the broker');
     }
 
     /**
