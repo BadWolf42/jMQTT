@@ -126,27 +126,6 @@
                                     autocomplete="off" style="margin-top: 5px" />
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Activer TLS : }}</label>
-                            <div class="col-lg-4">
-                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Vérifier la CA du Broker : }}</label>
-                            <div class="col-lg-4">
-                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsSecure">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Chemin vers le fichier CA du Broker (obligatoire s'il faut vérifier la CA) : }}</label>
-                            <div class="col-lg-4">
-                                <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile"
-                                    autocomplete="off" style="margin-top: 5px" placeholder="/.../ca.crt" />
-                            </div>
-                        </div>
-
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipements}} <sup><i class="fa fa-question-circle tooltips"
                             title="Seul les Topics correspondants pourront être souscrits sur ce Broker. '#' par défaut, i.e. tous les Topics.
@@ -178,19 +157,26 @@
                         <div id="dTlsCaFile" class="form-group">
 <?php
     $dir = dirname(__FILE__) . '/../../data/certs';
+    $crtfiles = "";
+    $pemfiles = "";
+    $keyfiles = "";
+    foreach (ls($dir, '*') as $file) {
+        foreach (ls($dir, '*') as $file) {
+        $file_options .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
+        if (strpos($file,'.crt') !== false)
+            $crtfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
+        elseif (strpos($file,'.pem') !== false)
+            $pemfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
+        elseif (strpos($file,'.key') !== false)
+            $keyfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
+    }
 ?>
                             <label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
                             title="Selectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
                             <div class="col-lg-4">
                                 <!-- <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="width:90%; margin-top: 5px"> -->
                                 <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
-<?php
-    foreach (ls($dir, '*') as $file) {
-        if (strpos($file,'.crt') !== false) {
-            echo '                                    <option value="' . $file . '">' .$file . '</option>';
-        }
-    }
-?>
+<?php echo $crtfiles; ?>
                                 </select>
                                <!-- <span class="btn btn-danger" style="" title="Supprimer le Certificat selectionné">
                                     <a class="mqttDeleteFile"><i class="fas fa-trash"></i></a>
@@ -207,7 +193,7 @@
                             <div class="col-lg-4">
                                 <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="api" style="margin-top: 5px">
                                     <option value="disable">{{Désactivé}}</option>
-                                    <option value="enable">{{Activé}}</option>
+                                    <option value="enable">{{Activé}} (topic : {Identifiant}/api)</option>
                                 </select>
                             </div>
                         </div>

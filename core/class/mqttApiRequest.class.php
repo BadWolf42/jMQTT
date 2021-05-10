@@ -114,20 +114,6 @@ class mqttApiRequest {
 
         // Process the request
         switch ($this->method) {
-            // This method is not described in the documentation as it is for test purpose only
-            // Remove all equipments attached to this broker
-            case 'jMQTT::removeAllEqpts':
-                $cron = new cron();
-                $cron->setClass('jMQTT');
-                $cron->setOption(array('id' => $this->broker->getId()));
-                $cron->setFunction('removeAllEqpts');
-                $cron->setOnce(1);
-                $cron->setSchedule('* * * * *');
-                $cron->setTimeout(1);
-                $cron->save();
-                $cron->run();
-                $jsonRes = $this->newSuccessMsg('ok');
-                break;
             default:
                 $jsonRes = $this->send($request);
                 $this->broker->log('debug', 'API: jsonrpc response is ' . $jsonRes);
@@ -204,7 +190,7 @@ class mqttApiRequest {
             'API: ' . $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG] . ' (err. code is ' .
             $_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE] . ')');
         if (isset($this->ret_topic))
-            $this->broker->publishMosquitto('api', $this->ret_topic, json_encode($_arrErr), '1', '0');
+            $this->broker->publish('api', $this->ret_topic, json_encode($_arrErr), '1', '0');
     }
 
     /**
@@ -215,7 +201,7 @@ class mqttApiRequest {
      */
     protected function publishSuccess($_jsonRes) {
         if (isset($this->ret_topic))
-            $this->broker->publishMosquitto('api', $this->ret_topic, $_jsonRes, '1', '0');
+            $this->broker->publish('api', $this->ret_topic, $_jsonRes, '1', '0');
         else
             $this->broker->log('warning',
                 'API: the response is not published as the response topic was not defined in the request.');

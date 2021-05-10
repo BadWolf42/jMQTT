@@ -38,6 +38,9 @@ echo "* Install Ratchet PHP library"
 echo "*"
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 cd ../3rdparty
+rm -r vendor
+rm composer.json
+rm composer.lock
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php composer-setup.php
 php -r "unlink('composer-setup.php');"

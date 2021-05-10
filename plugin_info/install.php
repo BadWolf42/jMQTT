@@ -27,7 +27,7 @@ define("VERSION", 'version');
 /**
  * Current Update version
  */
-define("CURRENT_VERSION", 3);
+define("CURRENT_VERSION", 4);
 
 
 /**
@@ -54,7 +54,13 @@ function migrateToMultiBrokerVersion() {
     $topic = $mqttId . '/' . jMQTT::CLIENT_STATUS;
     $cmds = cmd::byLogicalId($topic, 'info');
     if (count($cmds) == 0) {
-        $broker = jMQTT::createEquipment(null, $mqttId, $mqttId . '/#', jMQTT::TYP_BRK);
+        // $broker = jMQTT::createEquipment(null, $mqttId, $mqttId . '/#', jMQTT::TYP_BRK);
+        $eqpt = new jMQTT();
+        $eqpt->setType(jMQTT::TYP_BRK);
+        $eqpt->setName($mqttId);
+        $eqpt->setIsEnable(1);
+        $eqpt->save();
+
         $msg = 'créé';
     }
     else {
@@ -90,7 +96,7 @@ function migrateToMultiBrokerVersion() {
     }
 
     // Suppress no more used parameters
-    config::remove('include_mode', 'jMQTT');
+    config::remove(jMQTT::CACHE_INCLUDE_MODE, 'jMQTT');
     config::remove('status', 'jMQTT');
     
     $broker->setType(jMQTT::TYP_BRK);
@@ -208,8 +214,40 @@ function installNewDependancies() {
     // Even if we invalidate dependancies infos in cache, it's back just after
     // plugin::byId('jMQTT')->dependancy_info(true);
 
-    // So best option is to remove an old daemon dependancy
+    // So best option is to remove old daemon dependancies
+    // Uninstall pecl/Mosquitto
+    exec(system::getCmdSudo() . 'pecl uninstall Mosquitto-alpha');
+    // Remove mosquitto.so from php.ini files
+    $cliIniFilePath = php_ini_loaded_file();
+    $fpmIniFilePath = str_replace('cli', 'fpm', $cliIniFilePath);
+    $apache2IniFilePath = str_replace('cli', 'apache2', $cliIniFilePath);
+    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $cliIniFilePath);
+    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $fpmIniFilePath);
+    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $apache2IniFilePath);
+    // Uninstall Mosquitto libraries and clients
     exec(system::getCmdSudo() . 'apt-get -y remove mosquitto-clients libmosquitto-dev');
+}
+
+function tagBrokersStatusCmd() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 4) {
+        return;
+    }
+
+    // for each brokers
+    foreach ((jMQTT::getBrokers()) as $broker) {
+        // for each cmd of this broker
+        foreach (jMQTTCmd::byEqLogicId($broker->getId()) as $cmd) {
+            // if name is 'status'
+            if ($cmd->getName() == jMQTT::CLIENT_STATUS) {
+                //set logicalId to status (new method to manage broker status cmd)
+                $cmd->setLogicalId(jMQTT::CLIENT_STATUS);
+                $cmd->save();
+            }
+        }
+    }
+
+    log::add('jMQTT', 'info', 'Brokers status command tagged');
 }
 
 function jMQTT_install() {
@@ -227,6 +265,8 @@ function jMQTT_update() {
     // VERSION = 3
     removePreviousDaemonCrons();
     installNewDependancies();
+    // VERSION = 4
+    tagBrokersStatusCmd();
 
     // Update version next to upgrade operations
     config::save(VERSION, CURRENT_VERSION, 'jMQTT');
