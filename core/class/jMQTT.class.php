@@ -735,6 +735,11 @@ class jMQTT extends jMQTTBase {
     public static function deamon_start() {
         log::add(__CLASS__, 'info', 'démarre le daemon');
         parent::deamon_start();
+        // Clear MqttClientState to avoid wrong state next to power issue or complete crash
+        // Will be moved later to jMQTTBase
+        foreach(self::getBrokers() as $broker) {
+            $broker->setCache(self::CACHE_DAEMON_CONNECTED, false);
+        }
         self::checkAllMqttClients();
     }
     
@@ -869,7 +874,7 @@ class jMQTT extends jMQTTBase {
             foreach(self::getBrokers() as $broker) {
                 if ($broker->getIsEnable() && $broker->getMqttClientState() == "nok") {
                     try {
-                        log::add(__CLASS__, 'info', 'Redémarrage du client MQTT pour ' . $broker->getName());
+                        log::add(__CLASS__, 'info', 'Starting MqttClient for ' . $broker->getName());
                         $broker->startMqttClient();
                     }
                     catch (Throwable $e) {}
