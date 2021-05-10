@@ -37,7 +37,7 @@ echo "*"
 echo "* Install Ratchet PHP library"
 echo "*"
 cd "$( dirname "${BASH_SOURCE[0]}" )"
-cd ../3rdparty
+cd ../resources
 rm -rf vendor
 rm -f composer.json
 rm -f composer.lock

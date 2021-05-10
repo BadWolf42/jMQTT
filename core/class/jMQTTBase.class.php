@@ -1,8 +1,7 @@
 <?php
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
-
-include_file('3rdparty', 'mosquitto_topic_matches_sub', 'php', 'jMQTT');
+require_once __DIR__  . '/../../resources/mosquitto_topic_matches_sub.php';
 
 class jMQTTBase extends eqLogic {
 

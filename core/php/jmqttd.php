@@ -5,7 +5,7 @@ use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 
-require_once dirname(__FILE__) . '/../../3rdparty/vendor/autoload.php';
+require_once dirname(__FILE__) . '/../../resources/vendor/autoload.php';
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 $options = getopt('',array('plugin:','socketport:','pid:'));

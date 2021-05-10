@@ -18,7 +18,6 @@
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
 require_once __DIR__  . '/jMQTTBase.class.php';
 
-include_file('3rdparty', 'mosquitto_topic_matches_sub', 'php', 'jMQTT');
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
@@ -762,7 +761,7 @@ class jMQTT extends jMQTTBase {
         $return['progress_file'] = $depProgressFile;
         
         $return['state'] = 'ok';
-        if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../3rdparty/vendor/composer/installed.json 2>/dev/null | grep cboden/ratchet | wc -l") < 1) {
+        if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/vendor/composer/installed.json 2>/dev/null | grep cboden/ratchet | wc -l") < 1) {
             log::add(__CLASS__, 'debug', 'dependancy_info : Composer Ratchet PHP package is missing');
             $return['state'] = 'nok';
         }
