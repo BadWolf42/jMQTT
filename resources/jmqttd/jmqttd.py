@@ -46,7 +46,7 @@ class MqttClient:
 		self.id = message['id']
 		self.mqtthostname = message['hostname']
 		self.mqttport = message['port'] if 'port' in message else 1883
-		self.mqttstatustopic = message['statustopic'] if 'statustopic' in message ''
+		self.mqttstatustopic = message['statustopic'] if 'statustopic' in message else ''
 		if 'clientid' not in message:
 			message['clientid'] = ''
 		if 'username' not in message:
@@ -304,24 +304,27 @@ def cmd_handler(message):
 			message['tls'] = False
 
 		if message['tls']:
-			if 'tlscafile' in message:
-				if message['tlscafile'] == '':
-					message['tlscafile'] = None
-				elif not os.access(message['tlscafile'], os.R_OK):
-					logging.warning('Unable to read CA file "%s"', message['tlscafile'])
-					return
-			if 'tlsclicertfile' in message:
-				if message['tlsclicertfile'] == '':
-					message['tlsclicertfile'] = None
-				elif not os.access(message['tlsclicertfile'], os.R_OK):
-					logging.warning('Unable to read Client Certificate file "%s"', message['tlsclicertfile'])
-					return
-			if 'tlsclikeyfile' in message:
-				if message['tlsclikeyfile'] == '':
-					message['tlsclikeyfile'] = None
-				elif not os.access(message['tlsclikeyfile'], os.R_OK):
-					logging.warning('Unable to read Client Key file "%s"', message['tlsclikeyfile'])
-					return
+			if 'tlscafile' not in message or message['tlscafile'] == '':
+				message['tlscafile'] = None
+			elif not os.access(message['tlscafile'], os.R_OK):
+				logging.warning('Unable to read CA file "%s"', message['tlscafile'])
+				return
+			if 'tlsclicertfile' not in message or message['tlsclicertfile'] == '':
+				message['tlsclicertfile'] = None
+			elif not os.access(message['tlsclicertfile'], os.R_OK):
+				logging.warning('Unable to read Client Certificate file "%s"', message['tlsclicertfile'])
+				return
+			if 'tlsclikeyfile' not in message or message['tlsclikeyfile'] == '':
+				message['tlsclikeyfile'] = None
+			elif not os.access(message['tlsclikeyfile'], os.R_OK):
+				logging.warning('Unable to read Client Key file "%s"', message['tlsclikeyfile'])
+				return
+			if message['tlsclicertfile'] is None and message['tlsclikeyfile'] is not None:
+				logging.warning('Client Certificate is defined but Client Key is NOT')
+				return
+			if message['tlsclicertfile'] is not None and message['tlsclikeyfile'] is None:
+				logging.warning('Client Key is defined but Client Certificate is NOT')
+				return
 
 #TODO check_associate_cert_with_private_key(cert, private_key):
 			# import OpenSSL

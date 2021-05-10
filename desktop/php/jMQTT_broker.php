@@ -79,7 +79,7 @@
                     <i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
                 </span>
             </div> -->
-                                <!-- <span class="btn btn-danger" style="" title="Supprimer le Certificat selectionnÃ©">
+                                <!-- <span class="btn btn-danger" style="" title="Supprimer le Certificat selectionné">
                                     <a class="mqttDeleteFile"><i class="fas fa-trash"></i></a>
                                 </span>
                                 <span class="btn btn-success btn-file" style="width:5%;" title="Uploader un Certificat">
@@ -169,33 +169,38 @@
     $keyfiles = "";
     foreach (ls($dir, '*') as $file) {
         if (strpos($file,'.crt') !== false)
-            $crtfiles .= (' '*36) . '<option value="' . $file . '">' .$file . '</option>';
+            $crtfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
         elseif (strpos($file,'.pem') !== false)
-            $pemfiles .= (' '*36) . '<option value="' . $file . '">' .$file . '</option>';
+            $pemfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
         elseif (strpos($file,'.key') !== false)
-            $keyfiles .= (' '*36) . '<option value="' . $file . '">' .$file . '</option>';
+            $keyfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
     }
 ?>
                             <label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
                             title="Selectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
                             <div class="col-lg-4">
                                 <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
+                                    <option value="">{{Désactivé}}</option>
 <?php echo $crtfiles; ?>
                                 </select>
                             </div>
                         </div>
                         <div id="dTlsClientCertFile" class="form-group">
-                            <label class="col-lg-4 control-label">{{Certificat Client PersonnalisÃ©e}} <sup><i class="fa fa-question-circle tooltips" title="//FIXME"></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Certificat Client Personnalisé}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Selectionne le Certificat Client attendu par le Broker.<br/>Ce certificat doit être le pendant de la Clé Privée ci-dessous, si l'un est fournit l'autre est obligatoire."></i></sup></label>
                             <div class="col-lg-4">
                                 <select id="fTlsClientCertFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientCertFile" style="margin-top: 5px">
+                                    <option value="">{{Désactivé}}</option>
 <?php echo $pemfiles; ?>
                                 </select>
                             </div>
                         </div>
                         <div id="dTlsClientKeyFile" class="form-group">
-                            <label class="col-lg-4 control-label">{{ClÃ© Client PersonnalisÃ©e}} <sup><i class="fa fa-question-circle tooltips" title="//FIXME"></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Clé Privée Client Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Selectionne la Clée Privée du Client premettant de discuter avec le Broker.<br/>Cette clé privée doit être le pendant du Certificat ci-dessus, si l'un est fournit l'autre est obligatoire."></i></sup></label>
                             <div class="col-lg-4">
                                 <select id="fTlsClientKeyFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile" style="margin-top: 5px">
+                                    <option value="">{{Désactivé}}</option>
 <?php echo $keyfiles; ?>
                                 </select>
                             </div>
@@ -336,8 +341,8 @@ $('#fTls').change(function(){
         case 'custom':
             $('#dTlsSecure').show();
             $('#dTlsCaFile').show();
-            $('#dTlsClientCertFile').hide();
-            $('#dTlsClientKeyFile').hide();
+            $('#dTlsClientCertFile').show();
+            $('#dTlsClientKeyFile').show();
             break;
         case 'enable':
             $('#dTlsSecure').show();

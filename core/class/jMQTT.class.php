@@ -427,26 +427,22 @@ class jMQTT extends jMQTTBase {
             // load eqLogic from DB
             $eqLogic = self::byId($this->getId());
             $this->_preSaveInformations = array(
-                'name' => $eqLogic->getName(),
-                'isEnable' => $eqLogic->getIsEnable(),
-                self::CONF_KEY_LOGLEVEL => $eqLogic->getConf(self::CONF_KEY_LOGLEVEL),
-                self::CONF_KEY_MQTT_CLIENT_ID => $eqLogic->getConf(self::CONF_KEY_MQTT_CLIENT_ID),
-                self::CONF_KEY_MQTT_ADDRESS => $eqLogic->getConf(self::CONF_KEY_MQTT_ADDRESS),
-                self::CONF_KEY_MQTT_PORT => $eqLogic->getConf(self::CONF_KEY_MQTT_PORT),
-                self::CONF_KEY_MQTT_USER => $eqLogic->getConf(self::CONF_KEY_MQTT_USER),
-                self::CONF_KEY_MQTT_PASS => $this->getConf(self::CONF_KEY_MQTT_PASS),
-                self::CONF_KEY_MQTT_TLS => $this->getConf(self::CONF_KEY_MQTT_TLS),
-                self::CONF_KEY_MQTT_TLS_SECURE => $this->getConf(self::CONF_KEY_MQTT_TLS_SECURE),
-                self::CONF_KEY_MQTT_TLS_CA => $this->getConf(self::CONF_KEY_MQTT_TLS_CA),
-                self::CONF_KEY_MQTT_TLS_CLI_CERT => $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT),
-                self::CONF_KEY_MQTT_TLS_CLI_KEY => $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY),
-                self::CONF_KEY_MQTT_PAHO_LOG => $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG),
-                self::CONF_KEY_MQTT_INC_TOPIC => $eqLogic->getConf(self::CONF_KEY_MQTT_INC_TOPIC),
-                self::CONF_KEY_QOS => $eqLogic->getConf(self::CONF_KEY_QOS),
-                self::CONF_KEY_API => $eqLogic->isApiEnable(),
-                'topic' => $eqLogic->getTopic(),
-                self::CONF_KEY_BRK_ID => $eqLogic->getBrkId()
+                'name'                  => $eqLogic->getName(),
+                'isEnable'              => $eqLogic->getIsEnable(),
+                self::CONF_KEY_API      => $eqLogic->isApiEnable(),
+                'topic'                 => $eqLogic->getTopic(),
+                self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
             );
+            $backupVal = array( // load trivials eqLogic from DB
+                self::CONF_KEY_LOGLEVEL,      self::CONF_KEY_MQTT_CLIENT_ID,
+                self::CONF_KEY_MQTT_ADDRESS,  self::CONF_KEY_MQTT_PORT,
+                self::CONF_KEY_MQTT_USER,     self::CONF_KEY_MQTT_PASS,
+                self::CONF_KEY_QOS,           self::CONF_KEY_MQTT_INC_TOPIC,
+                self::CONF_KEY_MQTT_TLS,      self::CONF_KEY_MQTT_TLS_SECURE,
+                self::CONF_KEY_MQTT_TLS_CA,   self::CONF_KEY_MQTT_TLS_CLI_CERT,
+                self::CONF_KEY_MQTT_PAHO_LOG, self::CONF_KEY_MQTT_TLS_CLI_KEY);
+            foreach ($backupVal as $key)
+                $this->_preSaveInformations[$key] = $eqLogic->getConf($key);
         }
     }
 
@@ -478,8 +474,9 @@ class jMQTT extends jMQTTBase {
 
                 // isEnable changed
                 if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
-                    if ($this->getIsEnable()) $startRequested = true; //If nothing happens in between, it will be restarted
-                    else {
+                    if ($this->getIsEnable()) {
+                        $startRequested = true; //If nothing happens in between, it will be restarted
+                    } else {
                         if (!$stopped) {
                             $this->stopMqttClient();
                             $stopped = true;
@@ -510,7 +507,7 @@ class jMQTT extends jMQTTBase {
                                       self::CONF_KEY_MQTT_TLS,          self::CONF_KEY_MQTT_TLS_SECURE,
                                       self::CONF_KEY_MQTT_TLS_CA,       self::CONF_KEY_MQTT_TLS_CLI_CERT,
                                       self::CONF_KEY_MQTT_TLS_CLI_KEY,  self::CONF_KEY_MQTT_PAHO_LOG);
-                foreach ($checkKeys as $key) {
+                foreach ($checkChanged as $key) {
                     if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
                         if (!$stopped) {
                             $this->stopMqttClient();
@@ -1350,21 +1347,16 @@ class jMQTT extends jMQTTBase {
     private static function getDefaultConfiguration($_key) {
         $defValues = array(
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
-            self::CONF_KEY_MQTT_PORT => '',
             self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
             self::CONF_KEY_MQTT_TLS => 'disable',
-            self::CONF_KEY_MQTT_TLS_CA => '',
             self::CONF_KEY_MQTT_TLS_SECURE => '0',
-            self::CONF_KEY_MQTT_TLS_CLI_CERT => '',
-            self::CONF_KEY_MQTT_TLS_CLI_KEY => '',
-            self::CONF_KEY_MQTT_PAHO_LOG => '',
             self::CONF_KEY_AUTO_ADD_CMD => '1',
             self::CONF_KEY_MQTT_INC_TOPIC => '#',
             self::CONF_KEY_API => self::API_DISABLE,
             self::CONF_KEY_BRK_ID => -1
         );
-        
+        // If not in list, default value is ''
         return array_key_exists($_key, $defValues) ? $defValues[$_key] : '';
     }
     
