@@ -97,7 +97,7 @@ class jMQTTBase extends eqLogic {
       $result1 = exec($cmd1 . ' >> ' . log::getPathToLog(get_called_class().'_daemon') . ' 2>&1 &');
 
       // Start WebSocket daemon 
-      $path2 = realpath(dirname(__FILE__) . '/../../core/php/');
+      $path2 = realpath(dirname(__FILE__) . '/../../resources/jmqttd/');
       $cmd2 = 'php ' . $path2 . '/jmqttd.php';
       $cmd2 .= ' --plugin ' . get_called_class();
       $cmd2 .= ' --socketport ' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT);
@@ -178,7 +178,7 @@ class jMQTTBase extends eqLogic {
    public static function new_mqtt_client($id, $hostname, $port = 1883, $clientid = '', $statustopic = '', $username = '', $password = '') {
       $params['cmd']='newMqttClient';
       $params['id']=$id;
-      $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
+      $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
       $params['hostname']=$hostname;
       $params['port']=$port;
       $params['clientid']=$clientid;
