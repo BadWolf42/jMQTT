@@ -130,8 +130,8 @@ class MqttClient:
 		except:
 			logging.warning('Message skipped: payload %s  is not valid for topic %s', message.payload.hex(), message.topic)
 		else:
-			logging.info('Id %d : Message received (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, message.topic, decodedPayload, message.qos, message.retain)
-			self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":decodedPayload, "qos":message.qos, "retain":message.retain}))
+			logging.info('Id %d : Message received (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, message.topic, decodedPayload, message.qos, bool(message.retain))
+			self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":decodedPayload, "qos":message.qos, "retain":bool(message.retain)}))
 
 	def is_connected(self):
 		return str(self.connected).lower()
@@ -288,7 +288,7 @@ def cmd_handler(message):
 			return
 	if 'retain' in message and type(message['retain']) is str:
 		try:
-			message['retain'] = bool(message['retain'])
+			message['retain'] = message['retain'].lower() in ['true', '1']
 		except:
 			logging.error('Id %d !!! Incorrect retain provided : %s', message['id'], json.dumps(message))
 			return

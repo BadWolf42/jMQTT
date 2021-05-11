@@ -1,8 +1,7 @@
 <?php
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
-
-include_file('3rdparty', 'mosquitto_topic_matches_sub', 'php', 'jMQTT');
+require_once __DIR__  . '/../../resources/mosquitto_topic_matches_sub.php';
 
 class jMQTTBase extends eqLogic {
 
@@ -98,7 +97,7 @@ class jMQTTBase extends eqLogic {
       $result1 = exec($cmd1 . ' >> ' . log::getPathToLog(get_called_class().'_daemon') . ' 2>&1 &');
 
       // Start WebSocket daemon 
-      $path2 = realpath(dirname(__FILE__) . '/../../core/php/');
+      $path2 = realpath(dirname(__FILE__) . '/../../resources/jmqttd/');
       $cmd2 = 'php ' . $path2 . '/jmqttd.php';
       $cmd2 .= ' --plugin ' . get_called_class();
       $cmd2 .= ' --socketport ' . config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT);
@@ -180,7 +179,7 @@ class jMQTTBase extends eqLogic {
       $params['cmd']                  = 'newMqttClient';
       $params['id']                   = $id;
       $params['hostname']             = $hostname;
-      $params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
+      $params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
       if       ($params['tls'] == 'custom') {
          $params['tls']               = True;
       } elseif ($params['tls'] == 'enable') {
@@ -195,6 +194,7 @@ class jMQTTBase extends eqLogic {
       }
       // set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
       $params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
+
       get_called_class()::send_to_mqtt_daemon($params);
    }
 

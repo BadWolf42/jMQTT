@@ -293,15 +293,18 @@ class jMQTTCmd extends cmd {
                     $eqLogic->log('info', $cmdLogName . ': mode retain activé');
                 }
                 else{
-                    // A null payload should be sent to the broker to erase the last retained value
-                    // Otherwise, this last value remains retained at broker level
-                    $eqLogic->log('info', $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
-                    $eqLogic->publish($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+                    //If broker eqpt is enabled
+                    if ($eqLogic->getBroker()->getIsEnable()) {
+                        // A null payload should be sent to the broker to erase the last retained value
+                        // Otherwise, this last value remains retained at broker level
+                        $eqLogic->log('info', $cmdLogName . ': mode retain désactivé, efface la dernière valeur mémorisée sur le broker');
+                        $eqLogic->publish($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+                    }
                 }
             }
 
             // Specific command : status for Broker eqpt
-            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getEqLogic()->getIsEnable()) {
                 // If it's topic changed
                 if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
                     // Just try to remove the previous status topic
@@ -310,7 +313,7 @@ class jMQTTCmd extends cmd {
                 }
             }
         }
-       
+
         // For info commands, check that the topic is compatible with the subscription command
         // of the related equipment
         if ($this->getType() == 'info' && $this->getEqLogic()->getType() == jMQTT::TYP_EQPT) {

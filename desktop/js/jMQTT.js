@@ -177,6 +177,12 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
     }
 });
 
+$('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').on('change', function(e) {
+    if($(e.target).value() == 'broker') {
+        $('#menu-bar').hide();
+    }
+});
+
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
@@ -727,7 +733,7 @@ function addCmdToTable(_cmd) {
         jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
         function refreshValue(val) {
-            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(val);
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(val);
         }
 
         // Display the value. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
