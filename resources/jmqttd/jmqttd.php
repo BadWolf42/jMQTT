@@ -7,6 +7,7 @@ use Ratchet\WebSocket\WsServer;
 
 require_once dirname(__FILE__) . '/../vendor/autoload.php';
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
+require_once dirname(__FILE__) . '/../../core/class/jMQTTBase.class.php';
 
 $options = getopt('',array('plugin:','socketport:','pid:'));
 if (array_key_exists('plugin', $options)) {
@@ -84,6 +85,7 @@ class jMQTTdLogic implements MessageComponentInterface {
                 log::add($this->plugin, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
             }
         }
+        else jMQTTBase::log_missing_callback($this->plugin, 'on_daemon_connect');
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
@@ -111,6 +113,7 @@ class jMQTTdLogic implements MessageComponentInterface {
                             log::add($this->plugin, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
                         }
                     }
+                    else jMQTTBase::log_missing_callback($this->plugin, 'on_mqtt_connect');
                 }
                 else {
                     if(method_exists($this->plugin, 'on_mqtt_disconnect')) {
@@ -120,6 +123,7 @@ class jMQTTdLogic implements MessageComponentInterface {
                             log::add($this->plugin, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
                         }
                     }
+                    else jMQTTBase::log_missing_callback($this->plugin, 'on_mqtt_disconnect');
                 }
                 break;
             case 'messageIn':
@@ -130,6 +134,7 @@ class jMQTTdLogic implements MessageComponentInterface {
                         log::add($this->plugin, 'error', sprintf('on_mqtt_message raised an Exception : %s', $t->getMessage()));
                     }
                 }
+                else jMQTTBase::log_missing_callback($this->plugin, 'on_mqtt_message');
                 break;
             default:
                 log::add($this->plugin, 'error', sprintf('Id %d : Received message contains unkown cmd!?', $from->httpRequest->getHeader('id')[0]));
@@ -147,6 +152,7 @@ class jMQTTdLogic implements MessageComponentInterface {
                 log::add($this->plugin, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
             }
         }
+        else jMQTTBase::log_missing_callback($this->plugin, 'on_daemon_disconnect');
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
@@ -159,6 +165,7 @@ class jMQTTdLogic implements MessageComponentInterface {
                 log::add($this->plugin, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
             }
         }
+        else jMQTTBase::log_missing_callback($this->plugin, 'on_daemon_disconnect');
 
         $conn->close();
     }
