@@ -727,7 +727,7 @@ function addCmdToTable(_cmd) {
         jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
         function refreshValue(val) {
-            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(val);
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(val);
         }
 
         // Display the value. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
