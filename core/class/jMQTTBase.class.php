@@ -205,7 +205,7 @@ class jMQTTBase extends eqLogic {
          $params['tlssecure']='0';
       }
       // set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
-      $params['port']=($port != 0 && is_numeric($params['port'])) ? intval($port) : (($params['tls']) ? 8883 : 1883);
+      $params['port']=($port != 0 && is_numeric($port)) ? intval($port) : (($params['tls']) ? 8883 : 1883);
       $params['paholog']=$paholog;
       get_called_class()::send_to_mqtt_daemon($params);
    }
