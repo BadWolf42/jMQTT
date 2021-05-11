@@ -181,10 +181,6 @@ class jMQTTBase extends eqLogic {
       $params['id']                   = $id;
       $params['hostname']             = $hostname;
       $params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
-      $params['clientid']             = $clientid;
-      $params['statustopic']          = $statustopic;
-      $params['username']             = $username;
-      $params['password']             = $password;
       if       ($params['tls'] == 'custom') {
          $params['tls']               = True;
       } elseif ($params['tls'] == 'enable') {
