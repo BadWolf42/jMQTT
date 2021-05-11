@@ -163,7 +163,7 @@ class MqttClient:
 		try:
 			self.mqttclient.connect(self.mqtthostname, self.mqttport, 30)
 		except:
-			if logging.isEnabledFor(logging.DEBUG):
+			if logging.getLogger().isEnabledFor(logging.DEBUG):
 				logging.exception('Id %d : MqttClient.start() Exception', self.id)
 		self.mqttthread.start()
 
@@ -200,7 +200,7 @@ class WebSocketClient:
 			try:
 				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=1)
 			except:
-				if logging.isEnabledFor(logging.DEBUG):
+				if logging.getLogger().isEnabledFor(logging.DEBUG):
 					logging.exception('Id %d : WebSocketClient.autorestart_run_forever() Exception', self.id)
 			if self.stopautorestart:
 				break
@@ -212,9 +212,11 @@ class WebSocketClient:
 				msg = self.q.get(block=True, timeout=0.1)
 				self.wsclient.send(msg)
 				logging.info('Id %d : Sending message to Jeedom : %s', self.id, msg)
+			except Empty:
+				pass
 			except:
-				if logging.isEnabledFor(logging.DEBUG):
-					logging.debug('Id %d : WebSocketClient.worker() Exception', self.id)
+				if logging.getLogger().isEnabledFor(logging.DEBUG):
+					logging.exception('Id %d : WebSocketClient.worker() Exception', self.id)
 			if self.stopworker and self.q.empty():
 				break
 
@@ -428,7 +430,7 @@ def listen():
 		except KeyboardInterrupt:
 			shutdown()
 		except:
-			if logging.isEnabledFor(logging.DEBUG):
+			if logging.getLogger().isEnabledFor(logging.DEBUG):
 				logging.exception('Exception in listen:')
 		else:
 			logging.debug('jeedom_socket received message : %s', jeedom_msg)
@@ -461,7 +463,7 @@ def shutdown():
 			jmqttclients[id].stop()
 			del jmqttclients[id]
 	except:
-		if logging.isEnabledFor(logging.DEBUG):
+		if logging.getLogger().isEnabledFor(logging.DEBUG):
 			logging.exception('shutdown Exception')
 
 	try:
