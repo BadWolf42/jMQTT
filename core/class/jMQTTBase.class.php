@@ -175,16 +175,26 @@ class jMQTTBase extends eqLogic {
       socket_close($socket);
    }
 
-   public static function new_mqtt_client($id, $hostname, $port = 1883, $clientid = '', $statustopic = '', $username = '', $password = '') {
-      $params['cmd']='newMqttClient';
-      $params['id']=$id;
-      $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
-      $params['hostname']=$hostname;
-      $params['port']=$port;
-      $params['clientid']=$clientid;
-      $params['statustopic']=$statustopic;
-      $params['username']=$username;
-      $params['password']=$password;
+   public static function new_mqtt_client($id, $hostname, $params = array()) {
+      $params['cmd']                  = 'newMqttClient';
+      $params['id']                   = $id;
+      $params['hostname']             = $hostname;
+      $params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
+      if       ($params['tls'] == 'custom') {
+         $params['tls']               = True;
+      } elseif ($params['tls'] == 'enable') {
+         $params['tls']               = True;
+         $params['tlscafile']         = '';
+      } else {
+         $params['tls']               = False;
+         $params['tlssecure']         = '0';
+         $params['tlscafile']         = '';
+         $params['tlsclicertfile']    = '';
+         $params['tlsclikeyfile']     = '';
+      }
+      // set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
+      $params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
+
       get_called_class()::send_to_mqtt_daemon($params);
    }
 

@@ -4,12 +4,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-# 
+#
 # Jeedom is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
@@ -29,6 +29,7 @@ import websocket
 import paho.mqtt.client as mqtt
 from threading import Thread
 from queue import Queue
+from queue import Empty
 import gc
 
 try:
@@ -40,41 +41,63 @@ except ImportError:
 
 class MqttClient:
 	def __init__(self, queue, message):
+#		logging.debug('MqttClient.init(): message=%r', message)
 		self.q = queue
 		self.id = message['id']
-
 		self.mqtthostname = message['hostname']
-
-		self.mqttport = 1883
-		if 'port' in message:
-			self.mqttport = message['port']
-
-		self.mqttclientid = ''
-		if 'clientid' in message:
-			self.mqttclientid = message['clientid']
-
-		self.mqttusername = ''
-		if 'username' in message:
-			self.mqttusername = message['username']
-
-		self.mqttpassword = ''
-		if 'password' in message:
-			self.mqttpassword = message['password']
-
-		self.mqttstatustopic = ''
-		if 'statustopic' in message:
-			self.mqttstatustopic = message['statustopic']
-
+		self.mqttport = message['port'] if 'port' in message else 1883
+		self.mqttstatustopic = message['statustopic'] if 'statustopic' in message else ''
+		if 'clientid' not in message:
+			message['clientid'] = ''
+		if 'username' not in message:
+			message['username'] = ''
+		if 'password' not in message:
+			message['password'] = ''
 		self.mqttsubscribedtopics = {}
 		self.connected = False
+#		logging.debug('MqttClient.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
 
 		# Create MQTT Client
-		self.mqttclient = mqtt.Client(self.mqttclientid)
-		if self.mqttusername != '':
-			if self.mqttpassword != '':
-				self.mqttclient.username_pw_set(self.mqttusername, self.mqttpassword)
+		self.mqttclient = mqtt.Client(message['clientid'])
+		# Enable Paho logging functions
+		if 'paholog' in message and message['paholog'] != '':
+			logger = logging.getLogger()
+			self.mqttclient.enable_logger(logger)
+		else:
+			self.mqttclient.disable_logger()
+		if message['username'] != '':
+			if message['password'] != '':
+				self.mqttclient.username_pw_set(message['username'], message['password'])
 			else:
-				self.mqttclient.username_pw_set(self.mqttusername)
+				self.mqttclient.username_pw_set(message['username'])
+		if message['tls']:
+			try:
+				self.mqttclient.tls_set(ca_certs=message['tlscafile'], certfile=message['tlsclicertfile'], keyfile=message['tlsclikeyfile'])
+				self.mqttclient.tls_insecure_set(('tlssecure' not in message) or (message['tlssecure'] != '1'))
+			except:
+				logging.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
+
+#TODO Expose in "message" other parameters of tls_set()?
+#	Default values:
+#		cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS, ciphers=None
+#
+#	cert_reqs allows the certificate requirements that the client imposes
+#		on the broker to be changed. By default this is ssl.CERT_REQUIRED,
+#		which means that the broker must provide a certificate.
+#			CERT_NONE - no certificates from the other side are required (or will
+#				be looked at if provided)
+#			CERT_OPTIONAL - certificates are not required, but if provided will be
+#				validated, and if validation fails, the connection will
+#				also fail
+#			CERT_REQUIRED - certificates are required, and will be validated, and
+#				if validation fails, the connection will also fail
+#	tls_version allows the version of the SSL/TLS protocol used to be
+#		specified. By default TLS v1.2 is used. Previous versions are allowed
+#		but not recommended due to possible security problems.
+#	ciphers is a string specifying which encryption ciphers are allowable
+#		for this connection, or None to use the defaults. See:
+#		https://www.openssl.org/docs/manmaster/man1/openssl-ciphers.html#CIPHER-STRINGS
+
 		self.mqttclient.reconnect_delay_set(5, 15)
 		self.mqttclient.on_connect = self.on_connect
 		self.mqttclient.on_disconnect = self.on_disconnect
@@ -148,7 +171,7 @@ class MqttClient:
 			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
 		self.mqttclient.disconnect()
 		self.mqttthread.join()
-	
+
 class WebSocketClient:
 	def __init__(self, queue, message, fnismqttconnected):
 		self.q = queue
@@ -156,7 +179,7 @@ class WebSocketClient:
 		self.apikey = message['apikey']
 		self.wscallback = message['callback']
 		self.fnismqttconnected = fnismqttconnected
-		
+
 		# Create WebSocket Client
 		self.wsclient = websocket.WebSocketApp(
 			url=self.wscallback,
@@ -244,7 +267,6 @@ def cmd_handler(message):
 		logging.error('!!! cmd is missing !!! : %s', json.dumps(message))
 		return
 
-	
 	# Make some automatic convertions on received message
 	if type(message['id']) is str:
 		try:
@@ -277,6 +299,52 @@ def cmd_handler(message):
 		if not (message.keys() >= {'callback', 'hostname'}):
 			logging.error('Id %d !!! newMqttClient - missing parameter : %s', message['id'], json.dumps(message))
 			return
+
+		if 'tls' not in message:
+			message['tls'] = False
+
+		if message['tls']:
+			if 'tlscafile' not in message or message['tlscafile'] == '':
+				message['tlscafile'] = None
+			elif not os.access(message['tlscafile'], os.R_OK):
+				logging.warning('Unable to read CA file "%s"', message['tlscafile'])
+				return
+			if 'tlsclicertfile' not in message or message['tlsclicertfile'] == '':
+				message['tlsclicertfile'] = None
+			elif not os.access(message['tlsclicertfile'], os.R_OK):
+				logging.warning('Unable to read Client Certificate file "%s"', message['tlsclicertfile'])
+				return
+			if 'tlsclikeyfile' not in message or message['tlsclikeyfile'] == '':
+				message['tlsclikeyfile'] = None
+			elif not os.access(message['tlsclikeyfile'], os.R_OK):
+				logging.warning('Unable to read Client Key file "%s"', message['tlsclikeyfile'])
+				return
+			if message['tlsclicertfile'] is None and message['tlsclikeyfile'] is not None:
+				logging.warning('Client Certificate is defined but Client Key is NOT')
+				return
+			if message['tlsclicertfile'] is not None and message['tlsclikeyfile'] is None:
+				logging.warning('Client Key is defined but Client Certificate is NOT')
+				return
+
+#TODO check_associate_cert_with_private_key(cert, private_key):
+			# import OpenSSL
+			# try:
+				# private_key_obj = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, private_key)
+			# except OpenSSL.crypto.Error:
+				# raise Exception('private key is not correct: %s' % private_key)
+
+			# try:
+				# cert_obj = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
+			# except OpenSSL.crypto.Error:
+				# raise Exception('certificate is not correct: %s' % cert)
+
+			# context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+			# context.use_privatekey(private_key_obj)
+			# context.use_certificate(cert_obj)
+			# try:
+				# context.check_privatekey()
+			# except OpenSSL.SSL.Error:
+				# raise Exception('certificate is not correct: %s' % cert)
 
 		# if jmqttclient already exists then remove it first
 		if message['id'] in jmqttclients:
@@ -351,11 +419,14 @@ def listen():
 	jeedomsocket.open()
 	while True:
 		try:
-			jeedom_msg = jeedomsocket.queue.get(block=True, timeout=0.1).decode('utf-8')
+			jeedom_msg = jeedomsocket.get(block=True, timeout=0.1).decode('utf-8')
+		except Empty:
+			pass
 		except KeyboardInterrupt:
 			shutdown()
 		except:
-			pass
+			if logging.isEnabledFor(logging.DEBUG):
+				logging.exception('Exception in listen:')
 		else:
 			logging.debug('jeedom_socket received message : %s', jeedom_msg)
 			try:
