@@ -177,6 +177,12 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
     }
 });
 
+$('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').on('change', function(e) {
+    if($(e.target).value() == 'broker') {
+        $('#menu-bar').hide();
+    }
+});
+
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
