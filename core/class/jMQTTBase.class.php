@@ -226,7 +226,7 @@ class jMQTTBase {
    public static function remove_mqtt_client($pluginClass, $id) {
       $params['cmd']='removeMqttClient';
       $params['id']=$id;
-      self::send_to_mqtt_daemon($params);
+      self::send_to_mqtt_daemon($pluginClass, $params);
    }
 
    public static function subscribe_mqtt_topic($pluginClass, $id, $topic, $qos = 1) {
