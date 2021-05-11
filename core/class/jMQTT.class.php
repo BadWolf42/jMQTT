@@ -995,12 +995,10 @@ class jMQTT extends jMQTTBase {
         // (removal of broker eqLogic is not able to wait for disconnect first)
         try {
             $broker = self::getBrokerFromId(intval($id));
-        } catch (\Throwable $th) {}
-        if ($broker) {
             $broker->setCache(self::CACHE_DAEMON_CONNECTED, false);
             // if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
             self::on_mqtt_disconnect($id);
-        }
+        } catch (\Throwable $th) {}
     }
     public static function on_mqtt_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
