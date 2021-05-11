@@ -21,7 +21,7 @@ require_once __DIR__  . '/jMQTTBase.class.php';
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
-class jMQTT extends jMQTTBase {
+class jMQTT extends eqLogic {
 
     const API_TOPIC = 'api';
     const API_ENABLE = 'enable';
@@ -345,7 +345,7 @@ class jMQTT extends jMQTTBase {
         }
 
         $this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
-        self::subscribe_mqtt_topic($this->getBrkId(), $topic, $qos);
+        jMQTTBase::subscribe_mqtt_topic(__CLASS__, $this->getBrkId(), $topic, $qos);
     }
 
     /**
@@ -371,7 +371,7 @@ class jMQTT extends jMQTTBase {
         //if there is no other eqLogic using the same topic, we can unsubscribe
         if (!$count) {
             $this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': unsubscribes from "' . $topic . '"');
-            self::unsubscribe_mqtt_topic($brkId, $topic);
+            jMQTTBase::unsubscribe_mqtt_topic(__CLASS__, $brkId, $topic);
         }
     }
 
@@ -742,11 +742,18 @@ class jMQTT extends jMQTTBase {
     }
     
     /**
+     * callback to get information on the daemon
+     */
+    public static function deamon_info() {
+        return jMQTTBase::deamon_info(__CLASS__);
+    }
+
+    /**
      * callback to start daemon
      */
     public static function deamon_start() {
-        log::add(__CLASS__, 'info', 'démarre le daemon');
-        parent::deamon_start();
+        log::add(__CLASS__, 'info', 'Starting Daemon');
+        jMQTTBase::deamon_start(__CLASS__);
         // Clear MqttClientState to avoid wrong state next to power issue or complete crash
         // Will be moved later to jMQTTBase
         foreach(self::getBrokers() as $broker) {
@@ -759,8 +766,8 @@ class jMQTT extends jMQTTBase {
      * callback to stop daemon
      */
     public static function deamon_stop() {
-        log::add(__CLASS__, 'info', 'arrête le daemon');
-        parent::deamon_stop();
+        log::add(__CLASS__, 'info', 'Stopping Daemon');
+        jMQTTBase::deamon_stop(__CLASS__);
     }
     /**
      * Provides dependancy information
@@ -881,7 +888,7 @@ class jMQTT extends jMQTTBase {
      * Check all MQTT Clients (start them if needed)
      */
     public static function checkAllMqttClients() {
-        $daemon_info = self::deamon_info();
+        $daemon_info = jMQTTBase::deamon_info(__CLASS__);
         if ($daemon_info['state'] == 'ok') {
             foreach(self::getBrokers() as $broker) {
                 if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
@@ -909,7 +916,7 @@ class jMQTT extends jMQTTBase {
         
         // Is the MQTT Client launchable
         $return['launchable'] = 'ok';
-        $daemon_info = $this->deamon_info();
+        $daemon_info = jMQTTBase::deamon_info(__CLASS__);
         if ($daemon_info['state'] == 'ok') {
             if (!$this->getIsEnable()) {
                 $return['launchable'] = 'nok';
@@ -962,7 +969,7 @@ class jMQTT extends jMQTTBase {
      */
     public function startMqttClient() {
         // if daemon is not ok, do Nothing
-        $daemon_info = self::deamon_info();
+        $daemon_info = jMQTTBase::deamon_info(__CLASS__);
         if ($daemon_info['state'] != 'ok') return;
 
         //If MqttClient is not launchable (daemon is running), throw exception to get message
@@ -995,7 +1002,7 @@ class jMQTT extends jMQTTBase {
         if ($params['tlsclikeyfile'] != '')
             $params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../data/certs/'.$params['tlsclikeyfile']);
 
-        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $params);
+        jMQTTBase::new_mqtt_client(__CLASS__, $this->getId(), $this->getMqttAddress(), $params);
 
         foreach (self::byBrkId($this->getId()) as $mqtt) {
             if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
@@ -1016,7 +1023,7 @@ class jMQTT extends jMQTTBase {
      */
     public function stopMqttClient() {
         $this->log('info', 'arrête le client MQTT');
-        self::remove_mqtt_client($this->getId());
+        jMQTTBase::remove_mqtt_client(__CLASS__, $this->getId());
     }
 
     public static function on_daemon_connect($id) {
@@ -1257,7 +1264,7 @@ class jMQTT extends jMQTTBase {
         $this->log('debug', 'Publishing message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
         if ($this->getBroker()->getMqttClientState() == self::MQTTCLIENT_OK) {
-            self::publish_mqtt_message($this->getBrkId(), $topic, $payload, $qos, $retain);
+            jMQTTBase::publish_mqtt_message(__CLASS__, $this->getBrkId(), $topic, $payload, $qos, $retain);
             
             $d = date('Y-m-d H:i:s');
             $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
