@@ -163,7 +163,8 @@ class MqttClient:
 		try:
 			self.mqttclient.connect(self.mqtthostname, self.mqttport, 30)
 		except:
-			pass
+			if logging.isEnabledFor(logging.DEBUG):
+				logging.exception('Id %d : MqttClient.start() Exception', self.id)
 		self.mqttthread.start()
 
 	def stop(self):
@@ -199,7 +200,8 @@ class WebSocketClient:
 			try:
 				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=1)
 			except:
-				pass
+				if logging.isEnabledFor(logging.DEBUG):
+					logging.exception('Id %d : WebSocketClient.autorestart_run_forever() Exception', self.id)
 			if self.stopautorestart:
 				break
 			time.sleep(5)
@@ -211,7 +213,8 @@ class WebSocketClient:
 				self.wsclient.send(msg)
 				logging.info('Id %d : Sending message to Jeedom : %s', self.id, msg)
 			except:
-				pass
+				if logging.isEnabledFor(logging.DEBUG):
+					logging.debug('Id %d : WebSocketClient.worker() Exception', self.id)
 			if self.stopworker and self.q.empty():
 				break
 
@@ -224,7 +227,7 @@ class WebSocketClient:
 
 	def on_error(self, ws, error):
 		if not isinstance(error, AttributeError) or not self.stopautorestart:
-			logging.error('Id %d : WebSocket client encountered an Error!', self.id)
+			logging.error('Id %d : WebSocket client encountered an Error!', self.id, exc_info=error)
 
 	def on_close(self, ws):
 		logging.info('Id %d : Disconnected from Jeedom', self.id)
@@ -453,16 +456,14 @@ def shutdown():
 		logging.debug("Socket closed")
 	except:
 		logging.debug("Failed to close socket")
-	# try:
-	# 	jeedom_serial.close()
-	# except:
-	# 	pass
 	try:
 		for id in list(jmqttclients):
 			jmqttclients[id].stop()
 			del jmqttclients[id]
 	except:
-		pass
+		if logging.isEnabledFor(logging.DEBUG):
+			logging.exception('shutdown Exception')
+
 	try:
 		os.remove(_pidfile)
 		logging.debug("Removed PID file %s", _pidfile)
