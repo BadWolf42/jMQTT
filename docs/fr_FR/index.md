@@ -36,10 +36,10 @@ jMQTT posséde 2 types d'équipements:
   - les **équipements "classiques"**, appélés simplement équipements dans la suite,
 
 Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.
-![Gestion plugin et Broker](../images/gestion_plugin_et_Broker.png)
+![Gestion plugin et Broker](../images/gestion_plugin_et_brokers.png)
 
 Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :
-![Status Broker](../images/Broker_status.png)
+![Status Broker](../images/broker_status.png)
 * Vert: la connexion au Broker est opérationnelle
 * Orange: le démon tourne mais la connexion au Broker n'est pas établie
 * Rouge: le démon est arrêté

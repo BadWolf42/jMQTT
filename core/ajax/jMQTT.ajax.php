@@ -23,6 +23,8 @@ try {
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
+    define('PATH_CERTS', __DIR__ . '/../../data/templates');
+    define('PATH_TPLTS', __DIR__ . '/../../data/certs');
 
     ajax::init();
 
@@ -103,17 +105,16 @@ try {
             throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
         }
         $extension = strtolower(strrchr($_FILES['file']['name'], '.'));
-        if (!in_array($extension, array('.crt', '.key', '.json'))) {
+        if (!in_array($extension, array('.crt', '.key', '.json', '.pem'))) {
             throw new Exception('Extension du fichier non autorisée : ' . $extension);
         }
         if (filesize($_FILES['file']['tmp_name']) > 500000) {
             throw new Exception(__('Le fichier est trop gros (maximum 500ko)', __FILE__));
         }
         if (init('dir') == 'template') {
-//TODO Check if Tempate folder location corresponds to Jeedom best practices
-            $uploaddir = __DIR__ . '/../../core/config/template';
+            $uploaddir = PATH_TPLTS;
         } elseif (init('dir') == 'certs') {
-            $uploaddir = __DIR__ . '/../../data/certs';
+            $uploaddir = PATH_CERTS;
         } else {
             throw new Exception(__('Téléversement invalide', __FILE__));
         }
@@ -137,10 +138,9 @@ try {
     
     if (init('action') == 'filedelete') {
         if (init('dir') == 'template') {
-//TODO Check if Tempate folder location corresponds to Jeedom best practices
-            $uploaddir = __DIR__ . '/../../core/config/template';
+            $uploaddir = PATH_TPLTS;
         } elseif (init('dir') == 'certs') {
-            $uploaddir = __DIR__ . '/../../data/certs';
+            $uploaddir = PATH_CERTS;
         } else {
             throw new Exception(__('Suppression invalide', __FILE__));
         }

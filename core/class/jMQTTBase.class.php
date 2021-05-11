@@ -176,37 +176,29 @@ class jMQTTBase extends eqLogic {
       socket_close($socket);
    }
 
-   public static function new_mqtt_client($id, $hostname,       $port = 0,           $clientid = '',
-                                          $statustopic = '',    $username = '',      $password = '',
-                                          $tls = 'disable',     $tlscafile = '',     $tlssecure = '0',
-                                          $tlsclicertfile = '', $tlsclikeyfile = '', $paholog='') {
-      $params['cmd']='newMqttClient';
-      $params['id']=$id;
-      $params['callback']='ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
-      $params['hostname']=$hostname;
-      $params['clientid']=$clientid;
-      $params['statustopic']=$statustopic;
-      $params['username']=$username;
-      $params['password']=$password;
-      if ($tlsclicertfile != '')
-         $params['tlsclicertfile']=realpath(dirname(__FILE__) . '/../../data/certs/'.$tlsclicertfile);
-      if ($tlsclikeyfile != '')
-         $params['tlsclikeyfile']=realpath(dirname(__FILE__) . '/../../data/certs/'.$tlsclikeyfile);
-      if ($tls == 'enable') {
-         $params['tls']=True;
-         $params['tlssecure']=$tlssecure;
-      } elseif ($tls == 'custom') {
-         $params['tls']=True;
-         if ($tlscafile != '')
-            $params['tlscafile']=realpath(dirname(__FILE__) . '/../../data/certs/'.$tlscafile); // string path to the Certificate Authority certificate files that are to be treated as trusted by this client
-         $params['tlssecure']=$tlssecure;
-      } else { // No TLS
-         $params['tls']=False;
-         $params['tlssecure']='0';
+   public static function new_mqtt_client($id, $hostname, $params = array()) {
+      $params['cmd']                  = 'newMqttClient';
+      $params['id']                   = $id;
+      $params['hostname']             = $hostname;
+      $params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', get_called_class(), get_called_class()::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/core/php/jmqttd.php';
+      $params['clientid']             = $clientid;
+      $params['statustopic']          = $statustopic;
+      $params['username']             = $username;
+      $params['password']             = $password;
+      if       ($params['tls'] == 'custom') {
+         $params['tls']               = True;
+      } elseif ($params['tls'] == 'enable') {
+         $params['tls']               = True;
+         $params['tlscafile']         = '';
+      } else {
+         $params['tls']               = False;
+         $params['tlssecure']         = '0';
+         $params['tlscafile']         = '';
+         $params['tlsclicertfile']    = '';
+         $params['tlsclikeyfile']     = '';
       }
       // set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
-      $params['port']=($port != 0 && is_numeric($params['port'])) ? intval($port) : (($params['tls']) ? 8883 : 1883);
-      $params['paholog']=$paholog;
+      $params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
       get_called_class()::send_to_mqtt_daemon($params);
    }
 

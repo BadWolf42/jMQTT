@@ -962,34 +962,48 @@ class jMQTT extends jMQTTBase {
      * @throws Exception if the MQTT Client is not launchable
      */
     public function startMqttClient() {
-
         // if daemon is not ok, do Nothing
         $daemon_info = self::deamon_info();
         if ($daemon_info['state'] != 'ok') return;
-        
+
         //If MqttClient is not launchable (daemon is running), throw exception to get message
         $mqttclient_info = $this->getMqttClientInfo();
-        if ($mqttclient_info['launchable'] != 'ok') {
+        if ($mqttclient_info['launchable'] != 'ok')
             throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
-        }
 
         $this->log('info', 'démarre le client MQTT ');
         $this->setLastMqttClientLaunchTime();
         $this->sendMqttClientStateEvent();
-//TODO This function has way too much arguments, Rework it!!!
-        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $this->getMqttPort(), $this->getMqttClientId(), $this->getMqttClientStatusTopic(),
-                              $this->getConf(self::CONF_KEY_MQTT_USER), $this->getConf(self::CONF_KEY_MQTT_PASS),
-                              $this->getConf(self::CONF_KEY_MQTT_TLS), $this->getConf(self::CONF_KEY_MQTT_TLS_CA),
-                              $this->getConf(self::CONF_KEY_MQTT_TLS_SECURE), $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT),
-                              $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY), $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG)
-                              );
+
+        // Preparing some additional data for the broker
+        $params = array();
+        $params['port']              = $this->getMqttPort();
+        $params['clientid']          = $this->getMqttClientId();
+        $params['statustopic']       = $this->getMqttClientStatusTopic();
+        $params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
+        $params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
+        $params['paholog']           = $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG);
+        $params['tls']               = $this->getConf(self::CONF_KEY_MQTT_TLS);
+        $params['tlscafile']         = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
+        $params['tlssecure']         = $this->getConf(self::CONF_KEY_MQTT_TLS_SECURE);
+        $params['tlsclicertfile']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
+        $params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
+        // Realpaths
+        if ($params['tlscafile'] != '')
+            $params['tlscafile']     = realpath(dirname(__FILE__) . '/../../data/certs/'.$params['tlscafile']);
+        if ($params['tlsclicertfile'] != '')
+            $params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../data/certs/'.$params['tlsclicertfile']);
+        if ($params['tlsclikeyfile'] != '')
+            $params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../data/certs/'.$params['tlsclikeyfile']);
+
+        self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $params);
 
         foreach (self::byBrkId($this->getId()) as $mqtt) {
             if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
                 $mqtt->subscribeTopic($mqtt->getTopic(), $mqtt->getQos());
             }
         }
-        
+
         if ($this->isApiEnable()) {
             $this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
             $this->subscribeTopic($this->getMqttApiTopic(), '1');
