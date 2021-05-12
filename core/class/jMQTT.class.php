@@ -30,10 +30,6 @@ class jMQTT extends eqLogic {
     const CLIENT_STATUS = 'status';
     const OFFLINE = 'offline';
     const ONLINE = 'online';
-
-    const MQTTCLIENT_OK = 'ok';
-    const MQTTCLIENT_POK = 'pok';
-    const MQTTCLIENT_NOK = 'nok';
     
     const CONF_KEY_TYPE = 'type';
     const CONF_KEY_BRK_ID = 'brkId';
@@ -58,8 +54,6 @@ class jMQTT extends eqLogic {
     const CONF_KEY_NEW = 'new';
 
     const CACHE_INCLUDE_MODE = 'include_mode';
-    const CACHE_DAEMON_CONNECTED = 'daemonConnected';
-    const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
     
     /**
      * To define a standard jMQTT equipment
@@ -358,7 +352,7 @@ class jMQTT extends eqLogic {
 
         // If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send unsubscribe
         $broker = self::getBrokerFromId($brkId);
-        if(!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_POK || $broker->getMqttClientState() == self::MQTTCLIENT_NOK) return;
+        if(!$broker->getIsEnable() || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_POK || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK) return;
 
         //Find eqLogic using the same topic (which is stored in logicalId)
         $eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
@@ -468,7 +462,7 @@ class jMQTT extends eqLogic {
             // --- Existing broker ---
             else {
 
-                $stopped = false;
+                $stopped = ($this->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK);
                 $startRequested = false;
 
                 // isEnable changed
@@ -629,14 +623,18 @@ class jMQTT extends eqLogic {
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == self::TYP_BRK) {
 
-            // If current eqLogic is a Broker, MqttClientState has been lost because cache has been destroyed by eqLogic::remove()
-
             $this->log('info', 'removing broker ' . $this->getName());
             
             // Disable first the broker to Stop MqttClient
             if ($this->getIsEnable()) {
                 $this->setIsEnable(0);
                 $this->save();
+
+                // Wait up to 10s for MqttClient stopped
+                for ($i=0; $i < 40; $i++) { 
+                    if ($this->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK) break;
+                    usleep(250000);
+                }
             }
 
             // Disable all equipments attached to the broker
@@ -754,11 +752,6 @@ class jMQTT extends eqLogic {
     public static function deamon_start() {
         log::add(__CLASS__, 'info', 'Starting Daemon');
         jMQTTBase::deamon_start(__CLASS__);
-        // Clear MqttClientState to avoid wrong state next to power issue or complete crash
-        // Will be moved later to jMQTTBase
-        foreach(self::getBrokers() as $broker) {
-            $broker->setCache(self::CACHE_DAEMON_CONNECTED, false);
-        }
         self::checkAllMqttClients();
     }
     
@@ -891,7 +884,7 @@ class jMQTT extends eqLogic {
         $daemon_info = jMQTTBase::deamon_info(__CLASS__);
         if ($daemon_info['state'] == 'ok') {
             foreach(self::getBrokers() as $broker) {
-                if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
+                if ($broker->getIsEnable() && $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK) {
                     try {
                         log::add(__CLASS__, 'info', 'Starting MqttClient for ' . $broker->getName());
                         $broker->startMqttClient();
@@ -933,9 +926,9 @@ class jMQTT extends eqLogic {
         $return['state'] = $this->getMqttClientState();
         $return['color'] = self::getBrokerColorFromState($return['state']);
         if ($daemon_info['state'] == 'ok') {
-            if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
+            if ($return['state'] == jMQTTBase::MQTTCLIENT_NOK && $return['message'] == '')
                 $return['message'] = __('Le Client MQTT est arrêté', __FILE__);
-            elseif ($return['state'] == self::MQTTCLIENT_POK)
+            elseif ($return['state'] == jMQTTBase::MQTTCLIENT_POK)
                 $return['message'] = __('Le broker est OFFLINE', __FILE__);
         }
 
@@ -944,24 +937,13 @@ class jMQTT extends eqLogic {
     
     /**
      * Return MQTT Client state
-     *   - self::MQTTCLIENT_OK: MQTT Client is running and mqtt broker is online
-     *   - self::MQTTCLIENT_POK: MQTT Client is running but mqtt broker is offline
-     *   - self::MQTTCLIENT_NOK: no cron exists or cron is not running
+     *   - jMQTTBase::MQTTCLIENT_OK: MQTT Client is running and mqtt broker is online
+     *   - jMQTTBase::MQTTCLIENT_POK: MQTT Client is running but mqtt broker is offline
+     *   - jMQTTBase::MQTTCLIENT_NOK: no cron exists or cron is not running
      * @return string ok or nok
      */
     public function getMqttClientState() {
-        if ($this->getCache(self::CACHE_DAEMON_CONNECTED, false)) {
-            if ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false)) {
-                $return = self::MQTTCLIENT_OK;
-            }
-            else {
-                $return  = self::MQTTCLIENT_POK;
-            }
-        }
-        else
-            $return = self::MQTTCLIENT_NOK;
-        
-        return $return;
+        return jMQTTBase::get_mqtt_client_state(__CLASS__, $this->getId());
     }
     
     /**
@@ -970,10 +952,10 @@ class jMQTT extends eqLogic {
      */
     public static function getBrokerColorFromState($state) {
         switch ($state) {
-            case self::MQTTCLIENT_OK:
+            case jMQTTBase::MQTTCLIENT_OK:
                 return '#96C927';
                 break;
-            case self::MQTTCLIENT_POK:
+            case jMQTTBase::MQTTCLIENT_POK:
                 return '#ff9b00';
                 break;
             default:
@@ -1047,27 +1029,19 @@ class jMQTT extends eqLogic {
 
     public static function on_daemon_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache(self::CACHE_DAEMON_CONNECTED, true);
+        $broker->sendMqttClientStateEvent();
     }
     public static function on_daemon_disconnect($id) {
-        // handle exception where eqLogic has been already removed
-        // (removal of broker eqLogic is not able to wait for disconnect first)
-        try {
-            $broker = self::getBrokerFromId(intval($id));
-            $broker->setCache(self::CACHE_DAEMON_CONNECTED, false);
-            // if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
-            self::on_mqtt_disconnect($id);
-        } catch (\Throwable $th) {}
+        $broker = self::getBrokerFromId(intval($id));
+        $broker->sendMqttClientStateEvent();
     }
     public static function on_mqtt_connect($id) {
         $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true);
         $broker->getMqttClientStatusCmd()->event(self::ONLINE);
         $broker->sendMqttClientStateEvent();
     }
     public static function on_mqtt_disconnect($id) {
         $broker = self::getBrokerFromId(intval($id));
-        $broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
         $statusCmd = $broker->getMqttClientStatusCmd();
         if ($statusCmd) $statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
         $broker->sendMqttClientStateEvent();
@@ -1282,7 +1256,7 @@ class jMQTT extends eqLogic {
         
         $this->log('debug', 'Publishing message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
-        if ($this->getBroker()->getMqttClientState() == self::MQTTCLIENT_OK) {
+        if ($this->getBroker()->getMqttClientState() == jMQTTBase::MQTTCLIENT_OK) {
             jMQTTBase::publish_mqtt_message(__CLASS__, $this->getBrkId(), $topic, $payload, $qos, $retain);
             
             $d = date('Y-m-d H:i:s');

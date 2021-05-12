@@ -5,6 +5,13 @@ require_once __DIR__  . '/../../resources/mosquitto_topic_matches_sub.php';
 
 class jMQTTBase {
 
+   const MQTTCLIENT_OK = 'ok';
+   const MQTTCLIENT_POK = 'pok';
+   const MQTTCLIENT_NOK = 'nok';
+
+   const CACHE_DAEMON_CONNECTED = 'daemonConnected';
+   const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
+
    const DEFAULT_PYTHON_PORT = 1025;
    const DEFAULT_WEBSOCKET_PORT = 1026;
 
@@ -22,6 +29,23 @@ class jMQTTBase {
    public static function get_default_websocket_port($pluginClass) {
       return property_exists($pluginClass, 'DEFAULT_WEBSOCKET_PORT') ? $pluginClass::DEFAULT_WEBSOCKET_PORT : self::DEFAULT_WEBSOCKET_PORT;
    }
+
+   private static function get_cache($pluginClass, $id, $key, $default = null) {
+      return cache::byKey('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key)->getValue($default);
+   }
+   private static function set_cache($pluginClass, $id, $key, $value = null) {
+      return cache::set('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key, $value);
+   }
+   private static function clean_cache($pluginClass) {
+      //TODO code clean of cache for a plugin
+   }
+
+   public static function get_mqtt_client_state($pluginClass, $id) {
+      if (!self::get_cache($pluginClass, $id, self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
+      if (!self::get_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
+      return self::MQTTCLIENT_OK;
+   }
+
 
    public static function dependancy_info($pluginClass) {
       return jMQTT::dependancy_info();
@@ -61,6 +85,11 @@ class jMQTTBase {
 
       if($python_daemon && $websocket_daemon){
          $return['state'] = 'ok';
+      }
+
+      if ($return['state'] != 'ok') {
+         //clean cache automagically if daemons are not started (jmqttd.php crashed and burned)
+         self::clean_cache($pluginClass);
       }
 
       if (config::byKey('pythonsocketport', $pluginClass, self::get_default_python_port($pluginClass)) != config::byKey('websocketport', $pluginClass, self::get_default_websocket_port($pluginClass))) {
@@ -162,6 +191,9 @@ class jMQTTBase {
             usleep(250000);
          }
       }
+
+      // If something bad happened, clean anyway
+      self::clean_cache($pluginClass);
    }
 
    public static function log_missing_callback($pluginClass, $functionName) {
@@ -189,6 +221,9 @@ class jMQTTBase {
 
    // on_daemon_connect is called by jmqttd.php then it calls on_daemon_connect method in plugin class
    public static function on_daemon_connect($pluginClass, $id) {
+      // Save in cache that daemon is connected
+      self::set_cache($pluginClass, $id, self::CACHE_DAEMON_CONNECTED, true);
+      // And call plugin on_daemon_connect()
       if(method_exists($pluginClass, 'on_daemon_connect')) {
          try {
             $pluginClass::on_daemon_connect($id);
@@ -201,6 +236,14 @@ class jMQTTBase {
 
    // on_daemon_disconnect is called by jmqttd.php then it calls on_daemon_disconnect method in plugin class
    public static function on_daemon_disconnect($pluginClass, $id) {
+
+      // if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
+      if (self::get_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED))
+         self::on_mqtt_disconnect($pluginClass, $id);
+
+      // Save in cache that daemon is disconnected
+      self::set_cache($pluginClass, $id, self::CACHE_DAEMON_CONNECTED, false);
+      // And call plugin on_daemon_disconnect()
       if(method_exists($pluginClass, 'on_daemon_disconnect')) {
          try {
                $pluginClass::on_daemon_disconnect($id);
@@ -213,6 +256,9 @@ class jMQTTBase {
 
    // on_mqtt_connect is called by jmqttd.php then it calls on_mqtt_connect method in plugin class
    public static function on_mqtt_connect($pluginClass, $id) {
+      // Save in cache that Mqtt Client is connected
+      self::set_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED, true);
+      // And call plugin on_mqtt_connect()
       if(method_exists($pluginClass, 'on_mqtt_connect')) {
          try {
                $pluginClass::on_mqtt_connect($id);
@@ -225,6 +271,9 @@ class jMQTTBase {
 
    // on_mqtt_disconnect is called by jmqttd.php then it calls on_mqtt_disconnect method in plugin class
    public static function on_mqtt_disconnect($pluginClass, $id) {
+      // Save in cache that Mqtt Client is disconnected
+      self::set_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED, false);
+      // And call plugin on_mqtt_disconnect()
       if(method_exists($pluginClass, 'on_mqtt_disconnect')) {
          try {
                $pluginClass::on_mqtt_disconnect($id);
@@ -237,6 +286,7 @@ class jMQTTBase {
 
    // on_mqtt_message is called by jmqttd.php then it calls on_mqtt_message method in plugin class
    public static function on_mqtt_message($pluginClass, $id, $topic, $payload, $qos, $retain) {
+      // call plugin on_mqtt_message()
       if(method_exists($pluginClass, 'on_mqtt_message')) {
          try {
                $pluginClass::on_mqtt_message($id, $topic, $payload, $qos, $retain);
@@ -247,7 +297,7 @@ class jMQTTBase {
       else self::log_missing_callback($pluginClass, 'on_mqtt_message');
    }
 
-   protected static function send_to_mqtt_daemon($pluginClass, $params) {
+   private static function send_to_mqtt_daemon($pluginClass, $params) {
       $daemon_info = self::deamon_info($pluginClass);
       if ($daemon_info['state'] != 'ok') {
          throw new Exception("Le démon n'est pas démarré");
