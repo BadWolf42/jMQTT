@@ -971,7 +971,7 @@ class jMQTT extends eqLogic {
     public static function getBrokerColorFromState($state) {
         switch ($state) {
             case self::MQTTCLIENT_OK:
-                return '#00ff00';
+                return '#96C927';
                 break;
             case self::MQTTCLIENT_POK:
                 return '#ff9b00';
