@@ -22,6 +22,8 @@ if (!isConnect()) {
     include_file('desktop', '404', 'php');
     die();
 }
+
+require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
 ?>
 
 <form class="form-horizontal">
@@ -38,13 +40,13 @@ if (!isConnect()) {
         <div class="form-group">
             <label class="col-sm-5 control-label">{{Port démon python}}</label>
             <div class="col-sm-3">
-                <input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTT::DEFAULT_PYTHON_PORT; ?>"/>
+                <input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTTBase::get_default_python_port('jMQTT'); ?>"/>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-5 control-label">{{Port démon websocket}}</label>
             <div class="col-sm-3">
-                <input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTT::DEFAULT_WEBSOCKET_PORT; ?>"/>
+                <input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTTBase::get_default_websocket_port('jMQTT'); ?>"/>
             </div>
         </div>
     </fieldset>

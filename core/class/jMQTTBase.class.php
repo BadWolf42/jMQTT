@@ -16,10 +16,10 @@ class jMQTTBase {
    //    }
    // }
 
-   private static function get_default_python_port($pluginClass) {
+   public static function get_default_python_port($pluginClass) {
       return property_exists($pluginClass, 'DEFAULT_PYTHON_PORT') ? $pluginClass::DEFAULT_PYTHON_PORT : self::DEFAULT_PYTHON_PORT;
    }
-   private static function get_default_websocket_port($pluginClass) {
+   public static function get_default_websocket_port($pluginClass) {
       return property_exists($pluginClass, 'DEFAULT_WEBSOCKET_PORT') ? $pluginClass::DEFAULT_WEBSOCKET_PORT : self::DEFAULT_WEBSOCKET_PORT;
    }
 
