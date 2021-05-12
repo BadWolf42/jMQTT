@@ -979,7 +979,6 @@ function changeIncludeMode() {
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
     showMqttClientInfo(_options);
     setIncludeModeActivation(_options.brkId, _options.state);
-    $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
     $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').css('color', _options.color);
 });
 
