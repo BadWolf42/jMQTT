@@ -931,6 +931,7 @@ class jMQTT extends eqLogic {
         $return['log'] = $this->getMqttClientLogFile();
         $return['last_launch'] = $this->getLastMqttClientLaunchTime();      
         $return['state'] = $this->getMqttClientState();
+        $return['color'] = self::getBrokerColorFromState($return['state']);
         if ($daemon_info['state'] == 'ok') {
             if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
                 $return['message'] = __('Le Client MQTT est arrêté', __FILE__);
@@ -963,6 +964,24 @@ class jMQTT extends eqLogic {
         return $return;
     }
     
+    /**
+     * Return hex color string depending state passed
+     * @return string hex color
+     */
+    public static function getBrokerColorFromState($state) {
+        switch ($state) {
+            case self::MQTTCLIENT_OK:
+                return '#00ff00';
+                break;
+            case self::MQTTCLIENT_POK:
+                return '#ff9b00';
+                break;
+            default:
+                return '#ff0000';
+                break;
+        }
+    }
+
     /**
      * Start the MQTT Client of this broker if it is launchable
      * @throws Exception if the MQTT Client is not launchable

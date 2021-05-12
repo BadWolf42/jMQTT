@@ -980,6 +980,7 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_opt
     showMqttClientInfo(_options);
     setIncludeModeActivation(_options.brkId, _options.state);
     $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
+    $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').css('color', _options.color);
 });
 
 //Called by the plugin core to inform about the automatic inclusion mode disabling

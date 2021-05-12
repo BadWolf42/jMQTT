@@ -135,6 +135,7 @@ function displayEqLogicCard($eqL, $node_images) {
     }
     if ($eqL->getType() == jMQTT::TYP_BRK) {
         $file = 'node_broker_' . $eqL->getMqttClientState() . '.svg';
+        echo '<i class="status-circle fas fa-circle" style="font-size:1em !important;position:absolute;margin-top:30px;margin-left:55px;color:' . jMQTT::getBrokerColorFromState($eqL->getMqttClientState()) . '"></i>';
     }
     else {
         $icon = 'node_' . $eqL->getConfiguration('icone');
