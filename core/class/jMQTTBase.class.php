@@ -34,10 +34,23 @@ class jMQTTBase {
       return cache::byKey('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key)->getValue($default);
    }
    private static function set_cache($pluginClass, $id, $key, $value = null) {
+      // Save ids in cache as a list for future cleaning
+      $idListInCache = cache::byKey('jMQTTBase::' . $pluginClass)->getValue([]);
+      if (!in_array($id, $idListInCache, true)){
+         $idListInCache[] = $id;
+         cache::set('jMQTTBase::' . $pluginClass, $idListInCache);
+      }
+
       return cache::set('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key, $value);
    }
    private static function clean_cache($pluginClass) {
-      //TODO code clean of cache for a plugin
+      // Get list of ids
+      $idListInCache = cache::byKey('jMQTTBase::' . $pluginClass)->getValue([]);
+      // for each id clean both cached values
+      foreach ($idListInCache as $id) {
+         cache::delete('jMQTTBase::' . $pluginClass . '::' . $id . '::' . self::CACHE_DAEMON_CONNECTED);
+         cache::delete('jMQTTBase::' . $pluginClass . '::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
+      }
    }
 
    public static function get_mqtt_client_state($pluginClass, $id) {
@@ -85,11 +98,6 @@ class jMQTTBase {
 
       if($python_daemon && $websocket_daemon){
          $return['state'] = 'ok';
-      }
-
-      if ($return['state'] != 'ok') {
-         //clean cache automagically if daemons are not started (jmqttd.php crashed and burned)
-         self::clean_cache($pluginClass);
       }
 
       if (config::byKey('pythonsocketport', $pluginClass, self::get_default_python_port($pluginClass)) != config::byKey('websocketport', $pluginClass, self::get_default_websocket_port($pluginClass))) {
