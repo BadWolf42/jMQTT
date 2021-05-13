@@ -1095,10 +1095,18 @@ class jMQTT extends eqLogic {
         
         $this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
         
+        $this->log('debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
+
         // If this is the API topic, process the request
         if ($msgTopic == $this->getMqttApiTopic()) {
             $this->processApiRequest($msgValue);
             return;
+        }
+
+        // Loop on jMQTT equipments and get ones that subscribed to the current message
+        $elogics = array();
+        foreach (self::byBrkId($this->getId()) as $eqpt) {
+            if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) $elogics[] = $eqpt;
         }
 
         // In case of topic starting with /, remove the starting character (fix Issue #7)
@@ -1122,24 +1130,12 @@ class jMQTT extends eqLogic {
             return;
         }
         
-        $this->log('debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
-        
-        
-        $msgTopicArray = explode("/", $topicContent);
-        
-        // Loop on jMQTT equipments and get ones that subscribed to the current message
-        $elogics = array();
-        foreach (self::byBrkId($this->getId()) as $eqpt) {
-            if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) {
-                $elogics[] = $eqpt;
-            }
-        }
-        
         // If no equipment listening to the current message is found and the
         // automatic inclusion mode is active => create a new equipment
         // subscribing to all sub-topics starting with the first topic of the
         // current message
         if (empty($elogics) && $this->getIncludeMode()) {
+            $msgTopicArray = explode("/", $topicContent);
             $eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#');
             $elogics[] = $eqpt;
         }
