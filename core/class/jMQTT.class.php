@@ -1116,13 +1116,6 @@ class jMQTT extends eqLogic {
             return;
         }
         
-        // Return in case of invalid payload (only ascii payload are supported) - fix issue #46
-        if (! jMQTTCmd::isConfigurationValid($msgValue)) {
-            $this->log('warning',
-                'Message skipped: payload ' . strtoupper(bin2hex($msgValue)) . ' is not valid for topic ' . $msgTopic);
-            return;
-        }
-        
         $this->log('debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
         
         // If this is the API topic, process the request
