@@ -1109,33 +1109,27 @@ class jMQTT extends eqLogic {
             if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) $elogics[] = $eqpt;
         }
 
-        // In case of topic starting with /, remove the starting character (fix Issue #7)
-        // And set the topic prefix (fix issue #15)
-        if ($msgTopic[0] === '/') {
-            $this->log('debug', 'Message topic starts with /');
-            $topicPrefix = '/';
-            $topicContent = substr($msgTopic, 1);
-        }
-        else {
-            $topicPrefix = '';
-            $topicContent = $msgTopic;
-        }
-        
-        // Return in case of invalid topic
-        if (empty($topicContent) || ! jMQTTCmd::isConfigurationValid($msgTopic)) {
-            if (! empty($topicContent)) {
-                $msgTopic = strtoupper(bin2hex($msgTopic));
-            }
-            $this->log('warning', 'Message skipped: "' . $msgTopic . '" is not a valid topic');
-            return;
-        }
-        
         // If no equipment listening to the current message is found and the automatic inclusion mode is active
         if (empty($elogics) && $this->getIncludeMode()) {
 
+            // Make some check on topic
+            if ($msgTopic == '/' || strpos($msgTopic, '//')) {
+                $this->log('warning', 'Equipment can\'t be created automatically for the topic "' . $msgTopic . '"');
+                return;
+            }
+
+            // explode topic
+            $msgTopicArray = explode("/", $msgTopic);
+            // remove empty strings and reindex
+            $msgTopicArray = array_values(array_filter($msgTopicArray));
+
+            if (!count($msgTopicArray)) {
+                $this->log('warning', 'Equipment can\'t be created automatically for the topic "' . $msgTopic . '"');
+                return;
+            }
+
             // create a new equipment subscribing to all sub-topics starting with the first topic of the current message
-            $msgTopicArray = explode("/", $topicContent);
-            $eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#');
+            $eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], ($msgTopic[0] == '/' ? '/' : '') . $msgTopicArray[0] . '/#');
             $elogics[] = $eqpt;
         }
         
