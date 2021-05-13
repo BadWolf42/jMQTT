@@ -119,6 +119,20 @@ $(document).ready(function() {
         event.stopPropagation();
         refreshEqLogicPage();
     });
+
+    // Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
+    // TODO : To Be delete when fix reached Jeedom Core stable
+    // https://github.com/jeedom/core/pull/1825
+    // https://github.com/jeedom/core/pull/1829
+    $('.eqLogicAction[data-action=save]').mousedown(function() {
+        requestTextarea = $('.cmdAttr[data-l1key=configuration][data-l2key=request]')
+        currentValue = $(requestTextarea).val();
+        if (currentValue.length >= 1) {
+            if (currentValue[0] == '{') $(requestTextarea).val(String.fromCharCode(6) + currentValue);
+            else if (currentValue.length == String.fromCharCode(6)) $(requestTextarea).val('');
+            else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{') $(requestTextarea).val(currentValue.substring(1));
+        }
+    });
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {

@@ -216,10 +216,16 @@ class jMQTTCmd extends cmd {
      */
     public function preSave() {
 
-        // If request are JSON parameters, re-encode them (as Jeedom core decode them when saving through
-        // the desktop interface - fix issue #28)
         foreach(array('request') as $key) {
             $conf = $this->getConfiguration($key);
+
+            // Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
+            // TODO : To Be delete when fix reached Jeedom Core stable
+            // https://github.com/jeedom/core/pull/1825
+            // https://github.com/jeedom/core/pull/1829
+            if (is_string($conf) && $conf[0] == chr(6)) $this->setConfiguration($key, substr($conf, 1));
+
+            // If request are JSON parameters, re-encode them (as Jeedom core decode them when saving through the desktop interface - fix issue #28)
             if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
                 $this->setConfiguration($key, $conf);
         }
