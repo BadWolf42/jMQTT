@@ -1095,6 +1095,12 @@ class jMQTT extends eqLogic {
         
         $this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
         
+        // If this is the API topic, process the request
+        if ($msgTopic == $this->getMqttApiTopic()) {
+            $this->processApiRequest($msgValue);
+            return;
+        }
+
         // In case of topic starting with /, remove the starting character (fix Issue #7)
         // And set the topic prefix (fix issue #15)
         if ($msgTopic[0] === '/') {
@@ -1118,11 +1124,6 @@ class jMQTT extends eqLogic {
         
         $this->log('debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
         
-        // If this is the API topic, process the request
-        if ($msgTopic == $this->getMqttApiTopic()) {
-            $this->processApiRequest($msgValue);
-            return;
-        }
         
         $msgTopicArray = explode("/", $topicContent);
         
