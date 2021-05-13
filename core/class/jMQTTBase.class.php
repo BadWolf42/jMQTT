@@ -44,7 +44,7 @@ class jMQTTBase {
       return cache::set('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key, $value);
    }
    private static function clean_cache($pluginClass) {
-      // Get list of ids
+      // get list of ids
       $idListInCache = cache::byKey('jMQTTBase::' . $pluginClass)->getValue([]);
       // for each id clean both cached values
       foreach ($idListInCache as $id) {
@@ -84,6 +84,7 @@ class jMQTTBase {
             $python_daemon = true;
          } else {
             shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
+            self::deamon_stop($pluginClass);
          }
       }
 
@@ -93,6 +94,7 @@ class jMQTTBase {
             $websocket_daemon = true;
          } else {
             shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file2 . ' 2>&1 > /dev/null');
+            self::deamon_stop($pluginClass);
          }
       }
 
