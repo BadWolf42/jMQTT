@@ -125,13 +125,16 @@ $(document).ready(function() {
     // https://github.com/jeedom/core/pull/1825
     // https://github.com/jeedom/core/pull/1829
     $('.eqLogicAction[data-action=save]').mousedown(function() {
-        requestTextarea = $('.cmdAttr[data-l1key=configuration][data-l2key=request]')
-        currentValue = $(requestTextarea).val();
-        if (currentValue.length >= 1) {
-            if (currentValue[0] == '{') $(requestTextarea).val(String.fromCharCode(6) + currentValue);
-            else if (currentValue.length == String.fromCharCode(6)) $(requestTextarea).val('');
-            else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{') $(requestTextarea).val(currentValue.substring(1));
-        }
+        requestTextareas = $('.cmdAttr[data-l1key=configuration][data-l2key=request]')
+        requestTextareas.each(function(i, e){
+            currentValue = $(e).val();
+            if (currentValue.length >= 1) {
+                if (currentValue[0] == '{') $(e).val(String.fromCharCode(6) + currentValue);
+                else if (currentValue.length == String.fromCharCode(6)) $(e).val('');
+                else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{') $(e).val(currentValue.substring(1));
+            }
+        });
+        
     });
 });
 
