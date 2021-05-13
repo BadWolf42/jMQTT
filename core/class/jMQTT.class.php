@@ -1113,7 +1113,7 @@ class jMQTT extends eqLogic {
         if (empty($elogics) && $this->getIncludeMode()) {
 
             // Make some check on topic
-            if ($msgTopic == '/' || strpos($msgTopic, '//')) {
+            if ($msgTopic == '/' || strpos($msgTopic, '//') !== false) {
                 $this->log('warning', 'Equipment can\'t be created automatically for the topic "' . $msgTopic . '"');
                 return;
             }
@@ -1165,6 +1165,18 @@ class jMQTT extends eqLogic {
                 /** @var array[jMQTTCmd] $cmdlogics array of the commands related to the current message */
                 $cmdlogics = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
                 
+                // if some cmd matches topic
+                if (!is_null($cmdlogics)) {
+                    // Keep only info cmd
+                    $cmdlogics = array_filter($cmdlogics, function($cmd){
+                        if ($cmd->getType() == 'action') {
+                            $this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is an action command: skip');
+                            return false;
+                        }
+                        return true;
+                    });
+                }
+
                 // If the command associated to the topic has not been found, try to create one
                 if (is_null($cmdlogics) || $cmdlogics[0]->getTopic() != $msgTopic) {
                     if ($eqpt->getAutoAddCmd()) {
@@ -1180,12 +1192,6 @@ class jMQTT extends eqLogic {
                 }
                 
                 if (is_array($cmdlogics)) {
-                    
-                    // If the found command is an action command, skip
-                    if ($cmdlogics[0]->getType() == 'action') {
-                        $this->log('debug', $eqpt->getName() . '|' . $cmdlogics[0]->getName() . ' is an action command: skip');
-                        continue;
-                    }
                     
                     // Update the command value
                     if ($cmdlogics[0]->getTopic() == $msgTopic) {
