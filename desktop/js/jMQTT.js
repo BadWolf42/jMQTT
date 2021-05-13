@@ -134,7 +134,6 @@ $(document).ready(function() {
                 else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{') $(e).val(currentValue.substring(1));
             }
         });
-        
     });
 });
 
