@@ -1162,53 +1162,64 @@ class jMQTT extends eqLogic {
                     $cmdName = $cmdName . '/' . current($msgTopicArray);
                 }
                 
-                /** @var array[jMQTTCmd] $cmdlogics array of the commands related to the current message */
-                $cmdlogics = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
+                // Looking for cmd in the DB
+                $cmds = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
                 
                 // if some cmd matches topic
-                if (!is_null($cmdlogics)) {
-                    // Keep only info cmd
-                    $cmdlogics = array_filter($cmdlogics, function($cmd){
+                if (!is_null($cmds)) {
+
+                    // Keep only info cmds
+                    $cmds = array_filter($cmds, function($cmd){
                         if ($cmd->getType() == 'action') {
                             $this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is an action command: skip');
                             return false;
                         }
                         return true;
                     });
+
+                    // Get list of JSON cmds
+                    $jsonCmds = array_filter($cmds, function($cmd){
+                        return $cmd->isJson();
+                    });
+
+                    // Finally Keep only non JSON in $cmds
+                    $cmds = array_filter($cmds, function($cmd){
+                        return !$cmd->isJson();
+                    });
                 }
 
-                // If the command associated to the topic has not been found, try to create one
-                if (is_null($cmdlogics) || $cmdlogics[0]->getTopic() != $msgTopic) {
+                // If there is no cmd matching exactly with the topic (non JSON)
+                if (is_null($cmds) || !count($cmds)) {
+                    // Is auto add enabled
                     if ($eqpt->getAutoAddCmd()) {
-                        if (is_null($cmdlogics)) {
-                            $cmdlogics = [];
-                        }
-                        array_unshift($cmdlogics, jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic));
-                        $cmdlogics[0]->save();
+                        if (is_null($cmds)) $cmds = [];
+
+                        //Create a new cmd
+                        $newCmd = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
+                        $newCmd->save();
+                        $cmds[] = $newCmd;
                     }
-                    else {
-                        $this->log('debug', 'Command ' . $eqpt->getName() . '|' . $cmdName . ' not created as automatic command creation is disabled');
-                    }
+                    else $this->log('debug', 'Command ' . $eqpt->getName() . '|' . $cmdName . ' not created as automatic command creation is disabled');
                 }
                 
-                if (is_array($cmdlogics)) {
-                    
-                    // Update the command value
-                    if ($cmdlogics[0]->getTopic() == $msgTopic) {
-                        $cmdlogics[0]->updateCmdValue($msgValue);
-                        $i0 = 1;
+                // If there is some cmd matching exactly with the topic
+                if (is_array($cmds) && count($cmds)) {
+                    foreach ($cmds as $cmd) {
+                        // Update the command value
+                        $cmd->updateCmdValue($msgValue);
                     }
-                    else {
-                        $i0 = 0;
-                    }
-                        
-                    // Update JSON derived commands if any
-                    if (count($cmdlogics) > 1) {
-                        $jsonArray = $cmdlogics[0]->decodeJsonMsg($msgValue);
-                        if (isset($jsonArray)) {
-                            for ($i=$i0 ; $i<count($cmdlogics) ; $i++) {
-                                $cmdlogics[$i]->updateJsonCmdValue($jsonArray);
-                            }
+                }
+
+                // If there is some cmd matching exactly with the topic with JSON path
+                if (is_array($jsonCmds) && count($jsonCmds)) {
+
+                    // decode JSON payload
+                    $jsonArray = reset($jsonCmds)->decodeJsonMsg($msgValue);
+                    if (isset($jsonArray)) {
+
+                        foreach ($jsonCmds as $cmd) {
+                            // Update JSON derived commands
+                            $cmd->updateJsonCmdValue($jsonArray);
                         }
                     }
                 }

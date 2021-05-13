@@ -426,7 +426,7 @@ class jMQTTCmd extends cmd {
      * Return whether or not this command is derived from a Json payload
      * @return boolean
      */
-    private function isJson() {
+    public function isJson() {
         return strpos($this->getTopic(), '{') !== false;
     }
     
