@@ -198,7 +198,7 @@ class WebSocketClient:
 	def autorestart_run_forever(self):
 		while True:
 			try:
-				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=1)
+				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=0.1)
 			except:
 				if logging.getLogger().isEnabledFor(logging.DEBUG):
 					logging.exception('Id %d : WebSocketClient.autorestart_run_forever() Exception', self.id)
