@@ -450,6 +450,9 @@ def listen():
 # ----------------------------------------------------------------------------
 
 def signal_handler(signum=None, frame=None):
+	# unregister signal handler otherwise the second call will interrupt the first one and everything is going crazy!
+	signal.signal(signal.SIGINT, signal.SIG_IGN)
+	signal.signal(signal.SIGTERM, signal.SIG_IGN)
 	logging.debug("Signal %d caught, exiting...", signum)
 	shutdown()
 
