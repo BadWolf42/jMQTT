@@ -1130,11 +1130,10 @@ class jMQTT extends eqLogic {
             return;
         }
         
-        // If no equipment listening to the current message is found and the
-        // automatic inclusion mode is active => create a new equipment
-        // subscribing to all sub-topics starting with the first topic of the
-        // current message
+        // If no equipment listening to the current message is found and the automatic inclusion mode is active
         if (empty($elogics) && $this->getIncludeMode()) {
+
+            // create a new equipment subscribing to all sub-topics starting with the first topic of the current message
             $msgTopicArray = explode("/", $topicContent);
             $eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], $topicPrefix . $msgTopicArray[0] . '/#');
             $elogics[] = $eqpt;
