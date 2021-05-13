@@ -202,9 +202,11 @@ class WebSocketClient:
 			except:
 				if logging.getLogger().isEnabledFor(logging.DEBUG):
 					logging.exception('Id %d : WebSocketClient.autorestart_run_forever() Exception', self.id)
-			if self.stopautorestart:
-				break
-			time.sleep(5)
+			# Wait up to 5sec before reconnection
+			for i in range(50):
+				if self.stopautorestart:
+					return
+				time.sleep(0.1)
 
 	def worker(self):
 		while True:
