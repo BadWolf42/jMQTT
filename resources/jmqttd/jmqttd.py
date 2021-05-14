@@ -77,27 +77,6 @@ class MqttClient:
 			except:
 				logging.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
 
-#TODO Expose in "message" other parameters of tls_set()?
-#	Default values:
-#		cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS, ciphers=None
-#
-#	cert_reqs allows the certificate requirements that the client imposes
-#		on the broker to be changed. By default this is ssl.CERT_REQUIRED,
-#		which means that the broker must provide a certificate.
-#			CERT_NONE - no certificates from the other side are required (or will
-#				be looked at if provided)
-#			CERT_OPTIONAL - certificates are not required, but if provided will be
-#				validated, and if validation fails, the connection will
-#				also fail
-#			CERT_REQUIRED - certificates are required, and will be validated, and
-#				if validation fails, the connection will also fail
-#	tls_version allows the version of the SSL/TLS protocol used to be
-#		specified. By default TLS v1.2 is used. Previous versions are allowed
-#		but not recommended due to possible security problems.
-#	ciphers is a string specifying which encryption ciphers are allowable
-#		for this connection, or None to use the defaults. See:
-#		https://www.openssl.org/docs/manmaster/man1/openssl-ciphers.html#CIPHER-STRINGS
-
 		self.mqttclient.reconnect_delay_set(5, 15)
 		self.mqttclient.on_connect = self.on_connect
 		self.mqttclient.on_disconnect = self.on_disconnect
