@@ -223,7 +223,7 @@ class jMQTTCmd extends cmd {
             // TODO : To Be delete when fix reached Jeedom Core stable
             // https://github.com/jeedom/core/pull/1825
             // https://github.com/jeedom/core/pull/1829
-            if (is_string($conf) && $conf[0] == chr(6)) $this->setConfiguration($key, substr($conf, 1));
+            if (is_string($conf) && strlen($conf) >= 1 && $conf[0] == chr(6)) $this->setConfiguration($key, substr($conf, 1));
 
             // If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
             if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))

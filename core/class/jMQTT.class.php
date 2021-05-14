@@ -1164,6 +1164,7 @@ class jMQTT extends eqLogic {
                 
                 // Looking for cmd in the DB
                 $cmds = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
+                $jsonCmds = array();
                 
                 // if some cmd matches topic
                 if (!is_null($cmds)) {
