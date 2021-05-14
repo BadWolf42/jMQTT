@@ -38,13 +38,14 @@ class jMQTT extends eqLogic {
     const CONF_KEY_MQTT_PORT = 'mqttPort';
     const CONF_KEY_MQTT_USER = 'mqttUser';
     const CONF_KEY_MQTT_PASS = 'mqttPass';
+    const CONF_KEY_MQTT_PUB_STATUS = 'mqttPubStatus';
+    const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
     const CONF_KEY_MQTT_TLS = 'mqttTls';
     const CONF_KEY_MQTT_TLS_CHECK = 'mqttTlsCheck';
     const CONF_KEY_MQTT_TLS_CA = 'mqttTlsCaFile';
     const CONF_KEY_MQTT_TLS_CLI_CERT= 'mqttTlsClientCertFile';
     const CONF_KEY_MQTT_TLS_CLI_KEY = 'mqttTlsClientKeyFile';
     const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
-    const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
     const CONF_KEY_QOS = 'Qos';
     const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
     const CONF_KEY_API = 'api';
@@ -427,13 +428,14 @@ class jMQTT extends eqLogic {
                 self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
             );
             $backupVal = array( // load trivials eqLogic from DB
-                self::CONF_KEY_LOGLEVEL,      self::CONF_KEY_MQTT_CLIENT_ID,
-                self::CONF_KEY_MQTT_ADDRESS,  self::CONF_KEY_MQTT_PORT,
-                self::CONF_KEY_MQTT_USER,     self::CONF_KEY_MQTT_PASS,
-                self::CONF_KEY_QOS,           self::CONF_KEY_MQTT_INC_TOPIC,
-                self::CONF_KEY_MQTT_TLS,      self::CONF_KEY_MQTT_TLS_CHECK,
-                self::CONF_KEY_MQTT_TLS_CA,   self::CONF_KEY_MQTT_TLS_CLI_CERT,
-                self::CONF_KEY_MQTT_PAHO_LOG, self::CONF_KEY_MQTT_TLS_CLI_KEY);
+                self::CONF_KEY_LOGLEVEL,        self::CONF_KEY_MQTT_CLIENT_ID,
+                self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
+                self::CONF_KEY_MQTT_USER,       self::CONF_KEY_MQTT_PASS,
+                self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
+                self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
+                self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
+                self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
+                self::CONF_KEY_QOS);
             foreach ($backupVal as $key)
                 $this->_preSaveInformations[$key] = $eqLogic->getConf($key);
         }
@@ -497,9 +499,10 @@ class jMQTT extends eqLogic {
                 // 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', etc changed
                 $checkChanged = array(self::CONF_KEY_MQTT_ADDRESS,      self::CONF_KEY_MQTT_PORT,
                                       self::CONF_KEY_MQTT_USER,         self::CONF_KEY_MQTT_PASS,
-                                      self::CONF_KEY_MQTT_TLS,          self::CONF_KEY_MQTT_TLS_CHECK,
-                                      self::CONF_KEY_MQTT_TLS_CA,       self::CONF_KEY_MQTT_TLS_CLI_CERT,
-                                      self::CONF_KEY_MQTT_TLS_CLI_KEY,  self::CONF_KEY_MQTT_PAHO_LOG);
+                                      self::CONF_KEY_MQTT_PUB_STATUS,   self::CONF_KEY_MQTT_TLS,
+                                      self::CONF_KEY_MQTT_TLS_CHECK,    self::CONF_KEY_MQTT_TLS_CA,
+                                      self::CONF_KEY_MQTT_TLS_CLI_CERT, self::CONF_KEY_MQTT_TLS_CLI_KEY,
+                                      self::CONF_KEY_MQTT_PAHO_LOG);
                 foreach ($checkChanged as $key) {
                     if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
                         if (!$stopped) {
@@ -1292,6 +1295,7 @@ class jMQTT extends eqLogic {
      * @return string broker status topic name
      */
     public function getMqttClientStatusTopic()  {
+        if (! $this->getConf(self::CONF_KEY_MQTT_PUB_STATUS)) return '';
         return $this->getMqttClientId() . '/' . jMQTT::CLIENT_STATUS;
     }
 
@@ -1376,6 +1380,7 @@ class jMQTT extends eqLogic {
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
             self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
+            self::CONF_KEY_MQTT_PUB_STATUS => '1',
             self::CONF_KEY_MQTT_TLS => '0',
             self::CONF_KEY_MQTT_TLS_CHECK => 'public',
             self::CONF_KEY_AUTO_ADD_CMD => '1',
