@@ -312,26 +312,6 @@ def cmd_handler(message):
 				logging.warning('Client Key is defined but Client Certificate is NOT')
 				return
 
-#TODO check_associate_cert_with_private_key(cert, private_key):
-			# import OpenSSL
-			# try:
-				# private_key_obj = OpenSSL.crypto.load_privatekey(OpenSSL.crypto.FILETYPE_PEM, private_key)
-			# except OpenSSL.crypto.Error:
-				# raise Exception('private key is not correct: %s' % private_key)
-
-			# try:
-				# cert_obj = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert)
-			# except OpenSSL.crypto.Error:
-				# raise Exception('certificate is not correct: %s' % cert)
-
-			# context = OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
-			# context.use_privatekey(private_key_obj)
-			# context.use_certificate(cert_obj)
-			# try:
-				# context.check_privatekey()
-			# except OpenSSL.SSL.Error:
-				# raise Exception('certificate is not correct: %s' % cert)
-
 		# if jmqttclient already exists then remove it first
 		if message['id'] in jmqttclients:
 			logging.info('Id %d : Client already exists. Starting removal', message['id'])
