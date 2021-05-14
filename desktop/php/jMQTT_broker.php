@@ -132,6 +132,13 @@
                             </div>
                         </div>
                         <div class="form-group">
+                            <label class="col-lg-4 control-label">{{Publier le status}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Active/désactive la publication du status en MQTT sur le Broker (sur le topic {ClientId}/status)"></i></sup></label>
+                            <div class="col-lg-4">
+                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPubStatus" checked>
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipements}} <sup><i class="fa fa-question-circle tooltips"
                             title="Seul les Topics correspondants pourront être souscrits sur ce Broker. '#' par défaut, i.e. tous les Topics.
                             <br/>Ne pas modifier sans en comprendre les implications."></i></sup></label>
