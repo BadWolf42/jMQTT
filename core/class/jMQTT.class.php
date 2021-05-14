@@ -1169,13 +1169,12 @@ class jMQTT extends eqLogic {
                 if (!is_null($cmds)) {
 
                     // Keep only info cmds
-                    $cmds = array_filter($cmds, function($cmd){
-                        if ($cmd->getType() == 'action') {
+                    foreach($cmds as $k => $cmd) {
+                        if($cmd->getType() == 'action') {
                             $this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is an action command: skip');
-                            return false;
+                            unset($cmds[$k]);
                         }
-                        return true;
-                    });
+                    }
 
                     // Get list of JSON cmds
                     $jsonCmds = array_filter($cmds, function($cmd){
