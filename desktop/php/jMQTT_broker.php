@@ -140,24 +140,26 @@
                                     style="margin-top: 5px" placeholder="#" />
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{MQTTS (MQTT over TLS)}} <sup><i class="fa fa-question-circle tooltips"
                             title="Chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation."></i></sup></label>
                             <div class="col-lg-4">
-                                <select id="fTls" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls" style="margin-top: 5px">
-                                    <option value="disable">{{Désactivé}}</option>
-                                    <option value="enable">{{Activé - Autorités Publiques}}</option>
-                                    <option value="custom">{{Activé - Autorité Personnalisée}}</option>
-                                </select>
+                                <input id="fTls" type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
                             </div>
                         </div>
-                        <div id="dTlsSecure" class="form-group">
-                            <label class="col-lg-4 control-label">{{Vérifier le certificat du Broker}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet correspond à l'IP/Nom de Domaine du Broker"></i></sup></label>
-                            <div class="col-lg-4">
-                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsSecure" checked>
+                        <div id="dTls" style="display:none">
+                            <div class="form-group">
+                                <label class="col-lg-4 control-label">{{Vérifier le certificat du Broker}} <sup><i class="fa fa-question-circle tooltips"
+                                title="Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet correspond à l'IP/Nom de Domaine du Broker"></i></sup></label>
+                                <div class="col-lg-4">
+                                    <select id="fTlsCheck" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
+                                        <option value="public">{{Activé - Autorités Publiques}}</option>
+                                        <option value="private">{{Activé - Autorité Personnalisée}}</option>
+                                        <option value="disabled">{{Désactivé - Non Recommandé}}</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
 <?php
     $dir = realpath(dirname(__FILE__) . '/../../data/certs');
     $crtfiles = "";
@@ -172,34 +174,34 @@
             $keyfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
     }
 ?>
-                        <div id="dTlsCaFile" class="form-group">
-                            <label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Selectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
-                            <div class="col-lg-4">
-                                <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
-                                    <option value="">{{Désactivé}}</option>
+                            <div id="dTlsCaFile" class="form-group">
+                                <label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
+                                title="Selectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
+                                <div class="col-lg-4">
+                                    <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
+                                        <option value="">{{Désactivé}}</option>
 <?php echo $crtfiles; ?>
-                                </select>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div id="dTlsClientCertFile" class="form-group">
-                            <label class="col-lg-4 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Selectionne le Certificat Client attendu par le Broker.<br/>Ce certificat doit correspondre à la Clé Privée ci-dessous, si l'un est fournit l'autre est obligatoire."></i></sup></label>
-                            <div class="col-lg-4">
-                                <select id="fTlsClientCertFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientCertFile" style="margin-top: 5px">
-                                    <option value="">{{Désactivé}}</option>
+                            <div class="form-group">
+                                <label class="col-lg-4 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
+                                title="Selectionne le Certificat Client attendu par le Broker.<br/>Ce certificat doit correspondre à la Clé Privée ci-dessous, si l'un est fournit l'autre est obligatoire."></i></sup></label>
+                                <div class="col-lg-4">
+                                    <select id="fTlsClientCertFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientCertFile" style="margin-top: 5px">
+                                        <option value="">{{Désactivé}}</option>
 <?php echo $pemfiles; ?>
-                                </select>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div id="dTlsClientKeyFile" class="form-group">
-                            <label class="col-lg-4 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Selectionne la Clée Privée du Client premettant de discuter avec le Broker.<br/>Cette clé privée doit correspondre au Certificat ci-dessus, si l'un est fournit l'autre est obligatoire."></i></sup></label>
-                            <div class="col-lg-4">
-                                <select id="fTlsClientKeyFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile" style="margin-top: 5px">
-                                    <option value="">{{Désactivé}}</option>
+                            <div id="dTlsClientKeyFile" class="form-group">
+                                <label class="col-lg-4 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
+                                title="Selectionne la Clée Privée du Client premettant de discuter avec le Broker.<br/>Cette clé privée doit correspondre au Certificat ci-dessus, si l'un est fournit l'autre est obligatoire."></i></sup></label>
+                                <div class="col-lg-4">
+                                    <select id="fTlsClientKeyFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile" style="margin-top: 5px">
 <?php echo $keyfiles; ?>
-                                </select>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -333,26 +335,26 @@ $('#div_broker_log').on('click','.bt_plugin_conf_view_log',function() {
     }
 });
 
+
 $('#fTls').change(function(){
-    switch ($("#fTls").val()) {
-        case 'custom':
-            $('#dTlsSecure').show();
-            $('#dTlsCaFile').show();
-            $('#dTlsClientCertFile').show();
-            $('#dTlsClientKeyFile').show();
-            break;
-        case 'enable':
-            $('#dTlsSecure').show();
+    if ($(this).prop('checked')) $('#dTls').show();
+    else $('#dTls').hide();
+});
+$('#fTlsCheck').change(function(){
+    switch ($(this).val()) {
+        case 'public':
             $('#dTlsCaFile').hide();
-            $('#dTlsClientCertFile').show();
-            $('#dTlsClientKeyFile').show();
+            break;
+        case 'private':
+            $('#dTlsCaFile').show();
             break;
         default:
-            $('#dTlsSecure').hide();
             $('#dTlsCaFile').hide();
-            $('#dTlsClientCertFile').hide();
-            $('#dTlsClientKeyFile').hide();
     }
+});
+$('#fTlsClientCertFile').change(function(){
+    if ($(this).val() == '') $('#dTlsClientKeyFile').hide();
+    else $('#dTlsClientKeyFile').show();
 });
 
 $('#mqttUploadFile').fileupload({

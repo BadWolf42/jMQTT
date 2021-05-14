@@ -325,18 +325,7 @@ class jMQTTBase {
       $params['id']                   = $id;
       $params['hostname']             = $hostname;
       $params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', $pluginClass, self::get_default_websocket_port($pluginClass)).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
-      if       ($params['tls'] == 'custom') {
-         $params['tls']               = True;
-      } elseif ($params['tls'] == 'enable') {
-         $params['tls']               = True;
-         $params['tlscafile']         = '';
-      } else {
-         $params['tls']               = False;
-         $params['tlssecure']         = '0';
-         $params['tlscafile']         = '';
-         $params['tlsclicertfile']    = '';
-         $params['tlsclikeyfile']     = '';
-      }
+
       // set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
       $params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
 

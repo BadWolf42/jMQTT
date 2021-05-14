@@ -39,7 +39,7 @@ class jMQTT extends eqLogic {
     const CONF_KEY_MQTT_USER = 'mqttUser';
     const CONF_KEY_MQTT_PASS = 'mqttPass';
     const CONF_KEY_MQTT_TLS = 'mqttTls';
-    const CONF_KEY_MQTT_TLS_SECURE = 'mqttTlsSecure';
+    const CONF_KEY_MQTT_TLS_CHECK = 'mqttTlsCheck';
     const CONF_KEY_MQTT_TLS_CA = 'mqttTlsCaFile';
     const CONF_KEY_MQTT_TLS_CLI_CERT= 'mqttTlsClientCertFile';
     const CONF_KEY_MQTT_TLS_CLI_KEY = 'mqttTlsClientKeyFile';
@@ -431,7 +431,7 @@ class jMQTT extends eqLogic {
                 self::CONF_KEY_MQTT_ADDRESS,  self::CONF_KEY_MQTT_PORT,
                 self::CONF_KEY_MQTT_USER,     self::CONF_KEY_MQTT_PASS,
                 self::CONF_KEY_QOS,           self::CONF_KEY_MQTT_INC_TOPIC,
-                self::CONF_KEY_MQTT_TLS,      self::CONF_KEY_MQTT_TLS_SECURE,
+                self::CONF_KEY_MQTT_TLS,      self::CONF_KEY_MQTT_TLS_CHECK,
                 self::CONF_KEY_MQTT_TLS_CA,   self::CONF_KEY_MQTT_TLS_CLI_CERT,
                 self::CONF_KEY_MQTT_PAHO_LOG, self::CONF_KEY_MQTT_TLS_CLI_KEY);
             foreach ($backupVal as $key)
@@ -497,7 +497,7 @@ class jMQTT extends eqLogic {
                 // 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', etc changed
                 $checkChanged = array(self::CONF_KEY_MQTT_ADDRESS,      self::CONF_KEY_MQTT_PORT,
                                       self::CONF_KEY_MQTT_USER,         self::CONF_KEY_MQTT_PASS,
-                                      self::CONF_KEY_MQTT_TLS,          self::CONF_KEY_MQTT_TLS_SECURE,
+                                      self::CONF_KEY_MQTT_TLS,          self::CONF_KEY_MQTT_TLS_CHECK,
                                       self::CONF_KEY_MQTT_TLS_CA,       self::CONF_KEY_MQTT_TLS_CLI_CERT,
                                       self::CONF_KEY_MQTT_TLS_CLI_KEY,  self::CONF_KEY_MQTT_PAHO_LOG);
                 foreach ($checkChanged as $key) {
@@ -990,9 +990,23 @@ class jMQTT extends eqLogic {
         $params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
         $params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
         $params['paholog']           = $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG);
-        $params['tls']               = $this->getConf(self::CONF_KEY_MQTT_TLS);
-        $params['tlscafile']         = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
-        $params['tlssecure']         = $this->getConf(self::CONF_KEY_MQTT_TLS_SECURE);
+        $params['tls']               = boolval($this->getConf(self::CONF_KEY_MQTT_TLS));
+
+        switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
+            case 'disabled':
+                $params['tlsinsecure'] = true;
+                $params['tlscafile'] = '';
+                break;
+            case 'public':
+                $params['tlsinsecure'] = false;
+                $params['tlscafile'] = '';
+                break;
+            case 'private':
+                $params['tlsinsecure'] = false;
+                $params['tlscafile'] = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
+                break;
+        }
+
         $params['tlsclicertfile']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
         $params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
         // Realpaths
@@ -1000,6 +1014,8 @@ class jMQTT extends eqLogic {
             $params['tlscafile']     = realpath(dirname(__FILE__) . '/../../data/certs/'.$params['tlscafile']);
         if ($params['tlsclicertfile'] != '')
             $params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../data/certs/'.$params['tlsclicertfile']);
+        else
+            $params['tlsclikeyfile'] = '';
         if ($params['tlsclikeyfile'] != '')
             $params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../data/certs/'.$params['tlsclikeyfile']);
 
@@ -1360,8 +1376,8 @@ class jMQTT extends eqLogic {
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
             self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
             self::CONF_KEY_QOS => '1',
-            self::CONF_KEY_MQTT_TLS => 'disable',
-            self::CONF_KEY_MQTT_TLS_SECURE => '0',
+            self::CONF_KEY_MQTT_TLS => '0',
+            self::CONF_KEY_MQTT_TLS_CHECK => 'public',
             self::CONF_KEY_AUTO_ADD_CMD => '1',
             self::CONF_KEY_MQTT_INC_TOPIC => '#',
             self::CONF_KEY_API => self::API_DISABLE,

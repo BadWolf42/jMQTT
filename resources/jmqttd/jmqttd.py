@@ -73,7 +73,7 @@ class MqttClient:
 		if message['tls']:
 			try:
 				self.mqttclient.tls_set(ca_certs=message['tlscafile'], certfile=message['tlsclicertfile'], keyfile=message['tlsclikeyfile'])
-				self.mqttclient.tls_insecure_set(('tlssecure' not in message) or (message['tlssecure'] != '1'))
+				self.mqttclient.tls_insecure_set(('tlsinsecure' in message) and message['tlsinsecure'])
 			except:
 				logging.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
 
