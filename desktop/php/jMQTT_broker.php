@@ -91,8 +91,7 @@
                     <fieldset>
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{IP/Nom de Domaine du Broker}} <sup><i class="fa fa-question-circle tooltips"
-                            title="IP/Nom de Domaine du Broker, par défaut 'localhost' i.e. la machine hébergeant Jeedom.
-                            <br/>Pour MQTT sécurisé (TLS) avec validation du certificat, le certificat doit être valide pour le contenu de ce champ."></i></sup></label>
+                            title="IP/Nom de Domaine du Broker, par défaut 'localhost' i.e. la machine hébergeant Jeedom."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttAddress"
                                     style="margin-top: 5px" placeholder="localhost" />
@@ -107,10 +106,9 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Identifiant de Connexion}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT. Par défaut la valeur est 'jeedom'.
-                            <br/>Cet identifiant est aussi utilisé dans les topics des commandes info status et api.
-                            <br/>Les topics sont automatiquement mis à jour si l’identifiant est modifié.
+                            <label class="col-lg-4 control-label">{{Identifiant/ClientId}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT.
+                            <br/>Cet identifiant est aussi utilisé dans les topics status et api.
                             <br/>Il est important que cet identifiant ne soit utilisé que par jMQTT sur ce Broker."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId"
@@ -118,16 +116,16 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Compte de Connexion}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Utilisateur permettant de se connecter au Broker.<br/>Non obligatoire, vide par défaut."></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Nom d'utilisateur}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Utilisateur permettant de se connecter au Broker.<br/>Non obligatoire."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser"
                                     autocomplete="off" style="margin-top: 5px" />
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Mot de passe de Connexion}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Mot de passe permettant de se connecter au Broker.<br/>Non obligatoire, vide par défaut."></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Mot de passe}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Mot de passe permettant de se connecter au Broker.<br/>Non obligatoire."></i></sup></label>
                             <div class="col-lg-4">
                                 <input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPass"
                                     autocomplete="off" style="margin-top: 5px" />
@@ -143,9 +141,8 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{MQTT sécurisé (TLS)}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation.
-                            <br/>Ne pas modifier sans en comprendre les implications."></i></sup></label>
+                            <label class="col-lg-4 control-label">{{MQTTS (MQTT over TLS)}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation."></i></sup></label>
                             <div class="col-lg-4">
                                 <select id="fTls" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls" style="margin-top: 5px">
                                     <option value="disable">{{Désactivé}}</option>
@@ -155,13 +152,12 @@
                             </div>
                         </div>
                         <div id="dTlsSecure" class="form-group">
-                            <label class="col-lg-4 control-label">{{Vérifier l'Autorité}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Vérifie que le certificat du Broker est valide et correspond bien à ce Broker (IP/FQDN & CA)."></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Vérifier le certificat du Broker}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet correspond à l'IP/Nom de Domaine du Broker"></i></sup></label>
                             <div class="col-lg-4">
-                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsSecure">
+                                <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsSecure" checked>
                             </div>
                         </div>
-                        <div id="dTlsCaFile" class="form-group">
 <?php
     $dir = realpath(dirname(__FILE__) . '/../../data/certs');
     $crtfiles = "";
@@ -176,6 +172,7 @@
             $keyfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
     }
 ?>
+                        <div id="dTlsCaFile" class="form-group">
                             <label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
                             title="Selectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
                             <div class="col-lg-4">
@@ -186,8 +183,8 @@
                             </div>
                         </div>
                         <div id="dTlsClientCertFile" class="form-group">
-                            <label class="col-lg-4 control-label">{{Certificat Client Personnalisé}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Selectionne le Certificat Client attendu par le Broker.<br/>Ce certificat doit être le pendant de la Clé Privée ci-dessous, si l'un est fournit l'autre est obligatoire."></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Selectionne le Certificat Client attendu par le Broker.<br/>Ce certificat doit correspondre à la Clé Privée ci-dessous, si l'un est fournit l'autre est obligatoire."></i></sup></label>
                             <div class="col-lg-4">
                                 <select id="fTlsClientCertFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientCertFile" style="margin-top: 5px">
                                     <option value="">{{Désactivé}}</option>
@@ -196,8 +193,8 @@
                             </div>
                         </div>
                         <div id="dTlsClientKeyFile" class="form-group">
-                            <label class="col-lg-4 control-label">{{Clé Privée Client Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Selectionne la Clée Privée du Client premettant de discuter avec le Broker.<br/>Cette clé privée doit être le pendant du Certificat ci-dessus, si l'un est fournit l'autre est obligatoire."></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
+                            title="Selectionne la Clée Privée du Client premettant de discuter avec le Broker.<br/>Cette clé privée doit correspondre au Certificat ci-dessus, si l'un est fournit l'autre est obligatoire."></i></sup></label>
                             <div class="col-lg-4">
                                 <select id="fTlsClientKeyFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile" style="margin-top: 5px">
                                     <option value="">{{Désactivé}}</option>
