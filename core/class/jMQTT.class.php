@@ -689,8 +689,12 @@ class jMQTT extends eqLogic {
     public static function health() {
         $return = array();
         foreach(self::getBrokers() as $broker) {
+            // if(!$broker->getIsEnable() || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_POK || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK)
+                // continue;
             $mosqHost = $broker->getConf(self::CONF_KEY_MQTT_ADDRESS);
             $mosqPort = $broker->getConf(self::CONF_KEY_MQTT_PORT);
+            if ($mosqPort == '')
+                $mosqPort = (boolval($broker->getConf(self::CONF_KEY_MQTT_TLS))) ? 8883 : 1883;
             
             $socket = socket_create(AF_INET, SOCK_STREAM, 0);
             $state = false;
@@ -699,6 +703,7 @@ class jMQTT extends eqLogic {
                 socket_close($socket);
             }
         
+            //log::add(__CLASS__, 'debug', 'Health check BrkId:'.$broker->getConf(self::CONF_KEY_BRK_ID) .' host='.$mosqHost.' port='.$mosqPort);
             $return[] = array(
                 'test' => __('Accès au broker', __FILE__) . ' ' . $broker->getName(),
                 'result' => $state ? __('OK', __FILE__) : __('NOK', __FILE__),
