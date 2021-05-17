@@ -385,10 +385,6 @@ $('.createTemplate').off('click').on('click', function () {
     });
 });
 
-$('#checkAll').on('click', function () {
-    $('.cmdAttr[data-l1key=isVisible]').prop('checked', this.checked);
-});
-
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
  *   . Reorder commands if the JSON view is active
