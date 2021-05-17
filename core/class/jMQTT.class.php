@@ -689,13 +689,10 @@ class jMQTT extends eqLogic {
     public static function health() {
         $return = array();
         foreach(self::getBrokers() as $broker) {
-            // if(!$broker->getIsEnable() || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_POK || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK)
-                // continue;
+            if(!$broker->getIsEnable())
+                continue;
             $mosqHost = $broker->getConf(self::CONF_KEY_MQTT_ADDRESS);
             $mosqPort = $broker->getConf(self::CONF_KEY_MQTT_PORT);
-            if ($mosqPort == '')
-                $mosqPort = (boolval($broker->getConf(self::CONF_KEY_MQTT_TLS))) ? 8883 : 1883;
-            
             $socket = socket_create(AF_INET, SOCK_STREAM, 0);
             $state = false;
             if ($socket !== false) {
@@ -703,7 +700,6 @@ class jMQTT extends eqLogic {
                 socket_close($socket);
             }
         
-            //log::add(__CLASS__, 'debug', 'Health check BrkId:'.$broker->getConf(self::CONF_KEY_BRK_ID) .' host='.$mosqHost.' port='.$mosqPort);
             $return[] = array(
                 'test' => __('Accès au broker', __FILE__) . ' ' . $broker->getName(),
                 'result' => $state ? __('OK', __FILE__) : __('NOK', __FILE__),
@@ -832,7 +828,7 @@ class jMQTT extends eqLogic {
             foreach(self::getBrokers() as $broker) {
                 $hn = $broker->getMqttAddress();
                 $ip = gethostbyname($hn);
-                if ($hn == '' || $hn == self::getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS) || substr($ip, 0, 4) == '127.') {
+                if ($hn == '' || $hn == $broker->getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS) || substr($ip, 0, 4) == '127.') {
                     $brokerexists = true;
                     echo "Broker eqpt already exists\n";
                     break;
@@ -1377,10 +1373,12 @@ class jMQTT extends eqLogic {
     }
     
     private function getConf($_key) {
-        return $this->getConfiguration($_key, self::getDefaultConfiguration($_key));
+        return $this->getConfiguration($_key, $this->getDefaultConfiguration($_key));
     }
     
-    private static function getDefaultConfiguration($_key) {
+    private function getDefaultConfiguration($_key) {
+        if ($_key == self::CONF_KEY_MQTT_PORT)
+            return (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) ? 8883 : 1883;
         $defValues = array(
             self::CONF_KEY_MQTT_ADDRESS => 'localhost',
             self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
