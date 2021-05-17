@@ -81,7 +81,7 @@ class MqttClient:
 		if self.mqttstatustopic != '':
 			client.will_set(self.mqttstatustopic, 'offline', 1, True)
 			client.publish(self.mqttstatustopic, 'online', 1, True)
-		logging.info('BrkId: % 4d : Connected to broker %s:%d', self.id, self.mqtthostname, self.mqttport)
+		logging.info('BrkId: % 4s : Connected to broker %s:%d', self.id, self.mqtthostname, self.mqttport)
 		for topic in self.mqttsubscribedtopics:
 			self.subscribe_topic(topic, self.mqttsubscribedtopics[topic])
 		self.q.put('{"cmd":"connection","state":' + self.is_connected() + '}')
@@ -90,9 +90,9 @@ class MqttClient:
 		self.connected = False
 		self.q.put('{"cmd":"connection","state":' + self.is_connected() + '}')
 		if rc == mqtt.MQTT_ERR_SUCCESS:
-			logging.info('BrkId: % 4d : Disconnected from broker.', self.id)
+			logging.info('BrkId: % 4s : Disconnected from broker.', self.id)
 		else:
-			logging.error('BrkId: % 4d : Unexpected disconnection from broker!', self.id)
+			logging.error('BrkId: % 4s : Unexpected disconnection from broker!', self.id)
 
 	def on_message(self, client, userdata, message):
 		try:
@@ -100,7 +100,7 @@ class MqttClient:
 		except:
 			logging.warning('Message skipped: payload %s  is not valid for topic %s', message.payload.hex(), message.topic)
 		else:
-			logging.info('BrkId: % 4d : Message received (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, message.topic, decodedPayload, message.qos, bool(message.retain))
+			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, message.topic, decodedPayload, message.qos, bool(message.retain))
 			self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":decodedPayload, "qos":message.qos, "retain":bool(message.retain)}))
 
 	def is_connected(self):
@@ -110,20 +110,20 @@ class MqttClient:
 		res = self.mqttclient.subscribe(topic, qos)
 		if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
 			self.mqttsubscribedtopics[topic] = qos
-			logging.info('BrkId: % 4d : Topic subscribed "%s"', self.id, topic)
+			logging.info('BrkId: % 4s : Topic subscribed "%s"', self.id, topic)
 		else:
-			logging.error('BrkId: % 4d : Topic subscription failed "%s"', self.id, topic)
+			logging.error('BrkId: % 4s : Topic subscription failed "%s"', self.id, topic)
 
 	def unsubscribe_topic(self, topic):
 		if topic in self.mqttsubscribedtopics:
 			res = self.mqttclient.unsubscribe(topic)
 			if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
 				del self.mqttsubscribedtopics[topic]
-				logging.info('BrkId: % 4d : Topic unsubscribed "%s"', self.id, topic)
+				logging.info('BrkId: % 4s : Topic unsubscribed "%s"', self.id, topic)
 			else:
-				logging.error('BrkId: % 4d : Topic unsubscription failed "%s"', self.id, topic)
+				logging.error('BrkId: % 4s : Topic unsubscription failed "%s"', self.id, topic)
 		else:
-			logging.info('BrkId: % 4d : Can\'t unsubscribe not subscribed topic "%s"', self.id, topic)
+			logging.info('BrkId: % 4s : Can\'t unsubscribe not subscribed topic "%s"', self.id, topic)
 
 	def publish(self, topic, payload, qos, retain):
 		self.mqttclient.publish(topic, payload, qos, retain)
@@ -134,14 +134,14 @@ class MqttClient:
 		#  - wait_for_publish() will block until the message is published. It will raise ValueError if the message is not queued (rc == MQTT_ERR_QUEUE_SIZE).
 		#  - is_published returns True if the message has been published. It will raise ValueError if the message is not queued (rc == MQTT_ERR_QUEUE_SIZE).
 		#  - A ValueError will be raised if topic is None, has zero length or is invalid (contains a wildcard), if qos is not one of 0, 1 or 2, or if the length of the payload is greater than 268435455 bytes.
-		logging.info('BrkId: % 4d : Sending message to broker (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, topic, payload, qos, retain)
+		logging.info('BrkId: % 4s : Sending message to broker (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, topic, payload, qos, retain)
 
 	def start(self):
 		try:
 			self.mqttclient.connect(self.mqtthostname, self.mqttport, 30)
 		except:
 			if logging.getLogger().isEnabledFor(logging.DEBUG):
-				logging.exception('BrkId: % 4d : MqttClient.start() Exception', self.id)
+				logging.exception('BrkId: % 4s : MqttClient.start() Exception', self.id)
 		self.mqttthread.start()
 
 	def stop(self):
@@ -180,7 +180,7 @@ class WebSocketClient:
 				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=0.1)
 			except:
 				if logging.getLogger().isEnabledFor(logging.DEBUG):
-					logging.exception('BrkId: % 4d : WebSocketClient.autorestart_run_forever() Exception', self.id)
+					logging.exception('BrkId: % 4s : WebSocketClient.autorestart_run_forever() Exception', self.id)
 			# Wait up to 5sec before reconnection
 			for i in range(50):
 				if self.stopautorestart:
@@ -196,32 +196,32 @@ class WebSocketClient:
 			try:
 				msg = self.q.get(block=False)
 				self.wsclient.send(msg)
-				logging.info('BrkId: % 4d : Sending message to Jeedom : %s', self.id, msg)
+				logging.info('BrkId: % 4s : Sending message to Jeedom : %s', self.id, msg)
 			except queue.Empty:
 				pass
 			except:
 				if logging.getLogger().isEnabledFor(logging.DEBUG):
-					logging.exception('BrkId: % 4d : WebSocketClient.worker() Exception', self.id)
+					logging.exception('BrkId: % 4s : WebSocketClient.worker() Exception', self.id)
 
 	def on_open(self, ws):
 		ws.send('{"cmd":"connection","state":' + str(self.fnismqttconnected()) + '}')
-		logging.info('BrkId: % 4d : Connected to Jeedom using %s', self.id, self.wscallback)
+		logging.info('BrkId: % 4s : Connected to Jeedom using %s', self.id, self.wscallback)
 		self.wsstarted.set()
 
 	def on_message(self, ws, message):
-		logging.debug('BrkId: % 4d : Received a message through WebSocket', self.id)
+		logging.debug('BrkId: % 4s : Received a message through WebSocket', self.id)
 
 	def on_error(self, ws, error):
 		if not isinstance(error, AttributeError) or not self.stopautorestart:
-			logging.error('BrkId: % 4d : WebSocket client encountered an Error!', self.id, exc_info=error)
+			logging.error('BrkId: % 4s : WebSocket client encountered an Error!', self.id, exc_info=error)
 
 	def on_close(self, ws):
-		logging.info('BrkId: % 4d : Disconnected from Jeedom', self.id)
+		logging.info('BrkId: % 4s : Disconnected from Jeedom', self.id)
 
 	def start(self):
 		self.stopautorestart = False
 		self.wsthread.start()
-		self.wsstarted.wait(timeout=3)
+		self.wsstarted.wait(timeout=1)
 		self.stopworker = False
 		self.workerthread.start()
 
@@ -248,12 +248,12 @@ class jMqttClient:
 			self.ws.start()
 
 	def stop(self):
-		if self.ws is not None:
-			self.ws.stop()
-			self.ws = None
 		if self.mqtt is not None:
 			self.mqtt.stop()
 			self.mqtt = None
+		if self.ws is not None:
+			self.ws.stop()
+			self.ws = None
 
 	def restart(self, message=None):
 		if message is not None:
@@ -280,7 +280,7 @@ def params_fail(msg, constraints):
 		elif (expected_type is not None) and (not isinstance(msg[key], expected_type)):
 			try:
 				if expected_type is bool:
-					msg[key] = msg[key].lower() in ['true', '1']
+					msg[key] = str(msg[key]).lower() in ['true', '1']
 				else:
 					msg[key] = expected_type(msg[key])
 			except:
@@ -390,6 +390,7 @@ class Main():
 				self.jeedomsocket.open()
 			except:
 				self.log.exception('Run         : Failed to Open the communication channel for Jeedom')
+				self.should_stop.set()
 
 		# Wait for instructions
 		while not self.should_stop.is_set():
@@ -406,9 +407,6 @@ class Main():
 				message = json.loads(jeedom_msg)
 			except queue.Empty:
 				continue # More chance next time
-			except KeyboardInterrupt:
-				self.should_stop.set()
-				continue # Die now
 			except:
 				if self.log.isEnabledFor(logging.DEBUG):
 					self.log.exception('Run         : Unable to get a message or decode JSON')
@@ -420,7 +418,7 @@ class Main():
 
 			# Check for mandatory parameters before handling the message
 			if params_fail(message,  # key, mandatory, default_val, expected_type
-									[['id',      True,        None, int],
+									[['id',      True,        None, str],
 									 ['cmd',     True,        None, str]]):
 				continue
 
@@ -440,30 +438,30 @@ class Main():
 			if 'tlscafile' not in message or message['tlscafile'] == '':
 				message['tlscafile'] = None
 			elif not os.access(message['tlscafile'], os.R_OK):
-				self.log.warning('BrkId: % 4d : Cmd:    newMqttClient -> Unable to read CA file "%s"', message['id'], message['tlscafile'])
+				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Unable to read CA file "%s"', message['id'], message['tlscafile'])
 				return
 			if 'tlsclicertfile' not in message or message['tlsclicertfile'] == '':
 				message['tlsclicertfile'] = None
 			elif not os.access(message['tlsclicertfile'], os.R_OK):
-				self.log.warning('BrkId: % 4d : Cmd:    newMqttClient -> Unable to read Client Certificate file "%s"', message['id'], message['tlsclicertfile'])
+				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Unable to read Client Certificate file "%s"', message['id'], message['tlsclicertfile'])
 				return
 			if 'tlsclikeyfile' not in message or message['tlsclikeyfile'] == '':
 				message['tlsclikeyfile'] = None
 			elif not os.access(message['tlsclikeyfile'], os.R_OK):
-				self.log.warning('BrkId: % 4d : Cmd:    newMqttClient -> Unable to read Client Key file "%s"', message['id'], message['tlsclikeyfile'])
+				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Unable to read Client Key file "%s"', message['id'], message['tlsclikeyfile'])
 				return
 			if message['tlsclicertfile'] is None and message['tlsclikeyfile'] is not None:
-				self.log.warning('BrkId: % 4d : Cmd:    newMqttClient -> Client Certificate is defined but Client Key is NOT', message['id'])
+				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Client Certificate is defined but Client Key is NOT', message['id'])
 				return
 			if message['tlsclicertfile'] is not None and message['tlsclikeyfile'] is None:
-				self.log.warning('BrkId: % 4d : Cmd:    newMqttClient -> Client Key is defined but Client Certificate is NOT', message['id'])
+				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Client Key is defined but Client Certificate is NOT', message['id'])
 				return
-		# if jmqttclient already exists then remove it first
+		# if jmqttclient already exists then restart it
 		if message['id'] in self.jmqttclients:
-			self.log.info('BrkId: % 4d : Cmd:    newMqttClient -> Client already exists. Restarting it.', message['id'])
+			self.log.info('BrkId: % 4s : Cmd:    newMqttClient -> Client already exists. Restarting it.', message['id'])
 			self.jmqttclients[message['id']].restart(message)
 		else: # create requested jmqttclient
-			self.log.info('BrkId: % 4d : Cmd:    newMqttClient -> Creating Client.', message['id'])
+			self.log.info('BrkId: % 4s : Cmd:    newMqttClient -> Creating Client.', message['id'])
 			newjMqttClient = jMqttClient(message)
 			newjMqttClient.start()
 			self.jmqttclients[message['id']] = newjMqttClient
@@ -471,11 +469,11 @@ class Main():
 	def handle_removeMqttClient(self, message):
 		# if jmqttclient exists then remove it
 		if message['id'] in self.jmqttclients:
-			self.log.info('BrkId: % 4d : Starting Client removal', message['id'])
+			self.log.info('BrkId: % 4s : Starting Client removal', message['id'])
 			self.jmqttclients[message['id']].stop()
 			del self.jmqttclients[message['id']]
 		else:
-			self.log.info('BrkId: % 4d : Cmd: removeMqttClient -> No client found with this Broker', message['id'])
+			self.log.info('BrkId: % 4s : Cmd: removeMqttClient -> No client found with this Broker', message['id'])
 
 	def handle_subscribeTopic(self, message):
 		# Check for                  key, mandatory, default_val, expected_type
@@ -485,7 +483,7 @@ class Main():
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].mqtt.subscribe_topic(message['topic'], message['qos'])
 		else:
-			self.log.debug('BrkId: % 4d : Cmd:   subscribeTopic -> No client found with this Broker', message['id'])
+			self.log.debug('BrkId: % 4s : Cmd:   subscribeTopic -> No client found with this Broker', message['id'])
 
 	def handle_unsubscribeTopic(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
@@ -494,7 +492,7 @@ class Main():
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].mqtt.unsubscribe_topic(message['topic'])
 		else:
-			self.log.debug('BrkId: % 4d : Cmd: unsubscribeTopic -> No client found with this Broker', message['id'])
+			self.log.debug('BrkId: % 4s : Cmd: unsubscribeTopic -> No client found with this Broker', message['id'])
 
 	def handle_messageOut(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
@@ -505,16 +503,16 @@ class Main():
 			return
 		# Supplementary test on qos
 		if message['qos'] < 0 or message['qos'] > 2:
-			self.log.error('BrkId: % 4d : Cmd:       messageOut -> wrong value for qos "%d"', message['id'], message['qos'])
+			self.log.error('BrkId: % 4s : Cmd:       messageOut -> wrong value for qos "%d"', message['id'], message['qos'])
 			return
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].mqtt.publish(message['topic'], message['payload'], message['qos'], message['retain'])
 		else:
-			self.log.debug('BrkId: % 4d : Cmd:       messageOut -> No client found with this Broker', message['id'])
+			self.log.debug('BrkId: % 4s : Cmd:       messageOut -> No client found with this Broker', message['id'])
 
 	def handle_unknown(self, message):
 		# Message when Cmd is not found
-		self.log.debug('BrkId: % 4d : Cmd: %16s -> Unknown cmd dump="%s"', message['id'], message['cmd'], json.dumps(message))
+		self.log.debug('BrkId: % 4s : Cmd: %16s -> Unknown cmd dump="%s"', message['id'], message['cmd'], json.dumps(message))
 
 	def shutdown(self):
 		self.log.info('Stop jMQTT python daemon')
