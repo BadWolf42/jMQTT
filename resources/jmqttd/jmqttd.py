@@ -150,6 +150,8 @@ class MqttClient:
 		self.mqttclient.disconnect()
 		self.mqttthread.join()
 
+# ----------------------------------------------------------------------------
+
 class WebSocketClient:
 	def __init__(self, queue, message, fnismqttconnected):
 		self.q = queue
@@ -232,6 +234,8 @@ class WebSocketClient:
 		self.wsclient.close()
 		self.wsthread.join()
 
+# ----------------------------------------------------------------------------
+
 class jMqttClient:
 	def __init__(self, message):
 		self.m = message
@@ -264,9 +268,18 @@ class jMqttClient:
 	def __del__(self):
 		self.stop()
 
+# ----------------------------------------------------------------------------
 
-def params_fail(msg, constraints):
-	res = False
+# Takes a message "msg" and an array of (key, mandatory, default_val, expected_type) tupples to validate
+#   - "key" is an orderable and printable value representing a slot in msg (msg[key])
+#   - "mandatory" is a bool stating if msg[key] is mandatory or just expected
+#   - "default_val" can by any value to be placed in msg[key] if missing
+#         if "default_val" is None and mandatory is True, an error is logged if key is missing
+#   - "expected_type" is the expected type of msg[key], or None if no type is expected
+#         if msg[key] is not of expected type and cast atempt fails, an error is printed
+#   The return value is False if an error occurs, True otherwise
+def validate_params(msg, constraints):
+	res = True
 	bid = "% 4s" % (str(msg['id']))  if  'id' in msg else "????"
 	cmd = "%16s" % (str(msg['cmd'])) if 'cmd' in msg else "?               "
 	for (key, mandatory, default_val, expected_type) in constraints:
@@ -274,7 +287,7 @@ def params_fail(msg, constraints):
 			if mandatory:
 				if default_val is None:
 					logging.error('BrkId: %s : Cmd: %s -> missing parameter "%s" dump=%s', bid, cmd, key, json.dumps(msg))
-					res = True
+					res = False
 				else:
 					msg[key] = default_val
 		elif (expected_type is not None) and (not isinstance(msg[key], expected_type)):
@@ -285,7 +298,7 @@ def params_fail(msg, constraints):
 					msg[key] = expected_type(msg[key])
 			except:
 				logging.error('BrkId: %s : Cmd: %s -> Incorrect parameter "%s" (is %s, should be %s) dump=%s', bid, cmd, key, type(msg[key]), expected_type, json.dumps(msg))
-				res = True
+				res = False
 	return res
 
 # ----------------------------------------------------------------------------
@@ -417,9 +430,9 @@ class Main():
 				continue # Ignore unauthorized messages
 
 			# Check for mandatory parameters before handling the message
-			if params_fail(message,  # key, mandatory, default_val, expected_type
-									[['id',      True,        None, str],
-									 ['cmd',     True,        None, str]]):
+			if not validate_params(message,  # key, mandatory, default_val, expected_type
+											[['id',      True,        None, str],
+											 ['cmd',     True,        None, str]]):
 				continue
 
 			# Register the call
@@ -428,10 +441,10 @@ class Main():
 
 	def handle_newMqttClient(self, message):
 		# Check for                      key, mandatory, default_val, expected_type
-		if params_fail(message, [['callback',      True,        None, str],
-								 ['hostname',      True,        None, str],
-								 ['port',         False,        None, int],
-								 ['tls',           True,       False, bool]]):
+		if not validate_params(message, [['callback',      True,        None, str],
+										 ['hostname',      True,        None, str],
+										 ['port',         False,        None, int],
+										 ['tls',           True,       False, bool]]):
 			return
 
 		if message['tls']:
@@ -477,8 +490,8 @@ class Main():
 
 	def handle_subscribeTopic(self, message):
 		# Check for                  key, mandatory, default_val, expected_type
-		if params_fail(message, [['topic',     True,        None, str],
-								 ['qos',       True,        None, int]]):
+		if not validate_params(message, [['topic',     True,        None, str],
+										 ['qos',       True,        None, int]]):
 			return
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].mqtt.subscribe_topic(message['topic'], message['qos'])
@@ -487,7 +500,7 @@ class Main():
 
 	def handle_unsubscribeTopic(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
-		if params_fail(message, [['topic',      True,        None, str]]):
+		if not validate_params(message, [['topic',      True,        None, str]]):
 			return
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].mqtt.unsubscribe_topic(message['topic'])
@@ -496,10 +509,10 @@ class Main():
 
 	def handle_messageOut(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
-		if params_fail(message, [['topic',      True,        None, str],
-								 ['payload',    True,          '', str],
-								 ['qos',        True,        None, int],
-								 ['retain',     True,        None, bool]]):
+		if not validate_params(message, [['topic',      True,        None, str],
+										 ['payload',    True,          '', str],
+										 ['qos',        True,        None, int],
+										 ['retain',     True,        None, bool]]):
 			return
 		# Supplementary test on qos
 		if message['qos'] < 0 or message['qos'] > 2:
@@ -554,6 +567,7 @@ class Main():
 		self.log.debug("Exit 0")
 		sys.stdout.flush()
 
+# ----------------------------------------------------------------------------
 
 if __name__ == '__main__':
 	# Formater for the output of the logger
