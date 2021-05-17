@@ -23,8 +23,8 @@ try {
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
-    define('PATH_CERTS', __DIR__ . '/../../data/templates');
-    define('PATH_TPLTS', __DIR__ . '/../../data/certs');
+    define('PATH_TPLTS', __DIR__ . '/../../data/templates');
+    define('PATH_CERTS', __DIR__ . '/../../data/certs');
 
     ajax::init();
 
