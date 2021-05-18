@@ -18,13 +18,13 @@
 
 try {
     require_once __DIR__ . '/../../../../core/php/core.inc.php';
+    require_once __DIR__  . '/../class/jMQTTBase.class.php';
     include_file('core', 'authentification', 'php');
 
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
     define('PATH_TPLTS', __DIR__ . '/../../data/templates');
-    define('PATH_CERTS', __DIR__ . '/../../data/certs');
 
     ajax::init();
 
@@ -114,7 +114,7 @@ try {
         if (init('dir') == 'template') {
             $uploaddir = PATH_TPLTS;
         } elseif (init('dir') == 'certs') {
-            $uploaddir = PATH_CERTS;
+            $uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
         } else {
             throw new Exception(__('Téléversement invalide', __FILE__));
         }
@@ -140,7 +140,7 @@ try {
         if (init('dir') == 'template') {
             $uploaddir = PATH_TPLTS;
         } elseif (init('dir') == 'certs') {
-            $uploaddir = PATH_CERTS;
+            $uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
         } else {
             throw new Exception(__('Suppression invalide', __FILE__));
         }

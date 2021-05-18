@@ -168,7 +168,7 @@
                                 </div>
                             </div>
 <?php
-    $dir = realpath(dirname(__FILE__) . '/../../data/certs');
+    $dir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
     $crtfiles = "";
     $pemfiles = "";
     $keyfiles = "";
