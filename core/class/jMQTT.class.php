@@ -1015,13 +1015,13 @@ class jMQTT extends eqLogic {
         $params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
         // Realpaths
         if ($params['tlscafile'] != '')
-            $params['tlscafile']     = realpath(dirname(__FILE__) . '/../../data/certs/'.$params['tlscafile']);
+            $params['tlscafile']     = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $params['tlscafile']);
         if ($params['tlsclicertfile'] != '')
-            $params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../data/certs/'.$params['tlsclicertfile']);
+            $params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../' . jMQTTBase::PATH_CERTIFICATES . $params['tlsclicertfile']);
         else
             $params['tlsclikeyfile'] = '';
         if ($params['tlsclikeyfile'] != '')
-            $params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../data/certs/'.$params['tlsclikeyfile']);
+            $params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $params['tlsclikeyfile']);
 
         jMQTTBase::new_mqtt_client(__CLASS__, $this->getId(), $this->getMqttAddress(), $params);
 
