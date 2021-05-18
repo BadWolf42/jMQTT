@@ -12,7 +12,7 @@ class jMQTTBase {
    const CACHE_DAEMON_CONNECTED = 'daemonConnected';
    const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
 
-   const PATH_CERTIFICATES = 'data/certs/';
+   const PATH_CERTIFICATES = 'data/jmqtt/certs/';
 
    const DEFAULT_PYTHON_PORT = 1025;
    const DEFAULT_WEBSOCKET_PORT = 1026;
