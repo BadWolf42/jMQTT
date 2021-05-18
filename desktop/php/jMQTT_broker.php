@@ -74,18 +74,6 @@
     <div class="panel-body">
         <div id="div_broker_configuration"></div>
         <div class="form-actions">
-            <!-- <div class="form-group pull-right">
-                <span class="btn btn-success btn-file" style="width:100%;" title="Uploader un fichier">
-                    <i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
-                </span>
-            </div> -->
-                                <!-- <span class="btn btn-danger" style="" title="Supprimer le Certificat selectionné">
-                                    <a class="mqttDeleteFile"><i class="fas fa-trash"></i></a>
-                                </span>
-                                <span class="btn btn-success btn-file" style="width:5%;" title="Uploader un Certificat">
-                                    <i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
-                                </span>
-                                <div class="eventDisplayMini"></div> -->
             <form class="form-horizontal">
                 <div class="form-group">
                     <fieldset>
@@ -147,7 +135,6 @@
                                     style="margin-top: 5px" placeholder="#" />
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{MQTTS (MQTT over TLS)}} <sup><i class="fa fa-question-circle tooltips"
                             title="Chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation."></i></sup></label>
@@ -240,9 +227,7 @@
         </div>
     </div>
 </div>
-
 <script>
-
 var timeout_refreshMqttClientInfo = null;
 
 function showMqttClientInfo(data) {
@@ -258,7 +243,6 @@ function showMqttClientInfo(data) {
         default:
            $('.mqttClientLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
     }
-
     switch (data.state) {
         case 'ok':
             $('.mqttClientState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
@@ -275,9 +259,7 @@ function showMqttClientInfo(data) {
         default:
             $('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
     }
-
     $('.mqttClientLastLaunch').empty().append(data.last_launch);
-
     if ($("#div_broker_mqttclient").is(':visible')) {
         clearTimeout(timeout_refreshMqttClientInfo);
         timeout_refreshMqttClientInfo = setTimeout(refreshMqttClientInfo, 5000);
@@ -288,7 +270,6 @@ function refreshMqttClientInfo() {
     var id = $('.eqLogicAttr[data-l1key=id]').value();
     if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
-
     callPluginAjax({
         data: {
             action: 'getMqttClientInfo',
@@ -318,7 +299,6 @@ $('.bt_startMqttClient').on('click',function(){
     var id = $('.eqLogicAttr[data-l1key=id]').value();
     if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
-
     clearTimeout(timeout_refreshMqttClientInfo);
     callPluginAjax({
         data: {
@@ -342,7 +322,6 @@ $('#div_broker_log').on('click','.bt_plugin_conf_view_log',function() {
     }
 });
 
-
 $('#fTls').change(function(){
     if ($(this).prop('checked')) $('#dTls').show();
     else $('#dTls').hide();
@@ -364,50 +343,5 @@ $('#fTlsClientCertFile').change(function(){
     else $('#dTlsClientKeyFile').show();
 });
 
-$('#mqttUploadFile').fileupload({
-    dataType: 'json',
-    replaceFileInput: false,
-    done: function (e, data) {
-        if (data.result.state != 'ok') {
-            $('.eventDisplayMini').showAlert({message: data.result.result, level: 'danger'});
-            return;
-        }
-        $('.eventDisplayMini').showAlert({message: '{{Fichier(s) ajouté(s) avec succès}}', level: 'success'});
-        // $('#md_modal').dialog('close');
-        // $('#md_modal').dialog({title: "{{Gestion des jingles SqueezeboxControl}}"});
-        // $('#md_modal').load('index.php?v=d&plugin=squeezeboxcontrol&modal=jingle').dialog('open');
-    }
-});
 
-$('.mqttDeleteFile').on('click', function (){
-    var oriname = $("#fTlsCaFile").val()
-    $.ajax({
-        type: "POST",
-        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
-        data: {
-            action: "filedelete",
-            dir: "certs",
-            name: oriname
-        },
-        global : false,
-        dataType: 'json',
-        error: function(request, status, error) {
-            handleAjaxError(request, status, error);
-        },
-        success: function(data) {
-            if (data.state != 'ok') {
-                $('.eventDisplayMini').showAlert({message:  data.result,level: 'danger'});
-                setTimeout(function() { deleteAlertMini() }, 2000);
-                return;
-            }
-            $('.eventDisplayMini').showAlert({message:  'Suppression effectuée' ,level: 'success'});
-            setTimeout(function() { deleteAlertMini() }, 2000);
-            modifyWithoutSave=false;
-            // $('#md_modal').dialog('close');
-            // $('#md_modal').dialog({title: "{{Gestion des jingles SqueezeboxControl}}"});
-            // $('#md_modal').load('index.php?v=d&plugin=squeezeboxcontrol&modal=jingle').dialog('open');
-        }
-    });
-});
 </script>
-
