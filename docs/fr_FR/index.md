@@ -44,8 +44,8 @@ Sur les équipements Broker, un point de couleur indique l'état de la connexion
 * Orange: le démon tourne mais la connexion au Broker n'est pas établie
 * Rouge: le démon est arrêté
 
-Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.
-![eqpt panel](../images/eqpt_panel.png)
+Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.  
+![eqpt panel](../images/eqpt_panel.png)  
 Se trouve également sur ce panneau :
   - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
   - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
