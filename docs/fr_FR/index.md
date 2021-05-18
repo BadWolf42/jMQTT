@@ -1,12 +1,12 @@
 # Présentation
 
-MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.
+MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.  
 Il apporte une très grande souplesse dans les échanges d'information entre capteurs/actionneurs/systèmes domotique/etc.
 
 Ce plugin permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
 
-Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :
-[![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)
+Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :  
+[![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)  
 Crédit : François Riotte
 
 
@@ -14,7 +14,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 # Démarrage rapide
 
-Par défaut, jMQTT installe le Broker Mosquitto sur la machine hébergeant Jeedom.
+Par défaut, jMQTT installe le Broker Mosquitto sur la machine hébergeant Jeedom.  
 Il vous suffira ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à ce Broker (IP de votre Jeedom).
 
 La configuration jMQTT est alors très simple:
@@ -35,11 +35,11 @@ jMQTT posséde 2 types d'équipements:
   - les **équipements de type Broker** gérant la connexion avec les Broker MQTT, appelés équipements Broker dans la suite;
   - les **équipements "classiques"**, appélés simplement équipements dans la suite,
 
-Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.
+Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.  
 ![Gestion plugin et Broker](../images/gestion_plugin_et_brokers.png)
 
-Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :
-![Status Broker](../images/broker_status.png)
+Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :  
+![Status Broker](../images/broker_status.png)  
 * Vert: la connexion au Broker est opérationnelle
 * Orange: le démon tourne mais la connexion au Broker n'est pas établie
 * Rouge: le démon est arrêté
