@@ -60,7 +60,7 @@ require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-5 control-label">{{Supprimer ou Envoyer un Certificat}}</label>
+            <label class="col-sm-5 control-label">{{Supprimer un Certificat}}</label>
             <div class="col-sm-3">
                 <select id="ftodelete" class="form-control" data-l1key="tobedeleted">
 <?php
