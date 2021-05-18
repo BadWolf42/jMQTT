@@ -12,7 +12,7 @@
             "mqttTls": "0",
             "mqttTlsCheck": "public",
             "api": "disable",
-            "updatetime": "2021-05-17 21:50:33"
+            "updatetime": "2021-05-18 22:15:33"
         },
         "category": {
             "heating": "0",
@@ -199,7 +199,15 @@
             "layout::dashboard::table::cmd::94::line": 1,
             "layout::dashboard::table::cmd::94::column": 1,
             "layout::dashboard::table::cmd::95::line": 1,
-            "layout::dashboard::table::cmd::95::column": 1
+            "layout::dashboard::table::cmd::95::column": 1,
+            "layout::dashboard::table::cmd::96::line": 1,
+            "layout::dashboard::table::cmd::96::column": 1,
+            "layout::dashboard::table::cmd::103::line": 1,
+            "layout::dashboard::table::cmd::103::column": 1,
+            "layout::dashboard::table::cmd::101::line": 1,
+            "layout::dashboard::table::cmd::101::column": 1,
+            "layout::dashboard::table::cmd::102::line": 1,
+            "layout::dashboard::table::cmd::102::column": 1
         },
         "status": {
             "lastCommunication": "2021-05-16 20:31:14"
@@ -311,6 +319,25 @@
                     "parameters": []
                 },
                 "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Cmd decrease",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/Cmd decrease"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
                 "alert": []
             },
             {
@@ -531,6 +558,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Cmd Temperature Setpoint feedback",
                 "isVisible": "1",
                 "alert": []
             },
@@ -558,6 +586,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Power on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -585,6 +614,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Power on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -636,6 +666,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Bubble on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -687,6 +718,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Bubble on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -820,6 +852,97 @@
             },
             {
                 "eqType": "jMQTT",
+                "name": "Cmd Water filter time feedback",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/Cmd water filter time"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Farenheit Celsius",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/Farenheit Celsius"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "heater on",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/heater on"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "filter on",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/filter on"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
                 "name": "heater state",
                 "type": "info",
                 "subType": "numeric",
@@ -851,6 +974,73 @@
                     "parameters": []
                 },
                 "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Cmd Sanitizer time feedback",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/Cmd Sanitizer time"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Power on",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/Power on"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "filter setup time",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/filter setup time"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
                 "alert": []
             },
             {
@@ -896,6 +1086,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "heater on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -923,6 +1114,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "heater on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -949,6 +1141,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Cmd Water filter time feedback",
                 "isVisible": "1",
                 "alert": []
             },
@@ -982,6 +1175,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "filter on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -1009,6 +1203,7 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "filter on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -1035,31 +1230,8 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Cmd Sanitizer time feedback",
                 "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Farenheit Celsius",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Farenheit Celsius"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
                 "alert": []
             },
             {
@@ -1086,6 +1258,7 @@
                     "showNameOnmobile": "1",
                     "showIconAndNamemobile": "0"
                 },
+                "value": "Sanitizer on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -1113,6 +1286,7 @@
                     "showNameOnmobile": "1",
                     "showIconAndNamemobile": "0"
                 },
+                "value": "Sanitizer on",
                 "isVisible": "1",
                 "alert": []
             },
@@ -1132,103 +1306,6 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "filter on",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "1",
-                "configuration": {
-                    "topic": "%s\/filter on"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showStatsOndashboard": "0",
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "filter setup time",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/filter setup time"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "heater on",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/heater on"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Power on",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Power on"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
                     "showNameOndashboard": "1",
                     "showIconAndNamedashboard": "0",
                     "forceReturnLineBefore": "0",
