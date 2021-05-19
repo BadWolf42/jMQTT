@@ -744,14 +744,16 @@ function addCmdToTable(_cmd) {
         }
         jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
+        // Fill in value of current cmd. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
+        if (is_json_view) {
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.value);
+        }
+        
+        // refreshValue apply value on cmd with id (so there won't be any refresh on cmd without id in JSON view)
         function refreshValue(val) {
             $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(val);
         }
 
-        // Display the value. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
-        // See below for CLASSIC view.
-        refreshValue(_cmd.value);
-        
         if (_cmd.id != undefined) {
             // Get and display the value in CLASSIC view (for JSON view, see few lines above)
             if (! is_json_view) {
