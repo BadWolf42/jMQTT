@@ -25,7 +25,6 @@ if (!isConnect()) {
 
 require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
 ?>
-
 <div class="eventDisplayMini"></div>
 <form class="form-horizontal">
     <fieldset>
@@ -52,21 +51,22 @@ require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
         </div>
         <legend><i class="fas fa-key"></i>{{Certificats}}</legend>
         <div class="form-group">
-            <label class="col-sm-5 control-label">{{Envoyer un nouveau Certificat}}</label>
+            <label class="col-sm-5 control-label">{{Téléverser un nouveau Certificat}}</label>
             <div class="col-sm-3">
-                <span class="btn btn-success btn-sm btn-file" style="position:relative;" title="Envoyer un fichier">
-                    <i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
+                <span class="btn btn-success btn-sm btn-file" style="position:relative;" title="Téléverser un Certificat">
+                    <i class="fas fa-upload"></i><input id="mqttConfUpFile" type="file" name="file" accept=".crt, .pem, .key" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
                 </span>
             </div>
         </div>
         <div class="form-group">
             <label class="col-sm-5 control-label">{{Supprimer un Certificat}}</label>
             <div class="col-sm-3">
-                <select id="ftodelete" class="form-control" data-l1key="tobedeleted">
+                <select id="mqttConfDelFile" class="form-control" data-l1key="tobedeleted">
 <?php
     $dir = realpath(dirname(__FILE__) . '/../' . jMQTTBase::PATH_CERTIFICATES);
-    foreach (ls($dir, '*') as $file) {
-        echo str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
+    foreach (ls($dir) as $file) {
+        if (in_array(strtolower(strrchr($file, '.')), array('.crt', '.key', '.pem')))
+            echo str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
     }
 ?>
                 </select>
@@ -81,47 +81,65 @@ require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
     </fieldset>
 </form>
 <script>
-$('#mqttUploadFile').fileupload({
+$('#mqttConfUpFile').fileupload({
     dataType: 'json',
     replaceFileInput: false,
     done: function (e, data) {
         if (data.result.state != 'ok') {
             $('.eventDisplayMini').showAlert({message: data.result.result, level: 'danger'});
-            setTimeout(function() { deleteAlertMini() }, 2000);
         } else {
-            $('#md_modal').dialog('close');
-            $('#md_modal').dialog({title: "Configuration du plugin"}).load('index.php?v=d&p=plugin&ajax=1&id='+eqType).dialog('open');
-            // $('.eventDisplayMini').showAlert({message: '{{Fichier ajouté avec succès}}', level: 'success'});
+            $(new Option(data.result.result, data.result.result)).appendTo('#mqttConfDelFile');
+            $('#mqttConfDelFile option[value="'+data.result.result+'"]').attr('selected','selected');
+            switch (data.result.result.split('.').pop()) {
+                case 'crt':
+                    $(new Option(data.result.result, data.result.result)).appendTo('#fTlsCaFile');
+                    $('#fTlsCaFile option[value="'+data.result.result+'"]').attr('selected','selected');
+                    break;
+                case 'pem':
+                    $(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientCertFile');
+                    $('#fTlsClientCertFile option[value="'+data.result.result+'"]').attr('selected','selected');
+                    break;
+                case 'key':
+                    $(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientKeyFile');
+                    $('#fTlsClientKeyFile option[value="'+data.result.result+'"]').attr('selected','selected');
+                    break;
+            }
+            $('.eventDisplayMini').showAlert({message: '{{Fichier ajouté avec succès}}', level: 'success'});
         }
+        // setTimeout(function() { $('.eventDisplayMini').hideAlert(); }, 3000);
+        $('#mqttConfUpFile').val(null);
     }
 });
 
 $('.mqttDeleteFile').on('click', function (){
-    var oriname = $("#ftodelete").val()
-    $.ajax({
-        type: "POST",
-        url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
-        data: {
-            action: "filedelete",
-            dir: "certs",
-            name: oriname
-        },
-        global : false,
-        dataType: 'json',
-        error: function(request, status, error) {
-            handleAjaxError(request, status, error);
-        },
-        success: function(data) {
-            if (data.state != 'ok') {
-                $('.eventDisplayMini').showAlert({message:  data.result,level: 'danger'});
-                setTimeout(function() { deleteAlertMini() }, 2000);
-            } else {
-                $('#md_modal').dialog('close');
-                $('#md_modal').dialog({title: "Configuration du plugin"}).load('index.php?v=d&p=plugin&ajax=1&id='+eqType).dialog('open');
-                // $('.eventDisplayMini').showAlert({message:  'Suppression effectuée' ,level: 'success'});
-                modifyWithoutSave=false;
+    var oriname = $("#mqttConfDelFile").val();
+    if (oriname !== null) {
+        $.ajax({
+            type: "POST",
+            url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+            data: {
+                action: "filedelete",
+                dir: "certs",
+                name: oriname
+            },
+            global : false,
+            dataType: 'json',
+            error: function(request, status, error) {
+                handleAjaxError(request, status, error);
+            },
+            success: function(data) {
+                if (data.state != 'ok') {
+                    $('.eventDisplayMini').showAlert({message: data.result,level: 'danger'});
+                } else {
+                    $("#mqttConfDelFile :selected").remove();
+                    $('#fTlsCaFile option[value="'+oriname+'"]').remove(); // 3x black magic in Broker Tab
+                    $('#fTlsClientCertFile option[value="'+oriname+'"]').remove();
+                    $('#fTlsClientKeyFile option[value="'+oriname+'"]').remove();
+                    $('.eventDisplayMini').showAlert({message: 'Suppression effectuée' ,level: 'success'});
+                }
+                // setTimeout(function() { $('.eventDisplayMini').hideAlert() }, 3000);
             }
-        }
-    });
+        });
+    }
 });
 </script>

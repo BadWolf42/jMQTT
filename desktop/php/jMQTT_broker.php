@@ -121,14 +121,14 @@
                         </div>
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Publier le status}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Active/désactive la publication du status en MQTT sur le Broker (sur le topic {ClientId}/status)"></i></sup></label>
+                            title="Active/Désactive la publication du status en MQTT sur le Broker (sur le topic {ClientId}/status)"></i></sup></label>
                             <div class="col-lg-4">
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPubStatus" checked>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipements}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Seul les Topics correspondants pourront être souscrits sur ce Broker. '#' par défaut, i.e. tous les Topics.
+                            title="Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.
                             <br/>Ne pas modifier sans en comprendre les implications."></i></sup></label>
                             <div class="col-lg-4">
                                 <input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic"
@@ -137,7 +137,7 @@
                         </div>
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{MQTTS (MQTT over TLS)}} <sup><i class="fa fa-question-circle tooltips"
-                            title="Chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation."></i></sup></label>
+                            title="Active le chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation."></i></sup></label>
                             <div class="col-lg-4">
                                 <input id="fTls" type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
                             </div>
@@ -145,7 +145,7 @@
                         <div id="dTls" style="display:none">
                             <div class="form-group">
                                 <label class="col-lg-4 control-label">{{Vérifier le certificat du Broker}} <sup><i class="fa fa-question-circle tooltips"
-                                title="Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet correspond à l'IP/Nom de Domaine du Broker"></i></sup></label>
+                                title="Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet corresponde à l'IP/Nom de Domaine du Broker."></i></sup></label>
                                 <div class="col-lg-4">
                                     <select id="fTlsCheck" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
                                         <option value="public">{{Activé - Autorités Publiques}}</option>
@@ -153,6 +153,9 @@
                                         <option value="disabled">{{Désactivé - Non Recommandé}}</option>
                                     </select>
                                 </div>
+                                <span class="btn btn-success btn-sm btn-file" style="position:relative;top:2px !important;" title="Téléverser un Certificat">
+                                    <i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" accept=".crt, .pem, .key" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
+                                </span>
                             </div>
 <?php
     $dir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
@@ -170,7 +173,7 @@
 ?>
                             <div id="dTlsCaFile" class="form-group">
                                 <label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
-                                title="Selectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats doivent être dans : <?php echo $dir; ?>."></i></sup></label>
+                                title="Sélectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats peuvent être envoyés sur Jeedom avec le bouton vert ci-dessus.<br/>Il est possible de supprimer des Certificats depuis la page de configuration générale de Plugin."></i></sup></label>
                                 <div class="col-lg-4">
                                     <select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
                                         <option value="">{{Désactivé}}</option>
@@ -180,7 +183,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-lg-4 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
-                                title="Selectionne le Certificat Client attendu par le Broker.<br/>Ce certificat doit correspondre à la Clé Privée ci-dessous, si l'un est fournit l'autre est obligatoire."></i></sup></label>
+                                title="Sélectionne le Certificat Client attendu par le Broker.<br/>Ce Certificat doit être associé à la Clé Privée, dans le champ qui apparaîtra en-dessous, si l'un est fourni l'autre est obligatoire."></i></sup></label>
                                 <div class="col-lg-4">
                                     <select id="fTlsClientCertFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientCertFile" style="margin-top: 5px">
                                         <option value="">{{Désactivé}}</option>
@@ -190,9 +193,10 @@
                             </div>
                             <div id="dTlsClientKeyFile" class="form-group">
                                 <label class="col-lg-4 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
-                                title="Selectionne la Clée Privée du Client premettant de discuter avec le Broker.<br/>Cette clé privée doit correspondre au Certificat ci-dessus, si l'un est fournit l'autre est obligatoire."></i></sup></label>
+                                title="Sélectionne la Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire."></i></sup></label>
                                 <div class="col-lg-4">
                                     <select id="fTlsClientKeyFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile" style="margin-top: 5px">
+                                        <option value="">{{Désactivé}}</option>
 <?php echo $keyfiles; ?>
                                     </select>
                                 </div>
@@ -343,5 +347,37 @@ $('#fTlsClientCertFile').change(function(){
     else $('#dTlsClientKeyFile').show();
 });
 
+$('#mqttUploadFile').fileupload({
+    dataType: 'json',
+    replaceFileInput: false,
+    done: function (e, data) {
+        if (data.result.state != 'ok') {
+            $('#div_alert').showAlert({message: data.result.result, level: 'danger'});
+        } else {
+            switch (data.result.result.split('.').pop()) {
+                case 'crt':
+                    $(new Option(data.result.result, data.result.result)).appendTo('#fTlsCaFile');
+                    $('#fTlsCaFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
+                    $('#fTlsCaFile')[0].style.setProperty('background-color', '#ffb291', 'important');
+                    setTimeout(function() { $('#fTlsCaFile')[0].style.removeProperty('background-color'); }, 3000);
+                    break;
+                case 'pem':
+                    $(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientCertFile');
+                    $('#fTlsClientCertFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
+                    $('#fTlsClientCertFile')[0].style.setProperty('background-color', '#ffb291', 'important');
+                    setTimeout(function() { $('#fTlsClientCertFile')[0].style.removeProperty('background-color'); }, 3000);
+                    break;
+                case 'key':
+                    $(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientKeyFile');
+                    $('#fTlsClientKeyFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
+                    $('#fTlsClientKeyFile')[0].style.setProperty('background-color', '#ffb291', 'important');
+                    setTimeout(function() { $('#fTlsClientKeyFile')[0].style.removeProperty('background-color'); }, 3000);
+                    break;
+            }
+            $('#div_alert').hideAlert();
+        }
+        $('#mqttConfUpFile').val(null);
+    }
+});
 
 </script>

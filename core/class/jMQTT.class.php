@@ -1529,7 +1529,41 @@ class jMQTT extends eqLogic {
         }
         return $this->_broker;
     }
-    
+
+    /**
+     * Check if a certificate file is used by the Broker
+     * If TLS is disabled, gracefully replaces the certificate by the default configuration value.
+     * @param string $certname Certificate file name
+     * @return boolean true if certificat is used
+     */
+    public function isCertUsed($certname) {
+        if ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CA)) {
+            if (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
+                return true;
+            } else {
+                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
+                $this->save();
+            }
+        }
+        if ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT)) {
+            if (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
+                return true;
+            } else {
+                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
+                $this->save();
+            }
+        }
+        if ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY)) {
+            if (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
+                return true;
+            } else {
+                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
+                $this->save();
+            }
+        }
+        return false;
+    }
+
     /**
      * Get the jMQTT broker object which eqLogic Id is given
      * @var int $id id of the broker
