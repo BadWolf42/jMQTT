@@ -1345,7 +1345,7 @@ class jMQTT extends eqLogic {
         // To identify the sender (in case of debug need), build the client id based on the jMQTT connexion id
         // and the command id.
         // Concatenates a random string to have a unique id (in case of burst of commands, see issue #23).
-        $mosqId = $this->getBroker()->getMqttId() . '/' . $id . '/' . substr(md5(rand()), 0, 8);
+        $mosqId = $this->getBroker()->getMqttId() . '-' . $id . '-' . substr(md5(rand()), 0, 8);
         
         $mosqUser = $this->getBroker()->getConf(self::CONF_KEY_MQTT_USER);
         $mosqPass = $this->getBroker()->getConf(self::CONF_KEY_MQTT_PASS);
