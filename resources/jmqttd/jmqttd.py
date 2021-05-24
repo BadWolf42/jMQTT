@@ -144,10 +144,12 @@ class MqttClient:
 				logging.exception('BrkId: % 4s : MqttClient.start() Exception', self.id)
 		self.mqttthread.start()
 
-	def stop(self):
+	def pre_stop(self):
 		if self.mqttstatustopic != '':
 			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
 		self.mqttclient.disconnect()
+
+	def stop(self):
 		self.mqttthread.join()
 
 # ----------------------------------------------------------------------------
@@ -179,7 +181,7 @@ class WebSocketClient:
 	def autorestart_run_forever(self):
 		while not self.stopautorestart:
 			try:
-				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=0.5)
+				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=2.0)
 			except:
 				if logging.getLogger().isEnabledFor(logging.DEBUG):
 					logging.exception('BrkId: % 4s : WebSocketClient.autorestart_run_forever() Exception', self.id)
@@ -227,8 +229,10 @@ class WebSocketClient:
 		self.stopworker = False
 		self.workerthread.start()
 
-	def stop(self):
+	def pre_stop(self):
 		self.stopworker = True
+
+	def stop(self):
 		self.workerthread.join()
 		self.stopautorestart = True
 		self.wsclient.close()
@@ -251,6 +255,12 @@ class jMqttClient:
 			self.ws = WebSocketClient(self.q, self.m, self.mqtt.is_connected)
 			self.ws.start()
 
+	def pre_stop(self):
+		if self.mqtt is not None:
+			self.mqtt.pre_stop()
+		if self.ws is not None:
+			self.ws.pre_stop()
+
 	def stop(self):
 		if self.mqtt is not None:
 			self.mqtt.stop()
@@ -262,10 +272,12 @@ class jMqttClient:
 	def restart(self, message=None):
 		if message is not None:
 			self.m = message
+		self.pre_stop()
 		self.stop()
 		self.start()
 
 	def __del__(self):
+		self.pre_stop()
 		self.stop()
 
 # ----------------------------------------------------------------------------
@@ -483,6 +495,7 @@ class Main():
 		# if jmqttclient exists then remove it
 		if message['id'] in self.jmqttclients:
 			self.log.info('BrkId: % 4s : Starting Client removal', message['id'])
+			self.jmqttclients[message['id']].pre_stop()
 			self.jmqttclients[message['id']].stop()
 			del self.jmqttclients[message['id']]
 		else:
@@ -532,20 +545,22 @@ class Main():
 		self.should_stop.set()
 		self.has_stopped.wait(timeout=3)
 
-		# Stop all the Clients
-		try:
-			for id in list(self.jmqttclients):
-				self.jmqttclients[id].stop()
-		except:
-			if self.log.isEnabledFor(logging.DEBUG):
-				self.log.exception('Clients Stop Exception')
-
 		# Close the open communication channel for Jeedom
 		try:
 			self.jeedomsocket.close()
 			self.log.debug("Socket for Jeedom closed")
 		except:
 			self.log.debug("Failed to close Socket for Jeedom")
+
+		# Stop all the Clients
+		try:
+			for id in list(self.jmqttclients):
+				self.jmqttclients[id].pre_stop()
+			for id in list(self.jmqttclients):
+				self.jmqttclients[id].stop()
+		except:
+			if self.log.isEnabledFor(logging.DEBUG):
+				self.log.exception('Clients Stop Exception')
 
 		# Kill all the Clients
 		try:
