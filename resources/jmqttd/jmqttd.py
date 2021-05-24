@@ -144,12 +144,10 @@ class MqttClient:
 				logging.exception('BrkId: % 4s : MqttClient.start() Exception', self.id)
 		self.mqttthread.start()
 
-	def pre_stop(self):
+	def stop(self):
 		if self.mqttstatustopic != '':
 			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
 		self.mqttclient.disconnect()
-
-	def stop(self):
 		self.mqttthread.join()
 
 # ----------------------------------------------------------------------------
@@ -231,11 +229,11 @@ class WebSocketClient:
 
 	def pre_stop(self):
 		self.stopworker = True
-
-	def stop(self):
 		self.workerthread.join()
 		self.stopautorestart = True
 		self.wsclient.close()
+
+	def stop(self):
 		self.wsthread.join()
 
 # ----------------------------------------------------------------------------
@@ -257,14 +255,12 @@ class jMqttClient:
 
 	def pre_stop(self):
 		if self.mqtt is not None:
-			self.mqtt.pre_stop()
+			self.mqtt.stop()
+			self.mqtt = None
 		if self.ws is not None:
 			self.ws.pre_stop()
 
 	def stop(self):
-		if self.mqtt is not None:
-			self.mqtt.stop()
-			self.mqtt = None
 		if self.ws is not None:
 			self.ws.stop()
 			self.ws = None
