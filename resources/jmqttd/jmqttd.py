@@ -582,12 +582,17 @@ class Main():
 
 if __name__ == '__main__':
 	# Formater for the output of the logger
-	formatter = logging.Formatter('[%(asctime)s][%(levelname)-8s] : %(message)s')
+	formatter = logging.Formatter('[%(asctime)s]%(levelname)-10s : %(message)s')
+
+	def fmt_filter(record):
+		record.levelname = '[%s]' % record.levelname
+		return True
 
 	# STDOUT will get all logs
 	ch = logging.StreamHandler()
 	ch.setLevel(logging.DEBUG)
 	ch.setFormatter(formatter)
+	ch.addFilter(fmt_filter)
 
 	# Attach the handler to the main logger
 	logger = logging.getLogger()
