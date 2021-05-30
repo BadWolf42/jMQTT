@@ -1540,7 +1540,6 @@ class jMQTT extends eqLogic {
 
     /**
      * Check if a certificate file is used by the Broker
-     * If TLS is disabled, gracefully replaces the certificate by the default configuration value.
      * @param string $certname Certificate file name
      * @return boolean true if certificat is used
      */
