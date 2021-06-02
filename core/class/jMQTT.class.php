@@ -400,6 +400,16 @@ class jMQTT extends eqLogic {
             }
             // --- Existing broker ---
             else {
+                // Check certificate binding information if TLS is disabled
+                if (!boolval($this->_preSaveInformations[self::CONF_KEY_MQTT_TLS])) {
+                    // If a CA is specified and this file doesn't exists, remove it
+                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
+                        $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
+                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
+                        $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
+                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
+                        $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
+                }
             }
         }
         // ------------------------ Normal eqpt ------------------------
@@ -427,13 +437,6 @@ class jMQTT extends eqLogic {
                 'topic'                 => $eqLogic->getTopic(),
                 self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
             );
-
-            // Reset certificat binding information if TLS is disabled
-            if (!boolval($this->_preSaveInformations[self::CONF_KEY_MQTT_TLS])) {
-                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
-                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
-                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
-            }
 
             $backupVal = array( // load trivials eqLogic from DB
                 self::CONF_KEY_LOGLEVEL,        self::CONF_KEY_MQTT_CLIENT_ID,
