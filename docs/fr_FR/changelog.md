@@ -17,6 +17,9 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Amélioraton du daemon Python
  - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key 
 
+## 2021-06-02
+  - Correction [PR#86](https://github.com/Domochip/jMQTT/pull/86) : mosquitto_pub ne prend plus en charge les '/' dans le clientId. Ils ont donc été remplacé par des '-'
+
 ## 2021-04-27
   - Correction [PR#40](https://github.com/Domochip/jMQTT/pull/40): gestion du cas d'erreur de renommage du log d'un broker lorsque le log n'existe pas encore
   - Désactivation et retrait de l'Ajout automatique des commandes pour les équipements de type broker
