@@ -13,8 +13,9 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Amélioration de la gestion des erreurs dans le daemon WebSocket PHP
  - Nettoyage des anciennes dépendances lors de l'update du plugin
  - Ajout du support de TLS et modification de la documentation en conséquence
- - Correction temporaire de la transformation des entiers en texte dans les JSON des commandes actions (Jeedom Core [PR#1829](https://github.com/jeedom/core/pull/1829))
+  - Correction temporaire de la transformation des entiers en texte dans les JSON des commandes actions (Jeedom Core [PR#1829](https://github.com/jeedom/core/pull/1829))
  - Amélioraton du daemon Python
+ - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key 
 
 ## 2021-04-27
   - Correction [PR#40](https://github.com/Domochip/jMQTT/pull/40): gestion du cas d'erreur de renommage du log d'un broker lorsque le log n'existe pas encore
