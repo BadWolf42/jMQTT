@@ -427,6 +427,14 @@ class jMQTT extends eqLogic {
                 'topic'                 => $eqLogic->getTopic(),
                 self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
             );
+
+            // Reset certificat binding information if TLS is disabled
+            if (!boolval($this->_preSaveInformations[self::CONF_KEY_MQTT_TLS])) {
+                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
+                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
+                $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
+            }
+
             $backupVal = array( // load trivials eqLogic from DB
                 self::CONF_KEY_LOGLEVEL,        self::CONF_KEY_MQTT_CLIENT_ID,
                 self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
@@ -1529,7 +1537,19 @@ class jMQTT extends eqLogic {
         }
         return $this->_broker;
     }
-    
+
+    /**
+     * Check if a certificate file is used by the Broker
+     * @param string $certname Certificate file name
+     * @return boolean true if certificat is used
+     */
+    public function isCertUsed($certname) {
+        return (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) &&
+                (($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CA)) ||
+                 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT)) ||
+                 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY)));
+    }
+
     /**
      * Get the jMQTT broker object which eqLogic Id is given
      * @var int $id id of the broker
