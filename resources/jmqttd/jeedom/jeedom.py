@@ -184,7 +184,7 @@ class jeedom_utils():
 
 	@staticmethod
 	def dec2bin(x, width=8):
-		return ''.join(str((x>>i)&1) for i in xrange(width-1,-1,-1))
+		return ''.join(str((x>>i)&1) for i in range(width-1,-1,-1))
 
 	@staticmethod
 	def dec2hex(dec):
