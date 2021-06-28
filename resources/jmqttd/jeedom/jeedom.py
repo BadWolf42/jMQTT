@@ -28,6 +28,9 @@ import socketserver
 from socketserver import (TCPServer, StreamRequestHandler)
 import signal
 import unicodedata
+import sys
+if sys.version_info.major == 3:
+    unicode = str
 
 # ------------------------------------------------------------------------------
 
