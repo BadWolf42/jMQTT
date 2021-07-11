@@ -153,6 +153,9 @@ else { // older PHP version
     $server->loop->addPeriodicTimer(0.25,function(){ pcntl_signal_dispatch(); });
 }
 
+//Garbage Collection periodic call to avoid memory consumption increasing
+$server->loop->addPeriodicTimer(300, function() { gc_collect_cycles(); });
+
 log::add($plugin, 'debug', 'Listening on: [127.0.0.1:' . $socketport . ']');
 $server->run();
 
