@@ -217,7 +217,7 @@ class WebSocketClient:
         if not isinstance(error, AttributeError) or not self.stopautorestart:
             logging.error('BrkId: % 4s : WebSocket client encountered an Error!', self.id, exc_info=error)
 
-    def on_close(self, ws):
+    def on_close(self, ws, close_status_code, close_msg):
         logging.info('BrkId: % 4s : Disconnected from Jeedom', self.id)
 
     def start(self):
