@@ -15,7 +15,8 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Ajout du support de TLS et modification de la documentation en conséquence
   - Correction temporaire de la transformation des entiers en texte dans les JSON des commandes actions (Jeedom Core [PR#1829](https://github.com/jeedom/core/pull/1829))
  - Amélioraton du daemon Python
- - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key 
+ - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key
+ - Correction de Bug sur l'application des Template : La souscription au topic ne se faisait pas après l'application d'un template + des messages de topics mismatch apparaissaient 
 
 ## 2021-06-02
   - Correction [PR#86](https://github.com/Domochip/jMQTT/pull/86) : mosquitto_pub ne prend plus en charge les '/' dans le clientId. Ils ont donc été remplacé par des '-'

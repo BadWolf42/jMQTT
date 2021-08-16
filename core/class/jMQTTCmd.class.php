@@ -322,7 +322,7 @@ class jMQTTCmd extends cmd {
 
         // For info commands, check that the topic is compatible with the subscription command
         // of the related equipment
-        if ($this->getType() == 'info' && $this->getEqLogic()->getType() == jMQTT::TYP_EQPT) {
+        if ($this->getType() == 'info' && $this->getEqLogic()->getType() == jMQTT::TYP_EQPT && !$this->getEqLogic()->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0)) {
             if (! $this->topicMatchesSubscription($this->getEqLogic()->getTopic())) {
                 $this->eventTopicMismatch();
             }

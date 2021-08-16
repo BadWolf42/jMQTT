@@ -55,6 +55,7 @@ class jMQTT extends eqLogic {
     const CONF_KEY_NEW = 'new';
 
     const CACHE_INCLUDE_MODE = 'include_mode';
+    const CACHE_IGNORE_TOPIC_MISMATCH = 'ignore_topic_mismatch';
     
     /**
      * To define a standard jMQTT equipment
@@ -140,21 +141,24 @@ class jMQTT extends eqLogic {
 			return true;
 		}
 
-        //put temporary logicalId to format string to avoid cmd alert that not match cmd topic
-        $this->setLogicalId($template['logicalId']);
+        // Raise up the flag that cmd topic mismatch must be ignored
+        $this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
 
-        //import template
+        // import template
         $this->import($template, $_keepCmd);
 
-        # complete eqpt topic
+        // complete eqpt topic
         $this->setLogicalId(sprintf($template['logicalId'], $_topic));
-        $this->save(true); // direct save to avoid not mathcing topic alert
+        $this->save();
 
-        # complete cmd topics
+        // complete cmd topics
         foreach ($this->getCmd() as $cmd) {
             $cmd->setConfiguration('topic', sprintf($cmd->getConfiguration('topic'), $_topic));
             $cmd->save();
         }
+
+        // remove topic mismatch ignore flag
+        $this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 0);
 	}
 
     /**
