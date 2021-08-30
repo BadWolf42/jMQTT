@@ -179,7 +179,7 @@ class WebSocketClient:
     def autorestart_run_forever(self):
         while not self.stopautorestart:
             try:
-                self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=2.0)
+                self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=5.0)
             except:
                 if logging.getLogger().isEnabledFor(logging.DEBUG):
                     logging.exception('BrkId: % 4s : WebSocketClient.autorestart_run_forever() Exception', self.id)
@@ -539,7 +539,7 @@ class Main():
     def shutdown(self):
         self.log.info('Stop jMQTT python daemon')
         self.should_stop.set()
-        self.has_stopped.wait(timeout=3)
+        self.has_stopped.wait(timeout=6)
 
         # Close the open communication channel for Jeedom
         try:
