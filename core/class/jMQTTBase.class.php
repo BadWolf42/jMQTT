@@ -192,6 +192,7 @@ class jMQTTBase {
             if (! @posix_getsid($pid1)) break;
             usleep(250000);
          }
+         system::kill($pid1, true);
       }
       $pid_file2 = jeedom::getTmpFolder($pluginClass) . '/jmqttd.php.pid';
       if (file_exists($pid_file2)) {
@@ -202,6 +203,7 @@ class jMQTTBase {
             if (! @posix_getsid($pid2)) break;
             usleep(250000);
          }
+         system::kill($pid2, true);
       }
 
       // If something bad happened, clean anyway
