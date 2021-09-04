@@ -133,6 +133,7 @@
 					<option value="meteo">{{Météo}}</option>
 					<option value="motion">{{Mouvement}}</option>
 					<option value="multisensor">{{Multisensor}}</option>
+					<option value="nab">{{Nabaztag}}</option>
 					<option value="gate">{{Portail}}</option>
 					<option value="door">{{Porte}}</option>
 					<option value="prise">{{Prise}}</option>
