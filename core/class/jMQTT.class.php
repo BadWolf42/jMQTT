@@ -109,14 +109,16 @@ class jMQTT extends eqLogic {
      */
 	public static function templateParameters($_template = ''){
 		$return = array();
-		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
-			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
-				if (is_json($content)) {
-					$return += json_decode($content, true);
-				}
-			} catch (Throwable $e) {}
-		}
+        foreach (array("/../config/template", "/../../data/template") as $path) {
+            foreach (ls(dirname(__FILE__) . $path, '*.json', false, array('files', 'quiet')) as $file) {
+                try {
+                    $content = file_get_contents(dirname(__FILE__) . $path . '/' . $file);
+                    if (is_json($content)) {
+                        $return += json_decode($content, true);
+                    }
+                } catch (Throwable $e) {}
+            }
+        }
 		if (isset($_template) && $_template != '') {
 			if (isset($return[$_template])) {
 				return $return[$_template];
@@ -201,7 +203,7 @@ class jMQTT extends eqLogic {
         $jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $formatedTemplateName = str_replace(' ', '_', $_template);
         $formatedTemplateName = preg_replace('/[^a-zA-Z0-9_]+/', '', $formatedTemplateName);
-        file_put_contents(dirname(__FILE__) . '/../config/template/' . $formatedTemplateName . '.json', $jsonExport);
+        file_put_contents(dirname(__FILE__) . '/../../data/template/' . $formatedTemplateName . '.json', $jsonExport);
 	}
 
     /**
