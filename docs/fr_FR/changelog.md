@@ -20,6 +20,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Augmentation du timeout WebSocket et kill -9 des daemon si pas arrêté au bout de 10 secondes
  - Ajout de l'icone Nabaztag
  - Ajout de template de volet roulant
+ - Stockage des template dans le dossier data permettant de les conserver durant les MAJ du plugin
 
 ## 2021-06-02
   - Correction [PR#86](https://github.com/Domochip/jMQTT/pull/86) : mosquitto_pub ne prend plus en charge les '/' dans le clientId. Ils ont donc été remplacé par des '-'
