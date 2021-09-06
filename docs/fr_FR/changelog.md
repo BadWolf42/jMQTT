@@ -17,6 +17,9 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Amélioraton du daemon Python
  - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key
  - Correction de Bug sur l'application des Template : La souscription au topic ne se faisait pas après l'application d'un template + des messages de topics mismatch apparaissaient 
+ - Augmentation du timeout WebSocket et kill -9 des daemon si pas arrêté au bout de 10 secondes
+ - Ajout de l'icone Nabaztag
+ - Ajout de template de volet roulant
 
 ## 2021-06-02
   - Correction [PR#86](https://github.com/Domochip/jMQTT/pull/86) : mosquitto_pub ne prend plus en charge les '/' dans le clientId. Ils ont donc été remplacé par des '-'
