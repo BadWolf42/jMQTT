@@ -143,6 +143,7 @@
 					<option value="relay">{{Relais}}</option>
 					<option value="433">{{RF433}}</option>
 					<option value="rfid">{{RFID}}</option>
+					<option value="sms">{{SMS}}</option>
 					<option value="bell">{{Sonnerie}}</option>
 					<option value="remote">{{Télécommande}}</option>
 					<option value="teleinfo">{{Téléinfo}}</option>
