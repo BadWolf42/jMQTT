@@ -126,16 +126,16 @@ function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
     if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) {
-       echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
+       echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px;margin-left:4px"></i>';
     }
     if ($eqL->getIsVisible()) {
-        echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
+        echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px"></i>';
     } else {
-        echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
+        echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px"></i>';
     }
     if ($eqL->getType() == jMQTT::TYP_BRK) {
-        $file = 'node_.svg';
-        echo '<i class="status-circle fas fa-circle" style="font-size:1em !important;position:absolute;margin-top:30px;margin-left:55px;color:' . jMQTT::getBrokerColorFromState($eqL->getMqttClientState()) . '"></i>';
+        $file = 'node_broker.svg';
+        echo '<i class="status-circle fas fa-circle" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px;color:' . jMQTT::getBrokerColorFromState($eqL->getMqttClientState()) . '"></i>';
     }
     else {
         $icon = 'node_' . $eqL->getConfiguration('icone');
