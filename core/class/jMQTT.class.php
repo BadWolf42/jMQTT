@@ -1226,12 +1226,12 @@ class jMQTT extends eqLogic {
                         foreach (jMQTTCmd::byEqLogicId($eqpt->getId()) as $cmd)
                             $allCmdsNames[] = $cmd->getName();
                         // If cmdName is already used, add suffix _auto
-                        if (array_key_exists($cmdName, $allCmdsNames)) {
+                        if (false !== array_search($cmdName, $allCmdsNames)) {
                             $cmdName .= '_auto';
                             // If cmdName with suffix '_auto' is already used, add it an incremental suffix
-                            if (array_key_exists($cmdName, $allCmdsNames)) {
+                            if (false !== array_search($cmdName, $allCmdsNames)) {
                                 $increment = 1;
-                                while (array_key_exists($cmdName.$increment, $allCmdsNames))
+                                while (false !== array_search($cmdName.$increment, $allCmdsNames))
                                     $increment++;
                                 $cmdName .= $increment;
                             }
@@ -1240,6 +1240,7 @@ class jMQTT extends eqLogic {
                         $newCmd = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
                         $newCmd->save();
                         $cmds[] = $newCmd;
+                        $this->log('debug', $eqpt->getName() . '|' . $cmdName . ' automatically created for topic ' . $msgTopic);
                     } else {
                         $this->log('debug', 'Command for topic ' . $msgTopic . ' in ' . $eqpt->getName() . ' not created, as automatic command creation is disabled');
                     }
