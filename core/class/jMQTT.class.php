@@ -1198,45 +1198,51 @@ class jMQTT extends eqLogic {
                 while (next($msgTopicArray) !== false) {
                     $cmdName = $cmdName . '/' . current($msgTopicArray);
                 }
-                
-                // Looking for cmd in the DB
+
+                // Looking for all cmds matching Eq and Topic in the DB
                 $cmds = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
+                if (is_null($cmds))
+                    $cmds = array();
                 $jsonCmds = array();
-                
-                // if some cmd matches topic
-                if (!is_null($cmds)) {
 
-                    // Keep only info cmds
-                    foreach($cmds as $k => $cmd) {
-                        if($cmd->getType() == 'action') {
-                            $this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is an action command: skip');
-                            unset($cmds[$k]);
-                        }
+                // Keep only info cmds in $cmds and put all JSON info commands in $jsonCmds
+                foreach($cmds as $k => $cmd) {
+                    if ($cmd->getType() == 'action') {
+                        $this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is an action command: skip');
+                        unset($cmds[$k]);
+                    } elseif ($cmd->isJson()) {
+                        $this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is a JSON info command: skip');
+                        unset($cmds[$k]);
+                        $jsonCmds[] = $cmd;
                     }
-
-                    // Get list of JSON cmds
-                    $jsonCmds = array_filter($cmds, function($cmd){
-                        return $cmd->isJson();
-                    });
-
-                    // Finally Keep only non JSON in $cmds
-                    $cmds = array_filter($cmds, function($cmd){
-                        return !$cmd->isJson();
-                    });
                 }
 
-                // If there is no cmd matching exactly with the topic (non JSON)
-                if (is_null($cmds) || !count($cmds)) {
-                    // Is auto add enabled
+                // If there is no info cmd matching exactly with the topic (non JSON)
+                if (empty($cmds)) {
+                    // Is automatic command creation enabled?
                     if ($eqpt->getAutoAddCmd()) {
-                        if (is_null($cmds)) $cmds = [];
-
-                        //Create a new cmd
+                        $allCmdsNames = array();
+                        // Get all commands names for this equipment
+                        foreach (jMQTTCmd::byEqLogicId($eqpt->getId()) as $cmd)
+                            $allCmdsNames[] = $cmd->getName();
+                        // If cmdName is already used, add suffix _auto
+                        if (array_key_exists($cmdName, $allCmdsNames)) {
+                            $cmdName .= '_auto';
+                            // If cmdName with suffix '_auto' is already used, add it an incremental suffix
+                            if (array_key_exists($cmdName, $allCmdsNames)) {
+                                $increment = 1;
+                                while (array_key_exists($cmdName.$increment, $allCmdsNames))
+                                    $increment++;
+                                $cmdName .= $increment;
+                            }
+                        }
+                        // Create the new cmd
                         $newCmd = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
                         $newCmd->save();
                         $cmds[] = $newCmd;
+                    } else {
+                        $this->log('debug', 'Command for topic ' . $msgTopic . ' in ' . $eqpt->getName() . ' not created, as automatic command creation is disabled');
                     }
-                    else $this->log('debug', 'Command ' . $eqpt->getName() . '|' . $cmdName . ' not created as automatic command creation is disabled');
                 }
                 
                 // If there is some cmd matching exactly with the topic
