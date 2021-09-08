@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="307"
+   height="352"
+   viewBox="0 0 307 352"
+   sodipodi:docname="node_volet.svg"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     showgrid="false"
+     inkscape:zoom="2.3636364"
+     inkscape:cx="55.846154"
+     inkscape:cy="154.21154"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer1"
+     inkscape:label="volet"
+     style="display:inline">
+    <path
+       id="rect3"
+       style="opacity:1;fill:#f8d800;paint-order:fill markers stroke;stroke:none"
+       d="M 55.845703 22.845703 L 55.845703 61.769531 L 55.845703 251.73047 L 70.654297 251.73047 L 70.654297 61.769531 L 239.46094 61.769531 L 239.46094 251.73047 L 254.26953 251.73047 L 254.26953 61.769531 L 254.26953 22.845703 L 239.46094 22.845703 L 70.654297 22.845703 L 55.845703 22.845703 z M 75.941406 67.515625 L 75.941406 81.865234 L 233.75 81.865234 L 233.75 67.515625 L 75.941406 67.515625 z M 75.941406 87.789062 L 75.941406 102.13867 L 233.75 102.13867 L 233.75 87.789062 L 75.941406 87.789062 z M 75.941406 108.06055 L 75.941406 122.41211 L 233.75 122.41211 L 233.75 108.06055 L 75.941406 108.06055 z M 156.00781 195.56641 L 139.99023 227.76758 L 172.0293 227.76562 L 156.00781 195.56641 z M 155.69141 234.5957 A 13.644231 13.644231 0 0 0 142.04883 248.24023 A 13.644231 13.644231 0 0 0 155.69141 261.88477 A 13.644231 13.644231 0 0 0 169.33594 248.24023 A 13.644231 13.644231 0 0 0 155.69141 234.5957 z M 172.13086 268.67383 L 140.0918 268.74805 L 156.18555 300.91016 L 172.13086 268.67383 z " />
+  </g>
+</svg>
