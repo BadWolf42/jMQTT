@@ -5,7 +5,7 @@
 __________________
 
 <p align="center">
-  <img src="jMQTT.png"/>
+  <img src="jMQTT.svg"/>
 </p>
 
 jMQTT is a plugin for Jeedom aiming to connect Jeedom to an MQTT broker to subscribe and publish messages.
