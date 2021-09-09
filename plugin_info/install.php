@@ -27,7 +27,12 @@ define("VERSION", 'version');
 /**
  * Current Update version
  */
-define("CURRENT_VERSION", 4);
+define("CURRENT_VERSION", 5);
+
+/**
+ * Force dependancy Install Flag handled by deamon_start (value = 1)
+ */
+define("FORCE_DEPENDANCY_INSTALL", 'forceDepInstall');
 
 
 /**
@@ -215,17 +220,7 @@ function installNewDependancies() {
     // plugin::byId('jMQTT')->dependancy_info(true);
 
     // So best option is to remove old daemon dependancies
-    // Uninstall pecl/Mosquitto
-    exec(system::getCmdSudo() . 'pecl uninstall Mosquitto-alpha');
-    // Remove mosquitto.so from php.ini files
-    $cliIniFilePath = php_ini_loaded_file();
-    $fpmIniFilePath = str_replace('cli', 'fpm', $cliIniFilePath);
-    $apache2IniFilePath = str_replace('cli', 'apache2', $cliIniFilePath);
-    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $cliIniFilePath);
-    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $fpmIniFilePath);
-    exec(system::getCmdSudo() . "sed -i '/extension=mosquitto.so/d' " . $apache2IniFilePath);
-    // Uninstall Mosquitto libraries and clients
-    exec(system::getCmdSudo() . 'apt-get -y remove mosquitto-clients libmosquitto-dev');
+    // ***REMOVED*** Code removed due to side effect on other plugins. Problem handled by VERSION=5 and deamon_start() ***REMOVED***
 }
 
 function tagBrokersStatusCmd() {
@@ -250,6 +245,16 @@ function tagBrokersStatusCmd() {
     log::add('jMQTT', 'info', 'Brokers status command tagged');
 }
 
+function raiseForceDepInstallFlag() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 5) {
+        return;
+    }
+
+    config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT');
+}
+
+
 function jMQTT_install() {
     jMQTT_update();
 }
@@ -267,6 +272,8 @@ function jMQTT_update() {
     installNewDependancies();
     // VERSION = 4
     tagBrokersStatusCmd();
+    // VERSION = 5
+    raiseForceDepInstallFlag();
 
     // Update version next to upgrade operations
     config::save(VERSION, CURRENT_VERSION, 'jMQTT');

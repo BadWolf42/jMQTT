@@ -23,6 +23,8 @@ include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
 class jMQTT extends eqLogic {
 
+    const FORCE_DEPENDANCY_INSTALL = 'forceDepInstall';
+
     const API_TOPIC = 'api';
     const API_ENABLE = 'enable';
     const API_DISABLE = 'disable';
@@ -771,6 +773,23 @@ class jMQTT extends eqLogic {
      * callback to start daemon
      */
     public static function deamon_start() {
+
+        // if FORCE_DEPENDANCY_INSTALL flag is raised in plugin config
+        if (config::byKey(FORCE_DEPENDANCY_INSTALL, __CLASS__, 0) == 1) {
+            $plugin = plugin::byId(__CLASS__);
+            
+            //clean dependancy state cache
+            $plugin->dependancy_info(true);
+
+            //start dependancy install
+            $plugin->dependancy_install();
+
+            //remove flag
+            config::remove(FORCE_DEPENDANCY_INSTALL, __CLASS__);
+
+            return;
+        }
+
         log::add(__CLASS__, 'info', 'Starting Daemon');
         jMQTTBase::deamon_start(__CLASS__);
         self::checkAllMqttClients();
