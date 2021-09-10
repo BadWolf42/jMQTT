@@ -1181,30 +1181,12 @@ class jMQTT extends eqLogic {
         // Loop on enabled equipments listening to the current message
         //
         foreach ($elogics as $eqpt) {
-            
             if ($eqpt->getIsEnable()) {
-                
-                // Determine the name of the command.
-                // Suppress starting topic levels that are common with the equipment suscribing topic
-                $sbscrbTopicArray = explode("/", $eqpt->getTopic());
-                $msgTopicArray = explode("/", $msgTopic);
-                foreach ($sbscrbTopicArray as $s) {
-                    if ($s == '#' || $s == '+')
-                        break;
-                    else
-                        next($msgTopicArray);
-                }
-                $cmdName = current($msgTopicArray) === false ? end($msgTopicArray) : current($msgTopicArray);
-                while (next($msgTopicArray) !== false) {
-                    $cmdName = $cmdName . '/' . current($msgTopicArray);
-                }
-
                 // Looking for all cmds matching Eq and Topic in the DB
                 $cmds = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
                 if (is_null($cmds))
                     $cmds = array();
                 $jsonCmds = array();
-
                 // Keep only info cmds in $cmds and put all JSON info commands in $jsonCmds
                 foreach($cmds as $k => $cmd) {
                     if ($cmd->getType() == 'action') {
@@ -1216,15 +1198,29 @@ class jMQTT extends eqLogic {
                         $jsonCmds[] = $cmd;
                     }
                 }
-
                 // If there is no info cmd matching exactly with the topic (non JSON)
                 if (empty($cmds)) {
                     // Is automatic command creation enabled?
                     if ($eqpt->getAutoAddCmd()) {
+                        // Determine the futur name of the command.
+                        // Suppress starting topic levels that are common with the equipment suscribing topic
+                        $sbscrbTopicArray = explode("/", $eqpt->getTopic());
+                        $msgTopicArray = explode("/", $msgTopic);
+                        foreach ($sbscrbTopicArray as $s) {
+                            if ($s == '#' || $s == '+')
+                                break;
+                            else
+                                next($msgTopicArray);
+                        }
+                        $cmdName = current($msgTopicArray) === false ? end($msgTopicArray) : current($msgTopicArray);
+                        while (next($msgTopicArray) !== false) {
+                            $cmdName = $cmdName . '/' . current($msgTopicArray);
+                        }
+                        $cmdName = substr(trim($cmdName),0,120); // Ensure whitespaces are treated well
                         $allCmdsNames = array();
                         // Get all commands names for this equipment
                         foreach (jMQTTCmd::byEqLogicId($eqpt->getId()) as $cmd)
-                            $allCmdsNames[] = $cmd->getName();
+                            $allCmdsNames[] = trim($cmd->getName());
                         // If cmdName is already used, add suffix '-<number>'
                         if (false !== array_search($cmdName, $allCmdsNames)) {
                             $cmdName .= '-';
