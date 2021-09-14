@@ -775,7 +775,7 @@ class jMQTT extends eqLogic {
     public static function deamon_start() {
 
         // if FORCE_DEPENDANCY_INSTALL flag is raised in plugin config
-        if (config::byKey(FORCE_DEPENDANCY_INSTALL, __CLASS__, 0) == 1) {
+        if (config::byKey(self::FORCE_DEPENDANCY_INSTALL, __CLASS__, 0) == 1) {
             $plugin = plugin::byId(__CLASS__);
             
             //clean dependancy state cache
@@ -785,7 +785,7 @@ class jMQTT extends eqLogic {
             $plugin->dependancy_install();
 
             //remove flag
-            config::remove(FORCE_DEPENDANCY_INSTALL, __CLASS__);
+            config::remove(self::FORCE_DEPENDANCY_INSTALL, __CLASS__);
 
             return;
         }
