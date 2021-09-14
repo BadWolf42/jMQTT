@@ -23,6 +23,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
  - Stockage des template dans le dossier data permettant de les conserver durant les MAJ du plugin
  - IMAGES : Changement du logo du plugin, reprise des captures d'écran de la documentation, optimisation des tailles
  - Correction de l'Ajout automatique des commandes qui pouvait générer des erreurs MySQL de type "Duplicate entry", voir [Issue#89](https://github.com/Domochip/jMQTT/issues/89).
+ - le passage au nouveau démon déclenche correctement l'installation des nouvelles dépendances
 
 ## 2021-06-02
   - Correction [PR#86](https://github.com/Domochip/jMQTT/pull/86) : mosquitto_pub ne prend plus en charge les '/' dans le clientId. Ils ont donc été remplacé par des '-'
