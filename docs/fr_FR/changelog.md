@@ -1,6 +1,6 @@
 # Registre des évolutions
 
-## Beta
+## 2021-09-17 Nouveaux Démons
 **ATTENTION :  De gros changements ont été apporté au plugin**
 En cas de problème, merci d'ouvrir un thread sur [community ici](https://community.jeedom.com/tag/plugin-jmqtt) ou une issue sur [Github ici](https://github.com/Domochip/jMQTT/issues)
  - Changement complet de moteur MQTT
