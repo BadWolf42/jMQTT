@@ -1,6 +1,6 @@
 #! /bin/bash
 
-PROGRESS_FILE=/tmp/jmqtt_dep;
+PROGRESS_FILE=/tmp/dependancy_jmqtt
 if [ ! -z $1 ]; then
     PROGRESS_FILE=$1
 fi
@@ -10,136 +10,77 @@ if [ ! -z $2 ] && [ $2 -eq 1 -o $2 -eq 0 ]; then
     INSTALL_MOSQUITTO=$2
 fi
 
+touch ${PROGRESS_FILE}
 echo 0 > ${PROGRESS_FILE}
 
 echo "********************************************************"
-echo "* Install dependancies                                 *"
+echo "*              dependancies Installation               *"
 echo "********************************************************"
 echo "> Progress file: " ${PROGRESS_FILE}
 echo "> Install Mosquitto: " ${INSTALL_MOSQUITTO}
-echo "*"
-echo "* Update package source repository"
-echo "*"
-apt-get -y install lsb-release php-pear
-archi=`lscpu | grep Architecture | awk '{ print $2 }'`
-echo 10 > ${PROGRESS_FILE}
-
-if [ "$archi" == "x86_64" ]; then
-    cd /tmp
-    if [ `lsb_release -i -s` == "Debian" ]; then
-	wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
-	apt-key add mosquitto-repo.gpg.key
-	rm mosquitto-repo.gpg.key
-	if [ `lsb_release -c -s` == "jessie" ]; then
-	    wget http://repo.mosquitto.org/debian/mosquitto-jessie.list
-	    mv -f mosquitto-jessie.list /etc/apt/sources.list.d/mosquitto-jessie.list
-	fi
-	if [ `lsb_release -c -s` == "stretch" ]; then
-	    wget http://repo.mosquitto.org/debian/mosquitto-stretch.list
-	    mv -f mosquitto-stretch.list /etc/apt/sources.list.d/mosquitto-stretch.list
-	fi
-    fi
-fi
-echo 20 > ${PROGRESS_FILE}
 
 echo "*"
 echo "* Synchronize the package index"
 echo "*"
 apt-get update
-echo 40 > ${PROGRESS_FILE}
+echo 20 > ${PROGRESS_FILE}
 
 echo "*"
 echo "* Install Mosquitto"
 echo "*"
 if [ ${INSTALL_MOSQUITTO} -eq 1 ]; then
-    apt-get -y install mosquitto mosquitto-clients libmosquitto-dev
-else
-    apt-get -y install mosquitto-clients libmosquitto-dev
+    apt-get -y install mosquitto
 fi
+echo 40 > ${PROGRESS_FILE}
+
+echo "*"
+echo "* Install Ratchet PHP library"
+echo "*"
+cd "$( dirname "${BASH_SOURCE[0]}" )"
+cd ../resources
+rm -rf vendor
+rm -f composer.json
+rm -f composer.lock
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+sudo -u www-data php ./composer.phar require --working-dir=. --no-cache symfony/http-foundation
+sudo -u www-data php ./composer.phar require --working-dir=. --no-cache cboden/ratchet
+rm composer.phar
+echo 50 > ${PROGRESS_FILE}
+
+echo "*"
+echo "* Install python3 debian packages"
+echo "*"
+apt-get install -y python3-requests python3-pip 
 echo 60 > ${PROGRESS_FILE}
 
 echo "*"
-echo "* Install php mosquitto wrapper"
+echo "* Install python3 setuptools library"
 echo "*"
-php_ver=`php -version`
-php_ver=${php_ver:4:3}
-php_ver_maj=${php_ver:0:1}
+pip3 install --upgrade setuptools
+echo 70 > ${PROGRESS_FILE}
 
-if [ ${php_ver_maj} = 5 ]; then
-	echo "> Version 5 of PHP detected"
-	PHP_DEV_LIB="php5-dev"
-	PHP_CLI_DIR="/etc/php5/cli/"
-	PHP_FPM_DIR="/etc/php5/fpm/"
-	PHP_APACHE_DIR="/etc/php5/apache2/"
-	FPM_SERVER="php5-fpm"
-	APACHE_SERVER="apache2"
-elif [ ${php_ver_maj} = 7 ]; then
-	echo "> Version 7 of PHP detected"
-	PHP_DEV_LIB="php${php_ver}-dev"
-	PHP_CLI_DIR="/etc/php/${php_ver}/cli/"
-	PHP_FPM_DIR="/etc/php/${php_ver}/fpm/"
-	PHP_APACHE_DIR="/etc/php/${php_ver}/apache2/"
-	FPM_SERVER="php7-fpm"
-	APACHE_SERVER="apache2"
-else
-	PHP_DEV_LIB=""
-	echo "> ERROR: no version of PHP detected"
-fi
+echo "*"
+echo "* Install python3 paho-mqtt library"
+echo "*"
+pip3 install --upgrade paho-mqtt
+echo 80 > ${PROGRESS_FILE}
 
-if [ -n PHP_DEV_LIB ]; then	
-	echo "> Install ${PHP_DEV_LIB}"
-	apt-get -y install ${PHP_DEV_LIB}
-    echo 80 > ${PROGRESS_FILE}
-    
-    echo "> Install pecl/Mosquitto"
-    echo "" | pecl install Mosquitto-alpha
-    if [ $? -eq 0 ]; then
-    	RELOAD="tbd"
-    else
-    	RELOAD=""
-    fi
-    echo 90 > ${PROGRESS_FILE}
-    
-    if [ -d ${PHP_CLI_DIR} ] && [ -e ${PHP_CLI_DIR}php.ini ] && [ ! `cat ${PHP_CLI_DIR}php.ini | grep "mosquitto"` ]; then
-        echo "> Adding mosquitto.so to ${PHP_CLI_DIR}php.ini"
-  		echo "extension=mosquitto.so" | tee -a ${PHP_CLI_DIR}php.ini
-    fi
-    
-	if [ -d ${PHP_FPM_DIR} ]; then
-    	if [ -n "$RELOAD" ]; then
-    		RELOAD=${FPM_SERVER}
-    	fi
-    	if [ ! `cat ${PHP_FPM_DIR}php.ini | grep "mosquitto"` ]; then
-    		echo "> Adding mosquitto.so to ${PHP_FPM_DIR}php.ini"
-		  	echo "extension=mosquitto.so" | tee -a ${PHP_FPM_DIR}php.ini
-		  	RELOAD=${FPM_SERVER}
-		fi
-    fi
-    
-    if [ -d ${PHP_APACHE_DIR} ]; then
-    	if [ -n "$RELOAD" ]; then
-    		RELOAD=${APACHE_SERVER}
-    	fi
-    	if [ ! `cat ${PHP_APACHE_DIR}php.ini | grep "mosquitto"` ]; then
-    		echo "> Adding mosquitto.so to ${PHP_APACHE_DIR}php.ini"
-			echo "extension=mosquitto.so" | tee -a ${PHP_APACHE_DIR}php.ini
-			RELOAD=${APACHE_SERVER}
-		fi
-    fi
-      
-    if [ -n "${RELOAD}" ]; then
-    	echo "> Reload the web server" $RELOAD
-		service $RELOAD reload
-	else
-		echo "> No need to reload the web server"
-	fi
-fi
+echo "*"
+echo "* Install python3 websocket-client library"
+echo "*"
+pip3 install --upgrade websocket-client
+echo 90 > ${PROGRESS_FILE}
 
+echo "*"
+echo "* Run post_dependancy_install function"
+echo "*"
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 sudo -u www-data php -r 'include "../core/class/jMQTT.class.php"; jMQTT::post_dependancy_install();'
-
-rm ${PROGRESS_FILE}
+echo 100 > ${PROGRESS_FILE}
 
 echo "********************************************************"
 echo "*             End dependancy installation              *"
 echo "********************************************************"
+rm ${PROGRESS_FILE}

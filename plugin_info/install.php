@@ -27,7 +27,12 @@ define("VERSION", 'version');
 /**
  * Current Update version
  */
-define("CURRENT_VERSION", 2);
+define("CURRENT_VERSION", 5);
+
+/**
+ * Force dependancy Install Flag handled by deamon_start (value = 1)
+ */
+define("FORCE_DEPENDANCY_INSTALL", 'forceDepInstall');
 
 
 /**
@@ -36,7 +41,7 @@ define("CURRENT_VERSION", 2);
  * Return without doing anything if the multi broker version is already installed
  */
 function migrateToMultiBrokerVersion() {
-    $version = config::byKey(VERSION, 'jMQTT', 0);
+    $version = config::byKey(VERSION, 'jMQTT', -1);
     if ($version >= 0) {
         return;
     }
@@ -54,7 +59,13 @@ function migrateToMultiBrokerVersion() {
     $topic = $mqttId . '/' . jMQTT::CLIENT_STATUS;
     $cmds = cmd::byLogicalId($topic, 'info');
     if (count($cmds) == 0) {
-        $broker = jMQTT::createEquipment(null, $mqttId, $mqttId . '/#', jMQTT::TYP_BRK);
+        // $broker = jMQTT::createEquipment(null, $mqttId, $mqttId . '/#', jMQTT::TYP_BRK);
+        $eqpt = new jMQTT();
+        $eqpt->setType(jMQTT::TYP_BRK);
+        $eqpt->setName($mqttId);
+        $eqpt->setIsEnable(1);
+        $eqpt->save();
+
         $msg = 'créé';
     }
     else {
@@ -90,7 +101,7 @@ function migrateToMultiBrokerVersion() {
     }
 
     // Suppress no more used parameters
-    config::remove('include_mode', 'jMQTT');
+    config::remove(jMQTT::CACHE_INCLUDE_MODE, 'jMQTT');
     config::remove('status', 'jMQTT');
     
     $broker->setType(jMQTT::TYP_BRK);
@@ -132,7 +143,7 @@ function migrateToMultiBrokerVersion() {
  * Return without doing anything if the new JSON version is already installed
  */
 function migrateToJsonVersion() {
-    $version = config::byKey(VERSION, 'jMQTT', 0);
+    $version = config::byKey(VERSION, 'jMQTT', -1);
     if ($version >= 1) {
         return;
     }
@@ -156,7 +167,7 @@ function migrateToJsonVersion() {
  * Return without doing anything if the new version is already installed
  */
 function disableAutoAddCmdOnBrokers() {
-    $version = config::byKey(VERSION, 'jMQTT', 0);
+    $version = config::byKey(VERSION, 'jMQTT', -1);
     if ($version >= 2) {
         return;
     }
@@ -170,38 +181,106 @@ function disableAutoAddCmdOnBrokers() {
     log::add('jMQTT', 'info', 'migration to no auto_add_cmd for broker done');
 }
 
+/**
+ * version 3
+ * Migrate the plugin to the new daemon version
+ * Return without doing anything if the new version is already installed
+ */
+function removePreviousDaemonCrons() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 3) {
+        return;
+    }
+    
+    // remove all jMQTT old daemon crons
+    do {
+        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+        if (is_object($cron)) $cron->remove(true);
+        else break;
+    }
+    while (true);
+
+    log::add('jMQTT', 'info', 'removal of previous daemon cron done');
+}
+
+/**
+ * version 3
+ * Trigger installation of new dependancies
+ * Return without doing anything if the new version is already installed
+ */
+function installNewDependancies() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 3) {
+        return;
+    }
+    
+    //Jeedom Core Bug : the main thread will end by running the previous version dependancy_info()
+    // (the old one says dependancies are met and it's cached...)
+    // Even if we invalidate dependancies infos in cache, it's back just after
+    // plugin::byId('jMQTT')->dependancy_info(true);
+
+    // So best option is to remove old daemon dependancies
+    // ***REMOVED*** Code removed due to side effect on other plugins. Problem handled by VERSION=5 and deamon_start() ***REMOVED***
+}
+
+function tagBrokersStatusCmd() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 4) {
+        return;
+    }
+
+    // for each brokers
+    foreach ((jMQTT::getBrokers()) as $broker) {
+        // for each cmd of this broker
+        foreach (jMQTTCmd::byEqLogicId($broker->getId()) as $cmd) {
+            // if name is 'status'
+            if ($cmd->getName() == jMQTT::CLIENT_STATUS) {
+                //set logicalId to status (new method to manage broker status cmd)
+                $cmd->setLogicalId(jMQTT::CLIENT_STATUS);
+                $cmd->save();
+            }
+        }
+    }
+
+    log::add('jMQTT', 'info', 'Brokers status command tagged');
+}
+
+function raiseForceDepInstallFlag() {
+    $version = config::byKey(VERSION, 'jMQTT', -1);
+    if ($version >= 5) {
+        return;
+    }
+
+    config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT');
+}
+
+
 function jMQTT_install() {
     jMQTT_update();
 }
 
 function jMQTT_update() {
-    // Stop the plugin
-    jMQTT::stop();
     
+    // VERSION = 0
     migrateToMultiBrokerVersion();
+    // VERSION = 1
     migrateToJsonVersion();
+    // VERSION = 2
     disableAutoAddCmdOnBrokers();
+    // VERSION = 3
+    removePreviousDaemonCrons();
+    installNewDependancies();
+    // VERSION = 4
+    tagBrokersStatusCmd();
+    // VERSION = 5
+    raiseForceDepInstallFlag();
 
     // Update version next to upgrade operations
     config::save(VERSION, CURRENT_VERSION, 'jMQTT');
-
-    // force the refresh of the dependancy info
-    // otherwise the cache value is kept
-    plugin::byId('jMQTT')->dependancy_info(true);
-    
-    // Start the plugin
-    jMQTT::start();
 }
 
 function jMQTT_remove() {
-    do {
-        $cron = cron::byClassAndFunction('jMQTT', 'daemon');
-        if (is_object($cron))
-            $cron->remove(true);
-            else
-                break;
-    }
-    while (true);
+    
 }
 
 ?>

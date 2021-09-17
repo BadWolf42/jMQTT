@@ -119,6 +119,22 @@ $(document).ready(function() {
         event.stopPropagation();
         refreshEqLogicPage();
     });
+
+    // Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
+    // TODO : To Be delete when fix reached Jeedom Core stable
+    // https://github.com/jeedom/core/pull/1825
+    // https://github.com/jeedom/core/pull/1829
+    $('.eqLogicAction[data-action=save]').mousedown(function() {
+        requestTextareas = $('.cmdAttr[data-l1key=configuration][data-l2key=request]')
+        requestTextareas.each(function(i, e){
+            currentValue = $(e).val();
+            if (currentValue.length >= 1) {
+                if (currentValue[0] == '{') $(e).val(String.fromCharCode(6) + currentValue);
+                else if (currentValue.length == String.fromCharCode(6)) $(e).val('');
+                else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{') $(e).val(currentValue.substring(1));
+            }
+        });
+    });
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {
@@ -174,6 +190,12 @@ $('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', 
 $('.nav-tabs a[href="#commandtab"]').on('click', function() {
     if($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
         $('#menu-bar').show();
+    }
+});
+
+$('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').on('change', function(e) {
+    if($(e.target).value() == 'broker') {
+        $('#menu-bar').hide();
     }
 });
 
@@ -361,10 +383,6 @@ $('.createTemplate').off('click').on('click', function () {
             });
         }
     });
-});
-
-$('#checkAll').on('click', function () {
-    $('.cmdAttr[data-l1key=isVisible]').prop('checked', this.checked);
 });
 
 /**
@@ -563,14 +581,16 @@ function printEqLogic(_eqLogic) {
     }
 
     // Show UI elements depending on the type
-    if (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0 ||
+    if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0)) ||
             (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) {
         $('.toDisable').addClass('disabled');
+        $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
         $('.typ-brk').hide();
         $('.typ-std').show();
     }
     else if (_eqLogic.configuration.type == 'broker') {
         $('.toDisable').removeClass('disabled');
+        $('.eqLogicAction[data-action="configure"]').addClass('roundedLeft');
         $('.typ-std').hide();
         $('.typ-brk').show();
         $('#mqtttopic').prop('readonly', true);
@@ -579,7 +599,7 @@ function printEqLogic(_eqLogic) {
         $('.bt_plugin_conf_view_log').attr('data-log', log);
         $('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
         
-        refreshDaemonInfo();
+        refreshMqttClientInfo();
         
         jeedom.config.load({
             configuration: $('#div_broker_log').getValues('.configKey')[0],
@@ -594,6 +614,7 @@ function printEqLogic(_eqLogic) {
     }
     else if (_eqLogic.configuration.type == 'eqpt') {
         $('.toDisable').removeClass('disabled');
+        $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
         $('.typ-brk').hide();
         $('.typ-std').show();
         $('#mqtttopic').prop('readonly', false);
@@ -723,14 +744,16 @@ function addCmdToTable(_cmd) {
         }
         jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
+        // Fill in value of current cmd. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
+        if (is_json_view) {
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.value);
+        }
+        
+        // refreshValue apply value on cmd with id (so there won't be any refresh on cmd without id in JSON view)
         function refreshValue(val) {
-            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(val);
+            $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(val);
         }
 
-        // Display the value. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
-        // See below for CLASSIC view.
-        refreshValue(_cmd.value);
-        
         if (_cmd.id != undefined) {
             // Get and display the value in CLASSIC view (for JSON view, see few lines above)
             if (! is_json_view) {
@@ -968,9 +991,9 @@ function changeIncludeMode() {
 
 // Update the broker icon and the include mode activation on reception of a new state event
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
-    showDaemonInfo(_options);
+    showMqttClientInfo(_options);
     setIncludeModeActivation(_options.brkId, _options.state);
-    $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] img').attr('src', 'plugins/jMQTT/resources/images/node_broker_' + _options.state + '.svg');
+    $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').css('color', _options.color);
 });
 
 //Called by the plugin core to inform about the automatic inclusion mode disabling
@@ -1008,3 +1031,4 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
         }
     }
 });
+

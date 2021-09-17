@@ -59,6 +59,11 @@ $node_images = scandir(__DIR__ . '/../../resources/images/');
     background-color: #FFFFFF;
 }
 
+.row div.eqLogic div.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .eqLogicDisplayAction.disableCard {
     opacity: 0.35;
     cursor: default;
@@ -120,16 +125,17 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 function displayEqLogicCard($eqL, $node_images) {
     $opacity = $eqL->getIsEnable() ? '' : 'disableCard';
     echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
-    if ($eqL->getConfiguration('auto_add_cmd', 1) == 1) {
-       echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px"></i>';
+    if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) {
+       echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px;margin-left:4px"></i>';
     }
     if ($eqL->getIsVisible()) {
-        echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
+        echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px"></i>';
     } else {
-        echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px"></i>';
+        echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px"></i>';
     }
     if ($eqL->getType() == jMQTT::TYP_BRK) {
-        $file = 'node_broker_' . $eqL->getDaemonState() . '.svg';
+        $file = 'node_broker.svg';
+        echo '<i class="status-circle fas fa-circle" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px;color:' . jMQTT::getBrokerColorFromState($eqL->getMqttClientState()) . '"></i>';
     }
     else {
         $icon = 'node_' . $eqL->getConfiguration('icone');
@@ -258,7 +264,7 @@ function displayEqLogicCard($eqL, $node_images) {
                             <th style="width:300px;">{{Topic}}</th>
                             <th style="width:300px;">{{Valeur}}</th>
                             <th style="width:1px;">{{Unité}}</th>
-                            <th style="width:150px;">{{Paramètres}}<label class="checkbox-inline" style="margin-left:15px; display: none;"><input type="checkbox" id="checkAll" class="checkbox-inline" checked="">Cocher/Décocher</label></th>
+                            <th style="width:150px;">{{Paramètres}}</th>
                             <th style="width:130px;"></th>
                         </tr>
                     </thead>
@@ -280,7 +286,7 @@ function displayEqLogicCard($eqL, $node_images) {
 <?php
 // Initialise the automatic inclusion button display according to include_mode configuration parameter
 foreach ($eqBrokers as $eqL) {
-    echo 'setIncludeModeActivation(' . $eqL->getId() . ',"' . $eqL->getDaemonState() . '");';
+    echo 'setIncludeModeActivation(' . $eqL->getId() . ',"' . $eqL->getMqttClientState() . '");';
     echo 'configureIncludeModeDisplay(' . $eqL->getId() . ',' . $eqL->getIncludeMode() . ');';
 }
 ?>

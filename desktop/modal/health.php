@@ -47,7 +47,7 @@ echo '<legend><i class="fas fa-table"></i> {{Brokers}}</legend>';
 echo '<table class="table table-condensed tablesorter" id="table_healthMQTT">';
 echo '<thead><tr><th>{{Broker}}</th><th>{{ID}}</th><th>{{Statut}}</th><th>{{Dernière communication}}</th><th>{{Date création}}</th></tr></thead><tbody>';
 foreach ($eqBrokers as $eqB) {
-    $info = $eqB->getDaemonInfo();
+    $info = $eqB->getMqttClientInfo();
     echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
     echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqB->getId() . '</span></td>';
     echo '<td>' . getStatusHtml($info['state']) . ' ' . $info['message'] . '</td>';
