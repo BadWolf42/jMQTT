@@ -1,29 +1,32 @@
 # Registre des évolutions
 
+## Beta
+  - Correction : l'équipement broker "local" ne se créée plus si un équipement broker existant est configuré avec l'ip de la machine
+
 ## 2021-09-17 Nouveaux Démons
 **ATTENTION :  De gros changements ont été apporté au plugin**
 En cas de problème, merci d'ouvrir un thread sur [community ici](https://community.jeedom.com/tag/plugin-jmqtt) ou une issue sur [Github ici](https://github.com/Domochip/jMQTT/issues)
- - Changement complet de moteur MQTT
- - Passage au nouveau démon (PHPWebSocket + Python) utilisant la gestion fournie par Jeedom Core
- - Réécriture complète de la gestion des Création/Modification/Suppression des équipements
- - Structure de classes permettant l'utilisation dans de futurs plugins satellites
- - Nouvelles dépendances plus légères et maintenues
- - Renommage de l'ancienne partie Daemon en MqttClient
- - Retrait de Ratchet des sources et ajout au méchanisme d'installation de dépendances
- - Amélioration de la gestion des erreurs dans le daemon WebSocket PHP
- - Nettoyage des anciennes dépendances lors de l'update du plugin
- - Ajout du support de TLS et modification de la documentation en conséquence
- - Correction temporaire de la transformation des entiers en texte dans les JSON des commandes actions (Jeedom Core [PR#1829](https://github.com/jeedom/core/pull/1829))
- - Amélioraton du daemon Python
- - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key
- - Correction de Bug sur l'application des Template : La souscription au topic ne se faisait pas après l'application d'un template + des messages de topics mismatch apparaissaient 
- - Augmentation du timeout WebSocket et kill -9 des daemon si pas arrêté au bout de 10 secondes
- - Ajout de l'icone Nabaztag
- - Ajout de template de volet roulant
- - Stockage des template dans le dossier data permettant de les conserver durant les MAJ du plugin
- - IMAGES : Changement du logo du plugin, reprise des captures d'écran de la documentation, optimisation des tailles
- - Correction de l'Ajout automatique des commandes qui pouvait générer des erreurs MySQL de type "Duplicate entry", voir [Issue#89](https://github.com/Domochip/jMQTT/issues/89).
- - le passage au nouveau démon déclenche correctement l'installation des nouvelles dépendances
+  - Changement complet de moteur MQTT
+  - Passage au nouveau démon (PHPWebSocket + Python) utilisant la gestion fournie par Jeedom Core
+  - Réécriture complète de la gestion des Création/Modification/Suppression des équipements
+  - Structure de classes permettant l'utilisation dans de futurs plugins satellites
+  - Nouvelles dépendances plus légères et maintenues
+  - Renommage de l'ancienne partie Daemon en MqttClient
+  - Retrait de Ratchet des sources et ajout au méchanisme d'installation de dépendances
+  - Amélioration de la gestion des erreurs dans le daemon WebSocket PHP
+  - Nettoyage des anciennes dépendances lors de l'update du plugin
+  - Ajout du support de TLS et modification de la documentation en conséquence
+  - Correction temporaire de la transformation des entiers en texte dans les JSON des commandes actions (Jeedom Core [PR#1829](https://github.com/jeedom/core/pull/1829))
+  - Amélioraton du daemon Python
+  - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key
+  - Correction de Bug sur l'application des Template : La souscription au topic ne se faisait pas après l'application d'un template + des messages de topics mismatch apparaissaient 
+  - Augmentation du timeout WebSocket et kill -9 des daemon si pas arrêté au bout de 10 secondes
+  - Ajout de l'icone Nabaztag
+  - Ajout de template de volet roulant
+  - Stockage des template dans le dossier data permettant de les conserver durant les MAJ du plugin
+  - IMAGES : Changement du logo du plugin, reprise des captures d'écran de la documentation, optimisation des tailles
+  - Correction de l'Ajout automatique des commandes qui pouvait générer des erreurs MySQL de type "Duplicate entry", voir [Issue#89](https://github.com/Domochip/jMQTT/issues/89).
+  - le passage au nouveau démon déclenche correctement l'installation des nouvelles dépendances
 
 ## 2021-06-02
   - Correction [PR#86](https://github.com/Domochip/jMQTT/pull/86) : mosquitto_pub ne prend plus en charge les '/' dans le clientId. Ils ont donc été remplacé par des '-'
@@ -34,10 +37,10 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
   - Remplacement de la fonction topicMatchesSub de Mosquitto-PHP par un portage PHP de la fonction mosquitto_topic_matches_sub
 
 ## 2021-04-18
- - Réécriture des premiers chapitre de la documentation
- - Le bouton de suppression de commandes s'affiche sur les nouvelles commandes en mode "classic"
- - Les champs compte et mot de passe de connexion n'ont plus d'autocomplete
- - Correction [Issue#35](https://github.com/Domochip/jMQTT/issues/35): Bug d'ajout de commande action puis info...
+  - Réécriture des premiers chapitre de la documentation
+  - Le bouton de suppression de commandes s'affiche sur les nouvelles commandes en mode "classic"
+  - Les champs compte et mot de passe de connexion n'ont plus d'autocomplete
+  - Correction [Issue#35](https://github.com/Domochip/jMQTT/issues/35): Bug d'ajout de commande action puis info...
 
 ## 2021-04-13
   - Correction de la conversion de texte transformé en entier dans les payload (Ex : {"bidule":"007"} -> {"bidule":7})
