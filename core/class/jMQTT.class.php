@@ -864,7 +864,8 @@ class jMQTT extends eqLogic {
             foreach(self::getBrokers() as $broker) {
                 $hn = $broker->getMqttAddress();
                 $ip = gethostbyname($hn);
-                if ($hn == '' || $hn == $broker->getDefaultConfiguration(self::CONF_KEY_MQTT_ADDRESS) || substr($ip, 0, 4) == '127.') {
+                $localips = explode(' ', exec(system::getCmdSudo() . 'hostname -I'));
+                if ($hn == '' || substr($ip, 0, 4) == '127.' || in_array($ip, $localips)) {
                     $brokerexists = true;
                     echo "Broker eqpt already exists\n";
                     break;
