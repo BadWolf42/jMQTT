@@ -1,6 +1,6 @@
 # Registre des évolutions
 
-## Beta
+## 2021-09-18
   - Correction : l'équipement broker "local" ne se créée plus si un équipement broker existant est configuré avec l'ip de la machine
 
 ## 2021-09-17 Nouveaux Démons
