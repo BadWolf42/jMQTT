@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## Beta
+  - Améliorations mineures du log de DEBUG
+
 ## 2021-09-18
   - Correction : l'équipement broker "local" ne se créée plus si un équipement broker existant est configuré avec l'ip de la machine
 
