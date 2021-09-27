@@ -66,14 +66,25 @@ class jMQTTdLogic implements MessageComponentInterface {
 
     public function onOpen(ConnectionInterface $conn) {
 
-        if ( ! $conn->httpRequest->hasHeader('id') || ! $conn->httpRequest->hasHeader('apikey')) {
+        if (!$conn->httpRequest->hasHeader('id')) {
+            log::add($this->plugin, 'error', 'Id XX : A WebSocket connection didn\'t passed "Id" and will be closed now');
             $conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
             $conn->close();
+            return;
+        }
+
+        if (!$conn->httpRequest->hasHeader('apikey')) {
+            log::add($this->plugin, 'error', sprintf('Id %d : A WebSocket connection didn\'t passed "apikey" and will be closed now', $conn->httpRequest->getHeader('id')[0]));
+            $conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
+            $conn->close();
+            return;
         }
 
         if (!jeedom::apiAccess($conn->httpRequest->getHeader('apikey')[0], $this->plugin)) {
+            log::add($this->plugin, 'error', sprintf('Id %d : A WebSocket connection passed an invalid apikey and will be closed now', $conn->httpRequest->getHeader('id')[0]));
             $conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
             $conn->close();
+            return;
         }
 
         log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon connected successfully to WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
@@ -111,8 +122,13 @@ class jMQTTdLogic implements MessageComponentInterface {
     }
 
     public function onClose(ConnectionInterface $conn) {
-        log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon disconnected from WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
-        jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+        if (!$conn->httpRequest->hasHeader('id')) {
+            log::add($this->plugin, 'debug', 'Id XX : invalid WebSocket disconnected');
+        }
+        else {
+            log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon disconnected from WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
+            jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+        }
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
