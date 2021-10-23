@@ -147,10 +147,14 @@
 					<option value="bell">{{Sonnerie}}</option>
 					<option value="remote">{{Télécommande}}</option>
 					<option value="teleinfo">{{Téléinfo}}</option>
+					<option value="tv">{{Télévison}}</option>
 					<option value="temp">{{Température}}</option>
 					<option value="thermostat">{{Thermostat}}</option>
 					<option value="fan">{{Ventilation}}</option>
 					<option value="volet">{{Volet}}</option>
+					<option value="wifi">{{Wifi}}</option>
+					<option value="zigbee">{{Zigbee}}</option>
+					<option value="zwave">{{ZWave}}</option>
                 </select>
             </div>
         </div>
