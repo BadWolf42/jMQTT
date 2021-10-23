@@ -395,7 +395,6 @@ class jMQTT extends eqLogic {
 
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == self::TYP_BRK) {
-
             // Check for a broker eqpt with the same name (which is not this)
             foreach(self::getBrokers() as $broker) {
                 if ($broker->getName() == $this->getName() && $broker->getId() != $this->getId()) {
@@ -405,58 +404,83 @@ class jMQTT extends eqLogic {
 
             // --- New broker ---
             if ($this->getId() == '') {
+                $this->_preSaveInformations = null; // New eqpt => Nothing to collect
             }
             // --- Existing broker ---
             else {
+                // Gather informations that will be used in postSave
+                $eqLogic = self::byId($this->getId());
+                $this->_preSaveInformations = array(
+                    'name'                  => $eqLogic->getName(),
+                    'isEnable'              => $eqLogic->getIsEnable(),
+                    'topic'                 => $eqLogic->getTopic(),
+                    self::CONF_KEY_API      => $eqLogic->isApiEnable()
+                );
+                $backupVals = array( // load trivials eqLogic from DB
+                    self::CONF_KEY_LOGLEVEL,        self::CONF_KEY_MQTT_CLIENT_ID,
+                    self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
+                    self::CONF_KEY_MQTT_USER,       self::CONF_KEY_MQTT_PASS,
+                    self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
+                    self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
+                    self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
+                    self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
+                    self::CONF_KEY_QOS);
+                foreach ($backupVals as $key)
+                    $this->_preSaveInformations[$key] = $eqLogic->getConf($key);
+                $cleanVals = array( // Remove values leaking from Equipment tab
+                    self::CONF_KEY_BRK_ID,          self::CONF_KEY_AUTO_ADD_CMD,
+                    "icone"
+                );
+                foreach ($cleanVals as $key)
+                    $this->setConfiguration($key, null);
+
                 // Check certificate binding information if TLS is disabled
                 if (!boolval($this->_preSaveInformations[self::CONF_KEY_MQTT_TLS])) {
                     // If a CA is specified and this file doesn't exists, remove it
-                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
+                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA)
+                      && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
                         $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
-                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
+                    // If a Client Cert is specified and this file doesn't exists, remove it
+                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT)
+                      && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
                         $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
-                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
+                    // If a Client Key is specified and this file doesn't exists, remove it
+                    if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY)
+                      && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
                         $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
                 }
             }
         }
         // ------------------------ Normal eqpt ------------------------
         else{
-
             // --- New eqpt ---
             if ($this->getId() == '') {
+                $this->_preSaveInformations = null; // New eqpt => Nothing to collect
             }
             // --- Existing eqpt ---
             else {
+                // Gather informations that will be used in postSave
+                $eqLogic = self::byId($this->getId());
+                $this->_preSaveInformations = array(
+                    'name'                  => $eqLogic->getName(),
+                    'isEnable'              => $eqLogic->getIsEnable(),
+                    'topic'                 => $eqLogic->getTopic(),
+                    self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId(),
+                    self::CONF_KEY_QOS      => $eqLogic->getQos()
+                );
+                $cleanVals = array( // Remove values leaking from Broker tab
+                    self::CONF_KEY_LOGLEVEL,        self::CONF_KEY_MQTT_CLIENT_ID,
+                    self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
+                    self::CONF_KEY_MQTT_USER,       self::CONF_KEY_MQTT_PASS,
+                    self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
+                    self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
+                    self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
+                    self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
+                    self::CONF_KEY_API
+                );
+                foreach ($cleanVals as $key)
+                    $this->setConfiguration($key, null);
             }
-        }
-
-
-        // It's time to gather informations that will be used in postSave
-        if ($this->getId() == '') $this->_preSaveInformations = null; // New eqpt => Nothing to collect
-        else { // Existing eqpt
-
-            // load eqLogic from DB
-            $eqLogic = self::byId($this->getId());
-            $this->_preSaveInformations = array(
-                'name'                  => $eqLogic->getName(),
-                'isEnable'              => $eqLogic->getIsEnable(),
-                self::CONF_KEY_API      => $eqLogic->isApiEnable(),
-                'topic'                 => $eqLogic->getTopic(),
-                self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
-            );
-
-            $backupVal = array( // load trivials eqLogic from DB
-                self::CONF_KEY_LOGLEVEL,        self::CONF_KEY_MQTT_CLIENT_ID,
-                self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
-                self::CONF_KEY_MQTT_USER,       self::CONF_KEY_MQTT_PASS,
-                self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
-                self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
-                self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
-                self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
-                self::CONF_KEY_QOS);
-            foreach ($backupVal as $key)
-                $this->_preSaveInformations[$key] = $eqLogic->getConf($key);
         }
     }
 
