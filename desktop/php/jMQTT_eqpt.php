@@ -109,6 +109,7 @@
                 <select id="sel_icon" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">
 					<option value="">{{Aucun}}</option>
 					<option value="barometre">{{Baromètre}}</option>
+					<option value="bt">{{Bluetooth}}</option>
 					<option value="boiteauxlettres">{{Boite aux Lettres}}</option>
 					<option value="water-boiler">{{Chaudière}}</option>
 					<option value="chauffage">{{Chauffage}}</option>
