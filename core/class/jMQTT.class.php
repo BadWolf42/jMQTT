@@ -634,42 +634,6 @@ class jMQTT extends eqLogic {
                     $this->subscribeTopic($this->getTopic(), $this->getQos());
                 }
             }
-
-            $cmds = array();
-            foreach ($this->getCmd() as $cmd) {
-                if ($cmd->getConfiguration('auto_publish', false)) {
-                    preg_match_all("/#([0-9]*)#/", $cmd->getConfiguration('request', ''), $matches);
-                    foreach ($matches[1] as $cmd_id)
-                        $cmds[$cmd_id][] = $cmd->getId();
-                }
-            }
-            $listener = listener::byId($this->getCache('listener', ''));
-            if (count($cmds) > 0) {
-                if (!is_object($listener))
-                    $listener = new listener();
-                $listener->setClass(__CLASS__);
-                $listener->setFunction('listenerAction');
-                $listener->emptyEvent();
-                foreach ($cmds as $cmd_id=>$val)
-                    $listener->addEvent($cmd_id);
-                $listener->setOption('eq', $this->getId());
-                $listener->setOption('event_to_cmds', $cmds);
-                $listener->save();
-                $this->setCache('listener', $listener->getId());
-            } else {
-                if (is_object($listener))
-                    $listener->remove();
-            }
-
-        }
-    }
-
-    public static function listenerAction($_options) {
-        $eq = eqLogic::byId($_options['eq']);
-        $eq->log('info', 'listenerAction: ' . json_encode($_options));
-        foreach ($_options['event_to_cmds'][$_options['event_id']] as $cmd_id) {
-            $cmd = jMQTTCmd::byId($cmd_id);
-            $cmd->execute();
         }
     }
 
@@ -706,9 +670,6 @@ class jMQTT extends eqLogic {
         // ------------------------ Normal eqpt ------------------------
         else {
             $this->log('info', 'removing equipment ' . $this->getName());
-            $listener = listener::byId($this->getCache('listener', ''));
-            if (is_object($listener))
-                $listener->remove();
         }
 
         

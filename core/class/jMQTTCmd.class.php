@@ -287,11 +287,11 @@ class jMQTTCmd extends cmd {
             $this->eventNewCmd();
         }
         else { // the cmd has been updated
+            $eqLogic = $this->getEqLogic();
 
             // If retain mode changed
             if ($this->_preSaveInformations['retain'] != $this->getConfiguration('retain', 0)) {
 
-                $eqLogic = $this->getEqLogic();
                 $cmdLogName = $this->getLogName();
 
                 // It's enabled now
@@ -310,30 +310,72 @@ class jMQTTCmd extends cmd {
             }
 
             // Specific command : status for Broker eqpt
-            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getEqLogic()->getIsEnable()) {
+            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $eqLogic->getType() == jMQTT::TYP_BRK && $eqLogic->getIsEnable()) {
                 // If it's topic changed
                 if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
                     // Just try to remove the previous status topic
-                    $eqLogic = $this->getEqLogic();
                     $eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
                 }
             }
         }
 
-        // For info commands, check that the topic is compatible with the subscription command
-        // of the related equipment
-        if ($this->getType() == 'info' && $this->getEqLogic()->getType() == jMQTT::TYP_EQPT && !$this->getEqLogic()->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0)) {
-            if (! $this->topicMatchesSubscription($this->getEqLogic()->getTopic())) {
-                $this->eventTopicMismatch();
+        // For Equipments
+        if ($eqLogic->getType() == jMQTT::TYP_EQPT) {
+            // For info commands, check that the topic is compatible with the subscription command
+            if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0)) {
+                if (! $this->topicMatchesSubscription($eqLogic->getTopic())) {
+                    $this->eventTopicMismatch();
+                }
             }
+
+            // <Listener for auto_publish action command
+            $cmds = array();
+            if ($eqLogic->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('auto_publish', 0)) {
+                preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
+                $cmds = $matches[1];
+                // foreach ($matches[1] as $cmd_id)
+                    // $cmds[] = $cmd_id;
+            }
+            $listener = listener::byId($this->getCache('listener', null));
+            if (count($cmds) > 0) {
+                if (!is_object($listener))
+                    $listener = new listener();
+                $listener->setClass(__CLASS__);
+                $listener->setFunction('listenerAction');
+                $listener->emptyEvent();
+                foreach ($cmds as $cmd_id)
+                    $listener->addEvent($cmd_id);
+                $listener->setOption('cmd', $this->getId());
+                $listener->save();
+                $this->setCache('listener', $listener->getId());
+            } else if (!is_null($listener)) {
+                $this->setCache('listener', null);
+                if (is_object($listener))
+                    $listener->remove();
+            }
+            // Listener>
         }
     }
+
+
+    public static function listenerAction($_options) {
+        $cmd = jMQTTCmd::byId($_options['cmd']);
+        $cmd->getEqLogic()->log('info', 'listenerAction: ' . json_encode($_options));
+        $cmd->execute();
+    }
+
 
     /**
      * preRemove method to log that a command is removed
      */
     public function preRemove() {
         $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
+        $listener = listener::byId($this->getCache('listener', null));
+        if (!is_null($listener)) {
+            $this->setCache('listener', null);
+            if (is_object($listener))
+                $listener->remove();
+        }
     }
 
     public function setName($name) {
