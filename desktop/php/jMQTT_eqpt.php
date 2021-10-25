@@ -166,13 +166,13 @@
 
 <script>
 $("#sel_icon").change(function() {
-    var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
+    var text = 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val();
     $("#icon_visu").attr("src", text + '.svg');
 });
 
 $("#icon_visu").on("error", function () {
     if ($("#sel_icon").val() != '') {
-        $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
+        $(this).attr("src", 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val() + '.png');
     }
 });
 </script>
