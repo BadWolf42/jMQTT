@@ -261,6 +261,7 @@ class jMQTTCmd extends cmd {
      * Callback called by the core after having saved this command in the DB
      */
     public function postSave() {
+        $eqLogic = $this->getEqLogic();
 
         // If _preSaveInformations is null, It's a fresh new cmd.
         if (is_null($this->_preSaveInformations)) {
@@ -287,7 +288,6 @@ class jMQTTCmd extends cmd {
             $this->eventNewCmd();
         }
         else { // the cmd has been updated
-            $eqLogic = $this->getEqLogic();
 
             // If retain mode changed
             if ($this->_preSaveInformations['retain'] != $this->getConfiguration('retain', 0)) {
