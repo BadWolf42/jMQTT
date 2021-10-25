@@ -333,8 +333,6 @@ class jMQTTCmd extends cmd {
             if ($eqLogic->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('auto_publish', 0)) {
                 preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
                 $cmds = $matches[1];
-                // foreach ($matches[1] as $cmd_id)
-                    // $cmds[] = $cmd_id;
             }
             $listener = listener::byId($this->getCache('listener', null));
             if (count($cmds) > 0) {
@@ -346,13 +344,13 @@ class jMQTTCmd extends cmd {
                 foreach ($cmds as $cmd_id)
                     $listener->addEvent($cmd_id);
                 $listener->setOption('cmd', $this->getId());
+                $listener->setOption('background', false);
                 $listener->save();
                 $this->setCache('listener', $listener->getId());
-            } else if (!is_null($listener)) {
+            } else if (is_object($listener))
+                $listener->remove();
+            else
                 $this->setCache('listener', null);
-                if (is_object($listener))
-                    $listener->remove();
-            }
             // Listener>
         }
     }
@@ -360,8 +358,13 @@ class jMQTTCmd extends cmd {
 
     public static function listenerAction($_options) {
         $cmd = jMQTTCmd::byId($_options['cmd']);
-        $cmd->getEqLogic()->log('info', 'listenerAction: ' . json_encode($_options));
-        $cmd->execute();
+        if (is_object($cmd)) {
+            //$cmd->getEqLogic()->log('info', 'listenerAction: ' . json_encode($_options));
+            $cmd->execute();
+        } else {
+            $listener = listener::byId($_options['listener_id']);
+            $listener->remove();
+        }
     }
 
 
@@ -370,12 +373,6 @@ class jMQTTCmd extends cmd {
      */
     public function preRemove() {
         $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
-        $listener = listener::byId($this->getCache('listener', null));
-        if (!is_null($listener)) {
-            $this->setCache('listener', null);
-            if (is_object($listener))
-                $listener->remove();
-        }
     }
 
     public function setName($name) {
