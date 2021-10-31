@@ -24,9 +24,9 @@ try {
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
-    define('PATH_TPLTS', __DIR__ . '/../../data/templates');
+    define('PATH_TPLTS', __DIR__ . '/../../data/template');
 
-    if (init('action') == 'fileupload') { // Does not work if placed after "ajax::init()", because using some parameters in GET
+    if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
         log::add('jMQTT', 'info', 'file upload "' . $_FILES['file']['name'] . '"');
         if (!isset($_FILES['file'])) {
             throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
@@ -66,7 +66,18 @@ try {
     ajax::init();
 
     if (init('action') == 'getTemplateList') {
-        ajax::success(jMQTT::templateParameters());
+        ajax::success(jMQTT::templateParameters(init('template')));
+    }
+
+    if (init('action') == 'getTemplateFilename') {
+        ajax::success(jMQTT::templateFilename(init('template')));
+    }
+
+    if (init('action') == 'deleteUserTemplate') {
+        // log::add('jMQTT', 'info', 'deleteUserTemplate "' . init('template') . '"');
+        if (!$file = jMQTT::deleteUserTemplate(init('template')))
+            throw new Exception(__('Fichier non trouvé', __FILE__));
+        ajax::success($file);
     }
 
     if (init('action') == 'applyTemplate') {

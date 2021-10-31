@@ -110,16 +110,27 @@ class jMQTT extends eqLogic {
      * @return array
      */
 	public static function templateParameters($_template = ''){
+        log::add('jMQTT', 'debug', 'templateParameters("' . $_template . '")');
 		$return = array();
-        foreach (array("/../config/template", "/../../data/template") as $path) {
-            foreach (ls(dirname(__FILE__) . $path, '*.json', false, array('files', 'quiet')) as $file) {
-                try {
-                    $content = file_get_contents(dirname(__FILE__) . $path . '/' . $file);
-                    if (is_json($content)) {
-                        $return += json_decode($content, true);
-                    }
-                } catch (Throwable $e) {}
-            }
+        // Get personal templates
+        foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        $return['[Perso] '.$k] = $v;
+                }
+            } catch (Throwable $e) {}
+        }
+        // Get official templates
+        foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        $return['[Plugin] '.$k] = $v;
+                }
+            } catch (Throwable $e) {}
         }
 		if (isset($_template) && $_template != '') {
 			if (isset($return[$_template])) {
@@ -129,6 +140,65 @@ class jMQTT extends eqLogic {
 		}
 		return $return;
 	}
+
+    /**
+     * Return the (first) template json files to match template name.
+     * @param string $_template template name to look for.
+     * @return string
+     */
+	public static function templateFilename($_template = ''){
+        log::add('jMQTT', 'debug', 'templateFilename("' . $_template . '")');
+        if (!isset($_template) || is_null($_template) || $_template == '')
+            return "";
+        // Get personal templates
+        foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        if ('[Perso] '.$k == $_template)
+                            return 'plugins/jMQTT/data/template/' . $file;
+                }
+            } catch (Throwable $e) {}
+        }
+        // Get official templates
+        foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        if ('[Plugin] '.$k == $_template)
+                            return 'plugins/jMQTT/core/config/template/' . $file;
+                }
+            } catch (Throwable $e) {}
+        }
+        return "";
+    }
+
+    /**
+     * Deletes all user defined templates matking name.
+     * @param string $_template template name to look for.
+     */
+    public static function deleteUserTemplate($_template){
+        log::add('jMQTT', 'debug', 'deleteUserTemplate("' . $_template . '")');
+        if (!isset($_template) || is_null($_template) || $_template == '')
+            return false;
+        $res = array();
+        foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+                if (is_json($content))
+                    foreach (array_keys(json_decode($content, true)) as $k)
+                        if ('[Perso] '.$k == $_template)
+                            $res[] = $file;
+            } catch (Throwable $e) {}
+        }
+        if (count($res) <= 0)
+            return false;
+        foreach (array_unique($res) as $file)
+            unlink(dirname(__FILE__) . '/../../data/template/' . $file);
+        return true;
+    }
 
     /**
      * apply a template (from json) to the current equipement.
