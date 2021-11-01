@@ -158,7 +158,7 @@ $('#ul_jmqttTemplateList').on({
 							_cmd.tree_id = '1'; // else this is the first one
 					}
 					if (init(_cmd.type) == 'info') {
-						var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '">';
+						var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '" style="height: 88px!important;">';
 						tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="name" disabled style="margin-bottom: 33px;">';
 						tr += '</td><td>';
 						tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
@@ -169,6 +169,7 @@ $('#ul_jmqttTemplateList').on({
 						tr += '</select></td><td>';
 						tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" disabled style="resize:none!important;height:65px;" placeholder="{{Topic}}"></textarea>';
 						tr += '</td><td>';
+						tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="resize:none!important;height:65px;" disabled></textarea>';
 						tr += '</td><td>';
 						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" disabled title="{{Min}}" style="width:50px;display:inline-block;">';
 						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" disabled title="{{Max}}" style="width:50px;display:inline-block;">';
@@ -184,7 +185,7 @@ $('#ul_jmqttTemplateList').on({
 						$('#table_jmqttTemplateCmds [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
 					}
 					if (init(_cmd.type) == 'action') {
-						var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '">';
+						var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" style="height: 88px!important;">';
 						tr += '<td>';
 						tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" disabled>';
 						tr += '<select class="cmdAttr form-control tooltips input-sm" data-l1key="value" style="margin-top:5px;margin-right:10px;" disabled><option>' + init(_cmd.value, 'Aucune') + '</option></select>';
@@ -203,9 +204,12 @@ $('#ul_jmqttTemplateList').on({
 						tr += '</td><td>';
 						tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="resize:none!important;height:65px;" disabled placeholder="{{Valeur}}"></textarea>';
 						tr += '</td><td>';
-						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" disabled style="width:50px;display:inline-block;">';
-						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" disabled style="width:50px;display:inline-block;">';
-						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste de valeur|texte séparé par ;}}" disabled title="{{Liste}}">';
+						if (init(_cmd.subType) == 'slider') {
+							tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" disabled style="width:50px;display:inline-block;">';
+							tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" disabled style="width:50px;display:inline-block;">';
+						}
+						if (init(_cmd.subType) == 'select')
+							tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste de valeur|texte séparé par ;}}" disabled title="{{Liste}}">';
 						tr += '</td><td>';
 						tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" disabled checked/>{{Afficher}}</label></span><br> ';
 						tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="retain"/>{{Retain}}</label></span><br> ';
