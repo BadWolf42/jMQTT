@@ -154,6 +154,11 @@ $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
 });
 
+$('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
+    $('#md_modal').dialog({title: "{{Gestion des templates d'équipements}}"});
+    $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=templates').dialog('open');
+});
+
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
     var el = $(this);
     jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
@@ -315,7 +320,7 @@ $('.eqLogicAction[data-action=move_broker]').on('click', function () {
 $('.applyTemplate').off('click').on('click', function () {
     callPluginAjax({
         data: {
-            action: "getTemplateList",
+            action: "getOldTemplateList",
         },
         success: function (dataresult) {
             var dialog_message = '<label class="control-label">{{Choisissez un template : }}</label> ';
@@ -361,7 +366,7 @@ $('.applyTemplate').off('click').on('click', function () {
 $('.createTemplate').off('click').on('click', function () {
     callPluginAjax({
         data: {
-            action: "getTemplateList",
+            action: "getOldTemplateList",
         },
         success: function (dataresult) {
             bootbox.prompt({
