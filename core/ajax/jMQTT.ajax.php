@@ -79,7 +79,7 @@ try {
 
     if (init('action') == 'deleteTemplateByFile') {
         if (!jMQTT::deleteTemplateByFile(init('file')))
-            throw new Exception(__('Impossible de supprimer le fichier', __FILE__))
+            throw new Exception(__('Impossible de supprimer le fichier', __FILE__));
         ajax::success(true);
     }
 
