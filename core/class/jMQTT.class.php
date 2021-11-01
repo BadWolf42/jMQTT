@@ -128,7 +128,7 @@ class jMQTT extends eqLogic {
 				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
 				if (is_json($content)) {
 					foreach (json_decode($content, true) as $k => $v)
-						$return['[Plugin] '.$k] = $v;
+						$return[$k] = $v;
 				}
 			} catch (Throwable $e) {}
 		}
@@ -164,7 +164,7 @@ class jMQTT extends eqLogic {
 				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
 				if (is_json($content)) {
 					foreach (json_decode($content, true) as $k => $v)
-						$return[] = array(/* '[Plugin] '. */$k, 'plugins/jMQTT/core/config/template/' . $file);
+						$return[] = array($k, 'plugins/jMQTT/core/config/template/' . $file);
 				}
 			} catch (Throwable $e) {}
 		}
