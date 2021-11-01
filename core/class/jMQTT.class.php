@@ -110,7 +110,7 @@ class jMQTT extends eqLogic {
 	 * @return array
 	 */
 	public static function templateParameters($_template = ''){
-		log::add('jMQTT', 'debug', 'templateParameters("' . $_template . '")');
+		// log::add('jMQTT', 'debug', 'templateParameters("' . $_template . '")');
 		$return = array();
 		// Get personal templates
 		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
@@ -146,7 +146,7 @@ class jMQTT extends eqLogic {
 	 * @return list of name and file array.
 	 */
 	public static function templateList(){
-		log::add('jMQTT', 'debug', 'templateList()');
+		// log::add('jMQTT', 'debug', 'templateList()');
 		$return = array();
 		// Get personal templates
 		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
@@ -177,7 +177,7 @@ class jMQTT extends eqLogic {
 	 * @return array
 	 */
 	public static function templateByFile($_filename = ''){
-		log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
+		// log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
 		$existing_files = jMQTT::templateList();
 		$exists = false;
 		foreach ($existing_files as list($n, $f))
@@ -203,7 +203,7 @@ class jMQTT extends eqLogic {
 	 * @param string $_template template name to look for.
 	 */
 	public static function deleteTemplateByFile($_filename){
-		log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
+		// log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
 		if (!isset($_filename) || is_null($_filename) || $_filename == '')
 			return false;
 		$existing_files = jMQTT::templateList();
