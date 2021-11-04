@@ -363,7 +363,7 @@ Dans le gestionnaire, on distingue différentes sections :
   1. La liste des templates existants.
 
 Ceux préfixés par `[Perso]` sont liés à votre installation, les autres arrivent directement avec jMQTT.
-Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à (ouvrir un ticket sur GitHub)[https://github.com/Domochip/jMQTT/issues].
+Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à [ouvrir un ticket sur GitHub](https://github.com/Domochip/jMQTT/issues).
 
   2. Un bouton d'import de template dans jMQTT depuis un fichier json.
 
