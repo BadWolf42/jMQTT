@@ -2,6 +2,7 @@
 
 ## Beta
   - Améliorations mineures du log de DEBUG
+  - Ajout de la fonctionalité "Pub. Auto" (Publication automatique en MQTT lors du changement du champ Valeur d'une commande action)
 
 ## 2021-09-18
   - Correction : l'équipement broker "local" ne se créée plus si un équipement broker existant est configuré avec l'ip de la machine
