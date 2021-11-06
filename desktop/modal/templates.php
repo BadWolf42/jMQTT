@@ -73,7 +73,6 @@ $('#bt_jmqttTemplateUp').fileupload({
             $('#md_jmqttTemplate').showAlert({message: 'Template ajouté avec succès', level: 'success'});
             refreshJmqttTemplateList()
         }
-        // setTimeout(function() { $('#md_jmqttTemplate').hideAlert(); }, 3000);
         $('#bt_jmqttTemplateUp').val(null);
     }
 });
@@ -258,30 +257,4 @@ $('#bt_jmqttTemplateDownload').on('click',function() {
 	}
 	window.open('core/php/downloadFile.php?pathfile=' + $('#ul_jmqttTemplateList li.active').attr('data-file'), "_blank", null)
 })
-
-
-// TESTED until here
-
-/*
-$('#bt_jmqttTemplateApply').on('click', function() {
-  bootbox.confirm('{{Êtes-vous sûr de vouloir appliquer ce template ? Cela écrasera votre configuration actuelle.}}', function(result) {
-    if (result) {
-      var convert = $('.jmqttScenario').getValues('.jmqttScenarioAttr')
-      jeedom.scenario.applyTemplate({
-        template:$('#ul_jmqttTemplateList li.active').attr('data-template'),
-        id: jmqtt_template_id,
-        convert: json_encode(convert),
-        error: function(error) {
-          $('#md_jmqttTemplate').showAlert({message: error.message, level: 'danger'})
-        },
-        success: function(data) {
-          $('#md_modal').dialog('close')
-          printScenario(jmqtt_template_id)
-          $('#div_alert').showAlert({message: 'Template appliqué avec succès.', level: 'success'})
-        }
-      })
-    }
-  })
-})
-*/
 </script>
