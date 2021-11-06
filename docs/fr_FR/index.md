@@ -252,7 +252,7 @@ Les commandes de type action permettent au plugin jMQTT de publier des messages 
   - Topic : topic de publication ;
   - Valeur : définit la valeur publiée, i.e. la payload en langage MQTT, voir exemples ci-dessous ;
   - Retain : si coché, la valeur sera persistante (conservée par le Broker et publiée vers tout nouveau souscripteur) ;
-  - Pub. Auto : uniquement disponible sur une commande Action, execute automatique la commande lors du changement d'une info présente dans le champ Valeur (et donc publier la valeur en MQTT) ;
+  - Pub. Auto : si coché, le champ Valeur sera automatiquement calculé et publié sur le Topic lors du changement d'une commande info du champ Valeur ;
   - Qos : niveau de qualité de service utilisé pour publier la commande (1 par défaut).
 
 **Sous-type Défaut**
