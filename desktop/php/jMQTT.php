@@ -15,7 +15,7 @@ foreach ($eqBrokers as $id => $eqL) {
 sendVarToJS('eqBrokers', $eqBrokersName);
 
 $has_orphans = false;
-$node_images = scandir(__DIR__ . '/../../resources/images/');
+$node_images = scandir(__DIR__ . '/../../core/img/');
 ?>
 
 <style>
@@ -152,7 +152,7 @@ function displayEqLogicCard($eqL, $node_images) {
         }
     }
 
-    echo '<img class="lazy" src="plugins/jMQTT/resources/images/' . $file . '"/>';
+    echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
     echo "<br>";
     echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
     echo '</div>';

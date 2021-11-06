@@ -2,6 +2,7 @@
 
 ## Beta
   - Améliorations mineures du log de DEBUG
+  - Les images sont maintenant dans "core/img" pour assurer la compatibilité avec le Core Jeedom 4.2.5
   - Ajout de la fonctionalité "Pub. Auto" (Publication automatique en MQTT lors du changement du champ Valeur d'une commande action)
 
 ## 2021-09-18
