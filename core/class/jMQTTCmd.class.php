@@ -246,6 +246,36 @@ class jMQTTCmd extends cmd {
 
         }
 
+		// Reset auto_publish if info cmd
+		if ($this->getType() == 'info' && $this->getConfiguration('auto_publish', 0))
+			$this->setConfiguration('auto_publish', 0);
+		// Check "request" value if auto_publish enabled
+		if ($this->getType() == 'action' && $this->getConfiguration('auto_publish', 0)) {
+			$req = $this->getConfiguration('request', '');
+			// Get all commands
+			preg_match_all("/#([0-9]*)#/", $req, $matches);
+			$cmds = array_unique($matches[1]);
+			// $value = '';
+			if (count($cmds) > 0) { // There are commands
+				foreach ($cmds as $cmd_id) {
+					$cmd = cmd::byId($cmd_id);
+					if (!is_object($cmd))
+						throw new Exception('Impossible d\'activer la publication automatique sur <b>'.$this->getHumanName().'</b> car la commande <b>'.$cmd_id.'</b> est invalide.');
+					if ($cmd->getType() != 'info')
+						throw new Exception('Impossible d\'activer la publication automatique sur <b>'.$this->getHumanName().'</b> car la commande <b>'.$cmd->getHumanName().'</b> n\'est pas de type info.');
+					if ($cmd->getEqType() =='jMQTT' && $this->getTopic() == $cmd->getTopic())
+						throw new Exception('Impossible d\'activer la publication automatique sur <b>'.$this->getHumanName().'</b> car la commande <b>'.$cmd->getHumanName().'</b> référence le même topic.');
+					// if ($cmd->getEqType() =='jMQTT' && $this->getEqLogic()->getBrkId() == $cmd->getEqLogic()->getBrkId())
+						// throw new Exception('Impossible d\'activer la publication automatique sur <b>'.$this->getHumanName().'</b> car la commande <b>'.$cmd->getHumanName().'</b> appartient au même Broker.');
+					// $value .= '#'.$cmd->getId().'#';
+				}
+				// $this->setValue($value);
+			} else {// Reset auto_publish if no command
+				$this->setConfiguration('auto_publish', 0);
+				// $this->setValue(null);
+			}
+		}
+
         // It's time to gather informations that will be used in postSave
         if ($this->getId() == '') $this->_preSaveInformations = null;
         else {
@@ -327,46 +357,54 @@ class jMQTTCmd extends cmd {
                     $this->eventTopicMismatch();
                 }
             }
-
-            // <Listener for auto_publish action command
-            $cmds = array();
-            if ($eqLogic->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('auto_publish', 0)) {
-                preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
-                $cmds = $matches[1];
-            }
-            $listener = listener::byId($this->getCache('listener', null));
-            if (count($cmds) > 0) {
-                if (!is_object($listener))
-                    $listener = new listener();
-                $listener->setClass(__CLASS__);
-                $listener->setFunction('listenerAction');
-                $listener->emptyEvent();
-                foreach ($cmds as $cmd_id)
-                    $listener->addEvent($cmd_id);
-                $listener->setOption('cmd', $this->getId());
-                $listener->setOption('background', false);
-                $listener->save();
-                $this->setCache('listener', $listener->getId());
-            } else if (is_object($listener))
-                $listener->remove();
-            else
-                $this->setCache('listener', null);
-            // Listener>
+			$this->listenerUpdate();
         }
     }
 
+// Listener for auto_publish action command
+	public function listenerUpdate() {
+		$cmds = array();
+		if ($this->getEqLogic()->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('auto_publish', 0)) {
+			preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
+			$cmds = array_unique($matches[1]);
+		}
+		$listener = listener::byId($this->getCache('listener', null));
+		if (count($cmds) > 0) { // We need a listener
+			if (!is_object($listener))
+				$listener = new listener();
+			$listener->setClass(__CLASS__);
+			$listener->setFunction('listenerAction');
+			$listener->emptyEvent();
+			foreach ($cmds as $cmd_id) {
+				$cmd = cmd::byId($cmd_id);
+				if (is_object($cmd) && $cmd->getType() == 'info')
+					$listener->addEvent($cmd_id);
+			}
+			$listener->setOption('cmd', $this->getId());
+			$listener->setOption('background', false);
+			$listener->save();
+			$this->setCache('listener', $listener->getId());
+			log::add('jMQTT', 'debug', 'Installed Listener on #'.$this->getHumanName().'#');
+		} else { // We don't want a listener
+			if (is_object($listener)) {
+				$listener->remove();
+				log::add('jMQTT', 'debug', 'Removed Listener on #'.$this->getHumanName().'#');
+			}
+			$this->setCache('listener', null);
+		}
+	}
 
-    public static function listenerAction($_options) {
-        $cmd = jMQTTCmd::byId($_options['cmd']);
-        if (is_object($cmd)) {
-            //$cmd->getEqLogic()->log('info', 'listenerAction: ' . json_encode($_options));
-            $cmd->execute();
-        } else {
-            $listener = listener::byId($_options['listener_id']);
-            $listener->remove();
-        }
-    }
-
+	public static function listenerAction($_options) {
+		$cmd = self::byId($_options['cmd']);
+		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration('auto_publish', 0)) {
+			$listener = listener::byId($_options['listener_id']);
+			$listener->remove();
+			log::add('jMQTT', 'debug', 'Removed Listener on #'.$_options['cmd'].'#');
+		} else {
+			log::add('jMQTT', 'debug', 'Auto Publish on #'.$cmd->getHumanName().'#');
+			$cmd->execute();
+		}
+	}
 
     /**
      * preRemove method to log that a command is removed

@@ -793,6 +793,7 @@ class jMQTT extends eqLogic {
         log::add(__CLASS__, 'info', 'Starting Daemon');
         jMQTTBase::deamon_start(__CLASS__);
         self::checkAllMqttClients();
+		self::listenerAddAll();
     }
     
     /**
@@ -801,6 +802,7 @@ class jMQTT extends eqLogic {
     public static function deamon_stop() {
         log::add(__CLASS__, 'info', 'Stopping Daemon');
         jMQTTBase::deamon_stop(__CLASS__);
+		self::listenerRemoveAll();
     }
     /**
      * Provides dependancy information
@@ -911,6 +913,20 @@ class jMQTT extends eqLogic {
             }
         }
     }
+
+// Create or update all auto_publish listeners
+	public static function listenerAddAll() {
+		foreach (cmd::searchConfiguration('"auto_publish":"1"', __CLASS__) as $cmd)
+			$cmd->listenerUpdate();
+	}
+
+// Remove all auto_publish listeners
+	public static function listenerRemoveAll() {
+		foreach (listener::byClass('jMQTTCmd') as $l)
+			$l->remove();
+		foreach (cmd::searchConfiguration('"auto_publish":"1"', __CLASS__) as $cmd)
+			$cmd->setCache('listener', null);
+	}
 
     ###################################################################################################################
     ##
