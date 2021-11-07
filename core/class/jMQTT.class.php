@@ -105,43 +105,6 @@ class jMQTT extends eqLogic {
     private $_log;
 
 	/**
-	 * Return one or all templates content (from json files) as an array.
-	 * @param string $_template template name to look for
-	 * @return array
-	 */
-	public static function templateParameters($_template = ''){
-		// log::add('jMQTT', 'debug', 'templateParameters("' . $_template . '")');
-		$return = array();
-		// Get personal templates
-		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
-			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						$return['[Perso] '.$k] = $v;
-				}
-			} catch (Throwable $e) {}
-		}
-		// Get official templates
-		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
-			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						$return[$k] = $v;
-				}
-			} catch (Throwable $e) {}
-		}
-		if (isset($_template) && $_template != '') {
-			if (isset($return[$_template])) {
-				return $return[$_template];
-			}
-			return array();
-		}
-		return $return;
-	}
-
-	/**
 	 * Return a list of all templates name and file.
 	 * @return list of name and file array.
 	 */
@@ -169,6 +132,38 @@ class jMQTT extends eqLogic {
 			} catch (Throwable $e) {}
 		}
 		return $return;
+	}
+
+	/**
+	 * Return a template content (from json files).
+	 * @param string $_template template name to look for
+	 * @return array
+	 */
+	public static function templateByName($_template){
+		// log::add('jMQTT', 'debug', 'templateByName("' . $_template . '")');
+		// Get personal templates
+		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+				if (is_json($content)) {
+					foreach (json_decode($content, true) as $k => $v)
+						if ('[Perso] '.$k == $_template)
+							return $v;
+				}
+			} catch (Throwable $e) {}
+		}
+		// Get official templates
+		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+				if (is_json($content)) {
+					foreach (json_decode($content, true) as $k => $v)
+						if ($k == $_template)
+							return $v;
+				}
+			} catch (Throwable $e) {}
+		}
+		return null;
 	}
 
 	/**
@@ -228,8 +223,8 @@ class jMQTT extends eqLogic {
             return true;
         }
 
-		$template = self::templateParameters($_template);
-		if (!is_array($template)) {
+		$template = self::templateByName($_template);
+		if (is_null($template)) {
 			return true;
 		}
 

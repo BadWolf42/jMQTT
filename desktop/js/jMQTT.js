@@ -320,12 +320,12 @@ $('.eqLogicAction[data-action=move_broker]').on('click', function () {
 $('.applyTemplate').off('click').on('click', function () {
     callPluginAjax({
         data: {
-            action: "getOldTemplateList",
+            action: "getTemplateList",
         },
         success: function (dataresult) {
             var dialog_message = '<label class="control-label">{{Choisissez un template : }}</label> ';
             dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="applyTemplateSelector">';
-            for(var i in dataresult){ dialog_message += '<option value="'+i+'">'+i+'</option>'; }
+            for(var i in dataresult){ dialog_message += '<option value="'+dataresult[i][0]+'">'+dataresult[i][0]+'</option>'; }
             dialog_message += '</select><br>';
 
             dialog_message += '<label class="control-label">{{Saisissez le Topic de base : }}</label> ';
@@ -364,30 +364,23 @@ $('.applyTemplate').off('click').on('click', function () {
 });
 
 $('.createTemplate').off('click').on('click', function () {
-    callPluginAjax({
-        data: {
-            action: "getOldTemplateList",
-        },
-        success: function (dataresult) {
-            bootbox.prompt({
-                title: "Nom du nouveau template ?",
-                callback: function (result) {
-                    if (result !== null) {
-                        callPluginAjax({
-                            data: {
-                                action: "createTemplate",
-                                id: $('.eqLogicAttr[data-l1key=id]').value(),
-                                name : result
-                            },
-                            success: function (dataresult) {
-                                $('.eqLogicDisplayCard[data-eqLogic_id='+$('.eqLogicAttr[data-l1key=id]').value()+']').click();
-                            }
-                        });
-                    }
-                }
-            });
-        }
-    });
+	bootbox.prompt({
+		title: "Nom du nouveau template ?",
+		callback: function (result) {
+			if (result !== null) {
+				callPluginAjax({
+					data: {
+						action: "createTemplate",
+						id: $('.eqLogicAttr[data-l1key=id]').value(),
+						name : result
+					},
+					success: function (dataresult) {
+						$('.eqLogicDisplayCard[data-eqLogic_id='+$('.eqLogicAttr[data-l1key=id]').value()+']').click();
+					}
+				});
+			}
+		}
+	});
 });
 
 /**

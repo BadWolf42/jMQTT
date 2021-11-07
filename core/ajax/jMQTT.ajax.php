@@ -65,10 +65,6 @@ try {
 
     ajax::init();
 
-    if (init('action') == 'getOldTemplateList') {
-        ajax::success(jMQTT::templateParameters(init('template')));
-    }
-
     if (init('action') == 'getTemplateList') {
         ajax::success(jMQTT::templateList());
     }
