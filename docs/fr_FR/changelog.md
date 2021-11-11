@@ -3,6 +3,7 @@
 ## Beta
   - Améliorations mineures du log de DEBUG
   - Les images sont maintenant dans "core/img" pour assurer la compatibilité avec le Core Jeedom 4.2.5
+  - Ajout du gestionaire de Template (permet d'ajouter, de télécharger et de supprimer des Templates et d'en visualiser les commandes)
 
 ## 2021-09-18
   - Correction : l'équipement broker "local" ne se créée plus si un équipement broker existant est configuré avec l'ip de la machine

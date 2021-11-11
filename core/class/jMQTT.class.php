@@ -104,30 +104,113 @@ class jMQTT extends eqLogic {
      */
     private $_log;
 
-    /**
-     * Return one or all templates content (from json files) as an array.
-     * @param string $_template template name to look for
-     * @return array
-     */
-	public static function templateParameters($_template = ''){
+	/**
+	 * Return a list of all templates name and file.
+	 * @return list of name and file array.
+	 */
+	public static function templateList(){
+		// log::add('jMQTT', 'debug', 'templateList()');
 		$return = array();
-        foreach (array("/../config/template", "/../../data/template") as $path) {
-            foreach (ls(dirname(__FILE__) . $path, '*.json', false, array('files', 'quiet')) as $file) {
-                try {
-                    $content = file_get_contents(dirname(__FILE__) . $path . '/' . $file);
-                    if (is_json($content)) {
-                        $return += json_decode($content, true);
-                    }
-                } catch (Throwable $e) {}
-            }
-        }
-		if (isset($_template) && $_template != '') {
-			if (isset($return[$_template])) {
-				return $return[$_template];
-			}
-			return array();
+		// Get personal templates
+		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+				if (is_json($content)) {
+					foreach (json_decode($content, true) as $k => $v)
+						$return[] = array('[Perso] '.$k, 'plugins/jMQTT/data/template/' . $file);
+				}
+			} catch (Throwable $e) {}
+		}
+		// Get official templates
+		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+				if (is_json($content)) {
+					foreach (json_decode($content, true) as $k => $v)
+						$return[] = array($k, 'plugins/jMQTT/core/config/template/' . $file);
+				}
+			} catch (Throwable $e) {}
 		}
 		return $return;
+	}
+
+	/**
+	 * Return a template content (from json files).
+	 * @param string $_template template name to look for
+	 * @return array
+	 */
+	public static function templateByName($_template){
+		// log::add('jMQTT', 'debug', 'templateByName("' . $_template . '")');
+		// Get personal templates
+		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+				if (is_json($content)) {
+					foreach (json_decode($content, true) as $k => $v)
+						if ('[Perso] '.$k == $_template)
+							return $v;
+				}
+			} catch (Throwable $e) {}
+		}
+		// Get official templates
+		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+				if (is_json($content)) {
+					foreach (json_decode($content, true) as $k => $v)
+						if ($k == $_template)
+							return $v;
+				}
+			} catch (Throwable $e) {}
+		}
+		return null;
+	}
+
+	/**
+	 * Return one templates content (from json file name).
+	 * @param string $_filename template name to look for
+	 * @return array
+	 */
+	public static function templateByFile($_filename = ''){
+		// log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
+		$existing_files = jMQTT::templateList();
+		$exists = false;
+		foreach ($existing_files as list($n, $f))
+			if ($f == $_filename) {
+				$exists = true;
+				break;
+			}
+		if (!$exists)
+			throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
+		// log::add('jMQTT', 'debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
+		try {
+			$content = file_get_contents(dirname(__FILE__) . '/../../../../' . $_filename);
+			if (is_json($content)) {
+				foreach (json_decode($content, true) as $k => $v)
+					return $v;
+			}
+		} catch (Throwable $e) {}
+		return array();
+	}
+
+	/**
+	 * Deletes user defined template by filename.
+	 * @param string $_template template name to look for.
+	 */
+	public static function deleteTemplateByFile($_filename){
+		// log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
+		if (!isset($_filename) || is_null($_filename) || $_filename == '')
+			return false;
+		$existing_files = jMQTT::templateList();
+		$exists = false;
+		foreach ($existing_files as list($n, $f))
+			if ($f == $_filename) {
+				$exists = true;
+				break;
+			}
+		if (!$exists)
+			return false;
+		return unlink(dirname(__FILE__) . '/../../../../' . $_filename);
 	}
 
     /**
@@ -140,8 +223,8 @@ class jMQTT extends eqLogic {
             return true;
         }
 
-		$template = self::templateParameters($_template);
-		if (!is_array($template)) {
+		$template = self::templateByName($_template);
+		if (is_null($template)) {
 			return true;
 		}
 
