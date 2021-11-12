@@ -24,9 +24,9 @@ try {
     if (!isConnect('admin')) {
         throw new Exception(__('401 - Accès non autorisé', __FILE__));
     }
-    define('PATH_TPLTS', __DIR__ . '/../../data/templates');
+    define('PATH_TPLTS', __DIR__ . '/../../data/template');
 
-    if (init('action') == 'fileupload') { // Does not work if placed after "ajax::init()", because using some parameters in GET
+    if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
         log::add('jMQTT', 'info', 'file upload "' . $_FILES['file']['name'] . '"');
         if (!isset($_FILES['file'])) {
             throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
@@ -66,7 +66,17 @@ try {
     ajax::init();
 
     if (init('action') == 'getTemplateList') {
-        ajax::success(jMQTT::templateParameters());
+        ajax::success(jMQTT::templateList());
+    }
+
+    if (init('action') == 'getTemplateByFile') {
+        ajax::success(jMQTT::templateByFile(init('file')));
+    }
+
+    if (init('action') == 'deleteTemplateByFile') {
+        if (!jMQTT::deleteTemplateByFile(init('file')))
+            throw new Exception(__('Impossible de supprimer le fichier', __FILE__));
+        ajax::success(true);
     }
 
     if (init('action') == 'applyTemplate') {
@@ -159,24 +169,25 @@ try {
         ajax::success();
     }
 
-    // if (init('action') == 'filelist') {
-        // log::add('jMQTT', 'info', 'file list "' . init('dir') . '"');
-        // if (init('dir') == 'template') {
-            // $uploaddir = PATH_TPLTS;
-            // $patern = array('.json');
-        // } elseif (init('dir') == 'certs') {
-            // $uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
-            // $patern = array('.crt', '.key', '.pem');
-        // } else {
-            // throw new Exception(__('Suppression invalide', __FILE__));
-        // }
-        // $res = [];
-        // foreach (ls($uploaddir) as $file) {
-            // if (in_array(strtolower(strrchr($file, '.')), $patern))
-                // $res[] = $file;
-        // }
-        // ajax::success($res);
-    // }
+/*    if (init('action') == 'filelist') {
+        log::add('jMQTT', 'info', 'file list "' . init('dir') . '"');
+        if (init('dir') == 'template') {
+            $uploaddir = PATH_TPLTS;
+            $patern = array('.json');
+        } elseif (init('dir') == 'certs') {
+            $uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
+            $patern = array('.crt', '.key', '.pem');
+        } else {
+            throw new Exception(__('Suppression invalide', __FILE__));
+        }
+        $res = [];
+        foreach (ls($uploaddir) as $file) {
+            if (in_array(strtolower(strrchr($file, '.')), $patern))
+                $res[] = $file;
+        }
+        ajax::success($res);
+    }
+*/
 
     throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
     /*     * *********Catch exeption*************** */
