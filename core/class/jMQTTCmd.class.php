@@ -429,8 +429,10 @@ class jMQTTCmd extends cmd {
     public function preRemove() {
         $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
 		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
-		foreach ($listener as $l)
+		foreach ($listener as $l) {
+			log::add('jMQTT', 'debug', 'Listener Removed from #'.$l->getOption('cmd').'#');
 			$l->remove();
+		}
     }
 
     public function setName($name) {
