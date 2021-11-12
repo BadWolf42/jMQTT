@@ -425,6 +425,9 @@ class jMQTTCmd extends cmd {
      */
     public function preRemove() {
         $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
+		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
+		foreach ($listener as $l)
+			$l->remove();
     }
 
     public function setName($name) {
