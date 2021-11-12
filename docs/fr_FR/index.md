@@ -240,6 +240,14 @@ Si nous rebasculons dans la vue JSON, nous obtenons alors :
 >   * Le nom des commandes peut être modifié comme souhaité, jMQTT se base sur le champ Topic pour associer la bonne valeur.
 >   * Une fois les commandes filles d'une commande JSON créé, il est possible de supprimer la commande mère sans affecter la mise à jour des commandes filles.
 
+**Gestion de la batterie**
+
+Une commande info, dont le **nom** fini par `battery` (ou `batterie`) ou dont le **Type Générique** est `Batterie`, sera utilisé comme niveau de batterie de l'équipement auquel appartient cette commande.
+
+Si la commande info est de type binaire, la valeur de la batterie sera 10% (0) ou 100% (1).
+
+Il est recommandé de ne positionner qu'une seule commande info définissant le niveau de batterie par équipement, sous peine d'avoir des valeurs incohérentes.
+
 #### Commandes de type Action
 
 Les commandes de type action permettent au plugin jMQTT de publier des messages vers le Broker MQTT. Pour cela, créer une commande via le bouton *+ Ajouter une commande action* et remplir les champs selon le besoin :
