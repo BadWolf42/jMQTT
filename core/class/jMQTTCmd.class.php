@@ -384,7 +384,7 @@ class jMQTTCmd extends cmd {
 			preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
 			$cmds = array_unique($matches[1]);
 		}
-		$listener = listener::byId($this->getCache('listener', null));
+		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
 		if (count($cmds) > 0) { // We need a listener
 			if (!is_object($listener))
 				$listener = new listener();
@@ -399,22 +399,19 @@ class jMQTTCmd extends cmd {
 			$listener->setOption('cmd', $this->getId());
 			$listener->setOption('background', false);
 			$listener->save();
-			$this->setCache('listener', $listener->getId());
 			log::add('jMQTT', 'debug', 'Listener Installed on #'.$this->getHumanName().'#');
 		} else { // We don't want a listener
 			if (is_object($listener)) {
 				$listener->remove();
 				log::add('jMQTT', 'debug', 'Listener Removed from #'.$this->getHumanName().'#');
 			}
-			$this->setCache('listener', null);
 		}
 	}
 
 	public static function listenerAction($_options) {
 		$cmd = self::byId($_options['cmd']);
 		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration('autoPub', 0)) {
-			$listener = listener::byId($_options['listener_id']);
-			$listener->remove();
+			listener::byId($_options['listener_id'])->remove();
 			log::add('jMQTT', 'debug', 'Listener Removed from #'.$_options['cmd'].'#');
 		} else {
 			log::add('jMQTT', 'debug', 'Auto Publish on #'.$cmd->getHumanName().'#');
