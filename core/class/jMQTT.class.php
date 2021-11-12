@@ -997,17 +997,17 @@ class jMQTT extends eqLogic {
         }
     }
 
-// Create or update all auto_publish listeners
+// Create or update all autoPub listeners
 	public static function listenerAddAll() {
-		foreach (cmd::searchConfiguration('"auto_publish":"1"', __CLASS__) as $cmd)
+		foreach (cmd::searchConfiguration('"autoPub":"1"', __CLASS__) as $cmd)
 			$cmd->listenerUpdate();
 	}
 
-// Remove all auto_publish listeners
+// Remove all autoPub listeners
 	public static function listenerRemoveAll() {
 		foreach (listener::byClass('jMQTTCmd') as $l)
 			$l->remove();
-		foreach (cmd::searchConfiguration('"auto_publish":"1"', __CLASS__) as $cmd)
+		foreach (cmd::searchConfiguration('"autoPub":"1"', __CLASS__) as $cmd)
 			$cmd->setCache('listener', null);
 	}
 
