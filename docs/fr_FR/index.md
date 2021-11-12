@@ -338,9 +338,19 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués :
 >
 > Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l’équipement, si la case *Ajout automatique des commandes* est cochée.
 
+## Gestion de la batterie
+
+Une commande info, dont le **nom** fini par `battery` (ou `batterie`) ou dont le **Type Générique** est `Batterie`, sera utilisé comme niveau de batterie de l'équipement auquel appartient cette commande.
+
+Si la commande info est de type binaire, la valeur de la batterie sera 10% (0) ou 100% (1).
+
+Il est recommandé de ne positionner qu'une seule commande info définissant le niveau de batterie par équipement, sous peine d'avoir des valeurs incohérentes.
+
 ## Santé du plugin
 
-Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher l'état de santé des équipements Broker et de leurs équipements
+Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher l'état de santé des Broker et des équipements.
+
+Les informations présentes sont : l'état d'activation, le Topic de base, la Date de Dernière communication et la Date de création.
 
 # Gestion des templates
 
