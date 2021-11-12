@@ -381,6 +381,13 @@ class jMQTTCmd extends cmd {
 			$cmds = array_unique($matches[1]);
 		}
 		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
+		if (count($listener) == 0) { // No listener found
+			$listener = null;
+		} else {
+			while (count($listener) > 1) // Too many listener for this cmd, let's cleanup
+				array_pop($listener)->remove();
+			$listener = $listener[0]; // Get the last listener
+		}
 		if (count($cmds) > 0) { // We need a listener
 			if (!is_object($listener))
 				$listener = new listener();
