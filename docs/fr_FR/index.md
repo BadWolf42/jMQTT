@@ -354,10 +354,10 @@ Les informations présentes sont : l'état d'activation, le Topic de base, la Da
 
 # Gestion des templates
 
-jMQTT met à disposition de l'utilisateur une solution simple pour appliquer un model prédéfini à un équipement.
+jMQTT met à disposition de l'utilisateur une solution simple pour appliquer un modèle prédéfini (template) à un équipement.
 Les templates conservent toutes les commandes d'origine, leurs configurations et leurs paramètres avancés.
 
-Dans un permier temps, il est possible de [créer](#création-dun-template-depuis-un-équipement) ou d'[appliquer](#application-dun-template-sur-un-équipement) un model à un équipement existant, celà se passe directement sur un équipement :
+Dans un permier temps, il est possible de [créer](#création-dun-template-depuis-un-équipement) ou d'[appliquer](#application-dun-template-sur-un-équipement) un template à un équipement existant, celà se passe directement sur un équipement :
 
 ![Boutons sur un Equipement](../images/eqpt_buttons.png)
 
@@ -375,13 +375,13 @@ Dans le gestionnaire, on distingue différentes sections :
 Ceux préfixés par `[Perso]` sont liés à votre installation, les autres arrivent directement avec jMQTT.
 Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à [ouvrir un ticket sur GitHub](https://github.com/Domochip/jMQTT/issues).
 
-  2. Un bouton d'import de template dans jMQTT depuis un fichier json.
+2. Un bouton d'import de template dans jMQTT depuis un fichier json.
 
 Lorsqu'un template est selectionné dans la liste, la partie de droite est renseignée :
 
-  3. Un bouton permettant le téléchargement du template selectionné sur votre ordinateur.
-  4. Un bouton pour supprimer le template selectionné (uniquement pour les templates `Perso`).
-  5. Une prévisualisation des commandes disponibles et leurs paramètres.
+3. Un bouton permettant le téléchargement du template selectionné sur votre ordinateur.
+4. Un bouton pour supprimer le template selectionné (uniquement pour les templates `Perso`).
+5. Une prévisualisation des commandes disponibles et leurs paramètres.
 
 ## Création d'un template depuis un équipement
 
