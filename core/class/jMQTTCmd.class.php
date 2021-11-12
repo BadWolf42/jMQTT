@@ -397,6 +397,7 @@ class jMQTTCmd extends cmd {
 					$listener->addEvent($cmd_id);
 			}
 			$listener->setOption('cmd', $this->getId());
+			$listener->setOption('eqLogic', $this->getEqLogic_id());
 			$listener->setOption('background', false);
 			$listener->save();
 			log::add('jMQTT', 'debug', 'Listener Installed on #'.$this->getHumanName().'#');
