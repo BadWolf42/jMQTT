@@ -1014,7 +1014,7 @@ class jMQTT extends eqLogic {
 
 // Create or update all autoPub listeners from this eqLogic
 	public function listenersAdd() {
-		foreach (cmd::searchConfigurationEqLogic($this->getId(), '"autoPub":"1"', __CLASS__) as $cmd)
+		foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"autoPub":"1"') as $cmd)
 			$cmd->listenerUpdate();
 	}
 
