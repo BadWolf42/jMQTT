@@ -1383,12 +1383,15 @@ class jMQTT extends eqLogic {
      */
     public function publish($eqName, $topic, $payload, $qos, $retain) {
         
-        if (is_bool($payload)) {
+        if (is_bool($payload) || is_array($payload)) {
             // Fix #80
             // One can wonder why not encoding systematically the message?
             // Answer is that it does not work in some cases:
             //   * If payload is empty => "(null)" is sent instead of (null)
             //   * If payload contains ", they are backslashed \"
+            // Fix #110
+            // Since Core commit https://github.com/jeedom/core/commit/430f0049dc74e914c4166b109fb48b4375f11ead
+            // payload can be more than int/bool/string
             $payload = json_encode($payload);
         }
         $payloadLogMsg = ($payload === '') ? '(null)' : $payload;
