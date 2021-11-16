@@ -211,7 +211,7 @@ class WebSocketClient:
         self.wsstarted.set()
 
     def on_message(self, ws, message):
-        logging.debug('BrkId: % 4s : Received a message through WebSocket', self.id)
+        logging.error('BrkId: % 4s : Received a message through WebSocket!: %s', self.id, message)
 
     def on_error(self, ws, error):
         if not isinstance(error, AttributeError) or not self.stopautorestart:

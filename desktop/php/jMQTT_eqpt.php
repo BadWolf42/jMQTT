@@ -109,6 +109,7 @@
                 <select id="sel_icon" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">
 					<option value="">{{Aucun}}</option>
 					<option value="barometre">{{Baromètre}}</option>
+					<option value="bt">{{Bluetooth}}</option>
 					<option value="boiteauxlettres">{{Boite aux Lettres}}</option>
 					<option value="water-boiler">{{Chaudière}}</option>
 					<option value="chauffage">{{Chauffage}}</option>
@@ -147,10 +148,14 @@
 					<option value="bell">{{Sonnerie}}</option>
 					<option value="remote">{{Télécommande}}</option>
 					<option value="teleinfo">{{Téléinfo}}</option>
+					<option value="tv">{{Télévison}}</option>
 					<option value="temp">{{Température}}</option>
 					<option value="thermostat">{{Thermostat}}</option>
 					<option value="fan">{{Ventilation}}</option>
 					<option value="volet">{{Volet}}</option>
+					<option value="wifi">{{Wifi}}</option>
+					<option value="zigbee">{{Zigbee}}</option>
+					<option value="zwave">{{ZWave}}</option>
                 </select>
             </div>
         </div>
@@ -166,13 +171,13 @@
 
 <script>
 $("#sel_icon").change(function() {
-    var text = 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val();
+    var text = 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val();
     $("#icon_visu").attr("src", text + '.svg');
 });
 
 $("#icon_visu").on("error", function () {
     if ($("#sel_icon").val() != '') {
-        $(this).attr("src", 'plugins/jMQTT/resources/images/node_' + $("#sel_icon").val() + '.png');
+        $(this).attr("src", 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val() + '.png');
     }
 });
 </script>

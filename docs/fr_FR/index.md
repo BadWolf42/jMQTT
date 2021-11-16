@@ -142,10 +142,10 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
 
 Concernant les boutons en haut à droite :
 
-  - `Appliquer Template` TODO ;
+![Boutons sur un Equipement](../images/eqpt_buttons.png)
 
-  - `Créer Template` TODO ;
-
+  - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
+  - `Créer template` permet de Créer un [template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
   - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement).
 
 ### Onglet Commandes
@@ -338,9 +338,70 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués :
 >
 > Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l’équipement, si la case *Ajout automatique des commandes* est cochée.
 
+## Gestion de la batterie
+
+Une commande info, dont le **nom** fini par `battery` (ou `batterie`) ou dont le **Type Générique** est `Batterie`, sera utilisé comme niveau de batterie de l'équipement auquel appartient cette commande.
+
+Si la commande info est de type binaire, la valeur de la batterie sera 10% (0) ou 100% (1).
+
+Il est recommandé de ne positionner qu'une seule commande info définissant le niveau de batterie par équipement, sous peine d'avoir des valeurs incohérentes.
+
 ## Santé du plugin
 
-Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher l'état de santé des équipements Broker et de leurs équipements
+Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher l'état de santé des Broker et des équipements.
+
+Les informations présentes sont : l'état d'activation, le Topic de base, la Date de Dernière communication et la Date de création.
+
+# Gestion des templates
+
+jMQTT met à disposition de l'utilisateur une solution simple pour appliquer un modèle prédéfini (template) à un équipement.
+Les templates conservent toutes les commandes d'origine, leurs configurations et leurs paramètres avancés.
+
+Dans un permier temps, il est possible de [créer](#création-dun-template-depuis-un-équipement) ou d'[appliquer](#application-dun-template-sur-un-équipement) un template à un équipement existant, celà se passe directement sur un équipement :
+
+![Boutons sur un Equipement](../images/eqpt_buttons.png)
+
+Ensuite, le gestionnaire de Template est présent dans la section *Gestion plugin et brokers* du plugin :
+
+![Gestion des templates](../images/gestion_templates.png)
+
+Il permet d'ajouter, de télécharger et de supprimer des templates et d'en visualiser les commandes.
+
+![Modal gestion des templates](../images/modal_gestion_templates.png)
+
+Dans le gestionnaire, on distingue différentes sections :
+  1. La liste des templates existants.
+
+Ceux préfixés par `[Perso]` sont liés à votre installation, les autres arrivent directement avec jMQTT.
+Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à [ouvrir un ticket sur GitHub](https://github.com/Domochip/jMQTT/issues).
+
+2. Un bouton d'import de template dans jMQTT depuis un fichier json.
+
+Lorsqu'un template est selectionné dans la liste, la partie de droite est renseignée :
+
+3. Un bouton permettant le téléchargement du template selectionné sur votre ordinateur.
+4. Un bouton pour supprimer le template selectionné (uniquement pour les templates `Perso`).
+5. Une prévisualisation des commandes disponibles et leurs paramètres.
+
+## Création d'un template depuis un équipement
+
+La seule information à renseigner est le nom que vous souhaitez donner à votre template.
+
+![Créer un template](../images/create_template.png)
+
+Une fois la fenêtre validée, un nouveau template est disponible sur le système et peut être utilisé.
+
+## Application d'un template sur un équipement
+
+Quand on souhaite appliquer un template, 3 informations sont attendues :
+
+![Appliquer un template](../images/apply_template.png)
+
+  - Le template à appliquer ;
+  - Le topic de base qui sera utilisé pour spécialiser les commandes et la souscription de l'équipement ;
+  - Si les commandes existantes doivent être conservées (celles avec un nom présent dans la template seront écrasées), ou si tout l'équipement doit être vidé de ses commandes préalablement.
+
+Une fois la fenêtre validée, l'équipement est modifié et peut être utilisé.
 
 # Chiffrement TLS
 
@@ -365,7 +426,6 @@ A ce sujet, je vous renvoie vers l'excellent article [MQTTS : Comment utiliser M
 **Il s'agit d'une opération complexe, réservé à ceux qui en comprennent les implications et savent utiliser les Certificats.**
 
 Depuis mai 2021, jMQTT supporte la connexion aux Broker publique ou privé en MQTTS. Est aussi implémenté un mecanisme de validation du Certificat du Serveur et l'emploi une paire de clés cryptographique personnalisée (Certificat & Clé Privée Client) pour un chiffrement asymétrique de bout en bout.
-
 
 # API
 

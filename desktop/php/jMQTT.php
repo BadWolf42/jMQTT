@@ -15,7 +15,7 @@ foreach ($eqBrokers as $id => $eqL) {
 sendVarToJS('eqBrokers', $eqBrokersName);
 
 $has_orphans = false;
-$node_images = scandir(__DIR__ . '/../../resources/images/');
+$node_images = scandir(__DIR__ . '/../../core/img/');
 ?>
 
 <style>
@@ -112,10 +112,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
     echo '<div class="eqLogicDisplayAction eqLogicAction cursor ' . $class . '"';
     if ($attr != '')
         echo ' ' . $attr;
-    echo '>';
-    echo '<i class="fas ' . $fa_icon . '"></i><br>';
-    echo '<span>' . $action_name . '</span>';
-    echo '</div>';
+    echo '><i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
 }
 
 /**
@@ -152,7 +149,7 @@ function displayEqLogicCard($eqL, $node_images) {
         }
     }
 
-    echo '<img class="lazy" src="plugins/jMQTT/resources/images/' . $file . '"/>';
+    echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
     echo "<br>";
     echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
     echo '</div>';
@@ -171,6 +168,7 @@ function displayEqLogicCard($eqL, $node_images) {
         <?php
         displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
         displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
+        displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
         displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="add_jmqtt"', 'logoSecondary');
         foreach ($eqBrokers as $eqB) {
             displayEqLogicCard($eqB, $node_images);

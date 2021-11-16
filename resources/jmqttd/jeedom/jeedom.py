@@ -228,12 +228,12 @@ class jeedom_utils():
 
 class jeedom_socket_handler(StreamRequestHandler):
     def handle(self):
-        logging.debug("Client connected to [%s:%d]", *(self.client_address))
+        logging.debug("Client [%s:%d] connected", *(self.client_address))
         lg = self.rfile.readline()
         self.server.queue.put(lg)
         logging.debug("Message read from socket: %s", lg.strip())
         self.netAdapterClientConnected = False
-        logging.debug("Client disconnected from [%s:%d]", *(self.client_address))
+        logging.debug("Client [%s:%d] disconnected", *(self.client_address))
 
 class jeedom_socket():
 
