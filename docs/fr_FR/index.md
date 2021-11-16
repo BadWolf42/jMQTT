@@ -243,23 +243,23 @@ Si nous rebasculons dans la vue JSON, nous obtenons alors :
 #### Commandes de type Action
 
 Les commandes de type action permettent au plugin jMQTT de publier des messages vers le Broker MQTT. Pour cela, créer une commande via le bouton *+ Ajouter une commande action* et remplir les champs selon le besoin :
+
+![Commande Action](../images/cmd_action.png)
+
   - Nom: champ libre ;
   - Valeur par défaut de la commande: pour lier la valeur de la commande affichée sur le dashboard à une commande de type Information (exemple [ici](https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740)) ;
   - Sous-type : voir exemples ci-dessous ;
   - Topic : topic de publication ;
   - Valeur : définit la valeur publiée, i.e. la payload en langage MQTT, voir exemples ci-dessous ;
   - Retain : si coché, la valeur sera persistante (conservée par le Broker et publiée vers tout nouveau souscripteur) ;
+  - Pub. Auto : si coché, le champ Valeur sera automatiquement calculé et publié sur le Topic lors du changement d'une commande info du champ Valeur ;
   - Qos : niveau de qualité de service utilisé pour publier la commande (1 par défaut).
 
 **Sous-type Défaut**
 
 Les exemples du tableau suivant :
 
-| Nom               | Sous-Type       | Topic             | Valeur                                                         |
-| ----------------- | --------------- | ----------------- | -------------------------------------------------------------- |
-| set\_hw\_setpoint | action - Défaut | `hw/setpoint/set` | `40`                                                           |
-| set\_hw\_setpoint | action - Défaut | `hw/set`          | `{"name": "setpoint", "value": 40}`                            |
-| set\_hw\_setpoint | action - Défaut | `hw/set`          | `{"name": "setpoint", "value": #[home][boiler][hw_setpoint]#}` |
+![Commande Action sous-type Defaut](../images/cmd_action_default.png)
 
 Publieront respectivement :
 
@@ -273,10 +273,7 @@ En supposant que `#[home][boiler][hw_setpoint]#` a pour valeur 45.
 
 Les configurations suivantes publieront la valeur saisie via un widget de type curseur :
 
-| Nom               | Sous-Type        | Topic             | Valeur                                    |
-| ----------------- | ---------------- | ----------------- | ----------------------------------------- |
-| set\_hw\_setpoint | action - Curseur | `hw/setpoint/set` | `#slider#`                                |
-| set\_hw\_setpoint | action - Curseur | `hw/set`          | `{"name": "setpoint", "value": #slider#}` |
+![Commande Action sous-type Curseur](../images/cmd_action_slider.png)
 
 Soit respectivement, en supposant que la valeur du curseur est 50 :
 
@@ -293,19 +290,17 @@ Pour un message dont le titre est `ecs` et le contenu est `50`, la configuration
 
     boiler {"setpoint": "ecs", "value": 50}
 
-| Nom                | Sous-Type        | Topic    | Valeur                                        |
-| ------------------ | ---------------- | -------- | --------------------------------------------- |
-| set\_ecs\_setpoint | action - Message | `boiler` | `{"setpoint": "#title#", "value": #message#}` |
+![Commande Action sous-type Message](../images/cmd_action_message.png)
 
 **Sous-type Couleur**
 
-La configuration suivante publiera le code couleur sélectionnée via un widget sélecteur de couleur, par exemple :
+La configuration suivante publiera le code couleur sélectionnée via un widget sélecteur de couleur :
+
+![Commande Action sous-type Couleur](../images/cmd_action_color.png)
+
+Publiera pour une couleur rouge clair selectionnée :
 
     room/lamp/color #e63939
-
-| Nom        | Sous-Type        | Topic             | Valeur    |
-| ---------- | ---------------- | ----------------- | --------- |
-| set\_color | action - Couleur | `room/lamp/color` | `#color#` |
 
 #### Vue Classic, vue JSON
 
@@ -448,16 +443,6 @@ Où :
   - `Id. de la requête` (optionnel) : identifiant qui sera retourné dans la réponse, doit être une chaine. Si absent, l’id de retour sera null ;
   - `Paramètres additionnels` (optionnel) : paramètres relatifs à la méthode de la requête, voir [API JSON RPC](https://doc.jeedom.com/fr_FR/core/4.1/jsonrpc_api) ;
   - `Topic de retour` (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête. Si absent, la réponse n’est pas publiée.
-
-**Exemple :**
-
-Le tableau suivant fournit quelques exemples :
-
-| Requête                                                                                                         | Réponse                                                                                                | Description                                         |
-| --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------- |
-| `{"method":"ping","topic":"retour"}`                                                                            | `{"jsonrpc":"2.0","id":null,"result":"pong"}` sur le topic `retour`                                    | Teste la communication avec Jeedom                  |
-| `{"method":"ping","id":"3","topic":"retour"}`                                                                   | `{"jsonrpc":"2.0","id":"3","result":"pong"}` sur le topic `retour`                                     | Teste la communication avec Jeedom                  |
-| `{"method":"cmd::execCmd","topic":"emetteur/retour", "id":"a","params":{"id":"798","options":{"slider":"40"}}}` | `{"jsonrpc":"2.0", "id":"a", "result":{"value":"40","collectDate":""}}` sur le topic `emetteur/retour` | Exécute la commande 798: positionne le curseur à 40 |
 
 # FAQ
 

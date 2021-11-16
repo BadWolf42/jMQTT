@@ -677,13 +677,16 @@ class jMQTT extends eqLogic {
 
                 // isEnable changed
                 if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
-                    if ($this->getIsEnable()) $subscribeRequested = true;
-                    else {
+                    if ($this->getIsEnable()) {
+						$subscribeRequested = true;
+						$this->listenersAdd();
+					} else {
                         if(!$unsubscribed){
                             //Unsubscribe previous topic (if topic changed too)
                             $this->unsubscribeTopic($this->_preSaveInformations['topic']);
                             $unsubscribed = true;
                         }
+						$this->listenersRemove();
                     }
                 }
 
@@ -876,6 +879,7 @@ class jMQTT extends eqLogic {
         log::add(__CLASS__, 'info', 'Starting Daemon');
         jMQTTBase::deamon_start(__CLASS__);
         self::checkAllMqttClients();
+		self::listenersAddAll();
     }
     
     /**
@@ -884,6 +888,7 @@ class jMQTT extends eqLogic {
     public static function deamon_stop() {
         log::add(__CLASS__, 'info', 'Stopping Daemon');
         jMQTTBase::deamon_stop(__CLASS__);
+		self::listenersRemoveAll();
     }
     /**
      * Provides dependancy information
@@ -994,6 +999,33 @@ class jMQTT extends eqLogic {
             }
         }
     }
+
+// Create or update all autoPub listeners
+	public static function listenersAddAll() {
+		foreach (cmd::searchConfiguration('"autoPub":"1"', __CLASS__) as $cmd)
+			$cmd->listenerUpdate();
+	}
+
+// Remove all autoPub listeners
+	public static function listenersRemoveAll() {
+		foreach (listener::byClass('jMQTTCmd') as $l)
+			$l->remove();
+	}
+
+// Create or update all autoPub listeners from this eqLogic
+	public function listenersAdd() {
+		foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"autoPub":"1"') as $cmd)
+			$cmd->listenerUpdate();
+	}
+
+// Remove all autoPub listeners from this eqLogic
+	public function listenersRemove() {
+		$listener = listener::searchClassFunctionOption('jMQTTCmd', 'listenerAction', '"eqLogic":"'.$this->getId().'"');
+		foreach ($listener as $l)
+			$l->remove();
+	}
+
+
 
     ###################################################################################################################
     ##

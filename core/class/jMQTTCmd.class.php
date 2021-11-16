@@ -246,13 +246,46 @@ class jMQTTCmd extends cmd {
 
         }
 
+		// Reset autoPub if info cmd (should not happen or be possible)
+		if ($this->getType() == 'info' && $this->getConfiguration('autoPub', 0))
+			$this->setConfiguration('autoPub', 0);
+		// Check "request" if autoPub enabled
+		if ($this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
+			$req = $this->getConfiguration('request', '');
+			// Must check If New cmd, autoPub changed or Request changed
+			$must_chk = $this->getId() == '';
+			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration('autoPub', 0));
+			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration('request', '') != $req);
+			if ($must_chk) {
+				// Get all commands
+				preg_match_all("/#([0-9]*)#/", $req, $matches);
+				$cmds = array_unique($matches[1]);
+				if (count($cmds) > 0) { // There are commands
+					foreach ($cmds as $cmd_id) {
+						$cmd = cmd::byId($cmd_id);
+						if (!is_object($cmd))
+							throw new Exception('Impossible d\'activer la publication automatique sur <b>'.$this->getHumanName().'</b> car la commande <b>'.$cmd_id.'</b> est invalide.');
+						if ($cmd->getType() != 'info')
+							throw new Exception('Impossible d\'activer la publication automatique sur <b>'.$this->getHumanName().'</b> car la commande <b>'.$cmd->getHumanName().'</b> n\'est pas de type info.');
+						if ($cmd->getEqType() =='jMQTT') {
+							$cmd_topic = $cmd->isJson() ? substr($cmd->getTopic(), 0, strpos($cmd->getTopic(), '{')) : $cmd->getTopic();
+							if ($this->getTopic() == $cmd_topic)
+								throw new Exception('Impossible d\'activer la publication automatique sur <b>'.$this->getHumanName().'</b> car la commande <b>'.$cmd->getHumanName().'</b> référence le même topic.');
+						}
+					}
+				}
+			}
+		}
+
         // It's time to gather informations that will be used in postSave
         if ($this->getId() == '') $this->_preSaveInformations = null;
         else {
             $cmd = self::byId($this->getId());
             $this->_preSaveInformations = array(
                 'retain' => $cmd->getConfiguration('retain', 0),
-                'brokerStatusTopic' => $cmd->getTopic()
+                'brokerStatusTopic' => $cmd->getTopic(),
+                'autoPub' => $cmd->getConfiguration('autoPub', 0),
+                'request' => $cmd->getConfiguration('request', '')
             );
         }
     }
@@ -261,6 +294,7 @@ class jMQTTCmd extends cmd {
      * Callback called by the core after having saved this command in the DB
      */
     public function postSave() {
+        $eqLogic = $this->getEqLogic();
 
         // If _preSaveInformations is null, It's a fresh new cmd.
         if (is_null($this->_preSaveInformations)) {
@@ -284,6 +318,10 @@ class jMQTTCmd extends cmd {
                 }
             }
 
+			// Only update listener on Eq (not Broker) at creation
+			if ($eqLogic->getType() == jMQTT::TYP_EQPT)
+				$this->listenerUpdate();
+
             $this->eventNewCmd();
         }
         else { // the cmd has been updated
@@ -291,7 +329,6 @@ class jMQTTCmd extends cmd {
             // If retain mode changed
             if ($this->_preSaveInformations['retain'] != $this->getConfiguration('retain', 0)) {
 
-                $eqLogic = $this->getEqLogic();
                 $cmdLogName = $this->getLogName();
 
                 // It's enabled now
@@ -310,30 +347,92 @@ class jMQTTCmd extends cmd {
             }
 
             // Specific command : status for Broker eqpt
-            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getEqLogic()->getIsEnable()) {
+            if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $eqLogic->getType() == jMQTT::TYP_BRK && $eqLogic->getIsEnable()) {
                 // If it's topic changed
                 if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
                     // Just try to remove the previous status topic
-                    $eqLogic = $this->getEqLogic();
                     $eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
                 }
             }
+
+			// Only Update listener if "autoPub" or "request" has changed
+			if ($eqLogic->getType() == jMQTT::TYP_EQPT &&
+					($this->_preSaveInformations['autoPub'] != $this->getConfiguration('autoPub', 0) ||
+					 $this->_preSaveInformations['request'] != $this->getConfiguration('request', '')))
+				$this->listenerUpdate();
         }
 
-        // For info commands, check that the topic is compatible with the subscription command
-        // of the related equipment
-        if ($this->getType() == 'info' && $this->getEqLogic()->getType() == jMQTT::TYP_EQPT && !$this->getEqLogic()->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0)) {
-            if (! $this->topicMatchesSubscription($this->getEqLogic()->getTopic())) {
-                $this->eventTopicMismatch();
+        // For Equipments
+        if ($eqLogic->getType() == jMQTT::TYP_EQPT) {
+            // For info commands, check that the topic is compatible with the subscription command
+            if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0)) {
+                if (! $this->topicMatchesSubscription($eqLogic->getTopic())) {
+                    $this->eventTopicMismatch();
+                }
             }
         }
     }
+
+// Listener for autoPub action command
+	public function listenerUpdate() {
+		$cmds = array();
+		if ($this->getEqLogic()->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
+			preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
+			$cmds = array_unique($matches[1]);
+		}
+		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
+		if (count($listener) == 0) { // No listener found
+			$listener = null;
+		} else {
+			while (count($listener) > 1) // Too many listener for this cmd, let's cleanup
+				array_pop($listener)->remove();
+			$listener = $listener[0]; // Get the last listener
+		}
+		if (count($cmds) > 0) { // We need a listener
+			if (!is_object($listener))
+				$listener = new listener();
+			$listener->setClass(__CLASS__);
+			$listener->setFunction('listenerAction');
+			$listener->emptyEvent();
+			foreach ($cmds as $cmd_id) {
+				$cmd = cmd::byId($cmd_id);
+				if (is_object($cmd) && $cmd->getType() == 'info')
+					$listener->addEvent($cmd_id);
+			}
+			$listener->setOption('cmd', $this->getId());
+			$listener->setOption('eqLogic', $this->getEqLogic_id());
+			$listener->setOption('background', false);
+			$listener->save();
+			log::add('jMQTT', 'debug', 'Listener Installed on #'.$this->getHumanName().'#');
+		} else { // We don't want a listener
+			if (is_object($listener)) {
+				$listener->remove();
+				log::add('jMQTT', 'debug', 'Listener Removed from #'.$this->getHumanName().'#');
+			}
+		}
+	}
+
+	public static function listenerAction($_options) {
+		$cmd = self::byId($_options['cmd']);
+		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration('autoPub', 0)) {
+			listener::byId($_options['listener_id'])->remove();
+			log::add('jMQTT', 'debug', 'Listener Removed from #'.$_options['cmd'].'#');
+		} else {
+			log::add('jMQTT', 'debug', 'Auto Publish on #'.$cmd->getHumanName().'#');
+			$cmd->execute();
+		}
+	}
 
     /**
      * preRemove method to log that a command is removed
      */
     public function preRemove() {
         $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
+		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
+		foreach ($listener as $l) {
+			log::add('jMQTT', 'debug', 'Listener Removed from #'.$l->getOption('cmd').'#');
+			$l->remove();
+		}
     }
 
     public function setName($name) {
