@@ -104,114 +104,114 @@ class jMQTT extends eqLogic {
      */
     private $_log;
 
-	/**
-	 * Return a list of all templates name and file.
-	 * @return list of name and file array.
-	 */
-	public static function templateList(){
-		// log::add('jMQTT', 'debug', 'templateList()');
-		$return = array();
-		// Get personal templates
-		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
-			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						$return[] = array('[Perso] '.$k, 'plugins/jMQTT/data/template/' . $file);
-				}
-			} catch (Throwable $e) {}
-		}
-		// Get official templates
-		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
-			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						$return[] = array($k, 'plugins/jMQTT/core/config/template/' . $file);
-				}
-			} catch (Throwable $e) {}
-		}
-		return $return;
-	}
+    /**
+     * Return a list of all templates name and file.
+     * @return list of name and file array.
+     */
+    public static function templateList(){
+        // log::add('jMQTT', 'debug', 'templateList()');
+        $return = array();
+        // Get personal templates
+        foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        $return[] = array('[Perso] '.$k, 'plugins/jMQTT/data/template/' . $file);
+                }
+            } catch (Throwable $e) {}
+        }
+        // Get official templates
+        foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        $return[] = array($k, 'plugins/jMQTT/core/config/template/' . $file);
+                }
+            } catch (Throwable $e) {}
+        }
+        return $return;
+    }
 
-	/**
-	 * Return a template content (from json files).
-	 * @param string $_template template name to look for
-	 * @return array
-	 */
-	public static function templateByName($_template){
-		// log::add('jMQTT', 'debug', 'templateByName("' . $_template . '")');
-		// Get personal templates
-		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
-			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						if ('[Perso] '.$k == $_template)
-							return $v;
-				}
-			} catch (Throwable $e) {}
-		}
-		// Get official templates
-		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
-			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						if ($k == $_template)
-							return $v;
-				}
-			} catch (Throwable $e) {}
-		}
-		return null;
-	}
+    /**
+     * Return a template content (from json files).
+     * @param string $_template template name to look for
+     * @return array
+     */
+    public static function templateByName($_template){
+        // log::add('jMQTT', 'debug', 'templateByName("' . $_template . '")');
+        // Get personal templates
+        foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        if ('[Perso] '.$k == $_template)
+                            return $v;
+                }
+            } catch (Throwable $e) {}
+        }
+        // Get official templates
+        foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+            try {
+                $content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
+                if (is_json($content)) {
+                    foreach (json_decode($content, true) as $k => $v)
+                        if ($k == $_template)
+                            return $v;
+                }
+            } catch (Throwable $e) {}
+        }
+        return null;
+    }
 
-	/**
-	 * Return one templates content (from json file name).
-	 * @param string $_filename template name to look for
-	 * @return array
-	 */
-	public static function templateByFile($_filename = ''){
-		// log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
-		$existing_files = jMQTT::templateList();
-		$exists = false;
-		foreach ($existing_files as list($n, $f))
-			if ($f == $_filename) {
-				$exists = true;
-				break;
-			}
-		if (!$exists)
-			throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
-		// log::add('jMQTT', 'debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
-		try {
-			$content = file_get_contents(dirname(__FILE__) . '/../../../../' . $_filename);
-			if (is_json($content)) {
-				foreach (json_decode($content, true) as $k => $v)
-					return $v;
-			}
-		} catch (Throwable $e) {}
-		return array();
-	}
+    /**
+     * Return one templates content (from json file name).
+     * @param string $_filename template name to look for
+     * @return array
+     */
+    public static function templateByFile($_filename = ''){
+        // log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
+        $existing_files = jMQTT::templateList();
+        $exists = false;
+        foreach ($existing_files as list($n, $f))
+            if ($f == $_filename) {
+                $exists = true;
+                break;
+            }
+        if (!$exists)
+            throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
+        // log::add('jMQTT', 'debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
+        try {
+            $content = file_get_contents(dirname(__FILE__) . '/../../../../' . $_filename);
+            if (is_json($content)) {
+                foreach (json_decode($content, true) as $k => $v)
+                    return $v;
+            }
+        } catch (Throwable $e) {}
+        return array();
+    }
 
-	/**
-	 * Deletes user defined template by filename.
-	 * @param string $_template template name to look for.
-	 */
-	public static function deleteTemplateByFile($_filename){
-		// log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
-		if (!isset($_filename) || is_null($_filename) || $_filename == '')
-			return false;
-		$existing_files = jMQTT::templateList();
-		$exists = false;
-		foreach ($existing_files as list($n, $f))
-			if ($f == $_filename) {
-				$exists = true;
-				break;
-			}
-		if (!$exists)
-			return false;
-		return unlink(dirname(__FILE__) . '/../../../../' . $_filename);
-	}
+    /**
+     * Deletes user defined template by filename.
+     * @param string $_template template name to look for.
+     */
+    public static function deleteTemplateByFile($_filename){
+        // log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
+        if (!isset($_filename) || is_null($_filename) || $_filename == '')
+            return false;
+        $existing_files = jMQTT::templateList();
+        $exists = false;
+        foreach ($existing_files as list($n, $f))
+            if ($f == $_filename) {
+                $exists = true;
+                break;
+            }
+        if (!$exists)
+            return false;
+        return unlink(dirname(__FILE__) . '/../../../../' . $_filename);
+    }
 
     /**
      * apply a template (from json) to the current equipement.
@@ -223,10 +223,10 @@ class jMQTT extends eqLogic {
             return true;
         }
 
-		$template = self::templateByName($_template);
-		if (is_null($template)) {
-			return true;
-		}
+        $template = self::templateByName($_template);
+        if (is_null($template)) {
+            return true;
+        }
 
         // Raise up the flag that cmd topic mismatch must be ignored
         $this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
@@ -246,7 +246,7 @@ class jMQTT extends eqLogic {
 
         // remove topic mismatch ignore flag
         $this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 0);
-	}
+    }
 
     /**
      * create a template from the current equipement (to json).
@@ -289,7 +289,7 @@ class jMQTT extends eqLogic {
         $formatedTemplateName = str_replace(' ', '_', $_template);
         $formatedTemplateName = preg_replace('/[^a-zA-Z0-9_]+/', '', $formatedTemplateName);
         file_put_contents(dirname(__FILE__) . '/../../data/template/' . $formatedTemplateName . '.json', $jsonExport);
-	}
+    }
 
     /**
      * Create a new equipment given its name, subscription topic, type and broker the equipment is related to.
@@ -678,15 +678,15 @@ class jMQTT extends eqLogic {
                 // isEnable changed
                 if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
                     if ($this->getIsEnable()) {
-						$subscribeRequested = true;
-						$this->listenersAdd();
-					} else {
+                        $subscribeRequested = true;
+                        $this->listenersAdd();
+                    } else {
                         if(!$unsubscribed){
                             //Unsubscribe previous topic (if topic changed too)
                             $this->unsubscribeTopic($this->_preSaveInformations['topic']);
                             $unsubscribed = true;
                         }
-						$this->listenersRemove();
+                        $this->listenersRemove();
                     }
                 }
 
@@ -879,7 +879,7 @@ class jMQTT extends eqLogic {
         log::add(__CLASS__, 'info', 'Starting Daemon');
         jMQTTBase::deamon_start(__CLASS__);
         self::checkAllMqttClients();
-		self::listenersAddAll();
+        self::listenersAddAll();
     }
     
     /**
@@ -888,7 +888,7 @@ class jMQTT extends eqLogic {
     public static function deamon_stop() {
         log::add(__CLASS__, 'info', 'Stopping Daemon');
         jMQTTBase::deamon_stop(__CLASS__);
-		self::listenersRemoveAll();
+        self::listenersRemoveAll();
     }
     /**
      * Provides dependancy information
@@ -1001,29 +1001,29 @@ class jMQTT extends eqLogic {
     }
 
 // Create or update all autoPub listeners
-	public static function listenersAddAll() {
-		foreach (cmd::searchConfiguration('"autoPub":"1"', __CLASS__) as $cmd)
-			$cmd->listenerUpdate();
-	}
+    public static function listenersAddAll() {
+        foreach (cmd::searchConfiguration('"autoPub":"1"', __CLASS__) as $cmd)
+            $cmd->listenerUpdate();
+    }
 
 // Remove all autoPub listeners
-	public static function listenersRemoveAll() {
-		foreach (listener::byClass('jMQTTCmd') as $l)
-			$l->remove();
-	}
+    public static function listenersRemoveAll() {
+        foreach (listener::byClass('jMQTTCmd') as $l)
+            $l->remove();
+    }
 
 // Create or update all autoPub listeners from this eqLogic
-	public function listenersAdd() {
-		foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"autoPub":"1"') as $cmd)
-			$cmd->listenerUpdate();
-	}
+    public function listenersAdd() {
+        foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"autoPub":"1"') as $cmd)
+            $cmd->listenerUpdate();
+    }
 
 // Remove all autoPub listeners from this eqLogic
-	public function listenersRemove() {
-		$listener = listener::searchClassFunctionOption('jMQTTCmd', 'listenerAction', '"eqLogic":"'.$this->getId().'"');
-		foreach ($listener as $l)
-			$l->remove();
-	}
+    public function listenersRemove() {
+        $listener = listener::searchClassFunctionOption('jMQTTCmd', 'listenerAction', '"eqLogic":"'.$this->getId().'"');
+        foreach ($listener as $l)
+            $l->remove();
+    }
 
 
 
@@ -1592,7 +1592,7 @@ class jMQTT extends eqLogic {
      * @param string $type either jMQTT::TYP_EQPT or jMQTT::TYP_BRK
      */
     public function setType($type) {
-		if($type != self::TYP_EQPT && $type != self::TYP_BRK) return;
+        if($type != self::TYP_EQPT && $type != self::TYP_BRK) return;
         $this->setConfiguration(self::CONF_KEY_TYPE, $type);
     }
 
