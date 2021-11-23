@@ -1,5 +1,5 @@
 {
-    "zwavejs2mqtt Qubino ZMNHOD": {
+    "Zwavejs2mqtt Qubino ZMNHOD": {
         "name": "Velux",
         "eqType_name": "jMQTT",
         "configuration": {

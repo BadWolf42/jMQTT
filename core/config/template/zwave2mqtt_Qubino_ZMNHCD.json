@@ -1,5 +1,5 @@
 {
-    "zwave2mqtt Qubino ZMNHCD": {
+    "Zwave2mqtt Qubino ZMNHCD": {
         "name": "Volet",
         "eqType_name": "jMQTT",
         "configuration": {
