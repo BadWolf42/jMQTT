@@ -1,0 +1,177 @@
+{
+    "Zigbee2mqtt Heiman HS1CA": {
+        "name": "Zigbee2mqtt Heiman HS1CA",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2021-10-28 12:37:14",
+            "auto_add_cmd": "0",
+            "Qos": "1",
+            "battery_type": "1xCR123A",
+            "commentaire": "HS1CA",
+            "icone": "molecule-co",
+            "mqttPubStatus": "1",
+            "mqttTls": "0",
+            "mqttTlsCheck": "public",
+            "api": "disable",
+            "updatetime": "2021-10-28 13:08:56"
+        },
+        "category": {
+            "heating": "0",
+            "security": "1",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "status": {
+            "lastCommunication": "2021-10-19 17:45:04"
+        },
+        "logicalId": "%s\/#",
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "battery",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s{battery}",
+                    "minValue": "0",
+                    "maxValue": "100"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "battery_low",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s{battery_low}"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "carbon_monoxide",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s{carbon_monoxide}"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "HEIMAN HS1CA",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "linkquality",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s{linkquality}",
+                    "minValue": "0",
+                    "maxValue": "255"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "tamper",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s{tamper}"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "voltage",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s{voltage}",
+                    "minValue": "0",
+                    "maxValue": "3500"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}

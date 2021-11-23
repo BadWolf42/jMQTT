@@ -1,6 +1,6 @@
 {
     "zwavejs2mqtt Qubino ZMNHOD": {
-        "name": "Velux Paul-Arthur",
+        "name": "Velux",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

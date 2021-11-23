@@ -1,6 +1,6 @@
 {
     "zwavejs2mqtt Qubino ZMNHCD": {
-        "name": "Bureau",
+        "name": "Volet",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
