@@ -844,7 +844,7 @@ class jMQTT extends eqLogic {
      * cron callback
      * check MQTT Clients are up and connected to Websocket
      */
-    public function cron() {
+    public static function cron() {
         self::checkAllMqttClients();
     }
     
