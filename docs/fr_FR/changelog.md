@@ -1,7 +1,7 @@
 # Registre des évolutions
 
-## Beta
-  - Ajout de la fonctionalité **EXPÉRIMENTALE** "Pub. Auto" qui permet la Publication automatique en MQTT lors du changement du champ Valeur d'une commande action (Attention : la charge engendrée sur le système actuellement inconnue, d'où son coté expérimental.)
+## 2021-11-29 AutoPublish
+  - Ajout de la fonctionalité  "Pub. Auto" qui permet la Publication automatique en MQTT lors du changement du champ Valeur d'une commande action (Attention : la charge engendrée sur le système est actuellement inconnue)
 
 ## 2021-11-16 Template Manager
   - Améliorations mineures du log de DEBUG
