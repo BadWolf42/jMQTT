@@ -1,6 +1,6 @@
 # Registre des évolutions
 
-**Pour les Raspberry Pi uniquement, une erreur est provoquée lorsque jMQTT reçoit un message de plus de 64607 octets.**
+**Pour les Raspberry Pi et OS 32bits, une erreur est provoquée lorsque jMQTT reçoit un message de plus de 64607 octets.**
 **Ce message n'est donc pas traité puis les daemon se reconnectent et le plugin refonctionne automatiquement.**
 **Nous travaillons actuellement sur le problème afin de trouver une solution.**
 
