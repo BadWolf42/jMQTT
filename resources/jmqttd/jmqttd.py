@@ -159,6 +159,7 @@ class WebSocketClient:
         self.apikey = message['apikey']
         self.wscallback = message['callback']
         self.fnismqttconnected = fnismqttconnected
+        self.is32b = (sys.maxsize <= 2**32)
 
         # Create WebSocket Client
         self.wsclient = websocket.WebSocketApp(
@@ -197,6 +198,12 @@ class WebSocketClient:
                 continue # Check if should_stop changed
             try:
                 msg = self.q.get(block=False)
+                if self.is32b and len(msg) > 65535:
+                    if logging.getLogger().isEnabledFor(logging.DEBUG):
+                        logging.error('BrkId: % 4s : Ignoring >=64Ko message (See GitHub Issue #121) size=%io msg=%s', self.id, len(msg), m$
+                    else:
+                        logging.error('BrkId: % 4s : Ignoring >=64Ko message (See GitHub Issue #121) size=%io', self.id, len(msg))
+                    continue
                 self.wsclient.send(msg)
                 logging.info('BrkId: % 4s : Sending message to Jeedom : %s', self.id, msg)
             except queue.Empty:
