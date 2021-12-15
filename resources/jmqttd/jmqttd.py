@@ -200,7 +200,7 @@ class WebSocketClient:
                 msg = self.q.get(block=False)
                 if self.is32b and len(msg) > 65535:
                     if logging.getLogger().isEnabledFor(logging.DEBUG):
-                        logging.error('BrkId: % 4s : Ignoring >=64Ko message (See GitHub Issue #121) size=%io msg=%s', self.id, len(msg), m$
+                        logging.error('BrkId: % 4s : Ignoring >=64Ko message (See GitHub Issue #121) size=%io msg=%s', self.id, len(msg), msg)
                     else:
                         logging.error('BrkId: % 4s : Ignoring >=64Ko message (See GitHub Issue #121) size=%io', self.id, len(msg))
                     continue
