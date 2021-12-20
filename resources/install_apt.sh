@@ -25,11 +25,25 @@ echo "*"
 apt-get update
 echo 20 > ${PROGRESS_FILE}
 
-echo "*"
-echo "* Install Mosquitto"
-echo "*"
 if [ ${INSTALL_MOSQUITTO} -eq 1 ]; then
+    echo "*"
+    echo "* Install Mosquitto"
+    echo "*"
     apt-get -y install mosquitto
+fi
+echo 30 > ${PROGRESS_FILE}
+
+if [ ${INSTALL_MOSQUITTO} -eq 1 ]; then
+    echo "*"
+    echo "* Configure Mosquitto"
+    echo "*"
+    if [ $(ls /etc/mosquitto/conf.d/*.conf 2>/dev/null | wc -w) -eq 0 ]; then
+        echo "No *.conf file found in conf.d folder"
+        echo "Create jMQTT Mosquitto configuration file"
+        echo -e "# jMQTT Mosquitto configuration file\nlistener 1883\nallow_anonymous true" > /etc/mosquitto/conf.d/jMQTT.conf
+        echo "restart Mosquitto service"
+        service mosquitto restart
+    fi
 fi
 echo 40 > ${PROGRESS_FILE}
 
