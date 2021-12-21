@@ -198,12 +198,15 @@ class WebSocketClient:
                 continue # Check if should_stop changed
             try:
                 msg = self.q.get(block=False)
+                #################################################
+                # TODO Remove when issue https://github.com/ratchetphp/RFC6455/pull/64 is fixed.
                 if self.is32b and len(msg) > 65535:
                     if logging.getLogger().isEnabledFor(logging.DEBUG):
                         logging.error('BrkId: % 4s : Ignoring >=64Ko message (See GitHub Issue #121) size=%io msg=%s', self.id, len(msg), msg)
                     else:
                         logging.error('BrkId: % 4s : Ignoring >=64Ko message (See GitHub Issue #121) size=%io', self.id, len(msg))
                     continue
+                #################################################
                 self.wsclient.send(msg)
                 logging.info('BrkId: % 4s : Sending message to Jeedom : %s', self.id, msg)
             except queue.Empty:
