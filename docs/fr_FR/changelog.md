@@ -7,6 +7,7 @@
 ## Beta
  - Amélioration du log en cas d'erreur sur le daemon PHP
  - Création automatique d'un fichier de configuration Mosquitto s'il n'y en a pas
+ - Utilisation d'une librairie pour améliorer la lisibilité lors de l'installation des dépendances
 
 ## 2021-11-29 AutoPublish
   - Ajout de la fonctionalité  "Pub. Auto" qui permet la Publication automatique en MQTT lors du changement du champ Valeur d'une commande action (Attention : la charge engendrée sur le système est actuellement inconnue)
