@@ -442,7 +442,7 @@ class jMQTTCmd extends cmd {
             $l->remove();
         }
         // Remove batteryStatus from eqLogic on delete
-        if ($this->isBattery() {
+        if ($this->isBattery()) {
             $eqLogic->setStatus('battery', null);
             $eqLogic->setStatus('batteryDatetime', null);
         }
