@@ -47,6 +47,9 @@ try sudo -u www-data php ./composer.phar require --working-dir=. --no-cache symf
 try sudo -u www-data php ./composer.phar require --working-dir=. --no-cache cboden/ratchet
 silent rm composer.phar
 
+step 45 "Temporary fix of Ratchet PHP library (https://github.com/ratchetphp/RFC6455/pull/65)"
+try sed -i -E "s/unpack\('J'(.*)\)\[1\]/unpack('N2'\1)[2]/g" ./vendor/ratchet/rfc6455/src/Messaging/MessageBuffer.php
+
 step 50 "Install python3 debian packages"
 try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-requests python3-pip 
 
