@@ -53,7 +53,7 @@ if [ $(getconf LONG_BIT) -eq 32 ]; then
 fi
 
 step 50 "Install python3 debian packages"
-try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-requests python3-pip 
+try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-requests python3-pip python3-wheel
 
 step 60 "Install python3 setuptools library"
 try pip3 install --upgrade setuptools
