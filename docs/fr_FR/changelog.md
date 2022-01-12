@@ -10,6 +10,7 @@
  - Utilisation d'une librairie pour améliorer la lisibilité lors de l'installation des dépendances
  - Correction temporaire de la librairie RatchetPHP concernant les payload de plus de ~65Ko sur les OS 32bits et RPi
  - La reinstallation des dépendances n'est plus forcée lors de l'installation initiale de jMQTT
+ - Ajout de python3-wheel lors de l'installation des dépendances
 
 ## 2021-11-29 AutoPublish
   - Ajout de la fonctionalité  "Pub. Auto" qui permet la Publication automatique en MQTT lors du changement du champ Valeur d'une commande action (Attention : la charge engendrée sur le système est actuellement inconnue)
