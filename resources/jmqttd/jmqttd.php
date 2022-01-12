@@ -132,7 +132,7 @@ class jMQTTdLogic implements MessageComponentInterface {
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        log::add($this->plugin, 'error', sprintf('Id %d : Unexpected error between WebSocket Daemon and Python Daemon', $conn->httpRequest->getHeader('id')[0], $e->getMessage()));
+        log::add($this->plugin, 'error', sprintf('Id %d : Unexpected error between WebSocket Daemon and Python Daemon : %s', $conn->httpRequest->getHeader('id')[0], $e->getMessage()));
         jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
 
         $conn->close();
