@@ -261,19 +261,24 @@ function jMQTT_install() {
 
 function jMQTT_update() {
     
-    // VERSION = 0
-    migrateToMultiBrokerVersion();
-    // VERSION = 1
-    migrateToJsonVersion();
-    // VERSION = 2
-    disableAutoAddCmdOnBrokers();
-    // VERSION = 3
-    removePreviousDaemonCrons();
-    installNewDependancies();
-    // VERSION = 4
-    tagBrokersStatusCmd();
-    // VERSION = 5
-    raiseForceDepInstallFlag();
+    // if version info is not in DB, it means it is a fresh install of jMQTT
+    // and so we don't need to run these functions to adapt eqLogic structure/config
+    // (even if plugin is disabled the config key stays)
+    if (config::byKey(VERSION, 'jMQTT', -1) != -1) {
+        // VERSION = 0
+        migrateToMultiBrokerVersion();
+        // VERSION = 1
+        migrateToJsonVersion();
+        // VERSION = 2
+        disableAutoAddCmdOnBrokers();
+        // VERSION = 3
+        removePreviousDaemonCrons();
+        installNewDependancies();
+        // VERSION = 4
+        tagBrokersStatusCmd();
+        // VERSION = 5
+        raiseForceDepInstallFlag();
+    }
 
     // Update version next to upgrade operations
     config::save(VERSION, CURRENT_VERSION, 'jMQTT');
