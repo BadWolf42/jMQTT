@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## Beta
+ - Prise en compte de la logique de répetition des infos
+
 ## 2022-01-12
  - Amélioration du log en cas d'erreur sur le daemon PHP
  - Création automatique d'un fichier de configuration Mosquitto s'il n'y en a pas
