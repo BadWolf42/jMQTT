@@ -115,7 +115,7 @@ class jMQTTCmd extends cmd {
                 }
             }
         }
-        $this->event($value);
+        $this->getEqLogic()->checkAndUpdateCmd($this, $value);
         $this->getEqLogic()->log('info', '-> ' . $this->getLogName() . ' ' . $value);
 
         if ((preg_match('/(battery|batterie)$/i', $this->getName()) || $this->getGeneric_type() == 'BATTERY') && !in_array($value[0], ['{','[',''])) {
