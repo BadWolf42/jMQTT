@@ -646,6 +646,29 @@ function saveEqLogic(_eqLogic) {
         }
     }
     
+    // a function that substract properties of b from a (r = a - b)
+    function substract(a, b) {
+        var r = {};
+    
+        for (var key in a) {
+            if (typeof(a[key]) == 'object') {
+                if (!b[key]) b[key] = {};
+                r[key] = substract(a[key], b[key]);
+            } else {
+                if (a[key] && !b[key]) {
+                    r[key] = a[key];
+                }
+            }
+        }
+        return r;
+    }
+
+    // if this eqLogic is not a broker
+    if (_eqLogic.configuration.type != 'broker') {
+        // get hiden settings for Broker and remove them of eqLogic
+        _eqLogic = substract(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
+    }
+    
     return _eqLogic;
 }
 
