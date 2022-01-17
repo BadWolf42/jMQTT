@@ -2,6 +2,7 @@
 
 ## Beta
  - Prise en compte de la logique de répetition des infos
+ - Suppression du niveau de batterie si les commandes infos ne remplissent plus le critère
 
 ## 2022-01-12
  - Amélioration du log en cas d'erreur sur le daemon PHP

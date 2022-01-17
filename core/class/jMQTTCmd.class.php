@@ -284,9 +284,9 @@ class jMQTTCmd extends cmd {
             $this->_preSaveInformations = array(
                 'retain' => $cmd->getConfiguration('retain', 0),
                 'brokerStatusTopic' => $cmd->getTopic(),
-                'battery' => $cmd->isBattery(),
                 'autoPub' => $cmd->getConfiguration('autoPub', 0),
-                'request' => $cmd->getConfiguration('request', '')
+                'request' => $cmd->getConfiguration('request', ''),
+                'isBattery' => $cmd->isBattery()
             );
         }
     }
@@ -356,8 +356,8 @@ class jMQTTCmd extends cmd {
                 }
             }
 
-            // Remove batteryStatus from eqLogic is cmd is no longer a battery
-            if (!$this->isBattery() && $this->_preSaveInformations['battery']) {
+            // Remove batteryStatus from eqLogic if cmd is no longer a battery
+            if (!$this->isBattery() && $this->_preSaveInformations['isBattery']) {
                 $eqLogic->setStatus('battery', null);
                 $eqLogic->setStatus('batteryDatetime', null);
             }
