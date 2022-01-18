@@ -492,7 +492,7 @@ class jMQTT extends eqLogic {
             // --- Existing broker ---
             else {
                 // Check certificate binding information if TLS is disabled
-                if (!boolval($this->_preSaveInformations[self::CONF_KEY_MQTT_TLS])) {
+                if (!boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
                     // If a CA is specified and this file doesn't exists, remove it
                     if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
                         $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
