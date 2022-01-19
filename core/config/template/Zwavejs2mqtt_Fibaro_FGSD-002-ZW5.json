@@ -8,10 +8,6 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "fire",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-10-14 21:47:26",
             "battery_type": "1xCR123A"
         },

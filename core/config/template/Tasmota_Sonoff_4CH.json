@@ -10,10 +10,6 @@
             "battery_type": "Secteur",
             "commentaire": "Tasmota Sonoff 4CH",
             "icone": "lightbulb",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-11-19 14:57:50"
         },
         "category": {

@@ -9,10 +9,6 @@
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "volet",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-12-04 22:23:47"
         },
         "category": {

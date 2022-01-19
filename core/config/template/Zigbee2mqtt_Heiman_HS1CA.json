@@ -10,10 +10,6 @@
             "battery_type": "1xCR123A",
             "commentaire": "HS1CA",
             "icone": "molecule-co",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-10-28 13:08:56"
         },
         "category": {

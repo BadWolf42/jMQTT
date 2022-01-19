@@ -8,10 +8,7 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "volet",
-            "api": "enable",
-            "updatetime": "2021-04-28 09:31:10",
-            "previousIsEnable": "1",
-            "previousIsVisible": "1"
+            "updatetime": "2021-04-28 09:31:10"
         },
         "category": {
             "heating": "0",

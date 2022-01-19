@@ -9,10 +9,6 @@
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "dimmer",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-06-05 12:12:36"
         },
         "category": {

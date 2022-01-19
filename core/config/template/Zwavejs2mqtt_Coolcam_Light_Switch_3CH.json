@@ -10,10 +10,6 @@
             "battery_type": "Secteur",
             "commentaire": "Interrupteur mural 3 channels",
             "icone": "relay",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-12-09 22:42:42"
         },
         "category": {

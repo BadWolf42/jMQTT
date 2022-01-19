@@ -8,13 +8,7 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "volet",
-            "api": "enable",
-            "updatetime": "2021-06-20 12:25:13",
-            "previousIsEnable": "1",
-            "previousIsVisible": "1",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public"
+            "updatetime": "2021-06-20 12:25:13"
         },
         "category": {
             "heating": "0",
