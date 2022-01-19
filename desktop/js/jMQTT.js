@@ -632,10 +632,12 @@ function printEqLogic(_eqLogic) {
  */
 function saveEqLogic(_eqLogic) {
 
-    // pass the log level when defined (i.e. for a broker object)
-    var log_level = $('#div_broker_log').getValues('.configKey')[0];
-    if (!$.isEmptyObject(log_level)) {
-        _eqLogic.loglevel =  log_level;
+    // pass the log level when defined for a broker object
+    if (_eqLogic.configuration.type == 'broker') {
+        var log_level = $('#div_broker_log').getValues('.configKey')[0];
+        if (!$.isEmptyObject(log_level)) {
+            _eqLogic.loglevel =  log_level;
+        }
     }
     
     // remove non existing commands added for the JSON view and add new commands at the end
