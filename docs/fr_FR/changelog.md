@@ -3,6 +3,11 @@
 ## Beta
  - Prise en compte de la logique de répetition des infos
  - Suppression du niveau de batterie si les commandes infos ne remplissent plus le critère
+ - Correction de la verification des informations de certificat
+ - Correction de fuite d'information des brokers dans les equipements
+ - Suppression des infos brokers dans les equipements
+ - Suppression des infos brokers dans les templates
+ - Suppression des infos brokers dans les templates perso
 
 ## 2022-01-12
  - Amélioration du log en cas d'erreur sur le daemon PHP
