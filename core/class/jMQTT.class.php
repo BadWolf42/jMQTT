@@ -235,7 +235,7 @@ class jMQTT extends eqLogic {
         $this->import($template, $_keepCmd);
 
         // complete eqpt topic
-        $this->setLogicalId(sprintf($template['logicalId'], $_topic));
+        $this->setTopic(sprintf($template['logicalId'], $_topic));
         $this->save();
 
         // complete cmd topics
@@ -262,12 +262,12 @@ class jMQTT extends eqLogic {
         $exportedTemplate[$_template] = $this->export();
 
         // Looking for baseTopic from equipement
-        $baseTopic = $this->getLogicalId();
+        $baseTopic = $this->getTopic();
         if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
         if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
 
         // Add string format for logicalId (Topic of eqpt)
-        $exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getLogicalId());
+        $exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getTopic());
 
         // convert topic to string format
         foreach ($exportedTemplate[$_template]['cmd'] as $key => $cmd) {
