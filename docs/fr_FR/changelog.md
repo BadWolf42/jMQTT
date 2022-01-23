@@ -8,6 +8,7 @@
  - Suppression des infos brokers dans les equipements
  - Suppression des infos brokers dans les templates
  - Suppression des infos brokers dans les templates perso
+ - Correction d'un bug qui ajoute des \ avant chaque / lors du traitement de commande info JSON
 
 ## 2022-01-12
  - Amélioration du log en cas d'erreur sur le daemon PHP

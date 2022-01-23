@@ -140,7 +140,7 @@ class jMQTTCmd extends cmd {
         $indexes = explode('|', $indexes);
         try {
             $value = self::get_array_value($jsonArray, $indexes);
-            $this->updateCmdValue(json_encode($value));
+            $this->updateCmdValue(json_encode($value, JSON_UNESCAPED_SLASHES));
         }
         catch (Throwable $e) {
             // Should never occur
