@@ -276,10 +276,15 @@ class jMQTT extends eqLogic {
             }
         }
 
-        // Rename 'cmd' to 'commands' for Jeedom import ...
-        // (Why Jeedom used different names in export() and in import() ?!)
-        $exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
-        unset($exportedTemplate[$_template]['cmd']);
+        // older version of Jeedom (4.2 and bellow) export commands in 'cmd'
+        // Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
+        if (array_key_exists('cmd', $exportedTemplate[$_template]))
+        {
+            // Rename 'cmd' to 'commands' for Jeedom import ...
+            $exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
+            unset($exportedTemplate[$_template]['cmd']);
+        }
+        
 
         // Remove brkId from eqpt configuration
         unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);

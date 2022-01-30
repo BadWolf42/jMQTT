@@ -10,6 +10,7 @@
  - Suppression des infos brokers dans les templates perso
  - Correction d'un bug qui ajoute des \ avant chaque / lors du traitement de commande info JSON
  - Correction du daemon Python pouvait planter lors d'une sub/unsub invalide
+ - Gestion de l'évolution de la fonction export() pour les futures versions de Jeedom
 
 ## 2022-01-12
  - Amélioration du log en cas d'erreur sur le daemon PHP
