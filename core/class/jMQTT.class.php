@@ -269,13 +269,6 @@ class jMQTT extends eqLogic {
         // Add string format for logicalId (Topic of eqpt)
         $exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getTopic());
 
-        // convert topic to string format
-        foreach ($exportedTemplate[$_template]['cmd'] as $key => $cmd) {
-            if(isset($cmd['configuration']['topic'])) {
-                $exportedTemplate[$_template]['cmd'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $cmd['configuration']['topic']);
-            }
-        }
-
         // older version of Jeedom (4.2 and bellow) export commands in 'cmd'
         // Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
         if (array_key_exists('cmd', $exportedTemplate[$_template]))
@@ -284,7 +277,13 @@ class jMQTT extends eqLogic {
             $exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
             unset($exportedTemplate[$_template]['cmd']);
         }
-        
+
+        // convert topic to string format
+        foreach ($exportedTemplate[$_template]['commands'] as $key => $command) {
+            if(isset($command['configuration']['topic'])) {
+                $exportedTemplate[$_template]['commands'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $command['configuration']['topic']);
+            }
+        }
 
         // Remove brkId from eqpt configuration
         unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
