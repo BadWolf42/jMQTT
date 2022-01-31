@@ -1,6 +1,6 @@
 # Registre des évolutions
 
-## Beta
+## 2022-01-31
  - Prise en compte de la logique de répetition des infos
  - Suppression du niveau de batterie si les commandes infos ne remplissent plus le critère
  - Correction de la verification des informations de certificat
