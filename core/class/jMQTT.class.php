@@ -235,7 +235,7 @@ class jMQTT extends eqLogic {
         $this->import($template, $_keepCmd);
 
         // complete eqpt topic
-        $this->setLogicalId(sprintf($template['logicalId'], $_topic));
+        $this->setTopic(sprintf($template['logicalId'], $_topic));
         $this->save();
 
         // complete cmd topics
@@ -262,24 +262,28 @@ class jMQTT extends eqLogic {
         $exportedTemplate[$_template] = $this->export();
 
         // Looking for baseTopic from equipement
-        $baseTopic = $this->getLogicalId();
+        $baseTopic = $this->getTopic();
         if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
         if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
 
         // Add string format for logicalId (Topic of eqpt)
-        $exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getLogicalId());
+        $exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getTopic());
 
-        // convert topic to string format
-        foreach ($exportedTemplate[$_template]['cmd'] as $key => $cmd) {
-            if(isset($cmd['configuration']['topic'])) {
-                $exportedTemplate[$_template]['cmd'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $cmd['configuration']['topic']);
-            }
+        // older version of Jeedom (4.2 and bellow) export commands in 'cmd'
+        // Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
+        if (array_key_exists('cmd', $exportedTemplate[$_template]))
+        {
+            // Rename 'cmd' to 'commands' for Jeedom import ...
+            $exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
+            unset($exportedTemplate[$_template]['cmd']);
         }
 
-        // Rename 'cmd' to 'commands' for Jeedom import ...
-        // (Why Jeedom used different names in export() and in import() ?!)
-        $exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
-        unset($exportedTemplate[$_template]['cmd']);
+        // convert topic to string format
+        foreach ($exportedTemplate[$_template]['commands'] as $key => $command) {
+            if(isset($command['configuration']['topic'])) {
+                $exportedTemplate[$_template]['commands'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $command['configuration']['topic']);
+            }
+        }
 
         // Remove brkId from eqpt configuration
         unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
@@ -492,7 +496,7 @@ class jMQTT extends eqLogic {
             // --- Existing broker ---
             else {
                 // Check certificate binding information if TLS is disabled
-                if (!boolval($this->_preSaveInformations[self::CONF_KEY_MQTT_TLS])) {
+                if (!boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
                     // If a CA is specified and this file doesn't exists, remove it
                     if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
                         $this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));

@@ -10,10 +10,6 @@
             "battery_type": "Secteur",
             "commentaire": "HG06337",
             "icone": "prise",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-10-28 14:57:07"
         },
         "category": {

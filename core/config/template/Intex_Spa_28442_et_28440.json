@@ -8,10 +8,6 @@
             "auto_add_cmd": "1",
             "Qos": "1",
             "icone": "remote",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-05-16 23:31:46"
         },
         "category": {

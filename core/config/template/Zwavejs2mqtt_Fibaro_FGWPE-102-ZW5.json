@@ -8,10 +8,6 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "prise",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-09-21 17:34:45"
         },
         "category": {

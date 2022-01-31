@@ -1,5 +1,17 @@
 # Registre des évolutions
 
+## 2022-01-31
+ - Prise en compte de la logique de répetition des infos
+ - Suppression du niveau de batterie si les commandes infos ne remplissent plus le critère
+ - Correction de la verification des informations de certificat
+ - Correction de fuite d'information des brokers dans les equipements
+ - Suppression des infos brokers dans les equipements
+ - Suppression des infos brokers dans les templates
+ - Suppression des infos brokers dans les templates perso
+ - Correction d'un bug qui ajoute des \ avant chaque / lors du traitement de commande info JSON
+ - Correction du daemon Python pouvait planter lors d'une sub/unsub invalide
+ - Gestion de l'évolution de la fonction export() pour les futures versions de Jeedom
+
 ## 2022-01-12
  - Amélioration du log en cas d'erreur sur le daemon PHP
  - Création automatique d'un fichier de configuration Mosquitto s'il n'y en a pas

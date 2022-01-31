@@ -9,10 +9,6 @@
             "Qos": "1",
             "battery_type": "3x1.5V AAA",
             "icone": "ir2",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-10-14 21:47:26"
         },
         "category": {

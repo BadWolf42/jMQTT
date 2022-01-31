@@ -9,19 +9,7 @@
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "volet",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
-            "updatetime": "2021-11-25 11:10:50",
-            "loglevel": {
-                "100": "0",
-                "200": "0",
-                "300": "0",
-                "400": "0",
-                "1000": "0",
-                "default": "1"
-            }
+            "updatetime": "2021-11-25 11:10:50"
         },
         "category": {
             "heating": "0",

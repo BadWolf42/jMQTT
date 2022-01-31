@@ -10,12 +10,6 @@
             "battery_type": "Secteur",
             "commentaire": "ON1 : contact sec 2 vantails\nON2 : contact sec 1 vantail",
             "icone": "relay",
-            "mqttUser": "admin",
-            "mqttPass": "alexis12",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-12-11 15:35:24"
         },
         "category": {

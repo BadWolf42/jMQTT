@@ -10,10 +10,6 @@
             "battery_type": "Secteur",
             "commentaire": "ON1: chauffages\nON2: Salle de bain & autres...",
             "icone": "energie",
-            "mqttPubStatus": "1",
-            "mqttTls": "0",
-            "mqttTlsCheck": "public",
-            "api": "disable",
             "updatetime": "2021-12-12 14:18:03"
         },
         "category": {

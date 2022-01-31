@@ -632,10 +632,12 @@ function printEqLogic(_eqLogic) {
  */
 function saveEqLogic(_eqLogic) {
 
-    // pass the log level when defined (i.e. for a broker object)
-    var log_level = $('#div_broker_log').getValues('.configKey')[0];
-    if (!$.isEmptyObject(log_level)) {
-        _eqLogic.loglevel =  log_level;
+    // pass the log level when defined for a broker object
+    if (_eqLogic.configuration.type == 'broker') {
+        var log_level = $('#div_broker_log').getValues('.configKey')[0];
+        if (!$.isEmptyObject(log_level)) {
+            _eqLogic.loglevel =  log_level;
+        }
     }
     
     // remove non existing commands added for the JSON view and add new commands at the end
@@ -644,6 +646,29 @@ function saveEqLogic(_eqLogic) {
         if (_eqLogic.cmd[i].id == "" && _eqLogic.cmd[i].name == "") {
             _eqLogic.cmd.splice(i, 1);
         }
+    }
+    
+    // a function that substract properties of b from a (r = a - b)
+    function substract(a, b) {
+        var r = {};
+    
+        for (var key in a) {
+            if (typeof(a[key]) == 'object') {
+                if (!b[key]) b[key] = {};
+                r[key] = substract(a[key], b[key]);
+            } else {
+                if (a[key] && !b[key]) {
+                    r[key] = a[key];
+                }
+            }
+        }
+        return r;
+    }
+
+    // if this eqLogic is not a broker
+    if (_eqLogic.configuration.type != 'broker') {
+        // get hiden settings for Broker and remove them of eqLogic
+        _eqLogic = substract(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
     }
     
     return _eqLogic;

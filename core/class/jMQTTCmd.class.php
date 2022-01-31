@@ -115,10 +115,10 @@ class jMQTTCmd extends cmd {
                 }
             }
         }
-        $this->event($value);
+        $this->getEqLogic()->checkAndUpdateCmd($this, $value);
         $this->getEqLogic()->log('info', '-> ' . $this->getLogName() . ' ' . $value);
 
-        if ((preg_match('/(battery|batterie)$/i', $this->getName()) || $this->getGeneric_type() == 'BATTERY') && !in_array($value[0], ['{','[',''])) {
+        if ($this->isBattery() && !in_array($value[0], ['{','[',''])) {
             if ($this->getSubType() == 'binary') {
                 $this->getEqLogic()->batteryStatus($value ? 100 : 10);
             } else {
@@ -140,7 +140,7 @@ class jMQTTCmd extends cmd {
         $indexes = explode('|', $indexes);
         try {
             $value = self::get_array_value($jsonArray, $indexes);
-            $this->updateCmdValue(json_encode($value));
+            $this->updateCmdValue(json_encode($value, JSON_UNESCAPED_SLASHES));
         }
         catch (Throwable $e) {
             // Should never occur
@@ -285,7 +285,8 @@ class jMQTTCmd extends cmd {
                 'retain' => $cmd->getConfiguration('retain', 0),
                 'brokerStatusTopic' => $cmd->getTopic(),
                 'autoPub' => $cmd->getConfiguration('autoPub', 0),
-                'request' => $cmd->getConfiguration('request', '')
+                'request' => $cmd->getConfiguration('request', ''),
+                'isBattery' => $cmd->isBattery()
             );
         }
     }
@@ -353,6 +354,12 @@ class jMQTTCmd extends cmd {
                     // Just try to remove the previous status topic
                     $eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
                 }
+            }
+
+            // Remove batteryStatus from eqLogic if cmd is no longer a battery
+            if (!$this->isBattery() && $this->_preSaveInformations['isBattery']) {
+                $eqLogic->setStatus('battery', null);
+                $eqLogic->setStatus('batteryDatetime', null);
             }
 
             // Only Update listener if "autoPub" or "request" has changed
@@ -427,11 +434,17 @@ class jMQTTCmd extends cmd {
      * preRemove method to log that a command is removed
      */
     public function preRemove() {
-        $this->getEqLogic()->log('info', 'Removing command ' . $this->getLogName());
+        $eqLogic = $this->getEqLogic();
+        $eqLogic->log('info', 'Removing command ' . $this->getLogName());
         $listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
         foreach ($listener as $l) {
             log::add('jMQTT', 'debug', 'Listener Removed from #'.$l->getOption('cmd').'#');
             $l->remove();
+        }
+        // Remove batteryStatus from eqLogic on delete
+        if ($this->isBattery()) {
+            $eqLogic->setStatus('battery', null);
+            $eqLogic->setStatus('batteryDatetime', null);
         }
     }
 
@@ -520,7 +533,15 @@ class jMQTTCmd extends cmd {
             return self::get_array_value($value, $indexes);
         }
     }
-    
+
+    /**
+     * Return whether or not this command may contain a battery value
+     * @return boolean
+     */
+    public function isBattery() {
+        return $this->getType() == 'info' && ($this->getGeneric_type() == 'BATTERY' || preg_match('/(battery|batterie)$/i', $this->getName()));
+    }
+
     /**
      * Return whether or not this command is derived from a Json payload
      * @return boolean
