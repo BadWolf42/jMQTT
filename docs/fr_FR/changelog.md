@@ -1,5 +1,9 @@
 # Registre des évolutions
 
+## Beta
+ - Correction du nettoyage des info broker des equipements (les champs ayant '' pour valeur étaient supprimés avant envoi)
+ - Nouvel affichage du selecteur d'icones sur les commandes
+
 ## 2022-01-31
  - Prise en compte de la logique de répetition des infos
  - Suppression du niveau de batterie si les commandes infos ne remplissent plus le critère
