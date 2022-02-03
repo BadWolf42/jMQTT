@@ -654,10 +654,10 @@ function saveEqLogic(_eqLogic) {
     
         for (var key in a) {
             if (typeof(a[key]) == 'object') {
-                if (!b[key]) b[key] = {};
+                if (b[key] === undefined) b[key] = {};
                 r[key] = substract(a[key], b[key]);
             } else {
-                if (a[key] && !b[key]) {
+                if (a[key] !== undefined && b[key] === undefined) {
                     r[key] = a[key];
                 }
             }
