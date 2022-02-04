@@ -107,6 +107,17 @@ class MqttClient:
 		return str(self.connected).lower()
 
 	def subscribe_topic(self, topic, qos):
+		try:
+			res = self.mqttclient.subscribe(topic, qos)
+			if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
+				self.mqttsubscribedtopics[topic] = qos
+				logging.info('BrkId: % 4s : Topic subscribed "%s"', self.id, topic)
+				return
+		except ValueError: # Only catch ValueError
+			pass
+		logging.error('BrkId: % 4s : Topic subscription failed "%s"', self.id, topic)
+
+	def unsubscribe_topic(self, topic):
 		if topic not in self.mqttsubscribedtopics:
 			logging.info('BrkId: % 4s : Can\'t unsubscribe not subscribed topic "%s"', self.id, topic)
 			return
@@ -119,17 +130,6 @@ class MqttClient:
 		except ValueError: # Only catch ValueError
 			pass
 		logging.error('BrkId: % 4s : Topic unsubscription failed "%s"', self.id, topic)
-
-	def unsubscribe_topic(self, topic):
-		if topic in self.mqttsubscribedtopics:
-			res = self.mqttclient.unsubscribe(topic)
-			if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
-				del self.mqttsubscribedtopics[topic]
-				logging.info('BrkId: % 4s : Topic unsubscribed "%s"', self.id, topic)
-			else:
-				logging.error('BrkId: % 4s : Topic unsubscription failed "%s"', self.id, topic)
-		else:
-			logging.info('BrkId: % 4s : Can\'t unsubscribe not subscribed topic "%s"', self.id, topic)
 
 	def publish(self, topic, payload, qos, retain):
 		self.mqttclient.publish(topic, payload, qos, retain)

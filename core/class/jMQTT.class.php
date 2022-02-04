@@ -1680,8 +1680,7 @@ class jMQTT extends eqLogic {
 	 * @throws Exception if the broker is not found
 	 */
 	public function getBroker() {
-		if ($this->getType() == self::TYP_BRK)
-			return $this;
+		if ($this->getType() == self::TYP_BRK) return $this;
 		if (! isset($this->_broker)) {
 			$this->_broker = self::getBrokerFromId($this->getBrkId());
 		}

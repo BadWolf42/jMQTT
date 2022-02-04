@@ -733,7 +733,7 @@ function addCmdToTable(_cmd) {
 		tr += '<div class="input-group">';
 		tr += '<input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" placeholder="{{Nom de la commande}}">';
 		tr += '<span class="input-group-btn">';
-		tr += '<a class="cmdAction btn btn-sm btn-default" data-l1key="chooseIcon" title="{{Choisir une icÃ´ne}}"><i class="fas fa-icons"></i></a>';
+		tr += '<a class="cmdAction btn btn-sm btn-default" data-l1key="chooseIcon" title="{{Choisir une icône}}"><i class="fas fa-icons"></i></a>';
 		tr += '</span>';
 		tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;padding:0 5px 0 0!important;"></span>';
 		tr += '</div>';
@@ -813,11 +813,11 @@ function addCmdToTable(_cmd) {
 		tr += '<div class="input-group">';
 		tr += '<input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" placeholder="{{Nom de la commande}}">';
 		tr += '<span class="input-group-btn">';
-		tr += '<a class="cmdAction btn btn-sm btn-default" data-l1key="chooseIcon" title="{{Choisir une icÃ´ne}}"><i class="fas fa-icons"></i></a>';
+		tr += '<a class="cmdAction btn btn-sm btn-default" data-l1key="chooseIcon" title="{{Choisir une icône}}"><i class="fas fa-icons"></i></a>';
 		tr += '</span>';
 		tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;padding:0 5px 0 0!important;"></span>';
 		tr += '</div>';
-		tr += '<select class="cmdAttr form-control input-sm" data-l1key="value" style="display:none;margin-top:5px;" title="{{Commande information liÃ©e}}">';
+		tr += '<select class="cmdAttr form-control input-sm" data-l1key="value" style="display:none;margin-top:5px;" title="{{Commande information liée}}">';
 		tr += '<option value="">{{Aucune}}</option>';
 		tr += '</select>';
 		tr += '</td>';
