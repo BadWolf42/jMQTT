@@ -257,13 +257,13 @@ function displayEqLogicCard($eqL, $node_images) {
                     <thead>
                         <tr>
                             <th style="width:1px;">#</th>
-                            <th style="width:300px;">{{Nom}}</th>
-                            <th style="width:60px;">{{Sous-Type}}</th>
-                            <th>{{Topic}}</th>
-                            <th>{{Valeur}}</th>
+                            <th style="min-width:150px;width:300px;">{{Nom}}</th>
+                            <th style="width:130px;">{{Type}}</th>
+                            <th style="min-width:180px;">{{Topic}}</th>
+                            <th style="min-width:180px;">{{Valeur}}</th>
                             <th style="width:1px;">{{Unité}}</th>
-                            <th style="width:120px;">{{Paramètres}}</th>
-                            <th style="width:130px;"></th>
+                            <th style="min-width:100px;width:120px;">{{Options}}</th>
+                            <th style="min-width:135px;width:135px;"></th>
                         </tr>
                     </thead>
                     <tbody>
