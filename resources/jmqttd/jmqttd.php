@@ -11,25 +11,22 @@ require_once dirname(__FILE__) . '/../../core/class/jMQTTBase.class.php';
 
 $options = getopt('',array('plugin:','socketport:','pid:'));
 if (array_key_exists('plugin', $options)) {
-    $plugin = $options['plugin'];
-}
-else {
-    echo("[ERROR] !!! plugin name / class not provided !!! => Exit\n");
-    return;
+	$plugin = $options['plugin'];
+} else {
+	echo("[ERROR] !!! plugin name / class not provided !!! => Exit\n");
+	return;
 }
 if (array_key_exists('pid', $options)) {
-    $pidfile = $options['pid'];
-}
-else {
-    log::add($plugin, 'error', 'pidfile path not provided => Exit');
-    return;
+	$pidfile = $options['pid'];
+} else {
+	log::add($plugin, 'error', 'pidfile path not provided => Exit');
+	return;
 }
 if (array_key_exists('socketport', $options)) {
-    $socketport = intval($options['socketport']);
-}
-else {
-    log::add($plugin, 'error', 'socketport not provided => Exit');
-    return;
+	$socketport = intval($options['socketport']);
+} else {
+	log::add($plugin, 'error', 'socketport not provided => Exit');
+	return;
 }
 
 log::add($plugin, 'info', 'Start jMQTT websocket daemon');
@@ -39,9 +36,9 @@ log::add($plugin, 'info', 'PID file   : ' . $pidfile);
 
 //Check for daemon already running
 if (file_exists($pidfile)) {
-    log::add($plugin, 'debug', 'PID File "' . $pidfile . '" already exists.');
-    log::add($plugin, 'error', 'This daemon already runs! Exit 0');
-    exit(0);
+	log::add($plugin, 'debug', 'PID File "' . $pidfile . '" already exists.');
+	log::add($plugin, 'error', 'This daemon already runs! Exit 0');
+	exit(0);
 }
 
 // Create pid file
@@ -49,8 +46,8 @@ $pid = posix_getpid();
 log::add($plugin, 'debug', 'Writing PID ' . $pid . ' to ' . $pidfile);
 $fp = fopen($pidfile, 'x');
 if($fp == false){
-    log::add($plugin, 'error', 'Can\'t open pidfile => Exit');
-    return;
+	log::add($plugin, 'error', 'Can\'t open pidfile => Exit');
+	return;
 }
 fwrite($fp, $pid);
 fclose($fp);
@@ -58,102 +55,102 @@ fclose($fp);
 
 class jMQTTdLogic implements MessageComponentInterface {
 
-    private $plugin;
+	private $plugin;
 
-    public function __construct(string $plugin) {
-        $this->plugin = $plugin;
-    }
+	public function __construct(string $plugin) {
+		$this->plugin = $plugin;
+	}
 
-    public function onOpen(ConnectionInterface $conn) {
+	public function onOpen(ConnectionInterface $conn) {
 
-        if (!$conn->httpRequest->hasHeader('id')) {
-            log::add($this->plugin, 'error', 'Id XX : A WebSocket connection didn\'t passed "Id" and will be closed now');
-            $conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
-            $conn->close();
-            return;
-        }
+		if (!$conn->httpRequest->hasHeader('id')) {
+			log::add($this->plugin, 'error', 'Id XX : A WebSocket connection didn\'t passed "Id" and will be closed now');
+			$conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
+			$conn->close();
+			return;
+		}
 
-        if (!$conn->httpRequest->hasHeader('apikey')) {
-            log::add($this->plugin, 'error', sprintf('Id %d : A WebSocket connection didn\'t passed "apikey" and will be closed now', $conn->httpRequest->getHeader('id')[0]));
-            $conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
-            $conn->close();
-            return;
-        }
+		if (!$conn->httpRequest->hasHeader('apikey')) {
+			log::add($this->plugin, 'error', sprintf('Id %d : A WebSocket connection didn\'t passed "apikey" and will be closed now', $conn->httpRequest->getHeader('id')[0]));
+			$conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
+			$conn->close();
+			return;
+		}
 
-        if (!jeedom::apiAccess($conn->httpRequest->getHeader('apikey')[0], $this->plugin)) {
-            log::add($this->plugin, 'error', sprintf('Id %d : A WebSocket connection passed an invalid apikey and will be closed now', $conn->httpRequest->getHeader('id')[0]));
-            $conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
-            $conn->close();
-            return;
-        }
+		if (!jeedom::apiAccess($conn->httpRequest->getHeader('apikey')[0], $this->plugin)) {
+			log::add($this->plugin, 'error', sprintf('Id %d : A WebSocket connection passed an invalid apikey and will be closed now', $conn->httpRequest->getHeader('id')[0]));
+			$conn->send('Vous n\'etes pas autorisé à effectuer cette action', __FILE__);
+			$conn->close();
+			return;
+		}
 
-        log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon connected successfully to WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
+		log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon connected successfully to WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
 
-        jMQTTBase::on_daemon_connect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
-    }
+		jMQTTBase::on_daemon_connect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+	}
 
-    public function onMessage(ConnectionInterface $from, $msg) {
+	public function onMessage(ConnectionInterface $from, $msg) {
 
-        log::add($this->plugin, 'debug', sprintf('Id %d : onMessage received : "%s"', $from->httpRequest->getHeader('id')[0], $msg));
+		log::add($this->plugin, 'debug', sprintf('Id %d : onMessage received : "%s"', $from->httpRequest->getHeader('id')[0], $msg));
 
-        $message = json_decode($msg, true);
-        
-        if ($message == null) {
-            log::add($this->plugin, 'error', sprintf('Received message is not a correct JSON!? : %s', $msg));
-            return;
-        }
-        if (!array_key_exists('cmd', $message)) {
-            log::add($this->plugin, 'error', sprintf('Received message doesn\'t contain cmd!? : %s', $msg));
-            return;
-        }
+		$message = json_decode($msg, true);
 
-        switch ($message['cmd']) {
-            case 'connection':
-                if ($message['state']) jMQTTBase::on_mqtt_connect($this->plugin, $from->httpRequest->getHeader('id')[0]);
-                else jMQTTBase::on_mqtt_disconnect($this->plugin, $from->httpRequest->getHeader('id')[0]);
-                break;
-            case 'messageIn':
-                jMQTTBase::on_mqtt_message($this->plugin, $from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
-                break;
-            default:
-                log::add($this->plugin, 'error', sprintf('Id %d : Received message contains unkown cmd!?', $from->httpRequest->getHeader('id')[0]));
-                break;
-        }
-    }
+		if ($message == null) {
+			log::add($this->plugin, 'error', sprintf('Received message is not a correct JSON!? : %s', $msg));
+			return;
+		}
+		if (!array_key_exists('cmd', $message)) {
+			log::add($this->plugin, 'error', sprintf('Received message doesn\'t contain cmd!? : %s', $msg));
+			return;
+		}
 
-    public function onClose(ConnectionInterface $conn) {
-        if (!$conn->httpRequest->hasHeader('id')) {
-            log::add($this->plugin, 'debug', 'Id XX : invalid WebSocket disconnected');
-        }
-        else {
-            log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon disconnected from WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
-            jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
-        }
-    }
+		switch ($message['cmd']) {
+			case 'connection':
+				if ($message['state']) jMQTTBase::on_mqtt_connect($this->plugin, $from->httpRequest->getHeader('id')[0]);
+				else jMQTTBase::on_mqtt_disconnect($this->plugin, $from->httpRequest->getHeader('id')[0]);
+				break;
+			case 'messageIn':
+				jMQTTBase::on_mqtt_message($this->plugin, $from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
+				break;
+			default:
+				log::add($this->plugin, 'error', sprintf('Id %d : Received message contains unkown cmd!?', $from->httpRequest->getHeader('id')[0]));
+				break;
+		}
+	}
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
-        log::add($this->plugin, 'error', sprintf('Id %d : Unexpected error between WebSocket Daemon and Python Daemon : %s', $conn->httpRequest->getHeader('id')[0], $e->getMessage()));
-        jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+	public function onClose(ConnectionInterface $conn) {
+		if (!$conn->httpRequest->hasHeader('id')) {
+			log::add($this->plugin, 'debug', 'Id XX : invalid WebSocket disconnected');
+		}
+		else {
+			log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon disconnected from WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
+			jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+		}
+	}
 
-        $conn->close();
-    }
+	public function onError(ConnectionInterface $conn, \Exception $e) {
+		log::add($this->plugin, 'error', sprintf('Id %d : Unexpected error between WebSocket Daemon and Python Daemon : %s', $conn->httpRequest->getHeader('id')[0], $e->getMessage()));
+		jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+
+		$conn->close();
+	}
 }
 
 $server = IoServer::factory(
-    new HttpServer(
-        new WsServer(
-            new jMQTTdLogic($plugin)
-        )
-    ),
-    $socketport
+	new HttpServer(
+		new WsServer(
+			new jMQTTdLogic($plugin)
+		)
+	),
+	$socketport
 );
 
 function shutdown() {
-    global $plugin, $pidfile, $server;
-    log::add($plugin, 'debug', 'Shutdown');
-    log::add($plugin, 'debug', 'Removing PID file ' . $pidfile);
-    $server->loop->stop();
-    unlink($pidfile);
+	global $plugin, $pidfile, $server;
+	log::add($plugin, 'debug', 'Shutdown');
+	log::add($plugin, 'debug', 'Removing PID file ' . $pidfile);
+	$server->loop->stop();
+	unlink($pidfile);
 }
 
 pcntl_signal(SIGTERM, 'shutdown');
@@ -161,12 +158,12 @@ pcntl_signal(SIGINT, 'shutdown');
 
 // if PHP 7.1.0 or above
 if (PHP_MAJOR_VERSION >= 8 || (PHP_MAJOR_VERSION == 7 && PHP_MINOR_VERSION >= 1)) {
-    //Enable the new async signal handling
-    pcntl_async_signals(TRUE);
+	//Enable the new async signal handling
+	pcntl_async_signals(TRUE);
 }
 else { // older PHP version
-    //Use the older manual dispatch in $server->loop
-    $server->loop->addPeriodicTimer(0.25,function(){ pcntl_signal_dispatch(); });
+	//Use the older manual dispatch in $server->loop
+	$server->loop->addPeriodicTimer(0.25,function(){ pcntl_signal_dispatch(); });
 }
 
 //Garbage Collection periodic call to avoid memory consumption increasing

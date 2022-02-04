@@ -1,374 +1,374 @@
 {
-    "Zigbee2mqtt Lidl HG06338": {
-        "name": "Zigbee2mqtt Lidl HG06338",
-        "eqType_name": "jMQTT",
-        "configuration": {
-            "type": "eqpt",
-            "createtime": "2021-10-28 14:42:45",
-            "auto_add_cmd": "1",
-            "Qos": "1",
-            "battery_type": "Secteur",
-            "commentaire": "HG06338",
-            "icone": "power-plug",
-            "updatetime": "2021-10-28 14:44:01"
-        },
-        "category": {
-            "heating": "0",
-            "security": "0",
-            "energy": "1",
-            "light": "0",
-            "opening": "0",
-            "automatism": "0",
-            "multimedia": "0",
-            "default": "0"
-        },
-        "status": {
-            "lastCommunication": "2021-10-19 17:45:04"
-        },
-        "logicalId": "%s\/#",
-        "commands": [
-            {
-                "eqType": "jMQTT",
-                "name": "get",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/get"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "linkquality",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s{linkquality}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Lidl HG06338",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "state_l1",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s{state_l1}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "state_l2",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s{state_l2}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "state_l3",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s{state_l3}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "On I1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l1\":\"ON\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off I1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l1\":\"OFF\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Toggle I1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l1\":\"TOGGLE\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Get I1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/get",
-                    "request": "{\"state_l1\": \"\"}",
-                    "retain": "0",
-                    "Qos": "1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "On I2",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l2\":\"ON\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off I2",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l2\":\"OFF\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Toggle I2",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l2\":\"TOGGLE\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Get I2",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/get",
-                    "request": "{\"state_l2\": \"\"}",
-                    "retain": "0",
-                    "Qos": "1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "On I3",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l3\":\"ON\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off I3",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l3\":\"OFF\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Toggle I3",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/set",
-                    "request": "{\"state_l3\":\"TOGGLE\"}",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Get I3",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/get",
-                    "request": "{\"state_l3\": \"\"}",
-                    "retain": "0",
-                    "Qos": "1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            }
-        ]
-    }
+	"Zigbee2mqtt Lidl HG06338": {
+		"name": "Zigbee2mqtt Lidl HG06338",
+		"eqType_name": "jMQTT",
+		"configuration": {
+			"type": "eqpt",
+			"createtime": "2021-10-28 14:42:45",
+			"auto_add_cmd": "1",
+			"Qos": "1",
+			"battery_type": "Secteur",
+			"commentaire": "HG06338",
+			"icone": "power-plug",
+			"updatetime": "2021-10-28 14:44:01"
+		},
+		"category": {
+			"heating": "0",
+			"security": "0",
+			"energy": "1",
+			"light": "0",
+			"opening": "0",
+			"automatism": "0",
+			"multimedia": "0",
+			"default": "0"
+		},
+		"status": {
+			"lastCommunication": "2021-10-19 17:45:04"
+		},
+		"logicalId": "%s\/#",
+		"commands": [
+			{
+				"eqType": "jMQTT",
+				"name": "get",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/get"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "linkquality",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s{linkquality}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Lidl HG06338",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "state_l1",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s{state_l1}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "state_l2",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s{state_l2}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "state_l3",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s{state_l3}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "On I1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l1\":\"ON\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Off I1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l1\":\"OFF\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Toggle I1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l1\":\"TOGGLE\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Get I1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/get",
+					"request": "{\"state_l1\": \"\"}",
+					"retain": "0",
+					"Qos": "1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "On I2",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l2\":\"ON\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Off I2",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l2\":\"OFF\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Toggle I2",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l2\":\"TOGGLE\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Get I2",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/get",
+					"request": "{\"state_l2\": \"\"}",
+					"retain": "0",
+					"Qos": "1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "On I3",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l3\":\"ON\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Off I3",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l3\":\"OFF\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Toggle I3",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/set",
+					"request": "{\"state_l3\":\"TOGGLE\"}",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Get I3",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/get",
+					"request": "{\"state_l3\": \"\"}",
+					"retain": "0",
+					"Qos": "1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			}
+		]
+	}
 }

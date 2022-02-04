@@ -1,1172 +1,1172 @@
 {
-    "Tasmota Sonoff 4CH": {
-        "name": "Tasmota Sonoff 4CH",
-        "eqType_name": "jMQTT",
-        "configuration": {
-            "type": "eqpt",
-            "createtime": "2021-10-21 09:18:16",
-            "auto_add_cmd": "0",
-            "Qos": "1",
-            "battery_type": "Secteur",
-            "commentaire": "Tasmota Sonoff 4CH",
-            "icone": "lightbulb",
-            "updatetime": "2021-11-19 14:57:50"
-        },
-        "category": {
-            "heating": "0",
-            "security": "0",
-            "energy": "0",
-            "light": "1",
-            "opening": "0",
-            "automatism": "0",
-            "multimedia": "0",
-            "default": "0"
-        },
-        "status": {
-            "lastCommunication": "2021-10-19 17:45:04"
-        },
-        "logicalId": "%s\/#",
-        "commands": [
-            {
-                "eqType": "jMQTT",
-                "name": "cmnd:POWER",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "cmnd:POWER1",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "cmnd:POWER2",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "cmnd:POWER3",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER3"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "cmnd:POWER4",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER4"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "FallbackTopic",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO1{FallbackTopic}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "GroupTopic",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO1{GroupTopic}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Heap",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Heap}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Hostname",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO2{Hostname}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "INFO1",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "INFO2",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "INFO3",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO3"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "IPAddress",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO2{IPAddress}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "LoadAvg",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{LoadAvg}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "LWT",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/LWT"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Module",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO1{Module}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "MqttCount",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{MqttCount}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER1",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/POWER1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER1 RESULT",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/RESULT{POWER1}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER1 STATE",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{POWER1}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER2",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/POWER2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER2 RESULT",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/RESULT{POWER2}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER2 STATE",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{POWER2}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER3",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/POWER3"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER3 RESULT",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/RESULT{POWER3}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER3 STATE",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{POWER3}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER4",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/POWER4"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER4 RESULT",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/RESULT{POWER4}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "POWER4 STATE",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{POWER4}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "RestartReason",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO3{RestartReason}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "RESULT",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/RESULT"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Sleep",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Sleep}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "SleepMode",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{SleepMode}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "STATE",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Time",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Time}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Uptime",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Uptime}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "UptimeSec",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{UptimeSec}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Vcc",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Vcc}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Version",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO1{Version}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "WebServerMode",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/INFO2{WebServerMode}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi AP",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{AP}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi BSSId",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{BSSId}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi Channel",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{Channel}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi Downtime",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{Downtime}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi LinkCount",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{LinkCount}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi RSSI",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{RSSI}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi Signal",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{Signal}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Wifi SSId",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/STATE{Wifi}{SSId}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "On1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
-                    "request": "ON",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
-                    "request": "OFF",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Toggle1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
-                    "request": "TOGGLE",
-                    "retain": "0",
-                    "Qos": "1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "On2",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER2",
-                    "request": "ON",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off2",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER2",
-                    "request": "OFF",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Toggle2",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER2",
-                    "request": "TOGGLE",
-                    "retain": "0",
-                    "Qos": "1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "On3",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER3",
-                    "request": "ON",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off3",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER3",
-                    "request": "OFF",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Toggle3",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER3",
-                    "request": "TOGGLE",
-                    "retain": "0",
-                    "Qos": "1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "On4",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER4",
-                    "request": "ON",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off4",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER4",
-                    "request": "OFF",
-                    "retain": "0",
-                    "Qos": "2"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Toggle4",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/cmnd\/POWER4",
-                    "request": "TOGGLE",
-                    "retain": "0",
-                    "Qos": "1"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            }
-        ]
-    }
+	"Tasmota Sonoff 4CH": {
+		"name": "Tasmota Sonoff 4CH",
+		"eqType_name": "jMQTT",
+		"configuration": {
+			"type": "eqpt",
+			"createtime": "2021-10-21 09:18:16",
+			"auto_add_cmd": "0",
+			"Qos": "1",
+			"battery_type": "Secteur",
+			"commentaire": "Tasmota Sonoff 4CH",
+			"icone": "lightbulb",
+			"updatetime": "2021-11-19 14:57:50"
+		},
+		"category": {
+			"heating": "0",
+			"security": "0",
+			"energy": "0",
+			"light": "1",
+			"opening": "0",
+			"automatism": "0",
+			"multimedia": "0",
+			"default": "0"
+		},
+		"status": {
+			"lastCommunication": "2021-10-19 17:45:04"
+		},
+		"logicalId": "%s\/#",
+		"commands": [
+			{
+				"eqType": "jMQTT",
+				"name": "cmnd:POWER",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "cmnd:POWER1",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "cmnd:POWER2",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "cmnd:POWER3",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER3"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "cmnd:POWER4",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER4"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "FallbackTopic",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO1{FallbackTopic}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "GroupTopic",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO1{GroupTopic}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Heap",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Heap}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Hostname",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO2{Hostname}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "INFO1",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "INFO2",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "INFO3",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO3"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "IPAddress",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO2{IPAddress}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "LoadAvg",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{LoadAvg}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "LWT",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/LWT"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Module",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO1{Module}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "MqttCount",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{MqttCount}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER1",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/POWER1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER1 RESULT",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/RESULT{POWER1}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER1 STATE",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{POWER1}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER2",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/POWER2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER2 RESULT",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/RESULT{POWER2}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER2 STATE",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{POWER2}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER3",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/POWER3"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER3 RESULT",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/RESULT{POWER3}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER3 STATE",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{POWER3}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER4",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/POWER4"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER4 RESULT",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/RESULT{POWER4}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "POWER4 STATE",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{POWER4}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "RestartReason",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO3{RestartReason}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "RESULT",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/RESULT"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Sleep",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Sleep}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "SleepMode",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{SleepMode}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "STATE",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Time",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Time}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Uptime",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Uptime}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "UptimeSec",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{UptimeSec}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Vcc",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Vcc}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Version",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO1{Version}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "WebServerMode",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/INFO2{WebServerMode}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi AP",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{AP}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi BSSId",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{BSSId}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi Channel",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{Channel}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi Downtime",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{Downtime}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi LinkCount",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{LinkCount}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi RSSI",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{RSSI}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi Signal",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{Signal}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Wifi SSId",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/STATE{Wifi}{SSId}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "On1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER1",
+					"request": "ON",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Off1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER1",
+					"request": "OFF",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Toggle1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER1",
+					"request": "TOGGLE",
+					"retain": "0",
+					"Qos": "1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "On2",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER2",
+					"request": "ON",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Off2",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER2",
+					"request": "OFF",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Toggle2",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER2",
+					"request": "TOGGLE",
+					"retain": "0",
+					"Qos": "1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "On3",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER3",
+					"request": "ON",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Off3",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER3",
+					"request": "OFF",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Toggle3",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER3",
+					"request": "TOGGLE",
+					"retain": "0",
+					"Qos": "1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "On4",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER4",
+					"request": "ON",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Off4",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER4",
+					"request": "OFF",
+					"retain": "0",
+					"Qos": "2"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Toggle4",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/cmnd\/POWER4",
+					"request": "TOGGLE",
+					"retain": "0",
+					"Qos": "1"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"isVisible": "1",
+				"alert": []
+			}
+		]
+	}
 }

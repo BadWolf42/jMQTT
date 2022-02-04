@@ -1,21 +1,21 @@
 <?php
 
 /*
-Copyright (c) 2009-2020 Roger Light <roger@atchoo.org>
-All rights reserved. This program and the accompanying materials
-are made available under the terms of the Eclipse Public License 2.0
-and Eclipse Distribution License v1.0 which accompany this distribution.
-The Eclipse Public License is available at
-   https://www.eclipse.org/legal/epl-2.0/
-and the Eclipse Distribution License is available at
-  http://www.eclipse.org/org/documents/edl-v10.php.
-SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
-Contributors:
-   Roger Light - initial implementation and documentation.
-   Domochip - transcoding to PHP
-*/
+ * Copyright (c) 2009-2020 Roger Light <roger@atchoo.org>
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v1.0 which accompany this distribution.
+ * The Eclipse Public License is available at
+ *    https://www.eclipse.org/legal/epl-2.0/
+ * and the Eclipse Distribution License is available at
+ *    http://www.eclipse.org/org/documents/edl-v10.php.
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ * Contributors:
+ *    Roger Light - initial implementation and documentation.
+ *    Domochip - transcoding to PHP
+ */
 
-// This file can be found here : 
+// This file can be found here :
 // https://gist.github.com/Domochip/409bbb54c9505e0c98b16cf0b51179d0
 
 
@@ -25,27 +25,27 @@ Contributors:
 
 function mosquitto_topic_matches_sub($sub, $topic){
 
-    $result = false;
+	$result = false;
 
-    if (gettype($sub) != 'string' || gettype($topic) != 'string') {
-        return false; // MOSQ_ERR_INVAL
-    }
-    if (strlen($sub) == 0 || strlen($topic) == 0){
-        return false; // MOSQ_ERR_INVAL
-    }
+	if (gettype($sub) != 'string' || gettype($topic) != 'string') {
+		return false; // MOSQ_ERR_INVAL
+	}
+	if (strlen($sub) == 0 || strlen($topic) == 0){
+		return false; // MOSQ_ERR_INVAL
+	}
 
-    if (($sub[0] == '$' && $topic[0] != '$') || ($topic[0] == '$' && $sub[0] != '$')){
-        return false; // MOSQ_ERR_SUCCESS
-    }
+	if (($sub[0] == '$' && $topic[0] != '$') || ($topic[0] == '$' && $sub[0] != '$')){
+		return false; // MOSQ_ERR_SUCCESS
+	}
 
-    $spos = 0;
+	$spos = 0;
 	$previoussubchar = '';
 
-    while (strlen($sub) > 0){
-        if (strlen($topic) > 0 && ($topic[0] == '+' || $topic[0] == '#')){  // PHP transcoding : strlen added
-            return false; // MOSQ_ERR_INVAL
-        }
-        if(strlen($topic) == 0 || $sub[0] != $topic[0]){ /* Check for wildcard matches */   // PHP transcoding : order of condition changed
+	while (strlen($sub) > 0){
+		if (strlen($topic) > 0 && ($topic[0] == '+' || $topic[0] == '#')){  // PHP transcoding : strlen added
+			return false; // MOSQ_ERR_INVAL
+		}
+		if(strlen($topic) == 0 || $sub[0] != $topic[0]){ /* Check for wildcard matches */   // PHP transcoding : order of condition changed
 			if($sub[0] == '+'){
 				/* Check for bad "+foo" or "a/+foo" subscription */
 				if($spos > 0 && $previoussubchar != '/'){
@@ -56,7 +56,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
 					return false; // MOSQ_ERR_INVAL
 				}
 				$spos++;
-                $previoussubchar = $sub[0];
+				$previoussubchar = $sub[0];
 				$sub=substr($sub, 1);
 				while(strlen($topic) > 0 && $topic[0] != '/'){
 					if($topic[0] == '+' || $topic[0] == '#'){
@@ -104,8 +104,8 @@ function mosquitto_topic_matches_sub($sub, $topic){
 						return false; // MOSQ_ERR_INVAL
 					}
 					$spos++;
-                    $previoussubchar = $sub[0];
-                    $sub=substr($sub, 1);
+					$previoussubchar = $sub[0];
+					$sub=substr($sub, 1);
 				}
 
 				/* Valid input, but no match */
@@ -123,8 +123,8 @@ function mosquitto_topic_matches_sub($sub, $topic){
 				}
 			}
 			$spos++;
-            $previoussubchar = $sub[0];
-            $sub=substr($sub, 1);
+			$previoussubchar = $sub[0];
+			$sub=substr($sub, 1);
 			$topic=substr($topic, 1);
 			if(strlen($sub) == 0 && strlen($topic) == 0){
 				$result = true;
@@ -134,23 +134,23 @@ function mosquitto_topic_matches_sub($sub, $topic){
 					return false; // MOSQ_ERR_INVAL
 				}
 				$spos++;
-                $previoussubchar = $sub[0];
-                $sub=substr($sub, 1);
+				$previoussubchar = $sub[0];
+				$sub=substr($sub, 1);
 				$result = true;
 				return $result; // MOSQ_ERR_SUCCESS
 			}
 		}
-    }
-    if((strlen($topic) > 0 || strlen($sub) > 0)){
+	}
+	if((strlen($topic) > 0 || strlen($sub) > 0)){
 		$result = false;
 	}
-    while(strlen($topic) > 0){
+	while(strlen($topic) > 0){
 		if($topic[0] == '+' || $topic[0] == '#'){
 			return false; // MOSQ_ERR_INVAL
 		}
 		$topic=substr($topic, 1);
 	}
-    return $result;
+	return $result;
 }
 
 

@@ -1,1452 +1,1452 @@
 {
-    "Dingtian Relay8": {
-        "name": "Dingtian Relay8",
-        "eqType_name": "jMQTT",
-        "configuration": {
-            "type": "eqpt",
-            "createtime": "2021-09-27 22:03:15",
-            "auto_add_cmd": "1",
-            "Qos": "1",
-            "battery_type": "Secteur",
-            "icone": "relay",
-            "updatetime": "2021-11-13 11:17:02"
-        },
-        "category": {
-            "heating": "0",
-            "security": "0",
-            "energy": "0",
-            "light": "0",
-            "opening": "0",
-            "automatism": "0",
-            "multimedia": "0",
-            "default": "0"
-        },
-        "display": {
-            "width": "272px",
-            "height": "552px"
-        },
-        "status": {
-            "lastCommunication": "2021-04-10 16:47:36"
-        },
-        "logicalId": "%s\/#",
-        "commands": [
-            {
-                "eqType": "jMQTT",
-                "name": "En ligne",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/lwt_availability",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::line",
-                    "mobile": "core::line"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R1 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r1",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R1 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r1",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R1",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r1",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I1",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i1",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R2 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r2",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R2 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r2",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R2",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r2",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I2",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i2",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R3 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r3",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R3 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r3",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R3",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r3",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I3",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i3",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R4 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r4",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R4 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r4",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R4",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r4",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I4",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i4",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R5 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r5",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R5 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r5",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R5",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r5",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I5",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i5",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R6 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r6",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R6 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r6",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R6",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r6",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I6",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i6",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R7 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r7",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R7 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r7",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R7",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r7",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I7",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i7",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R8 ON",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r8",
-                    "request": "ON",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R8 OFF",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r8",
-                    "request": "OFF",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "R8",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/r8",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "I8",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/i8",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input2",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input2"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input1",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input1"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "ip",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/ip"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "mac",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/mac"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "sn",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/sn"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input3",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input3"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input4",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input4"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input5",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input5"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input6",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input6"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input7",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input7"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input8",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input8"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "input_cnt",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/input_cnt"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay1",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay1"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay2",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay2"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay3",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay3"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay4",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay4"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay5",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay5"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay6",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay6"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay7",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay7"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay8",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay8"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay_cnt",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/out\/relay_cnt"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r1",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r1"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r2",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r2"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r3",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r3"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r4",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r4"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r5",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r5"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r6",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r6"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r7",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r7"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "in:r8",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/in\/r8"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            }
-        ]
-    }
+	"Dingtian Relay8": {
+		"name": "Dingtian Relay8",
+		"eqType_name": "jMQTT",
+		"configuration": {
+			"type": "eqpt",
+			"createtime": "2021-09-27 22:03:15",
+			"auto_add_cmd": "1",
+			"Qos": "1",
+			"battery_type": "Secteur",
+			"icone": "relay",
+			"updatetime": "2021-11-13 11:17:02"
+		},
+		"category": {
+			"heating": "0",
+			"security": "0",
+			"energy": "0",
+			"light": "0",
+			"opening": "0",
+			"automatism": "0",
+			"multimedia": "0",
+			"default": "0"
+		},
+		"display": {
+			"width": "272px",
+			"height": "552px"
+		},
+		"status": {
+			"lastCommunication": "2021-04-10 16:47:36"
+		},
+		"logicalId": "%s\/#",
+		"commands": [
+			{
+				"eqType": "jMQTT",
+				"name": "En ligne",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/lwt_availability",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::line",
+					"mobile": "core::line"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R1 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r1",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R1 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r1",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R1",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r1",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I1",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i1",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R2 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r2",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R2 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r2",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R2",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r2",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I2",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i2",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R3 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r3",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R3 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r3",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R3",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r3",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I3",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i3",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R4 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r4",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R4 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r4",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R4",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r4",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I4",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i4",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R5 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r5",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R5 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r5",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R5",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r5",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I5",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i5",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R6 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r6",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R6 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r6",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R6",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r6",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I6",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i6",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R7 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r7",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R7 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r7",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R7",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r7",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I7",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i7",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R8 ON",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r8",
+					"request": "ON",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R8 OFF",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r8",
+					"request": "OFF",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "R8",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/r8",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "I8",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/i8",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"repeatEventManagement": "never",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input2",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input2"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input1",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input1"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "ip",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/ip"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "mac",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/mac"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "sn",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/sn"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input3",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input3"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input4",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input4"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input5",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input5"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input6",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input6"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input7",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input7"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input8",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input8"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "input_cnt",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/input_cnt"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay1",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay1"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay2",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay2"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay3",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay3"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay4",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay4"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay5",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay5"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay6",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay6"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay7",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay7"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay8",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay8"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "relay_cnt",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/out\/relay_cnt"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r1",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r1"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r2",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r2"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r3",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r3"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r4",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r4"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r5",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r5"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r6",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r6"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r7",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r7"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "in:r8",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/in\/r8"
+				},
+				"template": {
+					"dashboard": "core::default",
+					"mobile": "core::default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			}
+		]
+	}
 }

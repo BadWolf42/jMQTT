@@ -1,953 +1,953 @@
 {
-    "Intex Spa 28442 et 28440": {
-        "name": "IntexSpa",
-        "eqType_name": "jMQTT",
-        "configuration": {
-            "createtime": "2021-05-16 20:31:14",
-            "type": "eqpt",
-            "auto_add_cmd": "1",
-            "Qos": "1",
-            "icone": "remote",
-            "updatetime": "2021-05-16 23:31:46"
-        },
-        "category": {
-            "heating": "0",
-            "security": "0",
-            "energy": "0",
-            "light": "0",
-            "opening": "0",
-            "automatism": "0",
-            "multimedia": "0",
-            "default": "1"
-        },
-        "display": {
-            "width": "312px",
-            "height": "472px",
-            "layout::dashboard": "table",
-            "layout::dashboard::table::nbLine": "9",
-            "layout::dashboard::table::nbColumn": "1",
-            "layout::dashboard::table::parameters": {
-                "center": "1",
-                "styletd": "",
-                "styletable": "",
-                "text::td::1::1": "",
-                "style::td::1::1": "",
-                "text::td::2::1": "",
-                "style::td::2::1": "",
-                "text::td::3::1": "",
-                "style::td::3::1": "",
-                "text::td::4::1": "",
-                "style::td::4::1": "",
-                "text::td::5::1": "",
-                "style::td::5::1": "",
-                "text::td::6::1": "",
-                "style::td::6::1": "",
-                "text::td::7::1": "",
-                "style::td::7::1": "",
-                "text::td::8::1": "",
-                "style::td::8::1": "",
-                "text::td::9::1": "",
-                "style::td::9::1": "",
-                "text::td::10::1": "",
-                "style::td::10::1": "",
-                "text::td::11::1": "",
-                "style::td::11::1": "",
-                "text::td::12::1": "",
-                "style::td::12::1": ""
-            },
-            "parameters": [],
-            "layout::dashboard::table::cmd::12::line": "2",
-            "layout::dashboard::table::cmd::12::column": "1",
-            "layout::dashboard::table::cmd::4::line": 1,
-            "layout::dashboard::table::cmd::4::column": 1,
-            "layout::dashboard::table::cmd::11::line": 1,
-            "layout::dashboard::table::cmd::11::column": 1,
-            "layout::dashboard::table::cmd::14::line": 1,
-            "layout::dashboard::table::cmd::14::column": 1,
-            "layout::dashboard::table::cmd::13::line": 1,
-            "layout::dashboard::table::cmd::13::column": 1,
-            "layout::dashboard::table::cmd::9::line": 1,
-            "layout::dashboard::table::cmd::9::column": 1,
-            "layout::dashboard::table::cmd::7::line": 1,
-            "layout::dashboard::table::cmd::7::column": 1,
-            "layout::dashboard::table::cmd::8::line": 1,
-            "layout::dashboard::table::cmd::8::column": 1,
-            "layout::dashboard::table::cmd::5::line": 1,
-            "layout::dashboard::table::cmd::5::column": 1,
-            "layout::dashboard::table::cmd::6::line": "7",
-            "layout::dashboard::table::cmd::6::column": "1",
-            "layout::dashboard::table::cmd::3::line": 1,
-            "layout::dashboard::table::cmd::3::column": 1,
-            "layout::dashboard::table::cmd::10::line": "3",
-            "layout::dashboard::table::cmd::10::column": "1",
-            "layout::dashboard::table::cmd::33::line": 1,
-            "layout::dashboard::table::cmd::33::column": 1,
-            "layout::dashboard::table::cmd::32::line": 1,
-            "layout::dashboard::table::cmd::32::column": 1,
-            "layout::dashboard::table::cmd::16::line": "5",
-            "layout::dashboard::table::cmd::16::column": "1",
-            "layout::dashboard::table::cmd::17::line": "5",
-            "layout::dashboard::table::cmd::17::column": "1",
-            "layout::dashboard::table::cmd::19::line": "9",
-            "layout::dashboard::table::cmd::19::column": "1",
-            "layout::dashboard::table::cmd::20::line": "9",
-            "layout::dashboard::table::cmd::20::column": "1",
-            "layout::dashboard::table::cmd::21::line": "6",
-            "layout::dashboard::table::cmd::21::column": "1",
-            "layout::dashboard::table::cmd::22::line": "6",
-            "layout::dashboard::table::cmd::22::column": "1",
-            "layout::dashboard::table::cmd::23::line": "7",
-            "layout::dashboard::table::cmd::23::column": "1",
-            "layout::dashboard::table::cmd::24::line": "7",
-            "layout::dashboard::table::cmd::24::column": "1",
-            "layout::dashboard::table::cmd::30::line": "3",
-            "layout::dashboard::table::cmd::30::column": "1",
-            "layout::dashboard::table::cmd::31::line": "3",
-            "layout::dashboard::table::cmd::31::column": "1",
-            "layout::dashboard::table::cmd::35::line": "4",
-            "layout::dashboard::table::cmd::35::column": "1",
-            "layout::dashboard::table::cmd::38::line": "8",
-            "layout::dashboard::table::cmd::38::column": "1",
-            "layout::dashboard::table::cmd::50::line": 1,
-            "layout::dashboard::table::cmd::50::column": 1,
-            "layout::dashboard::table::cmd::49::line": 1,
-            "layout::dashboard::table::cmd::49::column": 1,
-            "layout::dashboard::table::cmd::48::line": 1,
-            "layout::dashboard::table::cmd::48::column": 1,
-            "layout::dashboard::table::cmd::52::line": 1,
-            "layout::dashboard::table::cmd::52::column": 1
-        },
-        "status": {
-            "lastCommunication": "2021-05-16 20:31:14"
-        },
-        "logicalId": "%s\/#",
-        "commands": [
-            {
-                "eqType": "jMQTT",
-                "name": "Bubble on",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Bubble on"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd decrease",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd decrease"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd water filter on off",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd water filter on off"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Communication with pump",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Communication with pump"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd heater on off",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd heater on off"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Error Number",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Error Number",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "auto",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::tile",
-                    "mobile": "core::tile"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Actual Temperature",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "°C",
-                "configuration": {
-                    "topic": "%s\/Actual Temperature",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "auto",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::tile",
-                    "mobile": "core::tile"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd increase",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd increase"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Reset ESP",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd Reset ESP"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Temperature Setpoint",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "°C",
-                "configuration": {
-                    "topic": "%s\/Temperature Setpoint",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "auto",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::tile",
-                    "mobile": "core::tile"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Temperature Setpoint feedback",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd Temperature Setpoint"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Water filter time feedback",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd water filter time"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "filter setup time",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/filter setup time"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "heater on",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/heater on"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Power on",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Power on"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "filter on",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "1",
-                "configuration": {
-                    "topic": "%s\/filter on"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Farenheit Celsius",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Farenheit Celsius"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Temp -1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd decrease",
-                    "request": "1",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Temp +1",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd increase",
-                    "request": "1",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Temperature Setpoint",
-                "type": "action",
-                "subType": "slider",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd Temperature Setpoint",
-                    "request": "#slider#",
-                    "minValue": "10",
-                    "maxValue": "40",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "Cmd Temperature Setpoint feedback",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Power On",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd Power on off",
-                    "request": "1",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "Power on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd  Power Off",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd Power on off",
-                    "request": "0",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "Power on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Bubble On",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd bubble on off",
-                    "request": "1",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "Bubble on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Bubble Off",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd bubble on off",
-                    "request": "0",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "Bubble on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "ESP Reset",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd Reset ESP",
-                    "request": "reset",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "heater state",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/heater state",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "auto",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "custom::ChauffageSpa",
-                    "mobile": "custom::ChauffageSpa"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Heater On",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd heater on off",
-                    "request": "1",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "heater on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Heater Off",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd heater on off",
-                    "request": "1",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "heater on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Water filter time",
-                "type": "action",
-                "subType": "select",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd water filter time",
-                    "request": "#select#",
-                    "listValue": "2|2;4|4;6|6",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "Cmd Water filter time feedback",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Water Filter On",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd water filter on off",
-                    "request": "1",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "filter on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Cmd Water Filter Off",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd water filter on off",
-                    "request": "0",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "core::binarySwitch",
-                    "mobile": "core::binarySwitch"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "filter on",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Switch °C to °F",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/Cmd Farenheit Celsius",
-                    "retain": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showIconAndNamedashboard": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            }
-        ]
-    }
+	"Intex Spa 28442 et 28440": {
+		"name": "IntexSpa",
+		"eqType_name": "jMQTT",
+		"configuration": {
+			"createtime": "2021-05-16 20:31:14",
+			"type": "eqpt",
+			"auto_add_cmd": "1",
+			"Qos": "1",
+			"icone": "remote",
+			"updatetime": "2021-05-16 23:31:46"
+		},
+		"category": {
+			"heating": "0",
+			"security": "0",
+			"energy": "0",
+			"light": "0",
+			"opening": "0",
+			"automatism": "0",
+			"multimedia": "0",
+			"default": "1"
+		},
+		"display": {
+			"width": "312px",
+			"height": "472px",
+			"layout::dashboard": "table",
+			"layout::dashboard::table::nbLine": "9",
+			"layout::dashboard::table::nbColumn": "1",
+			"layout::dashboard::table::parameters": {
+				"center": "1",
+				"styletd": "",
+				"styletable": "",
+				"text::td::1::1": "",
+				"style::td::1::1": "",
+				"text::td::2::1": "",
+				"style::td::2::1": "",
+				"text::td::3::1": "",
+				"style::td::3::1": "",
+				"text::td::4::1": "",
+				"style::td::4::1": "",
+				"text::td::5::1": "",
+				"style::td::5::1": "",
+				"text::td::6::1": "",
+				"style::td::6::1": "",
+				"text::td::7::1": "",
+				"style::td::7::1": "",
+				"text::td::8::1": "",
+				"style::td::8::1": "",
+				"text::td::9::1": "",
+				"style::td::9::1": "",
+				"text::td::10::1": "",
+				"style::td::10::1": "",
+				"text::td::11::1": "",
+				"style::td::11::1": "",
+				"text::td::12::1": "",
+				"style::td::12::1": ""
+			},
+			"parameters": [],
+			"layout::dashboard::table::cmd::12::line": "2",
+			"layout::dashboard::table::cmd::12::column": "1",
+			"layout::dashboard::table::cmd::4::line": 1,
+			"layout::dashboard::table::cmd::4::column": 1,
+			"layout::dashboard::table::cmd::11::line": 1,
+			"layout::dashboard::table::cmd::11::column": 1,
+			"layout::dashboard::table::cmd::14::line": 1,
+			"layout::dashboard::table::cmd::14::column": 1,
+			"layout::dashboard::table::cmd::13::line": 1,
+			"layout::dashboard::table::cmd::13::column": 1,
+			"layout::dashboard::table::cmd::9::line": 1,
+			"layout::dashboard::table::cmd::9::column": 1,
+			"layout::dashboard::table::cmd::7::line": 1,
+			"layout::dashboard::table::cmd::7::column": 1,
+			"layout::dashboard::table::cmd::8::line": 1,
+			"layout::dashboard::table::cmd::8::column": 1,
+			"layout::dashboard::table::cmd::5::line": 1,
+			"layout::dashboard::table::cmd::5::column": 1,
+			"layout::dashboard::table::cmd::6::line": "7",
+			"layout::dashboard::table::cmd::6::column": "1",
+			"layout::dashboard::table::cmd::3::line": 1,
+			"layout::dashboard::table::cmd::3::column": 1,
+			"layout::dashboard::table::cmd::10::line": "3",
+			"layout::dashboard::table::cmd::10::column": "1",
+			"layout::dashboard::table::cmd::33::line": 1,
+			"layout::dashboard::table::cmd::33::column": 1,
+			"layout::dashboard::table::cmd::32::line": 1,
+			"layout::dashboard::table::cmd::32::column": 1,
+			"layout::dashboard::table::cmd::16::line": "5",
+			"layout::dashboard::table::cmd::16::column": "1",
+			"layout::dashboard::table::cmd::17::line": "5",
+			"layout::dashboard::table::cmd::17::column": "1",
+			"layout::dashboard::table::cmd::19::line": "9",
+			"layout::dashboard::table::cmd::19::column": "1",
+			"layout::dashboard::table::cmd::20::line": "9",
+			"layout::dashboard::table::cmd::20::column": "1",
+			"layout::dashboard::table::cmd::21::line": "6",
+			"layout::dashboard::table::cmd::21::column": "1",
+			"layout::dashboard::table::cmd::22::line": "6",
+			"layout::dashboard::table::cmd::22::column": "1",
+			"layout::dashboard::table::cmd::23::line": "7",
+			"layout::dashboard::table::cmd::23::column": "1",
+			"layout::dashboard::table::cmd::24::line": "7",
+			"layout::dashboard::table::cmd::24::column": "1",
+			"layout::dashboard::table::cmd::30::line": "3",
+			"layout::dashboard::table::cmd::30::column": "1",
+			"layout::dashboard::table::cmd::31::line": "3",
+			"layout::dashboard::table::cmd::31::column": "1",
+			"layout::dashboard::table::cmd::35::line": "4",
+			"layout::dashboard::table::cmd::35::column": "1",
+			"layout::dashboard::table::cmd::38::line": "8",
+			"layout::dashboard::table::cmd::38::column": "1",
+			"layout::dashboard::table::cmd::50::line": 1,
+			"layout::dashboard::table::cmd::50::column": 1,
+			"layout::dashboard::table::cmd::49::line": 1,
+			"layout::dashboard::table::cmd::49::column": 1,
+			"layout::dashboard::table::cmd::48::line": 1,
+			"layout::dashboard::table::cmd::48::column": 1,
+			"layout::dashboard::table::cmd::52::line": 1,
+			"layout::dashboard::table::cmd::52::column": 1
+		},
+		"status": {
+			"lastCommunication": "2021-05-16 20:31:14"
+		},
+		"logicalId": "%s\/#",
+		"commands": [
+			{
+				"eqType": "jMQTT",
+				"name": "Bubble on",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Bubble on"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd decrease",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd decrease"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd water filter on off",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd water filter on off"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Communication with pump",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Communication with pump"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd heater on off",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd heater on off"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Error Number",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Error Number",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"historizeMode": "avg",
+					"repeatEventManagement": "auto",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::tile",
+					"mobile": "core::tile"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Actual Temperature",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"unite": "°C",
+				"configuration": {
+					"topic": "%s\/Actual Temperature",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"historizeMode": "avg",
+					"repeatEventManagement": "auto",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::tile",
+					"mobile": "core::tile"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd increase",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd increase"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Reset ESP",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd Reset ESP"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Temperature Setpoint",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"unite": "°C",
+				"configuration": {
+					"topic": "%s\/Temperature Setpoint",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"historizeMode": "avg",
+					"repeatEventManagement": "auto",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::tile",
+					"mobile": "core::tile"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Temperature Setpoint feedback",
+				"type": "info",
+				"subType": "string",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd Temperature Setpoint"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Water filter time feedback",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd water filter time"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "filter setup time",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/filter setup time"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "heater on",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/heater on"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Power on",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Power on"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "filter on",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "1",
+				"configuration": {
+					"topic": "%s\/filter on"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Farenheit Celsius",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Farenheit Celsius"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Temp -1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd decrease",
+					"request": "1",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Temp +1",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd increase",
+					"request": "1",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Temperature Setpoint",
+				"type": "action",
+				"subType": "slider",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd Temperature Setpoint",
+					"request": "#slider#",
+					"minValue": "10",
+					"maxValue": "40",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "Cmd Temperature Setpoint feedback",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Power On",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd Power on off",
+					"request": "1",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "Power on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd  Power Off",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd Power on off",
+					"request": "0",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "Power on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Bubble On",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd bubble on off",
+					"request": "1",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "Bubble on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Bubble Off",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd bubble on off",
+					"request": "0",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "Bubble on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "ESP Reset",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd Reset ESP",
+					"request": "reset",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "heater state",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/heater state",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"historizeMode": "avg",
+					"repeatEventManagement": "auto",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "custom::ChauffageSpa",
+					"mobile": "custom::ChauffageSpa"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Heater On",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd heater on off",
+					"request": "1",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "heater on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Heater Off",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd heater on off",
+					"request": "1",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "heater on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Water filter time",
+				"type": "action",
+				"subType": "select",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd water filter time",
+					"request": "#select#",
+					"listValue": "2|2;4|4;6|6",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "Cmd Water filter time feedback",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Water Filter On",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd water filter on off",
+					"request": "1",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "filter on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Cmd Water Filter Off",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd water filter on off",
+					"request": "0",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "core::binarySwitch",
+					"mobile": "core::binarySwitch"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"value": "filter on",
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Switch °C to °F",
+				"type": "action",
+				"subType": "other",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s\/Cmd Farenheit Celsius",
+					"retain": "0"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"showNameOndashboard": "1",
+					"showIconAndNamedashboard": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			}
+		]
+	}
 }

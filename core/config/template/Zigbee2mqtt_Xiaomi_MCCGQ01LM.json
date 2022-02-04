@@ -1,144 +1,144 @@
 {
-    "Zigbee2mqtt Xiaomi MCCGQ01LM": {
-        "name": "toto",
-        "eqType_name": "jMQTT",
-        "configuration": {
-            "type": "eqpt",
-            "createtime": "2021-03-16 20:53:34",
-            "auto_add_cmd": "0",
-            "Qos": "1",
-            "battery_type": "CR1632",
-            "icone": "contact",
-            "updatetime": "2021-03-16 23:49:36"
-        },
-        "category": {
-            "heating": "0",
-            "security": "0",
-            "energy": "0",
-            "light": "0",
-            "opening": "0",
-            "automatism": "0",
-            "multimedia": "0",
-            "default": "0"
-        },
-        "display": {
-            "width": "192px",
-            "height": "72px"
-        },
-        "status": [],
-        "logicalId": "%s\/#",
-        "commands": [
-            {
-                "generic_type": "BATTERY",
-                "eqType": "jMQTT",
-                "name": "battery",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "%",
-                "configuration": {
-                    "topic": "%s{battery}",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "auto",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Fermé",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "1",
-                "configuration": {
-                    "topic": "%s{contact}",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historyPurge": "-1 month",
-                    "repeatEventManagement": "auto",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::door",
-                    "mobile": "core::door"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "0",
-                    "showNameOnmobile": "0",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "linkquality",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s{linkquality}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "voltage",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "mV",
-                "configuration": {
-                    "topic": "%s{voltage}"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            }
-        ]
-    }
+	"Zigbee2mqtt Xiaomi MCCGQ01LM": {
+		"name": "toto",
+		"eqType_name": "jMQTT",
+		"configuration": {
+			"type": "eqpt",
+			"createtime": "2021-03-16 20:53:34",
+			"auto_add_cmd": "0",
+			"Qos": "1",
+			"battery_type": "CR1632",
+			"icone": "contact",
+			"updatetime": "2021-03-16 23:49:36"
+		},
+		"category": {
+			"heating": "0",
+			"security": "0",
+			"energy": "0",
+			"light": "0",
+			"opening": "0",
+			"automatism": "0",
+			"multimedia": "0",
+			"default": "0"
+		},
+		"display": {
+			"width": "192px",
+			"height": "72px"
+		},
+		"status": [],
+		"logicalId": "%s\/#",
+		"commands": [
+			{
+				"generic_type": "BATTERY",
+				"eqType": "jMQTT",
+				"name": "battery",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"unite": "%",
+				"configuration": {
+					"topic": "%s{battery}",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"historizeMode": "avg",
+					"repeatEventManagement": "auto",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "1",
+					"showNameOnmobile": "1",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "Fermé",
+				"type": "info",
+				"subType": "binary",
+				"isHistorized": "1",
+				"configuration": {
+					"topic": "%s{contact}",
+					"timeline::enable": "0",
+					"influx::enable": "0",
+					"interact::auto::disable": "0",
+					"jeedomCheckCmdOperator": "==",
+					"historyPurge": "-1 month",
+					"repeatEventManagement": "auto",
+					"actionCheckCmd": [],
+					"jeedomPreExecCmd": [],
+					"jeedomPostExecCmd": []
+				},
+				"template": {
+					"dashboard": "core::door",
+					"mobile": "core::door"
+				},
+				"display": {
+					"invertBinary": "0",
+					"showNameOndashboard": "0",
+					"showNameOnmobile": "0",
+					"showIconAndNamedashboard": "0",
+					"showIconAndNamemobile": "0",
+					"forceReturnLineBefore": "0",
+					"forceReturnLineAfter": "0",
+					"parameters": []
+				},
+				"isVisible": "1",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "linkquality",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"configuration": {
+					"topic": "%s{linkquality}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			},
+			{
+				"eqType": "jMQTT",
+				"name": "voltage",
+				"type": "info",
+				"subType": "numeric",
+				"isHistorized": "0",
+				"unite": "mV",
+				"configuration": {
+					"topic": "%s{voltage}"
+				},
+				"template": {
+					"dashboard": "default",
+					"mobile": "default"
+				},
+				"display": {
+					"invertBinary": "0"
+				},
+				"isVisible": "0",
+				"alert": []
+			}
+		]
+	}
 }
