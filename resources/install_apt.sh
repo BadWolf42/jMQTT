@@ -11,7 +11,7 @@ pre
 
 INSTALL_MOSQUITTO=1
 if [ ! -z $2 ] && [ $2 -eq 1 -o $2 -eq 0 ]; then
-    INSTALL_MOSQUITTO=$2
+	INSTALL_MOSQUITTO=$2
 fi
 
 echo "== Should install Mosquitto:" ${INSTALL_MOSQUITTO}
@@ -20,17 +20,17 @@ step 10 "Synchronize the package index"
 try sudo apt-get update
 
 if [ ${INSTALL_MOSQUITTO} -eq 1 ]; then
-    step 20 "Install Mosquitto"
-    try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto
+	step 20 "Install Mosquitto"
+	try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto
 
-    if [ $(ls /etc/mosquitto/conf.d/*.conf 2>/dev/null | wc -w) -eq 0 ]; then
-        step 30 "Configure Mosquitto"
-        #echo "== No *.conf file found in conf.d folder"
-        #echo "== Create jMQTT Mosquitto configuration file"
-        echo -e "# jMQTT Mosquitto configuration file\nlistener 1883\nallow_anonymous true" > /etc/mosquitto/conf.d/jMQTT.conf
-        #echo "== restart Mosquitto service"
-        try service mosquitto restart
-    fi
+	if [ $(ls /etc/mosquitto/conf.d/*.conf 2>/dev/null | wc -w) -eq 0 ]; then
+		step 30 "Configure Mosquitto"
+		#echo "== No *.conf file found in conf.d folder"
+		#echo "== Create jMQTT Mosquitto configuration file"
+		echo -e "# jMQTT Mosquitto configuration file\nlistener 1883\nallow_anonymous true" > /etc/mosquitto/conf.d/jMQTT.conf
+		#echo "== restart Mosquitto service"
+		try service mosquitto restart
+	fi
 fi
 
 step 40 "Install Ratchet PHP library"
@@ -49,7 +49,7 @@ silent rm composer.phar
 
 step 45 "Temporary fix of Ratchet PHP library (https://github.com/ratchetphp/RFC6455/pull/65)"
 if [ $(getconf LONG_BIT) -eq 32 ]; then
-    try sed -i -E "s/unpack\('J'(.*)\)\[1\]/unpack('N2'\1)[2]/g" ./vendor/ratchet/rfc6455/src/Messaging/MessageBuffer.php
+	try sed -i -E "s/unpack\('J'(.*)\)\[1\]/unpack('N2'\1)[2]/g" ./vendor/ratchet/rfc6455/src/Messaging/MessageBuffer.php
 fi
 
 step 50 "Install python3 debian packages"
