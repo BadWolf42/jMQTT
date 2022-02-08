@@ -1,6 +1,7 @@
 # Registre des évolutions
 
 ## Beta
+ - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
  - Correction du nettoyage des info broker des equipements (les champs ayant '' pour valeur étaient supprimés avant envoi)
  - Nouvel affichage du selecteur d'icones sur les commandes
 

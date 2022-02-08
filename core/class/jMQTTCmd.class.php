@@ -435,16 +435,20 @@ class jMQTTCmd extends cmd {
 	 */
 	public function preRemove() {
 		$eqLogic = $this->getEqLogic();
-		$eqLogic->log('info', 'Removing command ' . $this->getLogName());
+		if ($eqLogic) {
+			$eqLogic->log('info', 'Removing command ' . $this->getLogName());
+			// Remove batteryStatus from eqLogic on delete
+			if ($this->isBattery()) {
+				$eqLogic->setStatus('battery', null);
+				$eqLogic->setStatus('batteryDatetime', null);
+			}
+		} else {
+			log::add('jMQTT', 'info', 'Removing orphan command #'.$this->getId().'#');
+		}
 		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
 		foreach ($listener as $l) {
 			log::add('jMQTT', 'debug', 'Listener Removed from #'.$l->getOption('cmd').'#');
 			$l->remove();
-		}
-		// Remove batteryStatus from eqLogic on delete
-		if ($this->isBattery()) {
-			$eqLogic->setStatus('battery', null);
-			$eqLogic->setStatus('batteryDatetime', null);
 		}
 	}
 
