@@ -56,6 +56,8 @@ class jMQTT extends eqLogic {
 	const CACHE_INCLUDE_MODE = 'include_mode';
 	const CACHE_IGNORE_TOPIC_MISMATCH = 'ignore_topic_mismatch';
 
+	const PATH_CERTIFICATES = 'data/jmqtt/certs/';
+
 	/**
 	 * To define a standard jMQTT equipment
 	 * jMQTT type is either self::TYP_EQPT or self::TYP_BRK.
@@ -495,11 +497,11 @@ class jMQTT extends eqLogic {
 				// Check certificate binding information if TLS is disabled
 				if (!boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
 					// If a CA is specified and this file doesn't exists, remove it
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
+					if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
 						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
+					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
 						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
+					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
 						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
 				}
 			}
@@ -1168,13 +1170,13 @@ class jMQTT extends eqLogic {
 		$params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
 		// Realpaths
 		if ($params['tlscafile'] != '')
-			$params['tlscafile']     = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $params['tlscafile']);
+			$params['tlscafile']     = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $params['tlscafile']);
 		if ($params['tlsclicertfile'] != '')
-			$params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../' . jMQTTBase::PATH_CERTIFICATES . $params['tlsclicertfile']);
+			$params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../' . jMQTT::PATH_CERTIFICATES . $params['tlsclicertfile']);
 		else
 			$params['tlsclikeyfile'] = '';
 		if ($params['tlsclikeyfile'] != '')
-			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES . $params['tlsclikeyfile']);
+			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $params['tlsclikeyfile']);
 
 		jMQTTBase::new_mqtt_client(__CLASS__, $this->getId(), $this->getMqttAddress(), $params);
 

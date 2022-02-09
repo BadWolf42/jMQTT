@@ -63,7 +63,7 @@ require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
 			<div class="col-sm-3">
 				<select id="mqttConfDelFile" class="form-control" data-l1key="tobedeleted">
 <?php
-	$dir = realpath(dirname(__FILE__) . '/../' . jMQTTBase::PATH_CERTIFICATES);
+	$dir = realpath(dirname(__FILE__) . '/../' . jMQTT::PATH_CERTIFICATES);
 	foreach (ls($dir) as $file) {
 		if (in_array(strtolower(strrchr($file, '.')), array('.crt', '.key', '.pem')))
 			echo str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';

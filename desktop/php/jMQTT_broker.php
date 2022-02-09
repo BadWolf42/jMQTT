@@ -158,7 +158,7 @@
 								</span>
 							</div>
 <?php
-	$dir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
+	$dir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
 	$crtfiles = "";
 	$pemfiles = "";
 	$keyfiles = "";
