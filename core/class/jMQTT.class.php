@@ -1425,7 +1425,7 @@ class jMQTT extends eqLogic {
 			// if includeMode is enabled, disbale it
 			if ($broker->getIncludeMode()) $broker->changeIncludeMode(0);
 		} catch (Throwable $t) {
-				log::add($pluginClass, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
+				log::add(__CLASS__, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
 		}
 	}
 	public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
