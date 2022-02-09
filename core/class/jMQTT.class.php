@@ -1387,8 +1387,19 @@ class jMQTT extends eqLogic {
 		}
 	}
 	public static function on_daemon_disconnect($id) {
-		$broker = self::getBrokerFromId(intval($id));
-		$broker->sendMqttClientStateEvent();
+		// if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
+		if (self::getMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED))
+			self::on_mqtt_disconnect($id);
+
+		// Save in cache that daemon is disconnected
+		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false);
+
+		try {
+			$broker = self::getBrokerFromId(intval($id));
+			$broker->sendMqttClientStateEvent();
+		} catch (Throwable $t) {
+			log::add(__CLASS__, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
+		}
 	}
 	public static function on_mqtt_connect($id) {
 		$broker = self::getBrokerFromId(intval($id));

@@ -13,23 +13,6 @@ class jMQTTBase {
 	const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
 
 
-	// on_daemon_disconnect is called by jmqttd.php then it calls on_daemon_disconnect method in plugin class
-	public static function on_daemon_disconnect($pluginClass, $id) {
-
-		// if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
-		if (jMQTT::getMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED))
-			self::on_mqtt_disconnect($pluginClass, $id);
-
-		// Save in cache that daemon is disconnected
-		jMQTT::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false);
-		// And call on_daemon_disconnect()
-		try {
-				$pluginClass::on_daemon_disconnect($id);
-		} catch (Throwable $t) {
-				log::add($pluginClass, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
-		}
-	}
-
 	// on_mqtt_connect is called by jmqttd.php then it calls on_mqtt_connect method in plugin class
 	public static function on_mqtt_connect($pluginClass, $id) {
 		// Save in cache that Mqtt Client is connected
