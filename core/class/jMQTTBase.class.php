@@ -20,10 +20,11 @@ class jMQTTBase {
 	//    }
 	// }
 
-	private static function get_cache($pluginClass, $id, $key, $default = null) {
+	private static function getMqttClientState($id, $key, $default = null) {
 		return cache::byKey('jMQTT::' . $id . '::' . $key)->getValue($default);
 	}
-	private static function set_cache($pluginClass, $id, $key, $value = null) {
+
+	private static function setMqttClientStateCache($id, $key, $value = null) {
 		// Save ids in cache as a list for future cleaning
 		$idListInCache = cache::byKey('jMQTT')->getValue([]);
 		if (!in_array($id, $idListInCache, true)){
@@ -33,7 +34,7 @@ class jMQTTBase {
 
 		return cache::set('jMQTT::' . $id . '::' . $key, $value);
 	}
-	private static function clean_cache($pluginClass) {
+	private static function cleanMqttClientStateCache() {
 		// get list of ids
 		$idListInCache = cache::byKey('jMQTT')->getValue([]);
 		// for each id clean both cached values
@@ -43,9 +44,9 @@ class jMQTTBase {
 		}
 	}
 
-	public static function get_mqtt_client_state($pluginClass, $id) {
-		if (!self::get_cache($pluginClass, $id, self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
-		if (!self::get_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
+	public static function getMqttClientState($id) {
+		if (!self::getMqttClientState($id, self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
+		if (!self::getMqttClientState($id, self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
 		return self::MQTTCLIENT_OK;
 	}
 
@@ -186,7 +187,7 @@ class jMQTTBase {
 		}
 
 		// If something bad happened, clean anyway
-		self::clean_cache($pluginClass);
+		self::cleanMqttClientStateCache();
 	}
 
 	public static function log_missing_callback($pluginClass, $functionName) {
@@ -215,7 +216,7 @@ class jMQTTBase {
 	// on_daemon_connect is called by jmqttd.php then it calls on_daemon_connect method in plugin class
 	public static function on_daemon_connect($pluginClass, $id) {
 		// Save in cache that daemon is connected
-		self::set_cache($pluginClass, $id, self::CACHE_DAEMON_CONNECTED, true);
+		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, true);
 		// And call plugin on_daemon_connect()
 		if(method_exists($pluginClass, 'on_daemon_connect')) {
 			try {
@@ -232,11 +233,11 @@ class jMQTTBase {
 	public static function on_daemon_disconnect($pluginClass, $id) {
 
 		// if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
-		if (self::get_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED))
+		if (self::getMqttClientState($id, self::CACHE_MQTTCLIENT_CONNECTED))
 			self::on_mqtt_disconnect($pluginClass, $id);
 
 		// Save in cache that daemon is disconnected
-		self::set_cache($pluginClass, $id, self::CACHE_DAEMON_CONNECTED, false);
+		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false);
 		// And call plugin on_daemon_disconnect()
 		if(method_exists($pluginClass, 'on_daemon_disconnect')) {
 			try {
@@ -252,7 +253,7 @@ class jMQTTBase {
 	// on_mqtt_connect is called by jmqttd.php then it calls on_mqtt_connect method in plugin class
 	public static function on_mqtt_connect($pluginClass, $id) {
 		// Save in cache that Mqtt Client is connected
-		self::set_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED, true);
+		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
 		// And call plugin on_mqtt_connect()
 		if(method_exists($pluginClass, 'on_mqtt_connect')) {
 			try {
@@ -268,7 +269,7 @@ class jMQTTBase {
 	// on_mqtt_disconnect is called by jmqttd.php then it calls on_mqtt_disconnect method in plugin class
 	public static function on_mqtt_disconnect($pluginClass, $id) {
 		// Save in cache that Mqtt Client is disconnected
-		self::set_cache($pluginClass, $id, self::CACHE_MQTTCLIENT_CONNECTED, false);
+		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, false);
 		// And call plugin on_mqtt_disconnect()
 		if(method_exists($pluginClass, 'on_mqtt_disconnect')) {
 			try {

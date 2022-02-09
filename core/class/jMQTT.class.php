@@ -59,6 +59,8 @@ class jMQTT extends eqLogic {
 
 	const CACHE_INCLUDE_MODE = 'include_mode';
 	const CACHE_IGNORE_TOPIC_MISMATCH = 'ignore_topic_mismatch';
+	const CACHE_DAEMON_CONNECTED = 'daemonConnected';
+	const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
 
 	const PATH_CERTIFICATES = 'data/jmqtt/certs/';
 
@@ -1109,7 +1111,7 @@ class jMQTT extends eqLogic {
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
-		return jMQTTBase::get_mqtt_client_state(__CLASS__, $this->getId());
+		return jMQTTBase::getMqttClientState($this->getId());
 	}
 
 	/**
