@@ -889,7 +889,77 @@ class jMQTT extends eqLogic {
 		}
 
 		log::add(__CLASS__, 'info', 'Starting Daemon');
-		jMQTTBase::deamon_start(__CLASS__);
+		
+		self::deamon_stop();
+		$daemon_info = self::deamon_info(__CLASS__);
+		if ($daemon_info['launchable'] != 'ok') {
+			throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
+		}
+
+		// Get default ports for daemons
+		$defaultPythonPort = self::DEFAULT_PYTHON_PORT;
+		$defaultWebSocketPort = self::DEFAULT_WEBSOCKET_PORT;
+
+		// Check python daemon port is available
+		$output=null;
+		$retval=null;
+		exec(system::getCmdSudo() . 'fuser ' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort) . '/tcp', $output, $retval);
+		if ($retval == 0 && count($output) > 0) {
+			$pid = trim($output[0]);
+			unset($output);
+			exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
+			if ($retval == 0 && count($output) > 0) $commandline = $output[0];
+			throw new Exception(__('Le port du démon python (' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
+		}
+
+		// Check websocket daemon port is available
+		$output=null;
+		$retval=null;
+		exec(system::getCmdSudo() . 'fuser ' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort) . '/tcp', $output, $retval);
+		if ($retval == 0 && count($output) > 0) {
+			$pid = trim($output[0]);
+			unset($output);
+			exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
+			if ($retval == 0 && count($output) > 0) $commandline = $output[0];
+			throw new Exception(__('Le port du démon websocket (' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
+		}
+
+		// Start Python daemon
+		$path1 = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
+		$cmd1 = 'python3 ' . $path1 . '/jmqttd.py';
+		$cmd1 .= ' --plugin ' . __CLASS__;
+		$cmd1 .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
+		$cmd1 .= ' --socketport ' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort);
+		$cmd1 .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
+		$cmd1 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
+		log::add(__CLASS__, 'info', 'Lancement du démon python jMQTT pour le plugin '.__CLASS__);
+		$result1 = exec($cmd1 . ' >> ' . log::getPathToLog(__CLASS__.'_daemon') . ' 2>&1 &');
+
+		// Start WebSocket daemon
+		$path2 = realpath(dirname(__FILE__) . '/../../resources/jmqttd/');
+		$cmd2 = 'php ' . $path2 . '/jmqttd.php';
+		$cmd2 .= ' --plugin ' . __CLASS__;
+		$cmd2 .= ' --socketport ' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort);
+		$cmd2 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
+		log::add(__CLASS__, 'info', 'Lancement du démon websocket jMQTT pour le plugin '.__CLASS__);
+		$result2 = exec($cmd2 . ' >> ' . log::getPathToLog(__CLASS__) . ' 2>&1 &');
+
+		//wait up to 10 seconds for daemons start
+		for ($i = 1; $i <= 40; $i++) {
+			$daemon_info = self::deamon_info(__CLASS__);
+			if ($daemon_info['state'] == 'ok') break;
+			usleep(250000);
+		}
+
+		if ($daemon_info['state'] != 'ok') {
+			// If only one of both daemon runs we still need to stop
+			self::deamon_stop();
+			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
+			return false;
+		}
+		message::removeAll(__CLASS__, 'unableStartDaemon');
+
+
 		self::checkAllMqttClients();
 		self::listenersAddAll();
 	}
