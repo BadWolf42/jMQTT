@@ -13,16 +13,6 @@ class jMQTTBase {
 	const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
 
 
-	// on_mqtt_message is called by jmqttd.php then it calls on_mqtt_message method in plugin class
-	public static function on_mqtt_message($pluginClass, $id, $topic, $payload, $qos, $retain) {
-		// call on_mqtt_message()
-		try {
-				$pluginClass::on_mqtt_message($id, $topic, $payload, $qos, $retain);
-		} catch (Throwable $t) {
-				log::add($pluginClass, 'error', sprintf('on_mqtt_message raised an Exception : %s', $t->getMessage()));
-		}
-	}
-
 	private static function send_to_mqtt_daemon($pluginClass, $params) {
 		$daemon_info = jMQTT::deamon_info();
 		if ($daemon_info['state'] != 'ok') {

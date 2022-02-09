@@ -110,7 +110,7 @@ class jMQTTdLogic implements MessageComponentInterface {
 				else jMQTT::on_mqtt_disconnect($from->httpRequest->getHeader('id')[0]);
 				break;
 			case 'messageIn':
-				jMQTTBase::on_mqtt_message($this->plugin, $from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
+				jMQTT::on_mqtt_message($from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
 				break;
 			default:
 				log::add($this->plugin, 'error', sprintf('Id %d : Received message contains unkown cmd!?', $from->httpRequest->getHeader('id')[0]));
