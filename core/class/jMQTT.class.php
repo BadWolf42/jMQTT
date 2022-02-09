@@ -899,7 +899,33 @@ class jMQTT extends eqLogic {
 	 */
 	public static function deamon_stop() {
 		log::add(__CLASS__, 'info', 'Stopping Daemon');
-		jMQTTBase::deamon_stop(__CLASS__);
+
+		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
+		if (file_exists($pid_file1)) {
+			$pid1 = intval(trim(file_get_contents($pid_file1)));
+			system::kill($pid1, false);
+			//wait up to 10 seconds for python daemon stop
+			for ($i = 1; $i <= 40; $i++) {
+				if (! @posix_getsid($pid1)) break;
+				usleep(250000);
+			}
+			system::kill($pid1, true);
+		}
+		$pid_file2 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
+		if (file_exists($pid_file2)) {
+			$pid2 = intval(trim(file_get_contents($pid_file2)));
+			system::kill($pid2, false);
+			//wait up to 10 seconds for websocket daemon stop
+			for ($i = 1; $i <= 40; $i++) {
+				if (! @posix_getsid($pid2)) break;
+				usleep(250000);
+			}
+			system::kill($pid2, true);
+		}
+
+		// If something bad happened, clean anyway
+		self::cleanMqttClientStateCache();
+
 		self::listenersRemoveAll();
 	}
 	/**

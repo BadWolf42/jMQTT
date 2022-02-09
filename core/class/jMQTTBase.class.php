@@ -36,7 +36,7 @@ class jMQTTBase {
 				$python_daemon = true;
 			} else {
 				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
-				self::deamon_stop($pluginClass);
+				jMQTT::deamon_stop();
 			}
 		}
 
@@ -46,7 +46,7 @@ class jMQTTBase {
 				$websocket_daemon = true;
 			} else {
 				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file2 . ' 2>&1 > /dev/null');
-				self::deamon_stop($pluginClass);
+				jMQTT::deamon_stop();
 			}
 		}
 
@@ -61,7 +61,7 @@ class jMQTTBase {
 	}
 
 	public static function deamon_start($pluginClass) {
-		self::deamon_stop($pluginClass);
+		jMQTT::deamon_stop();
 		$daemon_info = self::deamon_info($pluginClass);
 		if ($daemon_info['launchable'] != 'ok') {
 			throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
@@ -124,40 +124,12 @@ class jMQTTBase {
 
 		if ($daemon_info['state'] != 'ok') {
 			// If only one of both daemon runs we still need to stop
-			self::deamon_stop($pluginClass);
+			jMQTT::deamon_stop();
 			log::add($pluginClass, 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
 			return false;
 		}
 		message::removeAll($pluginClass, 'unableStartDaemon');
 		return true;
-	}
-
-	public static function deamon_stop($pluginClass) {
-		$pid_file1 = jeedom::getTmpFolder($pluginClass) . '/jmqttd.py.pid';
-		if (file_exists($pid_file1)) {
-			$pid1 = intval(trim(file_get_contents($pid_file1)));
-			system::kill($pid1, false);
-			//wait up to 10 seconds for python daemon stop
-			for ($i = 1; $i <= 40; $i++) {
-				if (! @posix_getsid($pid1)) break;
-				usleep(250000);
-			}
-			system::kill($pid1, true);
-		}
-		$pid_file2 = jeedom::getTmpFolder($pluginClass) . '/jmqttd.php.pid';
-		if (file_exists($pid_file2)) {
-			$pid2 = intval(trim(file_get_contents($pid_file2)));
-			system::kill($pid2, false);
-			//wait up to 10 seconds for websocket daemon stop
-			for ($i = 1; $i <= 40; $i++) {
-				if (! @posix_getsid($pid2)) break;
-				usleep(250000);
-			}
-			system::kill($pid2, true);
-		}
-
-		// If something bad happened, clean anyway
-		jMQTT::cleanMqttClientStateCache();
 	}
 
 	public static function log_missing_callback($pluginClass, $functionName) {
