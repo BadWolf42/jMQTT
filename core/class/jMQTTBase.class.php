@@ -12,9 +12,6 @@ class jMQTTBase {
 	const CACHE_DAEMON_CONNECTED = 'daemonConnected';
 	const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
 
-	const DEFAULT_PYTHON_PORT = 1025;
-	const DEFAULT_WEBSOCKET_PORT = 1026;
-
 	// Do not rely on backtrace as it is designed for debug and performances cannot be guaranteed
 	// private static function get_calling_class() {
 	//    $backtrace = debug_backtrace();
@@ -24,25 +21,25 @@ class jMQTTBase {
 	// }
 
 	private static function get_cache($pluginClass, $id, $key, $default = null) {
-		return cache::byKey('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key)->getValue($default);
+		return cache::byKey('jMQTT::' . $id . '::' . $key)->getValue($default);
 	}
 	private static function set_cache($pluginClass, $id, $key, $value = null) {
 		// Save ids in cache as a list for future cleaning
-		$idListInCache = cache::byKey('jMQTTBase::' . $pluginClass)->getValue([]);
+		$idListInCache = cache::byKey('jMQTT')->getValue([]);
 		if (!in_array($id, $idListInCache, true)){
 			$idListInCache[] = $id;
-			cache::set('jMQTTBase::' . $pluginClass, $idListInCache);
+			cache::set('jMQTT', $idListInCache);
 		}
 
-		return cache::set('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key, $value);
+		return cache::set('jMQTT::' . $id . '::' . $key, $value);
 	}
 	private static function clean_cache($pluginClass) {
 		// get list of ids
-		$idListInCache = cache::byKey('jMQTTBase::' . $pluginClass)->getValue([]);
+		$idListInCache = cache::byKey('jMQTT')->getValue([]);
 		// for each id clean both cached values
 		foreach ($idListInCache as $id) {
-			cache::delete('jMQTTBase::' . $pluginClass . '::' . $id . '::' . self::CACHE_DAEMON_CONNECTED);
-			cache::delete('jMQTTBase::' . $pluginClass . '::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
+			cache::delete('jMQTT::' . $id . '::' . self::CACHE_DAEMON_CONNECTED);
+			cache::delete('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 		}
 	}
 
