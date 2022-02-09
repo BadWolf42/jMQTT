@@ -381,6 +381,8 @@ function jMQTT_update() {
 		// VERSION = 6
 		cleanLeakedInfoInEqpts();
 		cleanLeakedInfoInTemplates();
+		// VERSION = 7
+		config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT'); //TODO temporary before rest of evolution
 	}
 
 	// Update version next to upgrade operations
