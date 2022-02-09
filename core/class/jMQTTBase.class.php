@@ -23,13 +23,6 @@ class jMQTTBase {
 	//    }
 	// }
 
-	public static function get_default_python_port($pluginClass) {
-		return property_exists($pluginClass, 'DEFAULT_PYTHON_PORT') ? $pluginClass::DEFAULT_PYTHON_PORT : self::DEFAULT_PYTHON_PORT;
-	}
-	public static function get_default_websocket_port($pluginClass) {
-		return property_exists($pluginClass, 'DEFAULT_WEBSOCKET_PORT') ? $pluginClass::DEFAULT_WEBSOCKET_PORT : self::DEFAULT_WEBSOCKET_PORT;
-	}
-
 	private static function get_cache($pluginClass, $id, $key, $default = null) {
 		return cache::byKey('jMQTTBase::' . $pluginClass . '::' . $id . '::' . $key)->getValue($default);
 	}
@@ -102,7 +95,7 @@ class jMQTTBase {
 			$return['state'] = 'ok';
 		}
 
-		if (config::byKey('pythonsocketport', $pluginClass, self::get_default_python_port($pluginClass)) != config::byKey('websocketport', $pluginClass, self::get_default_websocket_port($pluginClass))) {
+		if (config::byKey('pythonsocketport', $pluginClass, jMQTT::DEFAULT_PYTHON_PORT) != config::byKey('websocketport', $pluginClass, jMQTT::DEFAULT_WEBSOCKET_PORT)) {
 			$return['launchable'] = 'ok';
 		}
 		return $return;
@@ -116,8 +109,8 @@ class jMQTTBase {
 		}
 
 		// Get default ports for daemons
-		$defaultPythonPort = self::get_default_python_port($pluginClass);
-		$defaultWebSocketPort = self::get_default_websocket_port($pluginClass);
+		$defaultPythonPort = jMQTT::DEFAULT_PYTHON_PORT;
+		$defaultWebSocketPort = jMQTT::DEFAULT_WEBSOCKET_PORT;
 
 		// Check python daemon port is available
 		$output=null;
@@ -322,7 +315,7 @@ class jMQTTBase {
 		$params['apikey'] = jeedom::getApiKey($pluginClass);
 		$payload = json_encode($params);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
-		socket_connect($socket, '127.0.0.1', config::byKey('pythonsocketport', $pluginClass, self::get_default_python_port($pluginClass)));
+		socket_connect($socket, '127.0.0.1', config::byKey('pythonsocketport', $pluginClass, jMQTT::DEFAULT_PYTHON_PORT));
 		socket_write($socket, $payload, strlen($payload));
 		socket_close($socket);
 	}
@@ -331,7 +324,7 @@ class jMQTTBase {
 		$params['cmd']                  = 'newMqttClient';
 		$params['id']                   = $id;
 		$params['hostname']             = $hostname;
-		$params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', $pluginClass, self::get_default_websocket_port($pluginClass)).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
+		$params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', $pluginClass, jMQTT::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
 
 		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
 		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);

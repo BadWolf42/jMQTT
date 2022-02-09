@@ -58,6 +58,9 @@ class jMQTT extends eqLogic {
 
 	const PATH_CERTIFICATES = 'data/jmqtt/certs/';
 
+	const DEFAULT_PYTHON_PORT = 1025;
+	const DEFAULT_WEBSOCKET_PORT = 1026;
+
 	/**
 	 * To define a standard jMQTT equipment
 	 * jMQTT type is either self::TYP_EQPT or self::TYP_BRK.
