@@ -107,7 +107,7 @@ class jMQTTdLogic implements MessageComponentInterface {
 		switch ($message['cmd']) {
 			case 'connection':
 				if ($message['state']) jMQTT::on_mqtt_connect($from->httpRequest->getHeader('id')[0]);
-				else jMQTTBase::on_mqtt_disconnect($this->plugin, $from->httpRequest->getHeader('id')[0]);
+				else jMQTT::on_mqtt_disconnect($from->httpRequest->getHeader('id')[0]);
 				break;
 			case 'messageIn':
 				jMQTTBase::on_mqtt_message($this->plugin, $from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);

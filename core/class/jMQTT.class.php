@@ -1414,12 +1414,19 @@ class jMQTT extends eqLogic {
 		}
 	}
 	public static function on_mqtt_disconnect($id) {
-		$broker = self::getBrokerFromId(intval($id));
-		$statusCmd = $broker->getMqttClientStatusCmd();
-		if ($statusCmd) $statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
-		$broker->sendMqttClientStateEvent();
-		// if includeMode is enabled, disbale it
-		if ($broker->getIncludeMode()) $broker->changeIncludeMode(0);
+		// Save in cache that Mqtt Client is disconnected
+		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, false);
+
+		try {
+			$broker = self::getBrokerFromId(intval($id));
+			$statusCmd = $broker->getMqttClientStatusCmd();
+			if ($statusCmd) $statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+			$broker->sendMqttClientStateEvent();
+			// if includeMode is enabled, disbale it
+			if ($broker->getIncludeMode()) $broker->changeIncludeMode(0);
+		} catch (Throwable $t) {
+				log::add($pluginClass, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
+		}
 	}
 	public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
 		$broker = self::getBrokerFromId(intval($id));
