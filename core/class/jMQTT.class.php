@@ -33,6 +33,10 @@ class jMQTT extends eqLogic {
 	const OFFLINE = 'offline';
 	const ONLINE = 'online';
 
+	const MQTTCLIENT_OK = 'ok';
+	const MQTTCLIENT_POK = 'pok';
+	const MQTTCLIENT_NOK = 'nok';
+
 	const CONF_KEY_TYPE = 'type';
 	const CONF_KEY_BRK_ID = 'brkId';
 	const CONF_KEY_MQTT_CLIENT_ID = 'mqttId';
@@ -450,7 +454,7 @@ class jMQTT extends eqLogic {
 
 		// If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send unsubscribe
 		$broker = self::getBrokerFromId($brkId);
-		if(!$broker->getIsEnable() || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_POK || $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK) return;
+		if(!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_POK || $broker->getMqttClientState() == self::MQTTCLIENT_NOK) return;
 
 		//Find eqLogic using the same topic (which is stored in logicalId)
 		$eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
@@ -572,7 +576,7 @@ class jMQTT extends eqLogic {
 			// --- Existing broker ---
 			else {
 
-				$stopped = ($this->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK);
+				$stopped = ($this->getMqttClientState() == self::MQTTCLIENT_NOK);
 				$startRequested = false;
 
 				// isEnable changed
@@ -746,7 +750,7 @@ class jMQTT extends eqLogic {
 
 				// Wait up to 10s for MqttClient stopped
 				for ($i=0; $i < 40; $i++) {
-					if ($this->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK) break;
+					if ($this->getMqttClientState() == self::MQTTCLIENT_NOK) break;
 					usleep(250000);
 				}
 			}
@@ -1046,7 +1050,7 @@ class jMQTT extends eqLogic {
 		$daemon_info = jMQTTBase::deamon_info(__CLASS__);
 		if ($daemon_info['state'] == 'ok') {
 			foreach(self::getBrokers() as $broker) {
-				if ($broker->getIsEnable() && $broker->getMqttClientState() == jMQTTBase::MQTTCLIENT_NOK) {
+				if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
 					try {
 						log::add(__CLASS__, 'info', 'Starting MqttClient for ' . $broker->getName());
 						$broker->startMqttClient();
@@ -1088,9 +1092,9 @@ class jMQTT extends eqLogic {
 		$return['state'] = $this->getMqttClientState();
 		$return['color'] = self::getBrokerColorFromState($return['state']);
 		if ($daemon_info['state'] == 'ok') {
-			if ($return['state'] == jMQTTBase::MQTTCLIENT_NOK && $return['message'] == '')
+			if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
 				$return['message'] = __('Le Client MQTT est arrêté', __FILE__);
-			elseif ($return['state'] == jMQTTBase::MQTTCLIENT_POK)
+			elseif ($return['state'] == self::MQTTCLIENT_POK)
 				$return['message'] = __('Le broker est OFFLINE', __FILE__);
 		}
 
@@ -1099,9 +1103,9 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * Return MQTT Client state
-	 *   - jMQTTBase::MQTTCLIENT_OK: MQTT Client is running and mqtt broker is online
-	 *   - jMQTTBase::MQTTCLIENT_POK: MQTT Client is running but mqtt broker is offline
-	 *   - jMQTTBase::MQTTCLIENT_NOK: no cron exists or cron is not running
+	 *   - self::MQTTCLIENT_OK: MQTT Client is running and mqtt broker is online
+	 *   - self::MQTTCLIENT_POK: MQTT Client is running but mqtt broker is offline
+	 *   - self::MQTTCLIENT_NOK: no cron exists or cron is not running
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
@@ -1114,10 +1118,10 @@ class jMQTT extends eqLogic {
 	 */
 	public static function getBrokerColorFromState($state) {
 		switch ($state) {
-			case jMQTTBase::MQTTCLIENT_OK:
+			case self::MQTTCLIENT_OK:
 				return '#96C927';
 				break;
-			case jMQTTBase::MQTTCLIENT_POK:
+			case self::MQTTCLIENT_POK:
 				return '#ff9b00';
 				break;
 			default:
@@ -1437,7 +1441,7 @@ class jMQTT extends eqLogic {
 
 		$this->log('debug', 'Publishing message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
-		if ($this->getBroker()->getMqttClientState() == jMQTTBase::MQTTCLIENT_OK) {
+		if ($this->getBroker()->getMqttClientState() == self::MQTTCLIENT_OK) {
 			jMQTTBase::publish_mqtt_message(__CLASS__, $this->getBrkId(), $topic, $payload, $qos, $retain);
 
 			$d = date('Y-m-d H:i:s');
