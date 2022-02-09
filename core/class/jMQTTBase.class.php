@@ -12,18 +12,6 @@ class jMQTTBase {
 	const CACHE_DAEMON_CONNECTED = 'daemonConnected';
 	const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
 
-	// Do not rely on backtrace as it is designed for debug and performances cannot be guaranteed
-	// private static function get_calling_class() {
-	//    $backtrace = debug_backtrace();
-	//    foreach ($backtrace as $stackFrame) {
-	//       if (array_key_exists('class', $stackFrame) && $stackFrame['class'] != __CLASS__) return $stackFrame['class'];
-	//    }
-	// }
-
-
-	public static function deamon_info($pluginClass) {
-		
-	}
 
 	// on_daemon_connect is called by jmqttd.php then it calls on_daemon_connect method in plugin class
 	public static function on_daemon_connect($pluginClass, $id) {
