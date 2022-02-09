@@ -60,42 +60,15 @@ class jMQTTBase {
 		return $return;
 	}
 
-	public static function log_missing_callback($pluginClass, $functionName) {
-		switch ($functionName) {
-			case 'on_daemon_connect':
-				log::add($pluginClass, 'debug', 'You need to implement "public static function on_daemon_connect($id)" in the class \''.$pluginClass.'\' to handle daemon connect event.');
-				break;
-			case 'on_daemon_disconnect':
-				log::add($pluginClass, 'debug', 'You need to implement "public static function on_daemon_disconnect($id)" in the class \''.$pluginClass.'\' to handle daemon disconnect event.');
-				break;
-			case 'on_mqtt_connect':
-				log::add($pluginClass, 'debug', 'You need to implement "public static function on_mqtt_connect($id)" in the class \''.$pluginClass.'\' to handle mqtt connect event.');
-				break;
-			case 'on_mqtt_disconnect':
-				log::add($pluginClass, 'debug', 'You need to implement "public static function on_mqtt_disconnect($id)" in the class \''.$pluginClass.'\' to handle mqtt disconnect event.');
-				break;
-			case 'on_mqtt_message':
-				log::add($pluginClass, 'debug', 'You need to implement "public static function on_mqtt_message($id, $topic, $payload, $qos, $retain)" in the class \''.$pluginClass.'\' to handle mqtt messages.');
-				break;
-			default:
-				log::add($pluginClass, 'debug', 'You need to implement ... "public static ... function on_mq... What?! You should have never came back here! Don\'t read this! The faulty plugin is here => \''.$pluginClass . '\'');
-				break;
-		}
-	}
-
 	// on_daemon_connect is called by jmqttd.php then it calls on_daemon_connect method in plugin class
 	public static function on_daemon_connect($pluginClass, $id) {
 		// Save in cache that daemon is connected
 		jMQTT::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, true);
-		// And call plugin on_daemon_connect()
-		if(method_exists($pluginClass, 'on_daemon_connect')) {
-			try {
-				$pluginClass::on_daemon_connect($id);
-			} catch (Throwable $t) {
-					log::add($pluginClass, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
-			}
-		} else {
-			self::log_missing_callback($pluginClass, 'on_daemon_connect');
+		// And call on_daemon_connect()
+		try {
+			$pluginClass::on_daemon_connect($id);
+		} catch (Throwable $t) {
+				log::add($pluginClass, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
 		}
 	}
 
@@ -108,15 +81,11 @@ class jMQTTBase {
 
 		// Save in cache that daemon is disconnected
 		jMQTT::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false);
-		// And call plugin on_daemon_disconnect()
-		if(method_exists($pluginClass, 'on_daemon_disconnect')) {
-			try {
-					$pluginClass::on_daemon_disconnect($id);
-			} catch (Throwable $t) {
-					log::add($pluginClass, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
-			}
-		} else {
-			self::log_missing_callback($pluginClass, 'on_daemon_disconnect');
+		// And call on_daemon_disconnect()
+		try {
+				$pluginClass::on_daemon_disconnect($id);
+		} catch (Throwable $t) {
+				log::add($pluginClass, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
 		}
 	}
 
@@ -124,15 +93,11 @@ class jMQTTBase {
 	public static function on_mqtt_connect($pluginClass, $id) {
 		// Save in cache that Mqtt Client is connected
 		jMQTT::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
-		// And call plugin on_mqtt_connect()
-		if(method_exists($pluginClass, 'on_mqtt_connect')) {
-			try {
-					$pluginClass::on_mqtt_connect($id);
-			} catch (Throwable $t) {
-					log::add($pluginClass, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
-			}
-		} else {
-			self::log_missing_callback($pluginClass, 'on_mqtt_connect');
+		// And call on_mqtt_connect()
+		try {
+				$pluginClass::on_mqtt_connect($id);
+		} catch (Throwable $t) {
+				log::add($pluginClass, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
 		}
 	}
 
@@ -140,29 +105,21 @@ class jMQTTBase {
 	public static function on_mqtt_disconnect($pluginClass, $id) {
 		// Save in cache that Mqtt Client is disconnected
 		jMQTT::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, false);
-		// And call plugin on_mqtt_disconnect()
-		if(method_exists($pluginClass, 'on_mqtt_disconnect')) {
-			try {
-					$pluginClass::on_mqtt_disconnect($id);
-			} catch (Throwable $t) {
-					log::add($pluginClass, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
-			}
-		} else {
-			self::log_missing_callback($pluginClass, 'on_mqtt_disconnect');
+		// And call on_mqtt_disconnect()
+		try {
+				$pluginClass::on_mqtt_disconnect($id);
+		} catch (Throwable $t) {
+				log::add($pluginClass, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
 		}
 	}
 
 	// on_mqtt_message is called by jmqttd.php then it calls on_mqtt_message method in plugin class
 	public static function on_mqtt_message($pluginClass, $id, $topic, $payload, $qos, $retain) {
-		// call plugin on_mqtt_message()
-		if(method_exists($pluginClass, 'on_mqtt_message')) {
-			try {
-					$pluginClass::on_mqtt_message($id, $topic, $payload, $qos, $retain);
-			} catch (Throwable $t) {
-					log::add($pluginClass, 'error', sprintf('on_mqtt_message raised an Exception : %s', $t->getMessage()));
-			}
-		} else {
-			self::log_missing_callback($pluginClass, 'on_mqtt_message');
+		// call on_mqtt_message()
+		try {
+				$pluginClass::on_mqtt_message($id, $topic, $payload, $qos, $retain);
+		} catch (Throwable $t) {
+				log::add($pluginClass, 'error', sprintf('on_mqtt_message raised an Exception : %s', $t->getMessage()));
 		}
 	}
 
