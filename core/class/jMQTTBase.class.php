@@ -50,15 +50,6 @@ class jMQTTBase {
 	}
 
 
-	public static function dependancy_info($pluginClass) {
-		return jMQTT::dependancy_info();
-	}
-
-	public static function dependancy_install($pluginClass) {
-		return array();
-	}
-
-
 	public static function deamon_info($pluginClass) {
 		$return = array();
 		$return['log'] = $pluginClass;
