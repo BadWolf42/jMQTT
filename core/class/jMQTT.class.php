@@ -16,7 +16,7 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
-require_once __DIR__  . '/jMQTTBase.class.php';
+require_once __DIR__  . '/../../resources/mosquitto_topic_matches_sub.php';
 
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
@@ -443,7 +443,7 @@ class jMQTT extends eqLogic {
 		}
 
 		$this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
-		jMQTTBase::subscribe_mqtt_topic(__CLASS__, $this->getBrkId(), $topic, $qos);
+		self::subscribe_mqtt_topic($this->getBrkId(), $topic, $qos);
 	}
 
 	/**
@@ -469,7 +469,7 @@ class jMQTT extends eqLogic {
 		//if there is no other eqLogic using the same topic, we can unsubscribe
 		if (!$count) {
 			$this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': unsubscribes from "' . $topic . '"');
-			jMQTTBase::unsubscribe_mqtt_topic(__CLASS__, $brkId, $topic);
+			self::unsubscribe_mqtt_topic($brkId, $topic);
 		}
 	}
 
@@ -1351,7 +1351,7 @@ class jMQTT extends eqLogic {
 		if ($params['tlsclikeyfile'] != '')
 			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $params['tlsclikeyfile']);
 
-		jMQTTBase::new_mqtt_client(__CLASS__, $this->getId(), $this->getMqttAddress(), $params);
+		self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $params);
 
 		foreach (self::byBrkId($this->getId()) as $mqtt) {
 			if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
@@ -1372,7 +1372,7 @@ class jMQTT extends eqLogic {
 	 */
 	public function stopMqttClient() {
 		$this->log('info', 'arrête le client MQTT');
-		jMQTTBase::remove_mqtt_client(__CLASS__, $this->getId());
+		self::remove_mqtt_client($this->getId());
 	}
 
 	public static function on_daemon_connect($id) {
@@ -1436,6 +1436,66 @@ class jMQTT extends eqLogic {
 		} catch (Throwable $t) {
 			log::add(__CLASS__, 'error', sprintf('on_mqtt_message raised an Exception : %s', $t->getMessage()));
 		}
+	}
+
+
+	private static function send_to_mqtt_daemon($params) {
+		$daemon_info = self::deamon_info();
+		if ($daemon_info['state'] != 'ok') {
+			throw new Exception("Le démon n'est pas démarré");
+		}
+		$params['apikey'] = jeedom::getApiKey(__CLASS__);
+		$payload = json_encode($params);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
+		socket_connect($socket, '127.0.0.1', config::byKey('pythonsocketport', __CLASS__, self::DEFAULT_PYTHON_PORT));
+		socket_write($socket, $payload, strlen($payload));
+		socket_close($socket);
+	}
+
+	public static function new_mqtt_client($id, $hostname, $params = array()) {
+		$params['cmd']                  = 'newMqttClient';
+		$params['id']                   = $id;
+		$params['hostname']             = $hostname;
+		$params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', __CLASS__, self::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
+
+		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
+		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
+
+		self::send_to_mqtt_daemon($params);
+	}
+
+	public static function remove_mqtt_client($id) {
+		$params['cmd']='removeMqttClient';
+		$params['id']=$id;
+		self::send_to_mqtt_daemon($params);
+	}
+
+	public static function subscribe_mqtt_topic($id, $topic, $qos = 1) {
+		if (empty($topic)) return;
+		$params['cmd']='subscribeTopic';
+		$params['id']=$id;
+		$params['topic']=$topic;
+		$params['qos']=$qos;
+		self::send_to_mqtt_daemon($params);
+	}
+
+	public static function unsubscribe_mqtt_topic($id, $topic) {
+		if (empty($topic)) return;
+		$params['cmd']='unsubscribeTopic';
+		$params['id']=$id;
+		$params['topic']=$topic;
+		self::send_to_mqtt_daemon($params);
+	}
+
+	public static function publish_mqtt_message($id, $topic, $payload, $qos = 1, $retain = false) {
+		if (empty($topic)) return;
+		$params['cmd']='messageOut';
+		$params['id']=$id;
+		$params['topic']=$topic;
+		$params['payload']=$payload;
+		$params['qos']=$qos;
+		$params['retain']=$retain;
+		self::send_to_mqtt_daemon($params);
 	}
 
 	/**
@@ -1645,7 +1705,7 @@ class jMQTT extends eqLogic {
 		$this->log('debug', 'Publishing message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
 
 		if ($this->getBroker()->getMqttClientState() == self::MQTTCLIENT_OK) {
-			jMQTTBase::publish_mqtt_message(__CLASS__, $this->getBrkId(), $topic, $payload, $qos, $retain);
+			self::publish_mqtt_message($this->getBrkId(), $topic, $payload, $qos, $retain);
 
 			$d = date('Y-m-d H:i:s');
 			$this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));

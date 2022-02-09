@@ -7,7 +7,6 @@ use Ratchet\WebSocket\WsServer;
 
 require_once dirname(__FILE__) . '/../vendor/autoload.php';
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
-require_once dirname(__FILE__) . '/../../core/class/jMQTTBase.class.php';
 
 $options = getopt('',array('plugin:','socketport:','pid:'));
 if (array_key_exists('plugin', $options)) {

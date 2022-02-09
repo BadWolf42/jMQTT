@@ -23,7 +23,6 @@ if (!isConnect()) {
 	die();
 }
 
-require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
 ?>
 <div class="eventDisplayMini"></div>
 <form class="form-horizontal">
