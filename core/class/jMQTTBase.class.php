@@ -13,18 +13,6 @@ class jMQTTBase {
 	const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
 
 
-	// on_mqtt_connect is called by jmqttd.php then it calls on_mqtt_connect method in plugin class
-	public static function on_mqtt_connect($pluginClass, $id) {
-		// Save in cache that Mqtt Client is connected
-		jMQTT::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
-		// And call on_mqtt_connect()
-		try {
-				$pluginClass::on_mqtt_connect($id);
-		} catch (Throwable $t) {
-				log::add($pluginClass, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
-		}
-	}
-
 	// on_mqtt_disconnect is called by jmqttd.php then it calls on_mqtt_disconnect method in plugin class
 	public static function on_mqtt_disconnect($pluginClass, $id) {
 		// Save in cache that Mqtt Client is disconnected

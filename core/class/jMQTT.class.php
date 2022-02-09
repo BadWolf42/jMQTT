@@ -1402,9 +1402,16 @@ class jMQTT extends eqLogic {
 		}
 	}
 	public static function on_mqtt_connect($id) {
-		$broker = self::getBrokerFromId(intval($id));
-		$broker->getMqttClientStatusCmd()->event(self::ONLINE);
-		$broker->sendMqttClientStateEvent();
+		// Save in cache that Mqtt Client is connected
+		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
+
+		try {
+			$broker = self::getBrokerFromId(intval($id));
+			$broker->getMqttClientStatusCmd()->event(self::ONLINE);
+			$broker->sendMqttClientStateEvent();
+		} catch (Throwable $t) {
+				log::add(__CLASS__, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
+		}
 	}
 	public static function on_mqtt_disconnect($id) {
 		$broker = self::getBrokerFromId(intval($id));
