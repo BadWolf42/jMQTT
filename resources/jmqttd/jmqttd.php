@@ -86,7 +86,7 @@ class jMQTTdLogic implements MessageComponentInterface {
 
 		log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon connected successfully to WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
 
-		jMQTTBase::on_daemon_connect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+		jMQTT::on_daemon_connect($conn->httpRequest->getHeader('id')[0]);
 	}
 
 	public function onMessage(ConnectionInterface $from, $msg) {

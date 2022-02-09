@@ -1376,8 +1376,15 @@ class jMQTT extends eqLogic {
 	}
 
 	public static function on_daemon_connect($id) {
-		$broker = self::getBrokerFromId(intval($id));
-		$broker->sendMqttClientStateEvent();
+		// Save in cache that daemon is connected
+		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, true);
+
+		try {
+			$broker = self::getBrokerFromId(intval($id));
+			$broker->sendMqttClientStateEvent();
+		} catch (Throwable $t) {
+				log::add(__CLASS__, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
+		}
 	}
 	public static function on_daemon_disconnect($id) {
 		$broker = self::getBrokerFromId(intval($id));
