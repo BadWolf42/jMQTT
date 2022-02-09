@@ -37,14 +37,10 @@ step 40 "Install Ratchet PHP library"
 
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 cd ../resources
-silent rm -rf vendor
-silent rm -f composer.json
-silent rm -f composer.lock
 try php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 try php composer-setup.php
 try php -r "unlink('composer-setup.php');"
-try sudo -u www-data php ./composer.phar require --working-dir=. --no-cache symfony/http-foundation
-try sudo -u www-data php ./composer.phar require --working-dir=. --no-cache cboden/ratchet
+try sudo -u www-data php ./composer.phar update --working-dir=.
 silent rm composer.phar
 
 step 45 "Temporary fix of Ratchet PHP library (https://github.com/ratchetphp/RFC6455/pull/65)"
