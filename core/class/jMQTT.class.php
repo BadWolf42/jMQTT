@@ -181,7 +181,7 @@ class jMQTT extends eqLogic {
 	 */
 	public static function templateByFile($_filename = ''){
 		// log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
-		$existing_files = jMQTT::templateList();
+		$existing_files = self::templateList();
 		$exists = false;
 		foreach ($existing_files as list($n, $f))
 			if ($f == $_filename) {
@@ -209,7 +209,7 @@ class jMQTT extends eqLogic {
 		// log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
 		if (!isset($_filename) || is_null($_filename) || $_filename == '')
 			return false;
-		$existing_files = jMQTT::templateList();
+		$existing_files = self::templateList();
 		$exists = false;
 		foreach ($existing_files as list($n, $f))
 			if ($f == $_filename) {
@@ -506,11 +506,11 @@ class jMQTT extends eqLogic {
 				// Check certificate binding information if TLS is disabled
 				if (!boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
 					// If a CA is specified and this file doesn't exists, remove it
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
+					if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
 						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
+					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
 						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
+					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
 						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
 				}
 			}
@@ -1343,13 +1343,13 @@ class jMQTT extends eqLogic {
 		$params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
 		// Realpaths
 		if ($params['tlscafile'] != '')
-			$params['tlscafile']     = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $params['tlscafile']);
+			$params['tlscafile']     = realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $params['tlscafile']);
 		if ($params['tlsclicertfile'] != '')
-			$params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../' . jMQTT::PATH_CERTIFICATES . $params['tlsclicertfile']);
+			$params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../' . self::PATH_CERTIFICATES . $params['tlsclicertfile']);
 		else
 			$params['tlsclikeyfile'] = '';
 		if ($params['tlsclikeyfile'] != '')
-			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES . $params['tlsclikeyfile']);
+			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $params['tlsclikeyfile']);
 
 		self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $params);
 
@@ -1574,7 +1574,7 @@ class jMQTT extends eqLogic {
 			}
 
 			// create a new equipment subscribing to all sub-topics starting with the first topic of the current message
-			$eqpt = jMQTT::createEquipment($this, $msgTopicArray[0], ($msgTopic[0] == '/' ? '/' : '') . $msgTopicArray[0] . '/#');
+			$eqpt = self::createEquipment($this, $msgTopicArray[0], ($msgTopic[0] == '/' ? '/' : '') . $msgTopicArray[0] . '/#');
 			$elogics[] = $eqpt;
 		}
 
@@ -1725,7 +1725,7 @@ class jMQTT extends eqLogic {
 	 */
 	public function getMqttClientStatusTopic()  {
 		if (! $this->getConf(self::CONF_KEY_MQTT_PUB_STATUS)) return '';
-		return $this->getMqttClientId() . '/' . jMQTT::CLIENT_STATUS;
+		return $this->getMqttClientId() . '/' . self::CLIENT_STATUS;
 	}
 
 	/**
@@ -1976,7 +1976,7 @@ class jMQTT extends eqLogic {
 	 */
 	public static function getBrokerFromId($id) {
 		/** @var jMQTT $broker */
-		$broker = jMQTT::byId($id);
+		$broker = self::byId($id);
 		if (!is_object($broker)) {
 			throw new Exception(__('Pas d\'équipement avec l\'id fourni', __FILE__) . ' (id=' . $id . ')');
 		}
