@@ -864,7 +864,43 @@ class jMQTT extends eqLogic {
 	 * callback to get information on the daemon
 	 */
 	public static function deamon_info() {
-		return jMQTTBase::deamon_info(__CLASS__);
+
+		$return = array();
+		$return['log'] = __CLASS__;
+		$return['state'] = 'nok';
+		$return['launchable'] = 'nok';
+
+		$python_daemon = false;
+		$websocket_daemon = false;
+
+		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
+		if (file_exists($pid_file1)) {
+			if (@posix_getsid(trim(file_get_contents($pid_file1)))) {
+				$python_daemon = true;
+			} else {
+				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
+				jMQTT::deamon_stop();
+			}
+		}
+
+		$pid_file2 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
+		if (file_exists($pid_file2)) {
+			if (@posix_getsid(trim(file_get_contents($pid_file2)))) {
+				$websocket_daemon = true;
+			} else {
+				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file2 . ' 2>&1 > /dev/null');
+				jMQTT::deamon_stop();
+			}
+		}
+
+		if($python_daemon && $websocket_daemon){
+			$return['state'] = 'ok';
+		}
+
+		if (config::byKey('pythonsocketport', __CLASS__, self::DEFAULT_PYTHON_PORT) != config::byKey('websocketport', __CLASS__, self::DEFAULT_WEBSOCKET_PORT)) {
+			$return['launchable'] = 'ok';
+		}
+		return $return;
 	}
 
 	/**
@@ -891,7 +927,7 @@ class jMQTT extends eqLogic {
 		log::add(__CLASS__, 'info', 'Starting Daemon');
 		
 		self::deamon_stop();
-		$daemon_info = self::deamon_info(__CLASS__);
+		$daemon_info = self::deamon_info();
 		if ($daemon_info['launchable'] != 'ok') {
 			throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
 		}
@@ -946,7 +982,7 @@ class jMQTT extends eqLogic {
 
 		//wait up to 10 seconds for daemons start
 		for ($i = 1; $i <= 40; $i++) {
-			$daemon_info = self::deamon_info(__CLASS__);
+			$daemon_info = self::deamon_info();
 			if ($daemon_info['state'] == 'ok') break;
 			usleep(250000);
 		}
@@ -1177,7 +1213,7 @@ class jMQTT extends eqLogic {
 	 * Check all MQTT Clients (start them if needed)
 	 */
 	public static function checkAllMqttClients() {
-		$daemon_info = jMQTTBase::deamon_info(__CLASS__);
+		$daemon_info = self::deamon_info();
 		if ($daemon_info['state'] == 'ok') {
 			foreach(self::getBrokers() as $broker) {
 				if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
@@ -1205,7 +1241,7 @@ class jMQTT extends eqLogic {
 
 		// Is the MQTT Client launchable
 		$return['launchable'] = 'ok';
-		$daemon_info = jMQTTBase::deamon_info(__CLASS__);
+		$daemon_info = self::deamon_info();
 		if ($daemon_info['state'] == 'ok') {
 			if (!$this->getIsEnable()) {
 				$return['launchable'] = 'nok';
@@ -1266,7 +1302,7 @@ class jMQTT extends eqLogic {
 	 */
 	public function startMqttClient() {
 		// if daemon is not ok, do Nothing
-		$daemon_info = jMQTTBase::deamon_info(__CLASS__);
+		$daemon_info = self::deamon_info();
 		if ($daemon_info['state'] != 'ok') return;
 
 		//If MqttClient is not launchable (daemon is running), throw exception to get message

@@ -22,42 +22,7 @@ class jMQTTBase {
 
 
 	public static function deamon_info($pluginClass) {
-		$return = array();
-		$return['log'] = $pluginClass;
-		$return['state'] = 'nok';
-		$return['launchable'] = 'nok';
-
-		$python_daemon = false;
-		$websocket_daemon = false;
-
-		$pid_file1 = jeedom::getTmpFolder($pluginClass) . '/jmqttd.py.pid';
-		if (file_exists($pid_file1)) {
-			if (@posix_getsid(trim(file_get_contents($pid_file1)))) {
-				$python_daemon = true;
-			} else {
-				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
-				jMQTT::deamon_stop();
-			}
-		}
-
-		$pid_file2 = jeedom::getTmpFolder($pluginClass) . '/jmqttd.php.pid';
-		if (file_exists($pid_file2)) {
-			if (@posix_getsid(trim(file_get_contents($pid_file2)))) {
-				$websocket_daemon = true;
-			} else {
-				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file2 . ' 2>&1 > /dev/null');
-				jMQTT::deamon_stop();
-			}
-		}
-
-		if($python_daemon && $websocket_daemon){
-			$return['state'] = 'ok';
-		}
-
-		if (config::byKey('pythonsocketport', $pluginClass, jMQTT::DEFAULT_PYTHON_PORT) != config::byKey('websocketport', $pluginClass, jMQTT::DEFAULT_WEBSOCKET_PORT)) {
-			$return['launchable'] = 'ok';
-		}
-		return $return;
+		
 	}
 
 	// on_daemon_connect is called by jmqttd.php then it calls on_daemon_connect method in plugin class
@@ -124,7 +89,7 @@ class jMQTTBase {
 	}
 
 	private static function send_to_mqtt_daemon($pluginClass, $params) {
-		$daemon_info = self::deamon_info($pluginClass);
+		$daemon_info = jMQTT::deamon_info();
 		if ($daemon_info['state'] != 'ok') {
 			throw new Exception("Le démon n'est pas démarré");
 		}
