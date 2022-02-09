@@ -879,7 +879,7 @@ class jMQTT extends eqLogic {
 				$python_daemon = true;
 			} else {
 				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
-				jMQTT::deamon_stop();
+				self::deamon_stop();
 			}
 		}
 
@@ -889,7 +889,7 @@ class jMQTT extends eqLogic {
 				$websocket_daemon = true;
 			} else {
 				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file2 . ' 2>&1 > /dev/null');
-				jMQTT::deamon_stop();
+				self::deamon_stop();
 			}
 		}
 
