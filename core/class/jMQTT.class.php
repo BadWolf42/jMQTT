@@ -53,9 +53,6 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
 
-	const CONF_KEY_OLD = 'old';
-	const CONF_KEY_NEW = 'new';
-
 	const CACHE_INCLUDE_MODE = 'include_mode';
 	const CACHE_IGNORE_TOPIC_MISMATCH = 'ignore_topic_mismatch';
 
