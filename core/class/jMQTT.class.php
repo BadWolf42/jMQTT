@@ -1045,6 +1045,38 @@ class jMQTT extends eqLogic {
 	##
 	###################################################################################################################
 
+
+	private static function getMqttClientStateCache($id, $key, $default = null) {
+		return cache::byKey('jMQTT::' . $id . '::' . $key)->getValue($default);
+	}
+
+	private static function setMqttClientStateCache($id, $key, $value = null) {
+		// Save ids in cache as a list for future cleaning
+		$idListInCache = cache::byKey('jMQTT')->getValue([]);
+		if (!in_array($id, $idListInCache, true)){
+			$idListInCache[] = $id;
+			cache::set('jMQTT', $idListInCache);
+		}
+
+		return cache::set('jMQTT::' . $id . '::' . $key, $value);
+	}
+	private static function cleanMqttClientStateCache() {
+		// get list of ids
+		$idListInCache = cache::byKey('jMQTT')->getValue([]);
+		// for each id clean both cached values
+		foreach ($idListInCache as $id) {
+			cache::delete('jMQTT::' . $id . '::' . self::CACHE_DAEMON_CONNECTED);
+			cache::delete('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
+		}
+	}
+
+	public static function getMqttClientState($id) {
+		if (!self::getMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
+		if (!self::getMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
+		return self::MQTTCLIENT_OK;
+	}
+
+
 	/**
 	 * Check all MQTT Clients (start them if needed)
 	 */
@@ -1111,7 +1143,7 @@ class jMQTT extends eqLogic {
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
-		return jMQTTBase::getMqttClientState($this->getId());
+		return self::getMqttClientState($this->getId());
 	}
 
 	/**
