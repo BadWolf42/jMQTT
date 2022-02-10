@@ -1202,12 +1202,6 @@ class jMQTT extends eqLogic {
 		}
 	}
 
-	public static function getMqttClientState($id) {
-		if (!self::getMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
-		if (!self::getMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
-		return self::MQTTCLIENT_OK;
-	}
-
 
 	/**
 	 * Check all MQTT Clients (start them if needed)
@@ -1275,7 +1269,9 @@ class jMQTT extends eqLogic {
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
-		return self::getMqttClientState($this->getId());
+		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
+		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
+		return self::MQTTCLIENT_OK;
 	}
 
 	/**
