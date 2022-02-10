@@ -18,7 +18,6 @@
 
 try {
 	require_once __DIR__ . '/../../../../core/php/core.inc.php';
-	require_once __DIR__  . '/../class/jMQTTBase.class.php';
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect('admin')) {
@@ -41,7 +40,7 @@ try {
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
+			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
 		} else {
 			throw new Exception(__('Téléversement invalide', __FILE__));
 		}
@@ -153,7 +152,7 @@ try {
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
+			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
 		} else {
 			throw new Exception(__('Suppression invalide', __FILE__));
 		}
@@ -175,7 +174,7 @@ try {
 			$uploaddir = PATH_TPLTS;
 			$patern = array('.json');
 		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTTBase::PATH_CERTIFICATES);
+			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
 			$patern = array('.crt', '.key', '.pem');
 		} else {
 			throw new Exception(__('Suppression invalide', __FILE__));

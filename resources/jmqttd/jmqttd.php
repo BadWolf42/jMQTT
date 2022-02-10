@@ -7,7 +7,6 @@ use Ratchet\WebSocket\WsServer;
 
 require_once dirname(__FILE__) . '/../vendor/autoload.php';
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
-require_once dirname(__FILE__) . '/../../core/class/jMQTTBase.class.php';
 
 $options = getopt('',array('plugin:','socketport:','pid:'));
 if (array_key_exists('plugin', $options)) {
@@ -86,7 +85,7 @@ class jMQTTdLogic implements MessageComponentInterface {
 
 		log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon connected successfully to WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
 
-		jMQTTBase::on_daemon_connect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+		jMQTT::on_daemon_connect($conn->httpRequest->getHeader('id')[0]);
 	}
 
 	public function onMessage(ConnectionInterface $from, $msg) {
@@ -106,11 +105,11 @@ class jMQTTdLogic implements MessageComponentInterface {
 
 		switch ($message['cmd']) {
 			case 'connection':
-				if ($message['state']) jMQTTBase::on_mqtt_connect($this->plugin, $from->httpRequest->getHeader('id')[0]);
-				else jMQTTBase::on_mqtt_disconnect($this->plugin, $from->httpRequest->getHeader('id')[0]);
+				if ($message['state']) jMQTT::on_mqtt_connect($from->httpRequest->getHeader('id')[0]);
+				else jMQTT::on_mqtt_disconnect($from->httpRequest->getHeader('id')[0]);
 				break;
 			case 'messageIn':
-				jMQTTBase::on_mqtt_message($this->plugin, $from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
+				jMQTT::on_mqtt_message($from->httpRequest->getHeader('id')[0], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
 				break;
 			default:
 				log::add($this->plugin, 'error', sprintf('Id %d : Received message contains unkown cmd!?', $from->httpRequest->getHeader('id')[0]));
@@ -124,13 +123,13 @@ class jMQTTdLogic implements MessageComponentInterface {
 		}
 		else {
 			log::add($this->plugin, 'debug', sprintf('Id %d : Python daemon disconnected from WebSocket Daemon', $conn->httpRequest->getHeader('id')[0]));
-			jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+			jMQTT::on_daemon_disconnect($conn->httpRequest->getHeader('id')[0]);
 		}
 	}
 
 	public function onError(ConnectionInterface $conn, \Exception $e) {
 		log::add($this->plugin, 'error', sprintf('Id %d : Unexpected error between WebSocket Daemon and Python Daemon : %s', $conn->httpRequest->getHeader('id')[0], $e->getMessage()));
-		jMQTTBase::on_daemon_disconnect($this->plugin, $conn->httpRequest->getHeader('id')[0]);
+		jMQTT::on_daemon_disconnect($conn->httpRequest->getHeader('id')[0]);
 
 		$conn->close();
 	}

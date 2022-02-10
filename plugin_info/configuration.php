@@ -23,7 +23,6 @@ if (!isConnect()) {
 	die();
 }
 
-require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
 ?>
 <div class="eventDisplayMini"></div>
 <form class="form-horizontal">
@@ -40,13 +39,13 @@ require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Port démon python}}</label>
 			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTTBase::get_default_python_port('jMQTT'); ?>"/>
+				<input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTT::DEFAULT_PYTHON_PORT; ?>"/>
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Port démon websocket}}</label>
 			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTTBase::get_default_websocket_port('jMQTT'); ?>"/>
+				<input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTT::DEFAULT_WEBSOCKET_PORT; ?>"/>
 			</div>
 		</div>
 		<legend><i class="fas fa-key"></i>{{Certificats}}</legend>
@@ -63,7 +62,7 @@ require_once __DIR__  . '/../core/class/jMQTTBase.class.php';
 			<div class="col-sm-3">
 				<select id="mqttConfDelFile" class="form-control" data-l1key="tobedeleted">
 <?php
-	$dir = realpath(dirname(__FILE__) . '/../' . jMQTTBase::PATH_CERTIFICATES);
+	$dir = realpath(dirname(__FILE__) . '/../' . jMQTT::PATH_CERTIFICATES);
 	foreach (ls($dir) as $file) {
 		if (in_array(strtolower(strrchr($file, '.')), array('.crt', '.key', '.pem')))
 			echo str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
