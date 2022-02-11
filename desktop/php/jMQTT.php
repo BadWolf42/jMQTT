@@ -25,26 +25,6 @@ $node_images = scandir(__DIR__ . '/../../core/img/');
 	height: 168px;
 }
 
-.eqLogicDisplayCard.disableCard {
-	opacity: 0.35;
-}
-
-.eqLogicDisplayCard > div.jmqttauto {
-	position:absolute;
-	top:25px;
-	width:100%;
-	text-align:center;
-	margin-left:-4px;
-}
-.eqLogicDisplayCard .jmqttauto .fas {
-	transform: rotate(90deg);
-}
-
-.eqLogicThumbnailContainer .eqLogicDisplayCard .jmqttauto i {
-	font-size:20px !important;
-	color: #8000FF;
-}
-
 .row div.eqLogicDisplayAction.card.include .fas {
 	color: #8000FF !important;
 	font-size: 52px !important;
@@ -55,52 +35,9 @@ $node_images = scandir(__DIR__ . '/../../core/img/');
 	color: #8000FF;
 }
 
-.row div.eqLogicDisplayAction.card:not(.include ) {
-	background-color: #FFFFFF;
-}
-
-.row div.eqLogic div.row {
-	margin-left: 0;
-	margin-right: 0;
-}
-
-.eqLogicDisplayAction.disableCard {
-	opacity: 0.35;
-	cursor: default;
-}
-
-.disabled {
-	pointer-events: none;
-	opacity: 0.4;
-}
-
 td.fitwidth {
 	white-space: nowrap;
 }
-
-<?php 
-if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
-	echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayCard {";
-	echo "height: 155px !important;";
-	echo "min-height: 0px !important;";
-	echo "}";
-	
-	echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicDisplayAction,";
-	echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.jmqttauto {";
-	echo "background-color:rgba(0, 0, 0, 0) !important;";
-	echo "color:#ccc !important;";
-	echo "border: 0px !important;";
-	echo "min-height: 0px !important;";
-	echo "}";
-
-	echo "div#div_pageContainer div.eqLogicThumbnailDisplay div.eqLogicThumbnailContainer div.eqLogicAction {";
-	echo "background-color:rgba(0, 0, 0, 0) !important;";
-	echo "color:#ccc !important;";
-	echo "border: 0px !important;";
-	echo "min-height: 0px !important;";
-	echo "}";
-}
-?>
 </style>
 
 <?php
