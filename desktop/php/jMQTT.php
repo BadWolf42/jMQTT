@@ -104,10 +104,6 @@ if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
 </style>
 
 <?php
-/*
- * $plugin = plugin::byId('jMQTT');
- * $plugin->callInstallFunction('update', true);
- */
 function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	echo '<div class="eqLogicDisplayAction eqLogicAction cursor ' . $class . '"';
 	if ($attr != '')
