@@ -210,8 +210,6 @@ function displayEqLogicCard($eqL, $node_images) {
 
 <script>
 
-//$('.eqLogicThumbnailContainer').packery();
-
 <?php
 // Initialise the automatic inclusion button display according to include_mode configuration parameter
 foreach ($eqBrokers as $eqL) {
