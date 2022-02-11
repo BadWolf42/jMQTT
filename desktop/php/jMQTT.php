@@ -105,10 +105,8 @@ if ($_SESSION['user']->getOptions('bootstrap_theme') == 'darksobre') {
 
 <?php
 function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
-	echo '<div class="eqLogicDisplayAction eqLogicAction cursor ' . $class . '"';
-	if ($attr != '')
-		echo ' ' . $attr;
-	echo '><i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
+	echo '<div class="eqLogicDisplayAction eqLogicAction cursor ' . $class . '" ' . $attr . '>';
+	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
 }
 
 /**
