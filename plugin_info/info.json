@@ -12,9 +12,11 @@
 	"issue" : "https://github.com/Domochip/jMQTT/issues",
 	"changelog" : "https://domochip.github.io/jMQTT/fr_FR/changelog",
 	"documentation" : "https://domochip.github.io/jMQTT/fr_FR/",
+    "changelog_beta": "https://domochip.github.io/jMQTT/fr_FR/changelog",
+    "documentation_beta": "https://domochip.github.io/jMQTT/fr_FR/",
 	"link" : {
 		"forum":"https://community.jeedom.com/tag/plugin-jmqtt"
 	},
 	"languages" : ["fr_FR","en_US","sp_SP"],
-	"compatibility" : ["miniplus","smart","rpi","docker","diy","v4"]
+	"compatibility" : ["miniplus","smart","atlas","rpi","docker","diy","v4"]
 }
