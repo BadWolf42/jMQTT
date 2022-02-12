@@ -473,6 +473,14 @@ class jMQTTCmd extends cmd {
 		return $this->getConfiguration('topic');
 	}
 
+	public function setJsonPath($jsonPath) {
+		$this->setConfiguration('jsonPath', $jsonPath);
+	}
+
+	public function getJsonPath() {
+		return $this->getConfiguration('jsonPath');
+	}
+
 	/**
 	 * Return the list of commands of the given equipment which topic is related to the given one
 	 * (i.e. equal to the given one if multiple is false, or having the given topic as mother JSON related
