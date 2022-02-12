@@ -500,22 +500,23 @@ class jMQTTCmd extends cmd {
 	 */
 	public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
 		// JSON_UNESCAPED_UNICODE used to correct #92
-		$conf = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -2);
-		$conf = str_replace('\\', '\\\\', $conf);
+		$confTopic = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -1);
+		$confTopic = str_replace('\\', '\\\\', $confTopic);
 
 		$values = array(
-			'topic' => '%' . $conf . '"%',
+			'topic' => '%' . $confTopic . '%',
+			'emptyJsonPath' => '%"jsonPath":""%',
 			'eqLogic_id' => $eqLogic_id,
 		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND ';
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic AND ';
 
 		if ($multiple) {
-			$values['topic_json'] = '%' . $conf . '{%';
+			$values['AllJsonPath'] = '%"jsonPath":"%';
 			// Union is used to have the mother command returned first
-			$sql .= 'configuration LIKE :topic UNION ' . $sql . 'configuration LIKE :topic_json';
+			$sql .= 'configuration LIKE :emptyJsonPath UNION ' . $sql . 'configuration LIKE :AllJsonPath';
 		}
 		else {
-			$sql .= 'configuration LIKE :topic';
+			$sql .= 'configuration LIKE :emptyJsonPath';
 		}
 		$cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 
