@@ -309,7 +309,7 @@ class jMQTTCmd extends cmd {
 			// Type Info and deriving from a JSON payload : Initialize value from "root" cmd
 			if ($this->getType() == 'info' && $this->isJson()) {
 
-				$root_topic = substr($this->getTopic(), 0, strpos($this->getTopic(), '{'));
+				$root_topic = $this->getTopic();
 
 				/** @var jMQTTCmd $root_cmd root JSON command */
 				$root_cmd = jMQTTCmd::byEqLogicIdAndTopic($this->getEqLogic_id(), $root_topic, false);
