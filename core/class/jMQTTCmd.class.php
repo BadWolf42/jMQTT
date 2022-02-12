@@ -483,7 +483,7 @@ class jMQTTCmd extends cmd {
 	}
 
 	public function getJsonPath() {
-		return $this->getConfiguration('jsonPath');
+		return $this->getConfiguration('jsonPath', '');
 	}
 
 	/**
