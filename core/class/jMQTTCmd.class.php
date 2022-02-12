@@ -39,7 +39,7 @@ class jMQTTCmd extends cmd {
 	 * @param string $topic command mqtt topic
 	 * @return jMQTTCmd new command (NULL if not created)
 	 */
-	public static function newCmd($eqLogic, $name, $topic) {
+	public static function newCmd($eqLogic, $name, $topic, $jsonPath = '') {
 
 		$cmd = new jMQTTCmd();
 		$cmd->setEqLogic($eqLogic);
@@ -49,6 +49,7 @@ class jMQTTCmd extends cmd {
 		$cmd->setType('info');
 		$cmd->setSubType('string');
 		$cmd->setTopic($topic);
+		$cmd->setJsonPath($jsonPath);
 
 		// Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
 		$cmd->setName(self::checkCmdName($eqLogic, $name));
