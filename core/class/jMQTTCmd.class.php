@@ -240,6 +240,7 @@ class jMQTTCmd extends cmd {
 			if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
 			if ($this->getSubType() != 'string') $this->setSubType('string');
 			$this->setTopic($this->getEqLogic()->getMqttClientStatusTopic()); // just for display as it's not used to start the MqttClient
+			$this->setJsonPath(''); // just for display as it's not used to start the MqttClient
 		}
 
 		// --- New cmd ---
