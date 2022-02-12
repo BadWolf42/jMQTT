@@ -428,14 +428,6 @@ function printEqLogic(_eqLogic) {
 		}
 
 		/**
-		 * Check if the topic of the given command is equal to the given topic
-		 * @return true or false
-		 */
-		function hasTopic(c, topic) {
-			return c.configuration.topic == topic;
-		}
-
-		/**
 		 * Check if the given command is in the given array
 		 * @return found command or undefined
 		 */
@@ -444,11 +436,11 @@ function printEqLogic(_eqLogic) {
 		}
 
 		/**
-		 * Check if the given topic is in the given array
+		 * Check if the given topic+jsonPath is in the given array
 		 * @return found command or undefined
 		 */
-		function existingCmd(cmds, topic) {
-			var exist_cmds = cmds.filter(function (c) { return hasTopic(c, topic); });
+		function existingCmd(cmds, topic, jsonPath) {
+			var exist_cmds = cmds.filter(function (c) { return c.configuration.topic == topic && c.configuration.jsonPath == jsonPath; });
 			if (exist_cmds.length > 0)
 				return exist_cmds[0];
 			else
@@ -456,18 +448,19 @@ function printEqLogic(_eqLogic) {
 		}
 
 		/**
-		 * Add the given topic/payload to the command array.
+		 * Add the given topic/jsonPath/payload to the command array.
 		 * If the command already exists, add the existing command. Otherwise create a no name command.
 		 * @return tree_id of the added payload
 		 */
-		function addPayload(topic, payload, parent_id) {
+		function addPayload(topic, jsonPath, payload, parent_id) {
 			var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
-			var c =  existingCmd(_eqLogic.cmd, topic);
-			//console.log('addPayload: topic=' + topic + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
+			var c =  existingCmd(_eqLogic.cmd, topic, jsonPath);
+			//console.log('addPayload: topic=' + topic + ' ,jsonPath=' + jsonPath + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
 			if (c === undefined) {
 				return addCmd({
 					configuration: {
-						topic: topic
+						topic: topic,
+						jsonPath: jsonPath
 					},
 					isHistorized: "0",
 					isVisible: "1",
@@ -483,18 +476,18 @@ function printEqLogic(_eqLogic) {
 		}
 
 		/**
-		 * Add to the JSON command tree the given command identified by its topic and JSON payload
+		 * Add to the JSON command tree the given command identified by its topic, jsonPath and JSON payload
 		 * plus the commands deriving from the JSON payload
 		 */
-		function recursiveAddJsonPayload(topic, payload, parent_id='') {
-			//console.log('recursiveAddJsonPayload: topic=' + topic + ', payload=' + JSON.stringify(payload));
-			var this_id = addPayload(topic, payload, parent_id);
+		function recursiveAddJsonPayload(topic, jsonPath, payload, parent_id='') {
+			//console.log('recursiveAddJsonPayload: topic=' + topic + ', jsonPath=' + jsonPath + ', payload=' + JSON.stringify(payload));
+			var this_id = addPayload(topic, jsonPath, payload, parent_id);
 			for (i in payload) {
 				if (typeof payload[i] === 'object') {
-					recursiveAddJsonPayload(topic + '{' + i + '}', payload[i], this_id);
+					recursiveAddJsonPayload(topic, jsonPath + '[' + i + ']', payload[i], this_id);
 				}
 				else {
-					addPayload(topic + '{' + i + '}', payload[i], this_id);
+					addPayload(topic, jsonPath + '[' + i + ']', payload[i], this_id);
 				}
 			}
 		}
@@ -502,28 +495,25 @@ function printEqLogic(_eqLogic) {
 		/**
 		 * Add commands from their topic
 		 */
-		function recursiveAddCmdFromTopic(topic) {
-			//console.log('recursiveAddCmdFromTopic: ' + topic);
+		function recursiveAddCmdFromTopic(topic, jsonPath) {
+			//console.log('recursiveAddCmdFromTopic: ' + topic + jsonPath);
 			var parent_id = '';
 
-			// For commands deriving from a JSON payload (i.e. topic contains {), start the
-			// addition from the father command
-			var n = topic.lastIndexOf('{');
-			if (n >= 0) {
-				father_topic = topic.substring(0, n);
-				// Call recursively this method iwth the father topic
-				recursiveAddCmdFromTopic(father_topic);
-				// We need to get the tree id of the father command to be able to add this
-				// command to tree in the next step
-				var c = existingCmd(new_cmds, father_topic);
+			// For commands deriving from a JSON payload (i.e. jsonPath is not undefined or empty), 
+			// start the addition from the father command
+			if (jsonPath) {
+				// Call recursively this method with the topic and no jsonPath
+				recursiveAddCmdFromTopic(topic, '');
+				// We need to get the tree id of the father command to be able to add this command to tree in the next step
+				var c = existingCmd(new_cmds, topic, '');
 				if (c !== undefined)
 					parent_id = c.tree_id;
 			}
 
 			// Add this command to the tree if not previously added
-			var c = existingCmd(new_cmds, topic);
+			var c = existingCmd(new_cmds, topic, jsonPath);
 			if (c === undefined) {
-				c = existingCmd(_eqLogic.cmd, topic);
+				c = existingCmd(_eqLogic.cmd, topic, jsonPath);
 				if (c !== undefined) {
 					// Get the payload associated to the command
 					jeedom.cmd.execute({
@@ -539,7 +529,7 @@ function printEqLogic(_eqLogic) {
 					// Add the command: in case of JSON payload, call recursiveAddJsonPayload to add
 					// also the derived commands
 					if (typeof parsed_json_value === 'object') {
-						recursiveAddJsonPayload(c.configuration.topic, parsed_json_value, parent_id);
+						recursiveAddJsonPayload(c.configuration.topic, c.configuration.jsonPath, parsed_json_value, parent_id);
 					}
 					else {
 						addCmd(c, parent_id);
@@ -553,8 +543,8 @@ function printEqLogic(_eqLogic) {
 		for (var c of _eqLogic.cmd) {
 			if (!inArray(new_cmds, c)) {
 				if (c.type == 'info') {
-					//console.log('loop: add info ' + c.configuration.topic);
-					recursiveAddCmdFromTopic(c.configuration.topic);
+					//console.log('loop: add info ' + c.configuration.topic + c.configuration.jsonPath);
+					recursiveAddCmdFromTopic(c.configuration.topic, c.configuration.jsonPath);
 				}
 				else {
 					// Action commands are added directly
