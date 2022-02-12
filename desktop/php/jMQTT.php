@@ -112,9 +112,9 @@ function displayEqLogicCard($eqL, $node_images) {
 			echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . 
-				$eqB->getId() . '"', 'logoSecondary', true);
+				$eqB->getId() . '"', 'logoSecondary');
 			displayActionCard('{{Mode inclusion}}', 'fa-sign-in-alt fa-rotate-90', 'data-action="changeIncludeMode" brkId="' .
-				$eqB->getId() . '"', 'logoSecondary card', true);
+				$eqB->getId() . '"', 'logoSecondary card');
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 					displayEqLogicCard($eqL, $node_images);
