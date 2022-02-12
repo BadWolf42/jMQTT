@@ -564,7 +564,7 @@ class jMQTTCmd extends cmd {
 	 * @return boolean
 	 */
 	public function isJson() {
-		return strpos($this->getTopic(), '{') !== false;
+		return $this->getJsonPath() != '';
 	}
 
 	/**
