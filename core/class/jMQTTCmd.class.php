@@ -527,33 +527,6 @@ class jMQTTCmd extends cmd {
 	}
 
 	/**
-	 * Return the $array element designated by $indexes.
-	 * Example: to retrieve $array['1']['name'], call get_array_value($array, array('1', 'name'))
-	 * @param array $array
-	 * @param array $indexes
-	 * @return mixed the requested element
-	 * @throws Exception if index is not found in $array
-	 */
-	private static function get_array_value($array, $indexes) {
-		if (count($array) == 0 || count($indexes) == 0) {
-			throw new Exception();
-		}
-
-		$index = array_shift($indexes);
-		if(!array_key_exists($index, $array)){
-			throw new Exception();
-		}
-
-		$value = $array[$index];
-		if (count($indexes) == 0) {
-			return $value;
-		}
-		else {
-			return self::get_array_value($value, $indexes);
-		}
-	}
-
-	/**
 	 * Return whether or not this command may contain a battery value
 	 * @return boolean
 	 */
