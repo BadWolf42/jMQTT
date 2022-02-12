@@ -135,12 +135,16 @@ class jMQTTCmd extends cmd {
 	 * @param array $jsonArray associative array
 	 */
 	public function updateJsonCmdValue($jsonArray) {
-		$topic = $this->getTopic();
-		$indexes = substr($topic, strpos($topic, '{'));
-		$indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
-		$indexes = explode('|', $indexes);
+		// Create JsonObject for JsonPath
+		$jsonobject=new JsonPath\JsonObject($jsonArray);
+
+		// Get and prepare the jsonPath
+		$jsonPath = $this->getJsonPath();
+		if ($jsonPath == '') return;
+		if ($jsonPath[0] != '$') $jsonPath = '$' . $jsonPath;
+
 		try {
-			$value = self::get_array_value($jsonArray, $indexes);
+			$value = $jsonobject->get($jsonPath);
 			$this->updateCmdValue(json_encode($value, JSON_UNESCAPED_SLASHES));
 		}
 		catch (Throwable $e) {
