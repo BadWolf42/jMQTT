@@ -583,9 +583,7 @@ class jMQTTCmd extends cmd {
 	 * @return boolean
 	 */
 	public function topicMatchesSubscription($subscription) {
-		$topic = $this->getTopic();
-		$i = strpos($topic, '{');
-		return mosquitto_topic_matches_sub($subscription, $i === false ? $topic : substr($topic, 0, $i));
+		return mosquitto_topic_matches_sub($subscription, $this->getTopic());
 	}
 
 	/**
