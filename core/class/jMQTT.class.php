@@ -1441,7 +1441,7 @@ class jMQTT extends eqLogic {
 			throw new Exception("Le démon n'est pas démarré");
 		}
 		$params['apikey'] = jeedom::getApiKey(__CLASS__);
-		$payload = json_encode($params);
+		$payload = json_encode($params, JSON_UNESCAPED_UNICODE);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
 		socket_connect($socket, '127.0.0.1', config::byKey('pythonsocketport', __CLASS__, self::DEFAULT_PYTHON_PORT));
 		socket_write($socket, $payload, strlen($payload));
