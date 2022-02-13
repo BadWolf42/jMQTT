@@ -1441,7 +1441,7 @@ class jMQTT extends eqLogic {
 			throw new Exception("Le démon n'est pas démarré");
 		}
 		$params['apikey'] = jeedom::getApiKey(__CLASS__);
-		$payload = json_encode($params, JSON_UNESCAPED_UNICODE);
+		$payload = json_encode($params);
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
 		socket_connect($socket, '127.0.0.1', config::byKey('pythonsocketport', __CLASS__, self::DEFAULT_PYTHON_PORT));
 		socket_write($socket, $payload, strlen($payload));
@@ -1693,7 +1693,7 @@ class jMQTT extends eqLogic {
 			// Fix #110
 			// Since Core commit https://github.com/jeedom/core/commit/430f0049dc74e914c4166b109fb48b4375f11ead
 			// payload can be more than int/bool/string
-			$payload = json_encode($payload);
+			$payload = json_encode($payload, JSON_UNESCAPED_UNICODE);
 		}
 		$payloadLogMsg = ($payload === '') ? '(null)' : $payload;
 		$this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadLogMsg);
