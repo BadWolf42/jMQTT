@@ -440,7 +440,8 @@ function printEqLogic(_eqLogic) {
 		 * @return found command or undefined
 		 */
 		function existingCmd(cmds, topic, jsonPath) {
-			var exist_cmds = cmds.filter(function (c) { return c.configuration.topic == topic && c.configuration.jsonPath == jsonPath; });
+			// try to find cmd that match with topic and jsonPath (or jsonPath with dollar sign in front)
+			var exist_cmds = cmds.filter(function (c) { return c.configuration.topic == topic && (c.configuration.jsonPath == jsonPath || c.configuration.jsonPath == '$' + jsonPath); });
 			if (exist_cmds.length > 0)
 				return exist_cmds[0];
 			else
