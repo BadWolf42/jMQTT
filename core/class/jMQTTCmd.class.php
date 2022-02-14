@@ -145,14 +145,15 @@ class jMQTTCmd extends cmd {
 
 		try {
 			$value = $jsonobject->get($jsonPath);
+			if ($value !== false)
+				$this->updateCmdValue(json_encode($value[0], JSON_UNESCAPED_SLASHES));
+			else
+				$this->getEqLogic()->log('info', 'valeur de la commande ' . $this->getLogName() . ' non trouvée');
 		}
 		catch (Throwable $e) {
 			$this->getEqLogic()->log('error', 'Chemin JSON de la commande ' . $this->getLogName() . ' incorrect : "' . $this->getJsonPath() . '"');
 		}
-		if ($value !== false)
-			$this->updateCmdValue(json_encode($value[0], JSON_UNESCAPED_SLASHES));
-		else
-			$this->getEqLogic()->log('info', 'valeur de la commande ' . $this->getLogName() . ' non trouvée');
+
 	}
 
 	/**
