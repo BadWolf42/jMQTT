@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
-require_once __DIR__  . '/../../resources/mosquitto_topic_matches_sub.php';
+require_once __DIR__ . '/../../resources/vendor/autoload.php';
+require_once __DIR__ . '/../../resources/mosquitto_topic_matches_sub.php';
 
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
@@ -1744,6 +1745,7 @@ class jMQTT extends eqLogic {
 		if (! is_object($this->getMqttClientStatusCmd())) {
 			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
 			$cmd->setLogicalId(self::CLIENT_STATUS);
+			$cmd->setConfiguration('jsonPath', '');
 			$cmd->setIrremovable();
 			$cmd->save();
 		}
