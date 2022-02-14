@@ -355,6 +355,24 @@ function cleanLeakedInfoInTemplates() {
 	log::add('jMQTT', 'info', 'Broker leaked info cleaned up in templates');
 }
 
+function splitJsonPathOfjMQTTCmd() {
+	$version = config::byKey(VERSION, 'jMQTT', -1);
+	if ($version >= 7) {
+		return;
+	}
+
+	$eqLogics = jMQTT::byType('jMQTT');
+	foreach ($eqLogics as $eqLogic) {
+
+		// get info cmds of current eqLogic
+		$infoCmds = jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info');
+		foreach ($infoCmds as $cmd) {
+			// split topic and jsonPath of cmd
+			$cmd->splitTopicAndJsonPath();
+		}
+	}
+}
+
 function jMQTT_install() {
 	jMQTT_update();
 }
@@ -382,6 +400,7 @@ function jMQTT_update() {
 		cleanLeakedInfoInEqpts();
 		cleanLeakedInfoInTemplates();
 		// VERSION = 7
+		splitJsonPathOfjMQTTCmd();
 		config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT'); //TODO temporary before rest of evolution
 	}
 
