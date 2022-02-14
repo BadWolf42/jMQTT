@@ -490,6 +490,23 @@ class jMQTTCmd extends cmd {
 		return $this->getConfiguration('jsonPath', '');
 	}
 
+	public function splitTopicAndJsonPath() {
+		// Try to find '{'
+		$topic = $this->getTopic();
+		$i = strpos($topic, '{');
+		// If no '{' then return
+		if ($i === false)
+			return;
+
+		// Set cleaned Topic
+		$this->setTopic(substr($topic, 0, $i));
+		$jsonPath = substr($topic, $i);
+		$jsonPath = str_replace('{', '[', $jsonPath);
+		$jsonPath = str_replace('}', ']', $jsonPath);
+		$this->setJsonPath($jsonPath);
+		$this->save();
+	}
+
 	/**
 	 * Return the list of commands of the given equipment which topic is related to the given one
 	 * (i.e. equal to the given one if multiple is false, or having the given topic as mother JSON related
