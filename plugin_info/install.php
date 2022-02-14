@@ -371,6 +371,8 @@ function splitJsonPathOfjMQTTCmd() {
 			$cmd->splitTopicAndJsonPath();
 		}
 	}
+
+	log::add('jMQTT', 'info', 'JsonPath splitted from topic for all jMQTT info commands');
 }
 
 function jMQTT_install() {
