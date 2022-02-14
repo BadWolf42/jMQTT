@@ -494,16 +494,19 @@ class jMQTTCmd extends cmd {
 		// Try to find '{'
 		$topic = $this->getTopic();
 		$i = strpos($topic, '{');
-		// If no '{' then return
-		if ($i === false)
-			return;
-
-		// Set cleaned Topic
-		$this->setTopic(substr($topic, 0, $i));
-		$jsonPath = substr($topic, $i);
-		$jsonPath = str_replace('{', '[', $jsonPath);
-		$jsonPath = str_replace('}', ']', $jsonPath);
-		$this->setJsonPath($jsonPath);
+		// If no '{'
+		if ($i === false) {
+			// Just set empty jsonPath
+			$this->setJsonPath('');
+		}
+		else {
+			// Set cleaned Topic
+			$this->setTopic(substr($topic, 0, $i));
+			$jsonPath = substr($topic, $i);
+			$jsonPath = str_replace('{', '[', $jsonPath);
+			$jsonPath = str_replace('}', ']', $jsonPath);
+			$this->setJsonPath($jsonPath);
+		}
 		$this->save();
 	}
 
