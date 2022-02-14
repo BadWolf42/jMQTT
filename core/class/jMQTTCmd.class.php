@@ -496,8 +496,8 @@ class jMQTTCmd extends cmd {
 		$i = strpos($topic, '{');
 		// If no '{'
 		if ($i === false) {
-			// Just set empty jsonPath
-			$this->setJsonPath('');
+			// Just set empty jsonPath if it doesn't exists
+			$this->setJsonPath($this->getJsonPath());
 		}
 		else {
 			// Set cleaned Topic
