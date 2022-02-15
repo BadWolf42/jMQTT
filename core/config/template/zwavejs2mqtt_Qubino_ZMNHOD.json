@@ -8,7 +8,8 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "volet",
-            "updatetime": "2021-06-20 12:25:13"
+            "updatetime": "2021-06-20 12:25:13",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -27,7 +28,7 @@
         "status": {
             "lastCommunication": "2021-04-28 09:26:37"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "generic_type": "FLAP_STATE",

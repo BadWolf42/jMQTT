@@ -10,7 +10,8 @@
             "battery_type": "Secteur",
             "commentaire": "Tasmota Sonoff 4CH",
             "icone": "lightbulb",
-            "updatetime": "2021-11-19 14:57:50"
+            "updatetime": "2021-11-19 14:57:50",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -25,7 +26,7 @@
         "status": {
             "lastCommunication": "2021-10-19 17:45:04"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",

@@ -9,7 +9,8 @@
             "Qos": "1",
             "battery_type": "CR1632",
             "icone": "contact",
-            "updatetime": "2021-03-16 23:49:36"
+            "updatetime": "2021-03-16 23:49:36",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -26,7 +27,7 @@
             "height": "72px"
         },
         "status": [],
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "generic_type": "BATTERY",

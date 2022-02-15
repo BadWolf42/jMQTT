@@ -10,7 +10,8 @@
             "battery_type": "Secteur",
             "commentaire": "Interrupteur mural 3 channels",
             "icone": "relay",
-            "updatetime": "2021-12-09 22:42:42"
+            "updatetime": "2021-12-09 22:42:42",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -29,7 +30,7 @@
         "status": {
             "lastCommunication": "2021-12-08 12:21:08"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "generic_type": "LIGHT_STATE",

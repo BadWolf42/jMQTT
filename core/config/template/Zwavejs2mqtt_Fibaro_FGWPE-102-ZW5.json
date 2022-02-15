@@ -8,7 +8,8 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "prise",
-            "updatetime": "2021-09-21 17:34:45"
+            "updatetime": "2021-09-21 17:34:45",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -27,7 +28,7 @@
         "status": {
             "lastCommunication": "2021-09-10 15:19:35"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",
