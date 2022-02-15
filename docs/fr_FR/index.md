@@ -203,15 +203,15 @@ Au premier message reçu, jMQTT créé automatiquement l’information suivante 
 
 En basculant dans la vue JSON, via le bouton dédié en haut à droite de la page, et en dépliant complètement l'arbre manuellement, nous obtenons :
 
-| # |   | Nom                      | Sous-Type | Topic / Chemin JSON                 | Valeur                                                                          |
+| # |   | Nom                      | Sous-Type | Topic            | Chemin JSON      | Valeur                                                                          |
 | - | - |------------------------- | --------- | ----------------------------------- | ------------------------------------------------------------------------------- |
-| > |   | temperatures             | info      | esp/temperatures                    | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
-|   |   |                          | info      | esp/temperatures / \[device\]       | "ESP32"                                                                         |
-|   |   |                          | info      | esp/temperatures / \[sensorType\]   | "Temperature"                                                                   |
-|   | > |                          | info      | esp/temperatures / \[values\]       | \[9.5, 18.2, 20.6\]                                                             |
-|   |   |                          | info      | esp/temperatures / \[values\]\[0\]  | 9.5                                                                             |
-|   |   |                          | info      | esp/temperatures / \[values\]\[1\]  | 18.2                                                                            |
-|   |   |                          | info      | esp/temperatures / \[values\]\[2\]  | 20.6                                                                            |
+| > |   | temperatures             | info      | esp/temperatures |                  | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+|   |   |                          | info      | esp/temperatures | \[device\]       | "ESP32"                                                                         |
+|   |   |                          | info      | esp/temperatures | \[sensorType\]   | "Temperature"                                                                   |
+|   | > |                          | info      | esp/temperatures | \[values\]       | \[9.5, 18.2, 20.6\]                                                             |
+|   |   |                          | info      | esp/temperatures | \[values\]\[0\]  | 9.5                                                                             |
+|   |   |                          | info      | esp/temperatures | \[values\]\[1\]  | 18.2                                                                            |
+|   |   |                          | info      | esp/temperatures | \[values\]\[2\]  | 20.6                                                                            |
 
 Seule la première ligne est une commande, reconnaissable parce qu'elle a un id, un nom et des paramètres.
 
