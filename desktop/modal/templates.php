@@ -159,7 +159,7 @@ $('#ul_jmqttTemplateList').on({
 					if (init(_cmd.type) == 'info') {
 						var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '" style="height: 88px!important;">';
 						tr += '<td>';
-						if (init(_cmd.display.icon)) {
+						if (init(_cmd.display) && init(_cmd.display.icon)) {
 							tr += '<div class="input-group"><input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" disabled>';
 							tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;">'+init(_cmd.display.icon)+'</span>';
 							tr += '</div>';
@@ -195,7 +195,7 @@ $('#ul_jmqttTemplateList').on({
 					if (init(_cmd.type) == 'action') {
 						var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" style="height: 88px!important;">';
 						tr += '<td>';
-						if (init(_cmd.display.icon)) {
+						if (init(_cmd.display) && init(_cmd.display.icon)) {
 							tr += '<div class="input-group"><input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" disabled>';
 							tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;">'+init(_cmd.display.icon)+'</span>';
 							tr += '</div>';
