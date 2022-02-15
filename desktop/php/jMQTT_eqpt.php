@@ -57,8 +57,7 @@
 		<div class="form-group toDisable typ-std">
 			<label class="col-sm-3 control-label">{{Inscrit au Topic}}</label>
 			<div class="col-sm-3">
-				<input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="logicalId"
-					placeholder="{{Topic principal de l'équipement jMQTT}}" />
+				<input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" placeholder="{{Topic principal de l'équipement jMQTT}}" />
 			</div>
 		</div>
 
