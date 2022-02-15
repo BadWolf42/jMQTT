@@ -37,7 +37,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/64\/0\/mode{value}"
+                    "topic": "%s\/64\/0\/mode",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -56,7 +57,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/68\/0\/mode{value}"
+                    "topic": "%s\/68\/0\/mode",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -76,7 +78,8 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature{value}"
+                    "topic": "%s\/49\/0\/Air_temperature",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -97,7 +100,8 @@
                 "configuration": {
                     "topic": "%s\/64\/0\/mode\/set",
                     "request": "5",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -115,7 +119,8 @@
                 "configuration": {
                     "topic": "%s\/64\/0\/mode\/set",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -133,7 +138,8 @@
                 "configuration": {
                     "topic": "%s\/64\/0\/mode\/set",
                     "request": "2",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -151,7 +157,8 @@
                 "configuration": {
                     "topic": "%s\/64\/0\/mode\/set",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -169,7 +176,8 @@
                 "configuration": {
                     "topic": "%s\/64\/0\/mode\/set",
                     "request": "6",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -186,7 +194,8 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/67\/0\/setpoint\/1{value}"
+                    "topic": "%s\/67\/0\/setpoint\/1",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -209,7 +218,8 @@
                     "request": "#slider#",
                     "minValue": "19",
                     "maxValue": "30",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -226,7 +236,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/67\/0\/setpoint\/2{value}"
+                    "topic": "%s\/67\/0\/setpoint\/2",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -249,7 +260,8 @@
                     "request": "#slider#",
                     "minValue": "18",
                     "maxValue": "28",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -267,9 +279,10 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level{value}",
+                    "topic": "%s\/128\/0\/level",
                     "minValue": "0",
-                    "maxValue": "100"
+                    "maxValue": "100",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -290,7 +303,8 @@
                 "configuration": {
                     "topic": "%s\/68\/0\/mode\/set",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -308,7 +322,8 @@
                 "configuration": {
                     "topic": "%s\/68\/0\/mode\/set",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -326,7 +341,8 @@
                 "configuration": {
                     "topic": "%s\/68\/0\/mode\/set",
                     "request": "5",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -344,7 +360,8 @@
                 "configuration": {
                     "topic": "%s\/68\/0\/mode\/set",
                     "request": "3",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",

@@ -37,7 +37,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s{battery}",
+                    "topic": "%s",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -46,7 +46,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[battery]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -72,7 +73,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s{contact}",
+                    "topic": "%s",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -81,7 +82,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[contact]"
                 },
                 "template": {
                     "dashboard": "core::door",
@@ -107,7 +109,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{linkquality}"
+                    "topic": "%s",
+                    "jsonPath": "[linkquality]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -127,7 +130,8 @@
                 "isHistorized": "0",
                 "unite": "mV",
                 "configuration": {
-                    "topic": "%s{voltage}"
+                    "topic": "%s",
+                    "jsonPath": "[voltage]"
                 },
                 "template": {
                     "dashboard": "default",

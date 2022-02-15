@@ -38,7 +38,8 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature{value}"
+                    "topic": "%s\/49\/0\/Air_temperature",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -57,7 +58,8 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/113\/0\/Smoke_Alarm\/Sensor_status{value}"
+                    "topic": "%s\/113\/0\/Smoke_Alarm\/Sensor_status",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -76,7 +78,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/113\/0\/Heat_Alarm\/Heat_sensor_status{value}"
+                    "topic": "%s\/113\/0\/Heat_Alarm\/Heat_sensor_status",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -95,7 +98,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/113\/0\/Home_Security\/Cover_status{value}"
+                    "topic": "%s\/113\/0\/Home_Security\/Cover_status",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -115,9 +119,10 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level{value}",
+                    "topic": "%s\/128\/0\/level",
                     "minValue": "0",
-                    "maxValue": "100"
+                    "maxValue": "100",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",

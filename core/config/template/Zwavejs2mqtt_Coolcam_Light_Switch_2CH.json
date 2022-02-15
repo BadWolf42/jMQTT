@@ -39,7 +39,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue{value}",
+                    "topic": "%s\/37\/1\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -47,7 +47,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -83,7 +84,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -119,7 +121,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -146,7 +149,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue{value}",
+                    "topic": "%s\/37\/2\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -154,7 +157,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -190,7 +194,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::light",
@@ -226,7 +231,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::light",

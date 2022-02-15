@@ -38,7 +38,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue{value}"
+                    "topic": "%s\/37\/1\/currentValue",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -59,7 +60,8 @@
                 "configuration": {
                     "topic": "%s\/37\/1\/targetValue\/set",
                     "request": "true",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -78,7 +80,8 @@
                 "configuration": {
                     "topic": "%s\/37\/1\/targetValue\/set",
                     "request": "false",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -95,7 +98,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue{value}"
+                    "topic": "%s\/37\/2\/currentValue",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -116,7 +120,8 @@
                 "configuration": {
                     "topic": "%s\/37\/2\/targetValue\/set",
                     "request": "true",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -135,7 +140,8 @@
                 "configuration": {
                     "topic": "%s\/37\/2\/targetValue\/set",
                     "request": "false",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",

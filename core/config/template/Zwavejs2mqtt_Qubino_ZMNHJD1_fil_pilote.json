@@ -38,7 +38,8 @@
                 "subType": "numeric",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/38\/0\/currentValue{value}"
+                    "topic": "%s\/38\/0\/currentValue",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -57,7 +58,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/Down"
+                    "topic": "%s\/38\/0\/Down",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -82,7 +84,8 @@
                     "maxValue": "255",
                     "retain": "0",
                     "autoPub": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -107,7 +110,8 @@
                     "maxValue": "255",
                     "retain": "0",
                     "autoPub": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -126,7 +130,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/Up"
+                    "topic": "%s\/38\/0\/Up",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -151,7 +156,8 @@
                     "maxValue": "255",
                     "retain": "0",
                     "autoPub": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -176,7 +182,8 @@
                     "maxValue": "255",
                     "retain": "0",
                     "autoPub": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -201,7 +208,8 @@
                     "maxValue": "255",
                     "retain": "0",
                     "autoPub": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -226,7 +234,8 @@
                     "maxValue": "255",
                     "retain": "0",
                     "autoPub": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -245,7 +254,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status{status}"
+                    "topic": "%s\/status",
+                    "jsonPath": "[status]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -275,7 +285,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",

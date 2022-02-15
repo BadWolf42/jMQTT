@@ -34,7 +34,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/get"
+                    "topic": "%s\/get",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -53,7 +54,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{linkquality}"
+                    "topic": "%s",
+                    "jsonPath": "[linkquality]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -72,7 +74,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s"
+                    "topic": "%s",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -91,7 +94,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{state_l1}"
+                    "topic": "%s",
+                    "jsonPath": "[state_l1]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -110,7 +114,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{state_l2}"
+                    "topic": "%s",
+                    "jsonPath": "[state_l2]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -129,7 +134,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{state_l3}"
+                    "topic": "%s",
+                    "jsonPath": "[state_l3]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -151,7 +157,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l1\":\"ON\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -170,7 +177,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l1\":\"OFF\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -189,7 +197,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l1\":\"TOGGLE\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -208,7 +217,8 @@
                     "topic": "%s\/get",
                     "request": "{\"state_l1\": \"\"}",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -227,7 +237,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l2\":\"ON\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -246,7 +257,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l2\":\"OFF\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -265,7 +277,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l2\":\"TOGGLE\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -284,7 +297,8 @@
                     "topic": "%s\/get",
                     "request": "{\"state_l2\": \"\"}",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -303,7 +317,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l3\":\"ON\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -322,7 +337,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l3\":\"OFF\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -341,7 +357,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state_l3\":\"TOGGLE\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -360,7 +377,8 @@
                     "topic": "%s\/get",
                     "request": "{\"state_l3\": \"\"}",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",

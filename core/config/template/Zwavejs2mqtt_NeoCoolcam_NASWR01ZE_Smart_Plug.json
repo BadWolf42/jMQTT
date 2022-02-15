@@ -65,7 +65,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/0\/currentValue{value}",
+                    "topic": "%s\/37\/0\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -73,7 +73,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -109,7 +110,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -145,7 +147,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -173,7 +176,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66049{value}",
+                    "topic": "%s\/50\/0\/value\/66049",
                     "minValue": "0",
                     "maxValue": "2500",
                     "timeline::enable": "0",
@@ -184,7 +187,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -211,7 +215,7 @@
                 "isHistorized": "0",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66817{value}",
+                    "topic": "%s\/50\/0\/value\/66817",
                     "minValue": "0",
                     "maxValue": "13",
                     "timeline::enable": "0",
@@ -222,7 +226,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -250,7 +255,7 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66561{value}",
+                    "topic": "%s\/50\/0\/value\/66561",
                     "minValue": "110",
                     "maxValue": "250",
                     "timeline::enable": "0",
@@ -261,7 +266,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -289,7 +295,7 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/65537{value}",
+                    "topic": "%s\/50\/0\/value\/65537",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -298,7 +304,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::tile",
