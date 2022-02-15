@@ -381,6 +381,7 @@ function splitJsonPathOfTemplates() {
 		return;
 	}
 
+	$templateFolderPath = dirname(__FILE__) . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 		jMQTT::templateSplitJsonPathByFile($file);
 	}
