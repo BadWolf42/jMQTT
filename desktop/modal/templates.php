@@ -175,7 +175,7 @@ $('#ul_jmqttTemplateList').on({
 						if (init(_cmd.subType) == 'string')  tr += '<option value="string">Autre</option>';
 						tr += '</select></td><td>';
 						tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" disabled>';
-						tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="jsonPath" placeholder="{{Chemin JSON}}" disabled >';
+						tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="configuration" data-l2key="jsonPath" placeholder="{{Chemin JSON}}" disabled >';
 						tr += '</td><td>';
 						tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="resize:none!important;height:65px;" disabled></textarea>';
 						tr += '</td><td>';
