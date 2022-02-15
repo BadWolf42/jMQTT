@@ -307,6 +307,8 @@ Publiera pour une couleur rouge clair selectionnée :
 
 #### Vue Classic, vue JSON
 
+![Cassic/JSON buttons](../images/classic_json_buttons.png)
+
 Deux boutons en haut à droite de la page permettent de choisir entre 2 types du vue :
   - La vue **Classic** montre les commandes dans l’ordre d’affichage sur la tuile du Dashboard. Elle permet de les réordonner par glissé/déposé ;
   - La vue **JSON** affiche un arbre hiérarchique permettant de naviguer à l'intérieur des payload JSON, de les déplier/replier, et de créer les commandes information souhaitées (se reporter au paragraphe _Payload JSON_) de la section [Commandes de type Information](#commandes-de-type-information)). Dans cette vue, l’ordonnancement des commandes via glissé/déposé est désactivée.
