@@ -36,108 +36,6 @@ define("FORCE_DEPENDANCY_INSTALL", 'forceDepInstall');
 
 
 /**
- * version 0
- * Migrate the plugin to the multi broker version
- * Return without doing anything if the multi broker version is already installed
- */
-function migrateToMultiBrokerVersion() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 0) {
-		return;
-	}
-
-	// Return if the multi broker version is already installed
-	$res = config::searchKey('mqttId', 'jMQTT');
-	if (empty($res)) {
-		log::add('jMQTT', 'info', 'multi-broker version is already installed');
-		return;
-	}
-			
-	// Try to identify which equipment can be converted to the broker
-	// Should be the one containing the status command
-	$mqttId = config::byKey('mqttId', 'jMQTT', 'jeedom');
-	$topic = $mqttId . '/' . jMQTT::CLIENT_STATUS;
-	$cmds = cmd::byLogicalId($topic, 'info');
-	if (count($cmds) == 0) {
-		// $broker = jMQTT::createEquipment(null, $mqttId, $mqttId . '/#', jMQTT::TYP_BRK);
-		$eqpt = new jMQTT();
-		$eqpt->setType(jMQTT::TYP_BRK);
-		$eqpt->setName($mqttId);
-		$eqpt->setIsEnable(1);
-		$eqpt->save();
-
-		$msg = 'créé';
-	}
-	else {
-		$broker = $cmds[0]->getEqLogic();
-		if (count($cmds) > 1) {
-			message::add('jMQTT', 'Plusieurs commandes ayant pour topic "' . $topic . '" existent. ' .
-				"Considère celle avec l'id=" . $broker->getId() . ' pour choisir le broker.');
-		}
-		$msg = 'sélectionné';
-	}
-	
-	$msg = "L'équipement " . $broker->getName() . " a été " . $msg. " comme broker MQTT.";
-	message::add('jMQTT', $msg);
-	log::add('jMQTT', 'debug', $msg);
-	
-	// Transfer plugin parameters
-	$conf_params = array(
-		'mqttAdress' => array('new_key' => 'mqttAddress', 'def' => 'localhost'),
-		'mqttPort' => '1883', 'mqttId' => 'jeedom', 'mqttUser' => '',
-		'mqttPass' => '', 'mqttTopic' => array('new_key' => 'mqttIncTopic', 'def' => '#'),
-		'api' => jMQTT::API_DISABLE);
-	foreach ($conf_params as $key => $p) {
-		if (is_array($p)) {
-			$new_key = $p['new_key'];
-			$def = $p['def'];
-		}
-		else {
-			$new_key = $key;
-			$def = $p;
-		}
-		$broker->setConfiguration($new_key, config::byKey($key, 'jMQTT', $def));
-		config::remove($key, 'jMQTT');
-	}
-
-	// Suppress no more used parameters
-	config::remove(jMQTT::CACHE_INCLUDE_MODE, 'jMQTT');
-	config::remove('status', 'jMQTT');
-	
-	$broker->setType(jMQTT::TYP_BRK);
-	$broker->setBrkId($broker->getId());
-	$broker->save(true);
-	
-	// Create the MQTT status information command
-	$broker->createMqttClientStatusCmd();
-	
-	foreach (eqLogic::byType('jMQTT') as $eqL) {
-		/** @var jMQTT $eqL */
-		try {
-			log::add('jMQTT', 'debug', 'export before of ' . $eqL->getName());
-			log::add('jMQTT', 'debug', json_encode($eqL->full_export()));
-
-			if ($eqL->getType() == '') {
-				$eqL->setType(jMQTT::TYP_EQPT);
-				$eqL->setBrkId($broker->getId());
-			}
-			$eqL->cleanEquipment();
-			$eqL->save(true);
-
-			log::add('jMQTT', 'debug', 'export after of ' . $eqL->getName());
-			log::add('jMQTT', 'debug', json_encode($eqL->full_export()));
-		}
-		catch (Exception $e) {
-			log::add('jMQTT', 'debug', 'catch exception ' . $e->getMessage());
-			$s = print_r(str_replace('/var/www/html', '', $e->getTraceAsString()), true);
-			log::add('jMQTT', 'debug', $s);
-		}
-	}
-
-	log::add('jMQTT', 'info', 'migration to multi-broker version done');
-}
-
-/**
  * version 1
  * Migrate the plugin to the new JSON version (implementing #76)
  * Return without doing anything if the new JSON version is already installed
@@ -398,9 +296,8 @@ function jMQTT_update() {
 	// if version info is not in DB, it means it is a fresh install of jMQTT
 	// and so we don't need to run these functions to adapt eqLogic structure/config
 	// (even if plugin is disabled the config key stays)
-	if (config::byKey(VERSION, 'jMQTT', -1) != -1) {
-		// VERSION = 0
-		migrateToMultiBrokerVersion();
+	$versionFromDB = config::byKey(VERSION, 'jMQTT', -1);
+	if ($versionFromDB != -1) {
 		// VERSION = 1
 		migrateToJsonVersion();
 		// VERSION = 2
