@@ -55,6 +55,7 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
 	const CONF_KEY_QOS = 'Qos';
 	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
+	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
 
@@ -1864,6 +1865,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_MQTT_TLS => '0',
 			self::CONF_KEY_MQTT_TLS_CHECK => 'public',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
+			self::CONF_KEY_AUTO_ADD_TOPIC => '',
 			self::CONF_KEY_MQTT_INC_TOPIC => '#',
 			self::CONF_KEY_API => self::API_DISABLE,
 			self::CONF_KEY_BRK_ID => -1
@@ -1885,20 +1887,18 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * Get this jMQTT object topic
-	 * It is stored as the logicalId
 	 * @return string
 	 */
 	public function getTopic() {
-		return $this->getLogicalId();
+		return $this->getConf(self::CONF_KEY_AUTO_ADD_TOPIC);
 	}
 
 	/**
 	 * Set this jMQTT object topic
-	 * It is stored as the logicalId
 	 * @var string $topic
 	 */
 	public function setTopic($topic) {
-		$this->setLogicalId($topic);
+		$this->setConfiguration(self::CONF_KEY_AUTO_ADD_TOPIC, $topic);
 	}
 
 	/**
