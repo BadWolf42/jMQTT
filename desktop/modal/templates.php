@@ -195,7 +195,13 @@ $('#ul_jmqttTemplateList').on({
 					if (init(_cmd.type) == 'action') {
 						var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" style="height: 88px!important;">';
 						tr += '<td>';
-						tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" disabled>';
+						if (init(_cmd.display.icon)) {
+							tr += '<div class="input-group"><input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" disabled>';
+							tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;">'+init(_cmd.display.icon)+'</span>';
+							tr += '</div>';
+						}
+						else
+							tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" disabled>';
 						tr += '<select class="cmdAttr form-control tooltips input-sm" data-l1key="value" style="margin-top:5px;margin-right:10px;" disabled><option>' + init(_cmd.value, 'Aucune') + '</option></select>';
 						tr += '</td>';
 						tr += '<td>';
