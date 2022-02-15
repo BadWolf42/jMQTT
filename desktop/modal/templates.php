@@ -158,7 +158,15 @@ $('#ul_jmqttTemplateList').on({
 					}
 					if (init(_cmd.type) == 'info') {
 						var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '" style="height: 88px!important;">';
-						tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="name" disabled style="margin-bottom: 33px;">';
+						tr += '<td>';
+						if (init(_cmd.display.icon)) {
+							tr += '<div class="input-group"><input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" disabled>';
+							tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;">'+init(_cmd.display.icon)+'</span>';
+							tr += '</div>';
+						}
+						else
+							tr += '<input class="cmdAttr form-control input-sm" data-l1key="name" disabled>';
+						
 						tr += '</td><td>';
 						tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
 						tr += '<select style="width : 120px;margin-top : 5px;" class="cmdAttr form-control input-sm" disabled data-l1key="subType">';
@@ -213,6 +221,7 @@ $('#ul_jmqttTemplateList').on({
 						tr += '</td><td>';
 						tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" disabled checked/>{{Afficher}}</label></span><br> ';
 						tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="retain"/>{{Retain}}</label></span><br> ';
+						tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="autoPub"/>{{Pub. auto}}</label></span><br> ';
 						tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" disabled data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 						tr += '</td></tr>';
 						$('#table_jmqttTemplateCmds tbody').append(tr);
