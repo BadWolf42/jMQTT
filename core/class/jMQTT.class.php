@@ -1943,7 +1943,7 @@ class jMQTT extends eqLogic {
 		if ($keyPresence == 'ThereIsNoKeyHere') {
 			$this->setTopic($this->getLogicalId());
 			$this->setLogicalId('');
-			$this->save();
+			$this->save(true); // Direct save to avoid daemon notification and Exception that daemon is not Up
 		}
 	}
 
