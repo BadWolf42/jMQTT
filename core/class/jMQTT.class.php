@@ -1136,6 +1136,10 @@ class jMQTT extends eqLogic {
 			log::add(__CLASS__, 'debug', 'dependancy_info : Composer Ratchet PHP package is missing');
 			$return['state'] = 'nok';
 		}
+		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
+			log::add(__CLASS__, 'debug', 'dependancy_info : Composer JsonPath PHP package is missing');
+			$return['state'] = 'nok';
+		}
 
 		if (exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "python3\-requests"') < 1) {
 			log::add(__CLASS__, 'debug', 'dependancy_info : debian python3-requests package is missing');
