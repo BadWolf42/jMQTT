@@ -25,11 +25,6 @@ include_file('core', 'jMQTT', 'class', 'jMQTT');
 define("VERSION", 'version');
 
 /**
- * Current Update version
- */
-define("CURRENT_VERSION", 6);
-
-/**
  * Force dependancy Install Flag handled by deamon_start (value = 1)
  */
 define("FORCE_DEPENDANCY_INSTALL", 'forceDepInstall');
@@ -41,10 +36,6 @@ define("FORCE_DEPENDANCY_INSTALL", 'forceDepInstall');
  * Return without doing anything if the new JSON version is already installed
  */
 function migrateToJsonVersion() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 1) {
-		return;
-	}
 	
 	/** @var cmd $cmd */
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
@@ -65,10 +56,6 @@ function migrateToJsonVersion() {
  * Return without doing anything if the new version is already installed
  */
 function disableAutoAddCmdOnBrokers() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 2) {
-		return;
-	}
 	
 	//disable auto_add_cmd on Brokers eqpt because auto_add is removed for them
 	foreach ((jMQTT::getBrokers()) as $broker) {
@@ -85,10 +72,6 @@ function disableAutoAddCmdOnBrokers() {
  * Return without doing anything if the new version is already installed
  */
 function removePreviousDaemonCrons() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 3) {
-		return;
-	}
 	
 	// remove all jMQTT old daemon crons
 	do {
@@ -107,10 +90,6 @@ function removePreviousDaemonCrons() {
  * Return without doing anything if the new version is already installed
  */
 function installNewDependancies() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 3) {
-		return;
-	}
 	
 	//Jeedom Core Bug : the main thread will end by running the previous version dependancy_info()
 	// (the old one says dependancies are met and it's cached...)
@@ -122,10 +101,6 @@ function installNewDependancies() {
 }
 
 function tagBrokersStatusCmd() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 4) {
-		return;
-	}
 
 	// for each brokers
 	foreach ((jMQTT::getBrokers()) as $broker) {
@@ -144,19 +119,11 @@ function tagBrokersStatusCmd() {
 }
 
 function raiseForceDepInstallFlag() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 5) {
-		return;
-	}
 
 	config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT');
 }
 
 function cleanLeakedInfoInEqpts() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 6) {
-		return;
-	}
 
 	// list of broker configurations
 	$configToRemove = array('mqttAddress',
@@ -193,10 +160,6 @@ function cleanLeakedInfoInEqpts() {
 }
 
 function cleanLeakedInfoInTemplates() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 6) {
-		return;
-	}
 
 	// list of broker configurations
 	$configToRemove = array('mqttAddress',
@@ -254,10 +217,6 @@ function cleanLeakedInfoInTemplates() {
 }
 
 function splitJsonPathOfjMQTTCmd() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 7) {
-		return;
-	}
 
 	$eqLogics = jMQTT::byType('jMQTT');
 	foreach ($eqLogics as $eqLogic) {
@@ -274,10 +233,6 @@ function splitJsonPathOfjMQTTCmd() {
 }
 
 function splitJsonPathOfTemplates() {
-	$version = config::byKey(VERSION, 'jMQTT', -1);
-	if ($version >= 7) {
-		return;
-	}
 
 	$templateFolderPath = dirname(__FILE__) . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
@@ -298,28 +253,55 @@ function jMQTT_update() {
 	// (even if plugin is disabled the config key stays)
 	$versionFromDB = config::byKey(VERSION, 'jMQTT', -1);
 	if ($versionFromDB != -1) {
-		// VERSION = 1
-		migrateToJsonVersion();
-		// VERSION = 2
-		disableAutoAddCmdOnBrokers();
-		// VERSION = 3
-		removePreviousDaemonCrons();
-		installNewDependancies();
-		// VERSION = 4
-		tagBrokersStatusCmd();
-		// VERSION = 5
-		raiseForceDepInstallFlag();
-		// VERSION = 6
-		cleanLeakedInfoInEqpts();
-		cleanLeakedInfoInTemplates();
-		// VERSION = 7
-		splitJsonPathOfjMQTTCmd();
-		splitJsonPathOfTemplates();
-		config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT'); //TODO temporary before rest of evolution
-	}
 
-	// Update version next to upgrade operations
-	config::save(VERSION, CURRENT_VERSION, 'jMQTT');
+		// VERSION = 1
+		if ($versionFromDB < 1) {
+			migrateToJsonVersion();
+			config::save(VERSION, 1, 'jMQTT');
+		}
+		
+		// VERSION = 2
+		if ($versionFromDB < 2) {
+			disableAutoAddCmdOnBrokers();
+			config::save(VERSION, 2, 'jMQTT');
+		}
+
+		// VERSION = 3
+		if ($versionFromDB < 3) {
+			removePreviousDaemonCrons();
+			installNewDependancies();
+			config::save(VERSION, 3, 'jMQTT');
+		}
+
+		// VERSION = 4
+		if ($versionFromDB < 4) {
+			tagBrokersStatusCmd();
+			config::save(VERSION, 4, 'jMQTT');
+		}
+
+		// VERSION = 5
+		if ($versionFromDB < 5) {
+			raiseForceDepInstallFlag();
+			config::save(VERSION, 5, 'jMQTT');
+		}
+
+		// VERSION = 6
+		if ($versionFromDB < 6) {
+			cleanLeakedInfoInEqpts();
+			cleanLeakedInfoInTemplates();
+			config::save(VERSION, 6, 'jMQTT');
+		}
+
+		// VERSION = 7
+		if ($versionFromDB < 7) {
+			splitJsonPathOfjMQTTCmd();
+			splitJsonPathOfTemplates();
+			config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT'); //TODO temporary before rest of evolution
+			config::save(VERSION, 7, 'jMQTT');
+		}
+	}
+	else
+		config::save(VERSION, 7, 'jMQTT');
 }
 
 function jMQTT_remove() {
