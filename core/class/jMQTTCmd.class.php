@@ -39,7 +39,7 @@ class jMQTTCmd extends cmd {
 	 * @param string $topic command mqtt topic
 	 * @return jMQTTCmd new command (NULL if not created)
 	 */
-	public static function newCmd($eqLogic, $name, $topic) {
+	public static function newCmd($eqLogic, $name, $topic, $jsonPath = '') {
 
 		$cmd = new jMQTTCmd();
 		$cmd->setEqLogic($eqLogic);
@@ -49,6 +49,7 @@ class jMQTTCmd extends cmd {
 		$cmd->setType('info');
 		$cmd->setSubType('string');
 		$cmd->setTopic($topic);
+		$cmd->setJsonPath($jsonPath);
 
 		// Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
 		$cmd->setName(self::checkCmdName($eqLogic, $name));
@@ -134,18 +135,25 @@ class jMQTTCmd extends cmd {
 	 * @param array $jsonArray associative array
 	 */
 	public function updateJsonCmdValue($jsonArray) {
-		$topic = $this->getTopic();
-		$indexes = substr($topic, strpos($topic, '{'));
-		$indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
-		$indexes = explode('|', $indexes);
+		// Create JsonObject for JsonPath
+		$jsonobject=new JsonPath\JsonObject($jsonArray);
+
+		// Get and prepare the jsonPath
+		$jsonPath = $this->getJsonPath();
+		if ($jsonPath == '') return;
+		if ($jsonPath[0] != '$') $jsonPath = '$' . $jsonPath;
+
 		try {
-			$value = self::get_array_value($jsonArray, $indexes);
-			$this->updateCmdValue(json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+			$value = $jsonobject->get($jsonPath);
+			if ($value !== false)
+				$this->updateCmdValue(json_encode($value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+			else
+				$this->getEqLogic()->log('info', 'valeur de la commande ' . $this->getLogName() . ' non trouvée');
 		}
 		catch (Throwable $e) {
-			// Should never occur
-			$this->getEqLogic()->log('info', 'valeur de la commande ' . $this->getLogName() . ' non trouvée');
+			$this->getEqLogic()->log('error', 'Chemin JSON de la commande ' . $this->getLogName() . ' incorrect : "' . $this->getJsonPath() . '"');
 		}
+
 	}
 
 	/**
@@ -235,6 +243,7 @@ class jMQTTCmd extends cmd {
 			if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
 			if ($this->getSubType() != 'string') $this->setSubType('string');
 			$this->setTopic($this->getEqLogic()->getMqttClientStatusTopic()); // just for display as it's not used to start the MqttClient
+			$this->setJsonPath(''); // just for display as it's not used to start the MqttClient
 		}
 
 		// --- New cmd ---
@@ -303,7 +312,7 @@ class jMQTTCmd extends cmd {
 			// Type Info and deriving from a JSON payload : Initialize value from "root" cmd
 			if ($this->getType() == 'info' && $this->isJson()) {
 
-				$root_topic = substr($this->getTopic(), 0, strpos($this->getTopic(), '{'));
+				$root_topic = $this->getTopic();
 
 				/** @var jMQTTCmd $root_cmd root JSON command */
 				$root_cmd = jMQTTCmd::byEqLogicIdAndTopic($this->getEqLogic_id(), $root_topic, false);
@@ -473,6 +482,34 @@ class jMQTTCmd extends cmd {
 		return $this->getConfiguration('topic');
 	}
 
+	public function setJsonPath($jsonPath) {
+		$this->setConfiguration('jsonPath', $jsonPath);
+	}
+
+	public function getJsonPath() {
+		return $this->getConfiguration('jsonPath', '');
+	}
+
+	public function splitTopicAndJsonPath() {
+		// Try to find '{'
+		$topic = $this->getTopic();
+		$i = strpos($topic, '{');
+		// If no '{'
+		if ($i === false) {
+			// Just set empty jsonPath if it doesn't exists
+			$this->setJsonPath($this->getJsonPath());
+		}
+		else {
+			// Set cleaned Topic
+			$this->setTopic(substr($topic, 0, $i));
+			$jsonPath = substr($topic, $i);
+			$jsonPath = str_replace('{', '[', $jsonPath);
+			$jsonPath = str_replace('}', ']', $jsonPath);
+			$this->setJsonPath($jsonPath);
+		}
+		$this->save();
+	}
+
 	/**
 	 * Return the list of commands of the given equipment which topic is related to the given one
 	 * (i.e. equal to the given one if multiple is false, or having the given topic as mother JSON related
@@ -486,22 +523,23 @@ class jMQTTCmd extends cmd {
 	 */
 	public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
 		// JSON_UNESCAPED_UNICODE used to correct #92
-		$conf = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -2);
-		$conf = str_replace('\\', '\\\\', $conf);
+		$confTopic = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -1);
+		$confTopic = str_replace('\\', '\\\\', $confTopic);
 
 		$values = array(
-			'topic' => '%' . $conf . '"%',
+			'topic' => '%' . $confTopic . '%',
+			'emptyJsonPath' => '%"jsonPath":""%',
 			'eqLogic_id' => $eqLogic_id,
 		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND ';
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic AND ';
 
 		if ($multiple) {
-			$values['topic_json'] = '%' . $conf . '{%';
+			$values['AllJsonPath'] = '%"jsonPath":"%';
 			// Union is used to have the mother command returned first
-			$sql .= 'configuration LIKE :topic UNION ' . $sql . 'configuration LIKE :topic_json';
+			$sql .= 'configuration LIKE :emptyJsonPath UNION ' . $sql . 'configuration LIKE :AllJsonPath';
 		}
 		else {
-			$sql .= 'configuration LIKE :topic';
+			$sql .= 'configuration LIKE :emptyJsonPath';
 		}
 		$cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 
@@ -509,33 +547,6 @@ class jMQTTCmd extends cmd {
 			return null;
 		else
 			return $multiple ? $cmds : $cmds[0];
-	}
-
-	/**
-	 * Return the $array element designated by $indexes.
-	 * Example: to retrieve $array['1']['name'], call get_array_value($array, array('1', 'name'))
-	 * @param array $array
-	 * @param array $indexes
-	 * @return mixed the requested element
-	 * @throws Exception if index is not found in $array
-	 */
-	private static function get_array_value($array, $indexes) {
-		if (count($array) == 0 || count($indexes) == 0) {
-			throw new Exception();
-		}
-
-		$index = array_shift($indexes);
-		if(!array_key_exists($index, $array)){
-			throw new Exception();
-		}
-
-		$value = $array[$index];
-		if (count($indexes) == 0) {
-			return $value;
-		}
-		else {
-			return self::get_array_value($value, $indexes);
-		}
 	}
 
 	/**
@@ -551,7 +562,7 @@ class jMQTTCmd extends cmd {
 	 * @return boolean
 	 */
 	public function isJson() {
-		return strpos($this->getTopic(), '{') !== false;
+		return $this->getJsonPath() != '';
 	}
 
 	/**
@@ -569,9 +580,7 @@ class jMQTTCmd extends cmd {
 	 * @return boolean
 	 */
 	public function topicMatchesSubscription($subscription) {
-		$topic = $this->getTopic();
-		$i = strpos($topic, '{');
-		return mosquitto_topic_matches_sub($subscription, $i === false ? $topic : substr($topic, 0, $i));
+		return mosquitto_topic_matches_sub($subscription, $this->getTopic());
 	}
 
 	/**

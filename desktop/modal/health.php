@@ -65,7 +65,7 @@ foreach ($eqBrokers as $eqB) {
 			echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
 			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getId() . '</span></td>';
 			echo '<td>' . getIsEnableHtml($eqL) . '</td>';
-			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getLogicalId() . '</span></td>';
+			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getTopic() . '</span></td>';
 			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getStatus('lastCommunication') . '</span></td>';
 			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getConfiguration('createtime') . '</span></td></tr>';
 		}

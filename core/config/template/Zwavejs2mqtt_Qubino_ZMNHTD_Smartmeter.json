@@ -10,7 +10,8 @@
             "battery_type": "Secteur",
             "commentaire": "ON1: chauffages\nON2: Salle de bain & autres...",
             "icone": "energie",
-            "updatetime": "2021-12-12 14:18:03"
+            "updatetime": "2021-12-12 14:18:03",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -29,7 +30,7 @@
         "status": {
             "lastCommunication": "2021-12-08 12:21:08"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",
@@ -39,7 +40,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue{value}",
+                    "topic": "%s\/37\/1\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -47,7 +48,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -83,7 +85,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -119,7 +122,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -146,7 +150,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue{value}",
+                    "topic": "%s\/37\/2\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -154,7 +158,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -190,7 +195,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -226,7 +232,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -253,7 +260,7 @@
                 "isHistorized": "1",
                 "unite": "kWh.",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65537{value}",
+                    "topic": "%s\/50\/1\/value\/65537",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -262,7 +269,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::horizontal",
@@ -289,7 +297,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/currentValue{value}",
+                    "topic": "%s\/37\/3\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -297,7 +305,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -324,7 +333,7 @@
                 "isHistorized": "1",
                 "unite": "kWh.",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65538{value}",
+                    "topic": "%s\/50\/1\/value\/65538",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -333,7 +342,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::rain",
@@ -360,7 +370,8 @@
                 "isHistorized": "1",
                 "unite": "kVAh.",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65793{value}"
+                    "topic": "%s\/50\/1\/value\/65793",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -379,7 +390,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/duration"
+                    "topic": "%s\/37\/1\/duration",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -400,7 +412,7 @@
                 "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66049{value}",
+                    "topic": "%s\/50\/1\/value\/66049",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -409,7 +421,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::vertical",
@@ -437,7 +450,7 @@
                 "isHistorized": "1",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66561{value}",
+                    "topic": "%s\/50\/1\/value\/66561",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -446,7 +459,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::shutter",
@@ -473,7 +487,8 @@
                 "isHistorized": "0",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66817{value}"
+                    "topic": "%s\/50\/1\/value\/66817",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -492,7 +507,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/duration"
+                    "topic": "%s\/37\/2\/duration",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -513,7 +529,7 @@
                 "isHistorized": "1",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/67073{value}",
+                    "topic": "%s\/50\/1\/value\/67073",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -523,7 +539,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::vertical",
@@ -550,7 +567,8 @@
                 "isHistorized": "0",
                 "unite": "kVar",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/67329{value}"
+                    "topic": "%s\/50\/1\/value\/67329",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -570,7 +588,8 @@
                 "isHistorized": "0",
                 "unite": "kVar",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/67330{value}"
+                    "topic": "%s\/50\/1\/value\/67330",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -599,7 +618,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -625,7 +645,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/duration"
+                    "topic": "%s\/37\/3\/duration",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -654,7 +675,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::prise",
@@ -680,7 +702,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/50\/1\/reset"
+                    "topic": "%s\/50\/1\/reset",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",

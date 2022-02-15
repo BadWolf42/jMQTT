@@ -166,7 +166,8 @@ $('#ul_jmqttTemplateList').on({
 						if (init(_cmd.subType) == 'binary')  tr += '<option value="binary">Binaire</option>';
 						if (init(_cmd.subType) == 'string')  tr += '<option value="string">Autre</option>';
 						tr += '</select></td><td>';
-						tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" disabled style="resize:none!important;height:65px;" placeholder="{{Topic}}"></textarea>';
+						tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" disabled>';
+						tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="jsonPath" placeholder="{{Chemin JSON}}" disabled >';
 						tr += '</td><td>';
 						tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="resize:none!important;height:65px;" disabled></textarea>';
 						tr += '</td><td>';

@@ -8,7 +8,8 @@
             "auto_add_cmd": "1",
             "Qos": "1",
             "icone": "remote",
-            "updatetime": "2021-05-18 22:15:33"
+            "updatetime": "2021-05-18 22:15:33",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -208,7 +209,7 @@
         "status": {
             "lastCommunication": "2021-05-16 20:31:14"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -217,7 +218,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Bubble on"
+                    "topic": "%s\/Bubble on",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -241,7 +243,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd water filter on off"
+                    "topic": "%s\/Cmd water filter on off",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -265,7 +268,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Communication with pump"
+                    "topic": "%s\/Communication with pump",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -298,7 +302,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::tile",
@@ -324,7 +329,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd decrease"
+                    "topic": "%s\/Cmd decrease",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -353,7 +359,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::tile",
@@ -379,7 +386,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd heater on off"
+                    "topic": "%s\/Cmd heater on off",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -413,7 +421,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::tile",
@@ -441,7 +450,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd decrease",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -464,7 +474,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd increase"
+                    "topic": "%s\/Cmd increase",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -490,7 +501,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd increase",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -513,7 +525,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd Reset ESP"
+                    "topic": "%s\/Cmd Reset ESP",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -541,7 +554,8 @@
                     "request": "#slider#",
                     "minValue": "10",
                     "maxValue": "40",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -567,7 +581,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd Power on off",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -595,7 +610,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd Power on off",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -621,7 +637,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd Temperature Setpoint"
+                    "topic": "%s\/Cmd Temperature Setpoint",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -647,7 +664,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd bubble on off",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -673,7 +691,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd water jet on off"
+                    "topic": "%s\/Cmd water jet on off",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -699,7 +718,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd bubble on off",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -725,7 +745,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Water jet on"
+                    "topic": "%s\/Water jet on",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -751,7 +772,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd water jet on off",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -777,7 +799,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Sanitizer on"
+                    "topic": "%s\/Sanitizer on",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -801,7 +824,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd sanitizer on off"
+                    "topic": "%s\/Cmd sanitizer on off",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -827,7 +851,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd water jet on off",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -853,7 +878,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd water filter time"
+                    "topic": "%s\/Cmd water filter time",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -872,7 +898,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Farenheit Celsius"
+                    "topic": "%s\/Farenheit Celsius",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -896,7 +923,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/heater on"
+                    "topic": "%s\/heater on",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -920,7 +948,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/filter on"
+                    "topic": "%s\/filter on",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -953,7 +982,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "custom::ChauffageSpa",
@@ -979,7 +1009,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Cmd Sanitizer time"
+                    "topic": "%s\/Cmd Sanitizer time",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -998,7 +1029,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Power on"
+                    "topic": "%s\/Power on",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1022,7 +1054,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/filter setup time"
+                    "topic": "%s\/filter setup time",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1046,7 +1079,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/Sanitizer setup time "
+                    "topic": "%s\/Sanitizer setup time ",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1067,7 +1101,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd heater on off",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -1095,7 +1130,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd heater on off",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -1124,7 +1160,8 @@
                     "topic": "%s\/Cmd water filter time",
                     "request": "#select#",
                     "listValue": "2|2;4|4;6|6",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1156,7 +1193,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -1184,7 +1222,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd water filter on off",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -1213,7 +1252,8 @@
                     "topic": "%s\/Cmd Sanitizer time",
                     "request": "#select#",
                     "listValue": "3|3;5|5;8|8",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1239,7 +1279,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd sanitizer on off",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -1267,7 +1308,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd sanitizer on off",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::binarySwitch",
@@ -1295,7 +1337,8 @@
                 "configuration": {
                     "topic": "%s\/Cmd Reset ESP",
                     "request": "reset",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1319,7 +1362,8 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/Cmd Farenheit Celsius",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",

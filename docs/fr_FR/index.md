@@ -187,6 +187,9 @@ Le plugin créé les informations suivantes :
 
 Dans le cas d’une payload JSON, le plugin sait décoder le contenu et créer les informations associées, et ceci indépendamment de l’état de la case *Ajout automatique des commandes* de l’Onglet Equipement.
 
+Le champ "Chemin JSON" est utilisé pour séléctionner l'information à extraire. Il s'agit d'un chemin JSON suivant le format JSONPath sans le premier caractère '$' par lisibilité.  
+(Le Chemin JSON reste parfaitement fonctionnel même si le caractère '$' est ajouté au début.)
+
 Prenons l’exemple de la payload JSON suivante :
 
     esp/temperatures {"device": "ESP32", "sensorType": "Temperature", "values": [9.5, 18.2, 20.6]}
@@ -200,15 +203,15 @@ Au premier message reçu, jMQTT créé automatiquement l’information suivante 
 
 En basculant dans la vue JSON, via le bouton dédié en haut à droite de la page, et en dépliant complètement l'arbre manuellement, nous obtenons :
 
-| # |   | Nom                      | Sous-Type | Topic                        | Valeur                                                                          |
-| - | - |------------------------- | --------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| > |   | temperatures             | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
-|   |   |                          | info      | esp/temperatures{device}     | "ESP32"                                                                         |
-|   |   |                          | info      | esp/temperatures{sensorType} | "Temperature"                                                                   |
-|   | > |                          | info      | esp/temperatures{values}     | \[9.5, 18.2, 20.6\]                                                             |
-|   |   |                          | info      | esp/temperatures{values}{0}  | 9.5                                                                             |
-|   |   |                          | info      | esp/temperatures{values}{1}  | 18.2                                                                            |
-|   |   |                          | info      | esp/temperatures{values}{2}  | 20.6                                                                            |
+| # |   | Nom                      | Sous-Type | Topic / Chemin JSON                 | Valeur                                                                          |
+| - | - |------------------------- | --------- | ----------------------------------- | ------------------------------------------------------------------------------- |
+| > |   | temperatures             | info      | esp/temperatures                    | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+|   |   |                          | info      | esp/temperatures / \[device\]       | "ESP32"                                                                         |
+|   |   |                          | info      | esp/temperatures / \[sensorType\]   | "Temperature"                                                                   |
+|   | > |                          | info      | esp/temperatures / \[values\]       | \[9.5, 18.2, 20.6\]                                                             |
+|   |   |                          | info      | esp/temperatures / \[values\]\[0\]  | 9.5                                                                             |
+|   |   |                          | info      | esp/temperatures / \[values\]\[1\]  | 18.2                                                                            |
+|   |   |                          | info      | esp/temperatures / \[values\]\[2\]  | 20.6                                                                            |
 
 Seule la première ligne est une commande, reconnaissable parce qu'elle a un id, un nom et des paramètres.
 
@@ -216,24 +219,24 @@ Pour créer des commandes associées à chaque température, il suffit de saisir
 
 L'affichage bascule dans la vue normale, montrant toutes les commandes de l'équipement ; dans notre cas :
 
-| Nom          | Sous-Type | Topic                        | Valeur                                                                          |
-| ------------ | --------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| temp0        | info      | esp/temperatures{values}{0}  | 9.5                                                                             |
-| temp1        | info      | esp/temperatures{values}{1}  | 18.2                                                                            |
-| temp2        | info      | esp/temperatures{values}{2}  | 20.6                                                                            |
-| temperatures | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+| Nom          | Sous-Type | Topic / Chemin JSON                 | Valeur                                                                          |
+| ------------ | --------- | ----------------------------------- | ------------------------------------------------------------------------------- |
+| temp0        | info      | esp/temperatures / \[values\]\[0\]  | 9.5                                                                             |
+| temp1        | info      | esp/temperatures / \[values\]\[1\]  | 18.2                                                                            |
+| temp2        | info      | esp/temperatures / \[values\]\[2\]  | 20.6                                                                            |
+| temperatures | info      | esp/temperatures                    | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
 
 Si nous rebasculons dans la vue JSON, nous obtenons alors :
 
-| # |   | Nom                      | Sous-Type | Topic                        | Valeur                                                                          |
-| - | - |------------------------- | --------- | ---------------------------- | ------------------------------------------------------------------------------- |
-| > |   | temperatures             | info      | esp/temperatures             | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
-|   |   |                          | info      | esp/temperatures{device}     | "ESP32"                                                                         |
-|   |   |                          | info      | esp/temperatures{sensorType} | "Temperature"                                                                   |
-|   | > |                          | info      | esp/temperatures{values}     | \[9.5, 18.2, 20.6\]                                                             |
-|   |   | temp0                    | info      | esp/temperatures{values}{0}  | 9.5                                                                             |
-|   |   | temp1                    | info      | esp/temperatures{values}{1}  | 18.2                                                                            |
-|   |   | temp2                    | info      | esp/temperatures{values}{2}  | 20.6                                                                            |
+| # |   | Nom                      | Sous-Type | Topic / Chemin JSON                 | Valeur                                                                          |
+| - | - |------------------------- | --------- | ----------------------------------- | ------------------------------------------------------------------------------- |
+| > |   | temperatures             | info      | esp/temperatures                    | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+|   |   |                          | info      | esp/temperatures / \[device\]       | "ESP32"                                                                         |
+|   |   |                          | info      | esp/temperatures / \[sensorType\]   | "Temperature"                                                                   |
+|   | > |                          | info      | esp/temperatures / \[values\]       | \[9.5, 18.2, 20.6\]                                                             |
+|   |   | temp0                    | info      | esp/temperatures / \[values\]\[0\]  | 9.5                                                                             |
+|   |   | temp1                    | info      | esp/temperatures / \[values\]\[1\]  | 18.2                                                                            |
+|   |   | temp2                    | info      | esp/temperatures / \[values\]\[2\]  | 20.6                                                                            |
 
 > **Note**
 >
@@ -303,6 +306,8 @@ Publiera pour une couleur rouge clair selectionnée :
     room/lamp/color #e63939
 
 #### Vue Classic, vue JSON
+
+![Cassic/JSON buttons](../images/classic_json_buttons.png)
 
 Deux boutons en haut à droite de la page permettent de choisir entre 2 types du vue :
   - La vue **Classic** montre les commandes dans l’ordre d’affichage sur la tuile du Dashboard. Elle permet de les réordonner par glissé/déposé ;
