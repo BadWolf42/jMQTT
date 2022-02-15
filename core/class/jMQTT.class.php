@@ -249,7 +249,7 @@ class jMQTT extends eqLogic {
 
 			// Save back template in the file
 			$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-			file_put_contents($templateFolderPath . '/' . $file, $jsonExport);
+			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
 		}
 	}
 
