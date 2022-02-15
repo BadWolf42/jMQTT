@@ -233,7 +233,7 @@ class jMQTT extends eqLogic {
 						if ($i === false) {
 							// Just set empty jsonPath if it doesn't exists
 							if (!array_key_exists('jsonPath', $cmd['configuration']))
-								$cmd['configuration']['jsonPath'] = ''
+								$cmd['configuration']['jsonPath'] = '';
 						}
 						else {
 							// Set cleaned Topic
