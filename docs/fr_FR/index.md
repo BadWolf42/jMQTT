@@ -187,6 +187,9 @@ Le plugin créé les informations suivantes :
 
 Dans le cas d’une payload JSON, le plugin sait décoder le contenu et créer les informations associées, et ceci indépendamment de l’état de la case *Ajout automatique des commandes* de l’Onglet Equipement.
 
+Le champ "Chemin JSON" est utilisé pour séléctionner l'information à extraire. Il s'agit d'un chemin JSON suivant le format JSONPath sans le premier caractère '$' par lisibilité.  
+(Le Chemin JSON reste parfaitement fonctionnel même si le caractère '$' est ajouté au début.)
+
 Prenons l’exemple de la payload JSON suivante :
 
     esp/temperatures {"device": "ESP32", "sensorType": "Temperature", "values": [9.5, 18.2, 20.6]}
