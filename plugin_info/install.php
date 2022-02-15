@@ -375,6 +375,19 @@ function splitJsonPathOfjMQTTCmd() {
 	log::add('jMQTT', 'info', 'JsonPath splitted from topic for all jMQTT info commands');
 }
 
+function splitJsonPathOfTemplates() {
+	$version = config::byKey(VERSION, 'jMQTT', -1);
+	if ($version >= 7) {
+		return;
+	}
+
+	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
+		jMQTT::templateSplitJsonPathByFile($file);
+	}
+
+	log::add('jMQTT', 'info', 'JsonPath splitted from topic for all templates');
+}
+
 function jMQTT_install() {
 	jMQTT_update();
 }
@@ -403,6 +416,7 @@ function jMQTT_update() {
 		cleanLeakedInfoInTemplates();
 		// VERSION = 7
 		splitJsonPathOfjMQTTCmd();
+		splitJsonPathOfTemplates();
 		config::save(FORCE_DEPENDANCY_INSTALL, 1, 'jMQTT'); //TODO temporary before rest of evolution
 	}
 
