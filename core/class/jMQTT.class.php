@@ -1783,7 +1783,7 @@ class jMQTT extends eqLogic {
 			// Fix #110
 			// Since Core commit https://github.com/jeedom/core/commit/430f0049dc74e914c4166b109fb48b4375f11ead
 			// payload can be more than int/bool/string
-			$payload = json_encode($payload);
+			$payload = json_encode($payload, JSON_UNESCAPED_UNICODE);
 		}
 		$payloadLogMsg = ($payload === '') ? '(null)' : $payload;
 		$this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadLogMsg);
