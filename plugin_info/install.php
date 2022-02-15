@@ -221,12 +221,18 @@ function splitJsonPathOfjMQTTCmd() {
 	$eqLogics = jMQTT::byType('jMQTT');
 	foreach ($eqLogics as $eqLogic) {
 
+		// Raise up the flag that cmd topic mismatch must be ignored
+		$eqLogic->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
+
 		// get info cmds of current eqLogic
 		$infoCmds = jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info');
 		foreach ($infoCmds as $cmd) {
 			// split topic and jsonPath of cmd
 			$cmd->splitTopicAndJsonPath();
 		}
+
+		// remove topic mismatch ignore flag
+		$eqLogic->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 0);
 	}
 
 	log::add('jMQTT', 'info', 'JsonPath splitted from topic for all jMQTT info commands');
