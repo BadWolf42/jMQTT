@@ -507,7 +507,7 @@ class jMQTTCmd extends cmd {
 			$jsonPath = str_replace('}', ']', $jsonPath);
 			$this->setJsonPath($jsonPath);
 		}
-		$this->save();
+		$this->save(true); // Direct save to avoid pre/postSave
 	}
 
 	/**
