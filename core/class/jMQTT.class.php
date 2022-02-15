@@ -511,8 +511,9 @@ class jMQTT extends eqLogic {
 		$broker = self::getBrokerFromId($brkId);
 		if(!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_POK || $broker->getMqttClientState() == self::MQTTCLIENT_NOK) return;
 
-		//Find eqLogic using the same topic (which is stored in logicalId)
-		$eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
+		//Find eqLogic using the same topic
+		$topicConfiguration = substr(json_encode(array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic)), 1, -1);
+		$eqLogics = jMQTT::byTypeAndSearhConfiguration(__CLASS__, $topicConfiguration);
 		$count = 0;
 		foreach ($eqLogics as $eqLogic) {
 			// If it's attached to the same broker and enabled and it's not "me"
