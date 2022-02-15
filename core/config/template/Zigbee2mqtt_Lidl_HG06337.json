@@ -34,9 +34,10 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{linkquality}",
+                    "topic": "%s",
                     "minValue": "0",
-                    "maxValue": "255"
+                    "maxValue": "255",
+                    "jsonPath": "[linkquality]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -55,7 +56,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s"
+                    "topic": "%s",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -74,7 +76,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{state}"
+                    "topic": "%s",
+                    "jsonPath": "[state]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -96,7 +99,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state\":\"ON\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -115,7 +119,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state\":\"OFF\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -134,7 +139,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state\":\"TOGGLE\"}",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -153,7 +159,8 @@
                     "topic": "%s\/set",
                     "request": "{\"state\":\"\"}",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",

@@ -37,7 +37,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/currentValue{value}"
+                    "topic": "%s\/38\/1\/currentValue",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -58,7 +59,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "99",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -77,7 +79,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -96,7 +99,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "#slider#",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -115,7 +119,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "10",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -134,7 +139,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "20",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -152,7 +158,8 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66049{value}"
+                    "topic": "%s\/50\/0\/value\/66049",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -172,7 +179,8 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65536{value}"
+                    "topic": "%s\/50\/1\/value\/65536",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",

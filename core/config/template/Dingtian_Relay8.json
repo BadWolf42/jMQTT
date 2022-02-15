@@ -45,7 +45,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -73,7 +74,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r1",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -91,7 +93,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r1",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -115,7 +118,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -149,7 +153,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -177,7 +182,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r2",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -195,7 +201,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r2",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -219,7 +226,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -253,7 +261,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -281,7 +290,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r3",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -299,7 +309,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r3",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -323,7 +334,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -357,7 +369,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -385,7 +398,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r4",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -403,7 +417,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r4",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -427,7 +442,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -461,7 +477,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -489,7 +506,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r5",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -507,7 +525,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r5",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -531,7 +550,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -565,7 +585,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -593,7 +614,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r6",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -611,7 +633,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r6",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -635,7 +658,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -669,7 +693,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -697,7 +722,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r7",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -715,7 +741,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r7",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -739,7 +766,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -773,7 +801,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -801,7 +830,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r8",
                     "request": "ON",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -819,7 +849,8 @@
                 "configuration": {
                     "topic": "%s\/in\/r8",
                     "request": "OFF",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -843,7 +874,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -877,7 +909,8 @@
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -903,7 +936,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input2"
+                    "topic": "%s\/out\/input2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -922,7 +956,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input1"
+                    "topic": "%s\/out\/input1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -941,7 +976,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/ip"
+                    "topic": "%s\/out\/ip",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -960,7 +996,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/mac"
+                    "topic": "%s\/out\/mac",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -979,7 +1016,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/sn"
+                    "topic": "%s\/out\/sn",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -998,7 +1036,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input3"
+                    "topic": "%s\/out\/input3",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1017,7 +1056,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input4"
+                    "topic": "%s\/out\/input4",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1036,7 +1076,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input5"
+                    "topic": "%s\/out\/input5",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1055,7 +1096,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input6"
+                    "topic": "%s\/out\/input6",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1074,7 +1116,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input7"
+                    "topic": "%s\/out\/input7",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1093,7 +1136,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input8"
+                    "topic": "%s\/out\/input8",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1112,7 +1156,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input_cnt"
+                    "topic": "%s\/out\/input_cnt",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1131,7 +1176,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay1"
+                    "topic": "%s\/out\/relay1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1150,7 +1196,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay2"
+                    "topic": "%s\/out\/relay2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1169,7 +1216,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay3"
+                    "topic": "%s\/out\/relay3",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1188,7 +1236,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay4"
+                    "topic": "%s\/out\/relay4",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1207,7 +1256,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay5"
+                    "topic": "%s\/out\/relay5",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1226,7 +1276,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay6"
+                    "topic": "%s\/out\/relay6",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1245,7 +1296,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay7"
+                    "topic": "%s\/out\/relay7",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1264,7 +1316,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay8"
+                    "topic": "%s\/out\/relay8",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1283,7 +1336,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay_cnt"
+                    "topic": "%s\/out\/relay_cnt",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1302,7 +1356,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r1"
+                    "topic": "%s\/in\/r1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1321,7 +1376,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r2"
+                    "topic": "%s\/in\/r2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1340,7 +1396,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r3"
+                    "topic": "%s\/in\/r3",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1359,7 +1416,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r4"
+                    "topic": "%s\/in\/r4",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1378,7 +1436,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r5"
+                    "topic": "%s\/in\/r5",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1397,7 +1456,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r6"
+                    "topic": "%s\/in\/r6",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1416,7 +1476,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r7"
+                    "topic": "%s\/in\/r7",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1435,7 +1496,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r8"
+                    "topic": "%s\/in\/r8",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",

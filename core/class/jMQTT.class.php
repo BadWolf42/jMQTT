@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
-require_once __DIR__  . '/../../resources/mosquitto_topic_matches_sub.php';
+require_once __DIR__ . '/../../resources/vendor/autoload.php';
+require_once __DIR__ . '/../../resources/mosquitto_topic_matches_sub.php';
 
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
@@ -199,6 +200,57 @@ class jMQTT extends eqLogic {
 			}
 		} catch (Throwable $e) {}
 		return array();
+	}
+
+	/**
+	 * Split topic and jsonPath of all commands for the template file.
+	 * @param string $_filename template name to look for.
+	 */
+	public static function templateSplitJsonPathByFile($_filename = '') {
+
+		$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $_filename);
+		if (is_json($content)) {
+
+			// decode template file content to json
+			$templateContent = json_decode($content, true);
+
+			// first key is the template itself
+			$templateKey = array_keys($templateContent)[0];
+
+			// if 'commands' key exists in this template
+			if (array_key_exists('commands', $templateContent[$templateKey])) {
+
+				// for each keys under 'commands'
+				foreach ($templateContent[$templateKey]['commands'] as &$cmd) {
+
+					// if 'configuration' key exists in this command
+					if (array_key_exists('configuration', $cmd)) {
+
+						// get the topic if it exists
+						$topic = (array_key_exists('topic', $cmd['configuration'])) ? $cmd['configuration']['topic'] : '';
+
+						$i = strpos($topic, '{');
+						if ($i === false) {
+							// Just set empty jsonPath if it doesn't exists
+							if (!array_key_exists('jsonPath', $cmd['configuration']))
+								$cmd['configuration']['jsonPath'] = '';
+						}
+						else {
+							// Set cleaned Topic
+							$cmd['configuration']['topic'] = substr($topic, 0, $i);
+							$jsonPath = substr($topic, $i);
+							$jsonPath = str_replace('{', '[', $jsonPath);
+							$jsonPath = str_replace('}', ']', $jsonPath);
+							$cmd['configuration']['jsonPath'] = $jsonPath;
+						}
+					}
+				}
+			}
+
+			// Save back template in the file
+			$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
+		}
 	}
 
 	/**
@@ -1744,6 +1796,7 @@ class jMQTT extends eqLogic {
 		if (! is_object($this->getMqttClientStatusCmd())) {
 			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
 			$cmd->setLogicalId(self::CLIENT_STATUS);
+			$cmd->setConfiguration('jsonPath', '');
 			$cmd->setIrremovable();
 			$cmd->save();
 		}

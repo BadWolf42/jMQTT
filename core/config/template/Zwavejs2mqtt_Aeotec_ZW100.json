@@ -39,9 +39,10 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level{value}",
+                    "topic": "%s\/128\/0\/level",
                     "minValue": "0",
-                    "maxValue": "100"
+                    "maxValue": "100",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -60,7 +61,8 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/113\/0\/Home_Security\/Motion_sensor_status{value}"
+                    "topic": "%s\/113\/0\/Home_Security\/Motion_sensor_status",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -80,7 +82,8 @@
                 "isHistorized": "1",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature{value}"
+                    "topic": "%s\/49\/0\/Air_temperature",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -100,9 +103,10 @@
                 "isHistorized": "1",
                 "unite": "Lux",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Illuminance{value}",
+                    "topic": "%s\/49\/0\/Illuminance",
                     "minValue": "0",
-                    "maxValue": "40000"
+                    "maxValue": "40000",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -122,9 +126,10 @@
                 "isHistorized": "1",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Humidity{value}",
+                    "topic": "%s\/49\/0\/Humidity",
                     "minValue": "0",
-                    "maxValue": "100"
+                    "maxValue": "100",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -143,7 +148,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Ultraviolet{value}"
+                    "topic": "%s\/49\/0\/Ultraviolet",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
