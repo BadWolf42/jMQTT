@@ -10,7 +10,8 @@
             "battery_type": "Secteur",
             "commentaire": "ZMNHJD1 qubino fil pilote",
             "icone": "chauffage",
-            "updatetime": "2021-12-11 15:35:13"
+            "updatetime": "2021-12-11 15:35:13",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "1",
@@ -29,7 +30,7 @@
         "status": {
             "lastCommunication": "2021-12-08 12:21:08"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",

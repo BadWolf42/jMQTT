@@ -242,6 +242,27 @@ function splitJsonPathOfTemplates() {
 	log::add('jMQTT', 'info', 'JsonPath splitted from topic for all templates');
 }
 
+function moveTopicOfjMQTTeqLogic() {
+
+	$eqLogics = jMQTT::byType('jMQTT');
+	foreach ($eqLogics as $eqLogic) {
+
+		$eqLogic->moveTopicToConfiguration();
+	}
+
+	log::add('jMQTT', 'info', 'Topic moved to configuration for all jMQTT equipments');
+}
+
+function moveTopicOfTemplates() {
+
+	$templateFolderPath = dirname(__FILE__) . '/../data/template';
+	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
+		jMQTT::moveTopicToConfigurationByFile($file);
+	}
+
+	log::add('jMQTT', 'info', 'Topic moved to configuration for all templates');
+}
+
 function jMQTT_install() {
 	jMQTT_update();
 }
@@ -299,9 +320,16 @@ function jMQTT_update() {
 			installNewDependancies();
 			config::save(VERSION, 7, 'jMQTT');
 		}
+
+		// VERSION = 8
+		if ($versionFromDB < 8) {
+			moveTopicOfjMQTTeqLogic();
+			moveTopicOfTemplates();
+			config::save(VERSION, 8, 'jMQTT');
+		}
 	}
 	else
-		config::save(VERSION, 7, 'jMQTT');
+		config::save(VERSION, 8, 'jMQTT');
 }
 
 function jMQTT_remove() {

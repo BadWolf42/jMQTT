@@ -328,7 +328,7 @@ $('.applyTemplate').off('click').on('click', function () {
 			dialog_message += '</select><br>';
 
 			dialog_message += '<label class="control-label">{{Saisissez le Topic de base : }}</label> ';
-			var currentTopic = $('.eqLogicAttr[data-l1key=logicalId]').value();
+			var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
 			if (currentTopic.endsWith("#") || currentTopic.endsWith("+")) {currentTopic = currentTopic.substr(0,currentTopic.length-1);}
 			if (currentTopic.endsWith("/")) {currentTopic = currentTopic.substr(0,currentTopic.length-1);}
 			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'

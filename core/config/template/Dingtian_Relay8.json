@@ -9,7 +9,8 @@
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "relay",
-            "updatetime": "2021-11-13 11:17:02"
+            "updatetime": "2021-11-13 11:17:02",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -28,7 +29,7 @@
         "status": {
             "lastCommunication": "2021-04-10 16:47:36"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",

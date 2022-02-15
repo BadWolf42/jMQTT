@@ -55,6 +55,7 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
 	const CONF_KEY_QOS = 'Qos';
 	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
+	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
 
@@ -254,6 +255,38 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
+	 * Split topic and jsonPath of all commands for the template file.
+	 * @param string $_filename template name to look for.
+	 */
+	public static function moveTopicToConfigurationByFile($_filename = '') {
+
+		$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $_filename);
+		if (is_json($content)) {
+
+			// decode template file content to json
+			$templateContent = json_decode($content, true);
+
+			// first key is the template itself
+			$templateKey = array_keys($templateContent)[0];
+
+			// if 'configuration' key exists in this template
+			if (array_key_exists('configuration', $templateContent[$templateKey])) {
+
+				// if auto_add_cmd doesn't exists in configuration, we need to move topic from logicalId to configuration
+				if (!array_key_exists(self::CONF_KEY_AUTO_ADD_TOPIC, $templateContent[$templateKey]['configuration'])) {
+					$topic = $templateContent[$templateKey]['logicalId'];
+					$templateContent[$templateKey]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = $topic;
+					$templateContent[$templateKey]['logicalId'] = '';
+				}
+			}
+
+			// Save back template in the file
+			$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
+		}
+	}
+
+	/**
 	 * Deletes user defined template by filename.
 	 * @param string $_template template name to look for.
 	 */
@@ -295,12 +328,12 @@ class jMQTT extends eqLogic {
 		$this->import($template, $_keepCmd);
 
 		// complete eqpt topic
-		$this->setTopic(sprintf($template['logicalId'], $_topic));
+		$this->setTopic(sprintf($template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
 		$this->save();
 
 		// complete cmd topics
 		foreach ($this->getCmd() as $cmd) {
-			$cmd->setConfiguration('topic', sprintf($cmd->getConfiguration('topic'), $_topic));
+			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
 			$cmd->save();
 		}
 
@@ -326,8 +359,8 @@ class jMQTT extends eqLogic {
 		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
 		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
 
-		// Add string format for logicalId (Topic of eqpt)
-		$exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getTopic());
+		// Add string format to eqLogic configuration
+		$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = str_replace($baseTopic, '%s', $this->getTopic());
 
 		// older version of Jeedom (4.2 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
@@ -510,8 +543,9 @@ class jMQTT extends eqLogic {
 		$broker = self::getBrokerFromId($brkId);
 		if(!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_POK || $broker->getMqttClientState() == self::MQTTCLIENT_NOK) return;
 
-		//Find eqLogic using the same topic (which is stored in logicalId)
-		$eqLogics = eqLogic::byLogicalId($topic, __CLASS__, true);
+		//Find eqLogic using the same topic
+		$topicConfiguration = substr(json_encode(array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic)), 1, -1);
+		$eqLogics = jMQTT::byTypeAndSearhConfiguration(__CLASS__, $topicConfiguration);
 		$count = 0;
 		foreach ($eqLogics as $eqLogic) {
 			// If it's attached to the same broker and enabled and it's not "me"
@@ -1864,6 +1898,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_MQTT_TLS => '0',
 			self::CONF_KEY_MQTT_TLS_CHECK => 'public',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
+			self::CONF_KEY_AUTO_ADD_TOPIC => '',
 			self::CONF_KEY_MQTT_INC_TOPIC => '#',
 			self::CONF_KEY_API => self::API_DISABLE,
 			self::CONF_KEY_BRK_ID => -1
@@ -1885,20 +1920,31 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * Get this jMQTT object topic
-	 * It is stored as the logicalId
 	 * @return string
 	 */
 	public function getTopic() {
-		return $this->getLogicalId();
+		return $this->getConf(self::CONF_KEY_AUTO_ADD_TOPIC);
 	}
 
 	/**
 	 * Set this jMQTT object topic
-	 * It is stored as the logicalId
 	 * @var string $topic
 	 */
 	public function setTopic($topic) {
-		$this->setLogicalId($topic);
+		$this->setConfiguration(self::CONF_KEY_AUTO_ADD_TOPIC, $topic);
+	}
+
+	/**
+	 * Move this jMQTT object auto_add_topic to configuration
+	 */
+	public function moveTopicToConfiguration() {
+		// Detect presence of auto_add_topic
+		$keyPresence = $this->getConfiguration(self::CONF_KEY_AUTO_ADD_TOPIC, 'ThereIsNoKeyHere');
+		if ($keyPresence == 'ThereIsNoKeyHere') {
+			$this->setTopic($this->getLogicalId());
+			$this->setLogicalId('');
+			$this->save();
+		}
 	}
 
 	/**

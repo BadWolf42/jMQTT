@@ -9,7 +9,8 @@
             "Qos": "1",
             "icone": "fire",
             "updatetime": "2021-10-14 21:47:26",
-            "battery_type": "1xCR123A"
+            "battery_type": "1xCR123A",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -28,7 +29,7 @@
         "status": {
             "lastCommunication": "2021-09-10 15:19:35"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",

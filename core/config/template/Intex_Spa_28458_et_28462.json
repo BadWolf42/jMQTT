@@ -8,7 +8,8 @@
             "auto_add_cmd": "1",
             "Qos": "1",
             "icone": "remote",
-            "updatetime": "2021-05-18 22:15:33"
+            "updatetime": "2021-05-18 22:15:33",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -208,7 +209,7 @@
         "status": {
             "lastCommunication": "2021-05-16 20:31:14"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",

@@ -10,7 +10,8 @@
             "battery_type": "Secteur",
             "icone": "multisensor",
             "updatetime": "2021-06-22 20:12:50",
-            "batterytime": "2021-06-02 21:08:24"
+            "batterytime": "2021-06-02 21:08:24",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -29,7 +30,7 @@
         "status": {
             "lastCommunication": "2021-09-10 15:19:35"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",
