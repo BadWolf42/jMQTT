@@ -59,6 +59,9 @@ try {
 		if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
 			throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
 		}
+		// Adapt template for the new jsonPath field
+		if (init('dir') == 'template')
+			jMQTT::templateSplitJsonPathByFile($_FILES['file']['name']);
 		ajax::success($_FILES['file']['name']);
 	}
 
