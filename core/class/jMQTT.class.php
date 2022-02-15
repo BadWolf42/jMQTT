@@ -296,12 +296,12 @@ class jMQTT extends eqLogic {
 		$this->import($template, $_keepCmd);
 
 		// complete eqpt topic
-		$this->setTopic(sprintf($template['logicalId'], $_topic));
+		$this->setTopic(sprintf($template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
 		$this->save();
 
 		// complete cmd topics
 		foreach ($this->getCmd() as $cmd) {
-			$cmd->setConfiguration('topic', sprintf($cmd->getConfiguration('topic'), $_topic));
+			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
 			$cmd->save();
 		}
 
@@ -327,8 +327,8 @@ class jMQTT extends eqLogic {
 		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
 		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
 
-		// Add string format for logicalId (Topic of eqpt)
-		$exportedTemplate[$_template]['logicalId'] = str_replace($baseTopic, '%s', $this->getTopic());
+		// Add string format to eqLogic configuration
+		$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = str_replace($baseTopic, '%s', $this->getTopic());
 
 		// older version of Jeedom (4.2 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
