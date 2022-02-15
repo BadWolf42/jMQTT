@@ -1903,6 +1903,19 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
+	 * Move this jMQTT object auto_add_topic to configuration
+	 */
+	public function moveTopicToConfiguration() {
+		// Detect presence of auto_add_topic
+		$keyPresence = $this->getConfiguration(self::CONF_KEY_AUTO_ADD_TOPIC, 'ThereIsNoKeyHere');
+		if ($keyPresence == 'ThereIsNoKeyHere') {
+			$this->setTopic($this->getLogicalId());
+			$this->setLogicalId('');
+			$this->save();
+		}
+	}
+
+	/**
 	 * Get this jMQTT object type
 	 * @return string either jMQTT::TYPE_EQPT, jMQTT::TYP_BRK, or empty string if not defined
 	 */
