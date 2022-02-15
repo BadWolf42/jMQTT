@@ -255,6 +255,38 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
+	 * Split topic and jsonPath of all commands for the template file.
+	 * @param string $_filename template name to look for.
+	 */
+	public static function moveTopicToConfigurationByFile($_filename = '') {
+
+		$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $_filename);
+		if (is_json($content)) {
+
+			// decode template file content to json
+			$templateContent = json_decode($content, true);
+
+			// first key is the template itself
+			$templateKey = array_keys($templateContent)[0];
+
+			// if 'configuration' key exists in this template
+			if (array_key_exists('configuration', $templateContent[$templateKey])) {
+
+				// if auto_add_cmd doesn't exists in configuration, we need to move topic from logicalId to configuration
+				if (!array_key_exists(self::CONF_KEY_AUTO_ADD_TOPIC, $templateContent[$templateKey]['configuration'])) {
+					$topic = $templateContent[$templateKey]['logicalId'];
+					$templateContent[$templateKey]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = $topic;
+					$templateContent[$templateKey]['logicalId'] = '';
+				}
+			}
+
+			// Save back template in the file
+			$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
+		}
+	}
+
+	/**
 	 * Deletes user defined template by filename.
 	 * @param string $_template template name to look for.
 	 */
