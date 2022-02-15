@@ -456,7 +456,7 @@ function printEqLogic(_eqLogic) {
 		function addPayload(topic, jsonPath, payload, parent_id) {
 			var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
 			var c =  existingCmd(_eqLogic.cmd, topic, jsonPath);
-			//console.log('addPayload: topic=' + topic + ' ,jsonPath=' + jsonPath + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
+			//console.log('addPayload: topic=' + topic + ', jsonPath=' + jsonPath + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
 			if (c === undefined) {
 				return addCmd({
 					configuration: {
