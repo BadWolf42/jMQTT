@@ -502,9 +502,22 @@ class jMQTTCmd extends cmd {
 		else {
 			// Set cleaned Topic
 			$this->setTopic(substr($topic, 0, $i));
-			$jsonPath = substr($topic, $i);
-			$jsonPath = str_replace('{', '[', $jsonPath);
-			$jsonPath = str_replace('}', ']', $jsonPath);
+
+			// Split old json path
+			$indexes = substr($topic, $i);
+			$indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
+			$indexes = explode('|', $indexes);
+
+			$jsonPath = '';
+			// For each part of the path
+			foreach ($indexes as $index) {
+				// if this part contains a dot, escape it
+				if (strpos($index, '.') !== false)
+					$jsonPath .= '[\'' . $index . '\']';
+				else
+					$jsonPath .= '[' . $index . ']';
+			}
+
 			$this->setJsonPath($jsonPath);
 		}
 		$this->save(true); // Direct save to avoid pre/postSave
