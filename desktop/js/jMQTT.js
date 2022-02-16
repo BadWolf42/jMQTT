@@ -484,11 +484,15 @@ function printEqLogic(_eqLogic) {
 			//console.log('recursiveAddJsonPayload: topic=' + topic + ', jsonPath=' + jsonPath + ', payload=' + JSON.stringify(payload));
 			var this_id = addPayload(topic, jsonPath, payload, parent_id);
 			for (i in payload) {
+				var escapedi = i;
+				if (escapedi.includes('.')) {
+					escapedi = '\'' + escapedi + '\'';
+				}
 				if (typeof payload[i] === 'object') {
-					recursiveAddJsonPayload(topic, jsonPath + '[' + i + ']', payload[i], this_id);
+					recursiveAddJsonPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
 				}
 				else {
-					addPayload(topic, jsonPath + '[' + i + ']', payload[i], this_id);
+					addPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
 				}
 			}
 		}
