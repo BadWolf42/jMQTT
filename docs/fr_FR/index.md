@@ -196,9 +196,9 @@ Prenons l’exemple de la payload JSON suivante :
 
 Au premier message reçu, jMQTT créé automatiquement l’information suivante :
 
-| Nom          | Sous-Type | Topic            | Valeur                                                                          |
-| ------------ | --------- | ---------------- | ------------------------------------------------------------------------------- |
-| temperatures | info      | esp/temperatures | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+| Nom          | Sous-Type | Topic            | Chemin JSON  | Valeur                                                                          |
+| ------------ | --------- | ---------------- | ------------ | ------------------------------------------------------------------------------- |
+| temperatures | info      | esp/temperatures |              | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
 
 
 En basculant dans la vue JSON, via le bouton dédié en haut à droite de la page, et en dépliant complètement l'arbre manuellement, nous obtenons :
@@ -219,24 +219,24 @@ Pour créer des commandes associées à chaque température, il suffit de saisir
 
 L'affichage bascule dans la vue normale, montrant toutes les commandes de l'équipement ; dans notre cas :
 
-| Nom          | Sous-Type | Topic / Chemin JSON                 | Valeur                                                                          |
-| ------------ | --------- | ----------------------------------- | ------------------------------------------------------------------------------- |
-| temp0        | info      | esp/temperatures / \[values\]\[0\]  | 9.5                                                                             |
-| temp1        | info      | esp/temperatures / \[values\]\[1\]  | 18.2                                                                            |
-| temp2        | info      | esp/temperatures / \[values\]\[2\]  | 20.6                                                                            |
-| temperatures | info      | esp/temperatures                    | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+| Nom          | Sous-Type | Topic            | Chemin JSON      | Valeur                                                                          |
+| ------------ | --------- | ---------------- |----------------- | ------------------------------------------------------------------------------- |
+| temp0        | info      | esp/temperatures | \[values\]\[0\]  | 9.5                                                                             |
+| temp1        | info      | esp/temperatures | \[values\]\[1\]  | 18.2                                                                            |
+| temp2        | info      | esp/temperatures | \[values\]\[2\]  | 20.6                                                                            |
+| temperatures | info      | esp/temperatures |                  | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
 
 Si nous rebasculons dans la vue JSON, nous obtenons alors :
 
-| # |   | Nom                      | Sous-Type | Topic / Chemin JSON                 | Valeur                                                                          |
-| - | - |------------------------- | --------- | ----------------------------------- | ------------------------------------------------------------------------------- |
-| > |   | temperatures             | info      | esp/temperatures                    | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
-|   |   |                          | info      | esp/temperatures / \[device\]       | "ESP32"                                                                         |
-|   |   |                          | info      | esp/temperatures / \[sensorType\]   | "Temperature"                                                                   |
-|   | > |                          | info      | esp/temperatures / \[values\]       | \[9.5, 18.2, 20.6\]                                                             |
-|   |   | temp0                    | info      | esp/temperatures / \[values\]\[0\]  | 9.5                                                                             |
-|   |   | temp1                    | info      | esp/temperatures / \[values\]\[1\]  | 18.2                                                                            |
-|   |   | temp2                    | info      | esp/temperatures / \[values\]\[2\]  | 20.6                                                                            |
+| # |   | Nom                      | Sous-Type | Topic            | Chemin JSON      | Valeur                                                                          |
+| - | - |------------------------- | --------- | ---------------- | ---------------- | ------------------------------------------------------------------------------- |
+| > |   | temperatures             | info      | esp/temperatures |                  | {"device": "ESP32", "sensorType": "Temperature", "values": \[9.5, 18.2, 20.6\]} |
+|   |   |                          | info      | esp/temperatures | \[device\]       | "ESP32"                                                                         |
+|   |   |                          | info      | esp/temperatures | \[sensorType\]   | "Temperature"                                                                   |
+|   | > |                          | info      | esp/temperatures | \[values\]       | \[9.5, 18.2, 20.6\]                                                             |
+|   |   | temp0                    | info      | esp/temperatures | \[values\]\[0\]  | 9.5                                                                             |
+|   |   | temp1                    | info      | esp/temperatures | \[values\]\[1\]  | 18.2                                                                            |
+|   |   | temp2                    | info      | esp/temperatures | \[values\]\[2\]  | 20.6                                                                            |
 
 > **Note**
 >
