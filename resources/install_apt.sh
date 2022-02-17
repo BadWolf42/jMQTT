@@ -2,6 +2,8 @@
 ######################### INCLUSION LIB ##########################
 BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 wget https://raw.githubusercontent.com/NebzHB/dependance.lib/master/dependance.lib -O $BASEDIR/dependance.lib &>/dev/null
+# change dependancy filename
+sed -i 's/\/dependance/\/dependancy/' $BASEDIR/dependance.lib
 PLUGIN=$(basename "$(realpath $BASEDIR/..)")
 LANG_DEP=en
 . ${BASEDIR}/dependance.lib
