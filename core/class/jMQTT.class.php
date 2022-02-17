@@ -16,8 +16,11 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
-require_once __DIR__ . '/../../resources/vendor/autoload.php';
 require_once __DIR__ . '/../../resources/mosquitto_topic_matches_sub.php';
+
+//
+if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
+	require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
 
 include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
