@@ -146,7 +146,7 @@ class jMQTTCmd extends cmd {
 		try {
 			$value = $jsonobject->get($jsonPath);
 			if ($value !== false)
-				$this->updateCmdValue(json_encode($value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+				$this->updateCmdValue(json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 			else
 				$this->getEqLogic()->log('info', 'valeur de la commande ' . $this->getLogName() . ' non trouvée');
 		}
