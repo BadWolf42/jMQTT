@@ -135,6 +135,13 @@ class jMQTTCmd extends cmd {
 	 * @param array $jsonArray associative array
 	 */
 	public function updateJsonCmdValue($jsonArray) {
+
+		// if dependancy is not yet installed, we avoid issue when someone create some command with JSONPath
+		if (!class_exists('JsonPath\JsonObject', false)) {
+			$this->getEqLogic()->log('error', 'JsonPath-PHP library is not available. Please reinstall jMQTT dependancy.');
+			return;
+		}
+
 		// Create JsonObject for JsonPath
 		$jsonobject=new JsonPath\JsonObject($jsonArray);
 
