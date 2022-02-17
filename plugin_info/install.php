@@ -317,7 +317,7 @@ function jMQTT_update() {
 		if ($versionFromDB < 7) {
 			splitJsonPathOfjMQTTCmd();
 			splitJsonPathOfTemplates();
-			installNewDependancies();
+			raiseForceDepInstallFlag();
 			config::save(VERSION, 7, 'jMQTT');
 		}
 
