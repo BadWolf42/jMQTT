@@ -1147,11 +1147,11 @@ class jMQTT extends eqLogic {
 		$return['progress_file'] = $depProgressFile;
 
 		$return['state'] = 'ok';
-		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/vendor/composer/installed.json 2>/dev/null | grep cboden/ratchet | wc -l") < 1) {
+		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/Ratchet/vendor/composer/installed.json 2>/dev/null | grep cboden/ratchet | wc -l") < 1) {
 			log::add(__CLASS__, 'debug', 'dependancy_info : Composer Ratchet PHP package is missing');
 			$return['state'] = 'nok';
 		}
-		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
+		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
 			log::add(__CLASS__, 'debug', 'dependancy_info : Composer JsonPath PHP package is missing');
 			$return['state'] = 'nok';
 		}
