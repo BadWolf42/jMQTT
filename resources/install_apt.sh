@@ -1,7 +1,7 @@
 #!/bin/bash
 ######################### INCLUSION LIB ##########################
 BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-wget https://raw.githubusercontent.com/NebzHB/dependance.lib/beta/dependance.lib -O $BASEDIR/dependance.lib &>/dev/null
+wget https://raw.githubusercontent.com/NebzHB/dependance.lib/master/dependance.lib -O $BASEDIR/dependance.lib &>/dev/null
 PROGRESS_FILENAME=dependancy
 PLUGIN=$(basename "$(realpath $BASEDIR/..)")
 LANG_DEP=en
