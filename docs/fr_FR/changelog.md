@@ -9,6 +9,7 @@
  - **Suppression de la classe intermédiaire jMQTTBase**
  - **Séparation du chemin JSON et du topic dans un nouveau champ de configuration (jsonPath)**
  - **Déplacement du topic de souscription des équipements dans un nouveau champ de configuration (auto_add_topic)**
+ - Correction de la progression de l'installation des dépendances
 
 ## 2022-01-31
  - Prise en compte de la logique de répetition des infos
