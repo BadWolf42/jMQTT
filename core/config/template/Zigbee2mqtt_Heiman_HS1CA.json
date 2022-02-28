@@ -10,7 +10,8 @@
             "battery_type": "1xCR123A",
             "commentaire": "HS1CA",
             "icone": "molecule-co",
-            "updatetime": "2021-10-28 13:08:56"
+            "updatetime": "2021-10-28 13:08:56",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -25,7 +26,7 @@
         "status": {
             "lastCommunication": "2021-10-19 17:45:04"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -35,9 +36,10 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s{battery}",
+                    "topic": "%s",
                     "minValue": "0",
-                    "maxValue": "100"
+                    "maxValue": "100",
+                    "jsonPath": "[battery]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -56,7 +58,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{battery_low}"
+                    "topic": "%s",
+                    "jsonPath": "[battery_low]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -75,7 +78,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{carbon_monoxide}"
+                    "topic": "%s",
+                    "jsonPath": "[carbon_monoxide]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -94,7 +98,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s"
+                    "topic": "%s",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -113,9 +118,10 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{linkquality}",
+                    "topic": "%s",
                     "minValue": "0",
-                    "maxValue": "255"
+                    "maxValue": "255",
+                    "jsonPath": "[linkquality]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -134,7 +140,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{tamper}"
+                    "topic": "%s",
+                    "jsonPath": "[tamper]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -154,9 +161,10 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s{voltage}",
+                    "topic": "%s",
                     "minValue": "0",
-                    "maxValue": "3500"
+                    "maxValue": "3500",
+                    "jsonPath": "[voltage]"
                 },
                 "template": {
                     "dashboard": "default",

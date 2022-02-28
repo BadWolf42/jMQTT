@@ -9,7 +9,8 @@
             "Qos": "1",
             "battery_type": "CR1632",
             "icone": "contact",
-            "updatetime": "2021-03-16 23:49:36"
+            "updatetime": "2021-03-16 23:49:36",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -26,7 +27,7 @@
             "height": "72px"
         },
         "status": [],
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "generic_type": "BATTERY",
@@ -37,7 +38,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s{battery}",
+                    "topic": "%s",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -46,7 +47,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[battery]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -72,7 +74,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s{contact}",
+                    "topic": "%s",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -81,7 +83,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[contact]"
                 },
                 "template": {
                     "dashboard": "core::door",
@@ -107,7 +110,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s{linkquality}"
+                    "topic": "%s",
+                    "jsonPath": "[linkquality]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -127,7 +131,8 @@
                 "isHistorized": "0",
                 "unite": "mV",
                 "configuration": {
-                    "topic": "%s{voltage}"
+                    "topic": "%s",
+                    "jsonPath": "[voltage]"
                 },
                 "template": {
                     "dashboard": "default",

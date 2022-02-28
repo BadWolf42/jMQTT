@@ -8,7 +8,8 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "volet",
-            "updatetime": "2021-04-28 09:31:10"
+            "updatetime": "2021-04-28 09:31:10",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -26,7 +27,7 @@
         "status": {
             "lastCommunication": "2021-04-28 09:26:37"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "generic_type": "FLAP_STATE",
@@ -45,7 +46,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -84,7 +86,8 @@
                     "jeedomPostExecCmd": [],
                     "minValue": "0",
                     "maxValue": "99",
-                    "lastCmdValue": "85"
+                    "lastCmdValue": "85",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -120,7 +123,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -156,7 +160,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -192,7 +197,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -226,7 +232,8 @@
                     "repeatEventManagement": "auto",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",

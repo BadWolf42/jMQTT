@@ -10,7 +10,8 @@
             "battery_type": "Secteur",
             "commentaire": "Tasmota Sonoff 4CH",
             "icone": "lightbulb",
-            "updatetime": "2021-11-19 14:57:50"
+            "updatetime": "2021-11-19 14:57:50",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -25,7 +26,7 @@
         "status": {
             "lastCommunication": "2021-10-19 17:45:04"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -34,7 +35,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER"
+                    "topic": "%s\/cmnd\/POWER",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -53,7 +55,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1"
+                    "topic": "%s\/cmnd\/POWER1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -72,7 +75,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER2"
+                    "topic": "%s\/cmnd\/POWER2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -91,7 +95,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER3"
+                    "topic": "%s\/cmnd\/POWER3",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -110,7 +115,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER4"
+                    "topic": "%s\/cmnd\/POWER4",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -129,7 +135,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1{FallbackTopic}"
+                    "topic": "%s\/INFO1",
+                    "jsonPath": "[FallbackTopic]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -148,7 +155,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1{GroupTopic}"
+                    "topic": "%s\/INFO1",
+                    "jsonPath": "[GroupTopic]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -167,7 +175,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Heap}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Heap]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -186,7 +195,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2{Hostname}"
+                    "topic": "%s\/INFO2",
+                    "jsonPath": "[Hostname]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -205,7 +215,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1"
+                    "topic": "%s\/INFO1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -224,7 +235,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2"
+                    "topic": "%s\/INFO2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -243,7 +255,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO3"
+                    "topic": "%s\/INFO3",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -262,7 +275,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2{IPAddress}"
+                    "topic": "%s\/INFO2",
+                    "jsonPath": "[IPAddress]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -281,7 +295,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{LoadAvg}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[LoadAvg]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -300,7 +315,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/LWT"
+                    "topic": "%s\/LWT",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -319,7 +335,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1{Module}"
+                    "topic": "%s\/INFO1",
+                    "jsonPath": "[Module]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -338,7 +355,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{MqttCount}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[MqttCount]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -357,7 +375,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER1"
+                    "topic": "%s\/POWER1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -376,7 +395,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT{POWER1}"
+                    "topic": "%s\/RESULT",
+                    "jsonPath": "[POWER1]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -395,7 +415,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{POWER1}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[POWER1]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -414,7 +435,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER2"
+                    "topic": "%s\/POWER2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -433,7 +455,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT{POWER2}"
+                    "topic": "%s\/RESULT",
+                    "jsonPath": "[POWER2]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -452,7 +475,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{POWER2}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[POWER2]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -471,7 +495,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER3"
+                    "topic": "%s\/POWER3",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -490,7 +515,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT{POWER3}"
+                    "topic": "%s\/RESULT",
+                    "jsonPath": "[POWER3]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -509,7 +535,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{POWER3}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[POWER3]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -528,7 +555,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER4"
+                    "topic": "%s\/POWER4",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -547,7 +575,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT{POWER4}"
+                    "topic": "%s\/RESULT",
+                    "jsonPath": "[POWER4]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -566,7 +595,8 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{POWER4}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[POWER4]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -585,7 +615,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO3{RestartReason}"
+                    "topic": "%s\/INFO3",
+                    "jsonPath": "[RestartReason]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -604,7 +635,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT"
+                    "topic": "%s\/RESULT",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -623,7 +655,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Sleep}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Sleep]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -642,7 +675,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{SleepMode}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[SleepMode]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -661,7 +695,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE"
+                    "topic": "%s\/STATE",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -680,7 +715,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Time}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Time]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -699,7 +735,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Uptime}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Uptime]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -718,7 +755,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{UptimeSec}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[UptimeSec]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -737,7 +775,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Vcc}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Vcc]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -756,7 +795,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1{Version}"
+                    "topic": "%s\/INFO1",
+                    "jsonPath": "[Version]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -775,7 +815,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2{WebServerMode}"
+                    "topic": "%s\/INFO2",
+                    "jsonPath": "[WebServerMode]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -794,7 +835,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{AP}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][AP]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -813,7 +855,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{BSSId}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][BSSId]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -832,7 +875,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{Channel}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][Channel]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -851,7 +895,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{Downtime}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][Downtime]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -870,7 +915,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{LinkCount}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][LinkCount]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -889,7 +935,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{RSSI}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][RSSI]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -908,7 +955,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{Signal}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][Signal]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -927,7 +975,8 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE{Wifi}{SSId}"
+                    "topic": "%s\/STATE",
+                    "jsonPath": "[Wifi][SSId]"
                 },
                 "template": {
                     "dashboard": "default",
@@ -949,7 +998,8 @@
                     "topic": "%s\/cmnd\/POWER1",
                     "request": "ON",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -968,7 +1018,8 @@
                     "topic": "%s\/cmnd\/POWER1",
                     "request": "OFF",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -987,7 +1038,8 @@
                     "topic": "%s\/cmnd\/POWER1",
                     "request": "TOGGLE",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1006,7 +1058,8 @@
                     "topic": "%s\/cmnd\/POWER2",
                     "request": "ON",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1025,7 +1078,8 @@
                     "topic": "%s\/cmnd\/POWER2",
                     "request": "OFF",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1044,7 +1098,8 @@
                     "topic": "%s\/cmnd\/POWER2",
                     "request": "TOGGLE",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1063,7 +1118,8 @@
                     "topic": "%s\/cmnd\/POWER3",
                     "request": "ON",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1082,7 +1138,8 @@
                     "topic": "%s\/cmnd\/POWER3",
                     "request": "OFF",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1101,7 +1158,8 @@
                     "topic": "%s\/cmnd\/POWER3",
                     "request": "TOGGLE",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1120,7 +1178,8 @@
                     "topic": "%s\/cmnd\/POWER4",
                     "request": "ON",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1139,7 +1198,8 @@
                     "topic": "%s\/cmnd\/POWER4",
                     "request": "OFF",
                     "retain": "0",
-                    "Qos": "2"
+                    "Qos": "2",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",
@@ -1158,7 +1218,8 @@
                     "topic": "%s\/cmnd\/POWER4",
                     "request": "TOGGLE",
                     "retain": "0",
-                    "Qos": "1"
+                    "Qos": "1",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "default",

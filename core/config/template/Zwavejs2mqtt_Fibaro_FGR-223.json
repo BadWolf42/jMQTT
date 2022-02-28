@@ -9,7 +9,8 @@
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "volet",
-            "updatetime": "2021-09-19 13:01:19"
+            "updatetime": "2021-09-19 13:01:19",
+            "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
@@ -28,7 +29,7 @@
         "status": {
             "lastCommunication": "2021-09-10 15:19:35"
         },
-        "logicalId": "%s\/#",
+        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -37,7 +38,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/currentValue{value}"
+                    "topic": "%s\/38\/1\/currentValue",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -67,7 +69,8 @@
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -95,7 +98,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "85",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -113,7 +117,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "69",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -131,7 +136,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "48",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -149,7 +155,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "25",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -167,7 +174,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "99",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -185,7 +193,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/Down\/set",
                     "request": "false",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -203,7 +212,8 @@
                 "configuration": {
                     "topic": "%s\/38\/1\/targetValue\/set",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -220,7 +230,8 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66049{value}"
+                    "topic": "%s\/50\/1\/value\/66049",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -240,7 +251,8 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65537{value}"
+                    "topic": "%s\/50\/1\/value\/65537",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -259,7 +271,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/local{value}"
+                    "topic": "%s\/117\/0\/local",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -280,7 +293,8 @@
                 "configuration": {
                     "topic": "%s\/117\/0\/local\/set",
                     "request": "2",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -298,7 +312,8 @@
                 "configuration": {
                     "topic": "%s\/117\/0\/local\/set",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -314,7 +329,8 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/rf{value}"
+                    "topic": "%s\/117\/0\/rf",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -335,7 +351,8 @@
                 "configuration": {
                     "topic": "%s\/117\/0\/rf\/set",
                     "request": "1",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -353,7 +370,8 @@
                 "configuration": {
                     "topic": "%s\/117\/0\/rf\/set",
                     "request": "0",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -370,7 +388,8 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-zwavejs2mqtt\/api\/RefreshValues(46)",
-                    "retain": "0"
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
