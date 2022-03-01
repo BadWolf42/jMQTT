@@ -251,8 +251,8 @@ class jMQTT extends eqLogic {
 							$jsonPath = '';
 							// For each part of the path
 							foreach ($indexes as $index) {
-								// if this part contains a dot or a space, escape it
-								if (strpos($index, '.') !== false || strpos($index, ' ') !== false)
+								// if this part contains a dot, a space or a slash, escape it
+								if (strpos($index, '.') !== false || strpos($index, ' ') !== false || strpos($index, '/') !== false)
 									$jsonPath .= '[\'' . $index . '\']';
 								else
 									$jsonPath .= '[' . $index . ']';
