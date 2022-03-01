@@ -485,7 +485,7 @@ function printEqLogic(_eqLogic) {
 			var this_id = addPayload(topic, jsonPath, payload, parent_id);
 			for (i in payload) {
 				var escapedi = i;
-				if (escapedi.includes('.') || escapedi.includes(' ')) {
+				if (escapedi.includes('.') || escapedi.includes(' ') || escapedi.includes('/')) {
 					escapedi = '\'' + escapedi + '\'';
 				}
 				if (typeof payload[i] === 'object') {
