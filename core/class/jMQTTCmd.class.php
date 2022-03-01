@@ -518,8 +518,8 @@ class jMQTTCmd extends cmd {
 			$jsonPath = '';
 			// For each part of the path
 			foreach ($indexes as $index) {
-				// if this part contains a dot, escape it
-				if (strpos($index, '.') !== false)
+				// if this part contains a dot or a space, escape it
+				if (strpos($index, '.') !== false || strpos($index, ' ') !== false)
 					$jsonPath .= '[\'' . $index . '\']';
 				else
 					$jsonPath .= '[' . $index . ']';
