@@ -1063,7 +1063,7 @@ class jMQTT extends eqLogic {
 
 		// Start Python daemon
 		$path1 = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
-		$cmd1 = 'python3 ' . $path1 . '/jmqttd.py';
+		$cmd1 = $path1.'/venv/bin/python3 ' . $path1 . '/jmqttd.py';
 		$cmd1 .= ' --plugin ' . __CLASS__;
 		$cmd1 .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
 		$cmd1 .= ' --socketport ' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort);
@@ -1156,12 +1156,8 @@ class jMQTT extends eqLogic {
 			$return['state'] = 'nok';
 		}
 
-		if (exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "python3\-requests"') < 1) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : debian python3-requests package is missing');
-			$return['state'] = 'nok';
-		}
-		if (exec(system::getCmdSudo() . 'pip3 list | grep -E "paho-mqtt|websocket\-client" | wc -l') < 2) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : python3 paho-mqtt or websocket-client library is missing');
+		if (exec(dirname(__FILE__) . '/../../resources/venv/bin/pip3 list | grep -E "requests|paho-mqtt|websocket\-client" | wc -l') < 3) {
+			log::add(__CLASS__, 'debug', 'dependancy_info : python3 requests, paho-mqtt or websocket-client library is missing in venv');
 			$return['state'] = 'nok';
 		}
 		if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
