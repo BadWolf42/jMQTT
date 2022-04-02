@@ -1,19 +1,21 @@
 {
-    "RING_Camera": {
-        "name": "Ring Camera",
+    "Zigbee2mqtt_Xiaomi_WXKG01LM": {
+        "name": "Zigbee2mqtt_Xiaomi_WXKG01LM",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
-            "createtime": "2022-02-19 10:12:33",
+            "createtime": "2022-03-29 00:40:59",
             "auto_add_cmd": "0",
             "auto_add_topic": "%s\/#",
             "Qos": "1",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
-            "updatetime": "2022-03-21 20:50:21"
+            "commentaire": "Xiaomi WXKG01LM\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-wxkg01lm/81827",
+            "icone": "zigbee",
+            "updatetime": "2022-03-29 02:13:58",
+            "batterytime": "2022-03-29 02:02:45"
         },
         "category": {
             "heating": "0",
-            "security": "1",
+            "security": "0",
             "energy": "0",
             "light": "0",
             "opening": "0",
@@ -23,248 +25,288 @@
         },
         "display": {
             "width": "232px",
-            "height": "232px"
+            "height": "192px"
         },
-        "status": {
-            "lastCommunication": "2022-03-07 09:27:12",
-            "enableDatime": "2022-03-07 09:27:12"
-        },
+        "status": [],
         "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
-                "name": "siren:state",
+                "name": "action",
                 "type": "info",
                 "subType": "string",
-                "isHistorized": "0",
+                "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/siren\/state"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "status",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/status"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "firmwareStatus",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/info\/state",
-                    "jsonPath": "[firmwareStatus]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "lastMotion",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/motion\/attributes",
-                    "jsonPath": "[lastMotion]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "lastMotionTime",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/motion\/attributes",
-                    "jsonPath": "[lastMotionTime]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "lastUpdate",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/info\/state",
-                    "jsonPath": "[lastUpdate]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "motionDetectionEnabled",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/motion\/attributes",
-                    "jsonPath": "[motionDetectionEnabled]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "personDetected",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/motion\/attributes",
-                    "jsonPath": "[personDetected]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "wirelessNetwork",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/wireless\/attributes",
-                    "jsonPath": "[wirelessNetwork]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "wirelessSignal",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "dB",
-                "configuration": {
-                    "topic": "%s\/wireless\/attributes",
-                    "jsonPath": "[wirelessSignal]",
-                    "minValue": "-100",
-                    "maxValue": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "motion:state",
-                "type": "info",
-                "subType": "binary",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/motion\/state",
+                    "topic": "%s",
+                    "jsonPath": "[action]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
                     "invertBinary": "0",
-                    "repeatEventManagement": "never",
+                    "repeatEventManagement": "always",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
                     "jeedomPostExecCmd": []
                 },
                 "template": {
-                    "dashboard": "core::presence",
-                    "mobile": "core::presence"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
-                    "invertBinary": "1",
+                    "invertBinary": "0",
                     "showNameOndashboard": "1",
                     "showNameOnmobile": "1",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "parameters": [],
+                    "showStatsOndashboard": "1",
+                    "showStatsOnmobile": "1"
                 },
                 "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "battery",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[battery]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Application Version",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][applicationVersion]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Friendly Name",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][friendlyName]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Link Quality",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[linkquality]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Ieee Addr",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][ieeeAddr]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Voltage",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "mV",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[voltage]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Manufacture ID",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][manufacturerID]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Manufacturer Name",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][manufacturerName]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Model",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][model]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Network Address",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][networkAddress]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Power Source",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][powerSource]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Type",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[device][type]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
                 "alert": []
             }
         ]

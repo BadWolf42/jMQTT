@@ -8,7 +8,7 @@
             "auto_add_cmd": "0",
             "auto_add_topic": "%s\/#",
             "Qos": "1",
-            "icone": "garage",
+            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
             "updatetime": "2022-03-21 20:50:21"
         },
         "category": {
