@@ -1011,6 +1011,7 @@ class jMQTT extends eqLogic {
 
 		// if FORCE_DEPENDANCY_INSTALL flag is raised in plugin config
 		if (config::byKey(self::FORCE_DEPENDANCY_INSTALL, __CLASS__, 0) == 1) {
+			log::add(__CLASS__, 'info', 'Forced Dependancies check/install, daemon will start at next retry');
 			$plugin = plugin::byId(__CLASS__);
 
 			//clean dependancy state cache
@@ -1022,6 +1023,7 @@ class jMQTT extends eqLogic {
 			//remove flag
 			config::remove(self::FORCE_DEPENDANCY_INSTALL, __CLASS__);
 
+			// Installation of the dependancies occuues in another process, this one must end.
 			return;
 		}
 
@@ -1092,7 +1094,7 @@ class jMQTT extends eqLogic {
 			// If only one of both daemon runs we still need to stop
 			self::deamon_stop();
 			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
-			return false;
+			return;
 		}
 		message::removeAll(__CLASS__, 'unableStartDaemon');
 
