@@ -329,7 +329,7 @@ function jMQTT_update($_direct=true) {
 			moveTopicOfjMQTTeqLogic();
 			moveTopicOfTemplates();
 			config::save(VERSION, 8, 'jMQTT');
-			}
+		}
 
 		// VERSION = 9
 		if ($versionFromDB < 9) {
