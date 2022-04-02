@@ -1156,7 +1156,11 @@ class jMQTT extends eqLogic {
 			$return['state'] = 'nok';
 		}
 
-		if (exec(dirname(__FILE__) . '/../../resources/venv/bin/pip3 list | grep -E "requests|paho-mqtt|websocket\-client" | wc -l') < 3) {
+		if (!file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3')) {
+			log::add(__CLASS__, 'debug', 'dependancy_info : python venv has not yet been created');
+			$return['state'] = 'nok';
+		}
+		if (exec(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3 list | grep -E "requests|paho-mqtt|websocket\-client" | wc -l') < 3) {
 			log::add(__CLASS__, 'debug', 'dependancy_info : python3 requests, paho-mqtt or websocket-client library is missing in venv');
 			$return['state'] = 'nok';
 		}

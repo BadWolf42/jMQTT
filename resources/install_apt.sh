@@ -59,13 +59,13 @@ step 50 "Install python3 venv and pip debian packages"
 try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-venv python3-pip
 
 step 60 "Create a python3 Virtual Environment"
-try python3 -m venv $BASEDIR/jmqttd/venv
+try sudo -u www-data python3 -m venv $BASEDIR/jmqttd/venv
 
 step 70 "Install python3 wheel library in venv"
-try $BASEDIR/jmqttd/venv/bin/pip3 install --upgrade wheel
+try sudo -u www-data $BASEDIR/jmqttd/venv/bin/pip3 install --upgrade wheel
 
 step 80 "Install python3 requests, setuptools, paho-mqtt and websocket-client libraries in venv"
-try $BASEDIR/jmqttd/venv/bin/pip3 install --upgrade requests setuptools paho-mqtt websocket-client
+try sudo -u www-data $BASEDIR/jmqttd/venv/bin/pip3 install --upgrade requests setuptools paho-mqtt websocket-client
 
 step 90 "Run post_dependancy_install function"
 cd "$( dirname "${BASH_SOURCE[0]}" )"

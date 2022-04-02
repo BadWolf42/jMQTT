@@ -36,7 +36,7 @@ define("FORCE_DEPENDANCY_INSTALL", 'forceDepInstall');
  * Return without doing anything if the new JSON version is already installed
  */
 function migrateToJsonVersion() {
-	
+
 	/** @var cmd $cmd */
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
 		log::add('jMQTT', 'debug', 'migrate info command ' . $cmd->getName());
@@ -46,7 +46,7 @@ function migrateToJsonVersion() {
 		$cmd->setConfiguration('jOrder', null);
 		$cmd->save();
 	}
-	
+
 	log::add('jMQTT', 'info', 'migration to json#76 version done');
 }
 
@@ -56,13 +56,13 @@ function migrateToJsonVersion() {
  * Return without doing anything if the new version is already installed
  */
 function disableAutoAddCmdOnBrokers() {
-	
+
 	//disable auto_add_cmd on Brokers eqpt because auto_add is removed for them
 	foreach ((jMQTT::getBrokers()) as $broker) {
 		$broker->setAutoAddCmd('0');
 		$broker->save();
 	}
-	
+
 	log::add('jMQTT', 'info', 'migration to no auto_add_cmd for broker done');
 }
 
@@ -72,7 +72,7 @@ function disableAutoAddCmdOnBrokers() {
  * Return without doing anything if the new version is already installed
  */
 function removePreviousDaemonCrons() {
-	
+
 	// remove all jMQTT old daemon crons
 	do {
 		$cron = cron::byClassAndFunction('jMQTT', 'daemon');
@@ -90,7 +90,7 @@ function removePreviousDaemonCrons() {
  * Return without doing anything if the new version is already installed
  */
 function installNewDependancies() {
-	
+
 	//Jeedom Core Bug : the main thread will end by running the previous version dependancy_info()
 	// (the old one says dependancies are met and it's cached...)
 	// Even if we invalidate dependancies infos in cache, it's back just after
@@ -264,11 +264,14 @@ function moveTopicOfTemplates() {
 }
 
 function jMQTT_install() {
-	jMQTT_update();
+	log::add('jMQTT', 'debug', 'install.php: jMQTT_install()');
+	jMQTT_update(false);
 }
 
-function jMQTT_update() {
-	
+function jMQTT_update($_direct=true) {
+	if ($_direct)
+		log::add('jMQTT', 'debug', 'install.php: jMQTT_update()');
+
 	// if version info is not in DB, it means it is a fresh install of jMQTT
 	// and so we don't need to run these functions to adapt eqLogic structure/config
 	// (even if plugin is disabled the config key stays)
@@ -280,7 +283,7 @@ function jMQTT_update() {
 			migrateToJsonVersion();
 			config::save(VERSION, 1, 'jMQTT');
 		}
-		
+
 		// VERSION = 2
 		if ($versionFromDB < 2) {
 			disableAutoAddCmdOnBrokers();
@@ -326,14 +329,20 @@ function jMQTT_update() {
 			moveTopicOfjMQTTeqLogic();
 			moveTopicOfTemplates();
 			config::save(VERSION, 8, 'jMQTT');
+			}
+
+		// VERSION = 9
+		if ($versionFromDB < 9) {
+			raiseForceDepInstallFlag();
+			config::save(VERSION, 9, 'jMQTT');
 		}
 	}
 	else
-		config::save(VERSION, 8, 'jMQTT');
+		config::save(VERSION, 9, 'jMQTT');
 }
 
 function jMQTT_remove() {
-	
+	log::add('jMQTT', 'debug', 'install.php: jMQTT_remove()');
 }
 
 ?>
