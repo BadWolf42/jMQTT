@@ -406,7 +406,7 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Create a new equipment given its name, subscription topic, type and broker the equipment is related to.
+	 * Create a new equipment given its name, subscription topic and broker the equipment is related to.
 	 * IMPORTANT: broker can be null, and then this is the responsability of the caller to attach the new equipment to a broker.
 	 * Equipment is enabled, and saved.
 	 * @param jMQTT $broker broker the equipment is related to
