@@ -60,6 +60,7 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
 	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
 	const CONF_KEY_JSON_PATH = 'jsonPath';
+	const CONF_KEY_TEMPLATE_UUID = 'templateUUID';
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
 
@@ -431,6 +432,76 @@ class jMQTT extends eqLogic {
 		// Advise the desktop page (jMQTT.js) that a new equipment has been added
 		event::add('jMQTT::eqptAdded', array('eqlogic_name' => $name));
 
+		return $eqpt;
+	}
+
+	/**
+	 * Create a new equipment given its name, subscription topic and broker the equipment is related to.
+	 * IMPORTANT: broker can be null, and then this is the responsability of the caller to attach the new equipment to a broker.
+	 * Equipment is enabled, and saved.
+	 * @param string $brk_addr is the IP/hostname of an EXISTING broker
+	 * @param string $name of the new equipment to create
+	 * @param string $template_path to the template json file
+	 * @param string $topic is the subscription base topic to apply to the template file
+	 * @param string $uuid is a unique ID provided at creation time to enable this equipment to be found later on
+	 * return jMQTT object of a new eqLogic or an existing one if matched
+	 * raise Exception is Broker could not be found
+	 */
+	public static function createEqWithTemplate($brk_addr, $name, $template_path, $topic, $uuid = null) {
+		log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
+		//$name = substr($name, 0, 50);
+
+		// Locate the expected broker, if not found then raise !
+		$brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);
+		$broker = null;
+		foreach(self::getBrokers() as $brk) {
+			$ip = gethostbyname($brk->getMqttAddress());
+			if ($ip == $brk_addr || (substr($ip, 0, 4) == '127.' && substr($brk_addr, 0, 4) == '127.')) {
+				$broker = $brk;
+				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found Broker: ' . $broker->getHumanName());
+				break;
+			}
+		}
+		if (!is_object($broker))
+			throw new Exception("Aucun Broker n'a pu être identifier, merci de créer un Broker dans jMQTT avant de créer un équipement.");
+		// Create or locate the Eq
+		$eq = null;
+		if (!is_null($uuid)) {
+			// Search for a jMQTT Eq with $uuid, if found apply template to it
+			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
+			$eqpts = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+			foreach ($eqpts as $eqpt) {
+				// If it's attached to correct broker
+				if ($eqpt->getBrkId() == $broker->getId()) {
+					log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found matching Eq '.$eqpt->getHumanName());
+					$eq = $eqpt;
+					break;
+				}
+				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found Eq with matching uuid but wrong broker '.$eqpt->getHumanName());
+			}
+			if (is_null($eq))
+				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Could not find any Eq matching with UUID and broker.');
+		}
+		if (is_null($eq)) {
+			$eq = self::createEquipment($broker, $name, $topic);
+			log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': New Eq created.');
+			if (!is_null($uuid)) {
+				$eq->setConfiguration(jMQTT::CONF_KEY_TEMPLATE_UUID, $uuid);
+				$eq->save();
+			}
+		}
+		// Check if file is in Jeedom directory and exists
+		if (strpos(realpath($template_path), getRootPath()) === 0)
+			throw new Exception("Le fichier template est en-dehors de Jeedom.");
+		if (!file_exists($template_path))
+			throw new Exception("Le fichier template n'a pas pu être trouvé.");
+		// Get template content directly from source file
+		$content = file_get_contents($template_path);
+		$template = json_decode($content, true);
+		// Apply the template
+		// TODO handle re-application of the template to the same more then once and keep existing cmd history ?
+		$eq->applyATemplate($template, $topic, false);
+		// Return the new Eq
 		return $eqpt;
 	}
 
