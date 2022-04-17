@@ -59,6 +59,7 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_QOS = 'Qos';
 	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
 	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
+	const CONF_KEY_JSON_PATH = 'jsonPath';
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
 
@@ -236,8 +237,8 @@ class jMQTT extends eqLogic {
 						$i = strpos($topic, '{');
 						if ($i === false) {
 							// Just set empty jsonPath if it doesn't exists
-							if (!array_key_exists('jsonPath', $cmd['configuration']))
-								$cmd['configuration']['jsonPath'] = '';
+							if (!array_key_exists(jMQTT::CONF_KEY_JSON_PATH, $cmd['configuration']))
+								$cmd['configuration'][jMQTT::CONF_KEY_JSON_PATH] = '';
 						}
 						else {
 							// Set cleaned Topic
@@ -257,7 +258,7 @@ class jMQTT extends eqLogic {
 								else
 									$jsonPath .= '[' . $index . ']';
 							}
-							$cmd['configuration']['jsonPath'] = $jsonPath;
+							$cmd['configuration'][jMQTT::CONF_KEY_JSON_PATH] = $jsonPath;
 						}
 					}
 				}
@@ -1849,7 +1850,7 @@ class jMQTT extends eqLogic {
 		if (! is_object($this->getMqttClientStatusCmd())) {
 			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
 			$cmd->setLogicalId(self::CLIENT_STATUS);
-			$cmd->setConfiguration('jsonPath', '');
+			$cmd->setConfiguration(jMQTT::CONF_KEY_JSON_PATH, '');
 			$cmd->setIrremovable();
 			$cmd->save();
 		}
