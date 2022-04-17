@@ -506,7 +506,7 @@ class jMQTT extends eqLogic {
 	public static function getBrokers() {
 		$type = json_encode(array('type' => self::TYP_BRK));
 		/** @var jMQTT[] $brokers */
-		$brokers = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1));
+		$brokers = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
 		$returns = array();
 		foreach ($brokers as $broker) {
 			$returns[$broker->getId()] = $broker;
@@ -562,7 +562,7 @@ class jMQTT extends eqLogic {
 
 		//Find eqLogic using the same topic
 		$topicConfiguration = substr(json_encode(array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic)), 1, -1);
-		$eqLogics = jMQTT::byTypeAndSearhConfiguration(__CLASS__, $topicConfiguration);
+		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
 		$count = 0;
 		foreach ($eqLogics as $eqLogic) {
 			// If it's attached to the same broker and enabled and it's not "me"
@@ -2109,7 +2109,7 @@ class jMQTT extends eqLogic {
 	public static function byBrkId($id) {
 		$brkId = json_encode(array('brkId' => $id));
 		/** @var jMQTT[] $eqpts */
-		$returns = self::byTypeAndSearhConfiguration(jMQTT::class, substr($brkId, 1, -1));
+		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
 		return $returns;
 	}
 
