@@ -324,16 +324,17 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * apply a template (from json) to the current equipement.
-	 * @param string $_template name of the template to apply
+	 * @param array $_template content of the template to apply
+	 * @param string $topic subscription topic
+	 * @param bool   $_keepCmd keep existing commands
 	 */
-	public function applyTemplate($_template, $_topic, $_keepCmd = true){
+	public function applyATemplate($_template, $_topic, $_keepCmd = true){
 
 		if ($this->getType() != self::TYP_EQPT) {
 			return true;
 		}
 
-		$template = self::templateByName($_template);
-		if (is_null($template)) {
+		if (is_null($_template)) {
 			return true;
 		}
 
@@ -341,10 +342,10 @@ class jMQTT extends eqLogic {
 		$this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
 
 		// import template
-		$this->import($template, $_keepCmd);
+		$this->import($_template, $_keepCmd);
 
 		// complete eqpt topic
-		$this->setTopic(sprintf($template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
+		$this->setTopic(sprintf($_template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
 		$this->save();
 
 		// complete cmd topics
