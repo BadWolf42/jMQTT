@@ -7,6 +7,7 @@
  - Modifications et réécritures mineures des certaines fonctions
  - Correction d'erreurs dans le fonction jMQTT::HTMLtoXY
  - Implementation d'un Environment Virtuel python3 pour mieux gérer les dépendences
+ - Correction de l'échapement du chemin JSON
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
