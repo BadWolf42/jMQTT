@@ -1,5 +1,13 @@
 # Registre des évolutions
 
+## Beta
+ - Nettoyage des nom des templates, ajout en commentaire de liens vers community ou les sources des templates
+ - Ajout de 30 nouvelles templates, merci à Nicoca-ine et Mikael, Meute, Jbval, lolo_95 et iPaaad !
+ - Ajout d'une fonction permettant à un plugin tiers d'ajouter/modifier facilement un équipement dans jMQTT avec un template
+ - Modifications et réécritures mineures des certaines fonctions
+ - Correction d'erreurs dans le fonction jMQTT::HTMLtoXY
+ - Implementation d'un Environment Virtuel python3 pour mieux gérer les dépendences
+
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
  - Correction du nettoyage des info broker des equipements (les champs ayant '' pour valeur étaient supprimés avant envoi)
