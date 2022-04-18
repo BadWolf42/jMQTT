@@ -1,6 +1,6 @@
 {
-    "qubino_ZMNHJD1": {
-        "name": "Chauffage",
+    "Zwavejs2mqtt Qubino ZMNHJD1 Fil Pilote": {
+        "name": "Zwavejs2mqtt Qubino ZMNHJD1 Fil Pilote",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
