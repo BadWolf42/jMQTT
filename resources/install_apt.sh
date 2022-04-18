@@ -17,15 +17,15 @@ fi
 
 echo "== Should install Mosquitto:" ${INSTALL_MOSQUITTO}
 
-step 10 "Synchronize the package index"
+step 5 "Synchronize the package index"
 try sudo apt-get update
 
 if [ ${INSTALL_MOSQUITTO} -eq 1 ]; then
-	step 20 "Install Mosquitto"
+	step 10 "Install Mosquitto"
 	try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto
 
 	if [ $(ls /etc/mosquitto/conf.d/*.conf 2>/dev/null | wc -w) -eq 0 ]; then
-		step 30 "Configure Mosquitto"
+		step 15 "Configure Mosquitto"
 		#echo "== No *.conf file found in conf.d folder"
 		#echo "== Create jMQTT Mosquitto configuration file"
 		echo -e "# jMQTT Mosquitto configuration file\nlistener 1883\nallow_anonymous true" > /etc/mosquitto/conf.d/jMQTT.conf
@@ -55,17 +55,17 @@ try sudo -u www-data php ./composer.phar update --working-dir=./JsonPath-PHP
 step 40 "Remove Composer"
 silent rm composer.phar
 
-step 50 "Install python3 debian packages"
-try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-requests python3-pip python3-wheel
+step 50 "Install python3 venv and pip debian packages"
+try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-venv python3-pip
 
-step 60 "Install python3 setuptools library"
-try pip3 install --upgrade setuptools
+step 60 "Create a python3 Virtual Environment"
+try sudo -u www-data python3 -m venv $BASEDIR/jmqttd/venv
 
-step 70 "Install python3 paho-mqtt library"
-try pip3 install --upgrade paho-mqtt
+step 70 "Install python3 wheel library in venv"
+try sudo -u www-data $BASEDIR/jmqttd/venv/bin/pip3 install --upgrade wheel
 
-step 80 "Install python3 websocket-client library"
-try pip3 install --upgrade websocket-client
+step 80 "Install python3 requests, setuptools, paho-mqtt and websocket-client libraries in venv"
+try sudo -u www-data $BASEDIR/jmqttd/venv/bin/pip3 install --upgrade requests setuptools paho-mqtt websocket-client
 
 step 90 "Run post_dependancy_install function"
 cd "$( dirname "${BASH_SOURCE[0]}" )"

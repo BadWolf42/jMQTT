@@ -6,6 +6,7 @@
  - Ajout d'une fonction permettant à un plugin tiers d'ajouter/modifier facilement un équipement dans jMQTT avec un template
  - Modifications et réécritures mineures des certaines fonctions
  - Correction d'erreurs dans le fonction jMQTT::HTMLtoXY
+ - Implementation d'un Environment Virtuel python3 pour mieux gérer les dépendences
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
