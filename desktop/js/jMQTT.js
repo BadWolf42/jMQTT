@@ -485,8 +485,8 @@ function printEqLogic(_eqLogic) {
 			var this_id = addPayload(topic, jsonPath, payload, parent_id);
 			for (i in payload) {
 				var escapedi = i;
-				if (escapedi.includes('.') || escapedi.includes(' ') || escapedi.includes('/')) {
-					escapedi = '\'' + escapedi + '\'';
+				if (escapedi.match(/[^\w-]/)) { // Escape if a special character is found
+					escapedi = '\'' + escapedi.replace(/'/g,"\\'") + '\'';
 				}
 				if (typeof payload[i] === 'object') {
 					recursiveAddJsonPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
