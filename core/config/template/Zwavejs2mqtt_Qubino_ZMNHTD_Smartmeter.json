@@ -1,6 +1,6 @@
 {
     "Zwavejs2mqtt Qubino ZMNHTD Smartmeter": {
-        "name": "SmartMeter",
+        "name": "Zwavejs2mqtt Qubino ZMNHTD Smartmeter",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
