@@ -490,11 +490,11 @@ class jMQTTCmd extends cmd {
 	}
 
 	public function setJsonPath($jsonPath) {
-		$this->setConfiguration('jsonPath', $jsonPath);
+		$this->setConfiguration(jMQTT::CONF_KEY_JSON_PATH, $jsonPath);
 	}
 
 	public function getJsonPath() {
-		return $this->getConfiguration('jsonPath', '');
+		return $this->getConfiguration(jMQTT::CONF_KEY_JSON_PATH, '');
 	}
 
 	public function splitTopicAndJsonPath() {

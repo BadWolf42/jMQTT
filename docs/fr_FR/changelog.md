@@ -3,6 +3,8 @@
 ## Beta
  - Nettoyage des nom des templates, ajout en commentaire de liens vers community ou les sources des templates
  - Ajout de 30 nouvelles templates, merci à Nicoca-ine et Mikael, Meute, Jbval, lolo_95 et iPaaad !
+ - Ajout d'une fonction permettant à un plugin tiers d'ajouter/modifier facilement un équipement dans jMQTT avec un template
+ - Modifications et réécritures mineures des certaines fonctions
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
