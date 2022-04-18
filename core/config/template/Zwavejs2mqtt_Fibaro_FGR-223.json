@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGR-223": {
-        "name": "Fibaro FGR-223 Roller Shutter 3",
+    "Zwavejs2mqtt Fibaro FGR-223 Roller Shutter 3": {
+        "name": "Zwavejs2mqtt Fibaro FGR-223 Roller Shutter 3",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
@@ -8,6 +8,7 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
+            "commentaire": "FGR-223 Volet roulant\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "icone": "volet",
             "updatetime": "2021-09-19 13:01:19",
             "auto_add_topic": "%s\/#"
