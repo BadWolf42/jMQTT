@@ -1,5 +1,5 @@
 {
-    "Zwavejs2mqtt Fibaro FGD-212": {
+    "Zwavejs2mqtt Fibaro FGD-212 Dimmer 2": {
         "name": "Fibaro FGD-212 Dimmer 2",
         "eqType_name": "jMQTT",
         "configuration": {

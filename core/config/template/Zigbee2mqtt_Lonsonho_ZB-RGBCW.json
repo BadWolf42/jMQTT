@@ -1,6 +1,6 @@
 {
-    "Zigbee2mqtt_Lonsonho_ZB-RGBCW": {
-        "name": "Zigbee2mqtt_Lonsonho_ZB-RGBCW",
+    "Zigbee2mqtt Lonsonho ZB-RGBCW": {
+        "name": "Zigbee2mqtt Lonsonho ZB-RGBCW",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

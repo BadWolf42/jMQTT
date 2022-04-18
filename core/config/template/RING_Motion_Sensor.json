@@ -1,5 +1,5 @@
 {
-    "RING_Motion_Sensor": {
+    "RING Motion Sensor": {
         "name": "Ring Motion Sensor",
         "eqType_name": "jMQTT",
         "configuration": {

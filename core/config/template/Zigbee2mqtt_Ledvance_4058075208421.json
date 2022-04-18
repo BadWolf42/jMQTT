@@ -1,6 +1,6 @@
 {
-    "Zigbee2mqtt_Ledvance_4058075208421": {
-        "name": "Zigbee2mqtt_Ledvance_4058075208421",
+    "Zigbee2mqtt Ledvance 4058075208421": {
+        "name": "Zigbee2mqtt Ledvance 4058075208421",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

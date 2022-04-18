@@ -1,5 +1,5 @@
 {
-    "RING_Keypad": {
+    "RING Keypad": {
         "name": "Ring Keypad",
         "eqType_name": "jMQTT",
         "configuration": {

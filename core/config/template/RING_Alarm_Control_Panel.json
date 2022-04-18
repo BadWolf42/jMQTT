@@ -1,5 +1,5 @@
 {
-    "RING_Alarm_Control_Panel": {
+    "RING Alarm Control Panel": {
         "name": "Ring Alarm Control Panel",
         "eqType_name": "jMQTT",
         "configuration": {

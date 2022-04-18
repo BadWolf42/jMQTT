@@ -1,5 +1,5 @@
 {
-    "RING_Camera": {
+    "RING Camera": {
         "name": "Ring Camera",
         "eqType_name": "jMQTT",
         "configuration": {

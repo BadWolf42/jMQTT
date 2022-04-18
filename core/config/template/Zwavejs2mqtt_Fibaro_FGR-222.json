@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGR-222": {
-        "name": "Fibaro FGR-222 Roller Shutter 2",
+    "Zwavejs2mqtt Fibaro FGR-222 Roller Shutter 2": {
+        "name": "Zwavejs2mqtt Fibaro FGR-222 Roller Shutter 2",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

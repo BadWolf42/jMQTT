@@ -1,6 +1,6 @@
 {
-    "Zigbee2mqtt_Xiaomi_WXKG02LM_rev1": {
-        "name": "Zigbee2mqtt_Xiaomi_WXKG02LM_rev1",
+    "Zigbee2mqtt Xiaomi WXKG02LM rev1": {
+        "name": "Zigbee2mqtt Xiaomi WXKG02LM rev1",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

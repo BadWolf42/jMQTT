@@ -1,5 +1,5 @@
 {
-    "RING_Contact_Sensor": {
+    "RING Contact Sensor": {
         "name": "Ring Contact Sensor",
         "eqType_name": "jMQTT",
         "configuration": {

@@ -1,5 +1,5 @@
 {
-    "RING_Alarm_Base_Station": {
+    "RING Alarm Base Station": {
         "name": "Ring Alarm Base Station",
         "eqType_name": "jMQTT",
         "configuration": {

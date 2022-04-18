@@ -1,6 +1,6 @@
 {
     "Zigbee2mqtt Xiaomi MCCGQ01LM": {
-        "name": "toto",
+        "name": "Zigbee2mqtt Xiaomi MCCGQ01LM",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

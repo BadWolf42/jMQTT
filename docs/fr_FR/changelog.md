@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## Beta
+ - Nettoyage des nom des templates, ajout en commentaire de liens vers community ou les sources des templates
+
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
  - Correction du nettoyage des info broker des equipements (les champs ayant '' pour valeur étaient supprimés avant envoi)

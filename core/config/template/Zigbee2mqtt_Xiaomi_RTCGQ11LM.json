@@ -1,6 +1,6 @@
 {
-    "Zigbee2mqtt_Xiaomi_RTCGQ11LM": {
-        "name": "Zigbee2mqtt_Xiaomi_RTCGQ11LM",
+    "Zigbee2mqtt Xiaomi RTCGQ11LM": {
+        "name": "Zigbee2mqtt Xiaomi RTCGQ11LM",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
