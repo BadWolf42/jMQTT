@@ -6,8 +6,8 @@
  - Ajout d'une fonction permettant à un plugin tiers d'ajouter/modifier facilement un équipement dans jMQTT avec un template
  - Modifications et réécritures mineures des certaines fonctions
  - Correction d'erreurs dans le fonction jMQTT::HTMLtoXY
- - Implementation d'un Environment Virtuel python3 pour mieux gérer les dépendences
- - Correction de l'échapement du chemin JSON
+ - Implémentation d'un Environnement Virtuel python3 pour mieux gérer les dépendances
+ - Correction de l'échappement du chemin JSON
  - Correction d'une erreur javascript lors du changement d'équipement
 
 ## 2022-02-28
