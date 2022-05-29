@@ -14,6 +14,7 @@
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+from base64 import b64encode
 import json
 import logging
 import os
@@ -24,6 +25,7 @@ import sys
 import threading
 import time
 import websocket
+from zlib import decompress as zlib_decompress
 
 try:
 	from jeedom.jeedom import jeedom_socket
@@ -96,12 +98,18 @@ class MqttClient:
 
 	def on_message(self, client, userdata, message):
 		try:
-			decodedPayload = message.payload.decode('utf-8')
+			usablePayload = message.payload.decode('utf-8')
+			form = '' # Successfully decoded as utf8
 		except:
-			logging.warning('Message skipped: payload %s  is not valid for topic %s', message.payload.hex(), message.topic)
-		else:
-			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, message.topic, decodedPayload, message.qos, bool(message.retain))
-			self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":decodedPayload, "qos":message.qos, "retain":bool(message.retain)}))
+			try: # jMQTT will try automaticaly to decompress the payload (requested in issue #135)
+				unzip = zlib_decompress(message.payload, wbits=-15)
+				usablePayload = unzip.decode('utf-8')
+				form = ' (decompressed)'
+			except: # If payload cannot be decoded or decompressed it is returned in base64
+				usablePayload = b64encode(message.payload)
+				form = ' (bin in base64)'
+			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', self.id, message.topic, usablePayload, form, message.qos, bool(message.retain))
+		self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":usablePayload, "qos":message.qos, "retain":bool(message.retain)}))
 
 	def is_connected(self):
 		return str(self.connected).lower()
