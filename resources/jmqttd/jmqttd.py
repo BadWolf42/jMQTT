@@ -14,6 +14,7 @@
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
+from binascii import b2a_base64
 import json
 import logging
 import os
@@ -24,6 +25,7 @@ import sys
 import threading
 import time
 import websocket
+from zlib import decompress as zlib_decompress
 
 try:
 	from jeedom.jeedom import jeedom_socket
@@ -96,12 +98,18 @@ class MqttClient:
 
 	def on_message(self, client, userdata, message):
 		try:
-			decodedPayload = message.payload.decode('utf-8')
+			usablePayload = message.payload.decode('utf-8')
+			form = '' # Successfully decoded as utf8
 		except:
-			logging.warning('Message skipped: payload %s  is not valid for topic %s', message.payload.hex(), message.topic)
-		else:
-			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, message.topic, decodedPayload, message.qos, bool(message.retain))
-			self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":decodedPayload, "qos":message.qos, "retain":bool(message.retain)}))
+			try: # jMQTT will try automaticaly to decompress the payload (requested in issue #135)
+				unzip = zlib_decompress(message.payload, wbits=-15)
+				usablePayload = unzip.decode('utf-8')
+				form = ' (decompressed)'
+			except: # If payload cannot be decoded or decompressed it is returned in base64
+				usablePayload = b2a_base64(message.payload, newline=False).decode('utf-8')
+				form = ' (bin in base64)'
+			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', self.id, message.topic, usablePayload, form, message.qos, bool(message.retain))
+		self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":usablePayload, "qos":message.qos, "retain":bool(message.retain)}))
 
 	def is_connected(self):
 		return str(self.connected).lower()
@@ -588,17 +596,12 @@ class Main():
 
 if __name__ == '__main__':
 	# Formater for the output of the logger
-	formatter = logging.Formatter('[%(asctime)s]%(levelname)-10s : %(message)s')
-
-	def fmt_filter(record):
-		record.levelname = '[%s]' % record.levelname
-		return True
+	formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
 
 	# STDOUT will get all logs
 	ch = logging.StreamHandler()
 	ch.setLevel(logging.DEBUG)
 	ch.setFormatter(formatter)
-	ch.addFilter(fmt_filter)
 
 	# Attach the handler to the main logger
 	logger = logging.getLogger()
