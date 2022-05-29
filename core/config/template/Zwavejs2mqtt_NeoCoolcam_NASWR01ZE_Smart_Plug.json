@@ -1,6 +1,6 @@
 {
-    "Neo Coolcam Smart Power Plug \/ NAS-WR01ZE": {
-        "name": "prise bureau",
+    "Zwavejs2mqtt NeoCoolcam NAS-WR01ZE Smart Plug": {
+        "name": "Zwavejs2mqtt NeoCoolcam NAS-WR01ZE Smart Plug",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

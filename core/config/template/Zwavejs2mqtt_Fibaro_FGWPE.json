@@ -1,101 +1,81 @@
 {
-    "Zwavejs2mqtt Qubino ZMNHOD": {
-        "name": "Zwavejs2mqtt Qubino ZMNHOD",
+    "Zwavejs2mqtt Fibaro FGWPE": {
+        "name": "Zwavejs2mqtt Fibaro FGWPE",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
-            "createtime": "2021-01-10 00:05:34",
+            "createtime": "2021-06-03 16:19:06",
             "auto_add_cmd": "0",
             "Qos": "1",
-            "icone": "volet",
-            "updatetime": "2021-06-20 12:25:13",
+            "icone": "prise",
+            "mqttPubStatus": "1",
+            "commentaire": "Fibaro FGWPE\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
+            "mqttTls": "0",
+            "mqttTlsCheck": "public",
+            "api": "disable",
+            "updatetime": "2022-01-13 12:21:29",
             "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
             "security": "0",
-            "energy": "0",
+            "energy": "1",
             "light": "0",
-            "automatism": "1",
+            "opening": "0",
+            "automatism": "0",
             "multimedia": "0",
-            "default": "0",
-            "opening": "0"
-        },
-        "display": {
-            "height": "112px",
-            "width": "192px"
-        },
-        "status": {
-            "lastCommunication": "2021-04-28 09:26:37"
+            "default": "0"
         },
         "logicalId": "",
         "commands": [
             {
-                "generic_type": "FLAP_STATE",
+                "generic_type": "ENERGY_STATE",
                 "eqType": "jMQTT",
                 "name": "Etat",
                 "type": "info",
-                "subType": "numeric",
-                "isHistorized": "1",
+                "subType": "binary",
+                "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/currentValue",
-                    "timeline::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "none",
-                    "historyPurge": "-7 days",
-                    "repeatEventManagement": "auto",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": [],
-                    "jsonPath": ""
+                    "topic": "%s\/37\/0\/currentValue",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
                     "mobile": "core::default"
                 },
                 "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "invertBinary": "0"
                 },
                 "isVisible": "0",
                 "alert": []
             },
             {
-                "generic_type": "FLAP_SLIDER",
+                "generic_type": "ENERGY_ON",
                 "eqType": "jMQTT",
-                "name": "Positionnement",
+                "name": "On",
                 "type": "action",
-                "subType": "slider",
+                "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
-                    "request": "#slider#",
+                    "topic": "%s\/37\/0\/targetValue\/set",
+                    "request": "true",
                     "retain": "0",
-                    "prev_retain": "0",
+                    "autoPub": "0",
                     "timeline::enable": "0",
                     "interact::auto::disable": "0",
                     "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
                     "jeedomPostExecCmd": [],
-                    "minValue": "0",
-                    "maxValue": "99",
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
+                    "dashboard": "core::prise",
+                    "mobile": "core::prise"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -107,54 +87,17 @@
                 "alert": []
             },
             {
-                "generic_type": "FLAP_DOWN",
+                "generic_type": "ENERGY_OFF",
                 "eqType": "jMQTT",
-                "name": "Descendre",
+                "name": "Off",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/Down\/set",
-                    "request": "true",
-                    "retain": "0",
-                    "prev_retain": "0",
-                    "timeline::enable": "0",
-                    "interact::auto::disable": "0",
-                    "actionConfirm": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": [],
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "icon": "<i class=\"fas fa-arrow-down\"><\/i>",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "generic_type": "FLAP_STOP",
-                "eqType": "jMQTT",
-                "name": "Stop",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/0\/Down\/set",
+                    "topic": "%s\/37\/0\/targetValue\/set",
                     "request": "false",
                     "retain": "0",
-                    "prev_retain": "0",
+                    "autoPub": "0",
                     "timeline::enable": "0",
                     "interact::auto::disable": "0",
                     "actionConfirm": "0",
@@ -164,80 +107,70 @@
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
+                    "dashboard": "core::prise",
+                    "mobile": "core::prise"
                 },
                 "display": {
-                    "icon": "<i class=\"fas fa-stop\"><\/i>",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Etat",
                 "isVisible": "1",
                 "alert": []
             },
             {
-                "generic_type": "FLAP_UP",
+                "generic_type": "POWER",
                 "eqType": "jMQTT",
-                "name": "Monter",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/0\/Up\/set",
-                    "request": "true",
-                    "retain": "0",
-                    "prev_retain": "0",
-                    "timeline::enable": "0",
-                    "interact::auto::disable": "0",
-                    "actionConfirm": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": [],
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "icon": "<i class=\"fas fa-arrow-up\"><\/i>",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "status",
+                "name": "Puissance",
                 "type": "info",
-                "subType": "binary",
-                "isHistorized": "1",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "W",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s\/49\/0\/Power",
+                    "minValue": "0",
+                    "maxValue": "2500",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "CONSUMPTION",
+                "eqType": "jMQTT",
+                "name": "Consommation",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "kWh",
+                "configuration": {
+                    "topic": "%s\/50\/0\/value\/65537",
                     "timeline::enable": "0",
+                    "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historyPurge": "-1 month",
-                    "repeatEventManagement": "auto",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
                     "jeedomPostExecCmd": [],
-                    "jsonPath": ""
+                    "jsonPath": "[value]"
                 },
                 "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
+                    "dashboard": "core::tile",
+                    "mobile": "core::tile"
                 },
                 "display": {
                     "invertBinary": "0",
@@ -248,6 +181,82 @@
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
                     "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "logicalId": "refresh",
+                "name": "Rafraichir",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "request": "{\"args\": []}",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "nodeId",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[nodeId]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Status",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
                 },
                 "isVisible": "0",
                 "alert": []

@@ -485,8 +485,8 @@ function printEqLogic(_eqLogic) {
 			var this_id = addPayload(topic, jsonPath, payload, parent_id);
 			for (i in payload) {
 				var escapedi = i;
-				if (escapedi.includes('.') || escapedi.includes(' ') || escapedi.includes('/')) {
-					escapedi = '\'' + escapedi + '\'';
+				if (escapedi.match(/[^\w-]/)) { // Escape if a special character is found
+					escapedi = '\'' + escapedi.replace(/'/g,"\\'") + '\'';
 				}
 				if (typeof payload[i] === 'object') {
 					recursiveAddJsonPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
@@ -624,6 +624,10 @@ function printEqLogic(_eqLogic) {
  * saveEqLogic callback called by plugin.template before saving an eqLogic
  */
 function saveEqLogic(_eqLogic) {
+	if (_eqLogic.configuration.type != 'broker' && _eqLogic.configuration.type != 'eqpt') {
+		// not on an jMQTT eqLogic, to fix issue #153
+		return _eqLogic;
+	}
 
 	// pass the log level when defined for a broker object
 	if (_eqLogic.configuration.type == 'broker') {
@@ -634,7 +638,6 @@ function saveEqLogic(_eqLogic) {
 	}
 
 	// remove non existing commands added for the JSON view and add new commands at the end
-	//var max_order = Math.max.apply(Math, _eqLogic.cmd.map(function(cmd) { return cmd.order; }));
 	for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
 		if (_eqLogic.cmd[i].id == "" && _eqLogic.cmd[i].name == "") {
 			_eqLogic.cmd.splice(i, 1);
