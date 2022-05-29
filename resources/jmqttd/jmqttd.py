@@ -14,7 +14,7 @@
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
 import argparse
-from base64 import b64encode
+from binascii import b2a_base64
 import json
 import logging
 import os
@@ -106,7 +106,7 @@ class MqttClient:
 				usablePayload = unzip.decode('utf-8')
 				form = ' (decompressed)'
 			except: # If payload cannot be decoded or decompressed it is returned in base64
-				usablePayload = b64encode(message.payload)
+				usablePayload = b2a_base64(message.payload, newline=False).decode('utf-8')
 				form = ' (bin in base64)'
 			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', self.id, message.topic, usablePayload, form, message.qos, bool(message.retain))
 		self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":usablePayload, "qos":message.qos, "retain":bool(message.retain)}))
