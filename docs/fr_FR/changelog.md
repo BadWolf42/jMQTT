@@ -9,6 +9,8 @@
  - Implémentation d'un Environnement Virtuel python3 pour mieux gérer les dépendances
  - Correction de l'échappement du chemin JSON
  - Correction d'une erreur javascript lors du changement d'équipement
+ - **Un message MQTT compressé avec zlib est automatiquement reçu décompressé dans Jeedom sur la commande info associée**
+ - **Un message MQTT binaire est automatiquement reçu en base64 dans Jeedom sur la commande info associée**
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
