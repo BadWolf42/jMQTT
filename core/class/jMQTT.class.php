@@ -442,6 +442,7 @@ class jMQTT extends eqLogic {
 	/**
 	 * Create a new equipment given its name, subscription topic and broker the equipment is related to.
 	 * IMPORTANT: broker can be null, and then this is the responsability of the caller to attach the new equipment to a broker.
+	 * If a command already exists with the same logicalId, then it will be kept and updated, otherwise a new cmd will be created.
 	 * Equipment is enabled, and saved.
 	 * @param string $brk_addr is the IP/hostname of an EXISTING broker
 	 * @param string $name of the new equipment to create
@@ -453,7 +454,14 @@ class jMQTT extends eqLogic {
 	 */
 	public static function createEqWithTemplate($brk_addr, $name, $template_path, $topic, $uuid = null) {
 		log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
-		//$name = substr($name, 0, 50);
+
+		// Check if file is in Jeedom directory and exists
+		if (strpos(realpath($template_path), getRootPath()) === false)
+			throw new Exception("Le fichier template est en-dehors de Jeedom.");
+		if (!file_exists($template_path))
+			throw new Exception("Le fichier template n'a pas pu être trouvé.");
+		// Convert on the fly template to jsonPath if needed
+		self::templateSplitJsonPathByFile($template_path);
 
 		// Locate the expected broker, if not found then raise !
 		$brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);
@@ -468,8 +476,9 @@ class jMQTT extends eqLogic {
 		}
 		if (!is_object($broker))
 			throw new Exception("Aucun Broker n'a pu être identifier, merci de créer un Broker dans jMQTT avant de créer un équipement.");
-		// Create or locate the Eq
+
 		$eq = null;
+		// Try to locate the Eq is uuid is provided
 		if (!is_null($uuid)) {
 			// Search for a jMQTT Eq with $uuid, if found apply template to it
 			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
@@ -486,6 +495,7 @@ class jMQTT extends eqLogic {
 			if (is_null($eq))
 				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Could not find any Eq matching with UUID and broker.');
 		}
+		// If the Eq is not located create it
 		if (is_null($eq)) {
 			$eq = self::createEquipment($broker, $name, $topic);
 			log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': New Eq created.');
@@ -494,19 +504,27 @@ class jMQTT extends eqLogic {
 				$eq->save();
 			}
 		}
-		// Check if file is in Jeedom directory and exists
-		if (strpos(realpath($template_path), getRootPath()) === 0)
-			throw new Exception("Le fichier template est en-dehors de Jeedom.");
-		if (!file_exists($template_path))
-			throw new Exception("Le fichier template n'a pas pu être trouvé.");
-		// Get template content directly from source file
-		$content = file_get_contents($template_path);
-		$template = json_decode($content, true);
+
+		// Get template content from file
+		try {
+			$content = file_get_contents($template_path);
+			if (is_json($content)) {
+				// decode template file content to json
+				$templateContent = json_decode($content, true);
+				// first key is the template name
+				$templateKey = array_keys($templateContent)[0];
+				// Content is the template
+				$template = $templateContent[$templateKey];
+			}
+		} catch (Throwable $e) {
+			throw new Exception(__('Erreur lors de la lecture du ficher template !', __FILE__));
+		}
+
 		// Apply the template
-		// TODO handle re-application of the template to the same more then once and keep existing cmd history ?
-		$eq->applyATemplate($template, $topic, false);
-		// Return the new Eq
-		return $eqpt;
+		$eq->applyATemplate($template, $topic, true);
+
+		// Return the Eq with template applied
+		return $eq;
 	}
 
 	/**
