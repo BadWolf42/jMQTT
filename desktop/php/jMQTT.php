@@ -109,7 +109,14 @@ function displayEqLogicCard($eqL, $node_images) {
 	
 		<?php
 		foreach ($eqBrokers as $eqB) {
-			echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} <b>' . $eqB->getName() . '</b></legend>';
+			echo '<legend><i class="fas fa-table"></i> ';
+			if (!array_key_exists($eqB->getId(), $eqNonBrokers))
+				echo '{{Aucun équipement connectés à}}';
+			elseif (count($eqNonBrokers[$eqB->getId()]) == 1)
+				echo '{{1 équipement connectés à}}';
+			else
+				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
+			echo ' <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . 
 				$eqB->getId() . '"', 'logoSecondary');
@@ -123,6 +130,7 @@ function displayEqLogicCard($eqL, $node_images) {
 			echo '</div>';
 		}
 		
+		// TODO: Check if this is still usefull (condition is always false)
 		if ($has_orphans) {
 			echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';

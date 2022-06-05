@@ -44,7 +44,7 @@ function getIsEnableHtml($eqL) {
 }
 
 echo '<legend><i class="fas fa-table"></i> {{Brokers}}</legend>';
-echo '<table class="table table-condensed tablesorter" id="table_healthMQTT">';
+echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_brk">';
 echo '<thead><tr><th>{{Broker}}</th><th>{{ID}}</th><th>{{Statut}}</th><th>{{Dernière communication}}</th><th>{{Date création}}</th></tr></thead><tbody>';
 foreach ($eqBrokers as $eqB) {
 	$info = $eqB->getMqttClientInfo();
@@ -57,8 +57,15 @@ foreach ($eqBrokers as $eqB) {
 echo '</tbody></table>';
 
 foreach ($eqBrokers as $eqB) {
-	echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} <b>' . $eqB->getName() . '</b></legend>';
-	echo '<table class="table table-condensed tablesorter" id="table_healthMQTT">';
+	echo '<legend><i class="fas fa-table"></i> ';
+	if (!array_key_exists($eqB->getId(), $eqNonBrokers))
+		echo '{{Aucun équipement connectés à}}';
+	elseif (count($eqNonBrokers[$eqB->getId()]) == 1)
+		echo '{{1 équipement connectés à}}';
+	else
+		echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
+	echo ' <b>' . $eqB->getName() . '</b></legend>';
+	echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_'.$eqB->getId().'">';
 	echo '<thead><tr><th>{{Module}}</th><th>{{ID}}</th><th>{{Activé}}</th><th>{{Inscrit au Topic}}</th><th>{{Dernière communication}}</th><th>{{Date création}}</th></tr></thead><tbody>';
 	if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 		foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
