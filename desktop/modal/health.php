@@ -26,19 +26,19 @@ $eqBrokers = jMQTT::getBrokers();
 function getStatusHtml($status) {
 	switch ($status) {
 		case 'ok':
-			return '<span class="label label-success" style="font-size : 1em; cursor : default;">{{OK}}</span>';
+			return '<span class="label label-success" style="font-size:1em;cursor:default;width:60px;">{{OK}}</span>';
 		case 'pok':
-			return '<span class="label label-warning" style="font-size : 1em; cursor : default;">{{POK}}</span>';
+			return '<span class="label label-warning" style="font-size:1em;cursor:default;width:60px;">{{POK}}</span>';
 		case 'nok':
-			return '<span class="label label-danger" style="font-size : 1em; cursor : default;">{{NOK}}</span>';
+			return '<span class="label label-danger" style="font-size:1em;cursor:default;width:60px;">{{NOK}}</span>';
 	}
 }
 
 function getIsEnableHtml($eqL) {
 	if ($eqL->getIsEnable()) {
-		return '<span class="label label-success" style="font-size : 1em; cursor : default;">{{Oui}}</span>';
+		return '<span class="label label-success" style="font-size:1em;cursor:default;width:60px;">{{Oui}}</span>';
 	} else {
-		return '<span class="label label-danger" style="font-size : 1em; cursor : default;">{{Non}}</span>';
+		return '<span class="label label-danger" style="font-size:1em;cursor:default;width:60px;">{{Non}}</span>';
 	}
 }
 
@@ -48,10 +48,10 @@ echo '<thead><tr><th class="col-md-3">{{Broker}}</th><th class="col-md-1">{{ID}}
 foreach ($eqBrokers as $eqB) {
 	$info = $eqB->getMqttClientInfo();
 	echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
-	echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqB->getId() . '</span></td>';
+	echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqB->getId() . '</span></td>';
 	echo '<td>' . getStatusHtml($info['state']) . ' ' . $info['message'] . '</td>';
-	echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqB->getStatus('lastCommunication') . '</span></td>';
-	echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqB->getConfiguration('createtime') . '</span></td></tr>';
+	echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqB->getStatus('lastCommunication') . '</span></td>';
+	echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqB->getConfiguration('createtime') . '</span></td></tr>';
 }
 echo '</tbody></table>';
 
@@ -69,11 +69,11 @@ foreach ($eqBrokers as $eqB) {
 	if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 		foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 			echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
-			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getId() . '</span></td>';
+			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getId() . '</span></td>';
 			echo '<td>' . getIsEnableHtml($eqL) . '</td>';
-			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getTopic() . '</span></td>';
-			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getStatus('lastCommunication') . '</span></td>';
-			echo '<td><span class="label label-info" style="font-size : 1em; cursor : default;">' . $eqL->getConfiguration('createtime') . '</span></td></tr>';
+			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getTopic() . '</span></td>';
+			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getStatus('lastCommunication') . '</span></td>';
+			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getConfiguration('createtime') . '</span></td></tr>';
 		}
 	}
 	echo '</tbody></table>';
