@@ -36,16 +36,15 @@ function getStatusHtml($status) {
 
 function getIsEnableHtml($eqL) {
 	if ($eqL->getIsEnable()) {
-		return getStatusHtml('ok');
-	}
-	else {
-		return getStatusHtml('nok');
+		return '<span class="label label-success" style="font-size : 1em; cursor : default;">{{Oui}}</span>';
+	} else {
+		return '<span class="label label-danger" style="font-size : 1em; cursor : default;">{{Non}}</span>';
 	}
 }
 
 echo '<legend><i class="fas fa-table"></i> {{Brokers}}</legend>';
 echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_brk">';
-echo '<thead><tr><th>{{Broker}}</th><th>{{ID}}</th><th>{{Statut}}</th><th>{{Dernière communication}}</th><th>{{Date création}}</th></tr></thead><tbody>';
+echo '<thead><tr><th class="col-md-3">{{Broker}}</th><th class="col-md-1">{{ID}}</th><th class="col-md-5">{{Statut}}</th><th class="col-md-2">{{Dernière communication}}</th><th class="col-md-1">{{Date de création}}</th></tr></thead><tbody>';
 foreach ($eqBrokers as $eqB) {
 	$info = $eqB->getMqttClientInfo();
 	echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
@@ -66,7 +65,7 @@ foreach ($eqBrokers as $eqB) {
 		echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
 	echo ' <b>' . $eqB->getName() . '</b></legend>';
 	echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_'.$eqB->getId().'">';
-	echo '<thead><tr><th>{{Module}}</th><th>{{ID}}</th><th>{{Activé}}</th><th>{{Inscrit au Topic}}</th><th>{{Dernière communication}}</th><th>{{Date création}}</th></tr></thead><tbody>';
+	echo '<thead><tr><th class="col-md-3">{{Module}}</th><th class="col-md-1">{{ID}}</th><th class="col-md-1">{{Activé}}</th><th class="col-md-4">{{Inscrit au Topic}}</th><th class="col-md-2">{{Dernière communication}}</th><th class="col-md-1">{{Date de création}}</th></tr></thead><tbody>';
 	if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 		foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 			echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
