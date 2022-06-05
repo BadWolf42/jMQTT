@@ -504,7 +504,7 @@ class jMQTT extends eqLogic {
 		$content = file_get_contents($template_path);
 		$template = json_decode($content, true);
 
-		// Get filename without .son extension
+		// Get filename without .json extension
 		$fname = basename($template_path, '.json');
 		// Retrieve json content without equipment name (generally same as filename)
 		foreach (json_decode($content, true) as $k => $v)
@@ -517,7 +517,7 @@ class jMQTT extends eqLogic {
 		// TODO handle re-application of the template to the same more then once and keep existing cmd history ?
 		$eq->applyATemplate($template, $topic, false);
 		// Return the new Eq
-		return $eqpt;
+		return $eq;
 	}
 
 	/**
