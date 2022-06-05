@@ -455,6 +455,12 @@ class jMQTT extends eqLogic {
 		log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
 		//$name = substr($name, 0, 50);
 
+		// Check if file is in Jeedom directory and exists
+		if (strpos(realpath($template_path), getRootPath()) === false)
+			throw new Exception("Le fichier template est en-dehors de Jeedom.");
+		if (!file_exists($template_path))
+			throw new Exception("Le fichier template n'a pas pu être trouvé.");
+
 		// Locate the expected broker, if not found then raise !
 		$brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);
 		$broker = null;
@@ -494,14 +500,19 @@ class jMQTT extends eqLogic {
 				$eq->save();
 			}
 		}
-		// Check if file is in Jeedom directory and exists
-		if (strpos(realpath($template_path), getRootPath()) === 0)
-			throw new Exception("Le fichier template est en-dehors de Jeedom.");
-		if (!file_exists($template_path))
-			throw new Exception("Le fichier template n'a pas pu être trouvé.");
 		// Get template content directly from source file
 		$content = file_get_contents($template_path);
 		$template = json_decode($content, true);
+
+		// Get filename without .son extension
+		$fname = basename($template_path, '.json');
+		// Retrieve json content without equipment name (generally same as filename)
+		foreach (json_decode($content, true) as $k => $v)
+			if ($k == $fname) {
+				$template = $v;
+				break;
+			}
+
 		// Apply the template
 		// TODO handle re-application of the template to the same more then once and keep existing cmd history ?
 		$eq->applyATemplate($template, $topic, false);
