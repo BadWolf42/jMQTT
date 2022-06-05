@@ -1022,6 +1022,11 @@ function changeIncludeMode() {
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
 	showMqttClientInfo(_options);
 	setIncludeModeActivation(_options.brkId, _options.state);
+	if (_options.launchable == 'ok')
+		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').removeClass('disableCard')
+	else
+		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').addClass('disableCard')
+	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle').removeClass('fa-minus-circle').removeClass('fa-times-circle').addClass(_options.icon);
 	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').css('color', _options.color);
 });
 

@@ -1442,6 +1442,7 @@ class jMQTT extends eqLogic {
 		$return['last_launch'] = $this->getLastMqttClientLaunchTime();
 		$return['state'] = $this->getMqttClientState();
 		$return['color'] = self::getBrokerColorFromState($return['state']);
+		$return['icon'] = self::getBrokerIconFromState($return['state']);
 		if ($daemon_info['state'] == 'ok') {
 			if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
 				$return['message'] = __('Le Client MQTT est arrêté', __FILE__);
@@ -1463,6 +1464,24 @@ class jMQTT extends eqLogic {
 		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
 		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
 		return self::MQTTCLIENT_OK;
+	}
+
+	/**
+	 * Return icon string depending state passed
+	 * @return string fa-circle icon
+	 */
+	public static function getBrokerIconFromState($state) {
+		switch ($state) {
+			case self::MQTTCLIENT_OK:
+				return 'fa-check-circle';
+				break;
+			case self::MQTTCLIENT_POK:
+				return 'fa-minus-circle';
+				break;
+			default:
+				return 'fa-times-circle';
+				break;
+		}
 	}
 
 	/**
