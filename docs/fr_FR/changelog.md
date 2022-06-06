@@ -18,6 +18,8 @@
  - Nettoyage et embellissement des pages de Santé
  - Affichage d'informations sur l'équipement dans le Gestionnaire de Template
  - Simplifications de certaines parties du code (lecture des fichiers de Template) et ajout de plus de gestion d'erreurs
+ - Utilisation d'icônes différentes selon les états des Brokers (pour ceux qui distinguent mal les couleurs)
+ - Alignement visuel des champs des commandes actions
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
