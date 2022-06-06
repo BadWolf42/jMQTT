@@ -743,7 +743,7 @@ function addCmdToTable(_cmd) {
 		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" ' + disabled + '>';
 		tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="configuration" data-l2key="jsonPath" placeholder="{{Chemin JSON}}" '+ disabled + '>';
 		tr += '</td><td>';
-		tr += '<textarea class="form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true></textarea>';
+		tr += '<textarea class="form-control input-sm" data-key="value" style="min-height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true></textarea>';
 		tr += '</td><td>';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:50px;display:inline-block;">';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:50px;display:inline-block;">';
@@ -828,10 +828,12 @@ function addCmdToTable(_cmd) {
 		tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
 		tr += '</td>';
 		tr += '<td>';
-		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';
+//		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom: 32px;" ' + disabled + '>';
+		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="min-height:62px;margin-top:14px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';
 		tr += '</td><td>';
-		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="height:30px;" ' + disabled + ' placeholder="{{Valeur}}"></textarea>';
-		tr += '<a class="btn btn-default btn-sm cursor listEquipementInfo" data-input="request" style="margin-top:5px;margin-left:5px;"><i class="fa fa-list-alt "></i> {{Rechercher équipement}}</a>';
+//		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" placeholder="{{Valeur}}" ' + disabled + '>';
+		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="height:18px;" ' + disabled + ' placeholder="{{Valeur}}"></textarea>';
+		tr += '<a class="btn btn-default btn-sm cursor listEquipementInfo" data-input="request" style="margin-top:5px;"><i class="fa fa-list-alt "></i> {{Rechercher équipement}}</a>';
 		tr +='</select></span>';
 		tr += '</td><td>';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:50px;display:inline-block;">';
