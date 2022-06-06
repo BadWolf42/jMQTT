@@ -185,7 +185,7 @@ function displayEqLogicCard($eqL, $node_images) {
 			</div>
 			<hr style="margin-top: 5px; margin-bottom: 5px;">
 		</div>
-		<div class="tab-content" style="height: calc(100% - 120px); overflow: auto; overflow-x: hidden;">
+		<div class="tab-content" style="height:calc(100vh - 140px)!important;overflow:auto;overflow-x:hidden;">
 			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
 				<?php include_file('desktop', 'jMQTT_eqpt', 'php', 'jMQTT'); ?>
 			</div>

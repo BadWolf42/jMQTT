@@ -20,6 +20,7 @@
  - Simplifications de certaines parties du code (lecture des fichiers de Template) et ajout de plus de gestion d'erreurs
  - Utilisation d'icônes différentes selon les états des Brokers (pour ceux qui distinguent mal les couleurs)
  - Alignement visuel des champs des commandes actions
+ - Correction du défilement sur la page des commandes d'un équipement
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
