@@ -168,11 +168,11 @@ class jMQTT extends eqLogic {
 		if (strpos($_name , '[Perso] ') === 0) {
 			// Get personal templates
 			$name = substr($_name, strlen('[Perso] '));
-			$folder = '/../../data/template';
+			$folder = '/../../data/template/';
 		} else {
 			// Get official templates
 			$name = $_name;
-			$folder = '/../config/template';
+			$folder = '/../config/template/';
 		}
 		foreach (ls(dirname(__FILE__) . $folder, '*.json', false, array('files', 'quiet')) as $file) {
 			try {
