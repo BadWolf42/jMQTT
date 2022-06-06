@@ -119,6 +119,17 @@ class jMQTT extends eqLogic {
 	 */
 	private $_log;
 
+	private static function templateRead($_file) {
+		// read content from file without error handeling!
+		$content = file_get_contents($_file);
+		// decode template file content to json (or raise)
+		$templateContent = json_decode($content, true);
+		// first key is the template itself
+		$templateKey = array_keys($templateContent)[0];
+		// return tuple of name & value
+		return [$templateKey, $templateContent[$templateKey]];
+	}
+
 	/**
 	 * Return a list of all templates name and file.
 	 * @return list of name and file array.
@@ -129,22 +140,20 @@ class jMQTT extends eqLogic {
 		// Get personal templates
 		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
 			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						$return[] = array('[Perso] '.$k, 'plugins/jMQTT/data/template/' . $file);
-				}
-			} catch (Throwable $e) {}
+				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $file);
+				$return[] = array('[Perso] '.$templateKey, 'plugins/jMQTT/data/template/' . $file);
+			} catch (Throwable $e) {
+				log::add('jMQTT', 'warning', __('Erreur lors de la lecture du template', __FILE__).' "data/template/'.$file.'"');
+			}
 		}
 		// Get official templates
 		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
 			try {
-				$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
-				if (is_json($content)) {
-					foreach (json_decode($content, true) as $k => $v)
-						$return[] = array($k, 'plugins/jMQTT/core/config/template/' . $file);
-				}
-			} catch (Throwable $e) {}
+				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../config/template/' . $file);
+				$return[] = array($templateKey, 'plugins/jMQTT/core/config/template/' . $file);
+			} catch (Throwable $e) {
+				log::add('jMQTT', 'warning', __('Erreur lors de la lecture du template', __FILE__).' "core/config/template/'.$file.'"');
+			}
 		}
 		return $return;
 	}
@@ -154,32 +163,24 @@ class jMQTT extends eqLogic {
 	 * @param string $_template template name to look for
 	 * @return array
 	 */
-	public static function templateByName($_template){
-		// log::add('jMQTT', 'debug', 'templateByName("' . $_template . '")');
-		if (strpos($_template , '[Perso] ') === 0) {
+	public static function templateByName($_name){
+		// log::add('jMQTT', 'debug', 'templateByName("' . $_name . '")');
+		if (strpos($_name , '[Perso] ') === 0) {
 			// Get personal templates
-			$_template = substr($_template, strlen('[Perso] '));
-			foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
-				try {
-					$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $file);
-					if (is_json($content)) {
-						foreach (json_decode($content, true) as $k => $v)
-							if ($k == $_template)
-								return $v;
-					}
-				} catch (Throwable $e) {}
-			}
+			$name = substr($_name, strlen('[Perso] '));
+			$folder = '/../../data/template/';
 		} else {
 			// Get official templates
-			foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
-				try {
-					$content = file_get_contents(dirname(__FILE__) . '/../config/template/' . $file);
-					if (is_json($content)) {
-						foreach (json_decode($content, true) as $k => $v)
-							if ($k == $_template)
-								return $v;
-					}
-				} catch (Throwable $e) {}
+			$name = $_name;
+			$folder = '/../config/template/';
+		}
+		foreach (ls(dirname(__FILE__) . $folder, '*.json', false, array('files', 'quiet')) as $file) {
+			try {
+				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . $folder . $file);
+				if ($templateKey == $name)
+					return $templateValue;
+			} catch (Throwable $e) {
+				throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_name.'"');
 			}
 		}
 		return null;
@@ -203,12 +204,11 @@ class jMQTT extends eqLogic {
 			throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
 		// log::add('jMQTT', 'debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
 		try {
-			$content = file_get_contents(dirname(__FILE__) . '/../../../../' . $_filename);
-			if (is_json($content)) {
-				foreach (json_decode($content, true) as $k => $v)
-					return $v;
-			}
-		} catch (Throwable $e) {}
+			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../../../' . $_filename);
+			return $templateValue;
+		} catch (Throwable $e) {
+			throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_filename.'"');
+		}
 		return array();
 	}
 
@@ -218,20 +218,17 @@ class jMQTT extends eqLogic {
 	 */
 	public static function templateSplitJsonPathByFile($_filename = '') {
 
-		$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $_filename);
-		if (is_json($content)) {
+		try {
+			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $_filename);
 
-			// decode template file content to json
-			$templateContent = json_decode($content, true);
-
-			// first key is the template itself
-			$templateKey = array_keys($templateContent)[0];
+			// Keep track of any change
+			$changed = false;
 
 			// if 'commands' key exists in this template
-			if (array_key_exists('commands', $templateContent[$templateKey])) {
+			if (array_key_exists('commands', $templateValue)) {
 
 				// for each keys under 'commands'
-				foreach ($templateContent[$templateKey]['commands'] as &$cmd) {
+				foreach ($templateValue['commands'] as &$cmd) {
 
 					// if 'configuration' key exists in this command
 					if (array_key_exists('configuration', $cmd)) {
@@ -242,10 +239,12 @@ class jMQTT extends eqLogic {
 						$i = strpos($topic, '{');
 						if ($i === false) {
 							// Just set empty jsonPath if it doesn't exists
-							if (!array_key_exists(jMQTT::CONF_KEY_JSON_PATH, $cmd['configuration']))
+							if (!array_key_exists(jMQTT::CONF_KEY_JSON_PATH, $cmd['configuration'])) {
 								$cmd['configuration'][jMQTT::CONF_KEY_JSON_PATH] = '';
-						}
-						else {
+								$changed = true;
+							}
+						} else {
+							$changed = true;
 							// Set cleaned Topic
 							$cmd['configuration']['topic'] = substr($topic, 0, $i);
 
@@ -257,9 +256,9 @@ class jMQTT extends eqLogic {
 							$jsonPath = '';
 							// For each part of the path
 							foreach ($indexes as $index) {
-								// if this part contains a dot, a space or a slash, escape it
-								if (strpos($index, '.') !== false || strpos($index, ' ') !== false || strpos($index, '/') !== false)
-									$jsonPath .= '[\'' . $index . '\']';
+								// if this part contains a special character, escape it
+								if (preg_match('/[^\w-]/', $index) !== false)
+									$jsonPath .= '[\'' . str_replace("'", "\\'", $index) . '\']';
 								else
 									$jsonPath .= '[' . $index . ']';
 							}
@@ -269,9 +268,15 @@ class jMQTT extends eqLogic {
 				}
 			}
 
+			// Don't write anything if no change was made
+			if (!$changed)
+				return;
+
 			// Save back template in the file
-			$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
+		} catch (Throwable $e) {
+			throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_filename.'"');
 		}
 	}
 
@@ -281,29 +286,25 @@ class jMQTT extends eqLogic {
 	 */
 	public static function moveTopicToConfigurationByFile($_filename = '') {
 
-		$content = file_get_contents(dirname(__FILE__) . '/../../data/template/' . $_filename);
-		if (is_json($content)) {
-
-			// decode template file content to json
-			$templateContent = json_decode($content, true);
-
-			// first key is the template itself
-			$templateKey = array_keys($templateContent)[0];
+		try {
+			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $_filename);
 
 			// if 'configuration' key exists in this template
-			if (array_key_exists('configuration', $templateContent[$templateKey])) {
+			if (array_key_exists('configuration', $templateValue)) {
 
 				// if auto_add_cmd doesn't exists in configuration, we need to move topic from logicalId to configuration
-				if (!array_key_exists(self::CONF_KEY_AUTO_ADD_TOPIC, $templateContent[$templateKey]['configuration'])) {
-					$topic = $templateContent[$templateKey]['logicalId'];
-					$templateContent[$templateKey]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = $topic;
-					$templateContent[$templateKey]['logicalId'] = '';
+				if (!array_key_exists(self::CONF_KEY_AUTO_ADD_TOPIC, $templateValue['configuration'])) {
+					$topic = $templateValue['logicalId'];
+					$templateValue['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = $topic;
+					$templateValue['logicalId'] = '';
 				}
 			}
 
 			// Save back template in the file
-			$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
+		} catch (Throwable $e) {
+			throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_filename.'"');
 		}
 	}
 
@@ -335,13 +336,8 @@ class jMQTT extends eqLogic {
 	 */
 	public function applyATemplate($_template, $_topic, $_keepCmd = true){
 
-		if ($this->getType() != self::TYP_EQPT) {
-			return true;
-		}
-
-		if (is_null($_template)) {
-			return true;
-		}
+		if ($this->getType() != self::TYP_EQPT || is_null($_template))
+			return;
 
 		// Raise up the flag that cmd topic mismatch must be ignored
 		$this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
@@ -442,6 +438,7 @@ class jMQTT extends eqLogic {
 	/**
 	 * Create a new equipment given its name, subscription topic and broker the equipment is related to.
 	 * IMPORTANT: broker can be null, and then this is the responsability of the caller to attach the new equipment to a broker.
+	 * If a command already exists with the same logicalId, then it will be kept and updated, otherwise a new cmd will be created.
 	 * Equipment is enabled, and saved.
 	 * @param string $brk_addr is the IP/hostname of an EXISTING broker
 	 * @param string $name of the new equipment to create
@@ -453,7 +450,14 @@ class jMQTT extends eqLogic {
 	 */
 	public static function createEqWithTemplate($brk_addr, $name, $template_path, $topic, $uuid = null) {
 		log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
-		//$name = substr($name, 0, 50);
+
+		// Check if file is in Jeedom directory and exists
+		if (strpos(realpath($template_path), getRootPath()) === false)
+			throw new Exception("Le fichier template est en-dehors de Jeedom.");
+		if (!file_exists($template_path))
+			throw new Exception("Le fichier template n'a pas pu être trouvé.");
+		// Convert on the fly template to jsonPath if needed
+		self::templateSplitJsonPathByFile($template_path);
 
 		// Locate the expected broker, if not found then raise !
 		$brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);
@@ -468,8 +472,9 @@ class jMQTT extends eqLogic {
 		}
 		if (!is_object($broker))
 			throw new Exception("Aucun Broker n'a pu être identifier, merci de créer un Broker dans jMQTT avant de créer un équipement.");
-		// Create or locate the Eq
+
 		$eq = null;
+		// Try to locate the Eq is uuid is provided
 		if (!is_null($uuid)) {
 			// Search for a jMQTT Eq with $uuid, if found apply template to it
 			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
@@ -486,6 +491,7 @@ class jMQTT extends eqLogic {
 			if (is_null($eq))
 				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Could not find any Eq matching with UUID and broker.');
 		}
+		// If the Eq is not located create it
 		if (is_null($eq)) {
 			$eq = self::createEquipment($broker, $name, $topic);
 			log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': New Eq created.');
@@ -494,19 +500,19 @@ class jMQTT extends eqLogic {
 				$eq->save();
 			}
 		}
-		// Check if file is in Jeedom directory and exists
-		if (strpos(realpath($template_path), getRootPath()) === 0)
-			throw new Exception("Le fichier template est en-dehors de Jeedom.");
-		if (!file_exists($template_path))
-			throw new Exception("Le fichier template n'a pas pu être trouvé.");
-		// Get template content directly from source file
-		$content = file_get_contents($template_path);
-		$template = json_decode($content, true);
+
+		// Get template content from file
+		try {
+			[$templateKey, $templateValue] = self::templateRead($template_path);
+		} catch (Throwable $e) {
+			throw new Exception(__('Erreur lors de la lecture du ficher template !', __FILE__));
+		}
+
 		// Apply the template
-		// TODO handle re-application of the template to the same more then once and keep existing cmd history ?
-		$eq->applyATemplate($template, $topic, false);
-		// Return the new Eq
-		return $eqpt;
+		$eq->applyATemplate($templateValue, $topic, true);
+
+		// Return the Eq with the applied template
+		return $eq;
 	}
 
 	/**
@@ -1436,6 +1442,7 @@ class jMQTT extends eqLogic {
 		$return['last_launch'] = $this->getLastMqttClientLaunchTime();
 		$return['state'] = $this->getMqttClientState();
 		$return['color'] = self::getBrokerColorFromState($return['state']);
+		$return['icon'] = self::getBrokerIconFromState($return['state']);
 		if ($daemon_info['state'] == 'ok') {
 			if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
 				$return['message'] = __('Le Client MQTT est arrêté', __FILE__);
@@ -1457,6 +1464,24 @@ class jMQTT extends eqLogic {
 		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
 		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
 		return self::MQTTCLIENT_OK;
+	}
+
+	/**
+	 * Return icon string depending state passed
+	 * @return string fa-circle icon
+	 */
+	public static function getBrokerIconFromState($state) {
+		switch ($state) {
+			case self::MQTTCLIENT_OK:
+				return 'fa-check-circle';
+				break;
+			case self::MQTTCLIENT_POK:
+				return 'fa-minus-circle';
+				break;
+			default:
+				return 'fa-times-circle';
+				break;
+		}
 	}
 
 	/**

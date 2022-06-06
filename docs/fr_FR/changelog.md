@@ -12,6 +12,15 @@
  - **Un message MQTT compressé avec zlib est automatiquement reçu décompressé dans Jeedom sur la commande info associée**
  - **Un message MQTT binaire est automatiquement reçu en base64 dans Jeedom sur la commande info associée**
  - Changement du début du format des logs du daemon Python pour être plus lisible en v4.2
+ - Corrections concernant la nouvelle fonction createEqWithTemplate
+ - Conversion à la volée du chemin JSON lors de l'utilisation d'anciennes Template
+ - Ajout du nombre d'équipement par Broker dans les pages de Santé
+ - Nettoyage et embellissement des pages de Santé
+ - Affichage d'informations sur l'équipement dans le Gestionnaire de Template
+ - Simplifications de certaines parties du code (lecture des fichiers de Template) et ajout de plus de gestion d'erreurs
+ - Utilisation d'icônes différentes selon les états des Brokers (pour ceux qui distinguent mal les couleurs)
+ - Alignement visuel des champs des commandes actions
+ - Correction du défilement sur la page des commandes d'un équipement
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)

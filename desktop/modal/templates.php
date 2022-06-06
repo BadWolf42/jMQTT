@@ -39,26 +39,24 @@ if (!isConnect('admin')) {
 		<!--<a class='btn btn-sm btn-success pull-right' id='bt_jmqttTemplateApply'><i class="far fa-check-circle"></i> {{Appliquer}}</a>-->
 		<a class="btn btn-sm btn-danger" id="bt_jmqttTemplateDelete"><i class="fas fa-times"></i> {{Supprimer}}</a>
 		<br />
-		<!--<div id='div_jmqttTemplateParams'></div>-->
-		<!--<legend><i class="fas fa-tools"></i> {{Détails}}</legend>-->
-			<!--<legend><i class="fas fa-tachometer-alt"></i> {{Equipement}}</legend>
-			<div id='div_jmqttTemplateEqlogic'></div>
-			<br />-->
-			<legend><i class="fas fa-list-alt"></i> {{Aperçu des commandes}}</legend>
-			<table id="table_jmqttTemplateCmds" class="table tree table-bordered table-condensed table-striped">
-					<thead>
-							<tr>
-									<th style="width:250px;">{{Nom}}</th>
-									<th style="width:60px;">{{Sous-Type}}</th>
-									<th style="width:300px;">{{Topic}}</th>
-									<th style="width:300px;">{{Valeur}}</th>
-									<th style="width:1px;">{{Unité}}</th>
-									<th style="width:150px;">{{Paramètres}}</th>
-							</tr>
-					</thead>
-					<tbody>
-					</tbody>
-			</table>
+		<legend><i class="fas fa-tachometer-alt"></i> {{Aperçu de l'équipement}}</legend>
+		<div id='div_jmqttTemplateEqlogic'></div>
+		<br />
+		<legend><i class="fas fa-list-alt"></i> {{Aperçu des commandes}}</legend>
+		<table id="table_jmqttTemplateCmds" class="table tree table-bordered table-condensed table-striped">
+			<thead>
+				<tr>
+					<th style="width:250px;">{{Nom}}</th>
+					<th style="width:60px;">{{Sous-Type}}</th>
+					<th style="width:300px;">{{Topic}}</th>
+					<th style="width:300px;">{{Valeur}}</th>
+					<th style="width:1px;">{{Unité}}</th>
+					<th style="width:150px;">{{Paramètres}}</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
 	</form>
 </div>
 
@@ -118,29 +116,50 @@ $('#ul_jmqttTemplateList').on({
 			},
 			success: function (data) {
 				$('#div_listJmqttTemplate').show()
-
-//TODO Add more Equipment informations
-/*
 				var eq =  '';
-					eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
-					eq += '< ?php
-						foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
-							echo '<label class="checkbox-inline">';
-							echo '<input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="' . $key . '" disabled />' .
-								$value['name'];
-							echo '</label>';
-						}
-					?>';
-					eq += '</div></div>';
-					eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-3">';
-					eq += '<input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="logicalId" value="'+init(data.logicalId)+'" disabled />';
-					eq += '</div></div>';
-					eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-3">';
-					eq += '<textarea class="eqLogicAttr form-control" style="resize:none!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.commentaire)+'</textarea>';
-					eq += '</div></div>';
-				$('#div_jmqttTemplateEqlogic').empty().html(eq)
-*/
+				// Nom
+				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">Nom de l\'équipement</label><div class="col-sm-3"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
+				// Category
+				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
+				eq += '<?php
+				foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
+							echo '<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="'.$key.'" \'+((init(data.category.'.$key.')=="1")?\'checked \':\'\')+\'disabled />'.$value['name'].'</label>'; ?>';
+				eq += '</div></div>';
+				// Auto add cmd
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label><div class="col-sm-3">';
+				eq += '<input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" '+((init(data.configuration.auto_add_cmd)=="1")?'checked ':'')+'disabled />';
+				eq += '</div></div>';
+				// Topic
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-3">';
+				eq += '<input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
+				eq += '</div></div>';
+				// Qos
+				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Qos}}</label><div id="mqttqos" class="col-sm-1">';
+				eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="Qos" disabled>';
+				eq += '<option value="'+init(data.configuration.auto_add_topic)+'" selected>'+init(data.configuration.Qos)+'</option></select>';
+				eq += '</div></div>';
+				// Alimentation
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Type d\'alimentation}}</label><div class="col-sm-3">';
+				eq += '<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" value="'+init(data.configuration.battery_type)+'" disabled />';
+				eq += '</div></div>';
+				// Comment
+				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-3">';
+				eq += '<textarea class="eqLogicAttr form-control" style="resize:none!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
+				eq += '</div></div>';
+				// Icone
+				eq += '<div id="sel_icon_div" class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Icone}}</label><div class="col-sm-3"><img id="icon_visu_tpl" src="" height="100" /></div></div>';
+				// Display equipements
+				$('#div_jmqttTemplateEqlogic').empty().html(eq);
+				// Handle error with icon
+				$("#icon_visu_tpl").on("error", function () {
+					if ($(this).attr("src") != '') {
+						$(this).attr("src", $(this).attr("src").slice(0, -4) + '.png');
+					}
+				});
+				// Load icon
+				$("#icon_visu_tpl").attr("src", 'plugins/jMQTT/core/img/node_' + init(data.configuration.icone) + '.svg');
 
+				// Load commands
 				for (var i in data['commands']) {
 					_cmd = data['commands'][i]
 					if (!isset(_cmd))
