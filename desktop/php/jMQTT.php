@@ -131,7 +131,7 @@ function displayEqLogicCard($eqL, $node_images) {
 			echo '</div>';
 		}
 		
-		// TODO: Check if this is still usefull (condition is always false)
+// TODO: Check if this is still usefull (condition is always false)
 		if ($has_orphans) {
 			echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';

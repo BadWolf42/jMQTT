@@ -120,8 +120,8 @@ $(document).ready(function() {
 		refreshEqLogicPage();
 	});
 
+// TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
 	// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
-	// TODO : To Be delete when fix reached Jeedom Core stable
 	// https://github.com/jeedom/core/pull/1825
 	// https://github.com/jeedom/core/pull/1829
 	$('.eqLogicAction[data-action=save]').mousedown(function() {
@@ -135,6 +135,7 @@ $(document).ready(function() {
 			}
 		});
 	});
+// End of DELETEME
 });
 
 $("#bt_addMQTTInfo").on('click', function(event) {
@@ -702,7 +703,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'info') {
-		// FIXME: is this disabled variable usefull?
+// TODO: FIXME: is this disabled variable usefull? virtualAction never exists
 		var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
 
 		var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '"';
@@ -804,7 +805,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'action') {
-		// FIXME: is this disabled variable usefull? Re-added to avoid "undefined"
+// TODO: FIXME: is this disabled variable usefull? Re-added to avoid "undefined" error
 		var disabled = '';
 
 		var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.

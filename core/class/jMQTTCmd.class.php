@@ -234,11 +234,12 @@ class jMQTTCmd extends cmd {
 		foreach(array('request') as $key) {
 			$conf = $this->getConfiguration($key);
 
+// TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
 			// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
-			// TODO : To Be delete when fix reached Jeedom Core stable
 			// https://github.com/jeedom/core/pull/1825
 			// https://github.com/jeedom/core/pull/1829
 			if (is_string($conf) && strlen($conf) >= 1 && $conf[0] == chr(6)) $this->setConfiguration($key, substr($conf, 1));
+// End of DELETEME
 
 			// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
 			if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
@@ -542,7 +543,7 @@ class jMQTTCmd extends cmd {
 	 * @return NULL|jMQTTCmd|array(jMQTTCmd)
 	 */
 	public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
-		// TODO: replace by jMQTTCmd::searchConfigurationEqLogic() ?
+// TODO: replace by jMQTTCmd::searchConfigurationEqLogic() ?
 
 		// JSON_UNESCAPED_UNICODE used to correct #92
 		$confTopic = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -1);
@@ -611,7 +612,7 @@ class jMQTTCmd extends cmd {
 	 */
 	private static function checkCmdName($eqLogic, $name) {
 		if (! isset(self::$_cmdNameMaxLength)) {
-			// TODO: Move lenght in plugin config and refresh at plugin enable/update or core update
+// TODO: Move lenght in plugin config and refresh at plugin enable/update or core update
 			$field = 'character_maximum_length';
 			$sql = "SELECT " . $field . " FROM information_schema.columns WHERE table_name='cmd' AND column_name='name'";
 			$res = DB::Prepare($sql, array());
