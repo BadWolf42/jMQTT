@@ -42,12 +42,6 @@ if (!isConnect()) {
 				<input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTT::DEFAULT_PYTHON_PORT; ?>"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label class="col-sm-5 control-label">{{Port démon websocket}}</label>
-			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTT::DEFAULT_WEBSOCKET_PORT; ?>"/>
-			</div>
-		</div>
 		<legend><i class="fas fa-key"></i>{{Certificats}}</legend>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Téléverser un nouveau Certificat}}</label>

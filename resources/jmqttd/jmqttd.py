@@ -30,6 +30,7 @@ from zlib import decompress as zlib_decompress
 try:
 	from jeedom.jeedom import jeedom_socket
 	from jeedom.jeedom import jeedom_utils
+	from jeedom.jeedom import jeedom_com
 except ImportError:
 	print("Error: importing module jeedom.jeedom")
 	sys.exit(1)
@@ -166,44 +167,22 @@ class MqttClient:
 
 # ----------------------------------------------------------------------------
 
-class WebSocketClient:
+class JeedomClient:
 	def __init__(self, queue, message, fnismqttconnected):
 		self.q = queue
 		self.id = message['id']
 		self.apikey = message['apikey']
-		self.wscallback = message['callback']
+		self.callback = message['callback']
 		self.fnismqttconnected = fnismqttconnected
 
-		# Create WebSocket Client
-		self.wsclient = websocket.WebSocketApp(
-			url=self.wscallback,
-			header={"apikey" : self.apikey, "id" : str(self.id)},
-			on_open=self.on_open,
-			on_message=self.on_message,
-			on_close=self.on_close,
-			on_error=self.on_error)
-
-		self.stopautorestart = False
-		self.wsthread = threading.Thread(target=self.autorestart_run_forever)
-		self.wsstarted = threading.Event()
-		self.wsstarted.clear()
+		# Create jeedom_com Client
+		self.jcom = jeedom_com(apikey=self.apikey, url=self.callback)
 		self.stopworker = False
 		self.workerthread = threading.Thread(target=self.worker)
 
-	def autorestart_run_forever(self):
-		while not self.stopautorestart:
-			try:
-				self.wsclient.run_forever(skip_utf8_validation=True, ping_interval=150, ping_timeout=5.0)
-			except:
-				if logging.getLogger().isEnabledFor(logging.DEBUG):
-					logging.exception('BrkId: % 4s : WebSocketClient.autorestart_run_forever() Exception', self.id)
-			# Wait up to 5sec before reconnection
-			for i in range(50):
-				if self.stopautorestart:
-					return
-				time.sleep(0.1)
-
 	def worker(self):
+		# self.jcom.thread_change('[{"id":'+self.id+', "cmd":"connection","state":' + str(self.fnismqttconnected()) + '}]')
+		# logging.info('BrkId: % 4s : Connected to Jeedom using %s', self.id, self.callback)
 		while not self.stopworker or not self.q.empty():
 			# empty() method is faster that Exception handling
 			if self.q.empty():
@@ -211,44 +190,23 @@ class WebSocketClient:
 				continue # Check if should_stop changed
 			try:
 				msg = self.q.get(block=False)
-				self.wsclient.send(msg)
+				self.jcom.thread_change(msg)
 				logging.info('BrkId: % 4s : Sending message to Jeedom : %s', self.id, msg)
 			except queue.Empty:
 				pass
 			except:
 				if logging.getLogger().isEnabledFor(logging.DEBUG):
-					logging.exception('BrkId: % 4s : WebSocketClient.worker() Exception', self.id)
-
-	def on_open(self, ws):
-		ws.send('{"cmd":"connection","state":' + str(self.fnismqttconnected()) + '}')
-		logging.info('BrkId: % 4s : Connected to Jeedom using %s', self.id, self.wscallback)
-		self.wsstarted.set()
-
-	def on_message(self, ws, message):
-		logging.error('BrkId: % 4s : Received a message through WebSocket!: %s', self.id, message)
-
-	def on_error(self, ws, error):
-		if not isinstance(error, AttributeError) or not self.stopautorestart:
-			logging.error('BrkId: % 4s : WebSocket client encountered an Error!', self.id, exc_info=error)
-
-	def on_close(self, ws, close_status_code, close_msg):
-		logging.info('BrkId: % 4s : Disconnected from Jeedom', self.id)
+					logging.exception('BrkId: % 4s : JeedomClient.worker() Exception', self.id)
+		# self.jcom.thread_change('[{"id":'+self.id+', "cmd":"connection","state":' + str(self.fnismqttconnected()) + '}]')
+		# logging.info('BrkId: % 4s : Disconnected from Jeedom', self.id)
 
 	def start(self):
-		self.stopautorestart = False
-		self.wsthread.start()
-		self.wsstarted.wait(timeout=1)
 		self.stopworker = False
 		self.workerthread.start()
 
-	def pre_stop(self):
+	def stop(self):
 		self.stopworker = True
 		self.workerthread.join()
-		self.stopautorestart = True
-		self.wsclient.close()
-
-	def stop(self):
-		self.wsthread.join()
 
 # ----------------------------------------------------------------------------
 
@@ -264,17 +222,13 @@ class jMqttClient:
 			self.mqtt = MqttClient(self.q, self.m)
 			self.mqtt.start()
 		if self.ws is None:
-			self.ws = WebSocketClient(self.q, self.m, self.mqtt.is_connected)
+			self.ws = JeedomClient(self.q, self.m, self.mqtt.is_connected)
 			self.ws.start()
 
-	def pre_stop(self):
+	def stop(self):
 		if self.mqtt is not None:
 			self.mqtt.stop()
 			self.mqtt = None
-		if self.ws is not None:
-			self.ws.pre_stop()
-
-	def stop(self):
 		if self.ws is not None:
 			self.ws.stop()
 			self.ws = None
@@ -282,12 +236,10 @@ class jMqttClient:
 	def restart(self, message=None):
 		if message is not None:
 			self.m = message
-		self.pre_stop()
 		self.stop()
 		self.start()
 
 	def __del__(self):
-		self.pre_stop()
 		self.stop()
 
 # ----------------------------------------------------------------------------
@@ -328,7 +280,6 @@ def validate_params(msg, constraints):
 class Main():
 	def __init__(self, flag):
 		# Default values
-		self._plugin      = ''
 		self._log_level   = "error"
 		self._socket_port = 55666
 		self._socket_host = '127.0.0.1'
@@ -351,22 +302,23 @@ class Main():
 							'messageOut':       self.handle_messageOut}
 		self.jmqttclients = {}
 		self.jeedomsocket = None
+		self.jcom = None
 
 	def prepare(self):
 		# Parsing arguments
 		parser = argparse.ArgumentParser(description='Daemon for Jeedom plugin')
-		parser.add_argument("--plugin",     help="Name of the plugin",       type=str)
 		parser.add_argument("--loglevel",   help="Log Level for the daemon", type=str)
 		parser.add_argument("--socketport", help="Socketport for server",    type=int)
+		parser.add_argument("--callback",   help="Comm. url to Jeedom",      type=str)
 		parser.add_argument("--apikey",     help="Apikey",                   type=str)
 		parser.add_argument("--pid",        help="Pid file",                 type=str)
 		args = parser.parse_args()
 
-		# Plugin name is mandatory
-		if args.plugin:
-			self._plugin = args.plugin
+		# Callback is mandatory
+		if args.callback:
+			self._callback = args.callback
 		else:
-			self.log.critical('Missing plugin name (use parameter --plugin <name>)')
+			self.log.critical('Missing callback url (use parameter --callback <url>)')
 			sys.exit(2)
 		if args.loglevel:
 			self._log_level = args.loglevel
@@ -406,7 +358,6 @@ class Main():
 
 		# All set, ready to run
 		self.log.info('Start jMQTT python daemon')
-		self.log.info('Plugin     : %s', self._plugin)
 		self.log.info('Log level  : %s', self._log_level)
 		self.log.info('Socket port: %s', self._socket_port)
 		self.log.info('PID file   : %s', self._pidfile)
@@ -423,9 +374,21 @@ class Main():
 			# Open communication channel
 			try:
 				self.jeedomsocket.open()
+
 			except:
 				self.log.exception('Run         : Failed to Open the communication channel for Jeedom')
 				self.should_stop.set()
+			else:
+				try:
+					self.jcom = jeedom_com(apikey=self._apikey, url=self._callback)
+					self.jcom.test()
+				except:
+					self.log.exception('Run         : Failed to Open the communication channel to Jeedom')
+					self.should_stop.set()
+
+		# Send daemon Up signal
+		self.jcom.thread_change('[{"id":'+self.id+', "cmd":"daemonUp"}]')
+		self.log.debug('Run         : Sent Daemon Up signal to Jeedom')
 
 		# Wait for instructions
 		while not self.should_stop.is_set():
@@ -505,7 +468,6 @@ class Main():
 		# if jmqttclient exists then remove it
 		if message['id'] in self.jmqttclients:
 			self.log.info('BrkId: % 4s : Starting Client removal', message['id'])
-			self.jmqttclients[message['id']].pre_stop()
 			self.jmqttclients[message['id']].stop()
 			del self.jmqttclients[message['id']]
 		else:
@@ -565,8 +527,6 @@ class Main():
 		# Stop all the Clients
 		try:
 			for id in list(self.jmqttclients):
-				self.jmqttclients[id].pre_stop()
-			for id in list(self.jmqttclients):
 				self.jmqttclients[id].stop()
 		except:
 			if self.log.isEnabledFor(logging.DEBUG):
@@ -579,6 +539,10 @@ class Main():
 		except:
 			if self.log.isEnabledFor(logging.DEBUG):
 				self.log.exception('Clients Kill Exception')
+
+		# Send daemon Down signal
+		self.jcom.thread_change('[{"id":'+self.id+', "cmd":"daemonDown"}]')
+		self.log.debug('Run         : Sent Daemon Down signal to Jeedom')
 
 		#Remove PID file if exists
 		if os.path.isfile(self._pidfile):

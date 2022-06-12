@@ -1055,7 +1055,6 @@ class jMQTT extends eqLogic {
 		$return['launchable'] = 'nok';
 
 		$python_daemon = false;
-		$websocket_daemon = false;
 
 		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		if (file_exists($pid_file1)) {
@@ -1067,22 +1066,8 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		$pid_file2 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
-		if (file_exists($pid_file2)) {
-			if (@posix_getsid(trim(file_get_contents($pid_file2)))) {
-				$websocket_daemon = true;
-			} else {
-				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file2 . ' 2>&1 > /dev/null');
-				self::deamon_stop();
-			}
-		}
-
-		if($python_daemon && $websocket_daemon){
+		if($python_daemon){
 			$return['state'] = 'ok';
-		}
-
-		if (config::byKey('pythonsocketport', __CLASS__, self::DEFAULT_PYTHON_PORT) != config::byKey('websocketport', __CLASS__, self::DEFAULT_WEBSOCKET_PORT)) {
-			$return['launchable'] = 'ok';
 		}
 		return $return;
 	}
@@ -1120,7 +1105,7 @@ class jMQTT extends eqLogic {
 
 		// Get default ports for daemons
 		$defaultPythonPort = self::DEFAULT_PYTHON_PORT;
-		$defaultWebSocketPort = self::DEFAULT_WEBSOCKET_PORT;
+		// $defaultWebSocketPort = self::DEFAULT_WEBSOCKET_PORT;
 
 		// Check python daemon port is available
 		$output=null;
@@ -1134,37 +1119,16 @@ class jMQTT extends eqLogic {
 			throw new Exception(__('Le port du démon python (' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
 		}
 
-		// Check websocket daemon port is available
-		$output=null;
-		$retval=null;
-		exec(system::getCmdSudo() . 'fuser ' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort) . '/tcp', $output, $retval);
-		if ($retval == 0 && count($output) > 0) {
-			$pid = trim($output[0]);
-			unset($output);
-			exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
-			if ($retval == 0 && count($output) > 0) $commandline = $output[0];
-			throw new Exception(__('Le port du démon websocket (' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
-		}
-
 		// Start Python daemon
 		$path1 = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
 		$cmd1 = $path1.'/venv/bin/python3 ' . $path1 . '/jmqttd.py';
-		$cmd1 .= ' --plugin ' . __CLASS__;
 		$cmd1 .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
 		$cmd1 .= ' --socketport ' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort);
+		$cmd1 .= ' --callback "http://localhost/plugins/jMQTT/core/php/callback.php"';
 		$cmd1 .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
 		$cmd1 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		log::add(__CLASS__, 'info', 'Lancement du démon python jMQTT pour le plugin '.__CLASS__);
 		$result1 = exec($cmd1 . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
-
-		// Start WebSocket daemon
-		$path2 = realpath(dirname(__FILE__) . '/../../resources/jmqttd/');
-		$cmd2 = 'php ' . $path2 . '/jmqttd.php';
-		$cmd2 .= ' --plugin ' . __CLASS__;
-		$cmd2 .= ' --socketport ' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort);
-		$cmd2 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
-		log::add(__CLASS__, 'info', 'Lancement du démon websocket jMQTT pour le plugin '.__CLASS__);
-		$result2 = exec($cmd2 . ' >> ' . log::getPathToLog(__CLASS__) . ' 2>&1 &');
 
 		//wait up to 10 seconds for daemons start
 		for ($i = 1; $i <= 40; $i++) {
@@ -1202,17 +1166,6 @@ class jMQTT extends eqLogic {
 				usleep(250000);
 			}
 			system::kill($pid1, true);
-		}
-		$pid_file2 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
-		if (file_exists($pid_file2)) {
-			$pid2 = intval(trim(file_get_contents($pid_file2)));
-			system::kill($pid2, false);
-			//wait up to 10 seconds for websocket daemon stop
-			for ($i = 1; $i <= 40; $i++) {
-				if (! @posix_getsid($pid2)) break;
-				usleep(250000);
-			}
-			system::kill($pid2, true);
 		}
 
 		// If something bad happened, clean anyway
@@ -1581,31 +1534,23 @@ class jMQTT extends eqLogic {
 		self::remove_mqtt_client($this->getId());
 	}
 
-	public static function on_daemon_connect($id) {
+	public static function on_daemon_connect() {
 		// Save in cache that daemon is connected
-		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, true);
-
-		try {
-			$broker = self::getBrokerFromId(intval($id));
-			$broker->sendMqttClientStateEvent();
-		} catch (Throwable $t) {
-				log::add(__CLASS__, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
-		}
+		self::setMqttClientStateCache('0', self::CACHE_DAEMON_CONNECTED, true);
 	}
-	public static function on_daemon_disconnect($id) {
-		// if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
-		if (self::getMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED))
-			self::on_mqtt_disconnect($id);
-
-		// Save in cache that daemon is disconnected
-		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false);
-
+	public static function on_daemon_disconnect() {
 		try {
-			$broker = self::getBrokerFromId(intval($id));
-			$broker->sendMqttClientStateEvent();
+			// if daemon is disconnected from Jeedom, consider all MQTT Clients as disconnected too
+			foreach(self::getBrokers() as $broker) {
+				if (self::getMqttClientStateCache($broker->getId(), self::CACHE_MQTTCLIENT_CONNECTED))
+					self::on_mqtt_disconnect($broker->getId());
+				$broker->sendMqttClientStateEvent();
+			}
 		} catch (Throwable $t) {
 			log::add(__CLASS__, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
 		}
+		// Save in cache that daemon is disconnected
+		self::setMqttClientStateCache('0', self::CACHE_DAEMON_CONNECTED, false);
 	}
 	public static function on_mqtt_connect($id) {
 		// Save in cache that Mqtt Client is connected
@@ -1663,7 +1608,7 @@ class jMQTT extends eqLogic {
 		$params['cmd']                  = 'newMqttClient';
 		$params['id']                   = $id;
 		$params['hostname']             = $hostname;
-		$params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', __CLASS__, self::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
+		$params['callback']             = "http://localhost/plugins/jMQTT/core/php/callback.php";
 
 		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
 		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
@@ -1998,6 +1943,15 @@ class jMQTT extends eqLogic {
 			$log = $this->getMqttClientLogFile();
 			log::add($log, $level, $msg);
 		} catch (Throwable $t) {} // nothing to do in that particular case
+	}
+
+	/**
+	 * Log messages to jMQTT log file
+	 * @param string $level
+	 * @param string $msg
+	 */
+	public static function logger($level, $msg) {
+		log::add('jMQTT', $level, $msg);
 	}
 
 	/**
