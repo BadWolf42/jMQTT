@@ -1640,7 +1640,8 @@ class jMQTT extends eqLogic {
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->brokerMessageCallback($topic, $payload);
 		} catch (Throwable $t) {
-			log::add(__CLASS__, 'error', sprintf('on_mqtt_message raised an Exception : %s', $t->getMessage()));
+			log::add(__CLASS__, 'error', sprintf('on_mqtt_message raised an Exception: %s, Stack: %s, BrkId: %s, Topic: %s, Payload: %s.',
+												 $t->getMessage(), str_replace("\n",' %%% ', $t->getTraceAsString()), $id, $topic, $payload));
 		}
 	}
 
