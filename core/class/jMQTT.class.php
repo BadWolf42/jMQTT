@@ -1052,23 +1052,18 @@ class jMQTT extends eqLogic {
 		$return = array();
 		$return['log'] = __CLASS__;
 		$return['state'] = 'nok';
-		$return['launchable'] = 'nok';
-
-		$python_daemon = false;
+		$return['launchable'] = 'ok';
 
 		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		if (file_exists($pid_file1)) {
 			if (@posix_getsid(trim(file_get_contents($pid_file1)))) {
-				$python_daemon = true;
+				$return['state'] = 'ok';
 			} else {
 				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
 				self::deamon_stop();
 			}
 		}
 
-		if($python_daemon){
-			$return['state'] = 'ok';
-		}
 		return $return;
 	}
 
@@ -1183,12 +1178,8 @@ class jMQTT extends eqLogic {
 		$return = array();
 		$return['log'] = log::getPathToLog($depLogFile);
 		$return['progress_file'] = $depProgressFile;
-
 		$return['state'] = 'ok';
-		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/Ratchet/vendor/composer/installed.json 2>/dev/null | grep cboden/ratchet | wc -l") < 1) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : Composer Ratchet PHP package is missing');
-			$return['state'] = 'nok';
-		}
+
 		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
 			log::add(__CLASS__, 'debug', 'dependancy_info : Composer JsonPath PHP package is missing');
 			$return['state'] = 'nok';
