@@ -1,6 +1,6 @@
 {
     "Zwavejs2mqtt Qubino ZMNHCD Venetian": {
-        "name": "BSO",
+        "name": "Zwavejs2mqtt Qubino ZMNHCD Venetian",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

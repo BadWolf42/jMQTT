@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGWPE-102-ZW5": {
-        "name": "Fibaro Wall Plug FGWPE-102-ZW5",
+    "Zwavejs2mqtt Fibaro FGWPE-102-ZW5 Wall Plug": {
+        "name": "Zwavejs2mqtt Fibaro FGWPE-102-ZW5 Wall Plug",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

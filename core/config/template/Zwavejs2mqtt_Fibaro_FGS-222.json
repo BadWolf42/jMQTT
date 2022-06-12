@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGS-222": {
-        "name": "Fibaro FGS-222 Switch 2x1",
+    "Zwavejs2mqtt Fibaro FGS-222 Switch 2x1": {
+        "name": "Zwavejs2mqtt Fibaro FGS-222 Switch 2x1",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

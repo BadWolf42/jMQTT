@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt_Coolcam_Light_Switch_2CH": {
-        "name": "Interrupteur",
+    "Zwavejs2mqtt Coolcam Light Switch 2CH": {
+        "name": "Zwavejs2mqtt Coolcam Light Switch 2CH",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

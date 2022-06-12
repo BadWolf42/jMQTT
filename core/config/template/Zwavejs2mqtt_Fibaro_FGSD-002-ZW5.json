@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGSD-002-ZW5": {
-        "name": "Fibaro FGSD-002-ZW5 Smoke Sensor 2",
+    "Zwavejs2mqtt Fibaro FGSD-002-ZW5 Smoke Sensor 2": {
+        "name": "Zwavejs2mqtt Fibaro FGSD-002-ZW5 Smoke Sensor 2",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

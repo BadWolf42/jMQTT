@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Aeotec ZW100": {
-        "name": "Aeotec ZW100 MultiSensor6",
+    "Zwavejs2mqtt Aeotec ZW100 MultiSensor6": {
+        "name": "Zwavejs2mqtt Aeotec ZW100 MultiSensor6",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

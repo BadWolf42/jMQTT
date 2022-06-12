@@ -1,6 +1,6 @@
 {
-    "Coolcam Light Switch 3 CH": {
-        "name": "Interrupteur(Salon)",
+    "Zwavejs2mqtt Coolcam Light Switch 3 CH": {
+        "name": "Zwavejs2mqtt Coolcam Light Switch 3 CH",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

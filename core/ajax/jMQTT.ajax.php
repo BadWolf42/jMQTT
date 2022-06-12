@@ -90,7 +90,8 @@ try {
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
 			throw new Exception(__('Pas d\'équipement jMQTT avec l\'id fourni', __FILE__) . ' (id=' . init('id') . ')');
 		}
-		$eqpt->applyTemplate(init('name'), init('topic'), init('keepCmd'));
+		$template = jMQTT::templateByName(init('name'));
+		$eqpt->applyATemplate($template, init('topic'), init('keepCmd'));
 		ajax::success();
 	}
 

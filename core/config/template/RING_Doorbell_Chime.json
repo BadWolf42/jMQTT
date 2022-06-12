@@ -1,0 +1,160 @@
+{
+    "RING Doorbell Chime": {
+        "name": "Ring Doorbell Chime",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2022-02-19 10:25:57",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s\/#",
+            "Qos": "1",
+            "icone": "motion",
+            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
+            "updatetime": "2022-03-21 20:50:21"
+        },
+        "category": {
+            "heating": "0",
+            "security": "1",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "232px",
+            "height": "232px"
+        },
+        "status": {
+            "lastCommunication": "2022-03-07 09:27:12",
+            "enableDatime": "2022-03-07 09:27:12"
+        },
+        "cache": [],
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "firmwareStatus",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/info\/state",
+                    "jsonPath": "[firmwareStatus]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "lastUpdate",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/info\/state",
+                    "jsonPath": "[lastUpdate]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "snooze:state",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/snooze\/state"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "volume:state",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/volume\/state",
+                    "minValue": "0",
+                    "maxValue": "10"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "wirelessNetwork",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/wireless\/attributes",
+                    "jsonPath": "[wirelessNetwork]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "wirelessSignal",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "dB",
+                "configuration": {
+                    "topic": "%s\/wireless\/attributes",
+                    "jsonPath": "[wirelessSignal]",
+                    "minValue": "-100",
+                    "maxValue": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}

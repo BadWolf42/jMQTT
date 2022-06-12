@@ -490,11 +490,11 @@ class jMQTTCmd extends cmd {
 	}
 
 	public function setJsonPath($jsonPath) {
-		$this->setConfiguration('jsonPath', $jsonPath);
+		$this->setConfiguration(jMQTT::CONF_KEY_JSON_PATH, $jsonPath);
 	}
 
 	public function getJsonPath() {
-		return $this->getConfiguration('jsonPath', '');
+		return $this->getConfiguration(jMQTT::CONF_KEY_JSON_PATH, '');
 	}
 
 	public function splitTopicAndJsonPath() {
@@ -542,6 +542,8 @@ class jMQTTCmd extends cmd {
 	 * @return NULL|jMQTTCmd|array(jMQTTCmd)
 	 */
 	public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
+		// TODO: replace by jMQTTCmd::searchConfigurationEqLogic() ?
+
 		// JSON_UNESCAPED_UNICODE used to correct #92
 		$confTopic = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -1);
 		$confTopic = str_replace('\\', '\\\\', $confTopic);
@@ -557,8 +559,7 @@ class jMQTTCmd extends cmd {
 			$values['AllJsonPath'] = '%"jsonPath":"%';
 			// Union is used to have the mother command returned first
 			$sql .= 'configuration LIKE :emptyJsonPath UNION ' . $sql . 'configuration LIKE :AllJsonPath';
-		}
-		else {
+		} else {
 			$sql .= 'configuration LIKE :emptyJsonPath';
 		}
 		$cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
@@ -610,6 +611,7 @@ class jMQTTCmd extends cmd {
 	 */
 	private static function checkCmdName($eqLogic, $name) {
 		if (! isset(self::$_cmdNameMaxLength)) {
+			// TODO: Move lenght in plugin config and refresh at plugin enable/update or core update
 			$field = 'character_maximum_length';
 			$sql = "SELECT " . $field . " FROM information_schema.columns WHERE table_name='cmd' AND column_name='name'";
 			$res = DB::Prepare($sql, array());
@@ -634,13 +636,13 @@ class jMQTTCmd extends cmd {
 	 *
 	 * @return array x, y, bri key/value
 	 */
-	public static function HTMLtoXY($color) {
+	public static function HTMLtoXY($_color) {
 
-		$color = str_replace('0x','', $color);
-		$color = str_replace('#','', $color);
-		$red = hexdec(substr($color, 0, 2));
-		$green = hexdec(substr($color, 2, 2));
-		$blue = hexdec(substr($color, 4, 2));
+		$_color = str_replace('0x','', $_color);
+		$_color = str_replace('#','', $_color);
+		$red = hexdec(substr($_color, 0, 2));
+		$green = hexdec(substr($_color, 2, 2));
+		$blue = hexdec(substr($_color, 4, 2));
 
 		// Normalize the values to 1
 		$normalizedToOne['red'] = $red / 255;
@@ -648,6 +650,7 @@ class jMQTTCmd extends cmd {
 		$normalizedToOne['blue'] = $blue / 255;
 
 		// Make colors more vivid
+		$color = array();
 		foreach ($normalizedToOne as $key => $normalized) {
 			if ($normalized > 0.04045) {
 				$color[$key] = pow(($normalized + 0.055) / (1.0 + 0.055), 2.4);

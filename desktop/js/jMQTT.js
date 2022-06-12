@@ -485,8 +485,8 @@ function printEqLogic(_eqLogic) {
 			var this_id = addPayload(topic, jsonPath, payload, parent_id);
 			for (i in payload) {
 				var escapedi = i;
-				if (escapedi.includes('.') || escapedi.includes(' ') || escapedi.includes('/')) {
-					escapedi = '\'' + escapedi + '\'';
+				if (escapedi.match(/[^\w-]/)) { // Escape if a special character is found
+					escapedi = '\'' + escapedi.replace(/'/g,"\\'") + '\'';
 				}
 				if (typeof payload[i] === 'object') {
 					recursiveAddJsonPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
@@ -624,6 +624,10 @@ function printEqLogic(_eqLogic) {
  * saveEqLogic callback called by plugin.template before saving an eqLogic
  */
 function saveEqLogic(_eqLogic) {
+	if (_eqLogic.configuration.type != 'broker' && _eqLogic.configuration.type != 'eqpt') {
+		// not on an jMQTT eqLogic, to fix issue #153
+		return _eqLogic;
+	}
 
 	// pass the log level when defined for a broker object
 	if (_eqLogic.configuration.type == 'broker') {
@@ -634,7 +638,6 @@ function saveEqLogic(_eqLogic) {
 	}
 
 	// remove non existing commands added for the JSON view and add new commands at the end
-	//var max_order = Math.max.apply(Math, _eqLogic.cmd.map(function(cmd) { return cmd.order; }));
 	for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
 		if (_eqLogic.cmd[i].id == "" && _eqLogic.cmd[i].name == "") {
 			_eqLogic.cmd.splice(i, 1);
@@ -740,7 +743,7 @@ function addCmdToTable(_cmd) {
 		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" ' + disabled + '>';
 		tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="configuration" data-l2key="jsonPath" placeholder="{{Chemin JSON}}" '+ disabled + '>';
 		tr += '</td><td>';
-		tr += '<textarea class="form-control input-sm" data-key="value" style="height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true></textarea>';
+		tr += '<textarea class="form-control input-sm" data-key="value" style="min-height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true></textarea>';
 		tr += '</td><td>';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:50px;display:inline-block;">';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:50px;display:inline-block;">';
@@ -801,6 +804,9 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'action') {
+		// FIXME: is this disabled variable usefull? Re-added to avoid "undefined"
+		var disabled = '';
+
 		var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
 		tr += '<td class="fitwidth">';
 		tr += '<span class="cmdAttr" data-l1key="id"></span>';
@@ -822,10 +828,12 @@ function addCmdToTable(_cmd) {
 		tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
 		tr += '</td>';
 		tr += '<td>';
-		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="height:65px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';
+//		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom: 32px;" ' + disabled + '>';
+		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="min-height:62px;margin-top:14px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';
 		tr += '</td><td>';
-		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="height:30px;" ' + disabled + ' placeholder="{{Valeur}}"></textarea>';
-		tr += '<a class="btn btn-default btn-sm cursor listEquipementInfo" data-input="request" style="margin-top:5px;margin-left:5px;"><i class="fa fa-list-alt "></i> {{Rechercher équipement}}</a>';
+//		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" placeholder="{{Valeur}}" ' + disabled + '>';
+		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="height:18px;" ' + disabled + ' placeholder="{{Valeur}}"></textarea>';
+		tr += '<a class="btn btn-default btn-sm cursor listEquipementInfo" data-input="request" style="margin-top:5px;"><i class="fa fa-list-alt "></i> {{Rechercher équipement}}</a>';
 		tr +='</select></span>';
 		tr += '</td><td>';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:50px;display:inline-block;">';
@@ -842,7 +850,9 @@ function addCmdToTable(_cmd) {
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fa fa-cogs"></i></a> ';
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
 		}
-		tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>'
+		if (!is_json_view && _cmd.configuration.irremovable == undefined) {
+			tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>'
+		}
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
@@ -1016,6 +1026,11 @@ function changeIncludeMode() {
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
 	showMqttClientInfo(_options);
 	setIncludeModeActivation(_options.brkId, _options.state);
+	if (_options.launchable == 'ok')
+		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').removeClass('disableCard')
+	else
+		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').addClass('disableCard')
+	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle').removeClass('fa-minus-circle').removeClass('fa-times-circle').addClass(_options.icon);
 	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').css('color', _options.color);
 });
 

@@ -63,7 +63,8 @@ function displayEqLogicCard($eqL, $node_images) {
 	}
 	if ($eqL->getType() == jMQTT::TYP_BRK) {
 		$file = 'node_broker.svg';
-		echo '<i class="status-circle fas fa-circle" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px;color:' . jMQTT::getBrokerColorFromState($eqL->getMqttClientState()) . '"></i>';
+		$st = $eqL->getMqttClientState();
+		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px;color:'.jMQTT::getBrokerColorFromState($st).'"></i>';
 	}
 	else {
 		$icon = 'node_' . $eqL->getConfiguration('icone');
@@ -109,7 +110,14 @@ function displayEqLogicCard($eqL, $node_images) {
 	
 		<?php
 		foreach ($eqBrokers as $eqB) {
-			echo '<legend><i class="fas fa-table"></i> {{Equipements connectés à}} <b>' . $eqB->getName() . '</b></legend>';
+			echo '<legend><i class="fas fa-table"></i> ';
+			if (!array_key_exists($eqB->getId(), $eqNonBrokers))
+				echo '{{Aucun équipement connectés à}}';
+			elseif (count($eqNonBrokers[$eqB->getId()]) == 1)
+				echo '{{1 équipement connectés à}}';
+			else
+				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
+			echo ' <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . 
 				$eqB->getId() . '"', 'logoSecondary');
@@ -123,6 +131,7 @@ function displayEqLogicCard($eqL, $node_images) {
 			echo '</div>';
 		}
 		
+		// TODO: Check if this is still usefull (condition is always false)
 		if ($has_orphans) {
 			echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
@@ -176,7 +185,7 @@ function displayEqLogicCard($eqL, $node_images) {
 			</div>
 			<hr style="margin-top: 5px; margin-bottom: 5px;">
 		</div>
-		<div class="tab-content" style="height: calc(100% - 120px); overflow: auto; overflow-x: hidden;">
+		<div class="tab-content" style="height:calc(100vh - 140px)!important;overflow:auto;overflow-x:hidden;">
 			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
 				<?php include_file('desktop', 'jMQTT_eqpt', 'php', 'jMQTT'); ?>
 			</div>
