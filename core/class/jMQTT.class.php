@@ -1106,7 +1106,7 @@ class jMQTT extends eqLogic {
 			//remove flag
 			config::remove(self::FORCE_DEPENDANCY_INSTALL, __CLASS__);
 
-			// Installation of the dependancies occuues in another process, this one must end.
+			// Installation of the dependancies occures in another process, this one must end.
 			return;
 		}
 
@@ -1788,7 +1788,7 @@ class jMQTT extends eqLogic {
 		// No equipment listening to the current message is found
 		// Should not occur: log a warning and return
 		if (empty($elogics)) {
-			$this->log('warning', 'No equipment listening to topic ' . $msgTopic);
+			$this->log('warning', 'No equipment listening to topic ' . $msgTopic . ', this should not occur: skip');
 			return;
 		}
 
