@@ -21,6 +21,8 @@
  - Utilisation d'icônes différentes selon les états des Brokers (pour ceux qui distinguent mal les couleurs)
  - Alignement visuel des champs des commandes actions
  - Correction du défilement sur la page des commandes d'un équipement
+ - Plus de messages de débug lors d'une Exception sur on_mqtt_message
+ - Une commande action peut maintenant aussi est "irremovable" (besoin pour plugins tiers)
 
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
