@@ -1155,7 +1155,7 @@ class jMQTT extends eqLogic {
 		$cmd1 .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
 		$cmd1 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		log::add(__CLASS__, 'info', 'Lancement du démon python jMQTT pour le plugin '.__CLASS__);
-		$result1 = exec($cmd1 . ' >> ' . log::getPathToLog(__CLASS__.'_daemon') . ' 2>&1 &');
+		$result1 = exec($cmd1 . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
 
 		// Start WebSocket daemon
 		$path2 = realpath(dirname(__FILE__) . '/../../resources/jmqttd/');
