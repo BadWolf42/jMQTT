@@ -8,5 +8,3 @@ resources/dependance.lib
 resources/jmqttd/venv/
 resources/JsonPath-PHP/composer.lock
 resources/JsonPath-PHP/vendor/
-resources/Ratchet/composer.lock
-resources/Ratchet/vendor/
