@@ -72,7 +72,6 @@ class jMQTT extends eqLogic {
 	const PATH_CERTIFICATES = 'data/jmqtt/certs/';
 
 	const DEFAULT_PYTHON_PORT = 1025;
-	const DEFAULT_WEBSOCKET_PORT = 1026;
 
 	/**
 	 * To define a standard jMQTT equipment
@@ -1054,12 +1053,12 @@ class jMQTT extends eqLogic {
 		$return['state'] = 'nok';
 		$return['launchable'] = 'ok';
 
-		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
-		if (file_exists($pid_file1)) {
-			if (@posix_getsid(trim(file_get_contents($pid_file1)))) {
+		$pid_file = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
+		if (file_exists($pid_file)) {
+			if (@posix_getsid(trim(file_get_contents($pid_file)))) {
 				$return['state'] = 'ok';
 			} else {
-				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
+				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 				self::deamon_stop();
 			}
 		}
@@ -1100,7 +1099,6 @@ class jMQTT extends eqLogic {
 
 		// Get default ports for daemons
 		$defaultPythonPort = self::DEFAULT_PYTHON_PORT;
-		// $defaultWebSocketPort = self::DEFAULT_WEBSOCKET_PORT;
 
 		// Check python daemon port is available
 		$output=null;
@@ -1333,10 +1331,10 @@ class jMQTT extends eqLogic {
 	}
 	private static function cleanMqttClientStateCache() {
 		// get list of ids
+		cache::delete('jMQTT::' . self::CACHE_DAEMON_CONNECTED);
 		$idListInCache = cache::byKey('jMQTT')->getValue([]);
 		// for each id clean both cached values
 		foreach ($idListInCache as $id) {
-			cache::delete('jMQTT::' . $id . '::' . self::CACHE_DAEMON_CONNECTED);
 			cache::delete('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 		}
 	}
@@ -1409,9 +1407,13 @@ class jMQTT extends eqLogic {
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
-		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
-		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
-		return self::MQTTCLIENT_OK;
+		if (!cache::byKey('jMQTT::' . self::CACHE_DAEMON_CONNECTED)->getValue(false) || $this->getType() != self::TYP_BRK)
+			return self::MQTTCLIENT_NOK;
+		if (self::getMqttClientStateCache($this->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false))
+			return self::MQTTCLIENT_OK;
+		if (self::getBrokerFromId(intval($this->getId()))->getIsEnable())
+			return self::MQTTCLIENT_POK;
+		return self::MQTTCLIENT_NOK;
 	}
 
 	/**
@@ -1531,8 +1533,9 @@ class jMQTT extends eqLogic {
 
 	public static function on_daemon_connect() {
 		// Save in cache that daemon is connected
-		self::setMqttClientStateCache('0', self::CACHE_DAEMON_CONNECTED, true);
+		cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, true);
 	}
+
 	public static function on_daemon_disconnect() {
 		try {
 			// if daemon is disconnected from Jeedom, consider all MQTT Clients as disconnected too
@@ -1545,13 +1548,12 @@ class jMQTT extends eqLogic {
 			log::add(__CLASS__, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
 		}
 		// Save in cache that daemon is disconnected
-		self::setMqttClientStateCache('0', self::CACHE_DAEMON_CONNECTED, false);
+		cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, false);
 	}
 	public static function on_mqtt_connect($id) {
-		// Save in cache that Mqtt Client is connected
-		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
-
 		try {
+			// Save in cache that Mqtt Client is connected
+			self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->getMqttClientStatusCmd()->event(self::ONLINE);
 			$broker->sendMqttClientStateEvent();
