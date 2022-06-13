@@ -254,7 +254,9 @@ class jeedom_socket():
 		if self.netAdapter:
 			self.netAdapter.queue = self.queue
 			logging.debug("Socket interface started")
-			threading.Thread(target=self.loopNetServer, args=()).start()
+			th = threading.Thread(target=self.loopNetServer, args=())
+			th.daemon = True
+			th.start()
 		else:
 			logging.debug("Cannot start socket interface")
 

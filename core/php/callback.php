@@ -35,42 +35,39 @@ if (is_null($messages) || !is_array($messages)) {	// Only expect an array of mes
 	die();
 }
 foreach($messages as $message) {					// Iterate through the messages
-	if (!isset($message['id']) || !isset($message['cmd'])) {					// No cmd supplied
+	if (!isset($message['cmd'])) {					// No cmd supplied
 		jMQTT::logger('error', sprintf('Daemon [%s]: Missing id or cmd, see: "%s".', $ruid, json_encode($message)));
 		continue;
 	}
 	switch ($message['cmd']) {						// Handle commands from daemon
 		case 'messageIn':
-			if (!isset($message['topic']) || !isset($message['payload']) || !isset($message['qos']) || !isset($message['retain']))
+			if (!isset($message['id']) || !isset($message['topic']) || !isset($message['payload']) || !isset($message['qos']) || !isset($message['retain']))
 				break;
 			jMQTT::on_mqtt_message($message['id'], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
 			continue 2;								// Next foreach iteration
 
-		case 'connection':
-			if (!isset($message['state']))
-				break;
-			if ($message['state'])
-				jMQTT::on_mqtt_connect($message['id']);
-			else
-				jMQTT::on_mqtt_disconnect($message['id']);
-			continue 2;								// Next foreach iteration
-
 		case 'brokerUp':								// {"cmd":"brokerUp", "id":string}
+			if (!isset($message['id']))
+				break;
+			jMQTT::logger('debug', sprintf('Daemon [%s]: Broker %s connected', $ruid, $message['id']));
 			jMQTT::on_mqtt_connect($message['id']);
 			continue 2;								// Next foreach iteration
 
 		case 'brokerDown':								// {"cmd":"brokerDown", "id":string}
+			if (!isset($message['id']))
+				break;
+			jMQTT::logger('debug', sprintf('Daemon [%s]: Broker %s disconnected', $ruid, $message['id']));
 			jMQTT::on_mqtt_disconnect($message['id']);
 			continue 2;								// Next foreach iteration
 
 
 		case 'daemonUp':							// {"cmd":"daemonUp"}
-			jMQTT::logger('debug', sprintf('Id %d : Python daemon connected successfully to Jeedom', '0'));
+			jMQTT::logger('debug', sprintf('Daemon [%s]: Python daemon connected successfully to Jeedom', $ruid));
 			jMQTT::on_daemon_connect();
 			continue 2;								// Next foreach iteration
 
 		case 'daemonDown':							// {"cmd":"daemonDown"}
-			jMQTT::logger('debug', sprintf('Id %d : Python daemon disconnected from Jeedom', '0'));
+			jMQTT::logger('debug', sprintf('Daemon [%s]: Python daemon disconnected from Jeedom', $ruid));
 			jMQTT::on_daemon_disconnect();
 			continue 2;								// Next foreach iteration
 

@@ -49,6 +49,7 @@ class MqttClient:
 			message['username'] = ''
 		if 'password' not in message:
 			message['password'] = ''
+		self.mqttsub_lock = threading.Lock()
 		self.mqttsubscribedtopics = {}
 		self.connected = False
 #		logging.debug('MqttClient.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
@@ -77,7 +78,6 @@ class MqttClient:
 		self.mqttclient.on_connect = self.on_connect
 		self.mqttclient.on_disconnect = self.on_disconnect
 		self.mqttclient.on_message = self.on_message
-		self.mqttthread = threading.Thread(target=self.mqttclient.loop_forever)
 
 	def on_connect(self, client, userdata, flags, rc):
 		self.connected = True
@@ -85,13 +85,14 @@ class MqttClient:
 			client.will_set(self.mqttstatustopic, 'offline', 1, True)
 			client.publish(self.mqttstatustopic, 'online', 1, True)
 		logging.info('BrkId: % 4s : Connected to broker %s:%d', self.id, self.mqtthostname, self.mqttport)
-		for topic in self.mqttsubscribedtopics:
-			self.subscribe_topic(topic, self.mqttsubscribedtopics[topic])
-		self.q.put('{"cmd":"connection","state":' + self.is_connected() + '}')
+		with self.mqttsub_lock:
+			for topic in self.mqttsubscribedtopics:
+				self.subscribe_topic(topic, self.mqttsubscribedtopics[topic])
+		self.q.put([{"cmd":"brokerUp","id":self.id}])
 
 	def on_disconnect(self, client, userdata, rc):
 		self.connected = False
-		self.q.put('{"cmd":"connection","state":' + self.is_connected() + '}')
+		self.q.put([{"cmd":"brokerDown","id":self.id}])
 		if rc == mqtt.MQTT_ERR_SUCCESS:
 			logging.info('BrkId: % 4s : Disconnected from broker.', self.id)
 		else:
@@ -110,16 +111,14 @@ class MqttClient:
 				usablePayload = b2a_base64(message.payload, newline=False).decode('utf-8')
 				form = ' (bin in base64)'
 			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', self.id, message.topic, usablePayload, form, message.qos, bool(message.retain))
-		self.q.put(json.dumps({"cmd":"messageIn", "topic":message.topic, "payload":usablePayload, "qos":message.qos, "retain":bool(message.retain)}))
-
-	def is_connected(self):
-		return str(self.connected).lower()
+		self.q.put([{"cmd":"messageIn","id":self.id,"topic":message.topic,"payload":usablePayload,"qos":message.qos,"retain":bool(message.retain)}])
 
 	def subscribe_topic(self, topic, qos):
 		try:
 			res = self.mqttclient.subscribe(topic, qos)
 			if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
-				self.mqttsubscribedtopics[topic] = qos
+				with self.mqttsub_lock:
+					self.mqttsubscribedtopics[topic] = qos
 				logging.info('BrkId: % 4s : Topic subscribed "%s"', self.id, topic)
 				return
 		except ValueError: # Only catch ValueError
@@ -127,18 +126,19 @@ class MqttClient:
 		logging.error('BrkId: % 4s : Topic subscription failed "%s"', self.id, topic)
 
 	def unsubscribe_topic(self, topic):
-		if topic not in self.mqttsubscribedtopics:
-			logging.info('BrkId: % 4s : Can\'t unsubscribe not subscribed topic "%s"', self.id, topic)
-			return
-		try:
-			res = self.mqttclient.unsubscribe(topic)
-			if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
-				del self.mqttsubscribedtopics[topic]
-				logging.info('BrkId: % 4s : Topic unsubscribed "%s"', self.id, topic)
+		with self.mqttsub_lock:
+			if topic not in self.mqttsubscribedtopics:
+				logging.info('BrkId: % 4s : Can\'t unsubscribe not subscribed topic "%s"', self.id, topic)
 				return
-		except ValueError: # Only catch ValueError
-			pass
-		logging.error('BrkId: % 4s : Topic unsubscription failed "%s"', self.id, topic)
+			try:
+				res = self.mqttclient.unsubscribe(topic)
+				if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
+					del self.mqttsubscribedtopics[topic]
+					logging.info('BrkId: % 4s : Topic unsubscribed "%s"', self.id, topic)
+					return
+			except ValueError: # Only catch ValueError
+				pass
+			logging.error('BrkId: % 4s : Topic unsubscription failed "%s"', self.id, topic)
 
 	def publish(self, topic, payload, qos, retain):
 		self.mqttclient.publish(topic, payload, qos, retain)
@@ -154,35 +154,35 @@ class MqttClient:
 	def start(self):
 		try:
 			self.mqttclient.connect(self.mqtthostname, self.mqttport, 30)
+			self.mqttclient.loop_start()
 		except:
 			if logging.getLogger().isEnabledFor(logging.DEBUG):
 				logging.exception('BrkId: % 4s : MqttClient.start() Exception', self.id)
-		self.mqttthread.start()
 
 	def stop(self):
 		if self.mqttstatustopic != '':
 			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
 		self.mqttclient.disconnect()
-		self.mqttthread.join()
+		self.mqttclient.loop_stop()
+		logging.debug('BrkId: % 4s : MqttClient.stop() ended', self.id)
 
 # ----------------------------------------------------------------------------
 
 class JeedomClient:
-	def __init__(self, queue, message, fnismqttconnected):
+	def __init__(self, queue, message):
 		self.q = queue
 		self.id = message['id']
 		self.apikey = message['apikey']
 		self.callback = message['callback']
-		self.fnismqttconnected = fnismqttconnected
 
 		# Create jeedom_com Client
 		self.jcom = jeedom_com(apikey=self.apikey, url=self.callback)
 		self.stopworker = False
 		self.workerthread = threading.Thread(target=self.worker)
+		self.workerthread.daemon = True
 
 	def worker(self):
-		# self.jcom.thread_change('[{"id":'+self.id+', "cmd":"connection","state":' + str(self.fnismqttconnected()) + '}]')
-		# logging.info('BrkId: % 4s : Connected to Jeedom using %s', self.id, self.callback)
+		logging.debug('BrkId: % 4s : Message worker to Jeedom started.', self.id)
 		while not self.stopworker or not self.q.empty():
 			# empty() method is faster that Exception handling
 			if self.q.empty():
@@ -197,8 +197,7 @@ class JeedomClient:
 			except:
 				if logging.getLogger().isEnabledFor(logging.DEBUG):
 					logging.exception('BrkId: % 4s : JeedomClient.worker() Exception', self.id)
-		# self.jcom.thread_change('[{"id":'+self.id+', "cmd":"connection","state":' + str(self.fnismqttconnected()) + '}]')
-		# logging.info('BrkId: % 4s : Disconnected from Jeedom', self.id)
+		logging.debug('BrkId: % 4s : Message worker to Jeedom ended.', self.id)
 
 	def start(self):
 		self.stopworker = False
@@ -215,23 +214,23 @@ class jMqttClient:
 		self.m = message
 		self.q = queue.Queue()
 		self.mqtt = None
-		self.ws = None
+		self.jc = None
 
 	def start(self):
 		if self.mqtt is None:
 			self.mqtt = MqttClient(self.q, self.m)
 			self.mqtt.start()
-		if self.ws is None:
-			self.ws = JeedomClient(self.q, self.m, self.mqtt.is_connected)
-			self.ws.start()
+		if self.jc is None:
+			self.jc = JeedomClient(self.q, self.m)
+			self.jc.start()
 
 	def stop(self):
 		if self.mqtt is not None:
 			self.mqtt.stop()
 			self.mqtt = None
-		if self.ws is not None:
-			self.ws.stop()
-			self.ws = None
+		if self.jc is not None:
+			self.jc.stop()
+			self.jc = None
 
 	def restart(self, message=None):
 		if message is not None:
@@ -239,8 +238,8 @@ class jMqttClient:
 		self.stop()
 		self.start()
 
-	def __del__(self):
-		self.stop()
+	# def __del__(self):
+		# self.stop()
 
 # ----------------------------------------------------------------------------
 
@@ -387,7 +386,7 @@ class Main():
 					self.should_stop.set()
 
 		# Send daemon Up signal
-		self.jcom.thread_change('[{"id":'+self.id+', "cmd":"daemonUp"}]')
+		self.jcom.thread_change([{"cmd":"daemonUp"}])
 		self.log.debug('Run         : Sent Daemon Up signal to Jeedom')
 
 		# Wait for instructions
@@ -541,16 +540,29 @@ class Main():
 				self.log.exception('Clients Kill Exception')
 
 		# Send daemon Down signal
-		self.jcom.thread_change('[{"id":'+self.id+', "cmd":"daemonDown"}]')
+		self.jcom.thread_change([{"cmd":"daemonDown"}])
 		self.log.debug('Run         : Sent Daemon Down signal to Jeedom')
 
 		#Remove PID file if exists
-		if os.path.isfile(self._pidfile):
-			try:
-				os.remove(self._pidfile)
-				self.log.debug("Removed PID file %s", self._pidfile)
-			except:
-				self.log.debug("Failed to remove PID file %s", self._pidfile)
+		# if os.path.isfile(self._pidfile):
+			# try:
+				# os.remove(self._pidfile)
+				# self.log.debug("Removed PID file %s", self._pidfile)
+			# except:
+				# self.log.debug("Failed to remove PID file %s", self._pidfile)
+
+		# List all living thread
+		# import traceback
+		# for thread in threading.enumerate():
+			# if threading.current_thread() == thread:
+				# continue
+			# self.log.debug("Thread %s is still active! Dict: %r Stack Trace:", thread.getName(), thread)
+			# stack = sys._current_frames()[thread.ident]
+			# for filename, lineno, name, line in traceback.extract_stack(stack):
+				# if line:
+					# self.log.debug('File: "%s", line %d, in %s  %s', filename, lineno, name, line.strip())
+				# else:
+					# self.log.debug('File: "%s", line %d, in %s', filename, lineno, name)
 
 		#This the end my friend
 		self.log.debug("Exit 0")
@@ -571,6 +583,21 @@ if __name__ == '__main__':
 	logger = logging.getLogger()
 	logger.handlers = []
 	logger.addHandler(ch)
+
+	# Disable debug in http/url/req libs
+	debuglevel = False
+	requests_log = logging.getLogger("requests.packages.urllib3")
+	pool_log = logging.getLogger("urllib3.connectionpool")
+	if debuglevel:
+		# self.log.verbose('Debug log active for requests & urllib3')
+		requests_log.setLevel(logging.DEBUG)
+		pool_log.setLevel(logging.DEBUG)
+	else:
+		requests_log.setLevel(logging.WARNING)
+		pool_log.setLevel(logging.WARNING)
+	requests_log.propagate = debuglevel
+	pool_log.propagate = debuglevel
+
 
 	# Get an instance of Main
 	should_stop = threading.Event()

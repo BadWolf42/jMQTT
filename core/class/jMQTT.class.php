@@ -1154,13 +1154,17 @@ class jMQTT extends eqLogic {
 		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		if (file_exists($pid_file1)) {
 			$pid1 = intval(trim(file_get_contents($pid_file1)));
-			system::kill($pid1, false);
+			@posix_kill($pid1, 15);
+			log::add(__CLASS__, 'debug', 'Sent Kill -15');
+			// system::kill($pid1, false);
 			//wait up to 10 seconds for python daemon stop
 			for ($i = 1; $i <= 40; $i++) {
 				if (! @posix_getsid($pid1)) break;
 				usleep(250000);
 			}
-			system::kill($pid1, true);
+			@posix_kill($pid1, 9);
+			log::add(__CLASS__, 'debug', 'Sent Kill -9');
+			// system::kill($pid1, true);
 		}
 
 		// If something bad happened, clean anyway
