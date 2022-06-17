@@ -1030,6 +1030,7 @@ class jMQTT extends eqLogic {
 		return $return;
 	}
 
+
 	###################################################################################################################
 	##
 	##                   PLUGIN RELATED METHODS
@@ -1167,7 +1168,9 @@ class jMQTT extends eqLogic {
 		}
 
 		// If something bad happened, clean anyway
-		self::cleanMqttClientStateCache();
+		cache::delete('jMQTT::' . self::CACHE_DAEMON_CONNECTED);
+		foreach(self::getBrokers() as $broker)
+			cache::delete('jMQTT::' . $broker->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 
 		self::listenersRemoveAll();
 	}
@@ -1308,38 +1311,11 @@ class jMQTT extends eqLogic {
 	}
 
 
-
 	###################################################################################################################
 	##
 	##                   MQTT CLIENT RELATED METHODS
 	##
 	###################################################################################################################
-
-
-	private static function getMqttClientStateCache($id, $key, $default = null) {
-		return cache::byKey('jMQTT::' . $id . '::' . $key)->getValue($default);
-	}
-
-	private static function setMqttClientStateCache($id, $key, $value = null) {
-		// Save ids in cache as a list for future cleaning
-		$idListInCache = cache::byKey('jMQTT')->getValue([]);
-		if (!in_array($id, $idListInCache, true)){
-			$idListInCache[] = $id;
-			cache::set('jMQTT', $idListInCache);
-		}
-
-		return cache::set('jMQTT::' . $id . '::' . $key, $value);
-	}
-	private static function cleanMqttClientStateCache() {
-		// get list of ids
-		cache::delete('jMQTT::' . self::CACHE_DAEMON_CONNECTED);
-		$idListInCache = cache::byKey('jMQTT')->getValue([]);
-		// for each id clean both cached values
-		foreach ($idListInCache as $id) {
-			cache::delete('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
-		}
-	}
-
 
 	/**
 	 * Check all MQTT Clients (start them if needed)
@@ -1410,7 +1386,7 @@ class jMQTT extends eqLogic {
 	public function getMqttClientState() {
 		if (!cache::byKey('jMQTT::' . self::CACHE_DAEMON_CONNECTED)->getValue(false) || $this->getType() != self::TYP_BRK)
 			return self::MQTTCLIENT_NOK;
-		if (self::getMqttClientStateCache($this->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false))
+		if (cache::byKey('jMQTT::' . $this->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED)->getValue(false))
 			return self::MQTTCLIENT_OK;
 		if (self::getBrokerFromId(intval($this->getId()))->getIsEnable())
 			return self::MQTTCLIENT_POK;
@@ -1543,7 +1519,7 @@ class jMQTT extends eqLogic {
 			cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, false);
 			// if daemon is disconnected from Jeedom, consider all MQTT Clients as disconnected too
 			foreach(self::getBrokers() as $broker) {
-				if (self::getMqttClientStateCache($broker->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false))
+				if (cache::byKey('jMQTT::' . $broker->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED)->getValue(false))
 					self::on_mqtt_disconnect($broker->getId());
 				$broker->sendMqttClientStateEvent();
 			}
@@ -1554,7 +1530,7 @@ class jMQTT extends eqLogic {
 	public static function on_mqtt_connect($id) {
 		try {
 			// Save in cache that Mqtt Client is connected
-			self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
+			cache::set('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED, true);
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->getMqttClientStatusCmd()->event(self::ONLINE);
 			$broker->sendMqttClientStateEvent();
@@ -1564,7 +1540,7 @@ class jMQTT extends eqLogic {
 	}
 	public static function on_mqtt_disconnect($id) {
 		// Save in cache that Mqtt Client is disconnected
-		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, false);
+		cache::set('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED, false);
 
 		try {
 			$broker = self::getBrokerFromId(intval($id));
@@ -1671,12 +1647,12 @@ class jMQTT extends eqLogic {
 		event::add('jMQTT::EventState', $this->getMqttClientInfo());
 	}
 
+
 	###################################################################################################################
 	##
 	##                   MQTT BROKER METHODS
 	##
 	###################################################################################################################
-
 
 	/**
 	 * Callback called each time a message matching subscribed topic is received from the broker.
@@ -2177,7 +2153,6 @@ class jMQTT extends eqLogic {
 	private function getMqttApiTopic() {
 		return $this->getMqttClientId() . '/' . self::API_TOPIC;
 	}
-
 
 	/**
 	 * Disable the equipment automatic inclusion mode and inform the desktop page
