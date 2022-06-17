@@ -18,13 +18,11 @@ from binascii import b2a_base64
 import json
 import logging
 import os
-import paho.mqtt.client as mqtt
 import queue
 import signal
 import sys
 import threading
 import time
-import websocket
 from zlib import decompress as zlib_decompress
 
 try:
@@ -34,6 +32,13 @@ try:
 except ImportError:
 	print("Error: importing module jeedom.jeedom")
 	sys.exit(1)
+
+try:
+	import paho.mqtt.client as mqtt
+except ImportError:
+	print("Error: importing module paho.mqtt")
+	sys.exit(1)
+
 
 class MqttClient:
 	def __init__(self, queue, message):
