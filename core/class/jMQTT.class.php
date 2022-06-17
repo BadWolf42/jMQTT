@@ -98,6 +98,7 @@ class jMQTT extends eqLogic {
 	 * @var array values from preRemove used for postRemove actions
 	 */
 	private $_preRemoveInformations;
+
 	/**
 	 * Broker jMQTT object related to this object
 	 * @var jMQTT broker object
@@ -1538,17 +1539,17 @@ class jMQTT extends eqLogic {
 
 	public static function on_daemon_disconnect() {
 		try {
+			// Save in cache that daemon is disconnected
+			cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, false);
 			// if daemon is disconnected from Jeedom, consider all MQTT Clients as disconnected too
 			foreach(self::getBrokers() as $broker) {
-				if (self::getMqttClientStateCache($broker->getId(), self::CACHE_MQTTCLIENT_CONNECTED))
+				if (self::getMqttClientStateCache($broker->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false))
 					self::on_mqtt_disconnect($broker->getId());
 				$broker->sendMqttClientStateEvent();
 			}
 		} catch (Throwable $t) {
 			log::add(__CLASS__, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
 		}
-		// Save in cache that daemon is disconnected
-		cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, false);
 	}
 	public static function on_mqtt_connect($id) {
 		try {
