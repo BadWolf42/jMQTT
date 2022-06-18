@@ -427,11 +427,11 @@ class jMQTTCmd extends cmd {
 			$listener->setOption('eqLogic', $this->getEqLogic_id());
 			$listener->setOption('background', false);
 			$listener->save();
-			log::add('jMQTT', 'debug', 'Listener Installed on #'.$this->getHumanName().'#');
+			jMQTT::logger('debug', 'Listener Installed on #'.$this->getHumanName().'#');
 		} else { // We don't want a listener
 			if (is_object($listener)) {
 				$listener->remove();
-				log::add('jMQTT', 'debug', 'Listener Removed from #'.$this->getHumanName().'#');
+				jMQTT::logger('debug', 'Listener Removed from #'.$this->getHumanName().'#');
 			}
 		}
 	}
@@ -440,9 +440,9 @@ class jMQTTCmd extends cmd {
 		$cmd = self::byId($_options['cmd']);
 		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration('autoPub', 0)) {
 			listener::byId($_options['listener_id'])->remove();
-			log::add('jMQTT', 'debug', 'Listener Removed from #'.$_options['cmd'].'#');
+			jMQTT::logger('debug', 'Listener Removed from #'.$_options['cmd'].'#');
 		} else {
-			log::add('jMQTT', 'debug', 'Auto Publish on #'.$cmd->getHumanName().'#');
+			jMQTT::logger('debug', 'Auto Publish on #'.$cmd->getHumanName().'#');
 			$cmd->execute();
 		}
 	}
@@ -460,11 +460,11 @@ class jMQTTCmd extends cmd {
 				$eqLogic->setStatus('batteryDatetime', null);
 			}
 		} else {
-			log::add('jMQTT', 'info', 'Removing orphan command #'.$this->getId().'#');
+			jMQTT::logger('info', 'Removing orphan command #'.$this->getId().'#');
 		}
 		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
 		foreach ($listener as $l) {
-			log::add('jMQTT', 'debug', 'Listener Removed from #'.$l->getOption('cmd').'#');
+			jMQTT::logger('debug', 'Listener Removed from #'.$l->getOption('cmd').'#');
 			$l->remove();
 		}
 	}

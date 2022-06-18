@@ -135,7 +135,7 @@ class jMQTT extends eqLogic {
 	 * @return list of name and file array.
 	 */
 	public static function templateList(){
-		// log::add('jMQTT', 'debug', 'templateList()');
+		// self::logger('debug', 'templateList()');
 		$return = array();
 		// Get personal templates
 		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
@@ -143,7 +143,7 @@ class jMQTT extends eqLogic {
 				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $file);
 				$return[] = array('[Perso] '.$templateKey, 'plugins/jMQTT/data/template/' . $file);
 			} catch (Throwable $e) {
-				log::add('jMQTT', 'warning', __('Erreur lors de la lecture du template', __FILE__).' "data/template/'.$file.'"');
+				self::logger('warning', __('Erreur lors de la lecture du template', __FILE__).' "data/template/'.$file.'"');
 			}
 		}
 		// Get official templates
@@ -152,7 +152,7 @@ class jMQTT extends eqLogic {
 				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../config/template/' . $file);
 				$return[] = array($templateKey, 'plugins/jMQTT/core/config/template/' . $file);
 			} catch (Throwable $e) {
-				log::add('jMQTT', 'warning', __('Erreur lors de la lecture du template', __FILE__).' "core/config/template/'.$file.'"');
+				self::logger('warning', __('Erreur lors de la lecture du template', __FILE__).' "core/config/template/'.$file.'"');
 			}
 		}
 		return $return;
@@ -164,7 +164,7 @@ class jMQTT extends eqLogic {
 	 * @return array
 	 */
 	public static function templateByName($_name){
-		// log::add('jMQTT', 'debug', 'templateByName("' . $_name . '")');
+		// self::logger('debug', 'templateByName("' . $_name . '")');
 		if (strpos($_name , '[Perso] ') === 0) {
 			// Get personal templates
 			$name = substr($_name, strlen('[Perso] '));
@@ -192,7 +192,7 @@ class jMQTT extends eqLogic {
 	 * @return array
 	 */
 	public static function templateByFile($_filename = ''){
-		// log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
+		// self::logger('debug', 'templateByFile("' . $_filename . '")');
 		$existing_files = self::templateList();
 		$exists = false;
 		foreach ($existing_files as list($n, $f))
@@ -202,7 +202,7 @@ class jMQTT extends eqLogic {
 			}
 		if (!$exists)
 			throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
-		// log::add('jMQTT', 'debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
+		// self::logger('debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
 		try {
 			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../../../' . $_filename);
 			return $templateValue;
@@ -313,7 +313,7 @@ class jMQTT extends eqLogic {
 	 * @param string $_template template name to look for.
 	 */
 	public static function deleteTemplateByFile($_filename){
-		// log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
+		// self::logger('debug', 'deleteTemplateByFile("' . $_filename . '")');
 		if (!isset($_filename) || is_null($_filename) || $_filename == '')
 			return false;
 		$existing_files = self::templateList();
@@ -417,7 +417,7 @@ class jMQTT extends eqLogic {
 	 */
 	public static function createEquipment($broker, $name, $topic) {
 
-		log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
+		self::logger('debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
 		$eqpt = new jMQTT();
 		$eqpt->setName($name);
 		$eqpt->setIsEnable(1);
@@ -449,7 +449,7 @@ class jMQTT extends eqLogic {
 	 * raise Exception is Broker could not be found
 	 */
 	public static function createEqWithTemplate($brk_addr, $name, $template_path, $topic, $uuid = null) {
-		log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
+		self::logger('debug', 'createEqWithTemplate ' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
 
 		// Check if file is in Jeedom directory and exists
 		if (strpos(realpath($template_path), getRootPath()) === false)
@@ -466,7 +466,7 @@ class jMQTT extends eqLogic {
 			$ip = gethostbyname($brk->getMqttAddress());
 			if ($ip == $brk_addr || (substr($ip, 0, 4) == '127.' && substr($brk_addr, 0, 4) == '127.')) {
 				$broker = $brk;
-				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found Broker: ' . $broker->getHumanName());
+				self::logger('debug', 'createEqWithTemplate ' . $name . ': Found Broker: ' . $broker->getHumanName());
 				break;
 			}
 		}
@@ -482,19 +482,19 @@ class jMQTT extends eqLogic {
 			foreach ($eqpts as $eqpt) {
 				// If it's attached to correct broker
 				if ($eqpt->getBrkId() == $broker->getId()) {
-					log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found matching Eq '.$eqpt->getHumanName());
+					self::logger('debug', 'createEqWithTemplate ' . $name . ': Found matching Eq '.$eqpt->getHumanName());
 					$eq = $eqpt;
 					break;
 				}
-				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found Eq with matching uuid but wrong broker '.$eqpt->getHumanName());
+				self::logger('debug', 'createEqWithTemplate ' . $name . ': Found Eq with matching uuid but wrong broker '.$eqpt->getHumanName());
 			}
 			if (is_null($eq))
-				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Could not find any Eq matching with UUID and broker.');
+				self::logger('debug', 'createEqWithTemplate ' . $name . ': Could not find any Eq matching with UUID and broker.');
 		}
 		// If the Eq is not located create it
 		if (is_null($eq)) {
 			$eq = self::createEquipment($broker, $name, $topic);
-			log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': New Eq created.');
+			self::logger('debug', 'createEqWithTemplate ' . $name . ': New Eq created.');
 			if (!is_null($uuid)) {
 				$eq->setConfiguration(jMQTT::CONF_KEY_TEMPLATE_UUID, $uuid);
 				$eq->save();
@@ -1076,7 +1076,7 @@ class jMQTT extends eqLogic {
 
 		// if FORCE_DEPENDANCY_INSTALL flag is raised in plugin config
 		if (config::byKey(self::FORCE_DEPENDANCY_INSTALL, __CLASS__, 0) == 1) {
-			log::add(__CLASS__, 'info', 'Forced Dependancies check/install, daemon will start at next retry');
+			self::logger('info', 'Forced Dependancies check/install, daemon will start at next retry');
 			$plugin = plugin::byId(__CLASS__);
 
 			//clean dependancy state cache
@@ -1092,7 +1092,7 @@ class jMQTT extends eqLogic {
 			return;
 		}
 
-		log::add(__CLASS__, 'info', 'Starting Daemon');
+		self::logger('info', 'Starting Daemon');
 		
 		self::deamon_stop();
 		$daemon_info = self::deamon_info();
@@ -1123,7 +1123,7 @@ class jMQTT extends eqLogic {
 		$cmd1 .= ' --callback "http://localhost/plugins/jMQTT/core/php/callback.php"';
 		$cmd1 .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
 		$cmd1 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
-		log::add(__CLASS__, 'info', 'Lancement du démon python jMQTT pour le plugin '.__CLASS__);
+		self::logger('info', 'Lancement du démon python jMQTT pour le plugin '.__CLASS__);
 		$result1 = exec($cmd1 . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
 
 		//wait up to 10 seconds for daemons start
@@ -1136,7 +1136,7 @@ class jMQTT extends eqLogic {
 		if ($daemon_info['state'] != self::MQTTCLIENT_OK) {
 			// If only one of both daemon runs we still need to stop
 			self::deamon_stop();
-			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
+			self::logger('error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
 			return;
 		}
 		message::removeAll(__CLASS__, 'unableStartDaemon');
@@ -1146,13 +1146,13 @@ class jMQTT extends eqLogic {
 	 * callback to stop daemon
 	 */
 	public static function deamon_stop() {
-		log::add(__CLASS__, 'info', 'Stopping Daemon');
+		self::logger('info', 'Stopping Daemon');
 
 		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		if (file_exists($pid_file1)) {
 			$pid1 = intval(trim(file_get_contents($pid_file1)));
 			@posix_kill($pid1, 15);
-			log::add(__CLASS__, 'debug', 'Sent Kill -15');
+			self::logger('debug', 'Sent Kill -15');
 			// system::kill($pid1, false);
 			//wait up to 10 seconds for python daemon stop
 			for ($i = 1; $i <= 40; $i++) {
@@ -1162,7 +1162,7 @@ class jMQTT extends eqLogic {
 			if (@posix_getsid($pid1)) {
 				@posix_kill($pid1, 9);
 				// shell_exec(system::getCmdSudo() . 'kill -9 ' . $pid1);
-				log::add(__CLASS__, 'debug', 'Sent Kill -9');
+				self::logger('debug', 'Sent Kill -9');
 			}
 		}
 		// If something bad happened, clean anyway
@@ -1182,21 +1182,21 @@ class jMQTT extends eqLogic {
 		$return['state'] = self::MQTTCLIENT_OK;
 
 		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : Composer JsonPath PHP package is missing');
+			self::logger('debug', 'dependancy_info : Composer JsonPath PHP package is missing');
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
 		if (!file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/python3')) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : python venv has not yet been created');
+			self::logger('debug', 'dependancy_info : python venv has not yet been created');
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 		elseif (exec(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-color -r '.dirname(__FILE__) . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null | wc -l') > 0) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : python3 required library is missing in venv');
+			self::logger('debug', 'dependancy_info : python3 required library is missing in venv');
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
 		if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : debian mosquitto package is missing');
+			self::logger('debug', 'dependancy_info : debian mosquitto package is missing');
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
@@ -1210,7 +1210,7 @@ class jMQTT extends eqLogic {
 		$depLogFile = __CLASS__ . '_dep';
 		$depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/dependancy';
 
-		log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . $depLogFile . ')');
+		self::logger('info', 'Installation des dépendances, voir log dédié (' . $depLogFile . ')');
 		log::remove($depLogFile);
 		return array(
 			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
@@ -1321,7 +1321,7 @@ class jMQTT extends eqLogic {
 			foreach(self::getBrokers() as $broker) {
 				if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
 					try {
-						log::add(__CLASS__, 'info', 'Starting MqttClient for ' . $broker->getName());
+						self::logger('info', 'Starting MqttClient for ' . $broker->getName());
 						$broker->startMqttClient();
 					}
 					catch (Throwable $e) {}
@@ -1548,7 +1548,7 @@ class jMQTT extends eqLogic {
 			$broker->log('info', 'Daemon connecté au Broker MQTT');
 			$broker->sendMqttClientStateEvent();
 		} catch (Throwable $t) {
-				log::add(__CLASS__, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
+				self::logger('error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
 		}
 	}
 	public static function on_mqtt_disconnect($id) {
@@ -1563,7 +1563,7 @@ class jMQTT extends eqLogic {
 			// if includeMode is enabled, disbale it
 			if ($broker->getIncludeMode()) $broker->changeIncludeMode(0);
 		} catch (Throwable $t) {
-				log::add(__CLASS__, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
+				self::logger('error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
 		}
 	}
 	public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
@@ -1572,7 +1572,7 @@ class jMQTT extends eqLogic {
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->brokerMessageCallback($topic, $payload);
 		} catch (Throwable $t) {
-			log::add(__CLASS__, 'error', sprintf('on_mqtt_message raised an Exception: %s, Stack: %s, BrkId: %s, Topic: %s, Payload: %s.',
+			self::logger('error', sprintf('on_mqtt_message raised an Exception: %s, Stack: %s, BrkId: %s, Topic: %s, Payload: %s.',
 												 $t->getMessage(), str_replace("\n",' %%% ', $t->getTraceAsString()), $id, $topic, $payload));
 		}
 	}
@@ -1938,7 +1938,7 @@ class jMQTT extends eqLogic {
 	 * @param string $msg
 	 */
 	public static function logger($level, $msg) {
-		log::add('jMQTT', $level, $msg);
+		log::add(__CLASS__, $level, $msg);
 	}
 
 	/**
