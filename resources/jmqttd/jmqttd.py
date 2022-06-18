@@ -188,7 +188,7 @@ class Main():
 			return False
 		if self.jcom.send_test(): # Test communication channel TO Jeedom
 			self.jcom.sender_start()									# Start sender
-			self.jcom.send_daemonUp()
+			self.jcom.send_async({"cmd":"daemonUp"})
 			# self.log.info('Successfully informed Jeedom')
 			self.log.debug('Open Comm   : Sent Daemon Up signal to Jeedom')
 		else:
@@ -356,7 +356,7 @@ class Main():
 		if self.jcom is not None:
 			self.log.debug('Run         : Sent Daemon Down signal to Jeedom')
 			self.jcom.sender_stop()
-			self.jcom.send_daemonDown()
+			self.jcom.send_async({"cmd":"daemonDown"})
 
 # ----------------------------------------------------------------------------
 

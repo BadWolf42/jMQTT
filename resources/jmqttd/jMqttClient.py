@@ -29,8 +29,6 @@ except ImportError:
 	sys.exit(1)
 
 
-
-
 class jMqttClient:
 	def __init__(self, jcom, message):
 #		logging.debug('MqttClient.init(): message=%r', message)

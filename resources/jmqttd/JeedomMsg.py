@@ -142,24 +142,6 @@ class JeedomMsg():
 		self._threadOut = None
 		self._log_snd.debug("Stopped")
 
-	# def send_msgsIn(self, msgs):
-		# self.send(msgs)
-
-	# def send_brkUp(self, brkId):
-		# self.send([{"cmd":"brkUp", "brkId":brkId}])
-
-	# def send_brkDown(self, brkId):
-		# self.send([{"cmd":"brkDown", "brkId":brkId}])
-
-	# def send_daemonPing(self):
-		# self.send([{"cmd":"daemonPing"}])
-
-	def send_daemonUp(self):
-		return self.send([{"cmd":"daemonUp"}])
-
-	def send_daemonDown(self):
-		self.send([{"cmd":"daemonDown"}])
-
 	def _loopRcv(self):
 		self._log_rcv.debug("Start")
 		self._socketIn.serve_forever()
