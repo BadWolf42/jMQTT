@@ -359,8 +359,9 @@ class Main():
 		# If possible Send daemon Down signal and stop sender
 		if self.jcom is not None:
 			self.log.debug('Run         : Sent Daemon Down signal to Jeedom')
+			# self.jcom.send_async({"cmd":"daemonDown"})
 			self.jcom.sender_stop()
-			self.jcom.send_async({"cmd":"daemonDown"})
+			self.jcom.send([{"cmd":"daemonDown"}])
 
 # ----------------------------------------------------------------------------
 

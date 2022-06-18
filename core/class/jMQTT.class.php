@@ -1050,12 +1050,10 @@ class jMQTT extends eqLogic {
 	 * callback to get information on the daemon
 	 */
 	public static function deamon_info() {
-
 		$return = array();
 		$return['log'] = __CLASS__;
 		$return['state'] = self::MQTTCLIENT_NOK;
 		$return['launchable'] = self::MQTTCLIENT_OK;
-
 		$pid_file = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		if (file_exists($pid_file)) {
 			if (@posix_getsid(trim(file_get_contents($pid_file)))) {
@@ -1065,7 +1063,6 @@ class jMQTT extends eqLogic {
 				self::deamon_stop();
 			}
 		}
-
 		return $return;
 	}
 
@@ -1154,7 +1151,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 		// If something bad happened, clean anyway
-		// self::on_daemon_disconnect();
+		self::on_daemon_disconnect();
 	}
 
 	/**
