@@ -80,11 +80,12 @@ class Main():
 		self.has_stopped.set()
 
 		# Tables for the meal
-		self.message_map  = {'newMqttClient':    self.handle_newMqttClient,
+		self.message_map  = {'newMqttClient':   self.handle_newMqttClient,
 							'removeMqttClient': self.handle_removeMqttClient,
 							'subscribeTopic':   self.handle_subscribeTopic,
 							'unsubscribeTopic': self.handle_unsubscribeTopic,
-							'messageOut':       self.handle_messageOut}
+							'messageOut':       self.handle_messageOut,
+							'loglevel':         self.handle_loglevel}
 		self.jmqttclients = {}
 		self.jcom         = None
 
@@ -318,6 +319,9 @@ class Main():
 			self.jmqttclients[message['id']].publish(message['topic'], message['payload'], message['qos'], message['retain'])
 		else:
 			self.log.debug('BrkId: % 4s : Cmd:       messageOut -> No client found with this Broker', message['id'])
+
+	def handle_loglevel(self, message):
+		self.set_log_level(message['level'])
 
 	def handle_unknown(self, message):
 		# Message when Cmd is not found

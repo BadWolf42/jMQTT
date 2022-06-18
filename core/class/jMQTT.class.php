@@ -1617,6 +1617,13 @@ class jMQTT extends eqLogic {
 		self::send_to_mqtt_daemon($params);
 	}
 
+	public static function send_loglevel() {
+		$params['cmd']='loglevel';
+		$params['id']=0;
+		$params['level']=log::convertLogLevel(log::getLogLevel(__class__));
+		self::send_to_mqtt_daemon($params);
+	}
+
 	/**
 	 * Return the last MQTT Client launch time
 	 * @return string date or unknown

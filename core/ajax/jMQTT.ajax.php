@@ -176,6 +176,11 @@ try {
 		ajax::success();
 	}
 
+	if (init('action') == 'sendLoglevel') {
+		jMQTT::send_loglevel();
+		ajax::success();
+	}
+
 /*    if (init('action') == 'filelist') {
 		jMQTT::logger('info', 'file list "' . init('dir') . '"');
 		if (init('dir') == 'template') {

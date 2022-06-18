@@ -78,7 +78,7 @@ $('#mqttConfUpFile').fileupload({
 	dataType: 'json',
 	replaceFileInput: false,
 	done: function (e, data) {
-		if (data.result.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
+		if (data.result.state != 'ok') {
 			$('.eventDisplayMini').showAlert({message: data.result.result, level: 'danger'});
 		} else {
 			$(new Option(data.result.result, data.result.result)).appendTo('#mqttConfDelFile');
@@ -121,7 +121,7 @@ $('.mqttDeleteFile').on('click', function (){
 				handleAjaxError(request, status, error);
 			},
 			success: function(data) {
-				if (data.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
+				if (data.state != 'ok') {
 					$('.eventDisplayMini').showAlert({message: data.result,level: 'danger'});
 				} else {
 					$("#mqttConfDelFile :selected").remove();
@@ -135,4 +135,34 @@ $('.mqttDeleteFile').on('click', function (){
 		});
 	}
 });
+
+$btSave = $('#bt_savePluginLogConfig');
+if (!$btSave.hasAttr('jmqtt')) {
+	$btSave.attr('jmqtt', 1);
+	$btSave.on('click', function() {
+		if ($('#span_plugin_id').text() == 'jMQTT') {
+			sleep(1000);
+			$.ajax({
+				type: "POST",
+				url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+				data: {
+					action: "sendLoglevel"
+				},
+				global : false,
+				dataType: 'json',
+				error: function(request, status, error) {
+					handleAjaxError(request, status, error);
+				},
+				success: function(data) {
+					if (data.state == 'ok') {
+						$('.eventDisplayMini').showAlert({message: "Le Démon est averti, il n'est pas nécessire de le redémarrer" ,level: 'success'});
+					}
+					// setTimeout(function() { $('.eventDisplayMini').hideAlert() }, 3000);
+				}
+			});
+		}
+	});
+};
+
+
 </script>
