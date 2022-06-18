@@ -22,16 +22,12 @@ import queue
 import signal
 import sys
 import threading
+import traceback
 import time
 from zlib import decompress as zlib_decompress
 
-try:
-	from jeedom.jeedom import jeedom_socket
-	from jeedom.jeedom import jeedom_utils
-	from jeedom.jeedom import jeedom_com
-except ImportError:
-	print("Error: importing module jeedom.jeedom")
-	sys.exit(1)
+import AddLogging
+from JeedomMsg import *
 
 try:
 	import paho.mqtt.client as mqtt
@@ -40,49 +36,12 @@ except ImportError:
 	sys.exit(1)
 
 
-class MqttClient:
-	def __init__(self, queue, message):
+class jMqttClient:
+	def __init__(self, jcom, message):
 #        logging.debug('MqttClient.init(): message=%r', message)
-		self.q = queue
-		self.id = message['id']
-		self.mqtthostname = message['hostname']
-		self.mqttport = message['port'] if 'port' in message else 1883
-		self.mqttstatustopic = message['statustopic'] if 'statustopic' in message else ''
-		if 'clientid' not in message:
-			message['clientid'] = ''
-		if 'username' not in message:
-			message['username'] = ''
-		if 'password' not in message:
-			message['password'] = ''
-		self.mqttsub_lock = threading.Lock()
-		self.mqttsubscribedtopics = {}
-		self.connected = False
-#		logging.debug('MqttClient.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
-
-		# Create MQTT Client
-		self.mqttclient = mqtt.Client(message['clientid'])
-		# Enable Paho logging functions
-		if 'paholog' in message and message['paholog'] != '':
-			logger = logging.getLogger()
-			self.mqttclient.enable_logger(logger)
-		else:
-			self.mqttclient.disable_logger()
-		if message['username'] != '':
-			if message['password'] != '':
-				self.mqttclient.username_pw_set(message['username'], message['password'])
-			else:
-				self.mqttclient.username_pw_set(message['username'])
-		if message['tls']:
-			try:
-				self.mqttclient.tls_set(ca_certs=message['tlscafile'], certfile=message['tlsclicertfile'], keyfile=message['tlsclikeyfile'])
-				self.mqttclient.tls_insecure_set(('tlsinsecure' in message) and message['tlsinsecure'])
-			except:
-				logging.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
-
-		self.mqttclient.reconnect_delay_set(5, 15)
-		self.mqttclient.on_connect = self.on_connect
-		self.mqttclient.on_disconnect = self.on_disconnect
-		self.mqttclient.on_message = self.on_message
+		self.jcom = jcom
+		self.message = message
+		self.mqttclient = None
 
 	def on_connect(self, client, userdata, flags, rc):
 		self.connected = True
@@ -92,12 +51,12 @@ class MqttClient:
 		logging.info('BrkId: % 4s : Connected to broker %s:%d', self.id, self.mqtthostname, self.mqttport)
 		with self.mqttsub_lock:
 			for topic in self.mqttsubscribedtopics:
-				self.subscribe_topic(topic, self.mqttsubscribedtopics[topic])
-		self.q.put([{"cmd":"brokerUp","id":self.id}])
+				self.subscribe_topic(topic, self.mqttsubscribedtopics[topic], False)
+		self.jcom.send_async({"cmd":"brokerUp","id":self.id})
 
 	def on_disconnect(self, client, userdata, rc):
 		self.connected = False
-		self.q.put([{"cmd":"brokerDown","id":self.id}])
+		self.jcom.send_async({"cmd":"brokerDown","id":self.id})
 		if rc == mqtt.MQTT_ERR_SUCCESS:
 			logging.info('BrkId: % 4s : Disconnected from broker.', self.id)
 		else:
@@ -116,14 +75,15 @@ class MqttClient:
 				usablePayload = b2a_base64(message.payload, newline=False).decode('utf-8')
 				form = ' (bin in base64)'
 			logging.info('BrkId: % 4s : Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', self.id, message.topic, usablePayload, form, message.qos, bool(message.retain))
-		self.q.put([{"cmd":"messageIn","id":self.id,"topic":message.topic,"payload":usablePayload,"qos":message.qos,"retain":bool(message.retain)}])
+		self.jcom.send_async({"cmd":"messageIn","id":self.id,"topic":message.topic,"payload":usablePayload,"qos":message.qos,"retain":bool(message.retain)})
 
-	def subscribe_topic(self, topic, qos):
+	def subscribe_topic(self, topic, qos, lock=True):
 		try:
 			res = self.mqttclient.subscribe(topic, qos)
 			if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
-				with self.mqttsub_lock:
-					self.mqttsubscribedtopics[topic] = qos
+				if lock:
+					with self.mqttsub_lock:
+						self.mqttsubscribedtopics[topic] = qos
 				logging.info('BrkId: % 4s : Topic subscribed "%s"', self.id, topic)
 				return
 		except ValueError: # Only catch ValueError
@@ -146,6 +106,9 @@ class MqttClient:
 			logging.error('BrkId: % 4s : Topic unsubscription failed "%s"', self.id, topic)
 
 	def publish(self, topic, payload, qos, retain):
+		if self.mqttclient is None:
+			logging.info('BrkId: % 4s : Could not send message Broker not started', self.id)
+			return
 		self.mqttclient.publish(topic, payload, qos, retain)
 		# Python Client : publish(topic, payload=None, qos=0, retain=False)
 		# Returns a MQTTMessageInfo which expose the following attributes and methods:
@@ -157,6 +120,48 @@ class MqttClient:
 		logging.info('BrkId: % 4s : Sending message to broker (topic="%s", payload="%s", QoS=%s, retain=%s)', self.id, topic, payload, qos, retain)
 
 	def start(self):
+		if self.mqttclient is not None:
+			logging.info('BrkId: % 4s : MqttClient.start() Already started', self.id)
+			return
+		self.id = self.message['id']
+		self.mqtthostname = self.message['hostname']
+		self.mqttport = self.message['port'] if 'port' in self.message else 1883
+		self.mqttstatustopic = self.message['statustopic'] if 'statustopic' in self.message else ''
+		if 'clientid' not in self.message:
+			self.message['clientid'] = ''
+		if 'username' not in self.message:
+			self.message['username'] = ''
+		if 'password' not in self.message:
+			self.message['password'] = ''
+		self.mqttsub_lock = threading.Lock()
+		self.mqttsubscribedtopics = {}
+		self.connected = False
+#		logging.debug('MqttClient.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
+
+		# Create MQTT Client
+		self.mqttclient = mqtt.Client(self.message['clientid'])
+		# Enable Paho logging functions
+		if 'paholog' in self.message and self.message['paholog'] != '':
+			logger = logging.getLogger()
+			self.mqttclient.enable_logger(logger)
+		else:
+			self.mqttclient.disable_logger()
+		if self.message['username'] != '':
+			if self.message['password'] != '':
+				self.mqttclient.username_pw_set(self.message['username'], self.message['password'])
+			else:
+				self.mqttclient.username_pw_set(self.message['username'])
+		if self.message['tls']:
+			try:
+				self.mqttclient.tls_set(ca_certs=self.message['tlscafile'], certfile=self.message['tlsclicertfile'], keyfile=self.message['tlsclikeyfile'])
+				self.mqttclient.tls_insecure_set(('tlsinsecure' in self.message) and self.message['tlsinsecure'])
+			except:
+				logging.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
+
+		self.mqttclient.reconnect_delay_set(5, 15)
+		self.mqttclient.on_connect = self.on_connect
+		self.mqttclient.on_disconnect = self.on_disconnect
+		self.mqttclient.on_message = self.on_message
 		try:
 			self.mqttclient.connect(self.mqtthostname, self.mqttport, 30)
 			self.mqttclient.loop_start()
@@ -165,86 +170,19 @@ class MqttClient:
 				logging.exception('BrkId: % 4s : MqttClient.start() Exception', self.id)
 
 	def stop(self):
-		if self.mqttstatustopic != '':
-			self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
-		self.mqttclient.disconnect()
-		self.mqttclient.loop_stop()
+		if self.mqttclient is not None:
+			if self.mqttstatustopic != '':
+				self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
+			self.mqttclient.disconnect()
+			self.mqttclient.loop_stop()
+			self.mqttclient = None
 		logging.debug('BrkId: % 4s : MqttClient.stop() ended', self.id)
-
-# ----------------------------------------------------------------------------
-
-class JeedomClient:
-	def __init__(self, queue, message):
-		self.q = queue
-		self.id = message['id']
-		self.apikey = message['apikey']
-		self.callback = message['callback']
-
-		# Create jeedom_com Client
-		self.jcom = jeedom_com(apikey=self.apikey, url=self.callback)
-		self.stopworker = False
-		self.workerthread = threading.Thread(target=self.worker)
-		self.workerthread.daemon = True
-
-	def worker(self):
-		logging.debug('BrkId: % 4s : Message worker to Jeedom started.', self.id)
-		while not self.stopworker or not self.q.empty():
-			# empty() method is faster that Exception handling
-			if self.q.empty():
-				time.sleep(0.1)
-				continue # Check if should_stop changed
-			try:
-				msg = self.q.get(block=False)
-				self.jcom.thread_change(msg)
-				logging.info('BrkId: % 4s : Sending message to Jeedom : %s', self.id, msg)
-			except queue.Empty:
-				pass
-			except:
-				if logging.getLogger().isEnabledFor(logging.DEBUG):
-					logging.exception('BrkId: % 4s : JeedomClient.worker() Exception', self.id)
-		logging.debug('BrkId: % 4s : Message worker to Jeedom ended.', self.id)
-
-	def start(self):
-		self.stopworker = False
-		self.workerthread.start()
-
-	def stop(self):
-		self.stopworker = True
-		self.workerthread.join()
-
-# ----------------------------------------------------------------------------
-
-class jMqttClient:
-	def __init__(self, message):
-		self.m = message
-		self.q = queue.Queue()
-		self.mqtt = None
-		self.jc = None
-
-	def start(self):
-		if self.mqtt is None:
-			self.mqtt = MqttClient(self.q, self.m)
-			self.mqtt.start()
-		if self.jc is None:
-			self.jc = JeedomClient(self.q, self.m)
-			self.jc.start()
-
-	def stop(self):
-		if self.mqtt is not None:
-			self.mqtt.stop()
-			self.mqtt = None
-		if self.jc is not None:
-			self.jc.stop()
-			self.jc = None
 
 	def restart(self, message=None):
 		if message is not None:
-			self.m = message
+			self.message = message
 		self.stop()
 		self.start()
-
-	# def __del__(self):
-		# self.stop()
 
 # ----------------------------------------------------------------------------
 
@@ -285,7 +223,7 @@ class Main():
 	def __init__(self, flag):
 		# Default values
 		self._log_level   = "error"
-		self._socket_port = 55666
+		self._socket_port = 0
 		self._socket_host = '127.0.0.1'
 		self._pidfile     = '/tmp/jmqttd.pid'
 		self._apikey      = ''
@@ -296,7 +234,7 @@ class Main():
 		# Handle Run & Shutdown
 		self.should_stop  = flag
 		self.has_stopped  = threading.Event()
-		self.has_stopped.clear()
+		self.has_stopped.set()
 
 		# Tables for the meal
 		self.message_map  = {'newMqttClient':    self.handle_newMqttClient,
@@ -305,8 +243,33 @@ class Main():
 							'unsubscribeTopic': self.handle_unsubscribeTopic,
 							'messageOut':       self.handle_messageOut}
 		self.jmqttclients = {}
-		self.jeedomsocket = None
-		self.jcom = None
+		self.jcom         = None
+
+	def set_log_level(self, level = 'error'):
+		newlevel = {
+			'verbose':  logging.VERBOSE,
+			'debug':    logging.DEBUG,
+			'info':     logging.INFO,
+			'warning':  logging.WARNING,
+			'error':    logging.ERROR,
+			'critical': logging.CRITICAL,
+			'none':     logging.NONE
+		}.get(level, logging.NONE)
+		logging.getLogger().setLevel(newlevel)
+		self.log.info('New log level set to: %s', logging.getLevelName(newlevel))
+		debuglevel = (newlevel <= logging.VERBOSE) #TODO check if needed
+		# HTTPConnection.debuglevel = int(debuglevel)
+		requests_log = logging.getLogger("requests.packages.urllib3")
+		pool_log = logging.getLogger("urllib3.connectionpool")
+		if debuglevel:
+			# self.log.verbose('Debug log active for requests & urllib3')
+			requests_log.setLevel(logging.DEBUG)
+			pool_log.setLevel(logging.DEBUG)
+		else:
+			requests_log.setLevel(logging.WARNING)
+			pool_log.setLevel(logging.WARNING)
+		requests_log.propagate = debuglevel
+		pool_log.propagate = debuglevel
 
 	def prepare(self):
 		# Parsing arguments
@@ -334,14 +297,14 @@ class Main():
 			self._apikey = args.apikey
 
 		# Set the global logging level
-		logging.getLogger().setLevel(jeedom_utils.convert_log_level(self._log_level))
+		self.set_log_level(self._log_level)
 
 		# Check the PID file
 		if os.path.isfile(self._pidfile):
 			self.log.debug('PID File "%s" already exists.', self._pidfile)
-			pidfile = open(self._pidfile, "r")
-			pidfile.seek(0)
-			pid = int(pidfile.readline())
+			with open(self._pidfile, "r") as f:
+				f.seek(0)
+				pid = int(f.readline())
 			try:
 				# Try to ping the pid
 				os.kill(pid, 0)
@@ -355,7 +318,10 @@ class Main():
 				sys.exit(0)
 		try:
 			# Try to write PID to file
-			jeedom_utils.write_pid(str(self._pidfile))
+			pid = str(os.getpid())
+			self.log.debug("Writing PID %s to %s", pid, self._pidfile)
+			with open(self._pidfile, 'w') as f:
+				f.write("%s\n" % pid)
 		except:
 			self.log.exception('Could not write PID file')
 			sys.exit(4)
@@ -367,43 +333,41 @@ class Main():
 		self.log.info('PID file   : %s', self._pidfile)
 		self.log.debug('Apikey    : %s', self._apikey)
 
-	def run(self):
-		# Create communication channel to reveive instructions from Jeedom
-		try:
-			self.jeedomsocket = jeedom_socket(port = self._socket_port, address = self._socket_host)
+	def open_comm(self):
+		self.jcom = JeedomMsg(self._callback, self._apikey, self._socket_port)
+		try: # Create communication channel to get instructions FROM Jeedom
+			self.jcom.receiver_start()
 		except:
-			self.log.exception('Run         : Failed to Create the communication channel for Jeedom')
-			self.should_stop.set()
-		else:
-			# Open communication channel
-			try:
-				self.jeedomsocket.open()
-
-			except:
-				self.log.exception('Run         : Failed to Open the communication channel for Jeedom')
-				self.should_stop.set()
+			if self.log.isEnabledFor(logging.DEBUG):
+				self.log.exception('Open Comm   : Failed to Open the communication channel to get instructions FROM Jeedom')
 			else:
-				try:
-					self.jcom = jeedom_com(apikey=self._apikey, url=self._callback)
-					self.jcom.test()
-				except:
-					self.log.exception('Run         : Failed to Open the communication channel to Jeedom')
-					self.should_stop.set()
+				self.log.critical('Open Comm   : Failed to Open the communication channel to get instructions FROM Jeedom')
+			return False
+		if self.jcom.send_test(): # Test communication channel TO Jeedom
+			self.jcom.sender_start()									# Start sender
+			self.jcom.send_daemonUp()
+			# self.log.info('Successfully informed Jeedom')
+			self.log.debug('Open Comm   : Sent Daemon Up signal to Jeedom')
+		else:
+			self.log.critical('Open Comm   : Failed to Open the communication channel to send informations back TO Jeedom')
+			self.jcom.receiver_stop()
+			self.log.critical('Open Comm   : Closed the communication channel to get instructions FROM Jeedom')
+			self.jcom = None
+			return False
+		return True
 
-		# Send daemon Up signal
-		self.jcom.thread_change([{"cmd":"daemonUp"}])
-		self.log.debug('Run         : Sent Daemon Up signal to Jeedom')
-
+	def run(self):
+		self.has_stopped.clear()
 		# Wait for instructions
 		while not self.should_stop.is_set():
 			# empty() method is faster that Exception handling
-			if self.jeedomsocket.empty():
+			if self.jcom.qFromJ.empty():
 				time.sleep(0.1)
 				continue # Check if should_stop changed
 
 			# Get some new raw data and cook it
 			try:
-				jeedom_raw = self.jeedomsocket.get(block=False)
+				jeedom_raw = self.jcom.qFromJ.get(block=False)
 				jeedom_msg = jeedom_raw.decode('utf-8')
 				self.log.debug('Run         : Received from Jeedom: %s', jeedom_msg)
 				message = json.loads(jeedom_msg)
@@ -464,7 +428,7 @@ class Main():
 			self.jmqttclients[message['id']].restart(message)
 		else: # create requested jmqttclient
 			self.log.info('BrkId: % 4s : Cmd:    newMqttClient -> Creating Client.', message['id'])
-			newjMqttClient = jMqttClient(message)
+			newjMqttClient = jMqttClient(self.jcom, message)
 			newjMqttClient.start()
 			self.jmqttclients[message['id']] = newjMqttClient
 
@@ -483,7 +447,7 @@ class Main():
 										 ['qos',       True,        None, int]]):
 			return
 		if message['id'] in self.jmqttclients:
-			self.jmqttclients[message['id']].mqtt.subscribe_topic(message['topic'], message['qos'])
+			self.jmqttclients[message['id']].subscribe_topic(message['topic'], message['qos'])
 		else:
 			self.log.debug('BrkId: % 4s : Cmd:   subscribeTopic -> No client found with this Broker', message['id'])
 
@@ -492,7 +456,7 @@ class Main():
 		if not validate_params(message, [['topic',      True,        None, str]]):
 			return
 		if message['id'] in self.jmqttclients:
-			self.jmqttclients[message['id']].mqtt.unsubscribe_topic(message['topic'])
+			self.jmqttclients[message['id']].unsubscribe_topic(message['topic'])
 		else:
 			self.log.debug('BrkId: % 4s : Cmd: unsubscribeTopic -> No client found with this Broker', message['id'])
 
@@ -508,7 +472,7 @@ class Main():
 			self.log.error('BrkId: % 4s : Cmd:       messageOut -> wrong value for qos "%d"', message['id'], message['qos'])
 			return
 		if message['id'] in self.jmqttclients:
-			self.jmqttclients[message['id']].mqtt.publish(message['topic'], message['payload'], message['qos'], message['retain'])
+			self.jmqttclients[message['id']].publish(message['topic'], message['payload'], message['qos'], message['retain'])
 		else:
 			self.log.debug('BrkId: % 4s : Cmd:       messageOut -> No client found with this Broker', message['id'])
 
@@ -519,14 +483,15 @@ class Main():
 	def shutdown(self):
 		self.log.info('Stop jMQTT python daemon')
 		self.should_stop.set()
-		self.has_stopped.wait(timeout=6)
+		self.has_stopped.wait(timeout=4)
 
 		# Close the open communication channel for Jeedom
 		try:
-			self.jeedomsocket.close()
-			self.log.debug("Socket for Jeedom closed")
+			if self.jcom is not None:
+				self.jcom.receiver_stop()
 		except:
-			self.log.debug("Failed to close Socket for Jeedom")
+			if self.log.isEnabledFor(logging.DEBUG):
+				self.log.debug("Failed to close Socket for Jeedom")
 
 		# Stop all the Clients
 		try:
@@ -544,40 +509,18 @@ class Main():
 			if self.log.isEnabledFor(logging.DEBUG):
 				self.log.exception('Clients Kill Exception')
 
-		# Send daemon Down signal
-		self.jcom.thread_change([{"cmd":"daemonDown"}])
-		self.log.debug('Run         : Sent Daemon Down signal to Jeedom')
-
-		#Remove PID file if exists
-		# if os.path.isfile(self._pidfile):
-			# try:
-				# os.remove(self._pidfile)
-				# self.log.debug("Removed PID file %s", self._pidfile)
-			# except:
-				# self.log.debug("Failed to remove PID file %s", self._pidfile)
-
-		# List all living thread
-		# import traceback
-		# for thread in threading.enumerate():
-			# if threading.current_thread() == thread:
-				# continue
-			# self.log.debug("Thread %s is still active! Dict: %r Stack Trace:", thread.getName(), thread)
-			# stack = sys._current_frames()[thread.ident]
-			# for filename, lineno, name, line in traceback.extract_stack(stack):
-				# if line:
-					# self.log.debug('File: "%s", line %d, in %s  %s', filename, lineno, name, line.strip())
-				# else:
-					# self.log.debug('File: "%s", line %d, in %s', filename, lineno, name)
-
-		#This the end my friend
-		self.log.debug("Exit 0")
-		sys.stdout.flush()
+		# If possible Send daemon Down signal and stop sender
+		if self.jcom is not None:
+			self.log.debug('Run         : Sent Daemon Down signal to Jeedom')
+			self.jcom.sender_stop()
+			self.jcom.send_daemonDown()
 
 # ----------------------------------------------------------------------------
 
 if __name__ == '__main__':
 	# Formater for the output of the logger
-	formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+	# formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+	formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(name)-15s %(threadName)-10s %(funcName)15s() : %(message)s')
 
 	# STDOUT will get all logs
 	ch = logging.StreamHandler()
@@ -589,25 +532,22 @@ if __name__ == '__main__':
 	logger.handlers = []
 	logger.addHandler(ch)
 
-	# Disable debug in http/url/req libs
-	debuglevel = False
-	requests_log = logging.getLogger("requests.packages.urllib3")
-	pool_log = logging.getLogger("urllib3.connectionpool")
-	if debuglevel:
-		# self.log.verbose('Debug log active for requests & urllib3')
-		requests_log.setLevel(logging.DEBUG)
-		pool_log.setLevel(logging.DEBUG)
-	else:
-		requests_log.setLevel(logging.WARNING)
-		pool_log.setLevel(logging.WARNING)
-	requests_log.propagate = debuglevel
-	pool_log.propagate = debuglevel
-
-
 	# Get an instance of Main
 	should_stop = threading.Event()
 	should_stop.clear()
 	m = Main(should_stop)
+
+	def dumpstacks(signal, frame):
+		id2name = dict([(th.ident, th.name) for th in threading.enumerate()])
+		code = []
+		for threadId, stack in sys._current_frames().items():
+			code.append("\n# Thread: %s(%d)" % (id2name.get(threadId,""), threadId))
+			for filename, lineno, name, line in traceback.extract_stack(stack):
+				code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
+				if line:
+					code.append("  %s" % (line.strip()))
+		logging.debug("\n".join(code))
+	signal.signal(signal.SIGUSR1, dumpstacks)
 
 	# Interrupt handler
 	def signal_handler(signum = None, frame = None):
@@ -620,8 +560,11 @@ if __name__ == '__main__':
 
 	# Ready ? Let's do something now
 	m.prepare()
-	m.run()
+	if m.open_comm():
+		m.run()
 	m.shutdown()
 
 	# Always exit well
+	logger.debug("Exit 0")
+	sys.stdout.flush()
 	sys.exit(0)

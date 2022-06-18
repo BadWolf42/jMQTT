@@ -36,7 +36,7 @@ if (is_null($messages) || !is_array($messages)) {	// Only expect an array of mes
 }
 foreach($messages as $message) {					// Iterate through the messages
 	if (!isset($message['cmd'])) {					// No cmd supplied
-		jMQTT::logger('error', sprintf('Daemon [%s]: Missing id or cmd, see: "%s".', $ruid, json_encode($message)));
+		jMQTT::logger('error', sprintf('Daemon [%s]: Missing cmd, see: "%s".', $ruid, json_encode($message)));
 		continue;
 	}
 	switch ($message['cmd']) {						// Handle commands from daemon
@@ -60,6 +60,10 @@ foreach($messages as $message) {					// Iterate through the messages
 			jMQTT::on_mqtt_disconnect($message['id']);
 			continue 2;								// Next foreach iteration
 
+		case 'hb':									// {"cmd":"hb"}
+			jMQTT::logger('debug', sprintf('Daemon [%s]: Python daemon headbeat', $ruid));
+			// jMQTT::fromDaemon_hb($ruid);
+			continue 2;								// Next foreach iteration
 
 		case 'daemonUp':							// {"cmd":"daemonUp"}
 			jMQTT::logger('debug', sprintf('Daemon [%s]: Python daemon connected successfully to Jeedom', $ruid));
@@ -72,7 +76,7 @@ foreach($messages as $message) {					// Iterate through the messages
 			continue 2;								// Next foreach iteration
 
 		default:
-			jMQTT::logger('error', sprintf('Id %d : Received message contains unkown cmd!?', $message['id']));
+			jMQTT::logger('error', sprintf('Id %d : Received message contains unkown cmd!?', $ruid));
 			continue 2;								// Next foreach iteration
 	}
 

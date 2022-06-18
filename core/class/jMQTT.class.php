@@ -639,7 +639,7 @@ class jMQTT extends eqLogic {
 
 		// If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send unsubscribe
 		$broker = self::getBrokerFromId($brkId);
-		if(!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_POK || $broker->getMqttClientState() == self::MQTTCLIENT_NOK) return;
+		if(!$broker->getIsEnable() || $broker->getMqttClientState() != self::MQTTCLIENT_OK) return;
 
 		//Find eqLogic using the same topic
 		$topicConfiguration = substr(json_encode(array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic)), 1, -1);
@@ -936,7 +936,7 @@ class jMQTT extends eqLogic {
 
 				// Wait up to 10s for MqttClient stopped
 				for ($i=0; $i < 40; $i++) {
-					if ($this->getMqttClientState() == self::MQTTCLIENT_NOK) break;
+					if ($this->getMqttClientState() != self::MQTTCLIENT_OK) break;
 					usleep(250000);
 				}
 			}
@@ -974,6 +974,7 @@ class jMQTT extends eqLogic {
 				unlink(log::getPathToLog($log));
 			}
 			config::remove('log::level::' . $log, 'jMQTT');
+			cache::delete('jMQTT::' . $this->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 
 			// Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
 			foreach (self::byBrkId($this->_preRemoveInformations['id']) as $eqpt) {
@@ -1058,7 +1059,7 @@ class jMQTT extends eqLogic {
 		$pid_file = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		if (file_exists($pid_file)) {
 			if (@posix_getsid(trim(file_get_contents($pid_file)))) {
-				$return['state'] = 'ok';
+				$return['state'] = ((cache::byKey('jMQTT::' . self::CACHE_DAEMON_CONNECTED)->getValue(false)) ? 'ok' : 'nok');
 			} else {
 				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 				self::deamon_stop();
@@ -1139,10 +1140,6 @@ class jMQTT extends eqLogic {
 			return;
 		}
 		message::removeAll(__CLASS__, 'unableStartDaemon');
-
-
-		self::checkAllMqttClients();
-		self::listenersAddAll();
 	}
 
 	/**
@@ -1159,21 +1156,19 @@ class jMQTT extends eqLogic {
 			// system::kill($pid1, false);
 			//wait up to 10 seconds for python daemon stop
 			for ($i = 1; $i <= 40; $i++) {
-				if (! @posix_getsid($pid1)) break;
+				if (!@posix_getsid($pid1)) break;
 				usleep(250000);
 			}
-			@posix_kill($pid1, 9);
-			log::add(__CLASS__, 'debug', 'Sent Kill -9');
-			// system::kill($pid1, true);
+			if (@posix_getsid($pid1)) {
+				@posix_kill($pid1, 9);
+				// shell_exec(system::getCmdSudo() . 'kill -9 ' . $pid1);
+				log::add(__CLASS__, 'debug', 'Sent Kill -9');
+			}
 		}
-
 		// If something bad happened, clean anyway
-		cache::delete('jMQTT::' . self::CACHE_DAEMON_CONNECTED);
-		foreach(self::getBrokers() as $broker)
-			cache::delete('jMQTT::' . $broker->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
-
-		self::listenersRemoveAll();
+		// self::on_daemon_disconnect();
 	}
+
 	/**
 	 * Provides dependancy information
 	 */
@@ -1511,17 +1506,32 @@ class jMQTT extends eqLogic {
 	public static function on_daemon_connect() {
 		// Save in cache that daemon is connected
 		cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, true);
+		self::listenersAddAll();
+		foreach(self::getBrokers() as $broker) {
+			if ($broker->getIsEnable() && $broker->getMqttClientState() != self::MQTTCLIENT_OK) {
+				try {
+					log::add(__CLASS__, 'info', 'Starting MqttClient for ' . $broker->getName());
+					$broker->startMqttClient();
+				}
+				catch (Throwable $e) {
+					log::add(__CLASS__, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
+				}
+			}
+		}
 	}
-
 	public static function on_daemon_disconnect() {
+		if (!cache::byKey('jMQTT::' . self::CACHE_DAEMON_CONNECTED)->getValue(false))
+			return;
 		try {
+			self::listenersRemoveAll();
 			// Save in cache that daemon is disconnected
 			cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, false);
-			// if daemon is disconnected from Jeedom, consider all MQTT Clients as disconnected too
+			// Consider all MQTT Clients as disconnected too
 			foreach(self::getBrokers() as $broker) {
 				if (cache::byKey('jMQTT::' . $broker->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED)->getValue(false))
 					self::on_mqtt_disconnect($broker->getId());
-				$broker->sendMqttClientStateEvent();
+				else
+					$broker->sendMqttClientStateEvent();
 			}
 		} catch (Throwable $t) {
 			log::add(__CLASS__, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
@@ -1539,10 +1549,9 @@ class jMQTT extends eqLogic {
 		}
 	}
 	public static function on_mqtt_disconnect($id) {
-		// Save in cache that Mqtt Client is disconnected
-		cache::set('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED, false);
-
 		try {
+			// Save in cache that Mqtt Client is disconnected
+			cache::set('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED, false);
 			$broker = self::getBrokerFromId(intval($id));
 			$statusCmd = $broker->getMqttClientStatusCmd();
 			if ($statusCmd) $statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
