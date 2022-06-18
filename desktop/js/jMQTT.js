@@ -994,7 +994,7 @@ function configureIncludeModeDisplay(brkId, mode) {
 }
 
 function setIncludeModeActivation(brkId, broker_state) {
-	if (broker_state == "ok") {
+	if (broker_state == 'ok') {
 		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('disableCard').on('click', changeIncludeMode);
 	}
 	else {
