@@ -49,34 +49,29 @@ foreach($messages as $message) {					// Iterate through the messages
 		case 'brokerUp':								// {"cmd":"brokerUp", "id":string}
 			if (!isset($message['id']))
 				break;
-			jMQTT::logger('debug', sprintf('Daemon [%s]: Broker %s connected', $ruid, $message['id']));
 			jMQTT::on_mqtt_connect($message['id']);
 			continue 2;								// Next foreach iteration
 
 		case 'brokerDown':								// {"cmd":"brokerDown", "id":string}
 			if (!isset($message['id']))
 				break;
-			jMQTT::logger('debug', sprintf('Daemon [%s]: Broker %s disconnected', $ruid, $message['id']));
 			jMQTT::on_mqtt_disconnect($message['id']);
 			continue 2;								// Next foreach iteration
 
 		case 'hb':									// {"cmd":"hb"}
-			jMQTT::logger('debug', sprintf('Daemon [%s]: Python daemon headbeat', $ruid));
 			// jMQTT::fromDaemon_hb($ruid);
 			continue 2;								// Next foreach iteration
 
 		case 'daemonUp':							// {"cmd":"daemonUp"}
-			jMQTT::logger('debug', sprintf('Daemon [%s]: Python daemon connected successfully to Jeedom', $ruid));
 			jMQTT::on_daemon_connect();
 			continue 2;								// Next foreach iteration
 
 		case 'daemonDown':							// {"cmd":"daemonDown"}
-			jMQTT::logger('debug', sprintf('Daemon [%s]: Python daemon disconnected from Jeedom', $ruid));
 			jMQTT::on_daemon_disconnect();
 			continue 2;								// Next foreach iteration
 
 		default:
-			jMQTT::logger('error', sprintf('Id %d : Received message contains unkown cmd!?', $ruid));
+			jMQTT::logger('error', sprintf('Daemon [%s]: Received message contains unkown cmd!?', $ruid));
 			continue 2;								// Next foreach iteration
 	}
 
