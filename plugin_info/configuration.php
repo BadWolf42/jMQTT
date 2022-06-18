@@ -78,7 +78,7 @@ $('#mqttConfUpFile').fileupload({
 	dataType: 'json',
 	replaceFileInput: false,
 	done: function (e, data) {
-		if (data.result.state != <?php echo jMQTT::MQTTCLIENT_OK; ?>) {
+		if (data.result.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
 			$('.eventDisplayMini').showAlert({message: data.result.result, level: 'danger'});
 		} else {
 			$(new Option(data.result.result, data.result.result)).appendTo('#mqttConfDelFile');
@@ -121,7 +121,7 @@ $('.mqttDeleteFile').on('click', function (){
 				handleAjaxError(request, status, error);
 			},
 			success: function(data) {
-				if (data.state != <?php echo jMQTT::MQTTCLIENT_OK; ?>) {
+				if (data.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
 					$('.eventDisplayMini').showAlert({message: data.result,level: 'danger'});
 				} else {
 					$("#mqttConfDelFile :selected").remove();

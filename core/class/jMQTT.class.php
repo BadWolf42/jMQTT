@@ -1319,12 +1319,14 @@ class jMQTT extends eqLogic {
 		$daemon_info = self::deamon_info();
 		if ($daemon_info['state'] == self::MQTTCLIENT_OK) {
 			foreach(self::getBrokers() as $broker) {
-				if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
+				if ($broker->getIsEnable() && $broker->getMqttClientState() != self::MQTTCLIENT_OK) {
 					try {
 						self::logger('info', 'Starting MqttClient for ' . $broker->getName());
 						$broker->startMqttClient();
 					}
-					catch (Throwable $e) {}
+					catch (Throwable $e) {
+						self::logger('error', sprintf('checkAllMqttClients raised an Exception : %s', $e->getMessage()));
+					}
 				}
 			}
 		}
@@ -1505,25 +1507,15 @@ class jMQTT extends eqLogic {
 
 	public static function on_daemon_connect() {
 		// Save in cache that daemon is connected
-		self::logger('debug', sprintf('Daemon connecté à Jeedom', $ruid));
+		self::logger('debug', 'Daemon connecté à Jeedom');
 		cache::set('jMQTT::' . self::CACHE_DAEMON_CONNECTED, true);
 		self::listenersAddAll();
-		foreach(self::getBrokers() as $broker) {
-			if ($broker->getIsEnable() && $broker->getMqttClientState() != self::MQTTCLIENT_OK) {
-				try {
-					self::logger('info', 'Starting MqttClient for ' . $broker->getName());
-					$broker->startMqttClient();
-				}
-				catch (Throwable $e) {
-					self::logger('error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
-				}
-			}
-		}
+		self::checkAllMqttClients();
 	}
 	public static function on_daemon_disconnect() {
 		if (!cache::byKey('jMQTT::' . self::CACHE_DAEMON_CONNECTED)->getValue(false))
 			return;
-		self::logger('debug', sprintf('Daemon déconnecté de Jeedom', $ruid));
+		self::logger('debug', 'Daemon déconnecté de Jeedom');
 		try {
 			self::listenersRemoveAll();
 			// Save in cache that daemon is disconnected
