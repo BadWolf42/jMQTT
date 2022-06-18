@@ -116,16 +116,17 @@ class jMQTTCmd extends cmd {
 				}
 			}
 		}
-		$this->getEqLogic()->checkAndUpdateCmd($this, $value);
-		$this->getEqLogic()->log('info', '-> ' . $this->getLogName() . ' ' . $value);
+		$eqLogic = $this->getEqLogic();
+		$eqLogic->checkAndUpdateCmd($this, $value);
+		$eqLogic->log('info', '-> ' . $this->getLogName() . ' ' . $value);
 
 		if ($this->isBattery() && !in_array($value[0], ['{','[',''])) {
 			if ($this->getSubType() == 'binary') {
-				$this->getEqLogic()->batteryStatus($value ? 100 : 10);
+				$eqLogic->batteryStatus($value ? 100 : 10);
 			} else {
-				$this->getEqLogic()->batteryStatus($this->getCache('value'));
+				$eqLogic->batteryStatus($this->getCache('value'));
 			}
-			$this->getEqLogic()->log('info', '-> Update battery status');
+			$eqLogic->log('info', '-> Update battery status');
 		}
 	}
 
