@@ -54,7 +54,7 @@ step 60 "Create a python3 Virtual Environment"
 try sudo -u www-data python3 -m venv $BASEDIR/jmqttd/venv
 
 step 70 "Install required python3 libraries in venv"
-try sudo -u www-data $BASEDIR/jmqttd/venv/bin/pip3 install -r $BASEDIR/python-requirements/requirements.txt
+try sudo -u www-data $BASEDIR/jmqttd/venv/bin/pip3 install --no-cache-dir -r $BASEDIR/python-requirements/requirements.txt
 
 step 90 "Run post_dependancy_install function"
 cd "$( dirname "${BASH_SOURCE[0]}" )"

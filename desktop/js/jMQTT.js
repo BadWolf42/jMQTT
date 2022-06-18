@@ -1008,8 +1008,7 @@ function changeIncludeMode() {
 	// Invert the button display and show the alert message
 	if (el.attr('data-mode') == 1) {
 		configureIncludeModeDisplay(el.attr('brkId'),0);
-	}
-	else {
+	} else {
 		configureIncludeModeDisplay(el.attr('brkId'),1);
 	}
 

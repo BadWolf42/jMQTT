@@ -3,6 +3,9 @@
 ## Beta
 (Les versions Beta et Stable sont identiques)
 
+## 2022-06-15
+ - Correction d'un bug lors de la vérification des dépendances chez certains utilisateurs
+
 ## 2022-06-13
  - Nettoyage des nom des templates, ajout en commentaire de liens vers community ou les sources des templates
  - Ajout de 30 nouvelles templates, merci à Nicoca-ine et Mikael, Meute, Jbval, lolo_95 et iPaaad !
