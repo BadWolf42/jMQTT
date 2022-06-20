@@ -26,7 +26,7 @@ try {
 	define('PATH_TPLTS', __DIR__ . '/../../data/template');
 
 	if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
-		log::add('jMQTT', 'info', 'file upload "' . $_FILES['file']['name'] . '"');
+		jMQTT::logger('info', 'file upload "' . $_FILES['file']['name'] . '"');
 		if (!isset($_FILES['file'])) {
 			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
@@ -146,7 +146,7 @@ try {
 		}
 		$old_broker_id = $eqpt->getBrkId();
 		$new_broker = jMQTT::getBrokerFromId(init('brk_id'));
-		log::add('jMQTT', 'info', 'déplace l\'équipement ' . $eqpt->getName() . ' vers le broker ' . $new_broker->getName());
+		jMQTT::logger('info', 'déplace l\'équipement ' . $eqpt->getName() . ' vers le broker ' . $new_broker->getName());
 		$eqpt->setBrkId($new_broker->getId());
 		$eqpt->cleanEquipment();
 		$eqpt->save();
@@ -156,7 +156,7 @@ try {
 
 	if (init('action') == 'filedelete') {
 		$certname = init('name');
-		log::add('jMQTT', 'info', 'file delete "' . $certname . '"');
+		jMQTT::logger('info', 'file delete "' . $certname . '"');
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 		} elseif (init('dir') == 'certs') {
@@ -176,8 +176,13 @@ try {
 		ajax::success();
 	}
 
+	if (init('action') == 'sendLoglevel') {
+		jMQTT::send_loglevel();
+		ajax::success();
+	}
+
 /*    if (init('action') == 'filelist') {
-		log::add('jMQTT', 'info', 'file list "' . init('dir') . '"');
+		jMQTT::logger('info', 'file list "' . init('dir') . '"');
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 			$patern = array('.json');

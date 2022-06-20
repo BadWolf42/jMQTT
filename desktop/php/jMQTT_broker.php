@@ -236,11 +236,11 @@ var timeout_refreshMqttClientInfo = null;
 
 function showMqttClientInfo(data) {
 	switch(data.launchable) {
-		case 'ok':
+		case '<?php echo jMQTT::MQTTCLIENT_OK; ?>':
 			$('.bt_startMqttClient').show();
 			$('.mqttClientLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
 			break;
-		case 'nok':
+		case '<?php echo jMQTT::MQTTCLIENT_NOK; ?>':
 			$('.bt_startMqttClient').hide();
 			$('.mqttClientLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
 			break;
@@ -248,15 +248,15 @@ function showMqttClientInfo(data) {
 			$('.mqttClientLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
 	}
 	switch (data.state) {
-		case 'ok':
+		case '<?php echo jMQTT::MQTTCLIENT_OK; ?>':
 			$('.mqttClientState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
 			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-danger').addClass('panel-success');
 			break;
-		case 'pok':
+		case '<?php echo jMQTT::MQTTCLIENT_POK; ?>':
 			$('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
 			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-danger').removeClass('panel-success').addClass('panel-warning');
 			break;
-		case 'nok':
+		case '<?php echo jMQTT::MQTTCLIENT_NOK; ?>':
 			$('.mqttClientState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
 			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-success').addClass('panel-danger');
 			break;
@@ -351,7 +351,7 @@ $('#mqttUploadFile').fileupload({
 	dataType: 'json',
 	replaceFileInput: false,
 	done: function (e, data) {
-		if (data.result.state != 'ok') {
+		if (data.result.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
 			$('#div_alert').showAlert({message: data.result.result, level: 'danger'});
 		} else {
 			switch (data.result.result.split('.').pop()) {

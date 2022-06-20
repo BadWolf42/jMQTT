@@ -25,11 +25,11 @@ $eqBrokers = jMQTT::getBrokers();
 
 function getStatusHtml($status) {
 	switch ($status) {
-		case 'ok':
+		case jMQTT::MQTTCLIENT_OK:
 			return '<span class="label label-success" style="font-size:1em;cursor:default;width:60px;">{{OK}}</span>';
-		case 'pok':
+		case jMQTT::MQTTCLIENT_POK:
 			return '<span class="label label-warning" style="font-size:1em;cursor:default;width:60px;">{{POK}}</span>';
-		case 'nok':
+		case jMQTT::MQTTCLIENT_NOK:
 			return '<span class="label label-danger" style="font-size:1em;cursor:default;width:60px;">{{NOK}}</span>';
 	}
 }
