@@ -42,12 +42,6 @@ if (!isConnect()) {
 				<input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTT::DEFAULT_PYTHON_PORT; ?>"/>
 			</div>
 		</div>
-		<div class="form-group">
-			<label class="col-sm-5 control-label">{{Port démon websocket}}</label>
-			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTT::DEFAULT_WEBSOCKET_PORT; ?>"/>
-			</div>
-		</div>
 		<legend><i class="fas fa-key"></i>{{Certificats}}</legend>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Téléverser un nouveau Certificat}}</label>
@@ -141,4 +135,34 @@ $('.mqttDeleteFile').on('click', function (){
 		});
 	}
 });
+
+$btSave = $('#bt_savePluginLogConfig');
+if (!$btSave.hasAttr('jmqtt')) {
+	$btSave.attr('jmqtt', 1);
+	$btSave.on('click', function() {
+		if ($('#span_plugin_id').text() == 'jMQTT') {
+			sleep(1000);
+			$.ajax({
+				type: "POST",
+				url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+				data: {
+					action: "sendLoglevel"
+				},
+				global : false,
+				dataType: 'json',
+				error: function(request, status, error) {
+					handleAjaxError(request, status, error);
+				},
+				success: function(data) {
+					if (data.state == 'ok') {
+						$('.eventDisplayMini').showAlert({message: "Le Démon est averti, il n'est pas nécessire de le redémarrer" ,level: 'success'});
+					}
+					// setTimeout(function() { $('.eventDisplayMini').hideAlert() }, 3000);
+				}
+			});
+		}
+	});
+};
+
+
 </script>

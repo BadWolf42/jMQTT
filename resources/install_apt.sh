@@ -41,15 +41,7 @@ try php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 try php composer-setup.php
 try php -r "unlink('composer-setup.php');"
 
-step 25 "Install Ratchet PHP library"
-try sudo -u www-data php ./composer.phar update --working-dir=./Ratchet
-
-step 30 "Temporary fix of Ratchet PHP library (https://github.com/ratchetphp/RFC6455/pull/65)"
-if [ $(getconf LONG_BIT) -eq 32 ]; then
-	try sed -i -E "s/unpack\('J'(.*)\)\[1\]/unpack('N2'\1)[2]/g" ./Ratchet/vendor/ratchet/rfc6455/src/Messaging/MessageBuffer.php
-fi
-
-step 35 "Install JsonPath-PHP library"
+step 30 "Install JsonPath-PHP library"
 try sudo -u www-data php ./composer.phar update --working-dir=./JsonPath-PHP
 
 step 40 "Remove Composer"

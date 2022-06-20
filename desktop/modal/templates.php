@@ -65,7 +65,7 @@ $('#bt_jmqttTemplateUp').fileupload({
 	dataType: 'json',
 	replaceFileInput: false,
 	done: function (e, data) {
-		if (data.result.state != 'ok') {
+		if (data.result.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
 			$('#md_jmqttTemplate').showAlert({message: data.result.result, level: 'danger'});
 		} else {
 			$('#md_jmqttTemplate').showAlert({message: 'Template ajouté avec succès', level: 'success'});
