@@ -260,7 +260,7 @@ $('#ul_jmqttTemplateList').on({
 
 $('#bt_jmqttTemplateDelete').on('click', function() {
 	if ($('#ul_jmqttTemplateList li.active').attr('data-file') == undefined) {
-		$('#md_jmqttTemplate').showAlert({message: 'Vous devez d\'abord sélectionner un template', level: 'danger'})
+		$('#md_jmqttTemplate').showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
 		return
 	}
 	bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer ce template ?}}', function(result) {
@@ -275,10 +275,10 @@ $('#bt_jmqttTemplateDelete').on('click', function() {
 				},
 				success: function(data) {
 					if (data) {
-						$('#md_jmqttTemplate').showAlert({message: 'Suppression du template réussie.', level: 'success'})
+						$('#md_jmqttTemplate').showAlert({message: '{{Template supprimé.}}', level: 'success'})
 						refreshJmqttTemplateList()
 					} else
-						$('#md_jmqttTemplate').showAlert({message: 'Ce template ne peut pas être supprimé.', level: 'danger'})
+						$('#md_jmqttTemplate').showAlert({message: '{{Ce template ne peut pas être supprimé.}}', level: 'danger'})
 				}
 			})
 		}
@@ -287,7 +287,7 @@ $('#bt_jmqttTemplateDelete').on('click', function() {
 
 $('#bt_jmqttTemplateDownload').on('click',function() {
 	if ($('#ul_jmqttTemplateList li.active').attr('data-file') == undefined) {
-		$('#md_jmqttTemplate').showAlert({message: 'Vous devez d\'abord sélectionner un template', level: 'danger'})
+		$('#md_jmqttTemplate').showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
 		return
 	}
 	window.open('core/php/downloadFile.php?pathfile=' + $('#ul_jmqttTemplateList li.active').attr('data-file'), "_blank", null)

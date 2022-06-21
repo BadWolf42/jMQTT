@@ -20,7 +20,7 @@ require_once dirname(__FILE__) . '/../../core/class/jMQTT.class.php';
 
 if (!jeedom::apiAccess(init('apikey'), 'jMQTT')) {	// Security
 	echo 'Unauthorized access.';
-	jMQTT::logger('error', sprintf('Unauthorized access from %s with APIKEY "%.8s..."', $_SERVER['REMOTE_ADDR'], init('apikey')));
+	jMQTT::logger('error', sprintf(__("Accès non autorisé depuis %1\$s, avec la clé API commenceant par %2\$.8s...", __FILE__), $_SERVER['REMOTE_ADDR'], init('apikey')));
 	die();
 }
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {			// NOT POST, used by ping, we just close the connection
@@ -28,15 +28,15 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {			// NOT POST, used by ping, we just
 }
 $ruid = init('uid');								// Collect Remote PID and PORT at connection
 $received = file_get_contents("php://input");		// Get page full content
-// jMQTT::logger('debug', sprintf('Daemon [%s]: Received "%s"', $ruid, $received));
+// jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Données reçues '%2\$s'", __FILE__), $ruid, $received));
 $messages = json_decode($received, true);			// Try to decode json -> can throw Excepetion
 if (is_null($messages) || !is_array($messages)) {	// Only expect an array of messages
-	jMQTT::logger('error', sprintf('Daemon [%s]: Incorrect JSON format: "%s".', $ruid, $received));
+	jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Format JSON erroné: '%2\$s'", __FILE__), $ruid, $received));
 	die();
 }
 foreach($messages as $message) {					// Iterate through the messages
 	if (!isset($message['cmd'])) {					// No cmd supplied
-		jMQTT::logger('error', sprintf('Daemon [%s]: Missing cmd, see: "%s".', $ruid, json_encode($message)));
+		jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Paramètre cmd manquant dans le message: '%2\$s'", __FILE__), $ruid, json_encode($message)));
 		continue;
 	}
 	switch ($message['cmd']) {						// Handle commands from daemon
@@ -71,7 +71,7 @@ foreach($messages as $message) {					// Iterate through the messages
 			continue 2;								// Next foreach iteration
 
 		default:
-			jMQTT::logger('error', sprintf('Daemon [%s]: Received message contains unkown cmd!?', $ruid));
+			jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Commande inconnue dans le message: '%2\$s'", __FILE__), $ruid, json_encode($message)));
 			continue 2;								// Next foreach iteration
 	}
 
@@ -80,9 +80,9 @@ foreach($messages as $message) {					// Iterate through the messages
 	$authorized = jMQTT::valid_uid($ruid);			// Evaluate each time capability of this daemon to send data to Jeedom
 	if (!$authorized && ($message['cmd'] != 'daemonUp')) { // Check if daemon is in a correct state or deny the message
 		if (is_null($authorized))
-			jMQTT::logger('debug', sprintf('Daemon [%s]: Cannot allow cmd "%s" before "daemonUp": "%s".', $ruid, $message['cmd'], json_encode($message)));
+			jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Impossible d'autoriser la cmd '%2\$s' avant 'daemonUp': '%3\$s'", __FILE__), $ruid, $message['cmd'], json_encode($message)));
 		else
-			jMQTT::logger('debug', sprintf('Daemon [%s]: Denied msg from invalid Daemon: "%s".', $ruid, json_encode($message)));
+			jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Message refusé (démon invalide) : '%2\$s'", __FILE__), $ruid, json_encode($message)));
 		continue;
 	}
 	switch ($message['cmd']) {						// Handle commands from daemon
@@ -117,10 +117,10 @@ foreach($messages as $message) {					// Iterate through the messages
 			jMQTT::fromDaemon_daemonDown($ruid);
 			continue 2;								// Next foreach iteration
 		default:
-			jMQTT::logger('error', sprintf('Daemon [%s]: Unkown cmd "%s", see: "%s"', $ruid, $message['cmd'], json_encode($message)));
+			jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Commande inconnue dans le message: '%2\$s'", __FILE__), $ruid, json_encode($message)));
 			continue 2;								// Next foreach iteration
 	}
 */
 	// All cmds the bad parameters are handled here
-	jMQTT::logger('error', sprintf('Daemon [%s]: Missing parameter for cmd "%s", see: "%s".', $ruid, $message['cmd'], json_encode($message)));
+	jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Paramètre manquant pour la cmd '%2\$s' : '%3\$s'", __FILE__), $ruid, $message['cmd'], json_encode($message)));
 }

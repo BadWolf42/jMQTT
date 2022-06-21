@@ -45,7 +45,7 @@ class mqttApiRequest {
 	 */
 	function __construct($request, $broker) {
 		$this->broker = $broker;
-		$broker->log('info', 'API: processing request ' . $request);
+		$broker->log('info', __("API: Traitement de la requête : ", __FILE__) . $request);
 
 		$this->apiAddr = network::getNetworkAccess('internal', 'http:127.0.0.1:port:comp') . '/core/api/jeeApi.php';
 
@@ -78,7 +78,7 @@ class mqttApiRequest {
 
 		if (isset($errArr)) {
 			$this->publishError($errArr);
-			throw new Exception();
+			throw new Exception(__("API: Exception", __FILE__));
 		}
 	}
 
@@ -171,9 +171,7 @@ class mqttApiRequest {
 	 *            array error message
 	 */
 	protected function publishError($_arrErr) {
-		$this->broker->log('error',
-			'API: ' . $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG] . ' (err. code is ' .
-			$_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE] . ')');
+		$this->broker->log('error', sprintf('API: %s (code: %s)', $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG], $_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE]));
 		if (isset($this->ret_topic))
 			$this->broker->publish('api', $this->ret_topic, json_encode($_arrErr), '1', '0');
 	}
@@ -188,8 +186,7 @@ class mqttApiRequest {
 		if (isset($this->ret_topic))
 			$this->broker->publish('api', $this->ret_topic, $_jsonRes, '1', '0');
 		else
-			$this->broker->log('warning',
-				'API: the response is not published as the response topic was not defined in the request.');
+			$this->broker->log('warning', __("API: La réponse n'a pas pu être publiée car il n'y avait pas de topic de réponse dans la requête.", __FILE__));
 	}
 
 	/**
