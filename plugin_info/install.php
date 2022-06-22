@@ -39,7 +39,7 @@ function migrateToJsonVersion() {
 
 	/** @var cmd $cmd */
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
-		jMQTT::logger('debug', 'migrate info command ' . $cmd->getName());
+		jMQTT::logger('debug', __("Migration de la commande info: ", __FILE__) . $cmd->getHumanName());
 		$cmd->setConfiguration('parseJson', null);
 		$cmd->setConfiguration('prevParseJson', null);
 		$cmd->setConfiguration('jParent', null);
@@ -47,7 +47,7 @@ function migrateToJsonVersion() {
 		$cmd->save();
 	}
 
-	jMQTT::logger('info', 'migration to json#76 version done');
+	jMQTT::logger('info', __("Migration vers la version json#76", __FILE__));
 }
 
 /**
@@ -63,7 +63,7 @@ function disableAutoAddCmdOnBrokers() {
 		$broker->save();
 	}
 
-	jMQTT::logger('info', 'migration to no auto_add_cmd for broker done');
+	jMQTT::logger('info', __("Désactivation de l'ajout automatique de commandes sur les Broker", __FILE__));
 }
 
 /**
@@ -81,7 +81,7 @@ function removePreviousDaemonCrons() {
 	}
 	while (true);
 
-	jMQTT::logger('info', 'removal of previous daemon cron done');
+	jMQTT::logger('info', __("Suppression du démon cron précédent", __FILE__));
 }
 
 /**
@@ -115,7 +115,7 @@ function tagBrokersStatusCmd() {
 		}
 	}
 
-	jMQTT::logger('info', 'Brokers status command tagged');
+	jMQTT::logger('info', __("Ajout de tags sur le statut des Broker", __FILE__));
 }
 
 function raiseForceDepInstallFlag() {
@@ -156,7 +156,7 @@ function cleanLeakedInfoInEqpts() {
 		}
 	}
 
-	jMQTT::logger('info', 'Broker leaked info cleaned up in eqpts');
+	jMQTT::logger('info', __("Equipements nettoyés des informations du Broker", __FILE__));
 }
 
 function cleanLeakedInfoInTemplates() {
@@ -213,7 +213,7 @@ function cleanLeakedInfoInTemplates() {
 		} catch (Throwable $e) {}
 	}
 
-	jMQTT::logger('info', 'Broker leaked info cleaned up in templates');
+	jMQTT::logger('info', __("Templates nettoyés des informations du Broker", __FILE__));
 }
 
 function splitJsonPathOfjMQTTCmd() {
@@ -229,7 +229,7 @@ function splitJsonPathOfjMQTTCmd() {
 		}
 	}
 
-	jMQTT::logger('info', 'JsonPath splitted from topic for all jMQTT info commands');
+	jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les commandes info jMQTT", __FILE__));
 }
 
 function splitJsonPathOfTemplates() {
@@ -239,7 +239,7 @@ function splitJsonPathOfTemplates() {
 		jMQTT::templateSplitJsonPathByFile($file);
 	}
 
-	jMQTT::logger('info', 'JsonPath splitted from topic for all templates');
+	jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les Templates jMQTT", __FILE__));
 }
 
 function moveTopicOfjMQTTeqLogic() {
@@ -250,7 +250,7 @@ function moveTopicOfjMQTTeqLogic() {
 		$eqLogic->moveTopicToConfiguration();
 	}
 
-	jMQTT::logger('info', 'Topic moved to configuration for all jMQTT equipments');
+	jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les équipements jMQTT", __FILE__));
 }
 
 function moveTopicOfTemplates() {
@@ -260,7 +260,7 @@ function moveTopicOfTemplates() {
 		jMQTT::moveTopicToConfigurationByFile($file);
 	}
 
-	jMQTT::logger('info', 'Topic moved to configuration for all templates');
+	jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les Templates jMQTT", __FILE__));
 }
 
 function jMQTT_install() {
