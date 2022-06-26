@@ -150,6 +150,11 @@ $("#bt_addMQTTAction").on('click', function(event) {
 	modifyWithoutSave = true;
 });
 
+$('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
+	$('#md_modal').dialog({title: "{{Debug jMQTT}}"});
+	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=debug').dialog('open');
+});
+
 $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Santé jMQTT}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
@@ -267,7 +272,7 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
 				(typ == 'broker' ? '{{le broker}}' : "{{l'équipement}}") + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
 			if (result) {
 				if (typ == 'broker') {
-					bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fa fa-warning"</i>' +
+					bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fas fa-exclamation-triangle" />' +
 						'</span></td><td style="vertical-align:middle">' + '{{Tous les équipements associés au broker vont être supprimés}}' +
 						'...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
 						if (result) {
@@ -297,7 +302,7 @@ $('.eqLogicAction[data-action=move_broker]').on('click', function () {
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	var brk_id = $('#broker').val();
 	if (id != undefined && brk_id != undefined) {
-		bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fa fa-warning"</i>' +
+		bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fas fa-exclamation-triangle" />' +
 			'</span></td><td style="vertical-align:middle">' + "{{Vous êtes sur le point de changer l'équipement de broker}}" +
 			'.<br>' + '{{Êtes vous sûr ?}}' + '</td></tr></table>', function (result) {
 			if (result) {
@@ -589,7 +594,7 @@ function printEqLogic(_eqLogic) {
 		var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
 		$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
 		$('.bt_plugin_conf_view_log').attr('data-log', log);
-		$('.bt_plugin_conf_view_log').html('<i class="fa fa fa-file-text-o"></i> ' + log);
+		$('.bt_plugin_conf_view_log').html('<i class="fas fa-file-text-o"></i> ' + log);
 
 		refreshMqttClientInfo();
 
@@ -829,12 +834,10 @@ function addCmdToTable(_cmd) {
 		tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
 		tr += '</td>';
 		tr += '<td>';
-//		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom: 32px;" ' + disabled + '>';
 		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="min-height:62px;margin-top:14px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';
 		tr += '</td><td>';
-//		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" placeholder="{{Valeur}}" ' + disabled + '>';
 		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="height:18px;" ' + disabled + ' placeholder="{{Valeur}}"></textarea>';
-		tr += '<a class="btn btn-default btn-sm cursor listEquipementInfo" data-input="request" style="margin-top:5px;"><i class="fa fa-list-alt "></i> {{Rechercher équipement}}</a>';
+		tr += '<a class="btn btn-default btn-sm cursor listEquipementInfo" data-input="request" style="margin-top:5px;"><i class="fas fa-list-alt "></i> {{Rechercher équipement}}</a>';
 		tr +='</select></span>';
 		tr += '</td><td>';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:50px;display:inline-block;">';
@@ -843,13 +846,13 @@ function addCmdToTable(_cmd) {
 		tr += '</td><td>';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}} <sup><i class="fa fa-question-circle tooltips" title="{{Publication automatique en MQTT lors d\'un changement <br>(Utiliser avec au moins une commande info dans Valeur).}}"></i></sup></label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}} <sup><i class="fas fa-question-circle tooltips" title="{{Publication automatique en MQTT lors d\'un changement <br>(Utiliser avec au moins une commande info dans Valeur).}}"></i></sup></label></span><br> ';
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td>';
 		if (is_numeric(_cmd.id)) {
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fa fa-cogs"></i></a> ';
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fa fa-rss"></i> {{Tester}}</a>';
+			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
+			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
 		}
 		if (!is_json_view && _cmd.configuration.irremovable == undefined) {
 			tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>'
@@ -981,13 +984,13 @@ function configureIncludeModeDisplay(brkId, mode) {
 	if (mode == 1) {
 		//$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').removeClass('btn-default').addClass('btn-success');
 		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 1);
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Arrêter l\'inclusion}}');
+		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'] span').text('{{Arrêter l\'inclusion}}');
 		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('include');
 		$('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
 	} else {
 		//$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
 		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 0);
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'].card span').text('{{Mode inclusion}}');
+		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'] span').text('{{Mode inclusion}}');
 		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('include');
 		$('#div_inclusionModeMsg').hideAlert();
 	}

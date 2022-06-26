@@ -137,8 +137,8 @@ $('.mqttDeleteFile').on('click', function (){
 });
 
 $btSave = $('#bt_savePluginLogConfig');
-if (!$btSave.hasAttr('jmqtt')) {
-	$btSave.attr('jmqtt', 1);
+if (!$btSave.hasClass('jmqttLog')) {
+	$btSave.addClass('jmqttLog');
 	$btSave.on('click', function() {
 		if ($('#span_plugin_id').text() == 'jMQTT') {
 			sleep(1000);
