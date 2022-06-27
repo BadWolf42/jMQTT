@@ -63,7 +63,7 @@ function callDebugAjax(_params) {
 				</div>
 				<div class="panel-body">
 					<form class="form-horizontal">
-							<fieldset>
+						<fieldset>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">Hardware</label>
 								<div class="col-sm-3">
@@ -341,7 +341,7 @@ foreach(jMQTT::getNonBrokers() as $eqpts) {
 	}
 }
 /*
-// TODO FIXME WAY TOO SLOW, fetch dynamicaly?
+// TODO FIXME Listing of cmd in cache WAY TOO SLOW, fetch dynamicaly?
 
 foreach (cmd::searchConfiguration('', jMQTT::class) as $cmd) {
 	$cacheCmdKeys = array();
@@ -458,11 +458,6 @@ $('#bt_debugTabCache').on('click', '.bt_debugDelCache', function () {
 					</script>
 				</div>
 
-
-
-
-
-
 <!--
 				<div class="panel-body">
 					<form class="form-horizontal">
@@ -507,7 +502,156 @@ foreach (jMQTT::getBrokers() as $brk) {
 ?>
 						</fieldset>
 					</form>
-				</div>-->
+				</div>
+-->
 			</div>
 		</div>
 	</div>
+
+<!--
+TODO IMPLEMENT sent to / receive from daemon
+	<div class="row">
+		<div class="col-md-6 col-sm-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><i class="fas fa-upload"></i> {{Simuler un event envoyé au Démon}}</h3>
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal">
+							<fieldset>
+							<div><pre>
+send_to_mqtt_daemon($params)
+	{"cmd": "", "id": "", "hostname": "", "port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}
+
+new_mqtt_client($id, $hostname, $params = array())
+	{"port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}
+
+remove_mqtt_client($id)
+subscribe_mqtt_topic($id, $topic, $qos = 1)
+unsubscribe_mqtt_topic($id, $topic)
+publish_mqtt_message($id, $topic, $payload, $qos = 1, $retain = false)
+send_loglevel()
+							</pre></div>
+							<legend><i class="fas fa-cog"></i>send_to_mqtt_daemon</legend>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+							</div>
+							<legend><i class="fas fa-cog"></i>new_mqtt_client</legend>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-9">
+									<span>XXXXXX</span>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+					<script>
+/*
+$('#bt_debugToDaemonRaw').on('click', function () {
+	bootbox.confirm({
+		title: '{{Ajouter un paramètre de configuration interne}}',
+		message: '<label class="control-label">{{Clé :}} </label> '
+				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
+				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+		callback: function (result){
+			if (result) {
+			callDebugAjax({
+				data: {
+					action: "configSet",
+					key : $("#debugKey").val(),
+					val: $("#debugVal").val()
+				},
+				error: function(error) {
+					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+				},
+				success: function(data) {
+					$('#md_jmqttDebug').showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
+					var row = $('#bt_debugTabConfig tbody').prepend('<tr />').children('tr:first');//.text($("#debugVal").val());
+					row.append('<td class="key">'+$("#debugKey").val()+'</td>');
+					row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
+					row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditConfig"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm bt_debugDelConfig"><i class="fas fa-trash"></i> </a></td>');
+				}
+			});
+			}
+		}
+	});
+});
+*/
+					</script>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6 col-sm-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><i class="fas fa-download"></i> {{Simuler un event reçu du Démon}}</h3>
+				</div>
+				<div class="panel-body">
+					<form class="form-horizontal">
+							<fieldset>
+							<div><pre>
+METHOD POST
+"uid" in URL
+{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}
+{"cmd":"brokerUp", "id":string}
+{"cmd":"brokerDown"}
+{"cmd":"daemonUp"}
+{"cmd":"daemonDown"}
+{"cmd":"hb"}
+							</pre></div>
+							<legend><i class="fas fa-cog"></i>messageIn</legend>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-3">
+									<span>XXXXXX</span>
+								</div>
+							</div>
+							<legend><i class="fas fa-cog"></i>brokerUp</legend>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">XXXXXX</label>
+								<div class="col-sm-9">
+									<span>XXXXXX</span>
+								</div>
+							</div>
+						</fieldset>
+					</form>
+					<script>
+// TODO Placeholder
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+-->
