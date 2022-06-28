@@ -27,19 +27,12 @@ if (!isConnect()) {
 <div class="eventDisplayMini"></div>
 <form class="form-horizontal">
 	<fieldset>
-		<legend><i class="fas fa-cog"></i>{{installation}}</legend>
+		<legend><i class="fas fa-cog"></i>{{Installation}}</legend>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Installer Mosquitto localement}}</label>
 			<div class="col-sm-3">
 				<input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="installMosquitto"
 					checked />
-			</div>
-		</div>
-		<legend><i class="fas fa-university"></i>{{Démons}}</legend>
-		<div class="form-group">
-			<label class="col-sm-5 control-label">{{Port du démon}}</label>
-			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTT::DEFAULT_PYTHON_PORT; ?>"/>
 			</div>
 		</div>
 		<legend><i class="fas fa-key"></i>{{Certificats}}</legend>

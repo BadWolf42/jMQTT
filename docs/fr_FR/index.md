@@ -25,12 +25,14 @@ La configuration jMQTT est alors très simple:
 > **Important**
 > Pour ne pas installer le Broker Mosquitto sur la machine hébergeant Jeedom, commencer par décocher la case *Installer Mosquitto localement*, sans oublier de sauvegarder la configuration.
 
-*****************TODO******************
-![Configuration du plugin](../images/config.png)
 
 Après installation du plugin, il suffit de l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep`.
 
+Le reste de la configuration principale est assez sommaire :
 
+![Configuration du plugin](../images/config.png)
+
+C'est aussi sur cette page qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
 
 # Gestion des équipements
 

@@ -377,7 +377,8 @@ class jMQTTCmd extends cmd {
 // Listener for autoPub action command
 	public function listenerUpdate() {
 		$cmds = array();
-		if ($this->getEqLogic()->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
+		$eq = $this->getEqLogic();
+		if ($eq->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
 			preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
 			$cmds = array_unique($matches[1]);
 		}
@@ -404,11 +405,11 @@ class jMQTTCmd extends cmd {
 			$listener->setOption('eqLogic', $this->getEqLogic_id());
 			$listener->setOption('background', false);
 			$listener->save();
-			jMQTT::logger('debug', sprintf(__("Listener installé pour #%s#", __FILE__), $this->getHumanName()));
+			$eq->log('debug', sprintf(__("Listener installé pour #%s#", __FILE__), $this->getHumanName()));
 		} else { // We don't want a listener
 			if (is_object($listener)) {
 				$listener->remove();
-				jMQTT::logger('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $this->getHumanName()));
+				$eq->log('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $this->getHumanName()));
 			}
 		}
 	}
@@ -417,9 +418,9 @@ class jMQTTCmd extends cmd {
 		$cmd = self::byId($_options['cmd']);
 		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration('autoPub', 0)) {
 			listener::byId($_options['listener_id'])->remove();
-			jMQTT::logger('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $_options['cmd']));
+			$cmd->getEqLogic()->log('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $_options['cmd']));
 		} else {
-			jMQTT::logger('debug', sprintf(__("Publication automatique de #%s#", __FILE__), $cmd->getHumanName()));
+			$cmd->getEqLogic()->log('debug', sprintf(__("Publication automatique de #%s#", __FILE__), $cmd->getHumanName()));
 			$cmd->execute();
 		}
 	}

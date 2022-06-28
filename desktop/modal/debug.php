@@ -280,7 +280,10 @@ $('#bt_debugTabConfig').on('click', '.bt_debugDelConfig', function () {
 							</tr>
 <?php
 $cacheKeys = array();
-$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_CONNECTED;
+$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_RCV;
+$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_SND;
+$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_PORT;
+$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_UID;
 // $cacheKeys[] = 'jMQTT::dummy';
 // $cacheKeys[] = ;
 foreach ($cacheKeys as $k) {
@@ -295,7 +298,8 @@ foreach ($cacheKeys as $k) {
 
 foreach (jMQTT::getBrokers() as $brk) {
 	$cacheBrkKeys = array();
-	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
+	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_INCLUDE_MODE;
+	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_LAST_LAUNCH_TIME;
 	$cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
 ?>
 							<tr>
@@ -520,19 +524,19 @@ TODO IMPLEMENT sent to / receive from daemon
 					<form class="form-horizontal">
 							<fieldset>
 							<div><pre>
-send_to_mqtt_daemon($params)
+sendToDaemon($params)
 	{"cmd": "", "id": "", "hostname": "", "port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}
 
-new_mqtt_client($id, $hostname, $params = array())
+toDaemon_newClient($id, $hostname, $params = array())
 	{"port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}
 
-remove_mqtt_client($id)
-subscribe_mqtt_topic($id, $topic, $qos = 1)
-unsubscribe_mqtt_topic($id, $topic)
-publish_mqtt_message($id, $topic, $payload, $qos = 1, $retain = false)
-send_loglevel()
+toDaemon_removeClient($id)
+toDaemon_subscribe($id, $topic, $qos = 1)
+toDaemon_unsubscribe($id, $topic)
+toDaemon_publish($id, $topic, $payload, $qos = 1, $retain = false)
+toDaemon_setLogLevel()
 							</pre></div>
-							<legend><i class="fas fa-cog"></i>send_to_mqtt_daemon</legend>
+							<legend><i class="fas fa-cog"></i>sendToDaemon</legend>
 							<div class="form-group">
 								<label class="col-sm-3 control-label">XXXXXX</label>
 								<div class="col-sm-3">

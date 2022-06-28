@@ -2,9 +2,10 @@
 
 ## Dev
  - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
- - Suppression des dépendances PHP à Ratchet
  - **Amélioration les performances et réduction de la consommation mémoire**
  - **Prise en compte immédiate du changement du niveau de log par le démon**
+ - **Configuration dynamique du port du démon, plus besoin de le définir**
+ - Suppression des dépendances PHP à Ratchet
  - Amélioration de la détection de l'état des Broker et du démon
  - **Changement du nom du fichier de log du démon pour correspondre au standard de Jeedom (jMQTTd)**
  - Déplacement de la barre de recherche pour correspondre au standard de Jeedom
@@ -16,14 +17,16 @@
  - Utilisation le plus souvent possible de $cmd->getHumanName() pour parler d'un Objet, Equipement, Broker ou Commande
  - Amélioration des logs du démon pour les rendre plus lisibles (mais toujours en anglais)
  - Ajout d'un niveau de log "verbose" pour avoir les logs des bibliothèques utilisées par le démon
- - Ajout d'une fonction de debug avancé capturant l'état des fils d'exécution du démon
+ - Ajout d'une fonction de debug avancé capturant l'état des fil d'exécution du démon
  - Remplacement de `jeedom.py` (communication avec Jeedom) par une version plus élaborée
  - Simplification du code du démon python suite à la suppression du démon php
  - Retrait de la suppression du fichier PID par le démon (tâche à effectuer par le Core)
  - Déplacement de la classe jMqttClient vers un autre fichier Python
- - Ajout de signaux de vie du démon vers Jeedom
+ - Ajout d'une modale de debug avancé
+ - Ajout de signaux de vie entre le démon et Jeedom
  - Ajout et nettoyage des symboles de traduction
  - Préparatifs pour le mode tableau de la vue des équipements
+ - Mise à jour des documentations
  - Corrections syntaxiques et orthographiques
 
 
