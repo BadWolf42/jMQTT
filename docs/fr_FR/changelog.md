@@ -1,6 +1,6 @@
 # Registre des évolutions
 
-## Dev
+## Beta 2022-06-30
  - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
  - **Amélioration les performances et réduction de la consommation mémoire**
  - **Prise en compte immédiate du changement du niveau de log par le démon**
@@ -28,11 +28,6 @@
  - Préparatifs pour le mode tableau de la vue des équipements
  - Mise à jour des documentations
  - Corrections syntaxiques et orthographiques
-
-
-## Beta
-(Les versions Beta et Stable sont identiques)
-
 
 ## 2022-06-15
  - Correction d'un bug lors de la vérification des dépendances chez certains utilisateurs
