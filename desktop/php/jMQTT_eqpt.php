@@ -1,3 +1,4 @@
+<br/>
 <form class="form-horizontal">
 	<fieldset>
 		<div class="form-group toDisable">
@@ -158,9 +159,10 @@
 			</div>
 		</div>
 
-		<div class="form-group typ-std">
-			<div style="text-align: center">
-				<img id="icon_visu" src="" height="200" />
+		<div class="form-group toDisable typ-std">
+			<label class="col-sm-3 control-label"></label>
+			<div class="col-sm-3" style="text-align: center">
+				<br /><img id="icon_visu" src="" height="200" />
 			</div>
 		</div>
 

@@ -20,7 +20,10 @@ require_once dirname(__FILE__) . '/../../core/class/jMQTT.class.php';
 
 if (!jeedom::apiAccess(init('apikey'), 'jMQTT')) {	// Security
 	echo 'Unauthorized access.';
-	jMQTT::logger('error', sprintf(__("Accès non autorisé depuis %1\$s, avec la clé API commenceant par %2\$.8s...", __FILE__), $_SERVER['REMOTE_ADDR'], init('apikey')));
+	if (init('apikey') != '')
+		jMQTT::logger('error', sprintf(__("Accès non autorisé depuis %1\$s, avec la clé API commenceant par %2\$.8s...", __FILE__), $_SERVER['REMOTE_ADDR'], init('apikey')));
+	else
+		jMQTT::logger('error', sprintf(__("Accès non autorisé depuis %s (pas de clé API)", __FILE__), $_SERVER['REMOTE_ADDR']));
 	die();
 }
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {			// NOT POST, used by ping, we just close the connection
