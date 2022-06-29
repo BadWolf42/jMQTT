@@ -1,7 +1,33 @@
 # Registre des évolutions
 
-## Beta
-(Les versions Beta et Stable sont identiques)
+## Beta 2022-06-30
+ - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
+ - **Amélioration les performances et réduction de la consommation mémoire**
+ - **Prise en compte immédiate du changement du niveau de log par le démon**
+ - **Configuration dynamique du port du démon, plus besoin de le définir**
+ - Suppression des dépendances PHP à Ratchet
+ - Amélioration de la détection de l'état des Broker et du démon
+ - **Changement du nom du fichier de log du démon pour correspondre au standard de Jeedom (jMQTTd)**
+ - Déplacement de la barre de recherche pour correspondre au standard de Jeedom
+ - Amélioration de la gestion du cache interne
+ - **Ajout de plus de debug lors de l'ajout de commandes, au cas où les erreurs MySQL 'Duplicate entry' continueraient**
+ - Ajoute de plus de log en cas d'Exception
+ - Amélioration des log du plugin, entièrement en français et prêt à être traduits dans les autres langues
+ - **Consolidation des logs en rapport avec un Broker : ils sont tous dans le log du Broker**
+ - Utilisation le plus souvent possible de $cmd->getHumanName() pour parler d'un Objet, Equipement, Broker ou Commande
+ - Amélioration des logs du démon pour les rendre plus lisibles (mais toujours en anglais)
+ - Ajout d'un niveau de log "verbose" pour avoir les logs des bibliothèques utilisées par le démon
+ - Ajout d'une fonction de debug avancé capturant l'état des fil d'exécution du démon
+ - Remplacement de `jeedom.py` (communication avec Jeedom) par une version plus élaborée
+ - Simplification du code du démon python suite à la suppression du démon php
+ - Retrait de la suppression du fichier PID par le démon (tâche à effectuer par le Core)
+ - Déplacement de la classe jMqttClient vers un autre fichier Python
+ - Ajout d'une modale de debug avancé
+ - Ajout de signaux de vie entre le démon et Jeedom
+ - Ajout et nettoyage des symboles de traduction
+ - Préparatifs pour le mode tableau de la vue des équipements
+ - Mise à jour des documentations
+ - Corrections syntaxiques et orthographiques
 
 ## 2022-06-15
  - Correction d'un bug lors de la vérification des dépendances chez certains utilisateurs
@@ -17,7 +43,7 @@
  - Correction d'une erreur javascript lors du changement d'équipement
  - **Un message MQTT compressé avec zlib est automatiquement reçu décompressé dans Jeedom sur la commande info associée**
  - **Un message MQTT binaire est automatiquement reçu en base64 dans Jeedom sur la commande info associée**
- - Changement du début du format des logs du daemon Python pour être plus lisible en v4.2
+ - Changement du début du format des logs du démon Python pour être plus lisible en v4.2
  - Corrections concernant la nouvelle fonction createEqWithTemplate
  - Conversion à la volée du chemin JSON lors de l'utilisation d'anciennes Template
  - Ajout du nombre d'équipement par Broker dans les pages de Santé
@@ -50,11 +76,11 @@
  - Suppression des infos brokers dans les templates
  - Suppression des infos brokers dans les templates perso
  - Correction d'un bug qui ajoute des \ avant chaque / lors du traitement de commande info JSON
- - Correction du daemon Python pouvait planter lors d'une sub/unsub invalide
+ - Correction du démon Python pouvait planter lors d'une sub/unsub invalide
  - Gestion de l'évolution de la fonction export() pour les futures versions de Jeedom
 
 ## 2022-01-12
- - Amélioration du log en cas d'erreur sur le daemon PHP
+ - Amélioration du log en cas d'erreur sur le démon PHP
  - Création automatique d'un fichier de configuration Mosquitto s'il n'y en a pas
  - Utilisation d'une librairie pour améliorer la lisibilité lors de l'installation des dépendances
  - Correction temporaire de la librairie RatchetPHP concernant les payload de plus de ~65Ko sur les OS 32bits et RPi
@@ -73,7 +99,7 @@
 ## 2021-09-18
   - Correction : l'équipement broker "local" ne se créée plus si un équipement broker existant est configuré avec l'ip de la machine
 
-## 2021-09-17 Nouveaux Démons
+## 2021-09-17 Nouveaux démons
 **ATTENTION :  De gros changements ont été apporté au plugin**
 En cas de problème, merci d'ouvrir un thread sur [community ici](https://community.jeedom.com/tag/plugin-jmqtt) ou une issue sur [Github ici](https://github.com/Domochip/jMQTT/issues)
   - Changement complet de moteur MQTT
@@ -81,16 +107,16 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
   - Réécriture complète de la gestion des Création/Modification/Suppression des équipements
   - Structure de classes permettant l'utilisation dans de futurs plugins satellites
   - Nouvelles dépendances plus légères et maintenues
-  - Renommage de l'ancienne partie Daemon en MqttClient
+  - Renommage de l'ancienne partie démon en MqttClient
   - Retrait de Ratchet des sources et ajout au méchanisme d'installation de dépendances
-  - Amélioration de la gestion des erreurs dans le daemon WebSocket PHP
+  - Amélioration de la gestion des erreurs dans le démon WebSocket PHP
   - Nettoyage des anciennes dépendances lors de l'update du plugin
   - Ajout du support de TLS et modification de la documentation en conséquence
   - Correction temporaire de la transformation des entiers en texte dans les JSON des commandes actions (Jeedom Core [PR#1829](https://github.com/jeedom/core/pull/1829))
-  - Amélioraton du daemon Python
+  - Amélioraton du démon Python
   - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key
   - Correction de Bug sur l'application des Template : La souscription au topic ne se faisait pas après l'application d'un template + des messages de topics mismatch apparaissaient 
-  - Augmentation du timeout WebSocket et kill -9 des daemon si pas arrêté au bout de 10 secondes
+  - Augmentation du timeout WebSocket et kill -9 des démon si pas arrêté au bout de 10 secondes
   - Ajout de l'icone Nabaztag
   - Ajout de template de volet roulant
   - Stockage des template dans le dossier data permettant de les conserver durant les MAJ du plugin

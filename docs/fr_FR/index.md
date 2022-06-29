@@ -1,12 +1,12 @@
 # Présentation
 
-MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.  
+MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.
 Il apporte une très grande souplesse dans les échanges d'information entre capteurs/actionneurs/systèmes domotique/etc.
 
 Ce plugin permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
 
-Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :  
-[![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)  
+Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :
+[![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)
 Crédit : François Riotte
 
 
@@ -14,7 +14,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 # Démarrage rapide
 
-Par défaut, jMQTT installe le Broker Mosquitto sur la machine hébergeant Jeedom.  
+Par défaut, jMQTT installe le Broker Mosquitto sur la machine hébergeant Jeedom.
 Il vous suffira ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à ce Broker (IP de votre Jeedom).
 
 La configuration jMQTT est alors très simple:
@@ -25,7 +25,14 @@ La configuration jMQTT est alors très simple:
 > **Important**
 > Pour ne pas installer le Broker Mosquitto sur la machine hébergeant Jeedom, commencer par décocher la case *Installer Mosquitto localement*, sans oublier de sauvegarder la configuration.
 
-Après installation du plugin, l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep`.
+
+Après installation du plugin, il suffit de l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep`.
+
+Le reste de la configuration principale est assez sommaire :
+
+![Configuration du plugin](../images/config.png)
+
+C'est aussi sur cette page qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
 
 # Gestion des équipements
 
@@ -35,17 +42,17 @@ jMQTT posséde 2 types d'équipements:
   - les **équipements de type Broker** gérant la connexion avec les Broker MQTT, appelés équipements Broker dans la suite;
   - les **équipements "classiques"**, appélés simplement équipements dans la suite,
 
-Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.  
+Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.
 ![Gestion plugin et Broker](../images/gestion_plugin_et_brokers.png)
 
-Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :  
-![Status Broker](../images/broker_status.png)  
+Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :
+![Status Broker](../images/broker_status.png)
 * Vert: la connexion au Broker est opérationnelle
 * Orange: le démon tourne mais la connexion au Broker n'est pas établie
 * Rouge: le démon est arrêté
 
-Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.  
-![eqpt panel](../images/eqpt_panel.png)  
+Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.
+![eqpt panel](../images/eqpt_panel.png)
 Se trouve également sur ce panneau :
   - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
   - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
@@ -188,8 +195,24 @@ Le plugin créé les informations suivantes :
 
 Dans le cas d’une payload JSON, le plugin sait décoder le contenu et créer les informations associées, et ceci indépendamment de l’état de la case *Ajout automatique des commandes* de l’Onglet Equipement.
 
-Le champ "Chemin JSON" est utilisé pour séléctionner l'information à extraire. Il s'agit d'un chemin JSON suivant le format JSONPath sans le premier caractère '$' par lisibilité.  
-(Le Chemin JSON reste parfaitement fonctionnel même si le caractère '$' est ajouté au début.)
+Le champ "Chemin JSON" est utilisé pour sélectionner l'information à extraire. Il s'agit d'un chemin JSON suivant le [format JSONPath](https://goessner.net/articles/JsonPath/), à travers l'implémentation de [Galbar](https://github.com/Galbar/JsonPath-PHP). Ce format est un outil très puissant pour analyser, transformer et extraire sélectivement des données à partir de structures JSON, à l’image de XPath pour le XML.
+
+Voici un aperçu du langage et des possibilités qu'il renferme :
+
+| JSONPath         | Description                                                                    |
+| ---------------- | ------------------------------------------------------------------------------ |
+| $                | Objet/élément racine                                                           |
+| @                | Objet/élément courant                                                          |
+| . or []          | Operateur de sélection d'un enfant                                             |
+| ..               | Descente récursive                                                             |
+| *                | Caractère générique : tous les objets/éléments indépendamment de leurs noms    |
+| []               | Opérateur d'indice : opérateur natif d'un tableau                              |
+| [,]              | Opérateur d'union : noms alternatifs ou indices de tableau en tant qu'ensemble |
+| [start:end:step] | Opérateur de découpage de tableau                                              |
+| ?()              | Expression (script) de filtrage de données                                     |
+
+Le premier caractère '$' est omis par la vue JSON de jMQTT dans un souci de lisibilité, mais le Chemin JSON reste parfaitement fonctionnel que le caractère '$' soit présent ou non.
+
 
 Prenons l’exemple de la payload JSON suivante :
 
@@ -376,13 +399,14 @@ Dans le gestionnaire, on distingue différentes sections :
 Ceux préfixés par `[Perso]` sont liés à votre installation, les autres arrivent directement avec jMQTT.
 Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à [ouvrir un ticket sur GitHub](https://github.com/Domochip/jMQTT/issues).
 
-2. Un bouton d'import de template dans jMQTT depuis un fichier json.
+  2. Un bouton d'import de template dans jMQTT depuis un fichier json.
 
 Lorsqu'un template est selectionné dans la liste, la partie de droite est renseignée :
 
-3. Un bouton permettant le téléchargement du template selectionné sur votre ordinateur.
-4. Un bouton pour supprimer le template selectionné (uniquement pour les templates `Perso`).
-5. Une prévisualisation des commandes disponibles et leurs paramètres.
+  3. Un bouton permettant le téléchargement du template selectionné sur votre ordinateur.
+  4. Un bouton pour supprimer le template selectionné (uniquement pour les templates `Perso`).
+  5. Une prévisualisation de l'équipement et ses paramètres.
+  6. Une prévisualisation des commandes disponibles et leurs paramètres.
 
 ## Création d'un template depuis un équipement
 
@@ -459,8 +483,9 @@ Où :
 
 ## J'ai changé le niveau de log mais je n'ai pas plus de détails
 
-Si vous changez le niveau de log, le démon doit être relancé.
-Pour cela, il faut désactiver puis réactiver l'équipement Broker concerné.
+Si vous changiez le niveau de log, le démon devait être relancé dans les anciennes version.
+Pour cela, il fallait désactiver puis réactiver l'équipement Broker concerné.
+Aujourd'hui, le démon est automatiquement informé que le niveau de log a changé et les nouveaux logs arrivent.
 
 ## Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
 
@@ -475,17 +500,17 @@ Les problèmes en cours d’investigation sont sur GitHub : [Issues jMQTT](https
 
 En cas de problèmes à l’installation, fournir les fichiers de log jMQTT (niveau Debug) et jMQTT\_dep.
 
-En cas de problèmes à l’utilisation, fournir :
-  - Le fichier de log `jMQTT`, niveau Debug, le fichier de log `jMQTT_{nom_Broker}` du Broker concerné.
-  - Le résultat de la commande suivante :
+En cas de problèmes à l’utilisation, passer le plugin et les Broker en niveau de log `Debug` reproduire le problème et fournir :
+  - Des captures d'écran ds pages Santé de Jeedom (avec les liste des autres plugins isntallés) et de jMQTT,
+  - Tous les fichiers de log commençant par `jMQTT`,
+  - Le nom du/des Broker concerné(s),
+  - Le résultat de la commande suivante pour chaque Broker concerné (fichier `/tmp/diag_jmqtt.log`) :
 
 <!-- end list -->
 
-        mosquitto_sub -h localhost -t "#" -v| xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' | tee /tmp/mosquitto_sub.log
+        mosquitto_sub -h localhost -v -t "#" | xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' | tee /tmp/diag_jmqtt.log
 
-En remplaçant, si besoin, `localhost` par le nom ou l’IP de la machine hébergeant le Broker MQTT concerné.
-
-Si le Broker requiert une authentification, il faudra ajouter `-u username` et `-p password` avant le `-v`.
+En remplaçant, si besoin, `localhost` par le nom ou l’IP de la machine hébergeant le Broker MQTT, si une authentification est requise, ajouter `-u username` et `-p password` avant le `-v`.
 
 # Exemples d’utilisation
 

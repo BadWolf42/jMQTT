@@ -26,13 +26,12 @@ try {
 	define('PATH_TPLTS', __DIR__ . '/../../data/template');
 
 	if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
-		log::add('jMQTT', 'info', 'file upload "' . $_FILES['file']['name'] . '"');
 		if (!isset($_FILES['file'])) {
 			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.crt', '.key', '.json', '.pem'))) {
-			throw new Exception('Extension du fichier non autorisée : ' . $extension);
+			throw new Exception(sprintf(__("L'extension de fichier '%s' n'est pas autorisée", __FILE__), $extension));
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 500000) {
 			throw new Exception(__('Le fichier est trop gros (maximum 500Ko)', __FILE__));
@@ -50,23 +49,25 @@ try {
 		if (!file_exists($uploaddir)) {
 			throw new Exception(__('Répertoire de téléversement non trouvé : ', __FILE__) . $uploaddir);
 		}
-		if (file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
+		$fname = $_FILES['file']['name'];
+		if (file_exists($uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de téléverser le fichier car il existe déjà, par sécurité il faut supprimer le fichier existant avant de le remplacer.', __FILE__));
 		}
-		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $_FILES['file']['name'])) {
+		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
 		}
-		if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
+		if (!file_exists($uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
 		}
 		// After template file imported
 		if (init('dir') == 'template') {
 			// Adapt template for the new jsonPath field
-			jMQTT::templateSplitJsonPathByFile($_FILES['file']['name']);
+			jMQTT::templateSplitJsonPathByFile($fname);
 			// Adapt template for the topic in configuration
-			jMQTT::moveTopicToConfigurationByFile($_FILES['file']['name']);
+			jMQTT::moveTopicToConfigurationByFile($fname);
 		}
-		ajax::success($_FILES['file']['name']);
+		jMQTT::logger('info', sprintf(__("Template %s correctement téléversée", __FILE__), $fname));
+		ajax::success($fname);
 	}
 
 	ajax::init();
@@ -88,7 +89,7 @@ try {
 	if (init('action') == 'applyTemplate') {
 		$eqpt = jMQTT::byId(init('id'));
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
-			throw new Exception(__('Pas d\'équipement jMQTT avec l\'id fourni', __FILE__) . ' (id=' . init('id') . ')');
+			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
 		}
 		$template = jMQTT::templateByName(init('name'));
 		$eqpt->applyATemplate($template, init('topic'), init('keepCmd'));
@@ -98,7 +99,7 @@ try {
 	if (init('action') == 'createTemplate') {
 		$eqpt = jMQTT::byId(init('id'));
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
-			throw new Exception(__('Pas d\'équipement jMQTT avec l\'id fourni', __FILE__) . ' (id=' . init('id') . ')');
+			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
 		}
 		$eqpt->createTemplate(init('name'));
 		ajax::success();
@@ -136,17 +137,14 @@ try {
 	}
 
 	if (init('action') == 'moveToBroker') {
-		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
 		/** @var jMQTT $eqpt */
 		$eqpt = jMQTT::byId(init('id'));
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
-			throw new Exception(__('Pas d\'équipement jMQTT avec l\'id fourni', __FILE__) . ' (id=' . init('id') . ')');
+			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
 		}
 		$old_broker_id = $eqpt->getBrkId();
 		$new_broker = jMQTT::getBrokerFromId(init('brk_id'));
-		log::add('jMQTT', 'info', 'déplace l\'équipement ' . $eqpt->getName() . ' vers le broker ' . $new_broker->getName());
+		jMQTT::logger('info', sprintf(__("Déplacement de l'Equipement %1\$s vers le broker %2\$s", __FILE__), $eqpt->getHumanName(), $new_broker->getName()));
 		$eqpt->setBrkId($new_broker->getId());
 		$eqpt->cleanEquipment();
 		$eqpt->save();
@@ -155,8 +153,7 @@ try {
 	}
 
 	if (init('action') == 'filedelete') {
-		$certname = init('name');
-		log::add('jMQTT', 'info', 'file delete "' . $certname . '"');
+		$fname = init('name');
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 		} elseif (init('dir') == 'certs') {
@@ -164,20 +161,26 @@ try {
 		} else {
 			throw new Exception(__('Suppression invalide', __FILE__));
 		}
-		if (!file_exists($uploaddir . '/' . $certname)) {
+		if (!file_exists($uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de supprimer le fichier, car il n\'existe pas.', __FILE__));
 		} else {
 			// Check if cert is used by a Broker!
 			foreach (jMQTT::getBrokers() as $broker)
-				if ($broker->isCertUsed($certname))
-					throw new Exception(__('Impossible de supprimer le fichier, car il est utilisé par le Broker "'.$broker->getName().'".', __FILE__));
-			unlink($uploaddir . '/' . $certname);
+				if ($broker->isCertUsed($fname))
+					throw new Exception(sprintf(__('Impossible de supprimer le fichier, car il est utilisé par le Broker %s.', __FILE__), $broker->getName()));
+			unlink($uploaddir . '/' . $fname);
 		}
+		jMQTT::logger('info', sprintf(__("Fichier %s supprimé", __FILE__), $fname));
+		ajax::success();
+	}
+
+	if (init('action') == 'sendLoglevel') {
+		jMQTT::toDaemon_setLogLevel();
 		ajax::success();
 	}
 
 /*    if (init('action') == 'filelist') {
-		log::add('jMQTT', 'info', 'file list "' . init('dir') . '"');
+		// jMQTT::logger('info', 'filelist: ' . init('dir'));
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 			$patern = array('.json');
@@ -196,7 +199,7 @@ try {
 	}
 */
 
-	throw new Exception(__('Aucune methode Ajax correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

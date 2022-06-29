@@ -27,7 +27,7 @@ if (!isConnect()) {
 <div class="eventDisplayMini"></div>
 <form class="form-horizontal">
 	<fieldset>
-		<legend><i class="fas fa-cog"></i>{{installation}}</legend>
+		<legend><i class="fas fa-cog"></i>{{Installation}}</legend>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Installer Mosquitto localement}}</label>
 			<div class="col-sm-3">
@@ -35,24 +35,11 @@ if (!isConnect()) {
 					checked />
 			</div>
 		</div>
-		<legend><i class="fas fa-university"></i>{{Démons}}</legend>
-		<div class="form-group">
-			<label class="col-sm-5 control-label">{{Port démon python}}</label>
-			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="pythonsocketport" placeholder="<?php echo jMQTT::DEFAULT_PYTHON_PORT; ?>"/>
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-sm-5 control-label">{{Port démon websocket}}</label>
-			<div class="col-sm-3">
-				<input class="configKey form-control" data-l1key="websocketport" placeholder="<?php echo jMQTT::DEFAULT_WEBSOCKET_PORT; ?>"/>
-			</div>
-		</div>
 		<legend><i class="fas fa-key"></i>{{Certificats}}</legend>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Téléverser un nouveau Certificat}}</label>
 			<div class="col-sm-3">
-				<span class="btn btn-success btn-sm btn-file" style="position:relative;" title="Téléverser un Certificat">
+				<span class="btn btn-success btn-sm btn-file" style="position:relative;" title="{{Téléverser un Certificat}}">
 					<i class="fas fa-upload"></i><input id="mqttConfUpFile" type="file" name="file" accept=".crt, .pem, .key" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
 				</span>
 			</div>
@@ -71,7 +58,7 @@ if (!isConnect()) {
 				</select>
 			</div>
 			<div class="col-sm-3">
-				<span class="btn btn-danger btn-sm btn-trash mqttDeleteFile" style="position:relative;margin-top: 2px;" title="Supprimer le fichier selectionné">
+				<span class="btn btn-danger btn-sm btn-trash mqttDeleteFile" style="position:relative;margin-top: 2px;" title="{{Supprimer le fichier selectionné}}">
 					<i class="fas fa-trash"></i>
 				</span>
 			</div>
@@ -134,11 +121,41 @@ $('.mqttDeleteFile').on('click', function (){
 					$('#fTlsCaFile option[value="'+oriname+'"]').remove(); // 3x black magic in Broker Tab
 					$('#fTlsClientCertFile option[value="'+oriname+'"]').remove();
 					$('#fTlsClientKeyFile option[value="'+oriname+'"]').remove();
-					$('.eventDisplayMini').showAlert({message: 'Suppression effectuée' ,level: 'success'});
+					$('.eventDisplayMini').showAlert({message: '{{Suppression effectuée}}' ,level: 'success'});
 				}
 				// setTimeout(function() { $('.eventDisplayMini').hideAlert() }, 3000);
 			}
 		});
 	}
 });
+
+$btSave = $('#bt_savePluginLogConfig');
+if (!$btSave.hasClass('jmqttLog')) {
+	$btSave.addClass('jmqttLog');
+	$btSave.on('click', function() {
+		if ($('#span_plugin_id').text() == 'jMQTT') {
+			sleep(1000);
+			$.ajax({
+				type: "POST",
+				url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+				data: {
+					action: "sendLoglevel"
+				},
+				global : false,
+				dataType: 'json',
+				error: function(request, status, error) {
+					handleAjaxError(request, status, error);
+				},
+				success: function(data) {
+					if (data.state == 'ok') {
+						$('.eventDisplayMini').showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}" ,level: 'success'});
+					}
+					// setTimeout(function() { $('.eventDisplayMini').hideAlert() }, 3000);
+				}
+			});
+		}
+	});
+};
+
+
 </script>
