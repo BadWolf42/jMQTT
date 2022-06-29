@@ -37,9 +37,9 @@ fi
 step 20 "Install Composer"
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 cd ../resources
-try php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+try wget 'https://getcomposer.org/installer' -O composer-setup.php
 try php composer-setup.php
-try php -r "unlink('composer-setup.php');"
+try rm -f composer-setup.php
 
 step 30 "Install JsonPath-PHP library"
 try sudo -u www-data php ./composer.phar update --working-dir=./JsonPath-PHP

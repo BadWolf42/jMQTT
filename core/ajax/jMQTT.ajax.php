@@ -26,7 +26,6 @@ try {
 	define('PATH_TPLTS', __DIR__ . '/../../data/template');
 
 	if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
-		// jMQTT::logger('info', 'file upload "' . $_FILES['file']['name'] . '"');
 		if (!isset($_FILES['file'])) {
 			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
@@ -50,23 +49,25 @@ try {
 		if (!file_exists($uploaddir)) {
 			throw new Exception(__('Répertoire de téléversement non trouvé : ', __FILE__) . $uploaddir);
 		}
-		if (file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
+		$fname = $_FILES['file']['name'];
+		if (file_exists($uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de téléverser le fichier car il existe déjà, par sécurité il faut supprimer le fichier existant avant de le remplacer.', __FILE__));
 		}
-		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $_FILES['file']['name'])) {
+		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
 		}
-		if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
+		if (!file_exists($uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
 		}
 		// After template file imported
 		if (init('dir') == 'template') {
 			// Adapt template for the new jsonPath field
-			jMQTT::templateSplitJsonPathByFile($_FILES['file']['name']);
+			jMQTT::templateSplitJsonPathByFile($fname);
 			// Adapt template for the topic in configuration
-			jMQTT::moveTopicToConfigurationByFile($_FILES['file']['name']);
+			jMQTT::moveTopicToConfigurationByFile($fname);
 		}
-		ajax::success($_FILES['file']['name']);
+		jMQTT::logger('info', sprintf(__("Template %s correctement téléversée", __FILE__), $fname));
+		ajax::success($fname);
 	}
 
 	ajax::init();
@@ -136,9 +137,6 @@ try {
 	}
 
 	if (init('action') == 'moveToBroker') {
-		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
 		/** @var jMQTT $eqpt */
 		$eqpt = jMQTT::byId(init('id'));
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
@@ -155,8 +153,7 @@ try {
 	}
 
 	if (init('action') == 'filedelete') {
-		$certname = init('name');
-		// jMQTT::logger('info', 'filedelete: ' . $certname);
+		$fname = init('name');
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 		} elseif (init('dir') == 'certs') {
@@ -164,26 +161,26 @@ try {
 		} else {
 			throw new Exception(__('Suppression invalide', __FILE__));
 		}
-		if (!file_exists($uploaddir . '/' . $certname)) {
+		if (!file_exists($uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de supprimer le fichier, car il n\'existe pas.', __FILE__));
 		} else {
 			// Check if cert is used by a Broker!
 			foreach (jMQTT::getBrokers() as $broker)
-				if ($broker->isCertUsed($certname))
+				if ($broker->isCertUsed($fname))
 					throw new Exception(sprintf(__('Impossible de supprimer le fichier, car il est utilisé par le Broker %s.', __FILE__), $broker->getName()));
-			unlink($uploaddir . '/' . $certname);
+			unlink($uploaddir . '/' . $fname);
 		}
+		jMQTT::logger('info', sprintf(__("Fichier %s supprimé", __FILE__), $fname));
 		ajax::success();
 	}
 
 	if (init('action') == 'sendLoglevel') {
-		// jMQTT::logger('info', 'sendLoglevel');
-		jMQTT::send_loglevel();
+		jMQTT::toDaemon_setLogLevel();
 		ajax::success();
 	}
 
 /*    if (init('action') == 'filelist') {
-		jMQTT::logger('info', 'filelist: ' . init('dir'));
+		// jMQTT::logger('info', 'filelist: ' . init('dir'));
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
 			$patern = array('.json');

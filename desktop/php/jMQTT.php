@@ -65,20 +65,9 @@ function displayEqLogicCard($eqL, $node_images) {
 		$file = 'node_broker.svg';
 		$st = $eqL->getMqttClientState();
 		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px;color:'.jMQTT::getBrokerColorFromState($st).'"></i>';
-	}
-	else {
+	} else {
 		$icon = 'node_' . $eqL->getConfiguration('icone');
-		$test = $icon . '.svg';
-		$file = 'node_.png';
-		if (in_array($test, $node_images)) {
-			$file = $test;
-		}
-		else {
-			$test = $icon . '.png';
-			if (in_array($test, $node_images)) {
-				$file = $test;
-			}
-		}
+		$file = (in_array($icon.'.svg', $node_images) ? $icon.'.svg' : (in_array($icon.'.png', $node_images) ? $icon.'.png' : 'node_.png'));
 	}
 
 	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
@@ -94,12 +83,14 @@ function displayEqLogicCard($eqL, $node_images) {
 <div id="div_inclusionModeMsg"></div>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
-		<input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />
 		<legend><i class="fas fa-cog"></i> {{Gestion plugin et brokers}}</legend>
 		<div class="eqLogicThumbnailContainer">
 		<?php
 		displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
 		displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
+		if (isset($_GET['debug']))
+		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
+			displayActionCard('{{Debug}}', 'fa-cog', 'data-action="debugJMQTT"', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
 		displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="add_jmqtt"', 'logoSecondary');
 		foreach ($eqBrokers as $eqB) {
@@ -107,7 +98,14 @@ function displayEqLogicCard($eqL, $node_images) {
 		}
 		?>
 		</div>
-	
+		<div class="input-group" style="margin:5px;">
+			<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">
+			<div class="input-group-btn">
+				<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>
+				<!-- TODO FIXME mode tableau incompatible avec la classe eqLogicDisplayAction (servant à l'alignement des eqLogicDisplay et eqLogicAction) -->
+				<!--<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>-->
+			</div>
+		</div>
 		<?php
 		foreach ($eqBrokers as $eqB) {
 			echo '<legend><i class="fas fa-table"></i> ';

@@ -39,35 +39,43 @@ foreach($messages as $message) {					// Iterate through the messages
 		jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Paramètre cmd manquant dans le message: '%2\$s'", __FILE__), $ruid, json_encode($message)));
 		continue;
 	}
+	$authorized = jMQTT::valid_uid($ruid);			// Evaluate each time capability of this daemon to send data to Jeedom
+	if (!$authorized && ($message['cmd'] != 'daemonUp')) { // Check if daemon is in a correct state or deny the message
+		if (is_null($authorized))
+			jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Impossible d'autoriser la cmd '%2\$s' avant la commande 'daemonUp': '%3\$s'", __FILE__), $ruid, $message['cmd'], json_encode($message)));
+		else
+			jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Message refusé (démon invalide) : '%2\$s'", __FILE__), $ruid, json_encode($message)));
+		continue;
+	}
 	switch ($message['cmd']) {						// Handle commands from daemon
 		case 'messageIn':
-			if (!isset($message['id']) || !isset($message['topic']) || !isset($message['payload']) || !isset($message['qos']) || !isset($message['retain']))
+			if (!isset($message['id']) || !isset($message['topic']) || !isset($message['payload']))
 				break;
-			jMQTT::on_mqtt_message($message['id'], $message['topic'], $message['payload'], $message['qos'], $message['retain']);
+			jMQTT::fromDaemon_msgIn($message['id'], $message['topic'], $message['payload']);
 			continue 2;								// Next foreach iteration
 
 		case 'brokerUp':								// {"cmd":"brokerUp", "id":string}
 			if (!isset($message['id']))
 				break;
-			jMQTT::on_mqtt_connect($message['id']);
+			jMQTT::fromDaemon_brkUp($message['id']);
 			continue 2;								// Next foreach iteration
 
 		case 'brokerDown':								// {"cmd":"brokerDown", "id":string}
 			if (!isset($message['id']))
 				break;
-			jMQTT::on_mqtt_disconnect($message['id']);
+			jMQTT::fromDaemon_brkDown($message['id']);
 			continue 2;								// Next foreach iteration
 
 		case 'hb':									// {"cmd":"hb"}
-			// jMQTT::fromDaemon_hb($ruid);
+			jMQTT::fromDaemon_hb($ruid);
 			continue 2;								// Next foreach iteration
 
 		case 'daemonUp':							// {"cmd":"daemonUp"}
-			jMQTT::on_daemon_connect();
+			jMQTT::fromDaemon_daemonUp($ruid);
 			continue 2;								// Next foreach iteration
 
 		case 'daemonDown':							// {"cmd":"daemonDown"}
-			jMQTT::on_daemon_disconnect();
+			jMQTT::fromDaemon_daemonDown($ruid);
 			continue 2;								// Next foreach iteration
 
 		default:
@@ -77,50 +85,14 @@ foreach($messages as $message) {					// Iterate through the messages
 
 // TODO: Later
 /*
-	$authorized = jMQTT::valid_uid($ruid);			// Evaluate each time capability of this daemon to send data to Jeedom
-	if (!$authorized && ($message['cmd'] != 'daemonUp')) { // Check if daemon is in a correct state or deny the message
-		if (is_null($authorized))
-			jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Impossible d'autoriser la cmd '%2\$s' avant 'daemonUp': '%3\$s'", __FILE__), $ruid, $message['cmd'], json_encode($message)));
-		else
-			jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Message refusé (démon invalide) : '%2\$s'", __FILE__), $ruid, json_encode($message)));
-		continue;
-	}
-	switch ($message['cmd']) {						// Handle commands from daemon
 		case 'value':								// {"cmd":"value", "c":[string], "v":string} #BrkId, cmdIds, value
 			if (!isset($message['c']) || !isset($message['v']))
 				break;
 			foreach($message['c'] as $cmdId)
 				jMQTT::fromDaemon_value($cmdId, $message['v']);
 			continue 2;								// Next foreach iteration
-		case 'msgIn':								// {"cmd":"msgIn", "b":string, "t":string, "p":string  *(* , "r":int, "r":bool  *)*  }
-			if (!isset($message['b']) || !isset($message['t']) || !isset($message['p']))
-				break;
-			jMQTT::fromDaemon_msgIn($message['b'], $message['t'], $message['p']);
-			continue 2;								// Next foreach iteration
-		case 'hb':									// {"cmd":"hb"}
-			jMQTT::fromDaemon_hb($ruid);
-			continue 2;								// Next foreach iteration
-		case 'brkUp':								// {"cmd":"brkUp", "brkId":string}
-			if (!isset($message['brkId']))
-				break;
-			jMQTT::fromDaemon_brkUp($message['brkId']);
-			continue 2;								// Next foreach iteration
-		case 'brkDown':								// {"cmd":"brkDown", "brkId":string}
-			if (!isset($message['brkId']))
-				break;
-			jMQTT::fromDaemon_brkDown($message['brkId']);
-			continue 2;								// Next foreach iteration
-		case 'daemonUp':							// {"cmd":"daemonUp"}
-			echo jMQTT::fromDaemon_daemonUp($ruid);
-			continue 2;								// Next foreach iteration
-		case 'daemonDown':							// {"cmd":"daemonDown"}
-			jMQTT::fromDaemon_daemonDown($ruid);
-			continue 2;								// Next foreach iteration
-		default:
-			jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Commande inconnue dans le message: '%2\$s'", __FILE__), $ruid, json_encode($message)));
-			continue 2;								// Next foreach iteration
-	}
 */
+
 	// All cmds the bad parameters are handled here
 	jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Paramètre manquant pour la cmd '%2\$s' : '%3\$s'", __FILE__), $ruid, $message['cmd'], json_encode($message)));
 }
