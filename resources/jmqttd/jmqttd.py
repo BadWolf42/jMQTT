@@ -45,7 +45,7 @@ def validate_params(msg, constraints):
 		if key not in msg or msg[key] == '':
 			if mandatory:
 				if default_val is None:
-					logging.error('BrkId: %s : Cmd: %s -> missing parameter "%s" dump=%s', bid, cmd, key, json.dumps(msg))
+					logging.error('Cmd "%s" is missing parameter "%s" dump=%s', bid, cmd, key, json.dumps(msg))
 					res = False
 				else:
 					msg[key] = default_val
@@ -56,7 +56,7 @@ def validate_params(msg, constraints):
 				else:
 					msg[key] = expected_type(msg[key])
 			except:
-				logging.error('BrkId: %s : Cmd: %s -> Incorrect parameter "%s" (is %s, should be %s) dump=%s', bid, cmd, key, type(msg[key]), expected_type, json.dumps(msg))
+				logging.error('Cmd "%s" has incorrect parameter "%s" (is %s, should be %s) dump=%s', bid, cmd, key, type(msg[key]), expected_type, json.dumps(msg))
 				res = False
 	return res
 
@@ -119,8 +119,8 @@ class Main():
 		# Parsing arguments
 		parser = argparse.ArgumentParser(description='Daemon for Jeedom plugin')
 		parser.add_argument("--loglevel",   help="Log Level for the daemon", type=str)
-		parser.add_argument("--socketport", help="Socketport for server",    type=int)
-		parser.add_argument("--callback",   help="Comm. url to Jeedom",      type=str)
+		parser.add_argument("--socketport", help="Specify the port to open", type=int)
+		parser.add_argument("--callback",   help="Callback url to Jeedom",   type=str)
 		parser.add_argument("--apikey",     help="Apikey",                   type=str)
 		parser.add_argument("--pid",        help="Pid file",                 type=str)
 		args = parser.parse_args()
@@ -183,9 +183,9 @@ class Main():
 			self.jcom.receiver_start()
 		except:
 			if self.log.isEnabledFor(logging.DEBUG):
-				self.log.exception('Open Comm   : Failed to Open the communication channel to get instructions FROM Jeedom')
+				self.log.exception('Failed to Open the communication channel to get instructions FROM Jeedom')
 			else:
-				self.log.critical('Open Comm   : Failed to Open the communication channel to get instructions FROM Jeedom')
+				self.log.critical('Failed to Open the communication channel to get instructions FROM Jeedom')
 			return False
 		if self.jcom.send_test(): # Test communication channel TO Jeedom
 			self.jcom.sender_start()									# Start sender
@@ -213,17 +213,17 @@ class Main():
 			try:
 				jeedom_raw = self.jcom.qFromJ.get(block=False)
 				jeedom_msg = jeedom_raw.decode('utf-8')
-				self.log.debug('Run         : Received from Jeedom: %s', jeedom_msg)
+				self.log.debug('Received from Jeedom: %s', jeedom_msg)
 				message = json.loads(jeedom_msg)
 			except queue.Empty:
 				continue # More chance next time
 			except:
 				if self.log.isEnabledFor(logging.DEBUG):
-					self.log.exception('Run         : Unable to get a message or decode JSON')
+					self.log.exception('Unable to get a message or decode JSON')
 				continue # Let's retry
 			# Check API key
 			if 'apikey' not in message or message['apikey'] != self._apikey:
-				self.log.error('Run         : Invalid apikey from socket : %s', message)
+				self.log.error('Invalid apikey from socket : %s', message)
 				continue # Ignore unauthorized messages
 
 			# Check for mandatory parameters before handling the message
@@ -248,30 +248,30 @@ class Main():
 			if 'tlscafile' not in message or message['tlscafile'] == '':
 				message['tlscafile'] = None
 			elif not os.access(message['tlscafile'], os.R_OK):
-				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Unable to read CA file "%s"', message['id'], message['tlscafile'])
+				self.log.warning('Unable to read CA file "%s" for Broker %s', message['tlscafile'], message['id'])
 				return
 			if 'tlsclicertfile' not in message or message['tlsclicertfile'] == '':
 				message['tlsclicertfile'] = None
 			elif not os.access(message['tlsclicertfile'], os.R_OK):
-				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Unable to read Client Certificate file "%s"', message['id'], message['tlsclicertfile'])
+				self.log.warning('Unable to read Client Certificate file "%s" for Broker %s', message['tlsclicertfile'], message['id'])
 				return
 			if 'tlsclikeyfile' not in message or message['tlsclikeyfile'] == '':
 				message['tlsclikeyfile'] = None
 			elif not os.access(message['tlsclikeyfile'], os.R_OK):
-				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Unable to read Client Key file "%s"', message['id'], message['tlsclikeyfile'])
+				self.log.warning('Unable to read Client Key file "%s" for Broker %s', message['tlsclikeyfile'], message['id'])
 				return
 			if message['tlsclicertfile'] is None and message['tlsclikeyfile'] is not None:
-				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Client Certificate is defined but Client Key is NOT', message['id'])
+				self.log.warning('Client Certificate is defined but Client Key is NOT for Broker %s', message['id'])
 				return
 			if message['tlsclicertfile'] is not None and message['tlsclikeyfile'] is None:
-				self.log.warning('BrkId: % 4s : Cmd:    newMqttClient -> Client Key is defined but Client Certificate is NOT', message['id'])
+				self.log.warning('Client Key is defined but Client Certificate is NOT for Broker %s', message['id'])
 				return
 		# if jmqttclient already exists then restart it
 		if message['id'] in self.jmqttclients:
-			self.log.info('BrkId: % 4s : Cmd:    newMqttClient -> Client already exists. Restarting it.', message['id'])
+			self.log.info('Client already exists for Broker %s. Restarting it.', message['id'])
 			self.jmqttclients[message['id']].restart(message)
 		else: # create requested jmqttclient
-			self.log.info('BrkId: % 4s : Cmd:    newMqttClient -> Creating Client.', message['id'])
+			self.log.info('Creating Client for Broker %s.', message['id'])
 			newjMqttClient = jMqttClient(self.jcom, message)
 			newjMqttClient.start()
 			self.jmqttclients[message['id']] = newjMqttClient
@@ -279,11 +279,11 @@ class Main():
 	def h_delClient(self, message):
 		# if jmqttclient exists then remove it
 		if message['id'] in self.jmqttclients:
-			self.log.info('BrkId: % 4s : Starting Client removal', message['id'])
+			self.log.info('Starting removal of Client for Broker %s', message['id'])
 			self.jmqttclients[message['id']].stop()
 			del self.jmqttclients[message['id']]
 		else:
-			self.log.info('BrkId: % 4s : Cmd: removeMqttClient -> No client found with this Broker', message['id'])
+			self.log.info('No client found for Broker %s', message['id'])
 
 	def h_subTopic(self, message):
 		# Check for                  key, mandatory, default_val, expected_type
@@ -293,7 +293,7 @@ class Main():
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].subscribe_topic(message['topic'], message['qos'])
 		else:
-			self.log.debug('BrkId: % 4s : Cmd:   subscribeTopic -> No client found with this Broker', message['id'])
+			self.log.debug('No client found for Broker %s', message['id'])
 
 	def h_unsubTopic(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
@@ -302,7 +302,7 @@ class Main():
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].unsubscribe_topic(message['topic'])
 		else:
-			self.log.debug('BrkId: % 4s : Cmd: unsubscribeTopic -> No client found with this Broker', message['id'])
+			self.log.debug('No client found for Broker %s', message['id'])
 
 	def h_messageOut(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
@@ -313,19 +313,19 @@ class Main():
 			return
 		# Supplementary test on qos
 		if message['qos'] < 0 or message['qos'] > 2:
-			self.log.error('BrkId: % 4s : Cmd:       messageOut -> wrong value for qos "%d"', message['id'], message['qos'])
+			self.log.error('Wrong value for qos "%d" for Broker %s', message['qos'], message['id'])
 			return
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].publish(message['topic'], message['payload'], message['qos'], message['retain'])
 		else:
-			self.log.debug('BrkId: % 4s : Cmd:       messageOut -> No client found with this Broker', message['id'])
+			self.log.debug('No client found for Broker %s', message['id'])
 
 	def h_logLevel(self, message):
 		self.set_log_level(message['level'])
 
 	def h_unknown(self, message):
 		# Message when Cmd is not found
-		self.log.debug('BrkId: % 4s : Cmd: %16s -> Unknown cmd dump="%s"', message['id'], message['cmd'], json.dumps(message))
+		self.log.debug('Unknown cmd "%16s" dump="%s"', message['cmd'], json.dumps(message))
 
 	def shutdown(self):
 		self.log.info('Stop jMQTT python daemon')
@@ -358,7 +358,7 @@ class Main():
 
 		# If possible Send daemon Down signal and stop sender
 		if self.jcom is not None:
-			self.log.debug('Run         : Sent Daemon Down signal to Jeedom')
+			self.log.debug('Sent Daemon Down signal to Jeedom')
 			# self.jcom.send_async({"cmd":"daemonDown"})
 			self.jcom.sender_stop()
 			self.jcom.send([{"cmd":"daemonDown"}])

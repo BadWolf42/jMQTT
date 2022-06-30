@@ -26,6 +26,7 @@
  - Ajout de signaux de vie entre le démon et Jeedom
  - Ajout et nettoyage des symboles de traduction
  - Préparatifs pour le mode tableau de la vue des équipements
+ - Simplification des logs du démon
  - Mise à jour des documentations
  - Corrections syntaxiques et orthographiques
 
