@@ -158,6 +158,8 @@ class jMqttClient:
 		try:
 			self.mqttclient.connect(self.mqtthostname, self.mqttport, 30)
 			self.mqttclient.loop_start()
+			if self.mqttclient._thread is not None:
+				self.mqttclient._thread.name = 'Brk' + self.id + 'Th'
 		except:
 			if self._log.getLogger().isEnabledFor(logging.DEBUG):
 				self._log.exception('BrkId: % 4s : MqttClient.start() Exception', self.id)
