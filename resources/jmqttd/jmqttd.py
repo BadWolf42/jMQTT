@@ -80,12 +80,12 @@ class Main():
 		self.has_stopped.set()
 
 		# Tables for the meal
-		self.message_map  = {'newMqttClient':   self.handle_newMqttClient,
-							'removeMqttClient': self.handle_removeMqttClient,
-							'subscribeTopic':   self.handle_subscribeTopic,
-							'unsubscribeTopic': self.handle_unsubscribeTopic,
-							'messageOut':       self.handle_messageOut,
-							'loglevel':         self.handle_loglevel}
+		self.message_map  = {'newMqttClient':   self.h_newClient,
+							'removeMqttClient': self.h_delClient,
+							'subscribeTopic':   self.h_subTopic,
+							'unsubscribeTopic': self.h_unsubTopic,
+							'messageOut':       self.h_messageOut,
+							'loglevel':         self.h_logLevel}
 		self.jmqttclients = {}
 		self.jcom         = None
 
@@ -233,10 +233,10 @@ class Main():
 				continue
 
 			# Register the call
-			self.message_map.get(message['cmd'], self.handle_unknown)(message)
+			self.message_map.get(message['cmd'], self.h_unknown)(message)
 		self.has_stopped.set()
 
-	def handle_newMqttClient(self, message):
+	def h_newClient(self, message):
 		# Check for                      key, mandatory, default_val, expected_type
 		if not validate_params(message, [['callback',      True,        None, str],
 										 ['hostname',      True,        None, str],
@@ -276,7 +276,7 @@ class Main():
 			newjMqttClient.start()
 			self.jmqttclients[message['id']] = newjMqttClient
 
-	def handle_removeMqttClient(self, message):
+	def h_delClient(self, message):
 		# if jmqttclient exists then remove it
 		if message['id'] in self.jmqttclients:
 			self.log.info('BrkId: % 4s : Starting Client removal', message['id'])
@@ -285,7 +285,7 @@ class Main():
 		else:
 			self.log.info('BrkId: % 4s : Cmd: removeMqttClient -> No client found with this Broker', message['id'])
 
-	def handle_subscribeTopic(self, message):
+	def h_subTopic(self, message):
 		# Check for                  key, mandatory, default_val, expected_type
 		if not validate_params(message, [['topic',     True,        None, str],
 										 ['qos',       True,        None, int]]):
@@ -295,7 +295,7 @@ class Main():
 		else:
 			self.log.debug('BrkId: % 4s : Cmd:   subscribeTopic -> No client found with this Broker', message['id'])
 
-	def handle_unsubscribeTopic(self, message):
+	def h_unsubTopic(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
 		if not validate_params(message, [['topic',      True,        None, str]]):
 			return
@@ -304,7 +304,7 @@ class Main():
 		else:
 			self.log.debug('BrkId: % 4s : Cmd: unsubscribeTopic -> No client found with this Broker', message['id'])
 
-	def handle_messageOut(self, message):
+	def h_messageOut(self, message):
 		# Check for                   key, mandatory, default_val, expected_type
 		if not validate_params(message, [['topic',      True,        None, str],
 										 ['payload',    True,          '', str],
@@ -320,10 +320,10 @@ class Main():
 		else:
 			self.log.debug('BrkId: % 4s : Cmd:       messageOut -> No client found with this Broker', message['id'])
 
-	def handle_loglevel(self, message):
+	def h_logLevel(self, message):
 		self.set_log_level(message['level'])
 
-	def handle_unknown(self, message):
+	def h_unknown(self, message):
 		# Message when Cmd is not found
 		self.log.debug('BrkId: % 4s : Cmd: %16s -> Unknown cmd dump="%s"', message['id'], message['cmd'], json.dumps(message))
 
