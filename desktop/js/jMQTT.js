@@ -575,6 +575,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 				if ($(this).val().startsWith(oldTopic))
 					$(this).val($(this).val().replace(oldTopic, newTopic));
 			});
+			modifyWithoutSave = true;
 		}}
 	});
 });
