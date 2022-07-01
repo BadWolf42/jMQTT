@@ -138,13 +138,13 @@ $(document).ready(function() {
 // End of DELETEME
 });
 
-$("#bt_addMQTTInfo").on('click', function(event) {
+$('.eqLogicAction[data-action=addMQTTInfo]').on('click', function(event) {
 	var _cmd = {type: 'info'};
 	addCmdToTable(_cmd);
 	modifyWithoutSave = true;
 });
 
-$("#bt_addMQTTAction").on('click', function(event) {
+$('.eqLogicAction[data-action=addMQTTAction]').on('click', function(event) {
 	var _cmd = {type: 'action'};
 	addCmdToTable(_cmd);
 	modifyWithoutSave = true;
@@ -182,16 +182,16 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 	});
 });
 
-$('#bt_classic').on('click', function() {
+$('.eqLogicAction[data-action=classicView]').on('click', function() {
 	refreshEqLogicPage();
-	$('#bt_classic').removeClass('btn-default').addClass('btn-primary');
-	$('#bt_json').removeClass('btn-primary').addClass('btn-default');
+	$('.eqLogicAction[data-action=classicView]').removeClass('btn-default').addClass('btn-primary');
+	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-primary').addClass('btn-default');
 });
 
-$('#bt_json').on('click', function() {
+$('.eqLogicAction[data-action=jsonView]').on('click', function() {
 	refreshEqLogicPage();
-	$('#bt_json').removeClass('btn-default').addClass('btn-primary');
-	$('#bt_classic').removeClass('btn-primary').addClass('btn-default');
+	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-default').addClass('btn-primary');
+	$('.eqLogicAction[data-action=classicView]').removeClass('btn-primary').addClass('btn-default');
 });
 
 $('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
@@ -221,7 +221,7 @@ $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
 /**
  * Add jMQTT equipment callback
  */
-$('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
+$('.eqLogicAction[data-action=add_jmqtt]').off('click').on('click', function () {
 	if (typeof $(this).attr('brkId') === 'undefined') {
 		var eqL = {type: 'broker', brkId: -1};
 		var prompt = "{{Nom du broker ?}}";
@@ -249,7 +249,7 @@ $('.eqLogicAction[data-action=add_jmqtt]').on('click', function () {
 	});
 });
 
-$('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
+$('.eqLogicAction[data-action=remove_jmqtt]').off('click').on('click', function () {
 	function remove_jmqtt() {
 		jeedom.eqLogic.remove({
 			type: eqType,
@@ -265,7 +265,6 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
 			}
 		});
 	}
-
 	if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
 		var typ = $('.eqLogicAttr[data-l2key=type]').value() == 'broker' ? 'broker' : 'module';
 		bootbox.confirm('{{Etes-vous sûr de vouloir supprimer}}' + ' ' +
@@ -290,7 +289,7 @@ $('.eqLogicAction[data-action=remove_jmqtt]').on('click', function () {
 	}
 });
 
-$('#mqtttopic').on('dblclick', function() {
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
 	if($(this).val() == "") {
 		var brokername = $('#broker option:selected').text();
 		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
@@ -298,7 +297,7 @@ $('#mqtttopic').on('dblclick', function() {
 	}
 });
 
-$('.eqLogicAction[data-action=move_broker]').on('click', function () {
+$('.eqLogicAction[data-action=move_broker]').off('click').on('click', function () {
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	var brk_id = $('#broker').val();
 	if (id != undefined && brk_id != undefined) {
@@ -322,7 +321,7 @@ $('.eqLogicAction[data-action=move_broker]').on('click', function () {
 	}
 });
 
-$('.applyTemplate').off('click').on('click', function () {
+$('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function () {
 	callPluginAjax({
 		data: {
 			action: "getTemplateList",
@@ -368,7 +367,7 @@ $('.applyTemplate').off('click').on('click', function () {
 	});
 });
 
-$('.createTemplate').off('click').on('click', function () {
+$('.eqLogicAction[data-action=createTemplate]').off('click').on('click', function () {
 	bootbox.prompt({
 		title: "{{Nom du nouveau template ?}}",
 		callback: function (result) {
@@ -399,7 +398,7 @@ function printEqLogic(_eqLogic) {
 	var n_cmd = 1;
 
 	// Is the JSON view is active
-	var is_json_view = $('#bt_json.active').length != 0;
+	var is_json_view = $('.eqLogicAction[data-action=jsonView].active').length != 0;
 
 	// JSON view button is active
 	if (is_json_view) {
@@ -510,7 +509,7 @@ function printEqLogic(_eqLogic) {
 			//console.log('recursiveAddCmdFromTopic: ' + topic + jsonPath);
 			var parent_id = '';
 
-			// For commands deriving from a JSON payload (i.e. jsonPath is not undefined or empty), 
+			// For commands deriving from a JSON payload (i.e. jsonPath is not undefined or empty),
 			// start the addition from the father command
 			if (jsonPath) {
 				// Call recursively this method with the topic and no jsonPath
@@ -692,7 +691,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	// Is the JSON view is active
-	var is_json_view = $('#bt_json.active').length != 0;
+	var is_json_view = $('.eqLogicAction[data-action=jsonView].active').length != 0;
 
 	if (!isset(_cmd.tree_id)) {
 		//looking for all tree-id, keep part before the first dot, convert to Int

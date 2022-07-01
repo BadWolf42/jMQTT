@@ -148,8 +148,8 @@ function displayEqLogicCard($eqL, $node_images) {
 	<div class="col-xs-12 eqLogic" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-warning btn-sm eqLogicAction applyTemplate typ-std roundedLeft"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction createTemplate typ-std"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
@@ -170,15 +170,11 @@ function displayEqLogicCard($eqL, $node_images) {
 		</div>
 		<div id="menu-bar" style="display: none;">
 			<div class="form-actions">
-				<a class="btn btn-default btn-sm toDisable" id="bt_addMQTTAction"><i class="fas fa-plus-circle"></i>
-					{{Ajouter une commande action}}</a>
-				<a class="btn btn-default btn-sm toDisable" id="bt_addMQTTInfo"><i class="fas fa-plus-circle"></i>
-					{{Ajouter une commande info}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction toDisable" data-action="addMQTTAction"><i class="fas fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction toDisable" data-action="addMQTTInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une commande info}}</a>
 				<div class="btn-group pull-right" data-toggle="buttons">
-					<a id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off"
-						checked><i class="fas fa-list-alt"></i> Classic </a> <a id="bt_json"
-						class="btn btn-sm btn-default"><input type="radio" autocomplete="off"><i class="fas fa-sitemap"></i>
-						JSON </a>
+					<a class="btn btn-primary btn-sm eqLogicAction active" data-action="classicView"><input type="radio" autocomplete="off" checked><i class="fas fa-list-alt"></i> Classic </a>
+					<a class="btn btn-default btn-sm eqLogicAction" data-action="jsonView"><input type="radio" autocomplete="off"><i class="fas fa-sitemap"></i> JSON </a>
 				</div>
 			</div>
 			<hr style="margin-top: 5px; margin-bottom: 5px;">
