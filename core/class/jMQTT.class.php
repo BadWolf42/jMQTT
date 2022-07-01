@@ -657,7 +657,7 @@ class jMQTT extends eqLogic {
 				$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
 			self::toDaemon_subscribe($broker->getId(), $topic, $qos);
 		} else {
-			$this->log('info', sprintf(__("Un autre équipement est déjà inscrit au topic '%2\$s'", __FILE__), $topic));
+			$this->log('info', sprintf(__("Un autre équipement est déjà inscrit au topic '%s'", __FILE__), $topic));
 		}
 	}
 
