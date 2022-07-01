@@ -92,7 +92,7 @@ function displayEqLogicCard($eqL, $node_images) {
 		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
 			displayActionCard('{{Debug}}', 'fa-cog', 'data-action="debugJMQTT"', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
-		displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="add_jmqtt"', 'logoSecondary');
+		displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="addJmqtt"', 'logoSecondary');
 		foreach ($eqBrokers as $eqB) {
 			displayEqLogicCard($eqB, $node_images);
 		}
@@ -117,10 +117,10 @@ function displayEqLogicCard($eqL, $node_images) {
 				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
 			echo ' <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
-			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . 
-				$eqB->getId() . '"', 'logoSecondary');
-			displayActionCard('{{Mode inclusion}}', 'fa-sign-in-alt fa-rotate-90', 'data-action="changeIncludeMode" brkId="' .
-				$eqB->getId() . '"', 'logoSecondary card');
+			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle',
+				'data-action="addJmqtt" brkId="' . $eqB->getId() . '"', 'logoSecondary');
+			displayActionCard('{{Mode inclusion}}', 'fa-sign-in-alt fa-rotate-90',
+				'data-action="changeIncludeMode" brkId="' . $eqB->getId() . '"', 'logoSecondary card');
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 					displayEqLogicCard($eqL, $node_images);
@@ -154,17 +154,14 @@ function displayEqLogicCard($eqL, $node_images) {
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
-				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove_jmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
+				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="removeJmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
 			</div>
 			<div class="input-group pull-left" style="display:inline-flex">
 				<ul class="nav nav-tabs" role="tablist">
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
-					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab"
-						data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
-					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab"
-						aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
-					<li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i
-							class="fas fa-list-alt"></i> {{Commandes}}</a></li>
+					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
+					<li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>

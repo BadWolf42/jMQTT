@@ -138,18 +138,9 @@ $(document).ready(function() {
 // End of DELETEME
 });
 
-$('.eqLogicAction[data-action=addMQTTInfo]').on('click', function(event) {
-	var _cmd = {type: 'info'};
-	addCmdToTable(_cmd);
-	modifyWithoutSave = true;
-});
-
-$('.eqLogicAction[data-action=addMQTTAction]').on('click', function(event) {
-	var _cmd = {type: 'action'};
-	addCmdToTable(_cmd);
-	modifyWithoutSave = true;
-});
-
+/**
+ * Actions on main plugin view
+ */
 $('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Debug jMQTT}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=debug').dialog('open');
@@ -182,18 +173,6 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 	});
 });
 
-$('.eqLogicAction[data-action=classicView]').on('click', function() {
-	refreshEqLogicPage();
-	$('.eqLogicAction[data-action=classicView]').removeClass('btn-default').addClass('btn-primary');
-	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-primary').addClass('btn-default');
-});
-
-$('.eqLogicAction[data-action=jsonView]').on('click', function() {
-	refreshEqLogicPage();
-	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-default').addClass('btn-primary');
-	$('.eqLogicAction[data-action=classicView]').removeClass('btn-primary').addClass('btn-default');
-});
-
 $('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
 	$('#menu-bar').hide();
 });
@@ -204,9 +183,20 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
 	}
 });
 
-$('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').on('change', function(e) {
+/**
+ * Automations on attributes
+ */
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', function(e) {
 	if($(e.target).value() == 'broker') {
 		$('#menu-bar').hide();
+	}
+});
+
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
+	if($(this).val() == "") {
+		var brokername = $('#broker option:selected').text();
+		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
+		$(this).val(brokername+'/'+eqName+'/#');
 	}
 });
 
@@ -219,9 +209,9 @@ $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
 });
 
 /**
- * Add jMQTT equipment callback
+ * Add / Remote / Move jMQTT equipment callback
  */
-$('.eqLogicAction[data-action=add_jmqtt]').off('click').on('click', function () {
+$('.eqLogicAction[data-action=addJmqtt]').off('click').on('click', function () {
 	if (typeof $(this).attr('brkId') === 'undefined') {
 		var eqL = {type: 'broker', brkId: -1};
 		var prompt = "{{Nom du broker ?}}";
@@ -249,8 +239,8 @@ $('.eqLogicAction[data-action=add_jmqtt]').off('click').on('click', function () 
 	});
 });
 
-$('.eqLogicAction[data-action=remove_jmqtt]').off('click').on('click', function () {
-	function remove_jmqtt() {
+$('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function () {
+	function removeJmqtt() {
 		jeedom.eqLogic.remove({
 			type: eqType,
 			id: $('.eqLogicAttr[data-l1key=id]').value(),
@@ -275,54 +265,18 @@ $('.eqLogicAction[data-action=remove_jmqtt]').off('click').on('click', function 
 						'</span></td><td style="vertical-align:middle">' + '{{Tous les équipements associés au broker vont être supprimés}}' +
 						'...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
 						if (result) {
-							remove_jmqtt();
+							removeJmqtt();
 						}
 					});
 				}
 				else {
-					remove_jmqtt();
+					removeJmqtt();
 				}
 			}
 		});
 	} else {
 		$('#div_alert').showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
 	}
-});
-
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
-	if($(this).val() == "") {
-		var brokername = $('#broker option:selected').text();
-		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
-		$(this).val(brokername+'/'+eqName+'/#');
-	}
-});
-
-$('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
-	var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
-	var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
-	if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
-		currentTopic = currentTopic.substr(0,currentTopic.length-1);
-	if (currentTopic.endsWith("/"))
-		currentTopic = currentTopic.substr(0,currentTopic.length-1);
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
-	dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="newTopic"><br><br>';
-	dialog_message += '<label class="control-label">({{Pensez à sauvegarder l\'équipement pour appliquer les modifications}})</label>';
-	bootbox.confirm({
-		title: "{{Modifier en masse les Topics de tout l'équipement}}",
-		message: dialog_message, //"{{Souhaitez-vous remplacer }} '"+oldTopic+"' {{par}} '"+newTopic+"' ?<br />({{Pensez à sauvegarder l'équipement pour appliquer la modification}})",
-		callback: function (valid){ if (valid) {
-			var oldTopic = $("#oldTopic").val();
-			var newTopic = $("#newTopic").val();
-			var mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
-			if (mainTopic.val().startsWith(oldTopic))
-				mainTopic.val(mainTopic.val().replace(oldTopic, newTopic));
-			$('.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
-				if ($(this).val().startsWith(oldTopic))
-					$(this).val($(this).val().replace(oldTopic, newTopic));
-			});
-		}}
-	});
 });
 
 $('.eqLogicAction[data-action=move_broker]').off('click').on('click', function () {
@@ -349,6 +303,9 @@ $('.eqLogicAction[data-action=move_broker]').off('click').on('click', function (
 	}
 });
 
+/**
+ * Actions in top menu on an Equipment
+ */
 $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function () {
 	callPluginAjax({
 		data: {
@@ -414,6 +371,59 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 		}
 	});
 });
+
+$('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
+	var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
+	var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
+	if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
+		currentTopic = currentTopic.substr(0,currentTopic.length-1);
+	if (currentTopic.endsWith("/"))
+		currentTopic = currentTopic.substr(0,currentTopic.length-1);
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
+	dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="newTopic"><br><br>';
+	dialog_message += '<label class="control-label">({{Pensez à sauvegarder l\'équipement pour appliquer les modifications}})</label>';
+	bootbox.confirm({
+		title: "{{Modifier en masse les Topics de tout l'équipement}}",
+		message: dialog_message, //"{{Souhaitez-vous remplacer }} '"+oldTopic+"' {{par}} '"+newTopic+"' ?<br />({{Pensez à sauvegarder l'équipement pour appliquer la modification}})",
+		callback: function (valid){ if (valid) {
+			var oldTopic = $("#oldTopic").val();
+			var newTopic = $("#newTopic").val();
+			var mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
+			if (mainTopic.val().startsWith(oldTopic))
+				mainTopic.val(mainTopic.val().replace(oldTopic, newTopic));
+			$('.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
+				if ($(this).val().startsWith(oldTopic))
+					$(this).val($(this).val().replace(oldTopic, newTopic));
+			});
+		}}
+	});
+});
+
+$('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
+	var _cmd = {type: 'info'};
+	addCmdToTable(_cmd);
+	modifyWithoutSave = true;
+});
+
+$('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
+	var _cmd = {type: 'action'};
+	addCmdToTable(_cmd);
+	modifyWithoutSave = true;
+});
+
+$('.eqLogicAction[data-action=classicView]').on('click', function() {
+	refreshEqLogicPage();
+	$('.eqLogicAction[data-action=classicView]').removeClass('btn-default').addClass('btn-primary');
+	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-primary').addClass('btn-default');
+});
+
+$('.eqLogicAction[data-action=jsonView]').on('click', function() {
+	refreshEqLogicPage();
+	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-default').addClass('btn-primary');
+	$('.eqLogicAction[data-action=classicView]').removeClass('btn-primary').addClass('btn-default');
+});
+
 
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.

@@ -9,6 +9,7 @@
 				<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement jMQTT}}" />
 			</div>
 		</div>
+
 		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label">{{Objet parent}}</label>
 			<div class="col-sm-3">
@@ -22,6 +23,7 @@
 				</select>
 			</div>
 		</div>
+
 		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label">{{Catégorie}}</label>
 			<div class="col-sm-8">
