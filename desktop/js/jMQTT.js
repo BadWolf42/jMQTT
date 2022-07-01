@@ -297,6 +297,34 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 	}
 });
 
+$('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
+	var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
+	var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
+	if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
+		currentTopic = currentTopic.substr(0,currentTopic.length-1);
+	if (currentTopic.endsWith("/"))
+		currentTopic = currentTopic.substr(0,currentTopic.length-1);
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
+	dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="newTopic"><br><br>';
+	dialog_message += '<label class="control-label">({{Pensez à sauvegarder l\'équipement pour appliquer les modifications}})</label>';
+	bootbox.confirm({
+		title: "{{Modifier en masse les Topics de tout l'équipement}}",
+		message: dialog_message, //"{{Souhaitez-vous remplacer }} '"+oldTopic+"' {{par}} '"+newTopic+"' ?<br />({{Pensez à sauvegarder l'équipement pour appliquer la modification}})",
+		callback: function (valid){ if (valid) {
+			var oldTopic = $("#oldTopic").val();
+			var newTopic = $("#newTopic").val();
+			var mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
+			if (mainTopic.val().startsWith(oldTopic))
+				mainTopic.val(mainTopic.val().replace(oldTopic, newTopic));
+			$('.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
+				if ($(this).val().startsWith(oldTopic))
+					$(this).val($(this).val().replace(oldTopic, newTopic));
+			});
+		}}
+	});
+});
+
 $('.eqLogicAction[data-action=move_broker]').off('click').on('click', function () {
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	var brk_id = $('#broker').val();
