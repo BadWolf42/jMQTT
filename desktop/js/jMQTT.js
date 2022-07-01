@@ -14,9 +14,11 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Missing stopPropagation for textarea in command list
-// cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821
-// Will be removed after PR integrated to Jeedom release
+/*
+ * Missing stopPropagation for textarea in command list
+ * cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821
+ * Will be removed after PR integrated to Jeedom release
+ */
 $('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
 	event.stopPropagation()
 });
@@ -49,12 +51,14 @@ function callPluginAjax(_params) {
 	});
 }
 
-// Rebuild the page URL from the current URL
-//
-// filter: array of parameters to be removed from the URL
-// id:     if not empty, it is appended to the URL (in that case, 'id' should be passed within the filter.
-// hash:   if provided, it is appended at the end of the URL (shall contain the # character). If a hash was already
-//         present, it is replaced by that one.
+/*
+ * Rebuild the page URL from the current URL
+ *
+ * filter: array of parameters to be removed from the URL
+ * id:     if not empty, it is appended to the URL (in that case, 'id' should be passed within the filter.
+ * hash:   if provided, it is appended at the end of the URL (shall contain the # character). If a hash was already
+ *         present, it is replaced by that one.
+ */
 function initPluginUrl(filter=['id', 'saveSuccessFull','removeSuccessFull', 'hash'], id='', hash='') {
 	var vars = getUrlVars();
 	var url = 'index.php?';
@@ -77,8 +81,10 @@ function initPluginUrl(filter=['id', 'saveSuccessFull','removeSuccessFull', 'has
 	return url;
 }
 
-// Function to refresh the page
-// Ask confirmation if the page has been modified
+/*
+ * Function to refresh the page
+ * Ask confirmation if the page has been modified
+ */
 function refreshEqLogicPage() {
 	function refreshPage() {
 		if ($('.eqLogicAttr[data-l1key=id]').value() != "") {
@@ -160,7 +166,9 @@ function refreshMqttClientInfo() {
 	});
 }
 
-// Observe attribute change of #brokertab. When tab is made visible, trigger refreshMqttClientInfo
+/*
+ * Observe attribute change of #brokertab. When tab is made visible, trigger refreshMqttClientInfo
+ */
 var observer = new MutationObserver(function(mutations) {
 	mutations.forEach(function(mutation) {
 		if ($("#brokertab").is(':visible')) {
@@ -204,7 +212,7 @@ $(document).ready(function() {
 // End of DELETEME
 });
 
-/**
+/*
  * Actions on main plugin view
  */
 $('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
@@ -250,7 +258,7 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
 });
 
 
-/**
+/*
  * Actions on Broker view
  */
 $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
@@ -280,7 +288,7 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 	}
 });
 
-/**
+/*
  * Automations on Broker view attributes
  */
 // TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]')
@@ -343,7 +351,7 @@ $('#mqttUploadFile').fileupload({
 	}
 });
 
-/**
+/*
  * Automations on Equipment view attributes
  */
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', function(e) {
@@ -379,7 +387,7 @@ $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
 	event.stopPropagation()
 });
 
-/**
+/*
  * Add / Remote / Move jMQTT equipment callback
  */
 $('.eqLogicAction[data-action=addJmqtt]').off('click').on('click', function () {
@@ -474,7 +482,7 @@ $('.eqLogicAction[data-action=move_broker]').off('click').on('click', function (
 	}
 });
 
-/**
+/*
  * Actions in top menu on an Equipment
  */
 $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function () {

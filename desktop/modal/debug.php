@@ -20,8 +20,11 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 ?>
+	<div class="floatingbar">
+		<div style="display: none;" id="md_jmqttDebug"></div>
+	</div>
 
-<div style="display: none;" id="md_jmqttDebug"></div>
+
 <!-- <div class="hasfloatingbar col-xs-12 col-lg-12" style=""> -->
 <!--
 	<div class="floatingbar">
@@ -365,7 +368,8 @@ foreach (cmd::searchConfiguration('', jMQTT::class) as $cmd) {
 	}
 	if ($printCmdB !== '')
 		echo $printCmdH, $printCmdB;
-}*/
+}
+*/
 ?>
 						</tbody>
 					</table>
@@ -658,4 +662,10 @@ METHOD POST
 			</div>
 		</div>
 	</div>
+-->
+<!--
+TODO
+- Stop heatbeat
+- Request Thread Dump
+- Enable/disable listeners
 -->
