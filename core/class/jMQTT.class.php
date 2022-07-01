@@ -615,55 +615,69 @@ class jMQTT extends eqLogic {
 		return $returns;
 	}
 
+
 	/**
-	 * subscribe topic
+	 * Check if Subscribe/Unsubscribe is needed
 	 */
-	public function subscribeTopic($topic, $qos){
-		// If broker eqpt is disabled, don't need to send subscribe
-		$broker = $this->getBroker();
-		if(!$broker->getIsEnable())
-			return;
-		if (empty($topic)){
+	private function needSubUnsubTopic($topic, $broker) {
+		// No Topic provided
+		if (empty($topic)) {
 			if ($this->getType() == self::TYP_EQPT)
 				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
 			else
 				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
-			return;
+			return null;
 		}
-		if ($this->getType() == self::TYP_EQPT)
-			$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
-		else
-			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
-		self::toDaemon_subscribe($this->getBrkId(), $topic, $qos);
+		// If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send subscribe/unsubscribe // TODO Check second part is true!
+		if(!$broker->getIsEnable() || $broker->getMqttClientState() != self::MQTTCLIENT_OK)
+			return null;
+		// Find eqLogic using the same topic AND the same Broker
+		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
+		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
+		foreach ($eqLogics as $eqLogic) {
+			// If it's enabled AND it's not "me"
+			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId())
+				return false;
+		}
+		return true;
+	}
+
+	/**
+	 * subscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
+	 */
+	public function subscribeTopic($topic, $qos) {
+		$broker = $this->getBroker();
+		$needToSub = $this->needSubUnsubTopic($topic, $broker);
+		if (is_null($needToSub)) // Nothing else to do (no Topic or Broker disabled)
+			return;
+		if ($needToSub) { // If there is no other eqLogic using the same topic, we can subscribe
+			if ($this->getType() == self::TYP_EQPT)
+				$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
+			else
+				$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
+			self::toDaemon_subscribe($broker->getId(), $topic, $qos);
+		} else {
+			$this->log('info', sprintf(__("Un autre équipement est déjà inscrit au topic '%2\$s'", __FILE__), $topic));
+		}
 	}
 
 	/**
 	 * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
 	 */
-	public function unsubscribeTopic($topic, $brkId = null){
-		if (empty($topic))
+	public function unsubscribeTopic($topic, $brkId = null) { // old Broker can be provided when switching Eq to another Broker
+		$broker = is_null($brkId) ? $this->getBroker() : self::getBrokerFromId($brkId);
+		$needToUnsub = $this->needSubUnsubTopic($topic, $broker);
+		if (is_null($needToUnsub)) // Nothing else to do (no Topic or Broker disabled)
 			return;
-		if (is_null($brkId))
-			$brkId = $this->getBrkId();
-		// If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send unsubscribe
-		$broker = self::getBrokerFromId($brkId);
-		if(!$broker->getIsEnable() || $broker->getMqttClientState() != self::MQTTCLIENT_OK)
-			return;
-		//Find eqLogic using the same topic
-		$topicConfiguration = substr(json_encode(array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic)), 1, -1);
-		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
-		$count = 0;
-		foreach ($eqLogics as $eqLogic) {
-			// If it's attached to the same broker and enabled and it's not "me"
-			if ($eqLogic->getBrkId() == $brkId && $eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) $count++;
-		}
-		//if there is no other eqLogic using the same topic, we can unsubscribe
-		if (!$count) {
+		// If there is no other eqLogic using the same topic, we can unsubscribe
+		if ($needToUnsub) {
 			if ($this->getType() == self::TYP_EQPT)
 				$this->log('info', sprintf(__("L'équipement #%1\$s# se désinscrit du topic '%2\$s'", __FILE__), $this->getHumanName(), $topic));
 			else
 				$this->log('info', sprintf(__("Le Broker %1\$s se désinscrit du topic '%2\$s'", __FILE__), $this->getName(), $topic));
-			self::toDaemon_unsubscribe($brkId, $topic);
+			self::toDaemon_unsubscribe($broker->getId(), $topic);
+		} else {
+			$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%2\$s'", __FILE__), $topic));
 		}
 	}
 
@@ -1249,10 +1263,10 @@ class jMQTT extends eqLogic {
 		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
 		if ($cpid != 0) { // Cached PID is available
 			if (!@posix_getsid($cpid)) { // Cached PID is NOT running
-				self::logger('warning', sprintf(__("Démon [%\$1s] va remplacer le Démon [%\$2s] !", __FILE__), $ruid, $cuid));
+				self::logger('warning', sprintf(__("Démon [%1\$s] va remplacer le Démon [%2\$s] !", __FILE__), $ruid, $cuid));
 				self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
 			} else { // Cached PID IS running
-				self::logger('warning', sprintf(__("Démon [%\$1s] essaye de remplacer le Démon [%\$2s] !", __FILE__), $ruid, $cuid));
+				self::logger('warning', sprintf(__("Démon [%1\$s] essaye de remplacer le Démon [%2\$s] !", __FILE__), $ruid, $cuid));
 				exec(system::getCmdSudo() . 'fuser ' . $cport . '/tcp 2> /dev/null', $output, $retval);
 				if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
 					self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être identifié", __FILE__), $cuid));
@@ -1261,7 +1275,7 @@ class jMQTT extends eqLogic {
 					self::logger('warning', sprintf(__("Démon [%s] : Reprend la main", __FILE__), $ruid));
 					self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
 				} else { // Old daemon is still alive. If Daemon is semi-dead, it may die by missing enough heartbeats
-					self::logger('warning', sprintf(__("Démon [%\$1s] va survivre au Démon [%\$2s] !", __FILE__), $cuid, $ruid));
+					self::logger('warning', sprintf(__("Démon [%1\$s] va survivre au Démon [%2\$s] !", __FILE__), $cuid, $ruid));
 					posix_kill($rpid, 15);
 					return '';
 				}
@@ -1329,11 +1343,11 @@ class jMQTT extends eqLogic {
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
 		$port = @cache::byKey('jMQTT::'.self::CACHE_DAEMON_PORT)->getValue(0);
 		if (!socket_connect($socket, '127.0.0.1', $port)) {
-			self::logger('debug', sprintf(__("Impossible de se connecter du Démon sur le port %\$1s, erreur %\$2s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
+			self::logger('debug', sprintf(__("Impossible de se connecter du Démon sur le port %1\$s, erreur %2\$s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
 			return;
 		}
 		if (socket_write($socket, $payload, strlen($payload)) === false) {
-			self::logger('debug', sprintf(__("Impossible d'envoyer un message au Démon sur le port %\$1s, erreur %\$2s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
+			self::logger('debug', sprintf(__("Impossible d'envoyer un message au Démon sur le port %1\$s, erreur %2\$s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
 			return;
 		}
 		socket_close($socket);
