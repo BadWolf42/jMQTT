@@ -22,7 +22,7 @@
 							<tr>
 								<td class="mqttClientLaunchable"></td>
 								<td class="mqttClientState"></td>
-								<td><a class="btn btn-success btn-sm bt_startMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
+								<td><a class="btn btn-success btn-sm eqLogicAction" data-action="startMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
 								<td class="mqttClientLastLaunch"></td>
 							</tr>
 						</tbody>
@@ -55,7 +55,7 @@
 						<fieldset>
 							<label class="col-sm-3 control-label">{{Logs}}</label>
 							<div class="col-sm-9">
-								<a class="btn btn-info bt_plugin_conf_view_log" data-slaveId="-1" data-log=""></a>
+								<a class="btn btn-info eqLogicAction" data-action="modalViewLog" data-slaveId="-1" data-log=""></a>
 							</div>
 						</fieldset>
 					</form>
@@ -218,155 +218,4 @@
 		</div>
 	</div>
 </div>
-<script>
-var timeout_refreshMqttClientInfo = null;
 
-function showMqttClientInfo(data) {
-	switch(data.launchable) {
-		case '<?php echo jMQTT::MQTTCLIENT_OK; ?>':
-			$('.bt_startMqttClient').show();
-			$('.mqttClientLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
-			break;
-		case '<?php echo jMQTT::MQTTCLIENT_NOK; ?>':
-			$('.bt_startMqttClient').hide();
-			$('.mqttClientLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
-			break;
-		default:
-			$('.mqttClientLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
-	}
-	switch (data.state) {
-		case '<?php echo jMQTT::MQTTCLIENT_OK; ?>':
-			$('.mqttClientState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
-			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-danger').addClass('panel-success');
-			break;
-		case '<?php echo jMQTT::MQTTCLIENT_POK; ?>':
-			$('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
-			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-danger').removeClass('panel-success').addClass('panel-warning');
-			break;
-		case '<?php echo jMQTT::MQTTCLIENT_NOK; ?>':
-			$('.mqttClientState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
-			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-success').addClass('panel-danger');
-			break;
-		default:
-			$('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
-	}
-	$('.mqttClientLastLaunch').empty().append(data.last_launch);
-	if ($("#div_broker_mqttclient").is(':visible')) {
-		clearTimeout(timeout_refreshMqttClientInfo);
-		timeout_refreshMqttClientInfo = setTimeout(refreshMqttClientInfo, 5000);
-	}
-}
-
-function refreshMqttClientInfo() {
-	var id = $('.eqLogicAttr[data-l1key=id]').value();
-	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
-		return;
-	callPluginAjax({
-		data: {
-			action: 'getMqttClientInfo',
-			id: id,
-		},
-		success: function(data) {
-			showMqttClientInfo(data);
-		}
-	});
-}
-
-// Observe attribute change of #brokertab. When tab is made visible, trigger refreshMqttClientInfo
-var observer = new MutationObserver(function(mutations) {
-	mutations.forEach(function(mutation) {
-		if ($("#brokertab").is(':visible')) {
-			refreshMqttClientInfo();
-		}
-	});
-});
-observer.observe($("#brokertab")[0], {attributes: true});
-
-$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
-	showMqttClientInfo(_options);
-});
-
-$('.bt_startMqttClient').on('click',function(){
-	var id = $('.eqLogicAttr[data-l1key=id]').value();
-	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
-		return;
-	clearTimeout(timeout_refreshMqttClientInfo);
-	callPluginAjax({
-		data: {
-			action: 'startMqttClient',
-			id: id,
-		},
-		success: function(data) {
-			refreshMqttClientInfo();
-		}
-	});
-});
-
-$('#div_broker_log').on('click','.bt_plugin_conf_view_log',function() {
-	if($('#md_modal').is(':visible')){
-		$('#md_modal2').dialog({title: "{{Log du plugin}}"});
-		$("#md_modal2").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
-	}
-	else{
-		$('#md_modal').dialog({title: "{{Log du plugin}}"});
-		$("#md_modal").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
-	}
-});
-
-$('#fTls').change(function(){
-	if ($(this).prop('checked')) $('#dTls').show();
-	else $('#dTls').hide();
-});
-
-$('#fTlsCheck').change(function(){
-	switch ($(this).val()) {
-		case 'public':
-			$('#dTlsCaFile').hide();
-			break;
-		case 'private':
-			$('#dTlsCaFile').show();
-			break;
-		default:
-			$('#dTlsCaFile').hide();
-	}
-});
-
-$('#fTlsClientCertFile').change(function(){
-	if ($(this).val() == '') $('#dTlsClientKeyFile').hide();
-	else $('#dTlsClientKeyFile').show();
-});
-
-$('#mqttUploadFile').fileupload({
-	dataType: 'json',
-	replaceFileInput: false,
-	done: function (e, data) {
-		if (data.result.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
-			$('#div_alert').showAlert({message: data.result.result, level: 'danger'});
-		} else {
-			switch (data.result.result.split('.').pop()) {
-				case 'crt':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsCaFile');
-					$('#fTlsCaFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsCaFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsCaFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-				case 'pem':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientCertFile');
-					$('#fTlsClientCertFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsClientCertFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsClientCertFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-				case 'key':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientKeyFile');
-					$('#fTlsClientKeyFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsClientKeyFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsClientKeyFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-			}
-			$('#div_alert').hideAlert();
-		}
-		$('#mqttConfUpFile').val(null);
-	}
-});
-
-</script>

@@ -67,6 +67,7 @@ if (!isConnect()) {
 	</fieldset>
 </form>
 <script>
+// TODO Remove and use textareas in Brokers instead of fileupload
 $('#mqttConfUpFile').fileupload({
 	dataType: 'json',
 	replaceFileInput: false,
@@ -97,6 +98,7 @@ $('#mqttConfUpFile').fileupload({
 	}
 });
 
+// TODO Remove and use textareas in Brokers instead of fileupload
 $('.mqttDeleteFile').on('click', function (){
 	var oriname = $("#mqttConfDelFile").val();
 	if (oriname !== null) {
@@ -156,6 +158,5 @@ if (!$btSave.hasClass('jmqttLog')) {
 		}
 	});
 };
-
 
 </script>

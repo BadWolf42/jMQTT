@@ -104,10 +104,10 @@
 			</div>
 		</div>
 
-		<div id='sel_icon_div' class="form-group toDisable typ-std">
+		<div class="form-group toDisable typ-std">
 			<label class="col-sm-3 control-label">{{Catégorie du topic}}</label>
 			<div class="col-sm-3">
-				<select id="sel_icon" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">
+				<select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">
 					<option value="">{{Aucun}}</option>
 					<option value="barometre">{{Baromètre}}</option>
 					<option value="bt">{{Bluetooth}}</option>
@@ -170,16 +170,3 @@
 
 	</fieldset>
 </form>
-
-<script>
-$("#sel_icon").change(function() {
-	var text = 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val();
-	$("#icon_visu").attr("src", text + '.svg');
-});
-
-$("#icon_visu").on("error", function () {
-	if ($("#sel_icon").val() != '') {
-		$(this).attr("src", 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val() + '.png');
-	}
-});
-</script>
