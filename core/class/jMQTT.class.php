@@ -1723,17 +1723,6 @@ class jMQTT extends eqLogic {
 		if ($params['tlsclikeyfile'] != '')
 			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $params['tlsclikeyfile']);
 		self::toDaemon_newClient($this->getId(), $this->getMqttAddress(), $params);
-		foreach (self::byBrkId($this->getId()) as $broker) {
-			if ($broker->getIsEnable() && $broker->getId() != $this->getId()) {
-				$broker->subscribeTopic($broker->getTopic(), $broker->getQos());
-			}
-		}
-		if ($this->isApiEnable()) {
-			$this->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $this->getMqttApiTopic()));
-			$this->subscribeTopic($this->getMqttApiTopic(), '1');
-		} else {
-			$this->log('info', __("L'accès à l'API est désactivée", __FILE__));
-		}
 	}
 
 	/**
@@ -1754,6 +1743,19 @@ class jMQTT extends eqLogic {
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
 			$broker->sendMqttClientStateEvent();
+			// Subscribe to topics
+			foreach (self::byBrkId($id) as $eq) {
+				if ($eq->getIsEnable() && $eq->getId() != $broker->getId()) {
+					$eq->subscribeTopic($eq->getTopic(), $eq->getQos());
+				}
+			}
+			// Enable API
+			if ($broker->isApiEnable()) {
+				$broker->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $broker->getMqttApiTopic()));
+				$broker->subscribeTopic($broker->getMqttApiTopic(), '1');
+			} else {
+				$broker->log('info', __("L'accès à l'API est désactivée", __FILE__));
+			}
 			// Active listeners
 			self::listenersAddAll();
 		} catch (Throwable $e) {
