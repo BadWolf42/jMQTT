@@ -1100,7 +1100,7 @@ function addCmdToTable(_cmd) {
 		$('#table_cmd tbody').append(tr);
 		// $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
 		var tr = $('#table_cmd [tree-id="' + _cmd.tree_id + '"]');
-		jeedom.eqLogic.builSelectCmd({
+		jeedom.eqLogic.buildSelectCmd({
 			id: $('.eqLogicAttr[data-l1key=id]').value(),
 			filter: {type: 'info'},
 			error: function (error) {
