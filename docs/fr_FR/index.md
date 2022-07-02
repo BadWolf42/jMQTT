@@ -514,7 +514,8 @@ En cas de problèmes à l’utilisation, passer le plugin et les Broker en nivea
 
         mosquitto_sub -h localhost -v -t "#" | xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' | tee /tmp/diag_jmqtt.log
 
-En remplaçant, si besoin, `localhost` par le nom ou l’IP de la machine hébergeant le Broker MQTT, si une authentification est requise, ajouter `-u username` et `-p password` avant le `-v`.
+En remplaçant, si besoin, `localhost` par le nom ou l’IP de la machine hébergeant le Broker MQTT.
+Si une authentification est requise, ajouter `-u username` et `-p password` avant le `-v`.
 
 # Exemples d’utilisation
 
