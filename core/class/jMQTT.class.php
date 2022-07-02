@@ -617,68 +617,60 @@ class jMQTT extends eqLogic {
 
 
 	/**
-	 * Check if Subscribe/Unsubscribe is needed
+	 * subscribe topic, ALWAYS
 	 */
-	private function needSubUnsubTopic($topic, $broker) {
+	public function subscribeTopic($topic, $qos) {
 		// No Topic provided
 		if (empty($topic)) {
 			if ($this->getType() == self::TYP_EQPT)
 				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
 			else
 				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
-			return null;
+			return;
 		}
-		// If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send subscribe/unsubscribe // TODO Check second part is true!
-		if(!$broker->getIsEnable() || $broker->getMqttClientState() != self::MQTTCLIENT_OK)
-			return null;
+		$broker = $this->getBroker();
+		// If broker eqpt is disabled, don't need to send subscribe
+		if(!$broker->getIsEnable())
+			return;
+		if ($this->getType() == self::TYP_EQPT)
+			$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
+		else
+			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
+		self::toDaemon_subscribe($broker->getId(), $topic, $qos);
+
+	}
+
+	/**
+	 * Unsubscribe topic, ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
+	 */
+	public function unsubscribeTopic($topic, $brkId = null) { // old Broker can be provided when switching Eq to another Broker
+		// No Topic provided
+		if (empty($topic)) {
+			if ($this->getType() == self::TYP_EQPT)
+				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
+			else
+				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
+			return;
+		}
+		$broker = is_null($brkId) ? $this->getBroker() : self::getBrokerFromId($brkId);
+		// If broker eqpt is disabled, don't need to send unsubscribe
+		if(!$broker->getIsEnable())
+			return;
 		// Find eqLogic using the same topic AND the same Broker
 		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
 		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
 		foreach ($eqLogics as $eqLogic) {
-			// If it's enabled AND it's not "me"
-			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId())
-				return false;
+			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
+				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
+				return;
+			}
 		}
-		return true;
-	}
-
-	/**
-	 * subscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
-	 */
-	public function subscribeTopic($topic, $qos) {
-		$broker = $this->getBroker();
-		$needToSub = $this->needSubUnsubTopic($topic, $broker);
-		if (is_null($needToSub)) // Nothing else to do (no Topic or Broker disabled)
-			return;
-		if ($needToSub) { // If there is no other eqLogic using the same topic, we can subscribe
-			if ($this->getType() == self::TYP_EQPT)
-				$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
-			else
-				$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
-			self::toDaemon_subscribe($broker->getId(), $topic, $qos);
-		} else {
-			$this->log('info', sprintf(__("Un autre équipement est déjà inscrit au topic '%s'", __FILE__), $topic));
-		}
-	}
-
-	/**
-	 * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
-	 */
-	public function unsubscribeTopic($topic, $brkId = null) { // old Broker can be provided when switching Eq to another Broker
-		$broker = is_null($brkId) ? $this->getBroker() : self::getBrokerFromId($brkId);
-		$needToUnsub = $this->needSubUnsubTopic($topic, $broker);
-		if (is_null($needToUnsub)) // Nothing else to do (no Topic or Broker disabled)
-			return;
 		// If there is no other eqLogic using the same topic, we can unsubscribe
-		if ($needToUnsub) {
-			if ($this->getType() == self::TYP_EQPT)
-				$this->log('info', sprintf(__("L'équipement #%1\$s# se désinscrit du topic '%2\$s'", __FILE__), $this->getHumanName(), $topic));
-			else
-				$this->log('info', sprintf(__("Le Broker %1\$s se désinscrit du topic '%2\$s'", __FILE__), $this->getName(), $topic));
-			self::toDaemon_unsubscribe($broker->getId(), $topic);
-		} else {
-			$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%2\$s'", __FILE__), $topic));
-		}
+		if ($this->getType() == self::TYP_EQPT)
+			$this->log('info', sprintf(__("L'équipement #%1\$s# se désinscrit du topic '%2\$s'", __FILE__), $this->getHumanName(), $topic));
+		else
+			$this->log('info', sprintf(__("Le Broker %1\$s se désinscrit du topic '%2\$s'", __FILE__), $this->getName(), $topic));
+		self::toDaemon_unsubscribe($broker->getId(), $topic);
 	}
 
 	/**
