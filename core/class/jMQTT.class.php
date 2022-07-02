@@ -1122,7 +1122,7 @@ class jMQTT extends eqLogic {
 			return false;
 		}
 		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_SND)->getValue(0)) > 50) {
-			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis 50s).", __FILE__));
+			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >50s).", __FILE__));
 			self::toDaemon_hb();
 			return true;
 		}
@@ -1333,7 +1333,7 @@ class jMQTT extends eqLogic {
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
 					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								'</br>@Stack: %3\$s,</br>@BrkId: %4\$s.',
+								"</br>@Stack: %3\$s,</br>@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -1588,7 +1588,7 @@ class jMQTT extends eqLogic {
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
 					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								'@Stack: %3\$s,</br>@BrkId: %4\$s.',
+								"@Stack: %3\$s,</br>@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -1771,7 +1771,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -1794,7 +1794,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -1809,7 +1809,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}
@@ -1985,7 +1985,7 @@ class jMQTT extends eqLogic {
 								self::logger('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
 							else // More info in debug mode, no big log otherwise
 								self::logger('error', str_replace("\n",' </br> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
-											',</br>@Stack: %3\$s,</br>@Dump: %4\$s.', $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
+											",</br>@Stack: %3\$s,</br>@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
 						}
 					} else
 						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement  #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
@@ -2117,7 +2117,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}
