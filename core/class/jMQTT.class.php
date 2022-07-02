@@ -1854,7 +1854,7 @@ class jMQTT extends eqLogic {
 	 * The method shall be called on a broker equipment eqLogic
 	 */
 	private function sendMqttClientStateEvent() {
-		$this->log('debug','jMQTT::EventState:'.json_encode($this->getMqttClientInfo()));
+		// $this->log('debug','jMQTT::EventState:'.json_encode($this->getMqttClientInfo()));
 		event::add('jMQTT::EventState', $this->getMqttClientInfo());
 	}
 
