@@ -7,6 +7,7 @@ Ce plugin permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé B
 
 Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :
 [![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)
+
 Crédit : François Riotte
 
 
@@ -47,12 +48,14 @@ Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de co
 
 Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :
 ![Status Broker](../images/broker_status.png)
+
 * Vert: la connexion au Broker est opérationnelle
 * Orange: le démon tourne mais la connexion au Broker n'est pas établie
 * Rouge: le démon est arrêté
 
 Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.
 ![eqpt panel](../images/eqpt_panel.png)
+
 Se trouve également sur ce panneau :
   - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
   - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
@@ -70,6 +73,8 @@ Dans la page de [Gestion des équipements](#gestion-des-équipements), cliquer s
 Suite à sa création, un message indique que la commande *status* a été ajoutée à l'équipement. Celle-ci donne l'état de connexion au Broker MQTT de l'équipement Broker. Elle prend 2 valeurs : *online* et *offline*. Elle est publiée de manière persistante auprès du Broker. Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion. Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via un scénario.
 
 ### Configuration
+
+![Configuration du Broker](../images/eqpt_broker.png)
 
 Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement. Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le status du démon devrait passer à OK.
 
@@ -126,6 +131,8 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 
 ### Onglet Equipement
 
+![Onglet principal d'un Equipement](../images/eqpt_equipement.png)
+
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
 
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
@@ -137,6 +144,10 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
   - _Qos_ : qualité de service souscrit ;
 
   - _Type d'alimentation_ : paramètre libre vous permettant de préciser le type d'alimentation de l'équipement (non disponible pour un équipement Broker) ;
+
+  - _Commande d'état de la batterie_ : commande de l'équipement qui sera utilisée comme niveau de batterie. Si la commande info est de type binaire, alors la valeur de la batterie sera 10% (0) ou 100% (1). Si la commande info est de type numérique, alors la valeur sera utilisée comme pourcentage de batterie (non disponible pour un équipement Broker) ;
+
+  - _Commande de disponibilité_ : commande de l'équipement (info binaire) qui sera utilisée comme état de disponibilité de l'équipement. Si cette commande est à 0, alors l'équipement sera remonté en erreur "Danger" (non disponible pour un équipement Broker) ;
 
   - _Dernière communication_ : date de dernière communication avec le Broker MQTT, que ce soit en réception (commande information) ou publication (commande action) ;
 
@@ -152,7 +163,8 @@ Concernant les boutons en haut à droite :
 ![Boutons sur un Equipement](../images/eqpt_buttons.png)
 
   - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
-  - `Créer template` permet de Créer un [template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
+  - `Créer template` permet de [Créer un template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
+  - `Modifier Topics` permet de Modifier en masse tous les topics de l'équipement courant (pensez à sauvegarder l'équipement après la modification) ;
   - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement).
 
 ### Onglet Commandes
@@ -361,14 +373,6 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués :
 > **Note**
 >
 > Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l’équipement, si la case *Ajout automatique des commandes* est cochée.
-
-## Gestion de la batterie
-
-Une commande info, dont le **nom** fini par `battery` (ou `batterie`) ou dont le **Type Générique** est `Batterie`, sera utilisé comme niveau de batterie de l'équipement auquel appartient cette commande.
-
-Si la commande info est de type binaire, la valeur de la batterie sera 10% (0) ou 100% (1).
-
-Il est recommandé de ne positionner qu'une seule commande info définissant le niveau de batterie par équipement, sous peine d'avoir des valeurs incohérentes.
 
 ## Santé du plugin
 
