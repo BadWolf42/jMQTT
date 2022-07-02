@@ -40,7 +40,7 @@ try {
 
 	if (init('action') == 'cacheSet') {
 		jMQTT::logger('debug', init('action').': key='.init('key').' value='.init('val'));
-		cache::set(init('key'), json_decode(init('val')));
+		cache::set(init('key'), json_decode(init('val'), JSON_UNESCAPED_UNICODE));
 		ajax::success();
 	}
 	if (init('action') == 'cacheDel') {
