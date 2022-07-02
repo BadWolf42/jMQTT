@@ -85,6 +85,7 @@ class Main():
 							'subscribeTopic':   self.h_subTopic,
 							'unsubscribeTopic': self.h_unsubTopic,
 							'messageOut':       self.h_messageOut,
+							'hb':               self.h_hb,
 							'loglevel':         self.h_logLevel}
 		self.jmqttclients = {}
 		self.jcom         = None
@@ -319,6 +320,10 @@ class Main():
 			self.jmqttclients[message['id']].publish(message['topic'], message['payload'], message['qos'], message['retain'])
 		else:
 			self.log.debug('No client found for Broker %s', message['id'])
+
+	def h_hb(self, message):
+		self.log.debug('Jeedom sent a Heartbeat.')
+		pass
 
 	def h_logLevel(self, message):
 		self.set_log_level(message['level'])
