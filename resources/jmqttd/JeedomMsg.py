@@ -167,7 +167,7 @@ class JeedomMsg():
 		self._socketIn = socketserver.TCPServer((self._socket_host, self._socket_port), SockIn)
 		if self._socketIn:
 			self._socketIn.jmsg = self
-			threading.Thread(target=self._loopRcv, args=(), name="SockIn").start()
+			threading.Thread(target=self._loopRcv, args=(), name="SockIn", daemon=True).start()
 			port = self._socketIn.socket.getsockname()[1]
 			self._socket_port = port
 			self._url = self._callback+'?apikey='+self._apikey+'&uid='+str(os.getpid())+':'+str(port)

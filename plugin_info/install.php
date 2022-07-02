@@ -263,6 +263,32 @@ function moveTopicOfTemplates() {
 	jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les Templates jMQTT", __FILE__));
 }
 
+function convertBatteryStatus() {
+
+	foreach (jMQTT::byType('jMQTT') as $eqLogic) {
+		// Protect already modified Eq
+		$batId = $eqLogic->getBatteryCmd();
+		if ($batId != '') {
+			$cmd = jMQTTCmd::byId($batId);
+			jMQTT::logger('info', sprintf(__("#%1\$s# définit DÉJÀ la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
+			continue;
+		}
+		// get info cmds of current eqLogic
+		foreach (jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info') as $cmd) {
+			// Old isBattery()
+			if ($cmd->getType() == 'info' && ($cmd->getGeneric_type() == 'BATTERY' || preg_match('/(battery|batterie)$/i', $cmd->getName()))) {
+				$eqLogic->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, $cmd->getId());
+				jMQTT::logger('info', sprintf(__("#%1\$s# définit la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
+				$eqLogic->save();
+				continue;
+			}
+		}
+	}
+
+	jMQTT::logger('info', __("Commandes batterie définies directement sur les équipements jMQTT", __FILE__));
+}
+
+
 function jMQTT_install() {
 	jMQTT::logger('debug', 'install.php: jMQTT_install()');
 	jMQTT_update(false);
@@ -336,9 +362,14 @@ function jMQTT_update($_direct=true) {
 			raiseForceDepInstallFlag();
 			config::save(VERSION, 9, 'jMQTT');
 		}
+		// VERSION = 10
+		if ($versionFromDB < 10) {
+			convertBatteryStatus();
+			config::save(VERSION, 10, 'jMQTT');
+		}
 	}
 	else
-		config::save(VERSION, 9, 'jMQTT');
+		config::save(VERSION, 10, 'jMQTT');
 }
 
 function jMQTT_remove() {

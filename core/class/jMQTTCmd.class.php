@@ -112,9 +112,19 @@ class jMQTTCmd extends cmd {
 		}
 		$eqLogic = $this->getEqLogic();
 		$eqLogic->checkAndUpdateCmd($this, $value);
+		$value = $this->getCache('value', 0);
 		$eqLogic->log('info', sprintf(__("Cmd #%1\$s# <- %2\$s", __FILE__), $this->getHumanName(), $value));
-		if ($this->isBattery() && !in_array($value[0], ['{','[',''])) {
-			$value = ($this->getSubType() == 'binary') ? ($value ? 100 : 10) : $this->getCache('value');
+		if ($this->isAvailability()) {
+			if (!boolval($value)) {
+				$eqLogic->setStatus('warning', 1);
+				$eqLogic->log('info', sprintf(__("Eq #%s# <- Est Indisponible", __FILE__), $eqLogic->getHumanName()));
+			} else {
+				$eqLogic->setStatus('warning', 0);
+				$eqLogic->log('info', sprintf(__("Eq #%s# <- Est Disponible", __FILE__), $eqLogic->getHumanName()));
+			}
+		}
+		if ($this->isBattery()) {
+			$value = ($this->getSubType() == 'binary') ? ($value ? 100 : 10) : $value;
 			$eqLogic->batteryStatus($value);
 			$eqLogic->log('info', sprintf(__("Eq #%1\$s# <- Batterie à %2\$s%%", __FILE__), $eqLogic->getHumanName(), $value));
 		}
@@ -282,8 +292,7 @@ class jMQTTCmd extends cmd {
 				'retain' => $cmd->getConfiguration('retain', 0),
 				'brokerStatusTopic' => $cmd->getTopic(),
 				'autoPub' => $cmd->getConfiguration('autoPub', 0),
-				'request' => $cmd->getConfiguration('request', ''),
-				'isBattery' => $cmd->isBattery()
+				'request' => $cmd->getConfiguration('request', '')
 			);
 		}
 	}
@@ -348,12 +357,6 @@ class jMQTTCmd extends cmd {
 					// Just try to remove the previous status topic
 					$eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
 				}
-			}
-
-			// Remove batteryStatus from eqLogic if cmd is no longer a battery
-			if (!$this->isBattery() && $this->_preSaveInformations['isBattery']) {
-				$eqLogic->setStatus('battery', null);
-				$eqLogic->setStatus('batteryDatetime', null);
 			}
 
 			// Only Update listener if "autoPub" or "request" has changed
@@ -432,10 +435,17 @@ class jMQTTCmd extends cmd {
 		$eqLogic = $this->getEqLogic();
 		if ($eqLogic) {
 			$eqLogic->log('info', sprintf(__("Suppression de la commande #%s#", __FILE__), $eqLogic->getHumanName()));
-			// Remove batteryStatus from eqLogic on delete
+			// Remove battery status from eqLogic on delete
 			if ($this->isBattery()) {
-				$eqLogic->setStatus('battery', null);
-				$eqLogic->setStatus('batteryDatetime', null);
+				$eqLogic->log('debug', sprintf(__("Suppression de la commande de Batterie de l'équipement #%s#", __FILE__), $eqLogic->getHumanName()));
+				$eqLogic->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, '');
+				$eqLogic->save();
+			}
+			// Remove availability status from eqLogic on delete
+			if ($this->isAvailability()) {
+				$eqLogic->log('debug', sprintf(__("Suppression de la commande de Disponibilité de l'équipement #%s#", __FILE__), $eqLogic->getHumanName()));
+				$eqLogic->setConfiguration(jMQTT::CONF_KEY_AVAILABILITY_CMD, '');
+				$eqLogic->save();
 			}
 		} else {
 			jMQTT::logger('info', sprintf(__("Suppression de la commande orpheline #%s#", __FILE__), $this->getId()));
@@ -550,11 +560,23 @@ class jMQTTCmd extends cmd {
 	}
 
 	/**
-	 * Return whether or not this command may contain a battery value
+	 * Return whether or not this command is the battery value
 	 * @return boolean
 	 */
 	public function isBattery() {
-		return $this->getType() == 'info' && ($this->getGeneric_type() == 'BATTERY' || preg_match('/(battery|batterie)$/i', $this->getName()));
+		if ($this->getType() != 'info' || $this->getSubType() == 'string')
+			return false;
+		return $this->getId() == $this->getEqLogic()->getBatteryCmd();
+	}
+
+	/**
+	 * Return whether or not this command is the availability value
+	 * @return boolean
+	 */
+	public function isAvailability() {
+		if ($this->getType() != 'info' || $this->getSubType() != 'binary')
+			return false;
+		return $this->getId() == $this->getEqLogic()->getAvailabilityCmd();
 	}
 
 	/**
