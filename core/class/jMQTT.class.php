@@ -60,6 +60,8 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
 	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
 	const CONF_KEY_JSON_PATH = 'jsonPath';
+	const CONF_KEY_BATTERY_CMD = 'battery_cmd';
+	const CONF_KEY_AVAILABILITY_CMD = 'availability_cmd';
 	const CONF_KEY_TEMPLATE_UUID = 'templateUUID';
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
@@ -748,6 +750,7 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
 				self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
+				self::CONF_KEY_BATTERY_CMD,     self::CONF_KEY_AVAILABILITY_CMD,
 				self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
 				self::CONF_KEY_QOS);
 			foreach ($backupVal as $key)
@@ -923,6 +926,19 @@ class jMQTT extends eqLogic {
 				if ($this->_preSaveInformations[self::CONF_KEY_QOS] != $this->getConf(self::CONF_KEY_QOS)) {
 					// resubscribe will take new QoS over
 					$subscribeRequested = true;
+				}
+
+				// Battery removed -> Clear Battery status
+				if ($this->_preSaveInformations[self::CONF_KEY_BATTERY_CMD] != '' && $this->getConf(self::CONF_KEY_BATTERY_CMD) == '') {
+					$this->setStatus('battery', null);
+					$this->setStatus('batteryDatetime', null);
+					$this->log('debug', sprintf(__("Nettoyage de la Batterie de l'équipement #%s#", __FILE__), $this->getHumanName()));
+				}
+
+				// Availability removed -> Clear Availability (Timeout) status
+				if ($this->_preSaveInformations[self::CONF_KEY_AVAILABILITY_CMD] != '' && $this->getConf(self::CONF_KEY_AVAILABILITY_CMD) == '') {
+					$this->setStatus('warning', null);
+					$this->log('debug', sprintf(__("Nettoyage de la Disponibilité de l'équipement #%s#", __FILE__), $this->getHumanName()));
 				}
 
 				// In the end, does topic need to be subscribed
@@ -1208,7 +1224,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 		// If something bad happened, clean anyway
-		self::logger('debug', __("Netoyage du Démon", __FILE__));
+		self::logger('debug', __("Nettoyage du Démon", __FILE__));
 		self::fromDaemon_daemonDown($cuid);
 	}
 
@@ -2328,6 +2344,22 @@ class jMQTT extends eqLogic {
 				(($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CA)) ||
 				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT)) ||
 				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY)));
+	}
+
+	/**
+	 * Get the Battery command defined in this eqLogic
+	 * @return string Return the Battery command defined
+	 */
+	public function getBatteryCmd() {
+		return $this->getConf(self::CONF_KEY_BATTERY_CMD);
+	}
+
+	/**
+	 * Get the Availability command defined in this eqLogic
+	 * @return string Return the Availability command defined
+	 */
+	public function getAvailabilityCmd() {
+		return $this->getConf(self::CONF_KEY_AVAILABILITY_CMD);
 	}
 
 	/**

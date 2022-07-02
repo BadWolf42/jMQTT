@@ -90,6 +90,24 @@
 			</div>
 		</div>
 
+		<div class="form-group toDisable typ-std">
+			<label class="col-sm-3 control-label">{{Commande d'état de la batterie}}</label>
+			<div class="col-sm-3">
+				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_cmd" title="{{Commande information de Batterie}}">
+					<option value="">{{Aucune}}</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group toDisable typ-std">
+			<label class="col-sm-3 control-label">{{Commande de disponibilité}}</label>
+			<div class="col-sm-3">
+				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="availability_cmd" title="{{Commande information de disponibilité}}">
+					<option value="">{{Aucune}}</option>
+				</select>
+			</div>
+		</div>
+
 		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label">{{Dernière communication}}</label>
 			<div class="col-sm-3">

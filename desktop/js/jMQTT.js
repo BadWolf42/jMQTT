@@ -795,8 +795,8 @@ function printEqLogic(_eqLogic) {
 	}
 
 	// Show UI elements depending on the type
-	if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0)) ||
-			(_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) {
+	if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0))
+			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) {
 		$('.toDisable').addClass('disabled');
 		$('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
@@ -832,6 +832,27 @@ function printEqLogic(_eqLogic) {
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 		$('#mqtttopic').prop('readonly', false);
+
+		// Initialise battery and availability dropboxes
+		eqId = $('.eqLogicAttr[data-l1key=id]').value();
+		bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
+		avl = $('.eqLogicAttr[data-l1key=configuration][data-l2key=availability_cmd]');
+		bat.empty().append('<option value="">{{Aucune}}</option>');
+		avl.empty().append('<option value="">{{Aucune}}</option>');
+		jeedom.eqLogic.buildSelectCmd({
+			id: eqId,
+			filter: {type: 'info', subType: 'numeric'},
+			error: function (error) { $('#div_alert').showAlert({message: error.message, level: 'danger'}); },
+			success: function (result) { bat.append(result); }
+		});
+		jeedom.eqLogic.buildSelectCmd({
+			id: eqId,
+			filter: {type: 'info', subType: 'binary'},
+			error: function (error) { $('#div_alert').showAlert({message: error.message, level: 'danger'}); },
+			success: function (result) { bat.append(result); avl.append(result); }
+		});
+		bat.val(_eqLogic.configuration.battery_cmd);
+		avl.val(_eqLogic.configuration.availability_cmd);
 	}
 
 	// Initialise the broker dropbox
