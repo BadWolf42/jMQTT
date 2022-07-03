@@ -124,7 +124,9 @@ foreach ($eqBrokers as $eqB) {
 					echo '<i class="far fa-square fa-rotate-90 w18 tooltips" title="{{Inclusion automatique désactivée}}"></i> ';
 				if ($eqL->getConfiguration('battery_cmd') == '')
 					echo '<i class="fas fa-plug w18 tooltips" title="{{Pas d\'état de la batterie}}"></i> ';
-				else if ($eqL->getStatus('warning'))
+				elseif ($eqL->getStatus('batterydanger'))
+					echo '<i class="fas fa-battery-empty w18 danger tooltips" title="{{Batterie en fin de vie}}"></i> ';
+				elseif ($eqL->getStatus('batterywarning'))
 					echo '<i class="fas fa-battery-quarter w18 warning tooltips" title="{{Batterie en alarme}}"></i> ';
 				else
 					echo '<i class="fas fa-battery-full w18 success tooltips" title="{{Batterie OK}}"></i> ';
