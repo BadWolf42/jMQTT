@@ -162,7 +162,7 @@ class jMqttClient:
 			if self.mqttclient._thread is not None:
 				self.mqttclient._thread.name = 'Brk' + self.id + 'Th'
 		except:
-			if self._log.getLogger().isEnabledFor(logging.DEBUG):
+			if self._log.isEnabledFor(logging.DEBUG):
 				self._log.exception('jMqttClient.start() Exception')
 
 	def stop(self):
