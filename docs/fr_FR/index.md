@@ -376,9 +376,11 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués :
 
 ## Santé du plugin
 
-Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher l'état de santé des Broker et des équipements.
+Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher une vue de la santé des Broker et des équipements :
 
-Les informations présentes sont : l'état d'activation, le Topic de base, la Date de Dernière communication et la Date de création.
+![Modal Santé](../images/health.png)
+
+Les informations présentes sont : le nom, l'ID, le Topic de souscription, la date de Dernière communication, la Date de création et l'état des Brokers (Activation et communication, Visibilité et Auto inclusion) ainsi que des équipements (Activation, Visibilité, Inclusion automatique, Batterie et Disponibilité).
 
 # Gestion des templates
 

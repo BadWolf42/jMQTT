@@ -1368,10 +1368,10 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params, false);
 	}
 
-	public static function toDaemon_setLogLevel() {
-		$params['cmd']='loglevel';
-		$params['id']=0;
-		$params['level']=log::convertLogLevel(log::getLogLevel(__class__));
+	public static function toDaemon_setLogLevel($_level=null) {
+		$params['cmd'] = 'loglevel';
+		$params['id'] = 0;
+		$params['level'] = is_null($_level) ? log::convertLogLevel(log::getLogLevel(__class__)) : $_level;
 		self::sendToDaemon($params);
 	}
 
@@ -1607,23 +1607,23 @@ class jMQTT extends eqLogic {
 		$return['log'] = $this->getMqttClientLogFile();
 		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));
 		$return['state'] = $this->getMqttClientState();
-		$return['color'] = self::getBrokerColorFromState($return['state']);
 		$return['icon'] = self::getBrokerIconFromState($return['state']);
 		if (!self::daemon_state()) { // Daemon is down
 			$return['message'] = __("Démon non démarré", __FILE__);
 			return $return;
 		}
 		if (!$this->getIsEnable()) {
-			$return['message'] = __("Ce Client est désactivé", __FILE__);
+			$return['message'] = __("La connexion à ce Broker est désactivée", __FILE__);
 		} elseif ($return['state'] == self::MQTTCLIENT_NOK) {
 			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Ce Client n'est pas démarré", __FILE__);
+			$return['message'] = __("Le Démon jMQTT n'est pas encore connecté à ce Broker", __FILE__);
 		} elseif ($return['state'] == self::MQTTCLIENT_POK) {
 			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Ce Client ne peut pas se connecter au Broker", __FILE__);
+			$return['message'] = __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__);
 		} else {
 			$return['launchable'] = self::MQTTCLIENT_OK;
 			$return['state'] = self::MQTTCLIENT_OK;
+			$return['message'] = __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__);
 		}
 		return $return;
 	}
@@ -1652,31 +1652,13 @@ class jMQTT extends eqLogic {
 	public static function getBrokerIconFromState($state) {
 		switch ($state) {
 			case self::MQTTCLIENT_OK:
-				return 'fa-check-circle';
+				return 'fa-check-circle success';
 				break;
 			case self::MQTTCLIENT_POK:
-				return 'fa-minus-circle';
+				return 'fa-minus-circle warning';
 				break;
 			default:
-				return 'fa-times-circle';
-				break;
-		}
-	}
-
-	/**
-	 * Return hex color string depending state passed
-	 * @return string hex color
-	 */
-	public static function getBrokerColorFromState($state) {
-		switch ($state) {
-			case self::MQTTCLIENT_OK:
-				return '#96C927';
-				break;
-			case self::MQTTCLIENT_POK:
-				return '#ff9b00';
-				break;
-			default:
-				return '#ff0000';
+				return 'fa-times-circle danger';
 				break;
 		}
 	}
