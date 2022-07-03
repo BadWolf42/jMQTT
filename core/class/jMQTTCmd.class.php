@@ -114,7 +114,7 @@ class jMQTTCmd extends cmd {
 		$eqLogic->checkAndUpdateCmd($this, $value);
 		$value = $this->getCache('value', 0);
 		$eqLogic->log('info', sprintf(__("Cmd #%1\$s# <- %2\$s", __FILE__), $this->getHumanName(), $value));
-		if ($this->isAvailability()) {
+		if ($this->isAvailability() && ((!boolval($value)) != boolval($eqLogic->getStatus('warning', 0)))) {
 			if (!boolval($value)) {
 				$eqLogic->setStatus('warning', 1);
 				$eqLogic->log('info', sprintf(__("Eq #%s# <- Est Indisponible", __FILE__), $eqLogic->getHumanName()));
@@ -125,8 +125,10 @@ class jMQTTCmd extends cmd {
 		}
 		if ($this->isBattery()) {
 			$value = ($this->getSubType() == 'binary') ? ($value ? 100 : 10) : $value;
-			$eqLogic->batteryStatus($value);
-			$eqLogic->log('info', sprintf(__("Eq #%1\$s# <- Batterie à %2\$s%%", __FILE__), $eqLogic->getHumanName(), $value));
+			if ($eqLogic->getStatus('battery') != $value) {
+				$eqLogic->batteryStatus($value);
+				$eqLogic->log('info', sprintf(__("Eq #%1\$s# <- Batterie à %2\$s%%", __FILE__), $eqLogic->getHumanName(), $value));
+			}
 		}
 	}
 
