@@ -1607,7 +1607,6 @@ class jMQTT extends eqLogic {
 		$return['log'] = $this->getMqttClientLogFile();
 		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));
 		$return['state'] = $this->getMqttClientState();
-		$return['color'] = self::getBrokerColorFromState($return['state']);
 		$return['icon'] = self::getBrokerIconFromState($return['state']);
 		if (!self::daemon_state()) { // Daemon is down
 			$return['message'] = __("Démon non démarré", __FILE__);
@@ -1652,31 +1651,13 @@ class jMQTT extends eqLogic {
 	public static function getBrokerIconFromState($state) {
 		switch ($state) {
 			case self::MQTTCLIENT_OK:
-				return 'fa-check-circle';
+				return 'fa-check-circle success';
 				break;
 			case self::MQTTCLIENT_POK:
-				return 'fa-minus-circle';
+				return 'fa-minus-circle warning';
 				break;
 			default:
-				return 'fa-times-circle';
-				break;
-		}
-	}
-
-	/**
-	 * Return hex color string depending state passed
-	 * @return string hex color
-	 */
-	public static function getBrokerColorFromState($state) {
-		switch ($state) {
-			case self::MQTTCLIENT_OK:
-				return '#96C927';
-				break;
-			case self::MQTTCLIENT_POK:
-				return '#ff9b00';
-				break;
-			default:
-				return '#ff0000';
+				return 'fa-times-circle danger';
 				break;
 		}
 	}

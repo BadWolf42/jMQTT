@@ -1270,8 +1270,7 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_opt
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').removeClass('disableCard')
 	else
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').addClass('disableCard')
-	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle').removeClass('fa-minus-circle').removeClass('fa-times-circle').addClass(_options.icon);
-	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').css('color', _options.color);
+	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
 });
 
 //Called by the plugin core to inform about the automatic inclusion mode disabling
