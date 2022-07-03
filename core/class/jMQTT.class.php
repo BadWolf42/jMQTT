@@ -1613,16 +1613,17 @@ class jMQTT extends eqLogic {
 			return $return;
 		}
 		if (!$this->getIsEnable()) {
-			$return['message'] = __("Ce Client est désactivé", __FILE__);
+			$return['message'] = __("La connexion à ce Broker est désactivée", __FILE__);
 		} elseif ($return['state'] == self::MQTTCLIENT_NOK) {
 			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Ce Client n'est pas démarré", __FILE__);
+			$return['message'] = __("Le Démon jMQTT n'est pas encore connecté à ce Broker", __FILE__);
 		} elseif ($return['state'] == self::MQTTCLIENT_POK) {
 			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Ce Client ne peut pas se connecter au Broker", __FILE__);
+			$return['message'] = __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__);
 		} else {
 			$return['launchable'] = self::MQTTCLIENT_OK;
 			$return['state'] = self::MQTTCLIENT_OK;
+			$return['message'] = __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__);
 		}
 		return $return;
 	}
