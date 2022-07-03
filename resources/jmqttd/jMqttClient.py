@@ -136,8 +136,8 @@ class jMqttClient:
 		# Create MQTT Client
 		self.mqttclient = mqtt.Client(self.message['clientid'])
 		# Enable Paho logging functions
-		if 'paholog' in self.message and self.message['paholog'] != '':
-			self.mqttclient.enable_logger(logger)
+		if self._log.isEnabledFor(logging.VERBOSE):
+			self.mqttclient.enable_logger(self._log)
 		else:
 			self.mqttclient.disable_logger()
 		if self.message['username'] != '':
@@ -161,9 +161,11 @@ class jMqttClient:
 			self.mqttclient.loop_start()
 			if self.mqttclient._thread is not None:
 				self.mqttclient._thread.name = 'Brk' + self.id + 'Th'
-		except:
+		except Exception as e:
 			if self._log.isEnabledFor(logging.DEBUG):
 				self._log.exception('jMqttClient.start() Exception')
+			else:
+				self._log.error('Could not start MQTT client: %s', e)
 
 	def stop(self):
 		if self.mqttclient is not None:

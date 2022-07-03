@@ -1368,10 +1368,10 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params, false);
 	}
 
-	public static function toDaemon_setLogLevel() {
-		$params['cmd']='loglevel';
-		$params['id']=0;
-		$params['level']=log::convertLogLevel(log::getLogLevel(__class__));
+	public static function toDaemon_setLogLevel($_level=null) {
+		$params['cmd'] = 'loglevel';
+		$params['id'] = 0;
+		$params['level'] = is_null($_level) ? log::convertLogLevel(log::getLogLevel(__class__)) : $_level;
 		self::sendToDaemon($params);
 	}
 
