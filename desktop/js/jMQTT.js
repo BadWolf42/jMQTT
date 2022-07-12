@@ -23,6 +23,10 @@ $('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
 	event.stopPropagation()
 });
 
+// Compatibility with Jeedom 4.1 // TODO Remove me when Jeedom 4.1 is deprecated
+if (typeof jeedom.eqLogic.buildSelectCmd !== 'function')
+	jeedom.eqLogic.buildSelectCmd = jeedom.eqLogic.builSelectCmd;
+
 //To memorise page refresh timeout when set
 var refreshTimeout;
 var timeout_refreshMqttClientInfo = null;

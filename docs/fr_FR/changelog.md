@@ -1,12 +1,13 @@
 # Registre des évolutions
 
-## Beta 2022-07-04
+## Beta 2022-07-13
  - **Ajout d'un bouton permettant de changer tous les Topics d'un Equipement**
  - **Ajout d'un champ de configuration pour la commande définissant la Batterie d'un Equipement**
  - **Ajout d'un champ de configuration pour la commande définissant l'état de Disponibilité d'un Equipement**
  - Correction d'un bug lors de l'utilisation du même Topic sur plusieurs équipements
  - Correction d'un bug (non impactant) dans le démon
  - Remplacement de la fonction obsolète jeedom.eqLogic.builSelectCmd() par buildSelectCmd()
+ - Correction du padding des liens de la documentation
 
 ## Beta 2022-06-30
  - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
