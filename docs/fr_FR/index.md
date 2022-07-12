@@ -1,11 +1,39 @@
+
 # Présentation
+
+Le plugin jMQTT permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
+Ses principales fonctionnalités sont :
+
+ - Installation automatique du Broker Mosquitto ;
+ - Prise en charge de plusieurs Broker ;
+ - Création automatique des équipements MQTT, création automatique des commandes d'information, options pour désactiver ces automatismes ;
+ - Ajout manuel d'équipement MQTT ;
+ - Duplication d'équipements ;
+ - Décodage de payload JSON complexe et création de commandes d'informations associées ;
+ - Affichage en vue Classique Jeedom ou en vue JSON ;
+ - Ajout manuel de commandes (pour la publication), prise en charge du mode Retain ;
+ - Gestionnaire de templates ;
+ - Emulation et remontée du niveau de batterie d'un équipement dans Jeedom ;
+ - Emulation et remontée de la disponibilité et mise en alarme de l'équipement dans Jeedom ;
+
+et encore beaucoup d'autres...
+
+
+# Qu'est-ce que MQTT ?
+
+MQTT, pour "Message Queuing Telemetry Transport", est un protocole open source de messagerie qui assure des communications non permanentes entre des appareils par le transport de leurs messages. 
+
+Il a été créé en 1999 par Andy Stanford-Clark, ingénieur chez IBM, et Arlen Nipper, chez EuroTech, principalement dans la communication M2M pour permettre à deux appareils utilisant des technologies différentes de communiquer. 
+"Devenu une norme ISO en 2016, MQTT connectait déjà à cette date des millions d'appareils dans le monde entier, dans toutes sortes d'applications et d'industries. C'est une technologie d'avenir", 
+affirme Fabien Pereira Vaz, technical sales manager chez Paessler AG. 
+
+Les géants du web parmi lesquels AWS ou Microsoft utilisent MQTT pour remonter les données sur leur plateforme cloud. 
 
 MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.
 Il apporte une très grande souplesse dans les échanges d'information entre capteurs/actionneurs/systèmes domotique/etc.
 
-Ce plugin permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
-
 Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :
+
 [![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)
 
 Crédit : François Riotte
@@ -82,7 +110,7 @@ Pour modifier les informations de connexion au Broker, les paramètres sont:
   - _IP/Nom de Domaine du Broker_ : adresse IP du Broker (par défaut localhost i.e. la machine hébergeant Jeedom);
   - _Port du Broker_ : port du Broker (1883 par défaut);
   - _Identifiant de Connexion_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
-    - Cet identifiant est aussi utilisé dans les topics des commandes info *status* et *api*. Les topics sont automatiquement mis à jour si l'identifiant est modifié.
+    - Cet identifiant est aussi utilisé dans le topic de la commande info *status*. Le topic est automatiquement mis à jour si l'identifiant est modifié.
   - _Compte et Mot de passe de Connexion_ : compte et mot de passe de connexion au Broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du Broker).
   - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
   - _MQTT Sécurisé (TLS)_ : permet le chiffrement TLS des communications avec le Broker. Trois options sont offertes : Désactivé, Activé en utilisant les Autorités Publiques et Activé en utilisant un Autorité Personnalisée. Bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls)
@@ -90,7 +118,6 @@ Pour modifier les informations de connexion au Broker, les paramètres sont:
   - _Autorité Personnalisée_ : visible si TLS est activé et utilise un Autorité Personnalisée, sélectionne l'autorité de certification attendue pour le Broker. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
   - _Certificat Client Personnalisé_ : visible si TLS est activé, sélectionne le Certificat Client attendu par le Broker. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
   - _Clé Privée Client Personnalisée_ : visible si TLS est activé, sélectionne la Clée Privée du Client premettant de discuter avec le Broker. Cette clé privée doit être le pendant du Certificat ci-dessus, si l'un est fournit l'autre est obligatoire. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
-  - _Accès API_ : à activer pour utiliser l'[API](#api).
 
 > **Attention**: _L'identifiant de connexion_ doit être unique par client par Broker. Sinon les clients portant le même identifiant vont se déconnecter mutuellement.
 
@@ -458,27 +485,6 @@ A ce sujet, je vous renvoie vers l'excellent article [MQTTS : Comment utiliser M
 
 Depuis mai 2021, jMQTT supporte la connexion aux Broker publique ou privé en MQTTS. Est aussi implémenté un mecanisme de validation du Certificat du Serveur et l'emploi une paire de clés cryptographique personnalisée (Certificat & Clé Privée Client) pour un chiffrement asymétrique de bout en bout.
 
-# API
-
-Le plugin permet d’accéder à toutes les méthodes de l’[API JSON RPC](https://doc.jeedom.com/fr_FR/core/4.1/jsonrpc_api) au travers du protocole MQTT.
-
-> **Important**
->
-> Pour activer l’API :
-> 1.  Activer l’accès à l’API jMQTT dans l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
-> 2.  Activer l'**API JSON RPC** dans la configuration Jeedom.
-
-Les payloads requêtes doivent être adressées au topic `Identifiant de Connexion/api`, `jeedom/api` par défaut, l’identifiant de connexion étant jeedom par défaut et se configurant via l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
-
-Leur format JSON est :
-
-    {"method": "Méthode de la requête", "id": "Id. de la requête", "params": { Paramètres additionnels }, "topic": "Topic de retour"}
-
-Où :
-  - `Méthode de la requête` : nom de la méthode invoquée, voir [API JSON RPC](https://doc.jeedom.com/fr_FR/core/4.1/jsonrpc_api) ;
-  - `Id. de la requête` (optionnel) : identifiant qui sera retourné dans la réponse, doit être une chaine. Si absent, l’id de retour sera null ;
-  - `Paramètres additionnels` (optionnel) : paramètres relatifs à la méthode de la requête, voir [API JSON RPC](https://doc.jeedom.com/fr_FR/core/4.1/jsonrpc_api) ;
-  - `Topic de retour` (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête. Si absent, la réponse n’est pas publiée.
 
 # FAQ
 
