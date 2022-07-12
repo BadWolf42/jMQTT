@@ -1,5 +1,14 @@
 # Registre des évolutions
 
+## Beta 2022-07-13
+ - **Ajout d'un bouton permettant de changer tous les Topics d'un Equipement**
+ - **Ajout d'un champ de configuration pour la commande définissant la Batterie d'un Equipement**
+ - **Ajout d'un champ de configuration pour la commande définissant l'état de Disponibilité d'un Equipement**
+ - Correction d'un bug lors de l'utilisation du même Topic sur plusieurs équipements
+ - Correction d'un bug (non impactant) dans le démon
+ - Remplacement de la fonction obsolète jeedom.eqLogic.builSelectCmd() par buildSelectCmd()
+ - Correction du padding des liens de la documentation
+
 ## Beta 2022-06-30
  - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
  - **Amélioration les performances et réduction de la consommation mémoire**
@@ -26,6 +35,7 @@
  - Ajout de signaux de vie entre le démon et Jeedom
  - Ajout et nettoyage des symboles de traduction
  - Préparatifs pour le mode tableau de la vue des équipements
+ - Simplification des logs du démon
  - Mise à jour des documentations
  - Corrections syntaxiques et orthographiques
 
@@ -179,7 +189,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
   - Amélioration [PR#6](https://github.com/Domochip/jMQTT/pull/6): Conversion des couleurs en HTML sur les commandes nommées "color","colour","couleur" ou "rgb"
   - Amélioration [PR#5](https://github.com/Domochip/jMQTT/pull/5): Mise en place de petites icones de visibilité et mode incluson sur les équipement + lazy image
   - Amélioration [PR#4](https://github.com/Domochip/jMQTT/pull/4): Utilisation d'une liste ordonnée et indentée pour le choix de l'Objet parent
-  - Amélioration [PR#3](https://github.com/Domochip/jMQTT/pull/3): AJout du remplacement de #select#
+  - Amélioration [PR#3](https://github.com/Domochip/jMQTT/pull/3): Ajout du remplacement de #select#
   - Amélioration [PR#2](https://github.com/Domochip/jMQTT/pull/2): Remplissage du topic de l'équipement sur double-click + ajout des champs min, max et listValue
 
 ## 2021-03-21

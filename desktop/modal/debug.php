@@ -20,8 +20,11 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 ?>
+	<div class="floatingbar">
+		<div style="display: none;" id="md_jmqttDebug"></div>
+	</div>
 
-<div style="display: none;" id="md_jmqttDebug"></div>
+
 <!-- <div class="hasfloatingbar col-xs-12 col-lg-12" style=""> -->
 <!--
 	<div class="floatingbar">
@@ -301,23 +304,21 @@ foreach (jMQTT::getBrokers() as $brk) {
 	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_INCLUDE_MODE;
 	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_LAST_LAUNCH_TIME;
 	$cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
-?>
-							<tr>
-								<td colspan="3" style="font-weight:bolder;color:var(--al-warning-color);">{{Broker}} <?php echo $brk->getHumanName(); ?> (<?php echo $brk->getId(); ?>)</td>
-							</tr>
-<?php
+
+	$printBrkH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-warning-color);">{{Broker}} '.$brk->getHumanName().' ('.$brk->getId().')</td></tr>';
+	$printBrkB = '';
 	foreach ($cacheBrkKeys as $k) {
 		$val = cache::byKey($k)->getValue(null);
 		if (!is_null($val)) {
-?>
-							<tr>
-								<td class="key"><?php echo $k; ?></td>
-								<td><pre class="val"><?php echo json_encode($val, JSON_UNESCAPED_UNICODE); ?></pre></td>
-								<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a> <a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>
-							</tr>
-<?php
+			$printBrkB .= '							<tr>';
+			$printBrkB .= '<td class="key">'.$k.'</td>';
+			$printBrkB .= '<td><pre class="val">'.json_encode($val, JSON_UNESCAPED_UNICODE).'</pre></td>';
+			$printBrkB .= '<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a> <a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>';
+			$printBrkB .= '</tr>';
 		}
 	}
+	if ($printBrkB !== '')
+		echo $printBrkH, $printBrkB;
 }
 
 foreach(jMQTT::getNonBrokers() as $eqpts) {
@@ -344,19 +345,22 @@ foreach(jMQTT::getNonBrokers() as $eqpts) {
 			echo $printEqH, $printEqB;
 	}
 }
+?>
+							<tr><td colspan="3"><a class="btn btn-success btn-xs pull-right bt_debugShowHideCmd"><i class="fas fa-pen"></i> {{Afficher le cache des Commandes}}</a></td></tr>
+<?php
 /*
-// TODO FIXME Listing of cmd in cache WAY TOO SLOW, fetch dynamicaly?
-
+// TODO FIXME Listing of cmd in cache TOO SLOW, fetch dynamicaly?
+*/
 foreach (cmd::searchConfiguration('', jMQTT::class) as $cmd) {
 	$cacheCmdKeys = array();
 	$cacheCmdKeys[] = 'cmdCacheAttr'.$cmd->getId();
-	$printCmdH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-success-color);">{{Commande}} '.$cmd->getHumanName().' ('.$cmd->getId().')</td></tr>';
+	$printCmdH = '							<tr class="lcmd hidden"><td colspan="3" style="font-weight:bolder;color:var(--al-success-color);">{{Commande}} '.$cmd->getHumanName().' ('.$cmd->getId().')</td></tr>';
 	
 	$printCmdB = '';
 	foreach ($cacheCmdKeys as $k) {
 		$val = cache::byKey($k)->getValue(null);
 		if (!is_null($val)) {
-			$printCmdB .= '							<tr>';
+			$printCmdB .= '							<tr class="lcmd hidden">';
 			$printCmdB .= '<td class="key">'.$k.'</td>';
 			$printCmdB .= '<td><pre class="val">'.json_encode($val, JSON_UNESCAPED_UNICODE).'</pre></td>';
 			$printCmdB .= '<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a> <a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>';
@@ -365,7 +369,8 @@ foreach (cmd::searchConfiguration('', jMQTT::class) as $cmd) {
 	}
 	if ($printCmdB !== '')
 		echo $printCmdH, $printCmdB;
-}*/
+}
+
 ?>
 						</tbody>
 					</table>
@@ -458,6 +463,15 @@ $('#bt_debugTabCache').on('click', '.bt_debugDelCache', function () {
 			}
 		}
 	});
+});
+$('#bt_debugTabCache').on('click', '.bt_debugShowHideCmd', function () {
+	if ($(this).hasClass('btn-warning')) {
+		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-pen"></i> {{Afficher le cache des Commandes}}');
+		$('#bt_debugTabCache .lcmd').each(function () { $(this).addClass('hidden'); });
+	} else {
+		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Cacher le cache des Commandes}}');
+		$('#bt_debugTabCache .lcmd').each(function () { $(this).removeClass('hidden'); });
+	}
 });
 					</script>
 				</div>
@@ -658,4 +672,11 @@ METHOD POST
 			</div>
 		</div>
 	</div>
+-->
+<!--
+TODO
+- Stop heatbeat
+- Request Thread Dump
+- Enable/disable listeners
+- Clean directories deps / dynamic content
 -->

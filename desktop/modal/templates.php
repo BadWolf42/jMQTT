@@ -41,7 +41,6 @@ if (!isConnect('admin')) {
 		<br />
 		<legend><i class="fas fa-tachometer-alt"></i> {{Aperçu de l'équipement}}</legend>
 		<div id='div_jmqttTemplateEqlogic'></div>
-		<br />
 		<legend><i class="fas fa-list-alt"></i> {{Aperçu des commandes}}</legend>
 		<table id="table_jmqttTemplateCmds" class="table tree table-bordered table-condensed table-striped">
 			<thead>
@@ -147,7 +146,7 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<textarea class="eqLogicAttr form-control" style="resize:none!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
 				eq += '</div></div>';
 				// Icone
-				eq += '<div id="sel_icon_div" class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Icone}}</label><div class="col-sm-3"><img id="icon_visu_tpl" src="" height="100" /></div></div>';
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Icone}}</label><div class="col-sm-3" style="text-align: center"><img id="icon_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 				// Display equipements
 				$('#div_jmqttTemplateEqlogic').empty().html(eq);
 				// Handle error with icon

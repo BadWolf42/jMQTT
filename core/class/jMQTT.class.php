@@ -60,6 +60,8 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
 	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
 	const CONF_KEY_JSON_PATH = 'jsonPath';
+	const CONF_KEY_BATTERY_CMD = 'battery_cmd';
+	const CONF_KEY_AVAILABILITY_CMD = 'availability_cmd';
 	const CONF_KEY_TEMPLATE_UUID = 'templateUUID';
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
@@ -615,56 +617,62 @@ class jMQTT extends eqLogic {
 		return $returns;
 	}
 
+
 	/**
-	 * subscribe topic
+	 * subscribe topic, ALWAYS
 	 */
-	public function subscribeTopic($topic, $qos){
-		// If broker eqpt is disabled, don't need to send subscribe
-		$broker = $this->getBroker();
-		if(!$broker->getIsEnable())
-			return;
-		if (empty($topic)){
+	public function subscribeTopic($topic, $qos) {
+		// No Topic provided
+		if (empty($topic)) {
 			if ($this->getType() == self::TYP_EQPT)
 				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
 			else
 				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
 			return;
 		}
+		$broker = $this->getBroker();
+		// If broker eqpt is disabled, don't need to send subscribe
+		if(!$broker->getIsEnable())
+			return;
 		if ($this->getType() == self::TYP_EQPT)
 			$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
 		else
 			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
-		self::toDaemon_subscribe($this->getBrkId(), $topic, $qos);
+		self::toDaemon_subscribe($broker->getId(), $topic, $qos);
+
 	}
 
 	/**
-	 * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
+	 * Unsubscribe topic, ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
 	 */
-	public function unsubscribeTopic($topic, $brkId = null){
-		if (empty($topic))
-			return;
-		if (is_null($brkId))
-			$brkId = $this->getBrkId();
-		// If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send unsubscribe
-		$broker = self::getBrokerFromId($brkId);
-		if(!$broker->getIsEnable() || $broker->getMqttClientState() != self::MQTTCLIENT_OK)
-			return;
-		//Find eqLogic using the same topic
-		$topicConfiguration = substr(json_encode(array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic)), 1, -1);
-		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
-		$count = 0;
-		foreach ($eqLogics as $eqLogic) {
-			// If it's attached to the same broker and enabled and it's not "me"
-			if ($eqLogic->getBrkId() == $brkId && $eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) $count++;
-		}
-		//if there is no other eqLogic using the same topic, we can unsubscribe
-		if (!$count) {
+	public function unsubscribeTopic($topic, $brkId = null) { // old Broker can be provided when switching Eq to another Broker
+		// No Topic provided
+		if (empty($topic)) {
 			if ($this->getType() == self::TYP_EQPT)
-				$this->log('info', sprintf(__("L'équipement #%1\$s# se désinscrit du topic '%2\$s'", __FILE__), $this->getHumanName(), $topic));
+				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
 			else
-				$this->log('info', sprintf(__("Le Broker %1\$s se désinscrit du topic '%2\$s'", __FILE__), $this->getName(), $topic));
-			self::toDaemon_unsubscribe($brkId, $topic);
+				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
+			return;
 		}
+		$broker = is_null($brkId) ? $this->getBroker() : self::getBrokerFromId($brkId);
+		// If broker eqpt is disabled, don't need to send unsubscribe
+		if(!$broker->getIsEnable())
+			return;
+		// Find eqLogic using the same topic AND the same Broker
+		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
+		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
+		foreach ($eqLogics as $eqLogic) {
+			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
+				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
+				return;
+			}
+		}
+		// If there is no other eqLogic using the same topic, we can unsubscribe
+		if ($this->getType() == self::TYP_EQPT)
+			$this->log('info', sprintf(__("L'équipement #%1\$s# se désinscrit du topic '%2\$s'", __FILE__), $this->getHumanName(), $topic));
+		else
+			$this->log('info', sprintf(__("Le Broker %1\$s se désinscrit du topic '%2\$s'", __FILE__), $this->getName(), $topic));
+		self::toDaemon_unsubscribe($broker->getId(), $topic);
 	}
 
 	/**
@@ -742,6 +750,7 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
 				self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
+				self::CONF_KEY_BATTERY_CMD,     self::CONF_KEY_AVAILABILITY_CMD,
 				self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
 				self::CONF_KEY_QOS);
 			foreach ($backupVal as $key)
@@ -917,6 +926,19 @@ class jMQTT extends eqLogic {
 				if ($this->_preSaveInformations[self::CONF_KEY_QOS] != $this->getConf(self::CONF_KEY_QOS)) {
 					// resubscribe will take new QoS over
 					$subscribeRequested = true;
+				}
+
+				// Battery removed -> Clear Battery status
+				if ($this->_preSaveInformations[self::CONF_KEY_BATTERY_CMD] != '' && $this->getConf(self::CONF_KEY_BATTERY_CMD) == '') {
+					$this->setStatus('battery', null);
+					$this->setStatus('batteryDatetime', null);
+					$this->log('debug', sprintf(__("Nettoyage de la Batterie de l'équipement #%s#", __FILE__), $this->getHumanName()));
+				}
+
+				// Availability removed -> Clear Availability (Timeout) status
+				if ($this->_preSaveInformations[self::CONF_KEY_AVAILABILITY_CMD] != '' && $this->getConf(self::CONF_KEY_AVAILABILITY_CMD) == '') {
+					$this->setStatus('warning', null);
+					$this->log('debug', sprintf(__("Nettoyage de la Disponibilité de l'équipement #%s#", __FILE__), $this->getHumanName()));
 				}
 
 				// In the end, does topic need to be subscribed
@@ -1100,7 +1122,7 @@ class jMQTT extends eqLogic {
 			return false;
 		}
 		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_SND)->getValue(0)) > 50) {
-			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis 50s).", __FILE__));
+			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >50s).", __FILE__));
 			self::toDaemon_hb();
 			return true;
 		}
@@ -1202,7 +1224,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 		// If something bad happened, clean anyway
-		self::logger('debug', __("Netoyage du Démon", __FILE__));
+		self::logger('debug', __("Nettoyage du Démon", __FILE__));
 		self::fromDaemon_daemonDown($cuid);
 	}
 
@@ -1249,10 +1271,10 @@ class jMQTT extends eqLogic {
 		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
 		if ($cpid != 0) { // Cached PID is available
 			if (!@posix_getsid($cpid)) { // Cached PID is NOT running
-				self::logger('warning', sprintf(__("Démon [%\$1s] va remplacer le Démon [%\$2s] !", __FILE__), $ruid, $cuid));
+				self::logger('warning', sprintf(__("Démon [%1\$s] va remplacer le Démon [%2\$s] !", __FILE__), $ruid, $cuid));
 				self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
 			} else { // Cached PID IS running
-				self::logger('warning', sprintf(__("Démon [%\$1s] essaye de remplacer le Démon [%\$2s] !", __FILE__), $ruid, $cuid));
+				self::logger('warning', sprintf(__("Démon [%1\$s] essaye de remplacer le Démon [%2\$s] !", __FILE__), $ruid, $cuid));
 				exec(system::getCmdSudo() . 'fuser ' . $cport . '/tcp 2> /dev/null', $output, $retval);
 				if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
 					self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être identifié", __FILE__), $cuid));
@@ -1261,7 +1283,7 @@ class jMQTT extends eqLogic {
 					self::logger('warning', sprintf(__("Démon [%s] : Reprend la main", __FILE__), $ruid));
 					self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
 				} else { // Old daemon is still alive. If Daemon is semi-dead, it may die by missing enough heartbeats
-					self::logger('warning', sprintf(__("Démon [%\$1s] va survivre au Démon [%\$2s] !", __FILE__), $cuid, $ruid));
+					self::logger('warning', sprintf(__("Démon [%1\$s] va survivre au Démon [%2\$s] !", __FILE__), $cuid, $ruid));
 					posix_kill($rpid, 15);
 					return '';
 				}
@@ -1311,7 +1333,7 @@ class jMQTT extends eqLogic {
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
 					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								'</br>@Stack: %3\$s,</br>@BrkId: %4\$s.',
+								"</br>@Stack: %3\$s,</br>@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -1329,11 +1351,11 @@ class jMQTT extends eqLogic {
 		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
 		$port = @cache::byKey('jMQTT::'.self::CACHE_DAEMON_PORT)->getValue(0);
 		if (!socket_connect($socket, '127.0.0.1', $port)) {
-			self::logger('debug', sprintf(__("Impossible de se connecter du Démon sur le port %\$1s, erreur %\$2s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
+			self::logger('debug', sprintf(__("Impossible de se connecter du Démon sur le port %1\$s, erreur %2\$s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
 			return;
 		}
 		if (socket_write($socket, $payload, strlen($payload)) === false) {
-			self::logger('debug', sprintf(__("Impossible d'envoyer un message au Démon sur le port %\$1s, erreur %\$2s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
+			self::logger('debug', sprintf(__("Impossible d'envoyer un message au Démon sur le port %1\$s, erreur %2\$s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
 			return;
 		}
 		socket_close($socket);
@@ -1346,10 +1368,10 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params, false);
 	}
 
-	public static function toDaemon_setLogLevel() {
-		$params['cmd']='loglevel';
-		$params['id']=0;
-		$params['level']=log::convertLogLevel(log::getLogLevel(__class__));
+	public static function toDaemon_setLogLevel($_level=null) {
+		$params['cmd'] = 'loglevel';
+		$params['id'] = 0;
+		$params['level'] = is_null($_level) ? log::convertLogLevel(log::getLogLevel(__class__)) : $_level;
 		self::sendToDaemon($params);
 	}
 
@@ -1566,7 +1588,7 @@ class jMQTT extends eqLogic {
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
 					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								'@Stack: %3\$s,</br>@BrkId: %4\$s.',
+								"@Stack: %3\$s,</br>@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -1585,23 +1607,23 @@ class jMQTT extends eqLogic {
 		$return['log'] = $this->getMqttClientLogFile();
 		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));
 		$return['state'] = $this->getMqttClientState();
-		$return['color'] = self::getBrokerColorFromState($return['state']);
 		$return['icon'] = self::getBrokerIconFromState($return['state']);
 		if (!self::daemon_state()) { // Daemon is down
 			$return['message'] = __("Démon non démarré", __FILE__);
 			return $return;
 		}
 		if (!$this->getIsEnable()) {
-			$return['message'] = __("Ce Client est désactivé", __FILE__);
+			$return['message'] = __("La connexion à ce Broker est désactivée", __FILE__);
 		} elseif ($return['state'] == self::MQTTCLIENT_NOK) {
 			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Ce Client n'est pas démarré", __FILE__);
+			$return['message'] = __("Le Démon jMQTT n'est pas encore connecté à ce Broker", __FILE__);
 		} elseif ($return['state'] == self::MQTTCLIENT_POK) {
 			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Ce Client ne peut pas se connecter au Broker", __FILE__);
+			$return['message'] = __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__);
 		} else {
 			$return['launchable'] = self::MQTTCLIENT_OK;
 			$return['state'] = self::MQTTCLIENT_OK;
+			$return['message'] = __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__);
 		}
 		return $return;
 	}
@@ -1630,31 +1652,13 @@ class jMQTT extends eqLogic {
 	public static function getBrokerIconFromState($state) {
 		switch ($state) {
 			case self::MQTTCLIENT_OK:
-				return 'fa-check-circle';
+				return 'fa-check-circle success';
 				break;
 			case self::MQTTCLIENT_POK:
-				return 'fa-minus-circle';
+				return 'fa-minus-circle warning';
 				break;
 			default:
-				return 'fa-times-circle';
-				break;
-		}
-	}
-
-	/**
-	 * Return hex color string depending state passed
-	 * @return string hex color
-	 */
-	public static function getBrokerColorFromState($state) {
-		switch ($state) {
-			case self::MQTTCLIENT_OK:
-				return '#96C927';
-				break;
-			case self::MQTTCLIENT_POK:
-				return '#ff9b00';
-				break;
-			default:
-				return '#ff0000';
+				return 'fa-times-circle danger';
 				break;
 		}
 	}
@@ -1709,17 +1713,6 @@ class jMQTT extends eqLogic {
 		if ($params['tlsclikeyfile'] != '')
 			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $params['tlsclikeyfile']);
 		self::toDaemon_newClient($this->getId(), $this->getMqttAddress(), $params);
-		foreach (self::byBrkId($this->getId()) as $broker) {
-			if ($broker->getIsEnable() && $broker->getId() != $this->getId()) {
-				$broker->subscribeTopic($broker->getTopic(), $broker->getQos());
-			}
-		}
-		if ($this->isApiEnable()) {
-			$this->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $this->getMqttApiTopic()));
-			$this->subscribeTopic($this->getMqttApiTopic(), '1');
-		} else {
-			$this->log('info', __("L'accès à l'API est désactivée", __FILE__));
-		}
 	}
 
 	/**
@@ -1740,6 +1733,19 @@ class jMQTT extends eqLogic {
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
 			$broker->sendMqttClientStateEvent();
+			// Subscribe to topics
+			foreach (self::byBrkId($id) as $eq) {
+				if ($eq->getIsEnable() && $eq->getId() != $broker->getId()) {
+					$eq->subscribeTopic($eq->getTopic(), $eq->getQos());
+				}
+			}
+			// Enable API
+			if ($broker->isApiEnable()) {
+				$broker->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $broker->getMqttApiTopic()));
+				$broker->subscribeTopic($broker->getMqttApiTopic(), '1');
+			} else {
+				$broker->log('info', __("L'accès à l'API est désactivée", __FILE__));
+			}
 			// Active listeners
 			self::listenersAddAll();
 		} catch (Throwable $e) {
@@ -1747,7 +1753,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -1770,7 +1776,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -1785,7 +1791,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}
@@ -1830,7 +1836,7 @@ class jMQTT extends eqLogic {
 	 * The method shall be called on a broker equipment eqLogic
 	 */
 	private function sendMqttClientStateEvent() {
-		$this->log('debug','jMQTT::EventState:'.json_encode($this->getMqttClientInfo()));
+		// $this->log('debug','jMQTT::EventState:'.json_encode($this->getMqttClientInfo()));
 		event::add('jMQTT::EventState', $this->getMqttClientInfo());
 	}
 
@@ -1961,7 +1967,7 @@ class jMQTT extends eqLogic {
 								self::logger('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
 							else // More info in debug mode, no big log otherwise
 								self::logger('error', str_replace("\n",' </br> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
-											',</br>@Stack: %3\$s,</br>@Dump: %4\$s.', $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
+											",</br>@Stack: %3\$s,</br>@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
 						}
 					} else
 						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement  #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
@@ -2093,7 +2099,7 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							'@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.',
+							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}
@@ -2320,6 +2326,22 @@ class jMQTT extends eqLogic {
 				(($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CA)) ||
 				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT)) ||
 				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY)));
+	}
+
+	/**
+	 * Get the Battery command defined in this eqLogic
+	 * @return string Return the Battery command defined
+	 */
+	public function getBatteryCmd() {
+		return $this->getConf(self::CONF_KEY_BATTERY_CMD);
+	}
+
+	/**
+	 * Get the Availability command defined in this eqLogic
+	 * @return string Return the Availability command defined
+	 */
+	public function getAvailabilityCmd() {
+		return $this->getConf(self::CONF_KEY_AVAILABILITY_CMD);
 	}
 
 	/**

@@ -6,11 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "composer"
-    directory: "/resources/Ratchet"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "composer"
     directory: "/resources/JsonPath-PHP"
     schedule:
       interval: "daily"

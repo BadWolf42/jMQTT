@@ -17,7 +17,6 @@ Main functionalities are:
   * Duplication of equipments;
   * Decoding of complex JSON payload and creation of related information commands;
   * Manual addition of commands (for publishing), support of the retain mode;
-  * [Deprecated] Acces to the Jeedom [JSON RPC API](https://jeedom.github.io/core/fr_FR/jsonrpc_api) through MQTT. 
 
 This plugin was originally written by Domotruc.  
 Many thanks to him for this real integration of MQTT into Jeedom that we continue to improve now!👍  
