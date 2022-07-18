@@ -1,19 +1,13 @@
 # Registre des évolutions
 
-## Beta 2022-07-13
- - **Ajout d'un bouton permettant de changer tous les Topics d'un Equipement**
- - **Ajout d'un champ de configuration pour la commande définissant la Batterie d'un Equipement**
- - **Ajout d'un champ de configuration pour la commande définissant l'état de Disponibilité d'un Equipement**
- - Correction d'un bug lors de l'utilisation du même Topic sur plusieurs équipements
- - Correction d'un bug (non impactant) dans le démon
- - Remplacement de la fonction obsolète jeedom.eqLogic.builSelectCmd() par buildSelectCmd()
- - Correction du padding des liens de la documentation
-
-## Beta 2022-06-30
+## 2022-07-19
  - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
  - **Amélioration les performances et réduction de la consommation mémoire**
  - **Prise en compte immédiate du changement du niveau de log par le démon**
  - **Configuration dynamique du port du démon, plus besoin de le définir**
+ - **Ajout d'un bouton permettant de changer tous les Topics d'un Equipement**
+ - **Ajout d'un champ de configuration pour la commande définissant la Batterie d'un Equipement**
+ - **Ajout d'un champ de configuration pour la commande définissant l'état de Disponibilité d'un Equipement**
  - Suppression des dépendances PHP à Ratchet
  - Amélioration de la détection de l'état des Broker et du démon
  - **Changement du nom du fichier de log du démon pour correspondre au standard de Jeedom (jMQTTd)**
@@ -36,6 +30,10 @@
  - Ajout et nettoyage des symboles de traduction
  - Préparatifs pour le mode tableau de la vue des équipements
  - Simplification des logs du démon
+ - Correction d'un bug lors de l'utilisation du même Topic sur plusieurs équipements
+ - Correction d'un bug (non impactant) dans le démon
+ - Remplacement de la fonction obsolète jeedom.eqLogic.builSelectCmd() par buildSelectCmd()
+ - Correction du padding des liens de la documentation
  - Mise à jour des documentations
  - Corrections syntaxiques et orthographiques
 
