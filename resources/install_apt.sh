@@ -9,6 +9,7 @@ LANG_DEP=en
 ##################################################################
 
 pre
+step 0 "Checking parameters"
 
 INSTALL_MOSQUITTO=1
 if [ ! -z $2 ] && [ $2 -eq 1 -o $2 -eq 0 ]; then
