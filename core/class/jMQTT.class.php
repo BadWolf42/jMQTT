@@ -60,19 +60,24 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
 	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
 	const CONF_KEY_JSON_PATH = 'jsonPath';
+	const CONF_KEY_BATTERY_CMD = 'battery_cmd';
+	const CONF_KEY_AVAILABILITY_CMD = 'availability_cmd';
 	const CONF_KEY_TEMPLATE_UUID = 'templateUUID';
 	const CONF_KEY_API = 'api';
 	const CONF_KEY_LOGLEVEL = 'loglevel';
 
-	const CACHE_INCLUDE_MODE = 'include_mode';
-	const CACHE_IGNORE_TOPIC_MISMATCH = 'ignore_topic_mismatch';
-	const CACHE_DAEMON_CONNECTED = 'daemonConnected';
-	const CACHE_MQTTCLIENT_CONNECTED = 'mqttClientConnected';
+	const CACHE_DAEMON_LAST_SND          = 'daemonLastSnd';
+	const CACHE_DAEMON_LAST_RCV          = 'daemonLastRcv';
+	const CACHE_DAEMON_PORT              = 'daemonPort';
+	const CACHE_DAEMON_UID               = 'daemonUid';
+	const CACHE_IGNORE_TOPIC_MISMATCH    = 'ignore_topic_mismatch';
+	const CACHE_INCLUDE_MODE             = 'include_mode';
+	const CACHE_MQTTCLIENT_CONNECTED     = 'mqttClientConnected';
+	const CACHE_LAST_LAUNCH_TIME         = 'lastLaunchTime';
 
 	const PATH_CERTIFICATES = 'data/jmqtt/certs/';
 
 	const DEFAULT_PYTHON_PORT = 1025;
-	const DEFAULT_WEBSOCKET_PORT = 1026;
 
 	/**
 	 * To define a standard jMQTT equipment
@@ -99,6 +104,7 @@ class jMQTT extends eqLogic {
 	 * @var array values from preRemove used for postRemove actions
 	 */
 	private $_preRemoveInformations;
+
 	/**
 	 * Broker jMQTT object related to this object
 	 * @var jMQTT broker object
@@ -135,7 +141,7 @@ class jMQTT extends eqLogic {
 	 * @return list of name and file array.
 	 */
 	public static function templateList(){
-		// log::add('jMQTT', 'debug', 'templateList()');
+		// self::logger('debug', 'templateList()');
 		$return = array();
 		// Get personal templates
 		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
@@ -143,7 +149,7 @@ class jMQTT extends eqLogic {
 				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $file);
 				$return[] = array('[Perso] '.$templateKey, 'plugins/jMQTT/data/template/' . $file);
 			} catch (Throwable $e) {
-				log::add('jMQTT', 'warning', __('Erreur lors de la lecture du template', __FILE__).' "data/template/'.$file.'"');
+				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), "data/template/".$file));
 			}
 		}
 		// Get official templates
@@ -152,7 +158,7 @@ class jMQTT extends eqLogic {
 				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../config/template/' . $file);
 				$return[] = array($templateKey, 'plugins/jMQTT/core/config/template/' . $file);
 			} catch (Throwable $e) {
-				log::add('jMQTT', 'warning', __('Erreur lors de la lecture du template', __FILE__).' "core/config/template/'.$file.'"');
+				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), "core/config/template/".$file));
 			}
 		}
 		return $return;
@@ -164,7 +170,7 @@ class jMQTT extends eqLogic {
 	 * @return array
 	 */
 	public static function templateByName($_name){
-		// log::add('jMQTT', 'debug', 'templateByName("' . $_name . '")');
+		// self::logger('debug', 'templateByName: ' . $_name);
 		if (strpos($_name , '[Perso] ') === 0) {
 			// Get personal templates
 			$name = substr($_name, strlen('[Perso] '));
@@ -180,7 +186,7 @@ class jMQTT extends eqLogic {
 				if ($templateKey == $name)
 					return $templateValue;
 			} catch (Throwable $e) {
-				throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_name.'"');
+				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_name));
 			}
 		}
 		return null;
@@ -192,7 +198,7 @@ class jMQTT extends eqLogic {
 	 * @return array
 	 */
 	public static function templateByFile($_filename = ''){
-		// log::add('jMQTT', 'debug', 'templateByFile("' . $_filename . '")');
+		// self::logger('debug', 'templateByFile: ' . $_filename);
 		$existing_files = self::templateList();
 		$exists = false;
 		foreach ($existing_files as list($n, $f))
@@ -202,12 +208,12 @@ class jMQTT extends eqLogic {
 			}
 		if (!$exists)
 			throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
-		// log::add('jMQTT', 'debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
+		// self::logger('debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
 		try {
 			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../../../' . $_filename);
 			return $templateValue;
 		} catch (Throwable $e) {
-			throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_filename.'"');
+			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
 		}
 		return array();
 	}
@@ -276,7 +282,7 @@ class jMQTT extends eqLogic {
 			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
 		} catch (Throwable $e) {
-			throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_filename.'"');
+			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
 		}
 	}
 
@@ -304,7 +310,7 @@ class jMQTT extends eqLogic {
 			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
 		} catch (Throwable $e) {
-			throw new Exception(__('Erreur lors de la lecture du template', __FILE__).' "'.$_filename.'"');
+			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
 		}
 	}
 
@@ -313,7 +319,7 @@ class jMQTT extends eqLogic {
 	 * @param string $_template template name to look for.
 	 */
 	public static function deleteTemplateByFile($_filename){
-		// log::add('jMQTT', 'debug', 'deleteTemplateByFile("' . $_filename . '")');
+		// self::logger('debug', 'deleteTemplateByFile: ' . $_filename);
 		if (!isset($_filename) || is_null($_filename) || $_filename == '')
 			return false;
 		$existing_files = self::templateList();
@@ -417,14 +423,14 @@ class jMQTT extends eqLogic {
 	 */
 	public static function createEquipment($broker, $name, $topic) {
 
-		log::add('jMQTT', 'debug', 'Initialize equipment ' . $name . ', topic=' . $topic);
+		self::logger('debug', 'createEquipment: ' . $name . ', topic=' . $topic);
 		$eqpt = new jMQTT();
 		$eqpt->setName($name);
 		$eqpt->setIsEnable(1);
 		$eqpt->setTopic($topic);
 
 		if (is_object($broker)) {
-			$broker->log('info', 'Create equipment ' . $name . ', topic=' . $topic);
+			$broker->log('info', sprintf(__("Création de l'équipement %1\$s pour le topic %2\$s", __FILE__), $name, $topic));
 			$eqpt->setBrkId($broker->getId());
 		}
 		$eqpt->save();
@@ -449,13 +455,12 @@ class jMQTT extends eqLogic {
 	 * raise Exception is Broker could not be found
 	 */
 	public static function createEqWithTemplate($brk_addr, $name, $template_path, $topic, $uuid = null) {
-		log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
-
+		// self::logger('debug', 'createEqWithTemplate: name=' . $name . ', brk_addr=' . $brk_addr . ', topic=' . $topic . ', template_path=' . $template_path . ', uuid=' . $uuid);
 		// Check if file is in Jeedom directory and exists
 		if (strpos(realpath($template_path), getRootPath()) === false)
-			throw new Exception("Le fichier template est en-dehors de Jeedom.");
+			throw new Exception(__("Le fichier template est en-dehors de Jeedom.", __FILE__));
 		if (!file_exists($template_path))
-			throw new Exception("Le fichier template n'a pas pu être trouvé.");
+			throw new Exception(__("Le fichier template n'a pas pu être trouvé.", __FILE__));
 		// Convert on the fly template to jsonPath if needed
 		self::templateSplitJsonPathByFile($template_path);
 
@@ -466,12 +471,12 @@ class jMQTT extends eqLogic {
 			$ip = gethostbyname($brk->getMqttAddress());
 			if ($ip == $brk_addr || (substr($ip, 0, 4) == '127.' && substr($brk_addr, 0, 4) == '127.')) {
 				$broker = $brk;
-				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found Broker: ' . $broker->getHumanName());
+				self::logger('debug', sprintf(__("createEqWithTemplate %1\$s: Le Broker %2\$s a été trouvé", __FILE__), $name, $broker->getHumanName()));
 				break;
 			}
 		}
 		if (!is_object($broker))
-			throw new Exception("Aucun Broker n'a pu être identifier, merci de créer un Broker dans jMQTT avant de créer un équipement.");
+			throw new Exception(__("Aucun Broker n'a pu être identifié, créez un Broker dans jMQTT avant de créer un équipement.", __FILE__));
 
 		$eq = null;
 		// Try to locate the Eq is uuid is provided
@@ -482,19 +487,20 @@ class jMQTT extends eqLogic {
 			foreach ($eqpts as $eqpt) {
 				// If it's attached to correct broker
 				if ($eqpt->getBrkId() == $broker->getId()) {
-					log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found matching Eq '.$eqpt->getHumanName());
+					self::logger('debug', sprintf(__("createEqWithTemplate %1\$s: L'Eq %2\$s a été trouvé", __FILE__), $name, $eqpt->getHumanName()));
+					self::logger('debug', 'createEqWithTemplate ' . $name . ': Found matching Eq '.$eqpt->getHumanName());
 					$eq = $eqpt;
 					break;
 				}
-				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Found Eq with matching uuid but wrong broker '.$eqpt->getHumanName());
+				self::logger('debug', sprintf(__("createEqWithTemplate %1\$s: L'Eq %2\$s a été trouvé avec cet UUID, mais sur le mauvais Broker", __FILE__), $name, $eqpt->getHumanName()));
 			}
 			if (is_null($eq))
-				log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': Could not find any Eq matching with UUID and broker.');
+				self::logger('debug', sprintf(__("createEqWithTemplate %s: Impossible de trouver un Eq correspondant à l'UUID sur ce Broker", __FILE__), $name));
 		}
 		// If the Eq is not located create it
 		if (is_null($eq)) {
 			$eq = self::createEquipment($broker, $name, $topic);
-			log::add('jMQTT', 'debug', 'createEqWithTemplate ' . $name . ': New Eq created.');
+			self::logger('debug', sprintf(__("createEqWithTemplate %s: Nouvel équipement créé", __FILE__), $name));
 			if (!is_null($uuid)) {
 				$eq->setConfiguration(jMQTT::CONF_KEY_TEMPLATE_UUID, $uuid);
 				$eq->save();
@@ -505,7 +511,7 @@ class jMQTT extends eqLogic {
 		try {
 			[$templateKey, $templateValue] = self::templateRead($template_path);
 		} catch (Throwable $e) {
-			throw new Exception(__('Erreur lors de la lecture du ficher template !', __FILE__));
+			throw new Exception(sprintf(__('Erreur lors de la lecture du ficher Template %s', __FILE__), $template_path));
 		}
 
 		// Apply the template
@@ -535,7 +541,7 @@ class jMQTT extends eqLogic {
 	 */
 	public function copy($_name) {
 
-		$this->log('info', 'Copying equipment ' . $this->getName() . ' as ' . $_name);
+		$this->log('info', sprintf(__("Copie de l'équipement %1\$s depuis l'équipement #%2\$s#", __FILE__), $name, $this->getHumanName()));
 
 		// Clone the equipment and change properties that shall be changed
 		// . new id will be given at saving
@@ -561,7 +567,7 @@ class jMQTT extends eqLogic {
 			$cmdCopy->setEqLogic_id($eqLogicCopy->getId());
 			$cmdCopy->setEqLogic($eqLogicCopy);
 			$cmdCopy->save();
-			$this->log('info', 'Cloning ' . $cmd->getType() . ' command ' . $cmd->getName());
+			$this->log('info', sprintf(__("Copie de la commande %1\$s %2\$s", __FILE__), $cmd->getType(), $cmd->getName()));
 		}
 
 		return $eqLogicCopy;
@@ -611,50 +617,62 @@ class jMQTT extends eqLogic {
 		return $returns;
 	}
 
+
 	/**
-	 * subscribe topic
+	 * subscribe topic, ALWAYS
 	 */
-	public function subscribeTopic($topic, $qos){
-
-		// If broker eqpt is disabled, don't need to send subscribe
-		$broker = $this->getBroker();
-		if(!$broker->getIsEnable()) return;
-
-		if (empty($topic)){
-			$this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': no subscription (empty topic)');
+	public function subscribeTopic($topic, $qos) {
+		// No Topic provided
+		if (empty($topic)) {
+			if ($this->getType() == self::TYP_EQPT)
+				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
+			else
+				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
 			return;
 		}
+		$broker = $this->getBroker();
+		// If broker eqpt is disabled, don't need to send subscribe
+		if(!$broker->getIsEnable())
+			return;
+		if ($this->getType() == self::TYP_EQPT)
+			$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
+		else
+			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
+		self::toDaemon_subscribe($broker->getId(), $topic, $qos);
 
-		$this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': subscribes to "' . $topic . '" with Qos=' . $qos);
-		self::subscribe_mqtt_topic($this->getBrkId(), $topic, $qos);
 	}
 
 	/**
-	 * Unsubscribe topic ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
+	 * Unsubscribe topic, ONLY if no other enabled eqpt linked to the same broker subscribes the same topic
 	 */
-	public function unsubscribeTopic($topic, $brkId = null){
-		if (empty($topic)) return;
-
-		if (is_null($brkId)) $brkId = $this->getBrkId();
-
-		// If broker eqpt is disabled or MqttClient is not connected or stopped, don't need to send unsubscribe
-		$broker = self::getBrokerFromId($brkId);
-		if(!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_POK || $broker->getMqttClientState() == self::MQTTCLIENT_NOK) return;
-
-		//Find eqLogic using the same topic
-		$topicConfiguration = substr(json_encode(array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic)), 1, -1);
+	public function unsubscribeTopic($topic, $brkId = null) { // old Broker can be provided when switching Eq to another Broker
+		// No Topic provided
+		if (empty($topic)) {
+			if ($this->getType() == self::TYP_EQPT)
+				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
+			else
+				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
+			return;
+		}
+		$broker = is_null($brkId) ? $this->getBroker() : self::getBrokerFromId($brkId);
+		// If broker eqpt is disabled, don't need to send unsubscribe
+		if(!$broker->getIsEnable())
+			return;
+		// Find eqLogic using the same topic AND the same Broker
+		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
 		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
-		$count = 0;
 		foreach ($eqLogics as $eqLogic) {
-			// If it's attached to the same broker and enabled and it's not "me"
-			if ($eqLogic->getBrkId() == $brkId && $eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) $count++;
+			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
+				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
+				return;
+			}
 		}
-
-		//if there is no other eqLogic using the same topic, we can unsubscribe
-		if (!$count) {
-			$this->log('info', ($this->getType() == self::TYP_EQPT?'Equipement ':'Broker ') . $this->getName() . ': unsubscribes from "' . $topic . '"');
-			self::unsubscribe_mqtt_topic($brkId, $topic);
-		}
+		// If there is no other eqLogic using the same topic, we can unsubscribe
+		if ($this->getType() == self::TYP_EQPT)
+			$this->log('info', sprintf(__("L'équipement #%1\$s# se désinscrit du topic '%2\$s'", __FILE__), $this->getHumanName(), $topic));
+		else
+			$this->log('info', sprintf(__("Le Broker %1\$s se désinscrit du topic '%2\$s'", __FILE__), $this->getName(), $topic));
+		self::toDaemon_unsubscribe($broker->getId(), $topic);
 	}
 
 	/**
@@ -732,6 +750,7 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
 				self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
+				self::CONF_KEY_BATTERY_CMD,     self::CONF_KEY_AVAILABILITY_CMD,
 				self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
 				self::CONF_KEY_QOS);
 			foreach ($backupVal as $key)
@@ -770,10 +789,8 @@ class jMQTT extends eqLogic {
 					if ($this->getIsEnable()) {
 						$startRequested = true; //If nothing happens in between, it will be restarted
 					} else {
-						if (!$stopped) {
-							$this->stopMqttClient();
-							$stopped = true;
-						}
+						// Note that $stopped is always true here
+						$this->stopMqttClient();
 					}
 				}
 
@@ -911,6 +928,19 @@ class jMQTT extends eqLogic {
 					$subscribeRequested = true;
 				}
 
+				// Battery removed -> Clear Battery status
+				if ($this->_preSaveInformations[self::CONF_KEY_BATTERY_CMD] != '' && $this->getConf(self::CONF_KEY_BATTERY_CMD) == '') {
+					$this->setStatus('battery', null);
+					$this->setStatus('batteryDatetime', null);
+					$this->log('debug', sprintf(__("Nettoyage de la Batterie de l'équipement #%s#", __FILE__), $this->getHumanName()));
+				}
+
+				// Availability removed -> Clear Availability (Timeout) status
+				if ($this->_preSaveInformations[self::CONF_KEY_AVAILABILITY_CMD] != '' && $this->getConf(self::CONF_KEY_AVAILABILITY_CMD) == '') {
+					$this->setStatus('warning', null);
+					$this->log('debug', sprintf(__("Nettoyage de la Disponibilité de l'équipement #%s#", __FILE__), $this->getHumanName()));
+				}
+
 				// In the end, does topic need to be subscribed
 				if($subscribeRequested && $this->getIsEnable()){
 					$this->subscribeTopic($this->getTopic(), $this->getQos());
@@ -927,7 +957,7 @@ class jMQTT extends eqLogic {
 		// ------------------------ Broker eqpt ------------------------
 		if ($this->getType() == self::TYP_BRK) {
 
-			$this->log('info', 'removing broker ' . $this->getName());
+			$this->log('info', sprintf(__("Suppression du Broker %s", __FILE__), $this->getName()));
 
 			// Disable first the broker to Stop MqttClient
 			if ($this->getIsEnable()) {
@@ -936,7 +966,7 @@ class jMQTT extends eqLogic {
 
 				// Wait up to 10s for MqttClient stopped
 				for ($i=0; $i < 40; $i++) {
-					if ($this->getMqttClientState() == self::MQTTCLIENT_NOK) break;
+					if ($this->getMqttClientState() != self::MQTTCLIENT_OK) break;
 					usleep(250000);
 				}
 			}
@@ -951,7 +981,7 @@ class jMQTT extends eqLogic {
 		}
 		// ------------------------ Normal eqpt ------------------------
 		else {
-			$this->log('info', 'removing equipment ' . $this->getName());
+			$this->log('info', sprintf(__("Suppression de l'équipement %s", __FILE__), $this->getName()));
 		}
 
 
@@ -974,6 +1004,7 @@ class jMQTT extends eqLogic {
 				unlink(log::getPathToLog($log));
 			}
 			config::remove('log::level::' . $log, 'jMQTT');
+			cache::delete('jMQTT::' . $this->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 
 			// Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
 			foreach (self::byBrkId($this->_preRemoveInformations['id']) as $eqpt) {
@@ -1004,7 +1035,7 @@ class jMQTT extends eqLogic {
 			$return[] = array(
 				'test' => __('Accès au broker', __FILE__) . ' ' . $broker->getName(),
 				'result' => $state ? __('OK', __FILE__) : __('NOK', __FILE__),
-				'advice' => $state ? '' : __('Vérifier les paramètres de connexion réseau', __FILE__),
+				'advice' => $state ? '' : __('Vérifiez les paramètres de connexion réseau', __FILE__),
 				'state' => $state
 			);
 
@@ -1013,15 +1044,15 @@ class jMQTT extends eqLogic {
 				$return[] = array(
 					'test' => __('Configuration du broker', __FILE__) . ' ' . $broker->getName(),
 					'result' => strtoupper($info['launchable']),
-					'advice' => ($info['launchable'] != 'ok' ? $info['message'] : ''),
-					'state' => ($info['launchable'] == 'ok')
+					'advice' => ($info['launchable'] != self::MQTTCLIENT_OK ? $info['message'] : ''),
+					'state' => ($info['launchable'] == self::MQTTCLIENT_OK)
 				);
 				if (end($return)['state']) {
 					$return[] = array(
 						'test' => __('Connexion au broker', __FILE__) . ' ' . $broker->getName(),
 						'result' => strtoupper($info['state']),
-						'advice' => ($info['state'] != 'ok' ? $info['message'] : ''),
-						'state' => ($info['state'] == 'ok')
+						'advice' => ($info['state'] != self::MQTTCLIENT_OK ? $info['message'] : ''),
+						'state' => ($info['state'] == self::MQTTCLIENT_OK)
 					);
 				}
 			}
@@ -1029,6 +1060,7 @@ class jMQTT extends eqLogic {
 
 		return $return;
 	}
+
 
 	###################################################################################################################
 	##
@@ -1044,182 +1076,359 @@ class jMQTT extends eqLogic {
 		self::checkAllMqttClients();
 	}
 
+	private static function clean_cache() {
+		// for each id, clean cached values
+		foreach (self::getBrokers() as $broker) {
+			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
+		}
+		cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
+		cache::delete('jMQTT::' . self::CACHE_DAEMON_PORT);
+		cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_SND);
+		cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_RCV);
+	}
+
+	public static function valid_uid($ruid) {
+		$cuid = @cache::byKey('jMQTT::'.self::CACHE_DAEMON_UID)->getValue("0:0");
+		if ($cuid === "0:0")
+			 return null;
+		return $cuid === $ruid;
+	}
+
 	/**
-	 * callback to get information on the daemon
+	 * Validates that a daemon is connected, running and is communicating
+	 */
+	private static function daemon_check() {
+		//self::logger('debug', 'daemon_check() ['.getmypid().']: ref='.$_SERVER['HTTP_REFERER']);	// VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
+		// Get Cached PID and PORT
+		$cuid = @cache::byKey('jMQTT::'.self::CACHE_DAEMON_UID)->getValue("0:0");
+		if ($cuid == "0:0") { // If UID nul -> not running
+			//self::logger('debug', __('Démon avec un UID nul.', __FILE__));						// VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
+			return false;
+		}
+		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
+		if (!@posix_getsid($cpid)) { // PID IS NOT alive
+			self::logger('debug', __('Démon avec un PID mort.', __FILE__));
+			self::deamon_stop(); // Cleanup and put jmqtt in a good state
+			return false;
+		}
+		if ((@cache::byKey('jMQTT::'.self::CACHE_DAEMON_PORT)->getValue(0)) != $cport) {
+			self::logger('debug', __('Démon avec un mauvais port.', __FILE__));
+			self::deamon_stop(); // Cleanup and put jmqtt in a good state
+			return false;
+		}
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 90) {
+			self::logger('debug', __('Pas message ou de Heartbeat reçu depuis >90s, le Démon est probablement mort.', __FILE__));
+			self::deamon_stop(); // Cleanup and put jmqtt in a good state
+			return false;
+		}
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_SND)->getValue(0)) > 50) {
+			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >50s).", __FILE__));
+			self::toDaemon_hb();
+			return true;
+		}
+		//self::logger('debug', __('Démon OK', __FILE__));											// VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
+		return true;
+	}
+
+	/**
+	 * Simple tests if a daemon is connected (do not validate it)
+	 */
+	private static function daemon_state() {
+		return (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_UID)->getValue("0:0")) !== "0:0";
+	}
+
+	/**
+	 * Jeedom callback to get information on the daemon
 	 */
 	public static function deamon_info() {
-
-		$return = array();
-		$return['log'] = __CLASS__;
-		$return['state'] = 'nok';
-		$return['launchable'] = 'nok';
-
-		$python_daemon = false;
-		$websocket_daemon = false;
-
-		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
-		if (file_exists($pid_file1)) {
-			if (@posix_getsid(trim(file_get_contents($pid_file1)))) {
-				$python_daemon = true;
-			} else {
-				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file1 . ' 2>&1 > /dev/null');
-				self::deamon_stop();
-			}
-		}
-
-		$pid_file2 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
-		if (file_exists($pid_file2)) {
-			if (@posix_getsid(trim(file_get_contents($pid_file2)))) {
-				$websocket_daemon = true;
-			} else {
-				shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file2 . ' 2>&1 > /dev/null');
-				self::deamon_stop();
-			}
-		}
-
-		if($python_daemon && $websocket_daemon){
-			$return['state'] = 'ok';
-		}
-
-		if (config::byKey('pythonsocketport', __CLASS__, self::DEFAULT_PYTHON_PORT) != config::byKey('websocketport', __CLASS__, self::DEFAULT_WEBSOCKET_PORT)) {
-			$return['launchable'] = 'ok';
-		}
+		$return = array('launchable' => self::MQTTCLIENT_OK, 'log' => __CLASS__);
+		$return['state'] = (self::daemon_check()) ? self::MQTTCLIENT_OK : self::MQTTCLIENT_NOK;
 		return $return;
 	}
 
 	/**
-	 * callback to start daemon
+	 * Jeedom callback to start daemon
 	 */
 	public static function deamon_start() {
-
 		// if FORCE_DEPENDANCY_INSTALL flag is raised in plugin config
 		if (config::byKey(self::FORCE_DEPENDANCY_INSTALL, __CLASS__, 0) == 1) {
-			log::add(__CLASS__, 'info', 'Forced Dependancies check/install, daemon will start at next retry');
+			self::logger('info', __("Installation/Vérification forcée des dépendances, le démon jMQTT démarrera au prochain essai", __FILE__));
 			$plugin = plugin::byId(__CLASS__);
-
 			//clean dependancy state cache
 			$plugin->dependancy_info(true);
-
 			//start dependancy install
 			$plugin->dependancy_install();
-
 			//remove flag
 			config::remove(self::FORCE_DEPENDANCY_INSTALL, __CLASS__);
-
 			// Installation of the dependancies occures in another process, this one must end.
 			return;
 		}
-
-		log::add(__CLASS__, 'info', 'Starting Daemon');
-		
+		self::logger('info', __('Démarrage du démon jMQTT', __FILE__));
+		// Always stop first.
 		self::deamon_stop();
-		$daemon_info = self::deamon_info();
-		if ($daemon_info['launchable'] != 'ok') {
-			throw new Exception(__('Veuillez vérifier la configuration', __FILE__));
+		// Check if daemon is launchable
+		$dep_info = self::dependancy_info();
+		if ($dep_info['state'] != self::MQTTCLIENT_OK) {
+			throw new Exception(__('Veuillez vérifier la configuration et les dépendances', __FILE__));
 		}
-
-		// Get default ports for daemons
-		$defaultPythonPort = self::DEFAULT_PYTHON_PORT;
-		$defaultWebSocketPort = self::DEFAULT_WEBSOCKET_PORT;
-
-		// Check python daemon port is available
-		$output=null;
-		$retval=null;
-		exec(system::getCmdSudo() . 'fuser ' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort) . '/tcp', $output, $retval);
-		if ($retval == 0 && count($output) > 0) {
-			$pid = trim($output[0]);
-			unset($output);
-			exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
-			if ($retval == 0 && count($output) > 0) $commandline = $output[0];
-			throw new Exception(__('Le port du démon python (' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
-		}
-
-		// Check websocket daemon port is available
-		$output=null;
-		$retval=null;
-		exec(system::getCmdSudo() . 'fuser ' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort) . '/tcp', $output, $retval);
-		if ($retval == 0 && count($output) > 0) {
-			$pid = trim($output[0]);
-			unset($output);
-			exec(system::getCmdSudo() . 'ps -p ' . $pid . ' -o command=', $output, $retval);
-			if ($retval == 0 && count($output) > 0) $commandline = $output[0];
-			throw new Exception(__('Le port du démon websocket (' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort) . ') est déjà utilisé par le pid ' . $pid . ' : ' . $commandline, __FILE__));
-		}
-
 		// Start Python daemon
-		$path1 = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
-		$cmd1 = $path1.'/venv/bin/python3 ' . $path1 . '/jmqttd.py';
-		$cmd1 .= ' --plugin ' . __CLASS__;
-		$cmd1 .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd1 .= ' --socketport ' . config::byKey('pythonsocketport', __CLASS__, $defaultPythonPort);
-		$cmd1 .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
-		$cmd1 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
-		log::add(__CLASS__, 'info', 'Lancement du démon python jMQTT pour le plugin '.__CLASS__);
-		$result1 = exec($cmd1 . ' >> ' . log::getPathToLog(__CLASS__.'_daemon') . ' 2>&1 &');
-
-		// Start WebSocket daemon
-		$path2 = realpath(dirname(__FILE__) . '/../../resources/jmqttd/');
-		$cmd2 = 'php ' . $path2 . '/jmqttd.php';
-		$cmd2 .= ' --plugin ' . __CLASS__;
-		$cmd2 .= ' --socketport ' . config::byKey('websocketport', __CLASS__, $defaultWebSocketPort);
-		$cmd2 .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
-		log::add(__CLASS__, 'info', 'Lancement du démon websocket jMQTT pour le plugin '.__CLASS__);
-		$result2 = exec($cmd2 . ' >> ' . log::getPathToLog(__CLASS__) . ' 2>&1 &');
-
-		//wait up to 10 seconds for daemons start
+		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
+		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
+		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
+		$cmd .= ' --callback "http://localhost/plugins/jMQTT/core/php/callback.php"';
+		$cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
+		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
+		self::logger('info', __('Lancement du démon jMQTT', __FILE__));
+		exec($cmd . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
+		// Wait up to 10 seconds for daemon start
 		for ($i = 1; $i <= 40; $i++) {
-			$daemon_info = self::deamon_info();
-			if ($daemon_info['state'] == 'ok') break;
+			if (self::daemon_state()) {
+				self::logger('info', __('Démon démarré', __FILE__));
+				break;
+			}
 			usleep(250000);
 		}
-
-		if ($daemon_info['state'] != 'ok') {
-			// If only one of both daemon runs we still need to stop
+		// If daemon has not correctly started
+		if (!self::daemon_state()) {
 			self::deamon_stop();
-			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
+			self::logger('error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
 			return;
 		}
+		// Else all good
 		message::removeAll(__CLASS__, 'unableStartDaemon');
-
-
-		self::checkAllMqttClients();
-		self::listenersAddAll();
 	}
 
 	/**
 	 * callback to stop daemon
 	 */
 	public static function deamon_stop() {
-		log::add(__CLASS__, 'info', 'Stopping Daemon');
-
-		$pid_file1 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
-		if (file_exists($pid_file1)) {
-			$pid1 = intval(trim(file_get_contents($pid_file1)));
-			system::kill($pid1, false);
-			//wait up to 10 seconds for python daemon stop
-			for ($i = 1; $i <= 40; $i++) {
-				if (! @posix_getsid($pid1)) break;
+		// Get cached PID and PORT
+		$cuid = @cache::byKey('jMQTT::'.self::CACHE_DAEMON_UID)->getValue("0:0");
+		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
+		// If PID is available and running
+		if ($cpid != 0 && @posix_getsid($cpid)) {
+			self::logger('info', __("Arrêt du démon jMQTT", __FILE__));
+			posix_kill($cpid, 15);  // Signal SIGTERM
+			self::logger('debug', __("Envoi du signal SIGTERM au Démon", __FILE__));
+			for ($i = 1; $i <= 40; $i++) {	//wait max 10 seconds for python daemon stop
+				if (!self::daemon_state()) {
+					self::logger('info', __("Démon jMQTT arrêté", __FILE__));
+					break;
+				}
 				usleep(250000);
 			}
-			system::kill($pid1, true);
-		}
-		$pid_file2 = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.php.pid';
-		if (file_exists($pid_file2)) {
-			$pid2 = intval(trim(file_get_contents($pid_file2)));
-			system::kill($pid2, false);
-			//wait up to 10 seconds for websocket daemon stop
-			for ($i = 1; $i <= 40; $i++) {
-				if (! @posix_getsid($pid2)) break;
-				usleep(250000);
+			if (self::daemon_state()) {
+				// Signal SIGKILL
+				posix_kill($cpid, 9);
+				self::logger('debug', __("Envoi du signal SIGKILL au Démon", __FILE__));
 			}
-			system::kill($pid2, true);
 		}
-
 		// If something bad happened, clean anyway
-		self::cleanMqttClientStateCache();
-
-		self::listenersRemoveAll();
+		self::logger('debug', __("Nettoyage du Démon", __FILE__));
+		self::fromDaemon_daemonDown($cuid);
 	}
+
+	/**
+	 * Daemon callback to tell Jeedom it is started
+	 */
+	public static function fromDaemon_daemonUp($ruid) {
+		// If we get here, apikey is OK!
+		//self::logger('debug', 'fromDaemon_daemonUp(ruid='.$ruid.')');
+		// Verify that daemon RemoteUID contains ':' or die
+		if (is_null($ruid) || !is_string($ruid) || (strpos($ruid, ':') === false)) {
+			self::logger('warning', sprintf(__("Démon [%s] : Inconsistent", __FILE__), $ruid));
+			return '';
+		}
+		// Verify that this daemon is not already initialized
+		$cuid = @cache::byKey('jMQTT::'.self::CACHE_DAEMON_UID)->getValue("0:0");
+		if ($cuid == $ruid) {
+			self::logger('info', sprintf(__("Démon [%s] : Déjà initialisé", __FILE__), $ruid));
+			return '';
+		}
+		list($rpid, $rport) = array_map('intval', explode(":", $ruid));
+		// Verify Remote UID coherence
+		if ($rpid == 0) { // If Remote PID is NOT available
+			self::logger('warning', sprintf(__("Démon [%s] : Pas d'identifiant d'exécution", __FILE__), $ruid));
+			return '';
+		}
+		if (!@posix_getsid($rpid)) { // Remote PID is not running
+			self::logger('warning', sprintf(__("Démon [%s] : Mauvais identifiant d'exécution", __FILE__), $ruid));
+			return '';
+		}
+		// Checking PID match for the PORT in RemoteUID
+		$output = null;
+		$retval = null;
+		exec(system::getCmdSudo() . 'fuser ' . $rport . '/tcp 2> /dev/null', $output, $retval);
+		if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
+			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être validé", __FILE__), $ruid));
+			return '';
+		}
+		if (intval(trim($output[0])) != $rpid) { // No match
+			self::logger('warning', sprintf(__("Démon [%s] : Port incohérent", __FILE__), $ruid));
+			return '';
+		}
+		// Verify if another daemon is not running
+		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
+		if ($cpid != 0) { // Cached PID is available
+			if (!@posix_getsid($cpid)) { // Cached PID is NOT running
+				self::logger('warning', sprintf(__("Démon [%1\$s] va remplacer le Démon [%2\$s] !", __FILE__), $ruid, $cuid));
+				self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
+			} else { // Cached PID IS running
+				self::logger('warning', sprintf(__("Démon [%1\$s] essaye de remplacer le Démon [%2\$s] !", __FILE__), $ruid, $cuid));
+				exec(system::getCmdSudo() . 'fuser ' . $cport . '/tcp 2> /dev/null', $output, $retval);
+				if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
+					self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être identifié", __FILE__), $cuid));
+					self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
+				} elseif (intval(trim($output[0])) != $cpid) { // No match for old daemon
+					self::logger('warning', sprintf(__("Démon [%s] : Reprend la main", __FILE__), $ruid));
+					self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
+				} else { // Old daemon is still alive. If Daemon is semi-dead, it may die by missing enough heartbeats
+					self::logger('warning', sprintf(__("Démon [%1\$s] va survivre au Démon [%2\$s] !", __FILE__), $cuid, $ruid));
+					posix_kill($rpid, 15);
+					return '';
+				}
+			}
+		}
+		//self::logger('debug', sprintf(__("Démon [%s] est vivant", __FILE__), $ruid)); // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
+		// Save in cache the daemon RemoteUID (as it is connected)
+		cache::set('jMQTT::'.self::CACHE_DAEMON_UID, $ruid);
+		cache::set('jMQTT::'.self::CACHE_DAEMON_PORT, $rport);
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_SND, time());
+		// Launch MQTT Clients
+		self::checkAllMqttClients();
+		// Active listeners
+		self::listenersAddAll();
+		// Prepare and send initial data
+		// TODO Edit Daemon to be enable to receive this information
+		// $returns = self::full_export(true);
+		// return json_encode($returns, JSON_UNESCAPED_UNICODE);
+	}
+
+	/**
+	 * Daemon callback to tell Jeedom it is OK
+	 */
+	public static function fromDaemon_hb($uid) {
+		self::logger('debug', sprintf(__("Démon [%s] est en vie", __FILE__), $uid));
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+	}
+
+	/**
+	 * Daemon callback to tell Jeedom it is stopped
+	 */
+	public static function fromDaemon_daemonDown($uid) {
+		//self::logger('debug', 'fromDaemon_daemonDown(uid='.$uid.')');
+		// Delete in cache the daemon uid (as it is disconnected)
+		self::clean_cache();
+		self::listenersRemoveAll();
+		// Get all brokers and set them as disconnected
+		foreach(self::getBrokers() as $broker) {
+			try {
+				if ($broker->getMqttClientState() != self::MQTTCLIENT_OK)
+					self::fromDaemon_brkDown($broker->getId());
+				else
+					$broker->sendMqttClientStateEvent();
+			} catch (Throwable $e) {
+				if (log::getLogLevel(__CLASS__) > 100)
+					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
+				else
+					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"</br>@Stack: %3\$s,</br>@BrkId: %4\$s.",
+								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
+			}
+		}
+	}
+
+	private static function sendToDaemon($params, $except = true) {
+		if (!self::daemon_state()) {
+			if ($except)
+				throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+			else
+				return;
+		}
+		$params['apikey'] = jeedom::getApiKey(__CLASS__);
+		$payload = json_encode($params);
+		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
+		$port = @cache::byKey('jMQTT::'.self::CACHE_DAEMON_PORT)->getValue(0);
+		if (!socket_connect($socket, '127.0.0.1', $port)) {
+			self::logger('debug', sprintf(__("Impossible de se connecter du Démon sur le port %1\$s, erreur %2\$s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
+			return;
+		}
+		if (socket_write($socket, $payload, strlen($payload)) === false) {
+			self::logger('debug', sprintf(__("Impossible d'envoyer un message au Démon sur le port %1\$s, erreur %2\$s", __FILE__), $port, socket_strerror(socket_last_error($socket))));
+			return;
+		}
+		socket_close($socket);
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_SND, time());
+	}
+
+	public static function toDaemon_hb() {
+		$params['cmd']      = 'hb';
+		$params['id']       = '0'; // TODO tmp fix?
+		self::sendToDaemon($params, false);
+	}
+
+	public static function toDaemon_setLogLevel($_level=null) {
+		$params['cmd'] = 'loglevel';
+		$params['id'] = 0;
+		$params['level'] = is_null($_level) ? log::convertLogLevel(log::getLogLevel(__class__)) : $_level;
+		self::sendToDaemon($params);
+	}
+
+/* TODO Implemented for later
+	public static function toDaemon_brkRestart($brkId) {
+		$params['cmd']      = 'brkRestart';
+		$params['brkId']    = $brkId;
+		self::sendToDaemon($params);
+	}
+
+	public static function toDaemon_incMode($brkId, $mode) {
+		$params['cmd']      = 'incMode';
+		$params['brkId']    = $brkId;
+		$params['inc']      = $mode == 1;
+		self::sendToDaemon($params);
+	}
+
+	public static function toDaemon_cfgChange($conf) {
+		$params['cmd']      = 'cfgChange';
+		$params['conf']     = $conf;
+		self::sendToDaemon($params, false);
+	}
+
+	public static function toDaemon_delCmd($cmdId) {
+		$params['cmd']      = 'delCmd';
+		$params['cmdId']    = $cmdId;
+		self::sendToDaemon($params, false);
+	}
+
+	public static function toDaemon_delEq($eqId) {
+		$params['cmd']      = 'delEq';
+		$params['eqId']     = $eqId;
+		self::sendToDaemon($params, false);
+	}
+
+	public static function toDaemon_terminate() {
+		$params['cmd']      = 'terminate';
+		self::sendToDaemon($params, false);
+	}
+*/
+
+	public static function toDaemon_newClient($id, $hostname, $params = array()) {
+		$params['cmd']                  = 'newMqttClient';
+		$params['id']                   = $id;
+		$params['hostname']             = $hostname;
+		$params['callback']             = "http://localhost/plugins/jMQTT/core/php/callback.php";
+		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
+		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
+		self::sendToDaemon($params);
+	}
+
+	public static function toDaemon_removeClient($id) {
+		$params['cmd']='removeMqttClient';
+		$params['id']=$id;
+		self::sendToDaemon($params);
+	}
+
 	/**
 	 * Provides dependancy information
 	 */
@@ -1230,29 +1439,25 @@ class jMQTT extends eqLogic {
 		$return = array();
 		$return['log'] = log::getPathToLog($depLogFile);
 		$return['progress_file'] = $depProgressFile;
+		$return['state'] = self::MQTTCLIENT_OK;
 
-		$return['state'] = 'ok';
-		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/Ratchet/vendor/composer/installed.json 2>/dev/null | grep cboden/ratchet | wc -l") < 1) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : Composer Ratchet PHP package is missing');
-			$return['state'] = 'nok';
-		}
 		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : Composer JsonPath PHP package is missing');
-			$return['state'] = 'nok';
+			self::logger('debug', __("Le package PHP JsonPath est manquant, relancez les dépendances", __FILE__));
+			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
 		if (!file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/python3')) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : python venv has not yet been created');
-			$return['state'] = 'nok';
+			self::logger('debug', __("Le venv Python n'a pas encore été créé, relancez les dépendances", __FILE__));
+			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 		elseif (exec(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir --no-color -r '.dirname(__FILE__) . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null | wc -l') > 0) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : python3 required library is missing in venv');
-			$return['state'] = 'nok';
+			self::logger('debug', __("Une bibliothèque Python requise est manquante dans le venv, relancez les dépendances", __FILE__));
+			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
 		if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
-			log::add(__CLASS__, 'debug', 'dependancy_info : debian mosquitto package is missing');
-			$return['state'] = 'nok';
+			self::logger('debug', __("Le paquet Debian Mosquitto est manquant, relancez les dépendances", __FILE__));
+			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
 		return $return;
@@ -1265,7 +1470,7 @@ class jMQTT extends eqLogic {
 		$depLogFile = __CLASS__ . '_dep';
 		$depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/dependancy';
 
-		log::add('jMQTT', 'info', 'Installation des dépendances, voir log dédié (' . $depLogFile . ')');
+		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
 		log::remove($depLogFile);
 		return array(
 			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
@@ -1361,95 +1566,65 @@ class jMQTT extends eqLogic {
 	}
 
 
-
 	###################################################################################################################
 	##
 	##                   MQTT CLIENT RELATED METHODS
 	##
 	###################################################################################################################
 
-
-	private static function getMqttClientStateCache($id, $key, $default = null) {
-		return cache::byKey('jMQTT::' . $id . '::' . $key)->getValue($default);
-	}
-
-	private static function setMqttClientStateCache($id, $key, $value = null) {
-		// Save ids in cache as a list for future cleaning
-		$idListInCache = cache::byKey('jMQTT')->getValue([]);
-		if (!in_array($id, $idListInCache, true)){
-			$idListInCache[] = $id;
-			cache::set('jMQTT', $idListInCache);
-		}
-
-		return cache::set('jMQTT::' . $id . '::' . $key, $value);
-	}
-	private static function cleanMqttClientStateCache() {
-		// get list of ids
-		$idListInCache = cache::byKey('jMQTT')->getValue([]);
-		// for each id clean both cached values
-		foreach ($idListInCache as $id) {
-			cache::delete('jMQTT::' . $id . '::' . self::CACHE_DAEMON_CONNECTED);
-			cache::delete('jMQTT::' . $id . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
-		}
-	}
-
-
 	/**
 	 * Check all MQTT Clients (start them if needed)
 	 */
 	public static function checkAllMqttClients() {
-		$daemon_info = self::deamon_info();
-		if ($daemon_info['state'] == 'ok') {
-			foreach(self::getBrokers() as $broker) {
-				if ($broker->getIsEnable() && $broker->getMqttClientState() == self::MQTTCLIENT_NOK) {
-					try {
-						log::add(__CLASS__, 'info', 'Starting MqttClient for ' . $broker->getName());
-						$broker->startMqttClient();
-					}
-					catch (Throwable $e) {}
-				}
+		if (self::daemon_check() != self::MQTTCLIENT_OK)
+			return;
+		foreach(self::getBrokers() as $broker) {
+			if (!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_OK)
+				continue;
+			try {
+				$broker->startMqttClient();
+			} catch (Throwable $e) {
+				if (log::getLogLevel(__CLASS__) > 100)
+					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
+				else
+					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
 	}
+
 
 	/**
 	 * Return MQTT Client information
 	 * @return string[] MQTT Client information array
 	 */
 	public function getMqttClientInfo() {
-		$return = array('message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok');
-
+		$return = array('message' => '', 'launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK, 'log' => self::MQTTCLIENT_NOK);
 		if ($this->getType() != self::TYP_BRK)
 			return $return;
-
 		$return['brkId'] = $this->getId();
-
-		// Is the MQTT Client launchable
-		$return['launchable'] = 'ok';
-		$daemon_info = self::deamon_info();
-		if ($daemon_info['state'] == 'ok') {
-			if (!$this->getIsEnable()) {
-				$return['launchable'] = 'nok';
-				$return['message'] = __("L'équipement est désactivé", __FILE__);
-			}
-		}
-		else {
-			$return['launchable'] = 'nok';
-			$return['message'] = __('Démon non démarré', __FILE__);
-		}
-
 		$return['log'] = $this->getMqttClientLogFile();
-		$return['last_launch'] = $this->getLastMqttClientLaunchTime();
+		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));
 		$return['state'] = $this->getMqttClientState();
-		$return['color'] = self::getBrokerColorFromState($return['state']);
 		$return['icon'] = self::getBrokerIconFromState($return['state']);
-		if ($daemon_info['state'] == 'ok') {
-			if ($return['state'] == self::MQTTCLIENT_NOK && $return['message'] == '')
-				$return['message'] = __('Le Client MQTT est arrêté', __FILE__);
-			elseif ($return['state'] == self::MQTTCLIENT_POK)
-				$return['message'] = __('Le broker est OFFLINE', __FILE__);
+		if (!self::daemon_state()) { // Daemon is down
+			$return['message'] = __("Démon non démarré", __FILE__);
+			return $return;
 		}
-
+		if (!$this->getIsEnable()) {
+			$return['message'] = __("La connexion à ce Broker est désactivée", __FILE__);
+		} elseif ($return['state'] == self::MQTTCLIENT_NOK) {
+			$return['launchable'] = self::MQTTCLIENT_OK;
+			$return['message'] = __("Le Démon jMQTT n'est pas encore connecté à ce Broker", __FILE__);
+		} elseif ($return['state'] == self::MQTTCLIENT_POK) {
+			$return['launchable'] = self::MQTTCLIENT_OK;
+			$return['message'] = __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__);
+		} else {
+			$return['launchable'] = self::MQTTCLIENT_OK;
+			$return['state'] = self::MQTTCLIENT_OK;
+			$return['message'] = __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__);
+		}
 		return $return;
 	}
 
@@ -1461,9 +1636,13 @@ class jMQTT extends eqLogic {
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
-		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_DAEMON_CONNECTED, false)) return self::MQTTCLIENT_NOK;
-		if (!self::getMqttClientStateCache($this->getId(), self::CACHE_MQTTCLIENT_CONNECTED, false)) return self::MQTTCLIENT_POK;
-		return self::MQTTCLIENT_OK;
+		if (!self::daemon_state() || $this->getType() != self::TYP_BRK)
+			return self::MQTTCLIENT_NOK;
+		if ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false))
+			return self::MQTTCLIENT_OK;
+		if ($this->getIsEnable())
+			return self::MQTTCLIENT_POK;
+		return self::MQTTCLIENT_NOK;
 	}
 
 	/**
@@ -1473,31 +1652,13 @@ class jMQTT extends eqLogic {
 	public static function getBrokerIconFromState($state) {
 		switch ($state) {
 			case self::MQTTCLIENT_OK:
-				return 'fa-check-circle';
+				return 'fa-check-circle success';
 				break;
 			case self::MQTTCLIENT_POK:
-				return 'fa-minus-circle';
+				return 'fa-minus-circle warning';
 				break;
 			default:
-				return 'fa-times-circle';
-				break;
-		}
-	}
-
-	/**
-	 * Return hex color string depending state passed
-	 * @return string hex color
-	 */
-	public static function getBrokerColorFromState($state) {
-		switch ($state) {
-			case self::MQTTCLIENT_OK:
-				return '#96C927';
-				break;
-			case self::MQTTCLIENT_POK:
-				return '#ff9b00';
-				break;
-			default:
-				return '#ff0000';
+				return 'fa-times-circle danger';
 				break;
 		}
 	}
@@ -1509,17 +1670,14 @@ class jMQTT extends eqLogic {
 	public function startMqttClient() {
 		// if daemon is not ok, do Nothing
 		$daemon_info = self::deamon_info();
-		if ($daemon_info['state'] != 'ok') return;
-
+		if ($daemon_info['state'] != self::MQTTCLIENT_OK) return;
 		//If MqttClient is not launchable (daemon is running), throw exception to get message
 		$mqttclient_info = $this->getMqttClientInfo();
-		if ($mqttclient_info['launchable'] != 'ok')
+		if ($mqttclient_info['launchable'] != self::MQTTCLIENT_OK)
 			throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
-
-		$this->log('info', 'démarre le client MQTT ');
-		$this->setLastMqttClientLaunchTime();
+		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
+		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
 		$this->sendMqttClientStateEvent();
-
 		// Preparing some additional data for the broker
 		$params = array();
 		$params['port']              = $this->getMqttPort();
@@ -1529,7 +1687,6 @@ class jMQTT extends eqLogic {
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
 		$params['paholog']           = $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG);
 		$params['tls']               = boolval($this->getConf(self::CONF_KEY_MQTT_TLS));
-
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
 				$params['tlsinsecure'] = true;
@@ -1544,7 +1701,6 @@ class jMQTT extends eqLogic {
 				$params['tlscafile'] = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
 				break;
 		}
-
 		$params['tlsclicertfile']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
 		$params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
 		// Realpaths
@@ -1556,145 +1712,115 @@ class jMQTT extends eqLogic {
 			$params['tlsclikeyfile'] = '';
 		if ($params['tlsclikeyfile'] != '')
 			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $params['tlsclikeyfile']);
-
-		self::new_mqtt_client($this->getId(), $this->getMqttAddress(), $params);
-
-		foreach (self::byBrkId($this->getId()) as $mqtt) {
-			if ($mqtt->getIsEnable() && $mqtt->getId() != $this->getId()) {
-				$mqtt->subscribeTopic($mqtt->getTopic(), $mqtt->getQos());
-			}
-		}
-
-		if ($this->isApiEnable()) {
-			$this->log('info', 'Subscribes to the API topic "' . $this->getMqttApiTopic() . '"');
-			$this->subscribeTopic($this->getMqttApiTopic(), '1');
-		} else {
-			$this->log('info', 'API is disabled');
-		}
+		self::toDaemon_newClient($this->getId(), $this->getMqttAddress(), $params);
 	}
 
 	/**
 	 * Stop the MQTT Client of this broker type object
 	 */
 	public function stopMqttClient() {
-		$this->log('info', 'arrête le client MQTT');
-		self::remove_mqtt_client($this->getId());
+		$this->log('info', __('Arrêt du Client MQTT', __FILE__));
+		self::toDaemon_removeClient($this->getId());
+		$this->sendMqttClientStateEvent();
 	}
 
-	public static function on_daemon_connect($id) {
-		// Save in cache that daemon is connected
-		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, true);
 
-		try {
+	public static function fromDaemon_brkUp($id) {
+		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
+			$broker->getMqttClientStatusCmd()->event(self::ONLINE); // TODO Check if can be removed as Daemon sends this event
+			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
+			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
 			$broker->sendMqttClientStateEvent();
-		} catch (Throwable $t) {
-				log::add(__CLASS__, 'error', sprintf('on_daemon_connect raised an Exception : %s', $t->getMessage()));
+			// Subscribe to topics
+			foreach (self::byBrkId($id) as $eq) {
+				if ($eq->getIsEnable() && $eq->getId() != $broker->getId()) {
+					$eq->subscribeTopic($eq->getTopic(), $eq->getQos());
+				}
+			}
+			// Enable API
+			if ($broker->isApiEnable()) {
+				$broker->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $broker->getMqttApiTopic()));
+				$broker->subscribeTopic($broker->getMqttApiTopic(), '1');
+			} else {
+				$broker->log('info', __("L'accès à l'API est désactivée", __FILE__));
+			}
+			// Active listeners
+			self::listenersAddAll();
+		} catch (Throwable $e) {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
+			else
+				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
-	public static function on_daemon_disconnect($id) {
-		// if daemon is disconnected from Jeedom, consider the MQTT Client as disconnected too
-		if (self::getMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED))
-			self::on_mqtt_disconnect($id);
 
-		// Save in cache that daemon is disconnected
-		self::setMqttClientStateCache($id, self::CACHE_DAEMON_CONNECTED, false);
-
-		try {
+	public static function fromDaemon_brkDown($id) {
+		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
+			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
+			$statusCmd = $broker->getMqttClientStatusCmd(); // TODO Check if can be removed as Daemon sends this event
+			if ($statusCmd)
+				$statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+			// if includeMode is enabled, disable it
+			if ($broker->getIncludeMode())
+				$broker->changeIncludeMode(0);
+			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+			$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
 			$broker->sendMqttClientStateEvent();
-		} catch (Throwable $t) {
-			log::add(__CLASS__, 'error', sprintf('on_daemon_disconnect raised an Exception : %s', $t->getMessage()));
+		} catch (Throwable $e) {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
+			else
+				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
-	public static function on_mqtt_connect($id) {
-		// Save in cache that Mqtt Client is connected
-		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, true);
 
-		try {
-			$broker = self::getBrokerFromId(intval($id));
-			$broker->getMqttClientStatusCmd()->event(self::ONLINE);
-			$broker->sendMqttClientStateEvent();
-		} catch (Throwable $t) {
-				log::add(__CLASS__, 'error', sprintf('on_mqtt_connect raised an Exception : %s', $t->getMessage()));
-		}
-	}
-	public static function on_mqtt_disconnect($id) {
-		// Save in cache that Mqtt Client is disconnected
-		self::setMqttClientStateCache($id, self::CACHE_MQTTCLIENT_CONNECTED, false);
-
-		try {
-			$broker = self::getBrokerFromId(intval($id));
-			$statusCmd = $broker->getMqttClientStatusCmd();
-			if ($statusCmd) $statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
-			$broker->sendMqttClientStateEvent();
-			// if includeMode is enabled, disbale it
-			if ($broker->getIncludeMode()) $broker->changeIncludeMode(0);
-		} catch (Throwable $t) {
-				log::add(__CLASS__, 'error', sprintf('on_mqtt_disconnect raised an Exception : %s', $t->getMessage()));
-		}
-	}
-	public static function on_mqtt_message($id, $topic, $payload, $qos, $retain) {
-
+	public static function fromDaemon_msgIn($id, $topic, $payload) {
 		try {
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->brokerMessageCallback($topic, $payload);
-		} catch (Throwable $t) {
-			log::add(__CLASS__, 'error', sprintf('on_mqtt_message raised an Exception: %s, Stack: %s, BrkId: %s, Topic: %s, Payload: %s.',
-												 $t->getMessage(), str_replace("\n",' %%% ', $t->getTraceAsString()), $id, $topic, $payload));
+			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		} catch (Throwable $e) {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
+			else
+				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
+							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}
 
-
-	private static function send_to_mqtt_daemon($params) {
-		$daemon_info = self::deamon_info();
-		if ($daemon_info['state'] != 'ok') {
-			throw new Exception("Le démon n'est pas démarré");
-		}
-		$params['apikey'] = jeedom::getApiKey(__CLASS__);
-		$payload = json_encode($params);
-		$socket = socket_create(AF_INET, SOCK_STREAM, 0);
-		socket_connect($socket, '127.0.0.1', config::byKey('pythonsocketport', __CLASS__, self::DEFAULT_PYTHON_PORT));
-		socket_write($socket, $payload, strlen($payload));
-		socket_close($socket);
+	public static function fromDaemon_value($cmdId, $value) {
+		$cmd = jMQTTCmd::byId(intval($cmdId));
+		$cmd->getEqLogic()->getBroker()->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
+		$cmd->updateCmdValue($value);
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 	}
 
-	public static function new_mqtt_client($id, $hostname, $params = array()) {
-		$params['cmd']                  = 'newMqttClient';
-		$params['id']                   = $id;
-		$params['hostname']             = $hostname;
-		$params['callback']             = 'ws://127.0.0.1:'.config::byKey('websocketport', __CLASS__, self::DEFAULT_WEBSOCKET_PORT).'/plugins/jMQTT/resources/jmqttd/jmqttd.php';
-
-		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
-		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
-
-		self::send_to_mqtt_daemon($params);
-	}
-
-	public static function remove_mqtt_client($id) {
-		$params['cmd']='removeMqttClient';
-		$params['id']=$id;
-		self::send_to_mqtt_daemon($params);
-	}
-
-	public static function subscribe_mqtt_topic($id, $topic, $qos = 1) {
+	public static function toDaemon_subscribe($id, $topic, $qos = 1) {
 		if (empty($topic)) return;
 		$params['cmd']='subscribeTopic';
 		$params['id']=$id;
 		$params['topic']=$topic;
 		$params['qos']=$qos;
-		self::send_to_mqtt_daemon($params);
+		self::sendToDaemon($params);
 	}
 
-	public static function unsubscribe_mqtt_topic($id, $topic) {
+	public static function toDaemon_unsubscribe($id, $topic) {
 		if (empty($topic)) return;
 		$params['cmd']='unsubscribeTopic';
 		$params['id']=$id;
 		$params['topic']=$topic;
-		self::send_to_mqtt_daemon($params);
+		self::sendToDaemon($params);
 	}
 
-	public static function publish_mqtt_message($id, $topic, $payload, $qos = 1, $retain = false) {
+	public static function toDaemon_publish($id, $topic, $payload, $qos = 1, $retain = false) {
 		if (empty($topic)) return;
 		$params['cmd']='messageOut';
 		$params['id']=$id;
@@ -1702,22 +1828,7 @@ class jMQTT extends eqLogic {
 		$params['payload']=$payload;
 		$params['qos']=$qos;
 		$params['retain']=$retain;
-		self::send_to_mqtt_daemon($params);
-	}
-
-	/**
-	 * Return the last MQTT Client launch time
-	 * @return string date or unknown
-	 */
-	public function getLastMqttClientLaunchTime() {
-		return $this->getCache('lastMqttClientLaunchTime', __('Inconnue', __FILE__));
-	}
-
-	/**
-	 * Set the last MQTT Client launch time to the current time
-	 */
-	public function setLastMqttClientLaunchTime() {
-		return $this->setCache('lastMqttClientLaunchTime', date('Y-m-d H:i:s'));
+		self::sendToDaemon($params);
 	}
 
 	/**
@@ -1725,15 +1836,16 @@ class jMQTT extends eqLogic {
 	 * The method shall be called on a broker equipment eqLogic
 	 */
 	private function sendMqttClientStateEvent() {
+		// $this->log('debug','jMQTT::EventState:'.json_encode($this->getMqttClientInfo()));
 		event::add('jMQTT::EventState', $this->getMqttClientInfo());
 	}
+
 
 	###################################################################################################################
 	##
 	##                   MQTT BROKER METHODS
 	##
 	###################################################################################################################
-
 
 	/**
 	 * Callback called each time a message matching subscribed topic is received from the broker.
@@ -1747,7 +1859,7 @@ class jMQTT extends eqLogic {
 
 		$this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
 
-		$this->log('debug', 'Payload ' . $msgValue . ' for topic ' . $msgTopic);
+		$this->log('debug', sprintf(__("Payload '%1\$s' reçu sur le Topic '%2\$s'", __FILE__), $msgValue, $msgTopic));
 
 		// If this is the API topic, process the request
 		if ($msgTopic == $this->getMqttApiTopic()) {
@@ -1766,7 +1878,7 @@ class jMQTT extends eqLogic {
 
 			// Make some check on topic
 			if ($msgTopic == '/' || strpos($msgTopic, '//') !== false) {
-				$this->log('warning', 'Equipment can\'t be created automatically for the topic "' . $msgTopic . '"');
+				$this->log('warning', sprintf(__("Un équipement n'a pas pu être créé automatiquement pour le topic %s (W101)", __FILE__), $msgTopic));
 				return;
 			}
 
@@ -1776,7 +1888,7 @@ class jMQTT extends eqLogic {
 			$msgTopicArray = array_values(array_filter($msgTopicArray));
 
 			if (!count($msgTopicArray)) {
-				$this->log('warning', 'Equipment can\'t be created automatically for the topic "' . $msgTopic . '"');
+				$this->log('warning', sprintf(__("Un équipement n'a pas pu être créé automatiquement pour le topic %s (W102)", __FILE__), $msgTopic));
 				return;
 			}
 
@@ -1788,7 +1900,7 @@ class jMQTT extends eqLogic {
 		// No equipment listening to the current message is found
 		// Should not occur: log a warning and return
 		if (empty($elogics)) {
-			$this->log('warning', 'No equipment listening to topic ' . $msgTopic . ', this should not occur: skip');
+			$this->log('warning', sprintf(__("Aucun équipement n'est inscrit au topic %s, cette erreur ne devrait pas se produire (W103)", __FILE__), $msgTopic));
 			return;
 		}
 
@@ -1805,10 +1917,10 @@ class jMQTT extends eqLogic {
 				// Keep only info cmds in $cmds and put all JSON info commands in $jsonCmds
 				foreach($cmds as $k => $cmd) {
 					if ($cmd->getType() == 'action') {
-						$this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is an action command: skip');
+						$this->log('debug', sprintf(__('Cmd #%s# est de type action : ignorée', __FILE__), $cmd->getHumanName()));
 						unset($cmds[$k]);
 					} elseif ($cmd->isJson()) {
-						$this->log('debug', $eqpt->getName() . '|' . $cmd->getName() . ' is a JSON info command: skip');
+						$this->log('debug', sprintf(__('Cmd #%s# est de type info JSON : ignorée', __FILE__), $cmd->getHumanName()));
 						unset($cmds[$k]);
 						$jsonCmds[] = $cmd;
 					}
@@ -1846,12 +1958,19 @@ class jMQTT extends eqLogic {
 						}
 						// Create the new cmd
 						$newCmd = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
-						$newCmd->save();
-						$cmds[] = $newCmd;
-						$this->log('debug', $eqpt->getName() . '|' . $cmdName . ' automatically created for topic ' . $msgTopic);
-					} else {
-						$this->log('debug', 'Command for topic ' . $msgTopic . ' in ' . $eqpt->getName() . ' not created, as automatic command creation is disabled');
-					}
+						try {
+							$newCmd->save();
+							$cmds[] = $newCmd;
+							$this->log('debug', sprintf(__("Cmd #%1\$s# créée automatiquement pour le topic '%2\$s'", __FILE__), $newCmd->getHumanName(), $msgTopic));
+						} catch (Throwable $e) {
+							if (log::getLogLevel(__CLASS__) > 100)
+								self::logger('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
+							else // More info in debug mode, no big log otherwise
+								self::logger('error', str_replace("\n",' </br> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
+											",</br>@Stack: %3\$s,</br>@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
+						}
+					} else
+						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement  #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
 				}
 
 				// If there is some cmd matching exactly with the topic
@@ -1894,7 +2013,6 @@ class jMQTT extends eqLogic {
 	 *            whether or not the message is a retained message ('0' or '1')
 	 */
 	public function publish($eqName, $topic, $payload, $qos, $retain) {
-
 		if (is_bool($payload) || is_array($payload)) {
 			// Fix #80
 			// One can wonder why not encoding systematically the message?
@@ -1907,23 +2025,29 @@ class jMQTT extends eqLogic {
 			$payload = json_encode($payload, JSON_UNESCAPED_UNICODE);
 		}
 		$payloadLogMsg = ($payload === '') ? '(null)' : $payload;
-		$this->log('info', '<- ' . $eqName . '|' . $topic . ' ' . $payloadLogMsg);
-
-		$this->log('debug', 'Publishing message ' . $topic . ' ' . $payload . ' (qos=' . $qos . ', retain=' . $retain . ')');
-
-		if ($this->getBroker()->getMqttClientState() == self::MQTTCLIENT_OK) {
-			self::publish_mqtt_message($this->getBrkId(), $topic, $payload, $qos, $retain);
-
-			$d = date('Y-m-d H:i:s');
-			$this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
-
-			if ($this->getType() == self::TYP_EQPT) {
-				$this->getBroker()->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
-			}
-
-			$this->log('debug', 'Message published');
+		if (log::getLogLevel(__CLASS__) > 100)
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic %3\$s", __FILE__), $this->getHumanName(), $payloadLogMsg, $topic));
+		else
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic %3\$s (qos=%4\$s, retain=%5\$s)", __FILE__), $this->getHumanName(), $payload, $topic, $qos, $retain));
+		$broker = $this->getBroker();
+		if (!self::daemon_state()) {
+			$this->log('warning', __("Message non publié, car le démon n'est pas démarré/connecté", __FILE__));
+			return;
 		}
-		else $this->log('warning', 'Message cannot be published, daemon is not connected to the broker');
+		if (!$broker->getIsEnable()) {
+			$this->log('warning', __("Message non publié, car le Broker jMQTT n'est pas activé", __FILE__));
+			return;
+		}
+		if ($broker->getMqttClientState() != self::MQTTCLIENT_OK) {
+			$this->log('warning', __("Message non publié, car le démon n'est pas connecté au Broker MQTT", __FILE__));
+			return;
+		}
+		self::toDaemon_publish($this->getBrkId(), $topic, $payload, $qos, $retain);
+		$d = date('Y-m-d H:i:s');
+		$this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+		if ($this->getType() == self::TYP_EQPT)
+			$broker->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
+		$this->log('debug', __('Message publié', __FILE__));
 	}
 
 	/**
@@ -1970,7 +2094,14 @@ class jMQTT extends eqLogic {
 		try {
 			$request = new mqttApiRequest($msg, $this);
 			$request->processRequest();
-		} catch (Throwable $e) {}
+		} catch (Throwable $e) {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
+			else
+				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
+							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
+		}
 	}
 
 	/**
@@ -1997,7 +2128,16 @@ class jMQTT extends eqLogic {
 		try {
 			$log = $this->getMqttClientLogFile();
 			log::add($log, $level, $msg);
-		} catch (Throwable $t) {} // nothing to do in that particular case
+		} catch (Throwable $e) {} // nothing to do in that particular case
+	}
+
+	/**
+	 * Log messages to jMQTT log file
+	 * @param string $level
+	 * @param string $msg
+	 */
+	public static function logger($level, $msg) {
+		log::add(__CLASS__, $level, $msg);
 	}
 
 	/**
@@ -2189,6 +2329,22 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
+	 * Get the Battery command defined in this eqLogic
+	 * @return string Return the Battery command defined
+	 */
+	public function getBatteryCmd() {
+		return $this->getConf(self::CONF_KEY_BATTERY_CMD);
+	}
+
+	/**
+	 * Get the Availability command defined in this eqLogic
+	 * @return string Return the Availability command defined
+	 */
+	public function getAvailabilityCmd() {
+		return $this->getConf(self::CONF_KEY_AVAILABILITY_CMD);
+	}
+
+	/**
 	 * Get the jMQTT broker object which eqLogic Id is given
 	 * @var int $id id of the broker
 	 * @return jMQTT
@@ -2198,10 +2354,10 @@ class jMQTT extends eqLogic {
 		/** @var jMQTT $broker */
 		$broker = self::byId($id);
 		if (!is_object($broker)) {
-			throw new Exception(__('Pas d\'équipement avec l\'id fourni', __FILE__) . ' (id=' . $id . ')');
+			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
 		}
 		if ($broker->getType() != self::TYP_BRK) {
-			throw new Exception(__('L\'équipement n\'est pas de type broker', __FILE__) . ' (id=' . $id . ')');
+			throw new Exception(__("L'équipement n'est pas de type Broker", __FILE__) . ' (id=' . $id . ')');
 		}
 		return $broker;
 	}
@@ -2226,7 +2382,6 @@ class jMQTT extends eqLogic {
 		return $this->getMqttClientId() . '/' . self::API_TOPIC;
 	}
 
-
 	/**
 	 * Disable the equipment automatic inclusion mode and inform the desktop page
 	 * @param string[] $option $option[id]=broker id
@@ -2245,7 +2400,10 @@ class jMQTT extends eqLogic {
 
 		// Update the include mode value
 		$this->setCache(self::CACHE_INCLUDE_MODE, $mode);
-		$this->log('info', ($mode ? 'active' : 'désactive') . " le mode d'inclusion automatique");
+		if ($mode)
+			$this->log('info', __("L'inclusion automatique est activée", __FILE__));
+		else
+			$this->log('info', __("L'inclusion automatique est désactivée", __FILE__));
 		if (! $mode) {
 			// Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
 			event::add('jMQTT::disableIncludeMode', array('brkId' => $this->getId()));
@@ -2264,7 +2422,7 @@ class jMQTT extends eqLogic {
 		// If includeMode needs to be enabled
 		if ($mode == 1) {
 			// Subscribe include topic
-			$this->log('debug', 'Subscribe to Inclusion Mode topic');
+			$this->log('debug', __("Inscription au topic d'inclusion automatique du Broker", __FILE__));
 			$this->subscribeTopic($includeTopic, $this->getQos());
 
 			// Create and configure the cron process to disable include mode later

@@ -41,7 +41,6 @@ if (!isConnect('admin')) {
 		<br />
 		<legend><i class="fas fa-tachometer-alt"></i> {{Aperçu de l'équipement}}</legend>
 		<div id='div_jmqttTemplateEqlogic'></div>
-		<br />
 		<legend><i class="fas fa-list-alt"></i> {{Aperçu des commandes}}</legend>
 		<table id="table_jmqttTemplateCmds" class="table tree table-bordered table-condensed table-striped">
 			<thead>
@@ -65,7 +64,7 @@ $('#bt_jmqttTemplateUp').fileupload({
 	dataType: 'json',
 	replaceFileInput: false,
 	done: function (e, data) {
-		if (data.result.state != 'ok') {
+		if (data.result.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
 			$('#md_jmqttTemplate').showAlert({message: data.result.result, level: 'danger'});
 		} else {
 			$('#md_jmqttTemplate').showAlert({message: 'Template ajouté avec succès', level: 'success'});
@@ -147,7 +146,7 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<textarea class="eqLogicAttr form-control" style="resize:none!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
 				eq += '</div></div>';
 				// Icone
-				eq += '<div id="sel_icon_div" class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Icone}}</label><div class="col-sm-3"><img id="icon_visu_tpl" src="" height="100" /></div></div>';
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Icone}}</label><div class="col-sm-3" style="text-align: center"><img id="icon_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 				// Display equipements
 				$('#div_jmqttTemplateEqlogic').empty().html(eq);
 				// Handle error with icon
@@ -260,7 +259,7 @@ $('#ul_jmqttTemplateList').on({
 
 $('#bt_jmqttTemplateDelete').on('click', function() {
 	if ($('#ul_jmqttTemplateList li.active').attr('data-file') == undefined) {
-		$('#md_jmqttTemplate').showAlert({message: 'Vous devez d\'abord sélectionner un template', level: 'danger'})
+		$('#md_jmqttTemplate').showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
 		return
 	}
 	bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer ce template ?}}', function(result) {
@@ -275,10 +274,10 @@ $('#bt_jmqttTemplateDelete').on('click', function() {
 				},
 				success: function(data) {
 					if (data) {
-						$('#md_jmqttTemplate').showAlert({message: 'Suppression du template réussie.', level: 'success'})
+						$('#md_jmqttTemplate').showAlert({message: '{{Template supprimé.}}', level: 'success'})
 						refreshJmqttTemplateList()
 					} else
-						$('#md_jmqttTemplate').showAlert({message: 'Ce template ne peut pas être supprimé.', level: 'danger'})
+						$('#md_jmqttTemplate').showAlert({message: '{{Ce template ne peut pas être supprimé.}}', level: 'danger'})
 				}
 			})
 		}
@@ -287,7 +286,7 @@ $('#bt_jmqttTemplateDelete').on('click', function() {
 
 $('#bt_jmqttTemplateDownload').on('click',function() {
 	if ($('#ul_jmqttTemplateList li.active').attr('data-file') == undefined) {
-		$('#md_jmqttTemplate').showAlert({message: 'Vous devez d\'abord sélectionner un template', level: 'danger'})
+		$('#md_jmqttTemplate').showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
 		return
 	}
 	window.open('core/php/downloadFile.php?pathfile=' + $('#ul_jmqttTemplateList li.active').attr('data-file'), "_blank", null)

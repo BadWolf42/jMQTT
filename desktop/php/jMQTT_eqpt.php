@@ -1,3 +1,4 @@
+<br/>
 <form class="form-horizontal">
 	<fieldset>
 		<div class="form-group toDisable">
@@ -8,6 +9,7 @@
 				<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement jMQTT}}" />
 			</div>
 		</div>
+
 		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label">{{Objet parent}}</label>
 			<div class="col-sm-3">
@@ -21,6 +23,7 @@
 				</select>
 			</div>
 		</div>
+
 		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label">{{Catégorie}}</label>
 			<div class="col-sm-8">
@@ -87,6 +90,24 @@
 			</div>
 		</div>
 
+		<div class="form-group toDisable typ-std">
+			<label class="col-sm-3 control-label">{{Commande d'état de la batterie}}</label>
+			<div class="col-sm-3">
+				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_cmd" title="{{Commande information de Batterie}}">
+					<option value="">{{Aucune}}</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group toDisable typ-std">
+			<label class="col-sm-3 control-label">{{Commande de disponibilité}}</label>
+			<div class="col-sm-3">
+				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="availability_cmd" title="{{Commande information de disponibilité}}">
+					<option value="">{{Aucune}}</option>
+				</select>
+			</div>
+		</div>
+
 		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label">{{Dernière communication}}</label>
 			<div class="col-sm-3">
@@ -101,10 +122,10 @@
 			</div>
 		</div>
 
-		<div id='sel_icon_div' class="form-group toDisable typ-std">
+		<div class="form-group toDisable typ-std">
 			<label class="col-sm-3 control-label">{{Catégorie du topic}}</label>
 			<div class="col-sm-3">
-				<select id="sel_icon" class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">
+				<select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone">
 					<option value="">{{Aucun}}</option>
 					<option value="barometre">{{Baromètre}}</option>
 					<option value="bt">{{Bluetooth}}</option>
@@ -158,24 +179,12 @@
 			</div>
 		</div>
 
-		<div class="form-group typ-std">
-			<div style="text-align: center">
-				<img id="icon_visu" src="" height="200" />
+		<div class="form-group toDisable typ-std">
+			<label class="col-sm-3 control-label"></label>
+			<div class="col-sm-3" style="text-align: center">
+				<br /><img id="icon_visu" src="" height="200" />
 			</div>
 		</div>
 
 	</fieldset>
 </form>
-
-<script>
-$("#sel_icon").change(function() {
-	var text = 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val();
-	$("#icon_visu").attr("src", text + '.svg');
-});
-
-$("#icon_visu").on("error", function () {
-	if ($("#sel_icon").val() != '') {
-		$(this).attr("src", 'plugins/jMQTT/core/img/node_' + $("#sel_icon").val() + '.png');
-	}
-});
-</script>

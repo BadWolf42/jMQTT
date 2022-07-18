@@ -1,12 +1,41 @@
+
 # Présentation
 
-MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.  
+Le plugin jMQTT permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
+Ses principales fonctionnalités sont :
+
+ - Installation automatique du Broker Mosquitto ;
+ - Prise en charge de plusieurs Broker ;
+ - Création automatique des équipements MQTT, création automatique des commandes d'information, options pour désactiver ces automatismes ;
+ - Ajout manuel d'équipement MQTT ;
+ - Duplication d'équipements ;
+ - Décodage de payload JSON complexe et création de commandes d'informations associées ;
+ - Affichage en vue Classique Jeedom ou en vue JSON ;
+ - Ajout manuel de commandes (pour la publication), prise en charge du mode Retain ;
+ - Gestionnaire de templates ;
+ - Emulation et remontée du niveau de batterie d'un équipement dans Jeedom ;
+ - Emulation et remontée de la disponibilité et mise en alarme de l'équipement dans Jeedom ;
+
+et encore beaucoup d'autres...
+
+
+# Qu'est-ce que MQTT ?
+
+MQTT, pour "Message Queuing Telemetry Transport", est un protocole open source de messagerie qui assure des communications non permanentes entre des appareils par le transport de leurs messages. 
+
+Il a été créé en 1999 par Andy Stanford-Clark, ingénieur chez IBM, et Arlen Nipper, chez EuroTech, principalement dans la communication M2M pour permettre à deux appareils utilisant des technologies différentes de communiquer. 
+"Devenu une norme ISO en 2016, MQTT connectait déjà à cette date des millions d'appareils dans le monde entier, dans toutes sortes d'applications et d'industries. C'est une technologie d'avenir", 
+affirme Fabien Pereira Vaz, technical sales manager chez Paessler AG. 
+
+Les géants du web parmi lesquels AWS ou Microsoft utilisent MQTT pour remonter les données sur leur plateforme cloud. 
+
+MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.
 Il apporte une très grande souplesse dans les échanges d'information entre capteurs/actionneurs/systèmes domotique/etc.
 
-Ce plugin permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
+Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :
 
-Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :  
-[![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)  
+[![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)
+
 Crédit : François Riotte
 
 
@@ -14,7 +43,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 # Démarrage rapide
 
-Par défaut, jMQTT installe le Broker Mosquitto sur la machine hébergeant Jeedom.  
+Par défaut, jMQTT installe le Broker Mosquitto sur la machine hébergeant Jeedom.
 Il vous suffira ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à ce Broker (IP de votre Jeedom).
 
 La configuration jMQTT est alors très simple:
@@ -25,7 +54,14 @@ La configuration jMQTT est alors très simple:
 > **Important**
 > Pour ne pas installer le Broker Mosquitto sur la machine hébergeant Jeedom, commencer par décocher la case *Installer Mosquitto localement*, sans oublier de sauvegarder la configuration.
 
-Après installation du plugin, l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep`.
+
+Après installation du plugin, il suffit de l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep`.
+
+Le reste de la configuration principale est assez sommaire :
+
+![Configuration du plugin](../images/config.png)
+
+C'est aussi sur cette page qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
 
 # Gestion des équipements
 
@@ -35,17 +71,22 @@ jMQTT posséde 2 types d'équipements:
   - les **équipements de type Broker** gérant la connexion avec les Broker MQTT, appelés équipements Broker dans la suite;
   - les **équipements "classiques"**, appélés simplement équipements dans la suite,
 
-Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.  
+Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.
+
 ![Gestion plugin et Broker](../images/gestion_plugin_et_brokers.png)
 
-Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :  
-![Status Broker](../images/broker_status.png)  
+Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :
+
+![Status Broker](../images/broker_status.png)
+
 * Vert: la connexion au Broker est opérationnelle
 * Orange: le démon tourne mais la connexion au Broker n'est pas établie
 * Rouge: le démon est arrêté
 
-Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.  
-![eqpt panel](../images/eqpt_panel.png)  
+Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.
+
+![eqpt panel](../images/eqpt_panel.png)
+
 Se trouve également sur ce panneau :
   - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
   - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
@@ -64,13 +105,15 @@ Suite à sa création, un message indique que la commande *status* a été ajout
 
 ### Configuration
 
+![Configuration du Broker](../images/eqpt_broker.png)
+
 Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement. Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le status du démon devrait passer à OK.
 
 Pour modifier les informations de connexion au Broker, les paramètres sont:
   - _IP/Nom de Domaine du Broker_ : adresse IP du Broker (par défaut localhost i.e. la machine hébergeant Jeedom);
   - _Port du Broker_ : port du Broker (1883 par défaut);
   - _Identifiant de Connexion_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
-    - Cet identifiant est aussi utilisé dans les topics des commandes info *status* et *api*. Les topics sont automatiquement mis à jour si l'identifiant est modifié.
+    - Cet identifiant est aussi utilisé dans le topic de la commande info *status*. Le topic est automatiquement mis à jour si l'identifiant est modifié.
   - _Compte et Mot de passe de Connexion_ : compte et mot de passe de connexion au Broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du Broker).
   - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
   - _MQTT Sécurisé (TLS)_ : permet le chiffrement TLS des communications avec le Broker. Trois options sont offertes : Désactivé, Activé en utilisant les Autorités Publiques et Activé en utilisant un Autorité Personnalisée. Bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls)
@@ -78,7 +121,6 @@ Pour modifier les informations de connexion au Broker, les paramètres sont:
   - _Autorité Personnalisée_ : visible si TLS est activé et utilise un Autorité Personnalisée, sélectionne l'autorité de certification attendue pour le Broker. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
   - _Certificat Client Personnalisé_ : visible si TLS est activé, sélectionne le Certificat Client attendu par le Broker. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
   - _Clé Privée Client Personnalisée_ : visible si TLS est activé, sélectionne la Clée Privée du Client premettant de discuter avec le Broker. Cette clé privée doit être le pendant du Certificat ci-dessus, si l'un est fournit l'autre est obligatoire. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
-  - _Accès API_ : à activer pour utiliser l'[API](#api).
 
 > **Attention**: _L'identifiant de connexion_ doit être unique par client par Broker. Sinon les clients portant le même identifiant vont se déconnecter mutuellement.
 
@@ -119,6 +161,8 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 
 ### Onglet Equipement
 
+![Onglet principal d'un Equipement](../images/eqpt_equipement.png)
+
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
 
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
@@ -130,6 +174,10 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
   - _Qos_ : qualité de service souscrit ;
 
   - _Type d'alimentation_ : paramètre libre vous permettant de préciser le type d'alimentation de l'équipement (non disponible pour un équipement Broker) ;
+
+  - _Commande d'état de la batterie_ : commande de l'équipement qui sera utilisée comme niveau de batterie. Si la commande info est de type binaire, alors la valeur de la batterie sera 10% (0) ou 100% (1). Si la commande info est de type numérique, alors la valeur sera utilisée comme pourcentage de batterie (non disponible pour un équipement Broker) ;
+
+  - _Commande de disponibilité_ : commande de l'équipement (info binaire) qui sera utilisée comme état de disponibilité de l'équipement. Si cette commande est à 0, alors l'équipement sera remonté en erreur "Danger" (non disponible pour un équipement Broker) ;
 
   - _Dernière communication_ : date de dernière communication avec le Broker MQTT, que ce soit en réception (commande information) ou publication (commande action) ;
 
@@ -145,7 +193,8 @@ Concernant les boutons en haut à droite :
 ![Boutons sur un Equipement](../images/eqpt_buttons.png)
 
   - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
-  - `Créer template` permet de Créer un [template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
+  - `Créer template` permet de [Créer un template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
+  - `Modifier Topics` permet de Modifier en masse tous les topics de l'équipement courant (pensez à sauvegarder l'équipement après la modification) ;
   - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement).
 
 ### Onglet Commandes
@@ -188,8 +237,24 @@ Le plugin créé les informations suivantes :
 
 Dans le cas d’une payload JSON, le plugin sait décoder le contenu et créer les informations associées, et ceci indépendamment de l’état de la case *Ajout automatique des commandes* de l’Onglet Equipement.
 
-Le champ "Chemin JSON" est utilisé pour séléctionner l'information à extraire. Il s'agit d'un chemin JSON suivant le format JSONPath sans le premier caractère '$' par lisibilité.  
-(Le Chemin JSON reste parfaitement fonctionnel même si le caractère '$' est ajouté au début.)
+Le champ "Chemin JSON" est utilisé pour sélectionner l'information à extraire. Il s'agit d'un chemin JSON suivant le [format JSONPath](https://goessner.net/articles/JsonPath/), à travers l'implémentation de [Galbar](https://github.com/Galbar/JsonPath-PHP). Ce format est un outil très puissant pour analyser, transformer et extraire sélectivement des données à partir de structures JSON, à l’image de XPath pour le XML.
+
+Voici un aperçu du langage et des possibilités qu'il renferme :
+
+| JSONPath         | Description                                                                    |
+| ---------------- | ------------------------------------------------------------------------------ |
+| $                | Objet/élément racine                                                           |
+| @                | Objet/élément courant                                                          |
+| . or []          | Operateur de sélection d'un enfant                                             |
+| ..               | Descente récursive                                                             |
+| *                | Caractère générique : tous les objets/éléments indépendamment de leurs noms    |
+| []               | Opérateur d'indice : opérateur natif d'un tableau                              |
+| [,]              | Opérateur d'union : noms alternatifs ou indices de tableau en tant qu'ensemble |
+| [start:end:step] | Opérateur de découpage de tableau                                              |
+| ?()              | Expression (script) de filtrage de données                                     |
+
+Le premier caractère '$' est omis par la vue JSON de jMQTT dans un souci de lisibilité, mais le Chemin JSON reste parfaitement fonctionnel que le caractère '$' soit présent ou non.
+
 
 Prenons l’exemple de la payload JSON suivante :
 
@@ -339,19 +404,13 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués :
 >
 > Les commandes de type info ne sont pas dupliquées. Elles seront découvertes automatiquement après définition du topic de souscription et activation de l’équipement, si la case *Ajout automatique des commandes* est cochée.
 
-## Gestion de la batterie
-
-Une commande info, dont le **nom** fini par `battery` (ou `batterie`) ou dont le **Type Générique** est `Batterie`, sera utilisé comme niveau de batterie de l'équipement auquel appartient cette commande.
-
-Si la commande info est de type binaire, la valeur de la batterie sera 10% (0) ou 100% (1).
-
-Il est recommandé de ne positionner qu'une seule commande info définissant le niveau de batterie par équipement, sous peine d'avoir des valeurs incohérentes.
-
 ## Santé du plugin
 
-Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher l'état de santé des Broker et des équipements.
+Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher une vue de la santé des Broker et des équipements :
 
-Les informations présentes sont : l'état d'activation, le Topic de base, la Date de Dernière communication et la Date de création.
+![Modal Santé](../images/health.png)
+
+Les informations présentes sont : le nom, l'ID, le Topic de souscription, la date de Dernière communication, la Date de création et l'état des Brokers (Activation et communication, Visibilité et Auto inclusion) ainsi que des équipements (Activation, Visibilité, Inclusion automatique, Batterie et Disponibilité).
 
 # Gestion des templates
 
@@ -376,13 +435,14 @@ Dans le gestionnaire, on distingue différentes sections :
 Ceux préfixés par `[Perso]` sont liés à votre installation, les autres arrivent directement avec jMQTT.
 Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à [ouvrir un ticket sur GitHub](https://github.com/Domochip/jMQTT/issues).
 
-2. Un bouton d'import de template dans jMQTT depuis un fichier json.
+  2. Un bouton d'import de template dans jMQTT depuis un fichier json.
 
 Lorsqu'un template est selectionné dans la liste, la partie de droite est renseignée :
 
-3. Un bouton permettant le téléchargement du template selectionné sur votre ordinateur.
-4. Un bouton pour supprimer le template selectionné (uniquement pour les templates `Perso`).
-5. Une prévisualisation des commandes disponibles et leurs paramètres.
+  3. Un bouton permettant le téléchargement du template selectionné sur votre ordinateur.
+  4. Un bouton pour supprimer le template selectionné (uniquement pour les templates `Perso`).
+  5. Une prévisualisation de l'équipement et ses paramètres.
+  6. Une prévisualisation des commandes disponibles et leurs paramètres.
 
 ## Création d'un template depuis un équipement
 
@@ -428,27 +488,6 @@ A ce sujet, je vous renvoie vers l'excellent article [MQTTS : Comment utiliser M
 
 Depuis mai 2021, jMQTT supporte la connexion aux Broker publique ou privé en MQTTS. Est aussi implémenté un mecanisme de validation du Certificat du Serveur et l'emploi une paire de clés cryptographique personnalisée (Certificat & Clé Privée Client) pour un chiffrement asymétrique de bout en bout.
 
-# API
-
-Le plugin permet d’accéder à toutes les méthodes de l’[API JSON RPC](https://doc.jeedom.com/fr_FR/core/4.1/jsonrpc_api) au travers du protocole MQTT.
-
-> **Important**
->
-> Pour activer l’API :
-> 1.  Activer l’accès à l’API jMQTT dans l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
-> 2.  Activer l'**API JSON RPC** dans la configuration Jeedom.
-
-Les payloads requêtes doivent être adressées au topic `Identifiant de Connexion/api`, `jeedom/api` par défaut, l’identifiant de connexion étant jeedom par défaut et se configurant via l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
-
-Leur format JSON est :
-
-    {"method": "Méthode de la requête", "id": "Id. de la requête", "params": { Paramètres additionnels }, "topic": "Topic de retour"}
-
-Où :
-  - `Méthode de la requête` : nom de la méthode invoquée, voir [API JSON RPC](https://doc.jeedom.com/fr_FR/core/4.1/jsonrpc_api) ;
-  - `Id. de la requête` (optionnel) : identifiant qui sera retourné dans la réponse, doit être une chaine. Si absent, l’id de retour sera null ;
-  - `Paramètres additionnels` (optionnel) : paramètres relatifs à la méthode de la requête, voir [API JSON RPC](https://doc.jeedom.com/fr_FR/core/4.1/jsonrpc_api) ;
-  - `Topic de retour` (optionnel) : topic sous lequel le plugin jMQTT publie la réponse à la requête. Si absent, la réponse n’est pas publiée.
 
 # FAQ
 
@@ -459,8 +498,9 @@ Où :
 
 ## J'ai changé le niveau de log mais je n'ai pas plus de détails
 
-Si vous changez le niveau de log, le démon doit être relancé.
-Pour cela, il faut désactiver puis réactiver l'équipement Broker concerné.
+Si vous changiez le niveau de log, le démon devait être relancé dans les anciennes version.
+Pour cela, il fallait désactiver puis réactiver l'équipement Broker concerné.
+Aujourd'hui, le démon est automatiquement informé que le niveau de log a changé et les nouveaux logs arrivent.
 
 ## Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
 
@@ -475,17 +515,18 @@ Les problèmes en cours d’investigation sont sur GitHub : [Issues jMQTT](https
 
 En cas de problèmes à l’installation, fournir les fichiers de log jMQTT (niveau Debug) et jMQTT\_dep.
 
-En cas de problèmes à l’utilisation, fournir :
-  - Le fichier de log `jMQTT`, niveau Debug, le fichier de log `jMQTT_{nom_Broker}` du Broker concerné.
-  - Le résultat de la commande suivante :
+En cas de problèmes à l’utilisation, passer le plugin et les Broker en niveau de log `Debug` reproduire le problème et fournir :
+  - Des captures d'écran ds pages Santé de Jeedom (avec les liste des autres plugins isntallés) et de jMQTT,
+  - Tous les fichiers de log commençant par `jMQTT`,
+  - Le nom du/des Broker concerné(s),
+  - Le résultat de la commande suivante pour chaque Broker concerné (fichier `/tmp/diag_jmqtt.log`) :
 
 <!-- end list -->
 
-        mosquitto_sub -h localhost -t "#" -v| xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' | tee /tmp/mosquitto_sub.log
+        mosquitto_sub -h localhost -v -t "#" | xargs -d$'\n' -L1 bash -c 'date "+%Y-%m-%d %T.%3N $0"' | tee /tmp/diag_jmqtt.log
 
-En remplaçant, si besoin, `localhost` par le nom ou l’IP de la machine hébergeant le Broker MQTT concerné.
-
-Si le Broker requiert une authentification, il faudra ajouter `-u username` et `-p password` avant le `-v`.
+En remplaçant, si besoin, `localhost` par le nom ou l’IP de la machine hébergeant le Broker MQTT.
+Si une authentification est requise, ajouter `-u username` et `-p password` avant le `-v`.
 
 # Exemples d’utilisation
 

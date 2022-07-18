@@ -64,21 +64,10 @@ function displayEqLogicCard($eqL, $node_images) {
 	if ($eqL->getType() == jMQTT::TYP_BRK) {
 		$file = 'node_broker.svg';
 		$st = $eqL->getMqttClientState();
-		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px;color:'.jMQTT::getBrokerColorFromState($st).'"></i>';
-	}
-	else {
+		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px"></i>';
+	} else {
 		$icon = 'node_' . $eqL->getConfiguration('icone');
-		$test = $icon . '.svg';
-		$file = 'node_.png';
-		if (in_array($test, $node_images)) {
-			$file = $test;
-		}
-		else {
-			$test = $icon . '.png';
-			if (in_array($test, $node_images)) {
-				$file = $test;
-			}
-		}
+		$file = (in_array($icon.'.svg', $node_images) ? $icon.'.svg' : (in_array($icon.'.png', $node_images) ? $icon.'.png' : 'node_.png'));
 	}
 
 	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
@@ -94,20 +83,29 @@ function displayEqLogicCard($eqL, $node_images) {
 <div id="div_inclusionModeMsg"></div>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
-		<input class="form-control" placeholder="{{Rechercher}}" id="in_searchEqlogic" />
 		<legend><i class="fas fa-cog"></i> {{Gestion plugin et brokers}}</legend>
 		<div class="eqLogicThumbnailContainer">
 		<?php
 		displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
 		displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
+		if (isset($_GET['debug']))
+		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
+			displayActionCard('{{Debug}}', 'fa-cog', 'data-action="debugJMQTT"', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
-		displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="add_jmqtt"', 'logoSecondary');
+		displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="addJmqtt"', 'logoSecondary');
 		foreach ($eqBrokers as $eqB) {
 			displayEqLogicCard($eqB, $node_images);
 		}
 		?>
 		</div>
-	
+		<div class="input-group" style="margin:5px;">
+			<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">
+			<div class="input-group-btn">
+				<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>
+				<!-- TODO FIXME mode tableau incompatible avec la classe eqLogicDisplayAction (servant à l'alignement des eqLogicDisplay et eqLogicAction) -->
+				<!--<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>-->
+			</div>
+		</div>
 		<?php
 		foreach ($eqBrokers as $eqB) {
 			echo '<legend><i class="fas fa-table"></i> ';
@@ -119,10 +117,10 @@ function displayEqLogicCard($eqL, $node_images) {
 				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
 			echo ' <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
-			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle', 'data-action="add_jmqtt" brkId="' . 
-				$eqB->getId() . '"', 'logoSecondary');
-			displayActionCard('{{Mode inclusion}}', 'fa-sign-in-alt fa-rotate-90', 'data-action="changeIncludeMode" brkId="' .
-				$eqB->getId() . '"', 'logoSecondary card');
+			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle',
+				'data-action="addJmqtt" brkId="' . $eqB->getId() . '"', 'logoSecondary');
+			displayActionCard('{{Mode inclusion}}', 'fa-sign-in-alt fa-rotate-90',
+				'data-action="changeIncludeMode" brkId="' . $eqB->getId() . '"', 'logoSecondary card');
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 					displayEqLogicCard($eqL, $node_images);
@@ -131,7 +129,7 @@ function displayEqLogicCard($eqL, $node_images) {
 			echo '</div>';
 		}
 		
-		// TODO: Check if this is still usefull (condition is always false)
+// TODO: Check if this is still usefull (condition is always false)
 		if ($has_orphans) {
 			echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
@@ -150,37 +148,31 @@ function displayEqLogicCard($eqL, $node_images) {
 	<div class="col-xs-12 eqLogic" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-warning btn-sm eqLogicAction applyTemplate typ-std roundedLeft"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction createTemplate typ-std"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-success btn-sm eqLogicAction typ-std" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
-				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove_jmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
+				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="removeJmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
 			</div>
 			<div class="input-group pull-left" style="display:inline-flex">
 				<ul class="nav nav-tabs" role="tablist">
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
-					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab"
-						data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
-					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab"
-						aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
-					<li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i
-							class="fas fa-list-alt"></i> {{Commandes}}</a></li>
+					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
+					<li role="presentation"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>
 		</div>
 		<div id="menu-bar" style="display: none;">
 			<div class="form-actions">
-				<a class="btn btn-default btn-sm toDisable" id="bt_addMQTTAction"><i class="fas fa-plus-circle"></i>
-					{{Ajouter une commande action}}</a>
-				<a class="btn btn-default btn-sm toDisable" id="bt_addMQTTInfo"><i class="fas fa-plus-circle"></i>
-					{{Ajouter une commande info}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction toDisable" data-action="addMQTTAction"><i class="fas fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction toDisable" data-action="addMQTTInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une commande info}}</a>
 				<div class="btn-group pull-right" data-toggle="buttons">
-					<a id="bt_classic" class="btn btn-sm btn-primary active"><input type="radio" autocomplete="off"
-						checked><i class="fas fa-list-alt"></i> Classic </a> <a id="bt_json"
-						class="btn btn-sm btn-default"><input type="radio" autocomplete="off"><i class="fas fa-sitemap"></i>
-						JSON </a>
+					<a class="btn btn-primary btn-sm eqLogicAction active" data-action="classicView"><input type="radio" autocomplete="off" checked><i class="fas fa-list-alt"></i> Classic </a>
+					<a class="btn btn-default btn-sm eqLogicAction" data-action="jsonView"><input type="radio" autocomplete="off"><i class="fas fa-sitemap"></i> JSON </a>
 				</div>
 			</div>
 			<hr style="margin-top: 5px; margin-bottom: 5px;">
