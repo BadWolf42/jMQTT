@@ -110,8 +110,7 @@ foreach ($eqBrokers as $eqB) {
 				echo '<i class="fas fa-eye-slash w18 tooltips" title="{{Equipement désactivé}}"></i> ';
 				echo '<i class="far fa-square fa-rotate-90 w18 tooltips" title="{{Equipement désactivé}}"></i> ';
 				echo '<i class="fas fa-plug w18 tooltips" title="{{Equipement désactivé}}"></i> ';
-				echo '<i class="fas fa-bell-slash w18 tooltips" title="{{Equipement désactivé}}"></i>';
-				
+				echo '<i class="far fa-bell w18 tooltips" title="{{Equipement désactivé}}"></i>';
 			} else {
 					echo '<i class="fas fa-check success w18 tooltips" title="{{Equipement activé}}"></i> ';
 				if ($eqL->getIsVisible())
@@ -131,11 +130,11 @@ foreach ($eqBrokers as $eqB) {
 				else
 					echo '<i class="fas fa-battery-full w18 success tooltips" title="{{Batterie OK}}"></i> ';
 				if ($eqL->getConfiguration('availability_cmd') == '')
-					echo '<i class="fas fa-bell-slash w18 tooltips" title="{{Pas d\'état de disponibilité}}"></i>';
+					echo '<i class="far fa-bell w18 tooltips" title="{{Pas d\'état de disponibilité}}"></i>';
 				elseif ($eqL->getStatus('warning'))
-					echo '<i class="fas fa-bell warning w18 tooltips" title="{{Equipement indisponible}}"></i>';
+					echo '<i class="fas fa-bell danger w18 tooltips" title="{{Equipement indisponible}}"></i>';
 				else
-					echo '<i class="fas fa-bell-slash success w18 tooltips" title="{{Equipement disponible}}"></i>';
+					echo '<i class="fas fa-bell success w18 tooltips" title="{{Equipement disponible}}"></i>';
 			}
 			echo '</td>';
 			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getTopic() . '</span></td>';
