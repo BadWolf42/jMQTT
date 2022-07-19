@@ -57,14 +57,14 @@ class JeedomMsg():
 
 	def send_test(self):
 		try:
-			response = requests.get(self._url, verify=False)
+			response = requests.get(self._url, timeout=3., verify=False)
 			if response.status_code != requests.codes.ok:
 				self._log_snd.error('Test error: %s %s', response.status.code, response.status.message)
 				self._status &= ~self.CAN_SND
 				self._retry_snd += 1
 				return False
 		except Exception as e:
-			self._log_snd.exception('Test exception: %s', e.message)
+			self._log_snd.exception('Callback test failed')
 			self._status &= ~self.CAN_SND
 			self._retry_snd += 1
 			return False
@@ -82,7 +82,7 @@ class JeedomMsg():
 		i = 1
 		while i <= self._retry:
 			try:
-				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False)
+				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False) #TODO check 120s timeout ?!
 				if r.status_code == requests.codes.ok:
 					self._log_snd.debug('Sent TO Jeedom: %s', msgs)
 					self._log_snd.verbose('Received back FROM Jeedom: %s', r.text)

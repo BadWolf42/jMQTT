@@ -172,11 +172,11 @@ class Main():
 			sys.exit(4)
 
 		# All set, ready to run
-		self.log.info('Start jMQTT python daemon')
-		self.log.info('Log level  : %s', self._log_level)
-		self.log.info('Socket port: %s', self._socket_port)
-		self.log.info('PID file   : %s', self._pidfile)
-		self.log.debug('Apikey    : %s', self._apikey)
+		self.log.info('Log level   : %s', self._log_level)
+		self.log.info('Socket port : %s', self._socket_port)
+		self.log.info('Callback url: %s', self._callback)
+		self.log.info('PID file    : %s', self._pidfile)
+		self.log.debug('Apikey      : %s', self._apikey)
 
 	def open_comm(self):
 		self.jcom = JeedomMsg(self._callback, self._apikey, self._socket_port)

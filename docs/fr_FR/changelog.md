@@ -1,6 +1,9 @@
 # Registre des évolutions
 
-## 2022-07-19
+## 2022-07-20
+ - Correction d'un bug lorsque Jeedom n'écoute pas en http sur le port 80
+
+## 2022-07-19 Suppression du démon PHP
  - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
  - **Amélioration les performances et réduction de la consommation mémoire**
  - **Prise en compte immédiate du changement du niveau de log par le démon**

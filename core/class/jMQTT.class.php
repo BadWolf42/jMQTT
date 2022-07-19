@@ -1173,9 +1173,11 @@ class jMQTT extends eqLogic {
 		}
 		// Start Python daemon
 		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
+		$prot = config::byKey('internalProtocol', 'core', 'http://');
+		$port = config::byKey('internalPort', 'core', 80);
 		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
 		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd .= ' --callback "http://localhost/plugins/jMQTT/core/php/callback.php"';
+		$cmd .= ' --callback "' . $prot . 'localhost:' . $port . '/plugins/jMQTT/core/php/callback.php"';
 		$cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
 		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		self::logger('info', __('Lancement du démon jMQTT', __FILE__));
