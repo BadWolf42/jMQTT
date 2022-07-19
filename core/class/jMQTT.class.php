@@ -2014,7 +2014,7 @@ class jMQTT extends eqLogic {
 	 * @param string $retain
 	 *            whether or not the message is a retained message ('0' or '1')
 	 */
-	public function publish($eqName, $topic, $payload, $qos, $retain) {
+	public function publish($cmdName, $topic, $payload, $qos, $retain) {
 		if (is_bool($payload) || is_array($payload)) {
 			// Fix #80
 			// One can wonder why not encoding systematically the message?
@@ -2028,20 +2028,20 @@ class jMQTT extends eqLogic {
 		}
 		$payloadLogMsg = ($payload === '') ? '(null)' : $payload;
 		if (log::getLogLevel(__CLASS__) > 100)
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic %3\$s", __FILE__), $this->getHumanName(), $payloadLogMsg, $topic));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic %3\$s", __FILE__), $cmdName, $payloadLogMsg, $topic));
 		else
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic %3\$s (qos=%4\$s, retain=%5\$s)", __FILE__), $this->getHumanName(), $payload, $topic, $qos, $retain));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic %3\$s (qos=%4\$s, retain=%5\$s)", __FILE__), $cmdName, $payload, $topic, $qos, $retain));
 		$broker = $this->getBroker();
 		if (!self::daemon_state()) {
-			$this->log('warning', __("Message non publié, car le démon n'est pas démarré/connecté", __FILE__));
+			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le démon n'est pas démarré/connecté", __FILE__), $cmdName));
 			return;
 		}
 		if (!$broker->getIsEnable()) {
-			$this->log('warning', __("Message non publié, car le Broker jMQTT n'est pas activé", __FILE__));
+			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le Broker jMQTT n'est pas activé", __FILE__), $cmdName));
 			return;
 		}
 		if ($broker->getMqttClientState() != self::MQTTCLIENT_OK) {
-			$this->log('warning', __("Message non publié, car le démon n'est pas connecté au Broker MQTT", __FILE__));
+			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le démon n'est pas connecté au Broker MQTT", __FILE__), $cmdName));
 			return;
 		}
 		self::toDaemon_publish($this->getBrkId(), $topic, $payload, $qos, $retain);
