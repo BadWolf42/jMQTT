@@ -1,6 +1,6 @@
 # Registre des évolutions
 
-## 2022-07-20
+## 2022-07-22
  - Correction d'un bug lorsque Jeedom n'écoute pas en http ou sur le port 80
  - Correction d'un bug avec Jeedom en Docker si lancé sans `--privileged=true`
  - Correction du nom de la commande dans le log lors d'une publication
