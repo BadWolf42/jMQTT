@@ -1173,9 +1173,11 @@ class jMQTT extends eqLogic {
 		}
 		// Start Python daemon
 		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
+		$prot = config::byKey('internalProtocol', 'core', 'http://');
+		$port = config::byKey('internalPort', 'core', 80);
 		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
 		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd .= ' --callback "http://localhost/plugins/jMQTT/core/php/callback.php"';
+		$cmd .= ' --callback "' . $prot . 'localhost:' . $port . '/plugins/jMQTT/core/php/callback.php"';
 		$cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
 		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		self::logger('info', __('Lancement du démon jMQTT', __FILE__));
@@ -1255,16 +1257,12 @@ class jMQTT extends eqLogic {
 			self::logger('warning', sprintf(__("Démon [%s] : Mauvais identifiant d'exécution", __FILE__), $ruid));
 			return '';
 		}
-		// Checking PID match for the PORT in RemoteUID
+		// Searching a match for RemoteUID (PID and PORT) in listening ports
 		$output = null;
 		$retval = null;
-		exec(system::getCmdSudo() . 'fuser ' . $rport . '/tcp 2> /dev/null', $output, $retval);
+		exec("netstat -lntp | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
 		if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
-			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être validé", __FILE__), $ruid));
-			return '';
-		}
-		if (intval(trim($output[0])) != $rpid) { // No match
-			self::logger('warning', sprintf(__("Démon [%s] : Port incohérent", __FILE__), $ruid));
+			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être authentifié", __FILE__), $ruid));
 			return '';
 		}
 		// Verify if another daemon is not running
@@ -2012,7 +2010,7 @@ class jMQTT extends eqLogic {
 	 * @param string $retain
 	 *            whether or not the message is a retained message ('0' or '1')
 	 */
-	public function publish($eqName, $topic, $payload, $qos, $retain) {
+	public function publish($cmdName, $topic, $payload, $qos, $retain) {
 		if (is_bool($payload) || is_array($payload)) {
 			// Fix #80
 			// One can wonder why not encoding systematically the message?
@@ -2026,20 +2024,20 @@ class jMQTT extends eqLogic {
 		}
 		$payloadLogMsg = ($payload === '') ? '(null)' : $payload;
 		if (log::getLogLevel(__CLASS__) > 100)
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic %3\$s", __FILE__), $this->getHumanName(), $payloadLogMsg, $topic));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic %3\$s", __FILE__), $cmdName, $payloadLogMsg, $topic));
 		else
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic %3\$s (qos=%4\$s, retain=%5\$s)", __FILE__), $this->getHumanName(), $payload, $topic, $qos, $retain));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic %3\$s (qos=%4\$s, retain=%5\$s)", __FILE__), $cmdName, $payload, $topic, $qos, $retain));
 		$broker = $this->getBroker();
 		if (!self::daemon_state()) {
-			$this->log('warning', __("Message non publié, car le démon n'est pas démarré/connecté", __FILE__));
+			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le démon n'est pas démarré/connecté", __FILE__), $cmdName));
 			return;
 		}
 		if (!$broker->getIsEnable()) {
-			$this->log('warning', __("Message non publié, car le Broker jMQTT n'est pas activé", __FILE__));
+			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le Broker jMQTT n'est pas activé", __FILE__), $cmdName));
 			return;
 		}
 		if ($broker->getMqttClientState() != self::MQTTCLIENT_OK) {
-			$this->log('warning', __("Message non publié, car le démon n'est pas connecté au Broker MQTT", __FILE__));
+			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le démon n'est pas connecté au Broker MQTT", __FILE__), $cmdName));
 			return;
 		}
 		self::toDaemon_publish($this->getBrkId(), $topic, $payload, $qos, $retain);

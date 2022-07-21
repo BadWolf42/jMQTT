@@ -217,7 +217,7 @@ class jMQTTCmd extends cmd {
 				break;
 		}
 		$request = jeedom::evaluateExpression($request);
-		$this->getEqLogic()->publish($this->getEqLogic()->getName(), $topic, $request, $qos, $retain);
+		$this->getEqLogic()->publish($this->getHumanName()(), $topic, $request, $qos, $retain);
 		return $request;
 	}
 
@@ -347,7 +347,7 @@ class jMQTTCmd extends cmd {
 						// A null payload should be sent to the broker to erase the last retained value
 						// Otherwise, this last value remains retained at broker level
 						$eqLogic->log('info', sprintf(__("Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker", __FILE__), $this->getHumanName()));
-						$eqLogic->publish($eqLogic->getName(), $this->getTopic(), '', 1, 1);
+						$eqLogic->publish($this->getHumanName(), $this->getTopic(), '', 1, 1);
 					}
 				}
 			}
