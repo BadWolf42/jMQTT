@@ -1260,7 +1260,7 @@ class jMQTT extends eqLogic {
 		// Searching a match for RemoteUID (PID and PORT) in listening ports
 		$output = null;
 		$retval = null;
-		exec("netstat -lntp | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+LISTEN[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
+		exec("netstat -lntp | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
 		if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
 			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être authentifié", __FILE__), $ruid));
 			return '';
