@@ -1257,16 +1257,12 @@ class jMQTT extends eqLogic {
 			self::logger('warning', sprintf(__("Démon [%s] : Mauvais identifiant d'exécution", __FILE__), $ruid));
 			return '';
 		}
-		// Checking PID match for the PORT in RemoteUID
+		// Searching a match for RemoteUID (PID and PORT) in listening ports
 		$output = null;
 		$retval = null;
-		exec(system::getCmdSudo() . 'fuser ' . $rport . '/tcp 2> /dev/null', $output, $retval);
+		exec("netstat -lntp | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+LISTEN[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
 		if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
-			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être validé", __FILE__), $ruid));
-			return '';
-		}
-		if (intval(trim($output[0])) != $rpid) { // No match
-			self::logger('warning', sprintf(__("Démon [%s] : Port incohérent", __FILE__), $ruid));
+			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être authentifié", __FILE__), $ruid));
 			return '';
 		}
 		// Verify if another daemon is not running

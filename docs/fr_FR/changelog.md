@@ -1,7 +1,8 @@
 # Registre des évolutions
 
 ## 2022-07-20
- - Correction d'un bug lorsque Jeedom n'écoute pas en http sur le port 80
+ - Correction d'un bug lorsque Jeedom n'écoute pas en http ou sur le port 80
+ - Correction d'un bug avec Jeedom en Docker si lancé sans `--privileged=true`
  - Correction du nom de la commande dans le log lors d'une publication
 
 ## 2022-07-19 Suppression du démon PHP

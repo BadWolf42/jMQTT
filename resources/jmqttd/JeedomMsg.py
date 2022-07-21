@@ -26,7 +26,6 @@ class JeedomMsg():
 		self._url         = callback+'?apikey='+apikey
 		self._status      = self.KO
 		self._retry       = 3
-		self._socket_host = '127.0.0.1'
 		self._socket_port = port
 		self._stopworker  = False
 		self._socketIn    = None
@@ -164,7 +163,11 @@ class JeedomMsg():
 				self.server.jmsg.qFromJ.put(raw)
 				self.server._last_rcv = time.time()
 				self._log.verbose("Client [%s:%d] disconnected", *(self.client_address))
-		self._socketIn = socketserver.TCPServer((self._socket_host, self._socket_port), SockIn)
+		# TODO: Implement IPv6 listening, examples:
+		#           https://www.bortzmeyer.org/files/echoserver.py
+		#           https://www.thecodingforums.com/threads/python-socketserver-with-ipv6.681964/
+		#       If so, DaemonUp PID/PORT check may need to be modified
+		self._socketIn = socketserver.TCPServer(('127.0.0.1', self._socket_port), SockIn)
 		if self._socketIn:
 			self._socketIn.jmsg = self
 			threading.Thread(target=self._loopRcv, args=(), name="SockIn", daemon=True).start()
