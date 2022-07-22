@@ -217,7 +217,7 @@ class jMQTTCmd extends cmd {
 				break;
 		}
 		$request = jeedom::evaluateExpression($request);
-		$this->getEqLogic()->publish($this->getHumanName()(), $topic, $request, $qos, $retain);
+		$this->getEqLogic()->publish($this->getHumanName(), $topic, $request, $qos, $retain);
 		return $request;
 	}
 
