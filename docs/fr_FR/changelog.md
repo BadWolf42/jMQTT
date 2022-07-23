@@ -1,5 +1,15 @@
 # Registre des évolutions
 
+## 2022-07-24
+ - Correction d'un problème avec le démon lorsque Jeedom n'est pas à la racine du serveur web
+ - Correction de l'utilisation de `netstat` pour valider le PID du démon (ajout de ss et lsof pour être sûr)
+ - Correction de la prise en charge des redirections (max 3) dans le démon (ex : Let's Encrpyt 80 -> 443)
+ - Correction de l'événement ONLINE sur un Broker dont la StatusCmd n'existe pas
+ - Ajoutez un champ de configuration sur les systèmes Docker pour personnaliser (si besoin) l'URL de callback.
+ - Correction du délai d'expiration du démon si aucun message n'est reçu/envoyé pendant trop longtemps
+ - Correction problème de journalisation dans JeedomMsg.py
+ - Préparation des équipements pour "Tableview"
+
 ## 2022-07-22
  - Correction d'un bug lorsque Jeedom n'écoute pas en http ou sur le port 80
  - Correction d'un bug avec Jeedom en Docker si lancé sans `--privileged=true`

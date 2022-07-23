@@ -1,6 +1,6 @@
 <br/>
 <div class="row">
-	<div class="col-md-5 col-sm-12">
+	<div class="col-md-6 col-sm-12">
 		<div class="panel panel-success">
 			<div class="panel-heading">
 				<h3 class="panel-title">
@@ -31,7 +31,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-7 col-sm-12">
+	<div class="col-md-6 col-sm-12">
 		<div class="panel panel-primary" id="div_brokerLog">
 			<div class="panel-heading">
 				<h3 class="panel-title">
