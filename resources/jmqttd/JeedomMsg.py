@@ -58,12 +58,15 @@ class JeedomMsg():
 		try:
 			response = requests.get(self._url, timeout=3., verify=False)
 			if response.status_code != requests.codes.ok:
-				self._log_snd.error('Test error: %s %s', response.status.code, response.status.message)
+				self._log_snd.error('Callback test Error (%s): %s', response.status_code, response.reason)
 				self._status &= ~self.CAN_SND
 				self._retry_snd += 1
 				return False
 		except Exception as e:
-			self._log_snd.exception('Callback test failed')
+			if self._log_snd.isEnabledFor(logging.DEBUG):
+				self._log_snd.exception('Callback test Exception')
+			else:
+				self._log_snd.error('Callback test Exception (%s)', e)
 			self._status &= ~self.CAN_SND
 			self._retry_snd += 1
 			return False
