@@ -35,7 +35,9 @@ class JeedomMsg():
 		self._retry_snd   = 0
 		self._retry_max   = 5
 		self._last_rcv    = time.time()
-		self._hb_delay    = 45 # seconds
+		self._hb_delay    = 45					# seconds between 2 heartbeat emission
+		self._hb_retry    = self._hb_delay / 2	# seconds before retrying
+		self._hb_timeout  = self._hb_delay * 2	# seconds before timeout
 		self.qFromJ       = queue.Queue()
 		self.qToJ         = queue.Queue()
 		# self._lock        = threading.Lock()
@@ -44,12 +46,14 @@ class JeedomMsg():
 	def is_working(self):
 		# TODO Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
 		if self._retry_snd > self._retry_max:
-			self._log_snd.waring("Nothing has been sent since %ds after retry %d (max %d).", time.time() - self._last_snd, self._retry_snd, self._retry_max)
-			return True
-		if time.time() - self._last_rcv > self._hb_delay * 2:
-			self._log_rcv.waring("Nothing has been received since %ds.", time.time() - self._last_rcv)
-			return True
-		return False
+			self._log_snd.error("Nothing has been sent since %ds and after send %d attempts, Jeedom/Apache is probably dead.",
+								time.time() - self._last_snd, self._retry_snd)
+			return False
+		if time.time() - self._last_rcv > self._hb_timeout:
+			self._log_rcv.error("Nothing has been received since %ds (max %d), Jeedom is probably dead.",
+								time.time() - self._last_rcv, self._hb_timeout)
+			return False
+		return True
 
 	def get_status(self):
 		return self._statusToName.get(self._status, self._statusToName[self.KO])
@@ -115,14 +119,16 @@ class JeedomMsg():
 	def _loopSnd(self):
 		self._log_snd.debug("Start")
 		max_msg_per_send = 40
+		last_hb = 0
 		while not self._stopworker:
 			if self.qToJ.empty():
 				if time.time() - self._last_snd > self._hb_delay:
-					self.qToJ.put({"cmd":"hb"}) # Add a heartbeat if it has been too long
-					self._last_snd = time.time() - (self._hb_delay / 2) # Next retry in half _hb_delay to avoid sending continuously
+					if time.time() - last_hb > self._hb_retry: # Avoid sending continuously hb
+						self.qToJ.put({"cmd":"hb"}) # Add a heartbeat if it has been too long
+						last_hb = time.time()
 				else:
 					time.sleep(0.1)
-					continue # Check if stopworker changed
+				continue # Check if stopworker changed
 			msgs = []
 			while not self._stopworker and not self.qToJ.empty() and (len(msgs) < max_msg_per_send):
 				msg = self.qToJ.get()
@@ -174,7 +180,7 @@ class JeedomMsg():
 				raw = self.rfile.read().strip()
 				self._log.verbose("Raw data: %s", raw)
 				self.server.jmsg.qFromJ.put(raw)
-				self.server._last_rcv = time.time()
+				self.server.jmsg._last_rcv = time.time()
 				self._log.verbose("Client [%s:%d] disconnected", *(self.client_address))
 		# TODO: Implement IPv6 listening, examples:
 		#           https://www.bortzmeyer.org/files/echoserver.py
