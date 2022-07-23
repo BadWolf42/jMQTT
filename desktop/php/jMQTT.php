@@ -19,25 +19,15 @@ $node_images = scandir(__DIR__ . '/../../core/img/');
 ?>
 
 <style>
-
-.eqLogicThumbnailContainer div.eqLogicDisplayAction {
-	padding-top: 25px !important;
-	height: 168px;
-}
-
-.row div.eqLogicDisplayAction.card.include .fas {
-	color: #8000FF !important;
-	font-size: 52px !important;
-}
-
-.row div.eqLogicDisplayAction.card.include span {
-	font-weight: bold;
-	color: #8000FF;
-}
-
-td.fitwidth {
-	white-space: nowrap;
-}
+.eqLogicThumbnailContainer div.eqLogicDisplayAction	{ padding-top: 25px !important; height: 168px; }
+.row div.eqLogicDisplayAction.card.include .fas		{ color: #8000FF !important; font-size: 52px !important; }
+.row div.eqLogicDisplayAction.card.include span		{ font-weight: bold; color: #8000FF; }
+td.fitwidth											{ white-space: nowrap; }
+span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:10px;margin-left:3px; }
+// span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:3px; }
+span.hiddenAsTable i.fas.status-circle				{ font-size:1em !important;  position:absolute;margin-top:23px;margin-left:55px; }
+span.hiddenAsTable i.fas.eyed						{ font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px; }
+span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px; }
 </style>
 
 <?php
@@ -53,26 +43,28 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 function displayEqLogicCard($eqL, $node_images) {
 	$opacity = $eqL->getIsEnable() ? '' : 'disableCard';
 	echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
-	if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) {
-		echo '<i class="fas fa-sign-in-alt fa-rotate-90" style="font-size:0.9em !important;position:absolute;margin-top:10px;margin-left:4px"></i>';
-	}
-	if ($eqL->getIsVisible()) {
-		echo '<i class="fas fa-eye" style="font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px"></i>';
-	} else {
-		echo '<i class="fas fa-eye-slash" style="font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px"></i>';
-	}
+	echo '<span class="hiddenAsTable">';
+	if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT)
+		echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
+	echo '<i class="fas eyed ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>';
 	if ($eqL->getType() == jMQTT::TYP_BRK) {
 		$file = 'node_broker.svg';
 		$st = $eqL->getMqttClientState();
-		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'" style="font-size:1em !important;position:absolute;margin-top:23px;margin-left:55px"></i>';
+		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>';
 	} else {
 		$icon = 'node_' . $eqL->getConfiguration('icone');
 		$file = (in_array($icon.'.svg', $node_images) ? $icon.'.svg' : (in_array($icon.'.png', $node_images) ? $icon.'.png' : 'node_.png'));
 	}
-
+	echo '</span>';
 	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
 	echo "<br>";
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
+	// TODO: Cleanup icon sizes for Tableview
+	// echo '<span class="hiddenAsCard displayTableRight hidden">';
+	// if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>&nbsp;';
+	// echo '<i class="fas ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>&nbsp;';
+	// if ($eqL->getType() == jMQTT::TYP_BRK) echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>&nbsp;';
+	// echo '</span>';
 	echo '</div>';
 }
 
