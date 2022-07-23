@@ -206,6 +206,8 @@ class Main():
 		# Wait for instructions
 		while not self.should_stop.is_set():
 			# empty() method is faster that Exception handling
+			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedon
+				self.should_stop.set()
 			if self.jcom.qFromJ.empty():
 				time.sleep(0.1)
 				continue # Check if should_stop changed
@@ -239,8 +241,7 @@ class Main():
 
 	def h_newClient(self, message):
 		# Check for                      key, mandatory, default_val, expected_type
-		if not validate_params(message, [['callback',      True,        None, str],
-										 ['hostname',      True,        None, str],
+		if not validate_params(message, [['hostname',      True,        None, str],
 										 ['port',         False,        None, int],
 										 ['tls',           True,       False, bool]]):
 			return

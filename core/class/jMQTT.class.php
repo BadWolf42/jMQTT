@@ -1146,6 +1146,14 @@ class jMQTT extends eqLogic {
 		return $return;
 	}
 
+public static function get_callback_url() {
+	$prot = config::byKey('internalProtocol', 'core', 'http://');
+	$port = config::byKey('internalPort', 'core', 80);
+	$comp = trim(config::byKey('internalComplement', 'core', ''), '/');
+	if ($comp !== '') $comp .= '/';
+	return $prot.'localhost:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
+}
+
 	/**
 	 * Jeedom callback to start daemon
 	 */
@@ -1173,11 +1181,12 @@ class jMQTT extends eqLogic {
 		}
 		// Start Python daemon
 		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
-		$prot = config::byKey('internalProtocol', 'core', 'http://');
-		$port = config::byKey('internalPort', 'core', 80);
+		$callbackURL = self::get_callback_url();
+		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, false)) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
+			$callbackURL = config::byKey('urlOverrideValue', __CLASS__, $callbackURL);
 		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
 		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd .= ' --callback "' . $prot . 'localhost:' . $port . '/plugins/jMQTT/core/php/callback.php"';
+		$cmd .= ' --callback "'.$callbackURL.'"';
 		$cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
 		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		self::logger('info', __('Lancement du démon jMQTT', __FILE__));
@@ -1258,9 +1267,16 @@ class jMQTT extends eqLogic {
 			return '';
 		}
 		// Searching a match for RemoteUID (PID and PORT) in listening ports
-		$output = null;
-		$retval = null;
-		exec("netstat -lntp | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
+		$retval = 255;
+		exec("ss -Htulpn 'sport = :" . $rport ."' 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+pid=" . $rpid . "' 2> /dev/null", $output, $retval);
+		if ($retval != 0) { // Execution issue with ss? Try netstat!
+			unset($output); // Be sure to clear $output first
+			exec("netstat -lntp 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
+		}
+		if ($retval != 0) { // Execution issue with netstat? Try lsof!
+			unset($output); // Be sure to clear $output first
+			exec("lsof -nP -iTCP -sTCP:LISTEN | grep -E 'python3[ \t]+" . $rpid . "[ \t]+.+[:]" . $rport ."[ \t]+' 2> /dev/null", $output, $retval);
+		}
 		if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
 			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être authentifié", __FILE__), $ruid));
 			return '';
@@ -1316,8 +1332,12 @@ class jMQTT extends eqLogic {
 	 */
 	public static function fromDaemon_daemonDown($uid) {
 		//self::logger('debug', 'fromDaemon_daemonDown(uid='.$uid.')');
+		// Remove PID file
+		if (file_exists($pid_file = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid'))
+			shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 		// Delete in cache the daemon uid (as it is disconnected)
 		self::clean_cache();
+		// Remove listeners
 		self::listenersRemoveAll();
 		// Get all brokers and set them as disconnected
 		foreach(self::getBrokers() as $broker) {
@@ -1415,7 +1435,6 @@ class jMQTT extends eqLogic {
 		$params['cmd']                  = 'newMqttClient';
 		$params['id']                   = $id;
 		$params['hostname']             = $hostname;
-		$params['callback']             = "http://localhost/plugins/jMQTT/core/php/callback.php";
 		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
 		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
 		self::sendToDaemon($params);
@@ -1726,7 +1745,8 @@ class jMQTT extends eqLogic {
 	public static function fromDaemon_brkUp($id) {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
-			$broker->getMqttClientStatusCmd()->event(self::ONLINE); // TODO Check if can be removed as Daemon sends this event
+			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event
+				$statusCmd->event(self::ONLINE); // TODO Check if can be removed
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
@@ -1760,8 +1780,7 @@ class jMQTT extends eqLogic {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
-			$statusCmd = $broker->getMqttClientStatusCmd(); // TODO Check if can be removed as Daemon sends this event
-			if ($statusCmd)
+			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event
 				$statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			// if includeMode is enabled, disable it
 			if ($broker->getIncludeMode())
