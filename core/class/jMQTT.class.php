@@ -1146,6 +1146,14 @@ class jMQTT extends eqLogic {
 		return $return;
 	}
 
+public static function get_callback_url() {
+	$prot = config::byKey('internalProtocol', 'core', 'http://');
+	$port = config::byKey('internalPort', 'core', 80);
+	$comp = trim(config::byKey('internalComplement', 'core', ''), '/');
+	if ($comp !== '') $comp .= '/';
+	return $prot.'localhost:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
+}
+
 	/**
 	 * Jeedom callback to start daemon
 	 */
@@ -1173,13 +1181,12 @@ class jMQTT extends eqLogic {
 		}
 		// Start Python daemon
 		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
-		$prot = config::byKey('internalProtocol', 'core', 'http://');
-		$port = config::byKey('internalPort', 'core', 80);
-		$comp = trim(config::byKey('internalComplement', ''), '/');
-		$comp .= ($comp != '') ? '/' : '';
+		$callbackURL = self::get_callback_url();
+		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, false)) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
+			$callbackURL = config::byKey('urlOverrideValue', __CLASS__, $callbackURL);
 		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
 		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd .= ' --callback "'.$prot.'localhost:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php"';
+		$cmd .= ' --callback "'.$callbackURL.'"';
 		$cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
 		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		self::logger('info', __('Lancement du démon jMQTT', __FILE__));

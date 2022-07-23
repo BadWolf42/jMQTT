@@ -179,6 +179,13 @@ try {
 		ajax::success();
 	}
 
+	if (init('action') == 'updateUrlOverride') {
+		config::save('urlOverrideEnable', init('valEn'), 'jMQTT');
+		config::save('urlOverrideValue', init('valUrl'), 'jMQTT');
+		ajax::success();
+	}
+
+
 /*    if (init('action') == 'filelist') {
 		// jMQTT::logger('info', 'filelist: ' . init('dir'));
 		if (init('dir') == 'template') {
