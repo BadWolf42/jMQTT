@@ -1726,7 +1726,8 @@ class jMQTT extends eqLogic {
 	public static function fromDaemon_brkUp($id) {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
-			$broker->getMqttClientStatusCmd()->event(self::ONLINE); // TODO Check if can be removed as Daemon sends this event
+			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event
+				$statusCmd->event(self::ONLINE); // TODO Check if can be removed
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
@@ -1760,8 +1761,7 @@ class jMQTT extends eqLogic {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
-			$statusCmd = $broker->getMqttClientStatusCmd(); // TODO Check if can be removed as Daemon sends this event
-			if ($statusCmd)
+			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event
 				$statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			// if includeMode is enabled, disable it
 			if ($broker->getIncludeMode())
