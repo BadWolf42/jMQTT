@@ -1424,7 +1424,6 @@ class jMQTT extends eqLogic {
 		$params['cmd']                  = 'newMqttClient';
 		$params['id']                   = $id;
 		$params['hostname']             = $hostname;
-		$params['callback']             = "http://localhost/plugins/jMQTT/core/php/callback.php";
 		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
 		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
 		self::sendToDaemon($params);
