@@ -1325,8 +1325,12 @@ class jMQTT extends eqLogic {
 	 */
 	public static function fromDaemon_daemonDown($uid) {
 		//self::logger('debug', 'fromDaemon_daemonDown(uid='.$uid.')');
+		// Remove PID file
+		if (file_exists($pid_file = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid'))
+			shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 		// Delete in cache the daemon uid (as it is disconnected)
 		self::clean_cache();
+		// Remove listeners
 		self::listenersRemoveAll();
 		// Get all brokers and set them as disconnected
 		foreach(self::getBrokers() as $broker) {
