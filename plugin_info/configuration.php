@@ -26,19 +26,50 @@ if (!isConnect()) {
 ?>
 <div class="eventDisplayMini"></div>
 <form class="form-horizontal">
-	<fieldset>
+	<div class="row">
+	<div class="col-sm-6">
 		<legend><i class="fas fa-cog"></i>{{Installation}}</legend>
 		<div class="form-group">
-			<label class="col-sm-5 control-label">{{Installer Mosquitto localement}}</label>
-			<div class="col-sm-3">
-				<input id="mosquitto_por" type="checkbox" class="configKey autoCheck" data-l1key="installMosquitto"
-					checked />
+			<label class="col-sm-4 control-label">{{Installer Mosquitto}}</label>
+			<div class="col-sm-8">
+				<input type="checkbox" class="configKey" data-l1key="installMosquitto" />
 			</div>
 		</div>
+<?php if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', "0") == "1") {
+	$regularVal = jMQTT::get_callback_url();
+	$overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
+	$overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
+	$curVal = ($overrideEn) ? $overrideVal : $regularVal;
+?>
+		<div class="form-group">
+			<label class="col-sm-4 control-label" style="color:var(--al-danger-color);">{{URL de Callback}} <sup><i class="fa fa-question-circle tooltips"
+				title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br />Dans ce cas uniquement, il peut être nécessaire de personaliser cette url, car elle est mal détectée par jMQTT.<br /><b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>
+			<div class="col-sm-7">
+				<div class="row">
+					<div class="col-sm-1">
+						<input type="checkbox" class="form-control" <?php if ($overrideEn) echo 'checked'; ?> id="jmqttUrlOverrideEnable" />
+					</div>
+					<div class="col-sm-10">
+						<input class="form-control<?php if (!$overrideEn) echo ' disabled'; ?>" id="jmqttUrlOverrideValue"
+							value="<?php echo $curVal; ?>" valOver="<?php echo $overrideVal; ?>" valStd="<?php echo $regularVal; ?>" />
+					</div>
+					<div class="col-sm-1">
+						<span class="btn btn-success btn-sm" id="bt_jmqttUrlOverride" style="position:relative;margin-top: 2px;" title="{{Appliquer}}">
+							<i class="fas fa-check"></i>
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-1">
+			</div>
+		</div>
+<?php } ?>
+	</div>
+	<div class="col-sm-6">
 		<legend><i class="fas fa-key"></i>{{Certificats}}</legend>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Téléverser un nouveau Certificat}}</label>
-			<div class="col-sm-3">
+			<div class="col-sm-5">
 				<span class="btn btn-success btn-sm btn-file" style="position:relative;" title="{{Téléverser un Certificat}}">
 					<i class="fas fa-upload"></i><input id="mqttConfUpFile" type="file" name="file" accept=".crt, .pem, .key" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
 				</span>
@@ -46,7 +77,7 @@ if (!isConnect()) {
 		</div>
 		<div class="form-group">
 			<label class="col-sm-5 control-label">{{Supprimer un Certificat}}</label>
-			<div class="col-sm-3">
+			<div class="col-sm-5">
 				<select id="mqttConfDelFile" class="form-control" data-l1key="tobedeleted">
 <?php
 	$dir = realpath(dirname(__FILE__) . '/../' . jMQTT::PATH_CERTIFICATES);
@@ -57,16 +88,54 @@ if (!isConnect()) {
 ?>
 				</select>
 			</div>
-			<div class="col-sm-3">
+			<div class="col-sm-1">
 				<span class="btn btn-danger btn-sm btn-trash mqttDeleteFile" style="position:relative;margin-top: 2px;" title="{{Supprimer le fichier selectionné}}">
 					<i class="fas fa-trash"></i>
 				</span>
 			</div>
 		</div>
 		<div class="form-group"><br /></div>
-	</fieldset>
+	</div>
+	</div>
 </form>
 <script>
+$('#bt_jmqttUrlOverride').on('click', function (){
+	var $valEn = $('#jmqttUrlOverrideEnable').value()
+	$.ajax({
+		type: "POST",
+		url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+		data: {
+			action: "updateUrlOverride",
+			valEn: $valEn,
+			valUrl: (($valEn == '1') ? $('#jmqttUrlOverrideValue').value() : $('#jmqttUrlOverrideValue').attr('valOver'))
+		},
+		global : false,
+		dataType: 'json',
+		error: function(request, status, error) {
+			handleAjaxError(request, status, error);
+		},
+		success: function(data) {
+			if (data.state != 'ok')
+				$('.eventDisplayMini').showAlert({message: data.result,level: 'danger'});
+			else
+				$('.eventDisplayMini').showAlert({message: '{{Modification effectuée. Relancez le Démon.}}' ,level: 'success'});
+		}
+	});
+});
+
+$('#jmqttUrlOverrideEnable').change(function(){
+	$oVal = $('#jmqttUrlOverrideValue');
+	if ($(this).value() == '1') {
+		if ($oVal.attr('valOver') != "")
+			$oVal.value($oVal.attr('valOver'));
+		$oVal.removeClass('disabled');
+	} else {
+		$oVal.attr('valOver', $oVal.value());
+		$oVal.value($oVal.attr('valStd'));
+		$oVal.addClass('disabled');
+	}
+});
+
 // TODO Remove and use textareas in Brokers instead of fileupload
 $('#mqttConfUpFile').fileupload({
 	dataType: 'json',
