@@ -1258,9 +1258,16 @@ class jMQTT extends eqLogic {
 			return '';
 		}
 		// Searching a match for RemoteUID (PID and PORT) in listening ports
-		$output = null;
-		$retval = null;
-		exec("netstat -lntp 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
+		$retval = 255;
+		exec("ss -Htulpn 'sport = :" . $rport ."' 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+pid=" . $rpid . "' 2> /dev/null", $output, $retval);
+		if ($retval != 0) { // Execution issue with ss? Try netstat!
+			unset($output); // Be sure to clear $output first
+			exec("netstat -lntp 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
+		}
+		if ($retval != 0) { // Execution issue with netstat? Try lsof!
+			unset($output); // Be sure to clear $output first
+			exec("lsof -nP -iTCP -sTCP:LISTEN | grep -E 'python3[ \t]+" . $rpid . "[ \t]+.+[:]" . $rport ."[ \t]+' 2> /dev/null", $output, $retval);
+		}
 		if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
 			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être authentifié", __FILE__), $ruid));
 			return '';
