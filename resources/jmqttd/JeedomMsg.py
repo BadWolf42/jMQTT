@@ -54,9 +54,19 @@ class JeedomMsg():
 	def get_status(self):
 		return self._statusToName.get(self._status, self._statusToName[self.KO])
 
-	def send_test(self):
+	def send_test(self, redirect=3):
 		try:
-			response = requests.get(self._url, timeout=3., verify=False)
+			response = requests.get(self._url, timeout=3., allow_redirects=False, verify=False)
+			if response.is_redirect:
+				if redirect == 0:
+					self._log_snd.error('Callback test following Too Many Redirections')
+					return False
+				self._url = response.headers['Location']
+				if self._log_snd.isEnabledFor(logging.DEBUG):
+					self._log_snd.info('Callback test following Redirection %d -> %s', 4 - redirect, self._url)
+				else:
+					self._log_snd.info('Callback test following Redirection %d', 4 - redirect)
+				return self.send_test(redirect - 1)
 			if response.status_code != requests.codes.ok:
 				self._log_snd.error('Callback test Error (%s): %s', response.status_code, response.reason)
 				self._status &= ~self.CAN_SND
