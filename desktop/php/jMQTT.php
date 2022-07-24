@@ -60,6 +60,7 @@ function displayEqLogicCard($eqL, $node_images) {
 	echo "<br>";
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
 	// TODO: Cleanup icon sizes for Tableview
+	// Core javascripts here : https://github.com/jeedom/core/blob/3ee8314bb8bd024d0a217a8f7c8997cf0f16ec25/core/js/plugin.template.js#L136
 	// echo '<span class="hiddenAsCard displayTableRight hidden">';
 	// if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>&nbsp;';
 	// echo '<i class="fas ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>&nbsp;';
