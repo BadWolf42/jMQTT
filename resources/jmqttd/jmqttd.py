@@ -205,10 +205,11 @@ class Main():
 		self.has_stopped.clear()
 		# Wait for instructions
 		while not self.should_stop.is_set():
-			# empty() method is faster that Exception handling
-			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedon
-				self.should_stop.set()
-			if self.jcom.qFromJ.empty():
+# TODO FIX ME
+#			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedon
+#				self.should_stop.set()
+# /TODO FIXME
+			if self.jcom.qFromJ.empty(): # empty() method is faster that Exception handling
 				time.sleep(0.1)
 				continue # Check if should_stop changed
 

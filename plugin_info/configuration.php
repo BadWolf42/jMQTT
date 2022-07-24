@@ -35,7 +35,8 @@ if (!isConnect()) {
 				<input type="checkbox" class="configKey" data-l1key="installMosquitto" />
 			</div>
 		</div>
-<?php if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', "0") == "1") {
+<?php if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1') {
+	// To fix issue: https://community.jeedom.com/t/87727/39
 	$regularVal = jMQTT::get_callback_url();
 	$overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
 	$overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
