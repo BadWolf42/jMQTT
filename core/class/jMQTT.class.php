@@ -1116,13 +1116,13 @@ class jMQTT extends eqLogic {
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
-		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 90) {
-			self::logger('debug', __('Pas message ou de Heartbeat reçu depuis >90s, le Démon est probablement mort.', __FILE__));
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 135) {
+			self::logger('debug', __('Pas message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
-		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_SND)->getValue(0)) > 50) {
-			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >50s).", __FILE__));
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_SND)->getValue(0)) > 45) {
+			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >45s).", __FILE__));
 			self::toDaemon_hb();
 			return true;
 		}
@@ -1146,13 +1146,16 @@ class jMQTT extends eqLogic {
 		return $return;
 	}
 
-public static function get_callback_url() {
-	$prot = config::byKey('internalProtocol', 'core', 'http://');
-	$port = config::byKey('internalPort', 'core', 80);
-	$comp = trim(config::byKey('internalComplement', 'core', ''), '/');
-	if ($comp !== '') $comp .= '/';
-	return $prot.'localhost:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
-}
+	/**
+	 * jMQTT static function returning an automatically detected callback url to Jeedom for the daemon
+	 */
+	public static function get_callback_url() {
+		$prot = config::byKey('internalProtocol', 'core', 'http://');		// To fix let's encrypt issue like: https://community.jeedom.com/t/87060/26
+		$port = config::byKey('internalPort', 'core', 80);					// To fix port issue like: https://community.jeedom.com/t/87060/30
+		$comp = trim(config::byKey('internalComplement', 'core', ''), '/');	// To fix path issue like: https://community.jeedom.com/t/87872/15
+		if ($comp !== '') $comp .= '/';
+		return $prot.'localhost:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
+	}
 
 	/**
 	 * Jeedom callback to start daemon
@@ -1179,10 +1182,14 @@ public static function get_callback_url() {
 		if ($dep_info['state'] != self::MQTTCLIENT_OK) {
 			throw new Exception(__('Veuillez vérifier la configuration et les dépendances', __FILE__));
 		}
+		// Reset timers to let Daemon start
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_SND, time());
 		// Start Python daemon
 		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
 		$callbackURL = self::get_callback_url();
-		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, false)) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
+		// To fix issue: https://community.jeedom.com/t/87727/39
+		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, '0')) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
 			$callbackURL = config::byKey('urlOverrideValue', __CLASS__, $callbackURL);
 		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
 		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
@@ -1191,7 +1198,7 @@ public static function get_callback_url() {
 		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
 		self::logger('info', __('Lancement du démon jMQTT', __FILE__));
 		exec($cmd . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
-		// Wait up to 10 seconds for daemon start
+		// Wait up to 10 seconds for daemon to start
 		for ($i = 1; $i <= 40; $i++) {
 			if (self::daemon_state()) {
 				self::logger('info', __('Démon démarré', __FILE__));
@@ -1745,8 +1752,8 @@ public static function get_callback_url() {
 	public static function fromDaemon_brkUp($id) {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
-			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event
-				$statusCmd->event(self::ONLINE); // TODO Check if can be removed
+			if ($statusCmd = $broker->getMqttClientStatusCmd())				// TODO Check if can be removed as Daemon sends this event
+				$statusCmd->event(self::ONLINE);							// TODO Remove STATUS CMD to fix issue https://community.jeedom.com/t/87060/54
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
@@ -1780,8 +1787,8 @@ public static function get_callback_url() {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
-			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event
-				$statusCmd->event(self::OFFLINE); //Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event / Remove STATUS CMD to fix issue https://community.jeedom.com/t/87060/54
+				$statusCmd->event(self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			// if includeMode is enabled, disable it
 			if ($broker->getIncludeMode())
 				$broker->changeIncludeMode(0);
