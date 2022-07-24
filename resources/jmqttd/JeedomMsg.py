@@ -37,7 +37,7 @@ class JeedomMsg():
 		self._last_rcv    = time.time()
 		self._hb_delay    = 45					# seconds between 2 heartbeat emission
 		self._hb_retry    = self._hb_delay / 2	# seconds before retrying
-		self._hb_timeout  = self._hb_delay * 2	# seconds before timeout
+		self._hb_timeout  = self._hb_delay * 3	# seconds before timeout
 		self.qFromJ       = queue.Queue()
 		self.qToJ         = queue.Queue()
 		# self._lock        = threading.Lock()

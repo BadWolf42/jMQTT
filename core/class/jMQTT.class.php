@@ -1116,13 +1116,13 @@ class jMQTT extends eqLogic {
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
-		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 90) {
-			self::logger('debug', __('Pas message ou de Heartbeat reçu depuis >90s, le Démon est probablement mort.', __FILE__));
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 135) {
+			self::logger('debug', __('Pas message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
-		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_SND)->getValue(0)) > 50) {
-			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >50s).", __FILE__));
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_SND)->getValue(0)) > 45) {
+			self::logger('debug', __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >45s).", __FILE__));
 			self::toDaemon_hb();
 			return true;
 		}
@@ -1182,6 +1182,9 @@ class jMQTT extends eqLogic {
 		if ($dep_info['state'] != self::MQTTCLIENT_OK) {
 			throw new Exception(__('Veuillez vérifier la configuration et les dépendances', __FILE__));
 		}
+		// Reset timers to let Daemon start
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_SND, time());
 		// Start Python daemon
 		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
 		$callbackURL = self::get_callback_url();

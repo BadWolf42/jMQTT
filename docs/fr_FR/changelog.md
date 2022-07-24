@@ -1,5 +1,10 @@
 # Registre des évolutions
 
+## 2022-07-25
+ - Correction de problèmes avec les Heartbeat
+ - Désactivation du timeout côté démon
+ - Augmentation du nombre de Heartbeat et allongement du timeout
+
 ## 2022-07-24
  - Correction d'un problème avec le démon lorsque Jeedom n'est pas à la racine du serveur web
  - Correction de l'utilisation de `netstat` pour valider le PID du démon (ajout de ss et lsof pour être sûr)
