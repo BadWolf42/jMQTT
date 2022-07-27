@@ -21,13 +21,13 @@ et encore beaucoup d'autres...
 
 # Qu'est-ce que MQTT ?
 
-MQTT, pour "Message Queuing Telemetry Transport", est un protocole open source de messagerie qui assure des communications non permanentes entre des appareils par le transport de leurs messages. 
+MQTT, pour "Message Queuing Telemetry Transport", est un protocole open source de messagerie qui assure des communications non permanentes entre des appareils par le transport de leurs messages.
 
-Il a été créé en 1999 par Andy Stanford-Clark, ingénieur chez IBM, et Arlen Nipper, chez EuroTech, principalement dans la communication M2M pour permettre à deux appareils utilisant des technologies différentes de communiquer. 
-"Devenu une norme ISO en 2016, MQTT connectait déjà à cette date des millions d'appareils dans le monde entier, dans toutes sortes d'applications et d'industries. C'est une technologie d'avenir", 
-affirme Fabien Pereira Vaz, technical sales manager chez Paessler AG. 
+Il a été créé en 1999 par Andy Stanford-Clark, ingénieur chez IBM, et Arlen Nipper, chez EuroTech, principalement dans la communication M2M pour permettre à deux appareils utilisant des technologies différentes de communiquer.
+"Devenu une norme ISO en 2016, MQTT connectait déjà à cette date des millions d'appareils dans le monde entier, dans toutes sortes d'applications et d'industries. C'est une technologie d'avenir",
+affirme Fabien Pereira Vaz, technical sales manager chez Paessler AG.
 
-Les géants du web parmi lesquels AWS ou Microsoft utilisent MQTT pour remonter les données sur leur plateforme cloud. 
+Les géants du web parmi lesquels AWS ou Microsoft utilisent MQTT pour remonter les données sur leur plateforme cloud.
 
 MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.
 Il apporte une très grande souplesse dans les échanges d'information entre capteurs/actionneurs/systèmes domotique/etc.
@@ -560,4 +560,7 @@ Attention, quel que soit la solution, il est important de configurer la *Gestion
 
 # Registre des évolutions
 
-[Voir ici](changelog)
+[Evolutions récentes](changelog)
+
+[Evolutions plus anciennes](changelog_archived) (archivées)
+
