@@ -27,6 +27,7 @@ span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position
 span.hiddenAsTable i.fas.status-circle				{ font-size:1em !important;  position:absolute;margin-top:23px;margin-left:55px; }
 span.hiddenAsTable i.fas.eyed						{ font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px; }
 span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px; }
+textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font-weight: bold!important; }
 </style>
 
 <?php
