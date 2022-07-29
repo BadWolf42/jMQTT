@@ -426,6 +426,7 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 	}
 });
 
+//
 // Automations on Broker view attributes
 // TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]')
 $('#fTls').change(function(){

@@ -1479,7 +1479,8 @@ class jMQTT extends eqLogic {
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
-		if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
+		// TODO: Check also if Mosquitto can be installed
+		if (config::byKey('installMosquitto', 'jMQTT', 0) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
 			self::logger('debug', __("Le paquet Debian Mosquitto est manquant, relancez les dépendances", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
@@ -1497,7 +1498,7 @@ class jMQTT extends eqLogic {
 		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
 		log::remove($depLogFile);
 		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
+			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 0),
 			'log' => log::getPathToLog($depLogFile)
 		);
 	}
@@ -1508,9 +1509,10 @@ class jMQTT extends eqLogic {
 	public static function post_dependancy_install() {
 		echo "Starting post_dependancy_install()\n";
 		// if Mosquitto is installed
-		if (config::byKey('installMosquitto', 'jMQTT', 1)) {
+		if (config::byKey('installMosquitto', 'jMQTT', 0)) {
 			echo "Mosquitto installation requested => looking for Broker eqpt\n";
 
+			// TODO: Check also if Mosquitto can be installed
 			//looking for broker pointing to local mosquitto
 			$brokerexists = false;
 			foreach(self::getBrokers() as $broker) {
