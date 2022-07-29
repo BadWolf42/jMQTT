@@ -151,6 +151,13 @@ try {
 		ajax::success();
 	}
 
+	if (init('action') == 'getBrokerList') {
+		$returns = array();
+		foreach (jMQTT::getBrokers() as $id => $brk)
+			$returns[$id] = $brk->getName();
+		ajax::success($returns);
+	}
+
 	if (init('action') == 'filedelete') {
 		$fname = init('name');
 		if (init('dir') == 'template') {

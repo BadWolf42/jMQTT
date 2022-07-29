@@ -219,6 +219,24 @@ $(document).ready(function() {
 //
 // Actions on main plugin view
 //
+$('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function () {
+	bootbox.prompt("{{Nom du nouveau broker ?}}", function (result) {
+		if (result !== null) {
+			jeedom.eqLogic.save({
+				type: eqType,
+				eqLogics: [ $.extend({name: result}, {type: 'broker', brkId: -1}) ],
+				error: function (error) {
+					$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				},
+				success: function (data) {
+					var url = initPluginUrl();
+					modifyWithoutSave = false;
+					url += '&id=' + data.id + '&saveSuccessFull=1';
+					loadPage(url);
+				}
+			});
+		}
+	});
 });
 
 $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
@@ -234,6 +252,54 @@ $('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
 $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Gestion des templates d'équipements}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=templates').dialog('open');
+});
+
+$('.eqLogicAction[data-action=discoveryJMQTT]').on('click', function () {
+	$('#md_modal').dialog({title: "{{Découverte automatique}}"});
+	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=discovery').dialog('open');
+});
+
+$('.eqLogicAction[data-action=realTimeJMQTT]').on('click', function () {
+	$('#md_modal').dialog({title: "{{Découverte automatique}}"});
+	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=realtime').dialog('open');
+});
+
+$('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
+	var dialog_message = '<label class="control-label">{{Choisissez un broker : }}</label> ';
+	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
+	for(var i in eqBrokers){ dialog_message += '<option value="'+i+'">'+eqBrokers[i]+'</option>'; } // Use global var in jMQTT.php !!!
+	dialog_message += '</select><br>';
+	dialog_message += '<label class="control-label">{{Nom du nouvel équipement : }}</label> ';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>'
+	bootbox.confirm({
+		title: "{{Ajouter un nouvel équipement}}",
+		message: dialog_message,
+		callback: function (result){ if (result) {
+			var broker = $('#addJmqttBrkSelector').value();
+			if (broker === undefined || broker == null || broker == '' || broker == false) {
+				$('#div_alert').showAlert({message: "{{Broker invalide !}}", level: 'warning'});
+				return false;
+			}
+			var eqName = $('#addJmqttEqName').value();
+			if (eqName === undefined || eqName == null || eqName === '' || eqName == false) {
+				$('#div_alert').showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
+				return false;
+			}
+			jeedom.eqLogic.save({
+				type: eqType,
+				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', brkId: broker}) ], // TODO Set brkId here
+				error: function (error) {
+					$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				},
+				success: function (data) {
+					var url = initPluginUrl();
+					modifyWithoutSave = false;
+					url += '&id=' + data.id + '&saveSuccessFull=1';
+					loadPage(url);
+				}
+			});
+		}}
+	});
 });
 
 //
@@ -302,7 +368,6 @@ $('.eqLogicAction[data-action=move_broker]').off('click').on('click', function (
 		});
 	}
 });
-
 
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
 	var el = $(this);
@@ -456,34 +521,6 @@ $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder:
 // Restrict "cmd.configure" modal popup when double-click on command without id
 $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
 	event.stopPropagation()
-});
-
-$('.eqLogicAction[data-action=addJmqtt]').off('click').on('click', function () {
-	if (typeof $(this).attr('brkId') === 'undefined') {
-		var eqL = {type: 'broker', brkId: -1};
-		var prompt = "{{Nom du broker ?}}";
-	}
-	else {
-		var eqL = {type: 'eqpt', brkId: $(this).attr('brkId')};
-		var prompt = "{{Nom de l'équipement ?}}";
-	}
-	bootbox.prompt(prompt, function (result) {
-		if (result !== null) {
-			jeedom.eqLogic.save({
-				type: eqType,
-				eqLogics: [ $.extend({name: result}, eqL) ],
-				error: function (error) {
-					$('#div_alert').showAlert({message: error.message, level: 'danger'});
-				},
-				success: function (data) {
-					var url = initPluginUrl();
-					modifyWithoutSave = false;
-					url += '&id=' + data.id + '&saveSuccessFull=1';
-					loadPage(url);
-				}
-			});
-		}
-	});
 });
 
 //

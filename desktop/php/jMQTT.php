@@ -18,21 +18,20 @@ $node_images = scandir(__DIR__ . '/../../core/img/');
 ?>
 
 <style>
-.eqLogicThumbnailContainer div.eqLogicDisplayAction	{ padding-top: 25px !important; height: 168px; }
-.row div.eqLogicDisplayAction.card.include .fas		{ color: #8000FF !important; font-size: 52px !important; }
-.row div.eqLogicDisplayAction.card.include span		{ font-weight: bold; color: #8000FF; }
 td.fitwidth											{ white-space: nowrap; }
-span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:10px;margin-left:3px; }
-// span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:3px; }
+div.eqLogicThumbnailContainer.containerAsTable i.fa-sign-in-alt.fa-rotate-90	{ margin-bottom: 0px; }
+span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:3px; }
 span.hiddenAsTable i.fas.status-circle				{ font-size:1em !important;  position:absolute;margin-top:23px;margin-left:55px; }
 span.hiddenAsTable i.fas.eyed						{ font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px; }
 span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px; }
+span.hiddenAsCard i.fas.status-circle				{ margin-right:6px; }
 textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font-weight: bold!important; }
+div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; } // border: rgba(248, 216, 0) 4px solid!important;
 </style>
 
 <?php
 function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
-	echo '<div class="eqLogicDisplayAction eqLogicAction cursor ' . $class . '" ' . $attr . '>';
+	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
 	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
 }
 
@@ -59,13 +58,11 @@ function displayEqLogicCard($eqL, $node_images) {
 	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
 	echo "<br>";
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
-	// TODO: Cleanup icon sizes for Tableview
-	// Core javascripts here : https://github.com/jeedom/core/blob/3ee8314bb8bd024d0a217a8f7c8997cf0f16ec25/core/js/plugin.template.js#L136
-	// echo '<span class="hiddenAsCard displayTableRight hidden">';
-	// if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>&nbsp;';
-	// echo '<i class="fas ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>&nbsp;';
-	// if ($eqL->getType() == jMQTT::TYP_BRK) echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>&nbsp;';
-	// echo '</span>';
+	echo '<span class="hiddenAsCard displayTableRight hidden">';
+	if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
+	if ($eqL->getType() == jMQTT::TYP_BRK) echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>';
+	echo '<i class="fas ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>';
+	echo '</span>';
 	echo '</div>';
 }
 
@@ -76,27 +73,26 @@ function displayEqLogicCard($eqL, $node_images) {
 <div id="div_inclusionModeMsg"></div>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
-		<legend><i class="fas fa-cog"></i> {{Gestion plugin et brokers}}</legend>
+		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 		<div class="eqLogicThumbnailContainer">
 		<?php
 		displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
+		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'data-action="addJmqttBrk"', 'logoSecondary');
 		displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
 		if (isset($_GET['debug']))
 		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
-			displayActionCard('{{Debug}}', 'fa-cog', 'data-action="debugJMQTT"', 'logoSecondary');
+			displayActionCard('{{Debug}}', 'fa-bug', 'data-action="debugJMQTT"', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
-		displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="addJmqtt"', 'logoSecondary');
-		foreach ($eqBrokers as $eqB) {
-			displayEqLogicCard($eqB, $node_images);
-		}
+		// displayActionCard('{{Découverte}}', 'fa-flag', 'data-action="discoveryJMQTT"', 'logoSecondary');
+		// displayActionCard('{{Temps réel}}', 'fa-stream', 'data-action="realTimeJMQTT"', 'logoSecondary');
+		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="addJmqttEq"', 'logoSecondary');
 		?>
 		</div>
 		<div class="input-group" style="margin:5px;">
 			<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">
 			<div class="input-group-btn">
 				<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>
-				<!-- TODO FIXME mode tableau incompatible avec la classe eqLogicDisplayAction (servant à l'alignement des eqLogicDisplay et eqLogicAction) -->
-				<!--<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>-->
+				<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>
 			</div>
 		</div>
 		<?php
@@ -127,10 +123,7 @@ function displayEqLogicCard($eqL, $node_images) {
 				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
 			echo ' <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
-			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle',
-				'data-action="addJmqtt" brkId="' . $eqB->getId() . '"', 'logoSecondary');
-			displayActionCard('{{Mode inclusion}}', 'fa-sign-in-alt fa-rotate-90',
-				'data-action="changeIncludeMode" brkId="' . $eqB->getId() . '"', 'logoSecondary card');
+			displayEqLogicCard($eqB, $node_images);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 					displayEqLogicCard($eqL, $node_images);
