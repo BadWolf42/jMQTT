@@ -14,7 +14,6 @@ foreach ($eqBrokers as $id => $eqL) {
 }
 sendVarToJS('eqBrokers', $eqBrokersName);
 
-$has_orphans = false;
 $node_images = scandir(__DIR__ . '/../../core/img/');
 ?>
 
@@ -41,8 +40,8 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
  * @param jMQTT $eqL
  */
 function displayEqLogicCard($eqL, $node_images) {
-	$opacity = $eqL->getIsEnable() ? '' : 'disableCard';
-	echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
+	$opacity = $eqL->getIsEnable() ? '' : ' disableCard';
+	echo '<div class="eqLogicDisplayCard cursor' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
 	echo '<span class="hiddenAsTable">';
 	if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT)
 		echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
@@ -100,6 +99,23 @@ function displayEqLogicCard($eqL, $node_images) {
 			</div>
 		</div>
 		<?php
+		// Check there are orphans first
+		$has_orphans = false;
+		foreach ($eqNonBrokers as $id => $nonBrokers) {
+			if (! array_key_exists($id, $eqBrokers)) {
+				if (!$has_orphans) {
+					echo '<legend><i class="fas fa-table"></i>{{Equipements orphelins}}</legend>';
+					echo '<div class="eqLogicThumbnailContainer">';
+					$has_orphans = true;
+				}
+				foreach ($nonBrokers as $eqL) {
+					displayEqLogicCard($eqL, $node_images);
+				}
+			}
+		}
+		if ($has_orphans)
+			echo '</div>';
+
 		foreach ($eqBrokers as $eqB) {
 			echo '<legend><i class="fas fa-table"></i> ';
 			if (!array_key_exists($eqB->getId(), $eqNonBrokers))
@@ -122,19 +138,6 @@ function displayEqLogicCard($eqL, $node_images) {
 			echo '</div>';
 		}
 		
-// TODO: Check if this is still usefull (condition is always false)
-		if ($has_orphans) {
-			echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';
-			echo '<div class="eqLogicThumbnailContainer">';
-			foreach ($eqNonBrokers as $id => $nonBrokers) {
-				if (! array_key_exists($id, $eqBrokers)) {
-					foreach ($nonBrokers as $eqL) {
-						displayEqLogicCard($eqL, $node_images);
-					}
-				}
-			}
-			echo '</div>';
-		}
 		?>
 	</div>
 
@@ -147,7 +150,7 @@ function displayEqLogicCard($eqL, $node_images) {
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
-				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="removeJmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
+				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="removeJmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>&nbsp;
 			</div>
 			<div class="input-group pull-left" style="display:inline-flex">
 				<ul class="nav nav-tabs" role="tablist">
