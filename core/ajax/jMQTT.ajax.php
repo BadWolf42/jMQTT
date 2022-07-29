@@ -142,9 +142,8 @@ try {
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
 			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
 		}
-		$old_broker_id = $eqpt->getBrkId();
 		$new_broker = jMQTT::getBrokerFromId(init('brk_id'));
-		jMQTT::logger('info', sprintf(__("Déplacement de l'Equipement %1\$s vers le broker %2\$s", __FILE__), $eqpt->getHumanName(), $new_broker->getName()));
+		jMQTT::logger('info', sprintf(__("Déplacement de l'Equipement %1\$s du broker %2\$s vers le broker %3\$s", __FILE__), $eqpt->getHumanName(), $eqpt->getBroker()->getHumanName(), $new_broker->getName()));
 		$eqpt->setBrkId($new_broker->getId());
 		$eqpt->cleanEquipment();
 		$eqpt->save();

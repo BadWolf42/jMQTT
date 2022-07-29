@@ -16,8 +16,8 @@
 
 /*
  * Missing stopPropagation for textarea in command list
- * cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821
- * Will be removed after PR integrated to Jeedom release
+ * cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821 (integrated in v4.2.1)
+ * TODO Remove me when Jeedom 4.1 is deprecated
  */
 $('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
 	event.stopPropagation()
@@ -216,12 +216,9 @@ $(document).ready(function() {
 // End of DELETEME
 });
 
-/*
- * Actions on main plugin view
- */
-$('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
-	$('#md_modal').dialog({title: "{{Debug jMQTT}}"});
-	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=debug').dialog('open');
+//
+// Actions on main plugin view
+//
 });
 
 $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
@@ -229,199 +226,19 @@ $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
 });
 
+$('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
+	$('#md_modal').dialog({title: "{{Debug jMQTT}}"});
+	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=debug').dialog('open');
+});
+
 $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Gestion des templates d'équipements}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=templates').dialog('open');
 });
 
-$("#table_cmd").delegate(".listEquipementAction", 'click', function() {
-	var el = $(this);
-	jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
-		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.attr('data-input') + ']');
-		calcul.value(result.human);
-	});
-});
-
-$("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
-	var el = $(this);
-	jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
-		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
-		calcul.atCaret('insert', result.human);
-		modifyWithoutSave = true
-	});
-});
-
-$('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
-	$('#menu-bar').hide();
-});
-
-$('.nav-tabs a[href="#commandtab"]').on('click', function() {
-	if($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
-		$('#menu-bar').show();
-	}
-});
-
-
-/*
- * Actions on Broker view
- */
-$('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
-	var id = $('.eqLogicAttr[data-l1key=id]').value();
-	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
-		return;
-	clearTimeout(timeout_refreshMqttClientInfo);
-	callPluginAjax({
-		data: {
-			action: 'startMqttClient',
-			id: id,
-		},
-		success: function(data) {
-			refreshMqttClientInfo();
-		}
-	});
-});
-
-$('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
-	if($('#md_modal').is(':visible')){
-		$('#md_modal2').dialog({title: "{{Log du plugin}}"});
-		$("#md_modal2").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
-	}
-	else{
-		$('#md_modal').dialog({title: "{{Log du plugin}}"});
-		$("#md_modal").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
-	}
-});
-
-/*
- * Automations on Broker view attributes
- */
-// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]')
-$('#fTls').change(function(){
-	if ($(this).prop('checked')) $('#dTls').show();
-	else $('#dTls').hide();
-});
-
-// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]')
-$('#fTlsCheck').change(function(){
-	switch ($(this).val()) {
-		case 'public':
-			$('#dTlsCaFile').hide();
-			break;
-		case 'private':
-			$('#dTlsCaFile').show();
-			break;
-		default:
-			$('#dTlsCaFile').hide();
-	}
-});
-
-// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]')
-$('#fTlsClientCertFile').change(function(){
-	if ($(this).val() == '') $('#dTlsClientKeyFile').hide();
-	else $('#dTlsClientKeyFile').show();
-});
-
-// TODO Remove and use textareas instead of fileupload
-$('#mqttUploadFile').fileupload({
-	dataType: 'json',
-	replaceFileInput: false,
-	done: function (e, data) {
-		if (data.result.state != 'ok') {
-			$('#div_alert').showAlert({message: data.result.result, level: 'danger'});
-		} else {
-			switch (data.result.result.split('.').pop()) {
-				case 'crt':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsCaFile');
-					$('#fTlsCaFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsCaFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsCaFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-				case 'pem':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientCertFile');
-					$('#fTlsClientCertFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsClientCertFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsClientCertFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-				case 'key':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientKeyFile');
-					$('#fTlsClientKeyFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsClientKeyFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsClientKeyFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-			}
-			$('#div_alert').hideAlert();
-		}
-		$('#mqttConfUpFile').val(null);
-	}
-});
-
-/*
- * Automations on Equipment view attributes
- */
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', function(e) {
-	if($(e.target).value() == 'broker') {
-		$('#menu-bar').hide();
-	}
-});
-
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
-	if($(this).val() == "") {
-		var brokername = $('#broker option:selected').text();
-		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
-		$(this).val(brokername+'/'+eqName+'/#');
-	}
-});
-
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
-	var text = 'plugins/jMQTT/core/img/node_' + $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val();
-	$("#icon_visu").attr("src", text + '.svg');
-});
-
-$("#icon_visu").on("error", function () {
-	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val() != '') {
-		$(this).attr("src", 'plugins/jMQTT/core/img/node_' + $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val() + '.png');
-	}
-});
-
-// Configure the sortable functionality of the commands array
-$("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
-
-// Restrict "cmd.configure" modal popup when double-click on command without id
-$('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
-	event.stopPropagation()
-});
-
-/*
- * Add / Remote / Move jMQTT equipment callback
- */
-$('.eqLogicAction[data-action=addJmqtt]').off('click').on('click', function () {
-	if (typeof $(this).attr('brkId') === 'undefined') {
-		var eqL = {type: 'broker', brkId: -1};
-		var prompt = "{{Nom du broker ?}}";
-	}
-	else {
-		var eqL = {type: 'eqpt', brkId: $(this).attr('brkId')};
-		var prompt = "{{Nom de l'équipement ?}}";
-	}
-	bootbox.prompt(prompt, function (result) {
-		if (result !== null) {
-			jeedom.eqLogic.save({
-				type: eqType,
-				eqLogics: [ $.extend({name: result}, eqL) ],
-				error: function (error) {
-					$('#div_alert').showAlert({message: error.message, level: 'danger'});
-				},
-				success: function (data) {
-					var url = initPluginUrl();
-					modifyWithoutSave = false;
-					url += '&id=' + data.id + '&saveSuccessFull=1';
-					loadPage(url);
-				}
-			});
-		}
-	});
-});
-
+//
+// Remove / Move jMQTT equipment callback
+//
 $('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function () {
 	function removeJmqtt() {
 		jeedom.eqLogic.remove({
@@ -486,9 +303,192 @@ $('.eqLogicAction[data-action=move_broker]').off('click').on('click', function (
 	}
 });
 
-/*
- * Actions in top menu on an Equipment
- */
+
+$("#table_cmd").delegate(".listEquipementAction", 'click', function() {
+	var el = $(this);
+	jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
+		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.attr('data-input') + ']');
+		calcul.value(result.human);
+	});
+});
+
+$("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
+	var el = $(this);
+	jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
+		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
+		calcul.atCaret('insert', result.human);
+		modifyWithoutSave = true
+	});
+});
+
+$('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
+	$('#menu-bar').hide();
+});
+
+$('.nav-tabs a[href="#commandtab"]').on('click', function() {
+	if($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
+		$('#menu-bar').show();
+	}
+});
+
+//
+// Actions on Broker view
+//
+$('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
+	var id = $('.eqLogicAttr[data-l1key=id]').value();
+	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
+		return;
+	clearTimeout(timeout_refreshMqttClientInfo);
+	callPluginAjax({
+		data: {
+			action: 'startMqttClient',
+			id: id,
+		},
+		success: function(data) {
+			refreshMqttClientInfo();
+		}
+	});
+});
+
+$('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
+	if($('#md_modal').is(':visible')){
+		$('#md_modal2').dialog({title: "{{Log du plugin}}"});
+		$("#md_modal2").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
+	}
+	else{
+		$('#md_modal').dialog({title: "{{Log du plugin}}"});
+		$("#md_modal").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
+	}
+});
+
+// Automations on Broker view attributes
+// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]')
+$('#fTls').change(function(){
+	if ($(this).prop('checked')) $('#dTls').show();
+	else $('#dTls').hide();
+});
+
+// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]')
+$('#fTlsCheck').change(function(){
+	switch ($(this).val()) {
+		case 'public':
+			$('#dTlsCaFile').hide();
+			break;
+		case 'private':
+			$('#dTlsCaFile').show();
+			break;
+		default:
+			$('#dTlsCaFile').hide();
+	}
+});
+
+// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]')
+$('#fTlsClientCertFile').change(function(){
+	if ($(this).val() == '') $('#dTlsClientKeyFile').hide();
+	else $('#dTlsClientKeyFile').show();
+});
+
+// TODO Remove and use textareas instead of fileupload
+$('#mqttUploadFile').fileupload({
+	dataType: 'json',
+	replaceFileInput: false,
+	done: function (e, data) {
+		if (data.result.state != 'ok') {
+			$('#div_alert').showAlert({message: data.result.result, level: 'danger'});
+		} else {
+			switch (data.result.result.split('.').pop()) {
+				case 'crt':
+					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsCaFile');
+					$('#fTlsCaFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
+					$('#fTlsCaFile')[0].style.setProperty('background-color', '#ffb291', 'important');
+					setTimeout(function() { $('#fTlsCaFile')[0].style.removeProperty('background-color'); }, 3000);
+					break;
+				case 'pem':
+					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientCertFile');
+					$('#fTlsClientCertFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
+					$('#fTlsClientCertFile')[0].style.setProperty('background-color', '#ffb291', 'important');
+					setTimeout(function() { $('#fTlsClientCertFile')[0].style.removeProperty('background-color'); }, 3000);
+					break;
+				case 'key':
+					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientKeyFile');
+					$('#fTlsClientKeyFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
+					$('#fTlsClientKeyFile')[0].style.setProperty('background-color', '#ffb291', 'important');
+					setTimeout(function() { $('#fTlsClientKeyFile')[0].style.removeProperty('background-color'); }, 3000);
+					break;
+			}
+			$('#div_alert').hideAlert();
+		}
+		$('#mqttConfUpFile').val(null);
+	}
+});
+
+//
+// Automations on Equipment view attributes
+//
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', function(e) {
+	if($(e.target).value() == 'broker') {
+		$('#menu-bar').hide();
+	}
+});
+
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
+	if($(this).val() == "") {
+		var brokername = $('#broker option:selected').text();
+		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
+		$(this).val(brokername+'/'+eqName+'/#');
+	}
+});
+
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
+	var text = 'plugins/jMQTT/core/img/node_' + $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val();
+	$("#icon_visu").attr("src", text + '.svg');
+});
+
+$("#icon_visu").on("error", function () {
+	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val() != '') {
+		$(this).attr("src", 'plugins/jMQTT/core/img/node_' + $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val() + '.png');
+	}
+});
+
+// Configure the sortable functionality of the commands array
+$("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
+
+// Restrict "cmd.configure" modal popup when double-click on command without id
+$('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
+	event.stopPropagation()
+});
+
+$('.eqLogicAction[data-action=addJmqtt]').off('click').on('click', function () {
+	if (typeof $(this).attr('brkId') === 'undefined') {
+		var eqL = {type: 'broker', brkId: -1};
+		var prompt = "{{Nom du broker ?}}";
+	}
+	else {
+		var eqL = {type: 'eqpt', brkId: $(this).attr('brkId')};
+		var prompt = "{{Nom de l'équipement ?}}";
+	}
+	bootbox.prompt(prompt, function (result) {
+		if (result !== null) {
+			jeedom.eqLogic.save({
+				type: eqType,
+				eqLogics: [ $.extend({name: result}, eqL) ],
+				error: function (error) {
+					$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				},
+				success: function (data) {
+					var url = initPluginUrl();
+					modifyWithoutSave = false;
+					url += '&id=' + data.id + '&saveSuccessFull=1';
+					loadPage(url);
+				}
+			});
+		}
+	});
+});
+
+//
+// Actions in top menu on an Equipment
+//
 $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function () {
 	callPluginAjax({
 		data: {
@@ -1025,11 +1025,6 @@ function addCmdToTable(_cmd) {
 			$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.value);
 		}
 
-		// refreshValue apply value on cmd with id (so there won't be any refresh on cmd without id in JSON view)
-		function refreshValue(val) {
-			$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(val);
-		}
-
 		if (_cmd.id != undefined) {
 			// Get and display the value in CLASSIC view (for JSON view, see few lines above)
 			if (! is_json_view) {
@@ -1038,13 +1033,13 @@ function addCmdToTable(_cmd) {
 					cache: 0,
 					notify: false,
 					success: function(result) {
-						refreshValue(result);
+						$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(result);
 				}});
 			}
 
 			// Set the update value callback
 			jeedom.cmd.update[_cmd.id] = function(_options) {
-				refreshValue(_options.display_value);
+				$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(_options.display_value);
 			}
 		}
 
@@ -1277,7 +1272,7 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_opt
 	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
 });
 
-//Called by the plugin core to inform about the automatic inclusion mode disabling
+// Called by the plugin core to inform about the automatic inclusion mode disabling
 $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', function (_event,_options) {
 	// Change display accordingly
 	configureIncludeModeDisplay(_options['brkId'], 0);
