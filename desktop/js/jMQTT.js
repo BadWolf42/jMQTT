@@ -197,23 +197,6 @@ $(document).ready(function() {
 		event.stopPropagation();
 		refreshEqLogicPage();
 	});
-
-// TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
-	// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
-	// https://github.com/jeedom/core/pull/1825
-	// https://github.com/jeedom/core/pull/1829
-	$('.eqLogicAction[data-action=save]').mousedown(function() {
-		requestTextareas = $('.cmdAttr[data-l1key=configuration][data-l2key=request]')
-		requestTextareas.each(function(i, e){
-			currentValue = $(e).val();
-			if (currentValue.length >= 1) {
-				if (currentValue[0] == '{') $(e).val(String.fromCharCode(6) + currentValue);
-				else if (currentValue.length == String.fromCharCode(6)) $(e).val('');
-				else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{') $(e).val(currentValue.substring(1));
-			}
-		});
-	});
-// End of DELETEME
 });
 
 //
@@ -369,6 +352,9 @@ $('.eqLogicAction[data-action=move_broker]').off('click').on('click', function (
 	}
 });
 
+//
+// Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
+//
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
 	var el = $(this);
 	jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
@@ -386,6 +372,9 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 	});
 });
 
+//
+// Hide / Show top menu depending of the selected Tab in Eq/Brk
+//
 $('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
 	$('#menu-bar').hide();
 });
@@ -914,6 +903,7 @@ function saveEqLogic(_eqLogic) {
 		// not on an jMQTT eqLogic, to fix issue #153
 		return _eqLogic;
 	}
+	// console.log('jMQTT Before saveEqLogic:'+JSON.stringify(_eqLogic)); // TODO display when in debug
 
 	// pass the log level when defined for a broker object
 	if (_eqLogic.configuration.type == 'broker') {
@@ -933,7 +923,6 @@ function saveEqLogic(_eqLogic) {
 	// a function that substract properties of b from a (r = a - b)
 	function substract(a, b) {
 		var r = {};
-
 		for (var key in a) {
 			if (typeof(a[key]) == 'object') {
 				if (b[key] === undefined) b[key] = {};
@@ -953,6 +942,30 @@ function saveEqLogic(_eqLogic) {
 		_eqLogic = substract(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
 	}
 
+// TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
+	// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
+	// https://github.com/jeedom/core/pull/1825
+	// https://github.com/jeedom/core/pull/1829
+	for (i in _eqLogic.cmd) {
+		if (_eqLogic.cmd[i].type != 'action')
+			continue;
+		currentValue = _eqLogic.cmd[i].configuration.request;
+		if (currentValue === undefined)
+			continue;
+		currentValue = JSON.stringify(currentValue);
+		if (currentValue.length == 0)
+			continue;
+		console.log("CMD: "+String(_eqLogic.cmd[i].id)+"="+currentValue);
+		if (currentValue[0] == '{')
+			_eqLogic.cmd[i].configuration.request = String.fromCharCode(6) + currentValue;
+		else if (currentValue.length == String.fromCharCode(6))
+			_eqLogic.cmd[i].configuration.request = '';
+		else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{')
+			_eqLogic.cmd[i].configuration.request = currentValue.substring(1);
+	}
+// End of DELETEME
+
+	// console.log('jMQTT After saveEqLogic:'+JSON.stringify(_eqLogic)); // TODO display when in debug
 	return _eqLogic;
 }
 
