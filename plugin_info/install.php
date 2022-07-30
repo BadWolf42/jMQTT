@@ -101,7 +101,6 @@ function installNewDependancies() {
 }
 
 function tagBrokersStatusCmd() {
-
 	// for each brokers
 	foreach ((jMQTT::getBrokers()) as $broker) {
 		// for each cmd of this broker
@@ -114,7 +113,6 @@ function tagBrokersStatusCmd() {
 			}
 		}
 	}
-
 	jMQTT::logger('info', __("Ajout de tags sur le statut des Broker", __FILE__));
 }
 
@@ -160,7 +158,6 @@ function cleanLeakedInfoInEqpts() {
 }
 
 function cleanLeakedInfoInTemplates() {
-
 	// list of broker configurations
 	$configToRemove = array('mqttAddress',
 							'mqttPort',
@@ -177,50 +174,38 @@ function cleanLeakedInfoInTemplates() {
 							'api',
 							'mqttPahoLog',
 							'loglevel');
-
-	$templateFolderPath = dirname(__FILE__) . '/../data/template';
-
+	$templateFolderPath = __DIR__ . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 		try {
 			$content = file_get_contents($templateFolderPath . '/' . $file);
 			if (is_json($content)) {
-
 				// decode template file content to json
 				$templateContent = json_decode($content, true);
-
 				// first key is the template itself
 				$templateKey = array_keys($templateContent)[0];
-
 				// if 'configuration' key exists in this template
 				if (array_key_exists('configuration', $templateContent[$templateKey])) {
-
 					// for each keys under 'configuration'
 					foreach (array_keys($templateContent[$templateKey]['configuration']) as $configurationKey) {
-
 						// if this configurationKey is in keys to remove
 						if (in_array($configurationKey, $configToRemove)) {
-
 							// remove it
 							unset($templateContent[$templateKey]['configuration'][$configurationKey]);
 						}
 					}
 				}
-
 				// Save back template in the file
 				$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 				file_put_contents($templateFolderPath . '/' . $file, $jsonExport);
 			}
 		} catch (Throwable $e) {}
 	}
-
 	jMQTT::logger('info', __("Templates nettoyés des informations du Broker", __FILE__));
 }
 
 function splitJsonPathOfjMQTTCmd() {
-
 	$eqLogics = jMQTT::byType('jMQTT');
 	foreach ($eqLogics as $eqLogic) {
-
 		// get info cmds of current eqLogic
 		$infoCmds = jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info');
 		foreach ($infoCmds as $cmd) {
@@ -228,43 +213,34 @@ function splitJsonPathOfjMQTTCmd() {
 			$cmd->splitTopicAndJsonPath();
 		}
 	}
-
 	jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les commandes info jMQTT", __FILE__));
 }
 
 function splitJsonPathOfTemplates() {
-
-	$templateFolderPath = dirname(__FILE__) . '/../data/template';
+	$templateFolderPath = __DIR__ . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 		jMQTT::templateSplitJsonPathByFile($file);
 	}
-
 	jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les Templates jMQTT", __FILE__));
 }
 
 function moveTopicOfjMQTTeqLogic() {
-
 	$eqLogics = jMQTT::byType('jMQTT');
 	foreach ($eqLogics as $eqLogic) {
-
 		$eqLogic->moveTopicToConfiguration();
 	}
-
 	jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les équipements jMQTT", __FILE__));
 }
 
 function moveTopicOfTemplates() {
-
-	$templateFolderPath = dirname(__FILE__) . '/../data/template';
+	$templateFolderPath = __DIR__ . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 		jMQTT::moveTopicToConfigurationByFile($file);
 	}
-
 	jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les Templates jMQTT", __FILE__));
 }
 
 function convertBatteryStatus() {
-
 	foreach (jMQTT::byType('jMQTT') as $eqLogic) {
 		// Protect already modified Eq
 		$batId = $eqLogic->getBatteryCmd();
@@ -280,11 +256,9 @@ function convertBatteryStatus() {
 				$eqLogic->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, $cmd->getId());
 				jMQTT::logger('info', sprintf(__("#%1\$s# définit la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
 				$eqLogic->save();
-				continue;
 			}
 		}
 	}
-
 	jMQTT::logger('info', __("Commandes batterie définies directement sur les équipements jMQTT", __FILE__));
 }
 
