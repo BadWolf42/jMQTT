@@ -27,44 +27,43 @@ include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
 class jMQTT extends eqLogic {
 
-	const FORCE_DEPENDANCY_INSTALL = 'forceDepInstall';
+	const FORCE_DEPENDANCY_INSTALL      = 'forceDepInstall';
 
-	const API_TOPIC = 'api';
-	const API_ENABLE = 'enable';
-	const API_DISABLE = 'disable';
+	const API_TOPIC                     = 'api';
+	const API_ENABLE                    = 'enable';
+	const API_DISABLE                   = 'disable';
 
-	const CLIENT_STATUS = 'status';
-	const OFFLINE = 'offline';
-	const ONLINE = 'online';
+	const CLIENT_STATUS                 = 'status';
+	const OFFLINE                       = 'offline';
+	const ONLINE                        = 'online';
 
-	const MQTTCLIENT_OK = 'ok';
-	const MQTTCLIENT_POK = 'pok';
-	const MQTTCLIENT_NOK = 'nok';
+	const MQTTCLIENT_OK                 = 'ok';
+	const MQTTCLIENT_POK                = 'pok';
+	const MQTTCLIENT_NOK                = 'nok';
 
-	const CONF_KEY_TYPE = 'type';
-	const CONF_KEY_BRK_ID = 'brkId';
-	const CONF_KEY_MQTT_CLIENT_ID = 'mqttId';
-	const CONF_KEY_MQTT_ADDRESS = 'mqttAddress';
-	const CONF_KEY_MQTT_PORT = 'mqttPort';
-	const CONF_KEY_MQTT_USER = 'mqttUser';
-	const CONF_KEY_MQTT_PASS = 'mqttPass';
-	const CONF_KEY_MQTT_PUB_STATUS = 'mqttPubStatus';
-	const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
-	const CONF_KEY_MQTT_TLS = 'mqttTls';
-	const CONF_KEY_MQTT_TLS_CHECK = 'mqttTlsCheck';
-	const CONF_KEY_MQTT_TLS_CA = 'mqttTlsCaFile';
-	const CONF_KEY_MQTT_TLS_CLI_CERT= 'mqttTlsClientCertFile';
-	const CONF_KEY_MQTT_TLS_CLI_KEY = 'mqttTlsClientKeyFile';
-	const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
-	const CONF_KEY_QOS = 'Qos';
-	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
-	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
-	const CONF_KEY_JSON_PATH = 'jsonPath';
-	const CONF_KEY_BATTERY_CMD = 'battery_cmd';
-	const CONF_KEY_AVAILABILITY_CMD = 'availability_cmd';
-	const CONF_KEY_TEMPLATE_UUID = 'templateUUID';
-	const CONF_KEY_API = 'api';
-	const CONF_KEY_LOGLEVEL = 'loglevel';
+	const CONF_KEY_TYPE                 = 'type';
+	const CONF_KEY_BRK_ID               = 'brkId';
+	const CONF_KEY_MQTT_CLIENT_ID       = 'mqttId';
+	const CONF_KEY_MQTT_ADDRESS         = 'mqttAddress';
+	const CONF_KEY_MQTT_PORT            = 'mqttPort';
+	const CONF_KEY_MQTT_USER            = 'mqttUser';
+	const CONF_KEY_MQTT_PASS            = 'mqttPass';
+	const CONF_KEY_MQTT_PUB_STATUS      = 'mqttPubStatus';
+	const CONF_KEY_MQTT_INC_TOPIC       = 'mqttIncTopic';
+	const CONF_KEY_MQTT_PROTO           = 'mqttProto';
+	const CONF_KEY_MQTT_TLS_CHECK       = 'mqttTlsCheck';
+	const CONF_KEY_MQTT_TLS_CA          = 'mqttTlsCa';
+	const CONF_KEY_MQTT_TLS_CLI_CERT    = 'mqttTlsClientCert';
+	const CONF_KEY_MQTT_TLS_CLI_KEY     = 'mqttTlsClientKey';
+	const CONF_KEY_QOS                  = 'Qos';
+	const CONF_KEY_AUTO_ADD_CMD         = 'auto_add_cmd';
+	const CONF_KEY_AUTO_ADD_TOPIC       = 'auto_add_topic';
+	const CONF_KEY_JSON_PATH            = 'jsonPath';
+	const CONF_KEY_BATTERY_CMD          = 'battery_cmd';
+	const CONF_KEY_AVAILABILITY_CMD     = 'availability_cmd';
+	const CONF_KEY_TEMPLATE_UUID        = 'templateUUID';
+	const CONF_KEY_API                  = 'api';
+	const CONF_KEY_LOGLEVEL             = 'loglevel';
 
 	const CACHE_DAEMON_LAST_SND         = 'daemonLastSnd';
 	const CACHE_DAEMON_LAST_RCV         = 'daemonLastRcv';
@@ -75,7 +74,6 @@ class jMQTT extends eqLogic {
 	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
 	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
 
-	const PATH_CERTIFICATES             = 'data/jmqtt/certs/';
 	const PATH_TEMPLATES_PERSO          = 'data/template/';
 	const PATH_TEMPLATES_JMQTT          = 'core/config/template/';
 
@@ -706,16 +704,7 @@ class jMQTT extends eqLogic {
 			}
 			// --- Existing broker ---
 			else {
-				// Check certificate binding information if TLS is disabled
-				if (!boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
-					// If a CA is specified and this file doesn't exists, remove it
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(__DIR__ . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
-						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(__DIR__ . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
-						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(__DIR__ . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
-						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
-				}
+
 			}
 		}
 		// ------------------------ Normal eqpt ------------------------
@@ -749,11 +738,10 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
 				self::CONF_KEY_MQTT_USER,       self::CONF_KEY_MQTT_PASS,
 				self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
-				self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
+				self::CONF_KEY_MQTT_PROTO,      self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
 				self::CONF_KEY_BATTERY_CMD,     self::CONF_KEY_AVAILABILITY_CMD,
-				self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
-				self::CONF_KEY_QOS);
+				self::CONF_KEY_QOS,             self::CONF_KEY_MQTT_TLS_CLI_KEY);
 			foreach ($backupVal as $key)
 				$this->_preSaveInformations[$key] = $eqLogic->getConf($key);
 		}
@@ -815,10 +803,9 @@ class jMQTT extends eqLogic {
 				// 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', etc changed
 				$checkChanged = array(self::CONF_KEY_MQTT_ADDRESS,      self::CONF_KEY_MQTT_PORT,
 									  self::CONF_KEY_MQTT_USER,         self::CONF_KEY_MQTT_PASS,
-									  self::CONF_KEY_MQTT_PUB_STATUS,   self::CONF_KEY_MQTT_TLS,
+									  self::CONF_KEY_MQTT_PUB_STATUS,   self::CONF_KEY_MQTT_PROTO,
 									  self::CONF_KEY_MQTT_TLS_CHECK,    self::CONF_KEY_MQTT_TLS_CA,
-									  self::CONF_KEY_MQTT_TLS_CLI_CERT, self::CONF_KEY_MQTT_TLS_CLI_KEY,
-									  self::CONF_KEY_MQTT_PAHO_LOG);
+									  self::CONF_KEY_MQTT_TLS_CLI_CERT, self::CONF_KEY_MQTT_TLS_CLI_KEY);
 				foreach ($checkChanged as $key) {
 					if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
 						if (!$stopped) {
@@ -1712,33 +1699,25 @@ class jMQTT extends eqLogic {
 		$params['statustopic']       = $this->getMqttClientStatusTopic();
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
-		$params['paholog']           = $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG);
-		$params['tls']               = boolval($this->getConf(self::CONF_KEY_MQTT_TLS));
+		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
 				$params['tlsinsecure'] = true;
-				$params['tlscafile'] = '';
+				$params['tlsca'] = '';
 				break;
 			case 'public':
 				$params['tlsinsecure'] = false;
-				$params['tlscafile'] = '';
+				$params['tlsca'] = '';
 				break;
 			case 'private':
 				$params['tlsinsecure'] = false;
-				$params['tlscafile'] = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
+				$params['tlsca'] = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
 				break;
 		}
-		$params['tlsclicertfile']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
-		$params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
-		// Realpaths
-		if ($params['tlscafile'] != '')
-			$params['tlscafile']     = realpath(__DIR__ . '/../../' . self::PATH_CERTIFICATES . $params['tlscafile']);
-		if ($params['tlsclicertfile'] != '')
-			$params['tlsclicertfile'] = realpath(__DIR__.'/../../' . self::PATH_CERTIFICATES . $params['tlsclicertfile']);
-		else
-			$params['tlsclikeyfile'] = '';
-		if ($params['tlsclikeyfile'] != '')
-			$params['tlsclikeyfile'] = realpath(__DIR__ . '/../../' . self::PATH_CERTIFICATES . $params['tlsclikeyfile']);
+		$params['tlsclicert']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
+		$params['tlsclikey']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
+		if ($params['tlsclicert'] == '')
+			$params['tlsclikey'] = '';
 		self::toDaemon_newClient($this->getId(), $this->getMqttAddress(), $params);
 	}
 
@@ -2180,14 +2159,21 @@ class jMQTT extends eqLogic {
 	}
 
 	private function getDefaultConfiguration($_key) {
-		if ($_key == self::CONF_KEY_MQTT_PORT)
-			return (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) ? 8883 : 1883;
+		if ($_key == self::CONF_KEY_MQTT_PORT) {
+			$proto = $this->getConf(self::CONF_KEY_MQTT_PROTO);
+			if ($proto == 'mqtt')
+				return 1883;
+			elseif ($proto == 'mqtts')
+				return 8883;
+			else // TODO handle ws
+				return 0;
+		}
 		$defValues = array(
 			self::CONF_KEY_MQTT_ADDRESS => 'localhost',
 			self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
 			self::CONF_KEY_QOS => '1',
 			self::CONF_KEY_MQTT_PUB_STATUS => '1',
-			self::CONF_KEY_MQTT_TLS => '0',
+			self::CONF_KEY_MQTT_PROTO => 'mqtt',
 			self::CONF_KEY_MQTT_TLS_CHECK => 'public',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
 			self::CONF_KEY_AUTO_ADD_TOPIC => '',
@@ -2341,18 +2327,6 @@ class jMQTT extends eqLogic {
 			$this->_broker = self::getBrokerFromId($this->getBrkId());
 		}
 		return $this->_broker;
-	}
-
-	/**
-	 * Check if a certificate file is used by the Broker
-	 * @param string $certname Certificate file name
-	 * @return boolean true if certificat is used
-	 */
-	public function isCertUsed($certname) {
-		return (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) &&
-				(($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CA)) ||
-				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT)) ||
-				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY)));
 	}
 
 	/**

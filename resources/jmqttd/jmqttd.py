@@ -217,7 +217,7 @@ class Main():
 			try:
 				jeedom_raw = self.jcom.qFromJ.get(block=False)
 				jeedom_msg = jeedom_raw.decode('utf-8')
-				self.log.debug('Received from Jeedom: %s', jeedom_msg)
+				#self.log.debug('Received from Jeedom: %s', jeedom_msg)
 				message = json.loads(jeedom_msg)
 			except queue.Empty:
 				continue # More chance next time

@@ -18,6 +18,8 @@ import logging
 import queue
 import sys
 import threading
+from os import unlink
+from tempfile import NamedTemporaryFile
 from zlib import decompress as zlib_decompress
 
 # import AddLogging
@@ -145,10 +147,22 @@ class jMqttClient:
 				self.mqttclient.username_pw_set(self.message['username'], self.message['password'])
 			else:
 				self.mqttclient.username_pw_set(self.message['username'])
-		if self.message['tls']:
+		if self.message['proto'] == 'mqtts':
 			try:
-				self.mqttclient.tls_set(ca_certs=self.message['tlscafile'], certfile=self.message['tlsclicertfile'], keyfile=self.message['tlsclikeyfile'])
+				ca = NamedTemporaryFile(delete=False)
+				ca.write(str.encode(self.message['tlsca']))
+				ca.close()
+				cert = NamedTemporaryFile(delete=False)
+				cert.write(str.encode(self.message['tlsclicert']))
+				cert.close()
+				key = NamedTemporaryFile(delete=False)
+				key.write(str.encode(self.message['tlsclikey']))
+				key.close()
+				self.mqttclient.tls_set(ca_certs=ca.name, certfile=cert.name, keyfile=key.name)
 				self.mqttclient.tls_insecure_set(('tlsinsecure' in self.message) and self.message['tlsinsecure'])
+				unlink(ca.name)
+				unlink(cert.name)
+				unlink(key.name)
 			except:
 				self._log.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
 

@@ -418,8 +418,8 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 //
 // Automations on Broker view attributes
 //
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]').change(function(){
-	if ($(this).prop('checked'))
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
+	if ($(this).val() == 'mqtts')
 		$('#jmqttDivTls').show();
 	else
 		$('#jmqttDivTls').hide();
@@ -438,8 +438,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(func
 	}
 });
 
-// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]') instead of $('#fTlsClientCertFile')
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCert]').change(function(){
 	if ($(this).val() == '') $('#jmqttDivTlsClientKey').hide();
 	else $('#jmqttDivTlsClientKey').show();
 });

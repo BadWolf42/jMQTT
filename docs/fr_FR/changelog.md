@@ -11,6 +11,7 @@
  - Suppression de la gestion des certificats par upload (sera remplacé plus tard)
  - Déplacement des équipements Broker au debut de chaque sections (mis en évidence en jaune)
  - Implémentation de la TableView
+ - Déplacement des certificats en base de donnée
  - Préparatifs pour les modals "Découverte" et "Temps réel"
  - Découpage de Changelog en 2 pages pour une meilleure lisibilité
  - Corrections syntaxiques et orthographiques & Changelog

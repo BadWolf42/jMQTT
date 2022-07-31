@@ -85,15 +85,17 @@
 								<span class="input-group-btn">
 									<select class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
 										title="{{Choisir si le Broker attend une communication sécurité.<br />Pour plus d'information, se référer à la documentation.}}">
-										<option value="0">mqtt</option>
-										<!-- <option value="1">mqtts</option> -->
+										<option>mqtt</option>
+										<option>mqtts</option>
+										<!--<option>ws</option>-->
+										<!--<option>wss</option>-->
 									</select>
 								</span>
 								<span class="input-group-addon">://</span>
 								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttAddress" placeholder="{{IP/Nom de Domaine}}"
 									title="{{Entrer l'adresse IP ou le Nom de Domaine du Broker.<br/>Valeur si vide, 'localhost' (la machine hébergeant Jeedom).}}">
 								<span class="input-group-addon">:</span>
-								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttPort" placeholder="{{Port}}"
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="{{Port}}"
 									title="{{Entrer le port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt ou 8883 en mqtts.}}">
 							</div>
 						</div>
@@ -132,14 +134,6 @@
 						</div>
 
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{MQTTS (MQTT over TLS)}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Active le chiffrement TLS des communications avec le Broker. Pour plus d'information, se rÃ©fÃ©rer Ã  la documentation.}}"></i></sup></label>
-							<div class="col-lg-4">
-								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
-							</div>
-						</div>
-
-						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Accès API}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
 							<div class="col-lg-7">
@@ -170,23 +164,23 @@
 							</div>
 							<div id="jmqttDivTlsCa" class="form-group">
 								<label class="col-lg-3 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
-								title="{{Sélectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats peuvent être envoyés sur Jeedom avec le bouton vert ci-dessus.<br/>Il est possible de supprimer des Certificats depuis la page de configuration générale du Plugin.}}"></i></sup></label>
+								title="{{Autorité de certification attendue pour le Broker.}}"></i></sup></label>
 								<div class="col-lg-8">
-									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsCaFile"></textarea>
+									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsCa"></textarea>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-lg-3 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
-								title="{{Sélectionne le Certificat Client attendu par le Broker.<br/>Ce Certificat doit être associé à la Clé Privée, dans le champ qui apparaîtra en-dessous, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
+								title="{{Certificat Client attendu par le Broker.<br/>Ce Certificat doit être associé à la Clé Privée, dans le champ qui apparaîtra en-dessous, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
 								<div class="col-lg-8">
-									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientCertFile"></textarea>
+									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientCert"></textarea>
 								</div>
 							</div>
 							<div id="jmqttDivTlsClientKey" class="form-group">
 								<label class="col-lg-3 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
-								title="{{Sélectionne la Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
+								title="{{Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
 								<div class="col-lg-8">
-									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile"></textarea>
+									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientKey"></textarea>
 								</div>
 							</div>
 						</div>
