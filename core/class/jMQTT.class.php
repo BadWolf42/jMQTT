@@ -154,9 +154,9 @@ class jMQTT extends eqLogic {
 			}
 		}
 		// Get official templates
-		foreach (ls(__DIR__ . '/../' . self::PATH_TEMPLATES_JMQTT, '*.json', false, array('files', 'quiet')) as $file) {
+		foreach (ls(__DIR__ . '/../../' . self::PATH_TEMPLATES_JMQTT, '*.json', false, array('files', 'quiet')) as $file) {
 			try {
-				[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../' . self::PATH_TEMPLATES_JMQTT . $file);
+				[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_JMQTT . $file);
 				$return[] = array($templateKey, 'plugins/jMQTT/' . self::PATH_TEMPLATES_JMQTT . $file);
 			} catch (Throwable $e) {
 				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), self::PATH_TEMPLATES_JMQTT . $file));
@@ -179,7 +179,7 @@ class jMQTT extends eqLogic {
 		} else {
 			// Get official templates
 			$name = $_name;
-			$folder = '/../' . self::PATH_TEMPLATES_JMQTT;
+			$folder = '/../../' . self::PATH_TEMPLATES_JMQTT;
 		}
 		foreach (ls(__DIR__ . $folder, '*.json', false, array('files', 'quiet')) as $file) {
 			try {
