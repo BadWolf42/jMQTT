@@ -419,28 +419,30 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 // Automations on Broker view attributes
 // TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]')
 $('#fTls').change(function(){
-	if ($(this).prop('checked')) $('#dTls').show();
-	else $('#dTls').hide();
+	if ($(this).prop('checked'))
+		$('#jmqttDivTls').show();
+	else
+		$('#jmqttDivTls').hide();
 });
 
 // TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]')
 $('#fTlsCheck').change(function(){
 	switch ($(this).val()) {
 		case 'public':
-			$('#dTlsCaFile').hide();
+			$('#jmqttDivTlsCa').hide();
 			break;
 		case 'private':
-			$('#dTlsCaFile').show();
+			$('#jmqttDivTlsCa').show();
 			break;
 		default:
-			$('#dTlsCaFile').hide();
+			$('#jmqttDivTlsCa').hide();
 	}
 });
 
 // TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]')
 $('#fTlsClientCertFile').change(function(){
-	if ($(this).val() == '') $('#dTlsClientKeyFile').hide();
-	else $('#dTlsClientKeyFile').show();
+	if ($(this).val() == '') $('#jmqttDivTlsClientKey').hide();
+	else $('#jmqttDivTlsClientKey').show();
 });
 
 // TODO Remove and use textareas instead of fileupload

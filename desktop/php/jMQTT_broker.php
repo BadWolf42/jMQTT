@@ -142,7 +142,7 @@
 								<input id="fTls" type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
 							</div>
 						</div>
-						<div id="dTls" style="display:none">
+						<div id="jmqttDivTls" style="display:none">
 							<div class="form-group">
 								<label class="col-lg-4 control-label">{{Vérifier le certificat du Broker}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet corresponde à l'IP/Nom de Domaine du Broker.}}"></i></sup></label>
@@ -171,7 +171,7 @@
 			$keyfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
 	}
 ?>
-							<div id="dTlsCaFile" class="form-group">
+							<div id="jmqttDivTlsCa" class="form-group">
 								<label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats peuvent être envoyés sur Jeedom avec le bouton vert ci-dessus.<br/>Il est possible de supprimer des Certificats depuis la page de configuration générale du Plugin.}}"></i></sup></label>
 								<div class="col-lg-4">
@@ -191,7 +191,7 @@
 									</select>
 								</div>
 							</div>
-							<div id="dTlsClientKeyFile" class="form-group">
+							<div id="jmqttDivTlsClientKey" class="form-group">
 								<label class="col-lg-4 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne la Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
 								<div class="col-lg-4">
