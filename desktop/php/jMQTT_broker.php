@@ -75,22 +75,35 @@
 		<div id="div_broker_configuration"></div>
 		<div class="form-actions">
 			<form class="form-horizontal">
-				<div class="form-group">
+
+				<div class="form-group col-lg-6">
 					<fieldset>
+						<legend><i class="fas fa-rss"></i>{{Paramètres d'accès au Broker}}</legend>
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{IP/Nom de Domaine du Broker}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{IP/Nom de Domaine du Broker, par défaut 'localhost' i.e. la machine hébergeant Jeedom.}}"></i></sup></label>
-							<div class="col-lg-4">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttAddress"
-									style="margin-top: 5px" placeholder="localhost" />
+							<label class="col-lg-4 control-label">{{Adresse du broker}} <sup><i class="fa fa-question-circle tooltips" title="{{Paramètres d'accès au Broker.}}"></i></sup></label>
+							<div class="col-lg-7 input-group">
+								<span class="input-group-btn">
+									<select class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
+										title="{{Choisir si le Broker attend une communication sécurité.<br />Pour plus d'information, se référer à la documentation.}}">
+										<option value="0">mqtt</option>
+										<!-- <option value="1">mqtts</option> -->
+									</select>
+								</span>
+								<span class="input-group-addon">://</span>
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttAddress" placeholder="{{IP/Nom de Domaine}}"
+									title="{{Entrer l'adresse IP ou le Nom de Domaine du Broker.<br/>Valeur si vide, 'localhost' (la machine hébergeant Jeedom).}}">
+								<span class="input-group-addon">:</span>
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttPort" placeholder="{{Port}}"
+									title="{{Entrer le port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt ou 8883 en mqtts.}}">
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Port du Broker}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Port réseau sur lequel écoute le Broker.<br/>Par défaut le port 1883 est utilisé pour MQTT en clair et 8883 pour MQTT sécurisé (TLS).}}"></i></sup></label>
-							<div class="col-lg-4">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPort"
-									style="margin-top: 5px" placeholder="{{Par défaut 1883 sans TLS et 8883 avec TLS}}" />
+							<label class="col-lg-4 control-label">{{Authentification}} <sup><i class="fa fa-question-circle tooltips"
+							title="{{Nom d'utilisateur et Mot de passe permettant de se connecter au Broker.<br/>Remplir ces champs n'est obligatoire si le Broker est configuré pour.}}"></i></sup></label>
+							<div class="col-lg-7 input-group">
+								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser" autocomplete="off" placeholder="{{Nom d'utilisateur}}" />
+								<span class="input-group-addon">:</span>
+								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPass" type="password" autocomplete="off" placeholder="{{Mot de passe}}" />
 							</div>
 						</div>
 						<div class="form-group">
@@ -98,56 +111,57 @@
 							title="{{Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT.
 							<br/>Cet identifiant est aussi utilisé dans les topics status et api.
 							<br/>Il est important que cet identifiant ne soit utilisé que par jMQTT sur ce Broker.}}"></i></sup></label>
-							<div class="col-lg-4">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId"
-									style="margin-top: 5px" placeholder="jeedom" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Nom d'utilisateur}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Utilisateur permettant de se connecter au Broker.<br/>Non obligatoire.}}"></i></sup></label>
-							<div class="col-lg-4">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser"
-									autocomplete="off" style="margin-top: 5px" />
-							</div>
-						</div>
-						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Mot de passe}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Mot de passe permettant de se connecter au Broker.<br/>Non obligatoire.}}"></i></sup></label>
-							<div class="col-lg-4">
-								<input type="password" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPass"
-									autocomplete="off" style="margin-top: 5px" />
+							<div class="col-lg-7">
+								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId" placeholder="jeedom" />
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Publier le statut}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Active/Désactive la publication du statut en MQTT sur le Broker (sur le topic {ClientId}/status).}}"></i></sup></label>
-							<div class="col-lg-4">
+							<div class="col-lg-7">
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPubStatus" checked>
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion automatique des équipements}} <sup><i class="fa fa-question-circle tooltips"
+							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.
 							<br/>Ne pas modifier sans en comprendre les implications.}}"></i></sup></label>
-							<div class="col-lg-4">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic"
-									style="margin-top: 5px" placeholder="#" />
+							<div class="col-lg-7">
+								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic" placeholder="#" />
 							</div>
 						</div>
+
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{MQTTS (MQTT over TLS)}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Active le chiffrement TLS des communications avec le Broker. Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
+							title="{{Active le chiffrement TLS des communications avec le Broker. Pour plus d'information, se rÃ©fÃ©rer Ã  la documentation.}}"></i></sup></label>
 							<div class="col-lg-4">
-								<input id="fTls" type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
+								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTls">
 							</div>
 						</div>
+
+						<div class="form-group">
+							<label class="col-lg-4 control-label">{{Accès API}} <sup><i class="fa fa-question-circle tooltips"
+							title="{{Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
+							<div class="col-lg-7">
+								<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="api">
+									<option value="disable">{{Désactivé}}</option>
+									<option value="enable">{{Activé}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group"><br /></div>
+					</fieldset>
+				</div>
+
+				<div class="form-group col-lg-6">
+					<fieldset>
 						<div id="jmqttDivTls" style="display:none">
+							<legend><i class="fas fa-key"></i>{{Paramètres de Sécurité}}</legend>
 							<div class="form-group">
-								<label class="col-lg-4 control-label">{{Vérifier le certificat du Broker}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-3 control-label">{{Vérifier le certificat}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet corresponde à l'IP/Nom de Domaine du Broker.}}"></i></sup></label>
-								<div class="col-lg-4">
-									<select id="fTlsCheck" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
+								<div class="col-lg-8">
+									<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
 										<option value="public">{{Activé - Autorités Publiques}}</option>
 										<option value="private">{{Activé - Autorité Personnalisée}}</option>
 										<option value="disabled">{{Désactivé - Non Recommandé}}</option>
@@ -172,9 +186,9 @@
 	}
 ?>
 							<div id="jmqttDivTlsCa" class="form-group">
-								<label class="col-lg-4 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-3 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats peuvent être envoyés sur Jeedom avec le bouton vert ci-dessus.<br/>Il est possible de supprimer des Certificats depuis la page de configuration générale du Plugin.}}"></i></sup></label>
-								<div class="col-lg-4">
+								<div class="col-lg-8">
 									<select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
 										<option value="">{{Désactivé}}</option>
 <?php echo $crtfiles; ?>
@@ -182,9 +196,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-lg-4 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-3 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne le Certificat Client attendu par le Broker.<br/>Ce Certificat doit être associé à la Clé Privée, dans le champ qui apparaîtra en-dessous, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
-								<div class="col-lg-4">
+								<div class="col-lg-8">
 									<select id="fTlsClientCertFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientCertFile" style="margin-top: 5px">
 										<option value="">{{Désactivé}}</option>
 <?php echo $pemfiles; ?>
@@ -192,9 +206,9 @@
 								</div>
 							</div>
 							<div id="jmqttDivTlsClientKey" class="form-group">
-								<label class="col-lg-4 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-3 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne la Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
-								<div class="col-lg-4">
+								<div class="col-lg-8">
 									<select id="fTlsClientKeyFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile" style="margin-top: 5px">
 										<option value="">{{Désactivé}}</option>
 <?php echo $keyfiles; ?>
@@ -202,18 +216,10 @@
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Accès API}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
-							<div class="col-lg-4">
-								<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="api" style="margin-top: 5px">
-									<option value="disable">{{Désactivé}}</option>
-									<option value="enable">{{Activé}}</option>
-								</select>
-							</div>
-						</div>
+						<div class="form-group"><br /></div>
 					</fieldset>
 				</div>
+
 			</form>
 		</div>
 	</div>

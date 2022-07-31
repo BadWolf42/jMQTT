@@ -26,7 +26,7 @@ span.hiddenAsTable i.fas.eyed						{ font-size:0.9em !important;position:absolut
 span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px; }
 span.hiddenAsCard i.fas.status-circle				{ margin-right:6px; }
 textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font-weight: bold!important; }
-div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; } // border: rgba(248, 216, 0) 4px solid!important;
+div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; }
 </style>
 
 <?php

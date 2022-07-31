@@ -1,14 +1,14 @@
 # Registre des évolutions
 
 ## 2022-07-29 Beta
- - Par défaut, Mosquitto n'est plus installé
+ - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**
+ - Changement de la page Broker des Brokers pour resembler à la page de configuration du plugin MQTT Manager
  - Affichage de la liste des équipements orphelins avant les équipements ratachés à des brokers
  - Mise en surbrillance des changements en temps réel sur la page des Commandes d'un équipement
  - Déplacement de l'ajout d'équipement depuis la second du broker vers le haut de page (selection du broker en même temps que le nom
  - Ajout d'une fonction ajax pour lister les Brokers
  - Suppression du mode Inclusion global (sera remplacé plus tard)
- - Déplacement des équipements Broker au debut de chaque sections
- - Mise en évidence des brokers en jaune dans leurs sections
+ - Déplacement des équipements Broker au debut de chaque sections (mis en évidence en jaune)
  - Implémentation de la TableView
  - Préparatifs pour les modals "Découverte" et "Temps réel"
  - Découpage de Changelog en 2 pages pour une meilleure lisibilité

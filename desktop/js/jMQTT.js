@@ -417,16 +417,15 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 
 //
 // Automations on Broker view attributes
-// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]')
-$('#fTls').change(function(){
+//
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTls]').change(function(){
 	if ($(this).prop('checked'))
 		$('#jmqttDivTls').show();
 	else
 		$('#jmqttDivTls').hide();
 });
 
-// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]')
-$('#fTlsCheck').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(function(){
 	switch ($(this).val()) {
 		case 'public':
 			$('#jmqttDivTlsCa').hide();
@@ -439,8 +438,8 @@ $('#fTlsCheck').change(function(){
 	}
 });
 
-// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]')
-$('#fTlsClientCertFile').change(function(){
+// TODO Use $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]') instead of $('#fTlsClientCertFile')
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]').change(function(){
 	if ($(this).val() == '') $('#jmqttDivTlsClientKey').hide();
 	else $('#jmqttDivTlsClientKey').show();
 });
