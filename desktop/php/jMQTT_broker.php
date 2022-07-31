@@ -167,52 +167,26 @@
 										<option value="disabled">{{Désactivé - Non Recommandé}}</option>
 									</select>
 								</div>
-								<span class="btn btn-success btn-sm btn-file" style="position:relative;top:2px !important;" title="{{Téléverser un Certificat}}">
-									<i class="fas fa-upload"></i><input id="mqttUploadFile" type="file" name="file" accept=".crt, .pem, .key" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&dir=certs">
-								</span>
 							</div>
-<?php
-	$dir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
-	$crtfiles = "";
-	$pemfiles = "";
-	$keyfiles = "";
-	foreach (ls($dir, '*') as $file) {
-		if (strpos($file,'.crt') !== false)
-			$crtfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
-		elseif (strpos($file,'.pem') !== false)
-			$pemfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
-		elseif (strpos($file,'.key') !== false)
-			$keyfiles .= str_repeat(' ', 36) . '<option value="' . $file . '">' .$file . '</option>';
-	}
-?>
 							<div id="jmqttDivTlsCa" class="form-group">
 								<label class="col-lg-3 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne l'autorité de certification attendue pour le Broker.<br/>Les certificats peuvent être envoyés sur Jeedom avec le bouton vert ci-dessus.<br/>Il est possible de supprimer des Certificats depuis la page de configuration générale du Plugin.}}"></i></sup></label>
 								<div class="col-lg-8">
-									<select id="fTlsCaFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCaFile" style="margin-top: 5px">
-										<option value="">{{Désactivé}}</option>
-<?php echo $crtfiles; ?>
-									</select>
+									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsCaFile"></textarea>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-lg-3 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne le Certificat Client attendu par le Broker.<br/>Ce Certificat doit être associé à la Clé Privée, dans le champ qui apparaîtra en-dessous, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
 								<div class="col-lg-8">
-									<select id="fTlsClientCertFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientCertFile" style="margin-top: 5px">
-										<option value="">{{Désactivé}}</option>
-<?php echo $pemfiles; ?>
-									</select>
+									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientCertFile"></textarea>
 								</div>
 							</div>
 							<div id="jmqttDivTlsClientKey" class="form-group">
 								<label class="col-lg-3 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Sélectionne la Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
 								<div class="col-lg-8">
-									<select id="fTlsClientKeyFile" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile" style="margin-top: 5px">
-										<option value="">{{Désactivé}}</option>
-<?php echo $keyfiles; ?>
-									</select>
+									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientKeyFile"></textarea>
 								</div>
 							</div>
 						</div>

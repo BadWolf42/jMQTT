@@ -38,8 +38,6 @@ try {
 		}
 		if (init('dir') == 'template') {
 			$uploaddir = PATH_TPLTS;
-		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
 		} else {
 			throw new Exception(__('Téléversement invalide', __FILE__));
 		}
@@ -158,28 +156,6 @@ try {
 		ajax::success($returns);
 	}
 
-	if (init('action') == 'filedelete') {
-		$fname = init('name');
-		if (init('dir') == 'template') {
-			$uploaddir = PATH_TPLTS;
-		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
-		} else {
-			throw new Exception(__('Suppression invalide', __FILE__));
-		}
-		if (!file_exists($uploaddir . '/' . $fname)) {
-			throw new Exception(__('Impossible de supprimer le fichier, car il n\'existe pas.', __FILE__));
-		} else {
-			// Check if cert is used by a Broker!
-			foreach (jMQTT::getBrokers() as $broker)
-				if ($broker->isCertUsed($fname))
-					throw new Exception(sprintf(__('Impossible de supprimer le fichier, car il est utilisé par le Broker %s.', __FILE__), $broker->getName()));
-			unlink($uploaddir . '/' . $fname);
-		}
-		jMQTT::logger('info', sprintf(__("Fichier %s supprimé", __FILE__), $fname));
-		ajax::success();
-	}
-
 	if (init('action') == 'sendLoglevel') {
 		jMQTT::toDaemon_setLogLevel();
 		ajax::success();
@@ -190,27 +166,6 @@ try {
 		config::save('urlOverrideValue', init('valUrl'), 'jMQTT');
 		ajax::success();
 	}
-
-
-/*    if (init('action') == 'filelist') {
-		// jMQTT::logger('info', 'filelist: ' . init('dir'));
-		if (init('dir') == 'template') {
-			$uploaddir = PATH_TPLTS;
-			$patern = array('.json');
-		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
-			$patern = array('.crt', '.key', '.pem');
-		} else {
-			throw new Exception(__('Suppression invalide', __FILE__));
-		}
-		$res = [];
-		foreach (ls($uploaddir) as $file) {
-			if (in_array(strtolower(strrchr($file, '.')), $patern))
-				$res[] = $file;
-		}
-		ajax::success($res);
-	}
-*/
 
 	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
 	/*     * *********Catch exeption*************** */

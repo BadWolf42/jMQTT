@@ -444,40 +444,6 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCertFile]').ch
 	else $('#jmqttDivTlsClientKey').show();
 });
 
-// TODO Remove and use textareas instead of fileupload
-$('#mqttUploadFile').fileupload({
-	dataType: 'json',
-	replaceFileInput: false,
-	done: function (e, data) {
-		if (data.result.state != 'ok') {
-			$('#div_alert').showAlert({message: data.result.result, level: 'danger'});
-		} else {
-			switch (data.result.result.split('.').pop()) {
-				case 'crt':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsCaFile');
-					$('#fTlsCaFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsCaFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsCaFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-				case 'pem':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientCertFile');
-					$('#fTlsClientCertFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsClientCertFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsClientCertFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-				case 'key':
-					$(new Option(data.result.result, data.result.result)).appendTo('#fTlsClientKeyFile');
-					$('#fTlsClientKeyFile option[value="'+data.result.result+'"]').attr('selected','selected').change();
-					$('#fTlsClientKeyFile')[0].style.setProperty('background-color', '#ffb291', 'important');
-					setTimeout(function() { $('#fTlsClientKeyFile')[0].style.removeProperty('background-color'); }, 3000);
-					break;
-			}
-			$('#div_alert').hideAlert();
-		}
-		$('#mqttConfUpFile').val(null);
-	}
-});
-
 //
 // Automations on Equipment view attributes
 //

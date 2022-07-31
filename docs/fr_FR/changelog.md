@@ -8,6 +8,7 @@
  - Déplacement de l'ajout d'équipement depuis la second du broker vers le haut de page (selection du broker en même temps que le nom
  - Ajout d'une fonction ajax pour lister les Brokers
  - Suppression du mode Inclusion global (sera remplacé plus tard)
+ - Suppression de la gestion des certificats par upload (sera remplacé plus tard)
  - Déplacement des équipements Broker au debut de chaque sections (mis en évidence en jaune)
  - Implémentation de la TableView
  - Préparatifs pour les modals "Découverte" et "Temps réel"

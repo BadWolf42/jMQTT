@@ -75,7 +75,7 @@ class jMQTT extends eqLogic {
 	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
 	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
 
-	const PATH_CERTIFICATES = 'data/jmqtt/certs/';
+	const PATH_CERTIFICATES             = 'data/jmqtt/certs/';
 	const PATH_TEMPLATES_PERSO          = 'data/template/';
 	const PATH_TEMPLATES_JMQTT          = 'core/config/template/';
 
