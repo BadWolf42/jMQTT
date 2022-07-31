@@ -23,7 +23,6 @@ try {
 	if (!isConnect('admin')) {
 		throw new Exception(__('401 - Accès non autorisé', __FILE__));
 	}
-	define('PATH_TPLTS', __DIR__ . '/../../data/template');
 
 	if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
 		if (!isset($_FILES['file'])) {
@@ -37,7 +36,7 @@ try {
 			throw new Exception(__('Le fichier est trop gros (maximum 500Ko)', __FILE__));
 		}
 		if (init('dir') == 'template') {
-			$uploaddir = PATH_TPLTS;
+			$uploaddir = realpath(__DIR__ . '/../../' . jMQTT::PATH_TEMPLATES_PERSO);
 		} else {
 			throw new Exception(__('Téléversement invalide', __FILE__));
 		}

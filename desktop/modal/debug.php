@@ -675,6 +675,7 @@ METHOD POST
 -->
 <!--
 TODO
+- Relaunch plugin install
 - Stop heatbeat
 - Request Thread Dump
 - Enable/disable listeners
