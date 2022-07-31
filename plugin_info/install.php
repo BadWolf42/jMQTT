@@ -244,7 +244,7 @@ function convertBatteryStatus() {
 	foreach (jMQTT::byType('jMQTT') as $eqLogic) {
 		// Protect already modified Eq
 		$batId = $eqLogic->getBatteryCmd();
-		if ($batId != '') {
+		if ($batId != false && $batId != '') {
 			$cmd = jMQTTCmd::byId($batId);
 			jMQTT::logger('info', sprintf(__("#%1\$s# définit DÉJÀ la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
 			continue;
