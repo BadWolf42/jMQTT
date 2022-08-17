@@ -83,7 +83,7 @@
 							<label class="col-lg-4 control-label">{{Adresse du broker}} <sup><i class="fa fa-question-circle tooltips" title="{{Paramètres d'accès au Broker.}}"></i></sup></label>
 							<div class="col-lg-7 input-group">
 								<span class="input-group-btn">
-									<select class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
+									<select class="eqLogicAttr form-control roundedLeft tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
 										title="{{Choisir si le Broker attend une communication sécurité.<br />Pour plus d'information, se référer à la documentation.}}">
 										<option>mqtt</option>
 										<option>mqtts</option>
@@ -95,7 +95,7 @@
 								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttAddress" placeholder="{{IP/Nom de Domaine}}"
 									title="{{Entrer l'adresse IP ou le Nom de Domaine du Broker.<br/>Valeur si vide, 'localhost' (la machine hébergeant Jeedom).}}">
 								<span class="input-group-addon">:</span>
-								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="{{Port}}"
+								<input class="eqLogicAttr form-control tooltips roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="{{Port}}"
 									title="{{Entrer le port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt ou 8883 en mqtts.}}">
 							</div>
 						</div>
@@ -103,9 +103,9 @@
 							<label class="col-lg-4 control-label">{{Authentification}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Nom d'utilisateur et Mot de passe permettant de se connecter au Broker.<br/>Remplir ces champs n'est obligatoire si le Broker est configuré pour.}}"></i></sup></label>
 							<div class="col-lg-7 input-group">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttUser" autocomplete="off" placeholder="{{Nom d'utilisateur}}" />
+								<input class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="mqttUser" autocomplete="off" placeholder="{{Nom d'utilisateur}}" />
 								<span class="input-group-addon">:</span>
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPass" type="password" autocomplete="off" placeholder="{{Mot de passe}}" />
+								<input class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="mqttPass" type="password" autocomplete="off" placeholder="{{Mot de passe}}" />
 							</div>
 						</div>
 						<div class="form-group">
