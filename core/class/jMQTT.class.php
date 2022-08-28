@@ -1558,7 +1558,7 @@ class jMQTT extends eqLogic {
 
 // Create or update all autoPub listeners
 	public static function listenersAddAll() {
-		foreach (cmd::searchConfiguration('"autoPub":"1"', __CLASS__) as $cmd)
+		foreach (cmd::searchConfiguration('"'.jMQTTCmd::CONF_KEY_AUTOPUB.'":"1"', __CLASS__) as $cmd)
 			$cmd->listenerUpdate();
 	}
 
@@ -1570,7 +1570,7 @@ class jMQTT extends eqLogic {
 
 // Create or update all autoPub listeners from this eqLogic
 	public function listenersAdd() {
-		foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"autoPub":"1"') as $cmd)
+		foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"'.jMQTTCmd::CONF_KEY_AUTOPUB.'":"1"') as $cmd)
 			$cmd->listenerUpdate();
 	}
 

@@ -21,6 +21,7 @@
  */
 class jMQTTCmd extends cmd {
 
+	const CONF_KEY_AUTOPUB              = 'autoPub';
 	const CONF_KEY_JSON_PATH            = 'jsonPath';
 
 	/**
@@ -252,14 +253,14 @@ class jMQTTCmd extends cmd {
 		}
 
 		// Reset autoPub if info cmd (should not happen or be possible)
-		if ($this->getType() == 'info' && $this->getConfiguration('autoPub', 0))
-			$this->setConfiguration('autoPub', 0);
+		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
+			$this->setConfiguration(self::CONF_KEY_AUTOPUB, 0);
 		// Check "request" if autoPub enabled
-		if ($this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
+		if ($this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
 			$req = $this->getConfiguration('request', '');
 			// Must check If New cmd, autoPub changed or Request changed
 			$must_chk = $this->getId() == '';
-			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration('autoPub', 0));
+			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration(self::CONF_KEY_AUTOPUB, 0));
 			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration('request', '') != $req);
 			if ($must_chk) {
 				// Get all commands
@@ -289,7 +290,7 @@ class jMQTTCmd extends cmd {
 			$this->_preSaveInformations = array(
 				'retain' => $cmd->getConfiguration('retain', 0),
 				'brokerStatusTopic' => $cmd->getTopic(),
-				'autoPub' => $cmd->getConfiguration('autoPub', 0),
+				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
 				'request' => $cmd->getConfiguration('request', '')
 			);
 		}
@@ -359,7 +360,7 @@ class jMQTTCmd extends cmd {
 
 			// Only Update listener if "autoPub" or "request" has changed
 			if ($eqLogic->getType() == jMQTT::TYP_EQPT &&
-					($this->_preSaveInformations['autoPub'] != $this->getConfiguration('autoPub', 0) ||
+					($this->_preSaveInformations[self::CONF_KEY_AUTOPUB] != $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0) ||
 					 $this->_preSaveInformations['request'] != $this->getConfiguration('request', '')))
 				$this->listenerUpdate();
 		}
@@ -379,7 +380,7 @@ class jMQTTCmd extends cmd {
 	public function listenerUpdate() {
 		$cmds = array();
 		$eq = $this->getEqLogic();
-		if ($eq->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
+		if ($eq->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
 			preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
 			$cmds = array_unique($matches[1]);
 		}
@@ -417,7 +418,7 @@ class jMQTTCmd extends cmd {
 
 	public static function listenerAction($_options) {
 		$cmd = self::byId($_options['cmd']);
-		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration('autoPub', 0)) {
+		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
 			listener::byId($_options['listener_id'])->remove();
 			$cmd->getEqLogic()->log('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $_options['cmd']));
 		} else {
