@@ -25,6 +25,7 @@ class jMQTTCmd extends cmd {
 	const CONF_KEY_IRREMOVABLE          = 'irremovable';
 	const CONF_KEY_JSON_PATH            = 'jsonPath';
 	const CONF_KEY_PUB_QOS              = 'Qos';
+	const CONF_KEY_REQUEST              = 'request';
 
 	/**
 	 * @var int maximum length of command name supported by the database scheme
@@ -33,7 +34,7 @@ class jMQTTCmd extends cmd {
 
 	/**
 	 * Data shared between preSave and postSave
-	 * @var array values from preSave used fro postSave actions
+	 * @var array values from preSave used for postSave actions
 	 */
 	private $_preSaveInformations;
 
@@ -199,7 +200,7 @@ class jMQTTCmd extends cmd {
 	public function execute($_options = null) {
 		if ($this->getType() != 'action')
 			return;
-		$request = $this->getConfiguration('request', "");
+		$request = $this->getConfiguration(self::CONF_KEY_REQUEST, "");
 		$topic = $this->getTopic();
 		$qos = $this->getConfiguration(self::CONF_KEY_PUB_QOS, 1);
 		$retain = $this->getConfiguration('retain', 0);
@@ -224,19 +225,16 @@ class jMQTTCmd extends cmd {
 	 * preSave callback called by the core before saving this command in the DB
 	 */
 	public function preSave() {
-
-		foreach(array('request') as $key) {
-			$conf = $this->getConfiguration($key);
+		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
 // TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
-			// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
-			// https://github.com/jeedom/core/pull/1825
-			// https://github.com/jeedom/core/pull/1829
-			if (is_string($conf) && strlen($conf) >= 1 && $conf[0] == chr(6)) $this->setConfiguration($key, substr($conf, 1));
+		// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
+		// https://github.com/jeedom/core/pull/1825
+		// https://github.com/jeedom/core/pull/1829
+		if (is_string($conf) && strlen($conf) >= 1 && $conf[0] == chr(6)) $this->setConfiguration(self::CONF_KEY_REQUEST, substr($conf, 1));
 // End of DELETEME
-			// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
-			if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
-				$this->setConfiguration($key, $conf);
-		}
+		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
+		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
+			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
 		// Specific command : status for Broker eqpt
 		if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
 			if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
@@ -259,11 +257,11 @@ class jMQTTCmd extends cmd {
 			$this->setConfiguration(self::CONF_KEY_AUTOPUB, 0);
 		// Check "request" if autoPub enabled
 		if ($this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
-			$req = $this->getConfiguration('request', '');
+			$req = $this->getConfiguration(self::CONF_KEY_REQUEST, '');
 			// Must check If New cmd, autoPub changed or Request changed
 			$must_chk = $this->getId() == '';
 			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration(self::CONF_KEY_AUTOPUB, 0));
-			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration('request', '') != $req);
+			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration(self::CONF_KEY_REQUEST, '') != $req);
 			if ($must_chk) {
 				// Get all commands
 				preg_match_all("/#([0-9]*)#/", $req, $matches);
@@ -293,7 +291,7 @@ class jMQTTCmd extends cmd {
 				'retain' => $cmd->getConfiguration('retain', 0),
 				'brokerStatusTopic' => $cmd->getTopic(),
 				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
-				'request' => $cmd->getConfiguration('request', '')
+				self::CONF_KEY_REQUEST => $cmd->getConfiguration(self::CONF_KEY_REQUEST, '')
 			);
 		}
 	}
@@ -363,7 +361,7 @@ class jMQTTCmd extends cmd {
 			// Only Update listener if "autoPub" or "request" has changed
 			if ($eqLogic->getType() == jMQTT::TYP_EQPT &&
 					($this->_preSaveInformations[self::CONF_KEY_AUTOPUB] != $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0) ||
-					 $this->_preSaveInformations['request'] != $this->getConfiguration('request', '')))
+					 $this->_preSaveInformations[self::CONF_KEY_REQUEST] != $this->getConfiguration(self::CONF_KEY_REQUEST, '')))
 				$this->listenerUpdate();
 		}
 
@@ -383,7 +381,7 @@ class jMQTTCmd extends cmd {
 		$cmds = array();
 		$eq = $this->getEqLogic();
 		if ($eq->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
-			preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
+			preg_match_all("/#([0-9]*)#/", $this->getConfiguration(self::CONF_KEY_REQUEST, ''), $matches);
 			$cmds = array_unique($matches[1]);
 		}
 		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
