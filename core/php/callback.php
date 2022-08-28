@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {			// NOT POST, used by ping, we just
 $ruid = init('uid');								// Collect Remote PID and PORT at connection
 $received = file_get_contents("php://input");		// Get page full content
 // jMQTT::logger('debug', sprintf(__("Démon [%1\$s] : Données reçues '%2\$s'", __FILE__), $ruid, $received));
-$messages = json_decode($received, true);			// Try to decode json -> can throw Excepetion
+$messages = json_decode($received, true);			// Try to decode json -> can throw Exception
 if (is_null($messages) || !is_array($messages)) {	// Only expect an array of messages
 	jMQTT::logger('error', sprintf(__("Démon [%1\$s] : Format JSON erroné: '%2\$s'", __FILE__), $ruid, $received));
 	die();

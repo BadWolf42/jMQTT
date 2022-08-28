@@ -1058,7 +1058,7 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * cron callback
-	 * check MQTT Clients are up and connected to Websocket
+	 * check MQTT Clients are up and connected
 	 */
 	public static function cron() {
 		self::checkAllMqttClients();
@@ -2007,8 +2007,8 @@ class jMQTT extends eqLogic {
 	/**
 	 * Publish a given message to the MQTT broker attached to this object
 	 *
-	 * @param string $eqName
-	 *            equipment name (for log purpose)
+	 * @param string $cmdName
+	 *            command name (for log purpose only)
 	 * @param string $topic
 	 *            topic
 	 * @param string $message
@@ -2016,7 +2016,7 @@ class jMQTT extends eqLogic {
 	 * @param string $qos
 	 *            quality of service used to send the message ('0', '1' or '2')
 	 * @param string $retain
-	 *            whether or not the message is a retained message ('0' or '1')
+	 *            whether or not the message should be retained ('0' or '1')
 	 */
 	public function publish($cmdName, $topic, $payload, $qos, $retain) {
 		if (is_bool($payload) || is_array($payload)) {
