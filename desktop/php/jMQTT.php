@@ -29,6 +29,7 @@ textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font
 div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; }
 textarea.eqLogicAttr.form-control.blured			{ filter: blur(4px); }
 textarea.eqLogicAttr.form-control.blured:hover		{ filter: none; }
+textarea.eqLogicAttr.form-control.blured:focus		{ filter: none; }
 textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospace; height: 90px; }
 </style>
 
