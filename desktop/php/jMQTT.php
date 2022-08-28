@@ -74,6 +74,9 @@ function displayEqLogicCard($eqL, $node_images) {
 <div id="div_cmdMsg"></div>
 <div id="div_newEqptMsg"></div>
 <div id="div_inclusionModeMsg"></div>
+<?php if(strpos(trim(update::byLogicalId('jeedom')->getLocalVersion()), '3.') === 0) { ?>
+<div class="col-xs-12"><span class="label control-label label-danger" style="width:100%;font-size: 13px!important">{{Ceci est la dernière version de jMQTT supportant Jeedom 3. Passez Jeedom en version 4 pour bénéficier des prochaines évolutions de jMQTT}}</span></div>
+<?php } ?>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
 		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>

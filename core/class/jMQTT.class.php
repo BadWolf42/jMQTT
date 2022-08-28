@@ -1486,7 +1486,7 @@ class jMQTT extends eqLogic {
 		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
 		log::remove($depLogFile);
 		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 0),
+			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 0) . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
 			'log' => log::getPathToLog($depLogFile)
 		);
 	}
