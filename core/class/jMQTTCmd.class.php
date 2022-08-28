@@ -22,6 +22,7 @@
 class jMQTTCmd extends cmd {
 
 	const CONF_KEY_AUTOPUB              = 'autoPub';
+	const CONF_KEY_IRREMOVABLE          = 'irremovable';
 	const CONF_KEY_JSON_PATH            = 'jsonPath';
 	const CONF_KEY_PUB_QOS              = 'Qos';
 
@@ -467,7 +468,7 @@ class jMQTTCmd extends cmd {
 	 * Set this command as irremovable
 	 */
 	public function setIrremovable() {
-		$this->setConfiguration('irremovable', 1);
+		$this->setConfiguration(self::CONF_KEY_IRREMOVABLE, 1);
 	}
 
 	public function setTopic($topic) {
