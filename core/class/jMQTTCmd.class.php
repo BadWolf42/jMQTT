@@ -26,6 +26,7 @@ class jMQTTCmd extends cmd {
 	const CONF_KEY_JSON_PATH            = 'jsonPath';
 	const CONF_KEY_PUB_QOS              = 'Qos';
 	const CONF_KEY_REQUEST              = 'request';
+	const CONF_KEY_RETAIN               = 'retain';
 
 	/**
 	 * @var int maximum length of command name supported by the database scheme
@@ -203,7 +204,7 @@ class jMQTTCmd extends cmd {
 		$request = $this->getConfiguration(self::CONF_KEY_REQUEST, "");
 		$topic = $this->getTopic();
 		$qos = $this->getConfiguration(self::CONF_KEY_PUB_QOS, 1);
-		$retain = $this->getConfiguration('retain', 0);
+		$retain = $this->getConfiguration(self::CONF_KEY_RETAIN, 0);
 		// Prevent error when $_options is null or accessing an unavailable $_options
 		$_defaults = array('other' => '', 'slider' => '#slider#', 'title' => '#title#', 'message' => '#message#', 'color' => '#color#', 'select' => '#select#');
 		$_options = is_null($_options) ? $_defaults : array_merge($_defaults, $_options);
@@ -288,7 +289,7 @@ class jMQTTCmd extends cmd {
 		else {
 			$cmd = self::byId($this->getId());
 			$this->_preSaveInformations = array(
-				'retain' => $cmd->getConfiguration('retain', 0),
+				self::CONF_KEY_RETAIN => $cmd->getConfiguration(self::CONF_KEY_RETAIN, 0),
 				'brokerStatusTopic' => $cmd->getTopic(),
 				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
 				self::CONF_KEY_REQUEST => $cmd->getConfiguration(self::CONF_KEY_REQUEST, '')
@@ -333,10 +334,10 @@ class jMQTTCmd extends cmd {
 		else { // the cmd has been updated
 
 			// If retain mode changed
-			if ($this->_preSaveInformations['retain'] != $this->getConfiguration('retain', 0)) {
+			if ($this->_preSaveInformations[self::CONF_KEY_RETAIN] != $this->getConfiguration(self::CONF_KEY_RETAIN, 0)) {
 
 				// It's enabled now
-				if ($this->getConfiguration('retain', 0)) {
+				if ($this->getConfiguration(self::CONF_KEY_RETAIN, 0)) {
 					$eqLogic->log('info', sprintf(__("Mode retain activé sur la commande #%s#", __FILE__), $this->getHumanName()));
 				} else {
 					//If broker eqpt is enabled
