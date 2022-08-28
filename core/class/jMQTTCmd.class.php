@@ -198,23 +198,17 @@ class jMQTTCmd extends cmd {
 		$topic = $this->getTopic();
 		$qos = $this->getConfiguration('Qos', 1);
 		$retain = $this->getConfiguration('retain', 0);
-		switch ($this->getSubType()) {
-			case 'slider':
-				$request = str_replace('#slider#', $_options['slider'], $request);
-				break;
-			case 'color':
-				$request = str_replace('#color#', $_options['color'], $request);
-				break;
-			case 'message':
-				if ($_options != null)  {
-					$replace = array('#title#', '#message#');
-					$replaceBy = array($_options['title'], $_options['message']);
-					$request = str_replace($replace, $replaceBy, $request);
-				}
-				break;
-			case 'select':
-				$request = str_replace('#select#', $_options['select'], $request);
-				break;
+		// Prevent error when $_options is null or accessing an unavailable $_options
+		$_defaults = array('other' => '', 'slider' => '#slider#', 'title' => '#title#', 'message' => '#message#', 'color' => '#color#', 'select' => '#select#');
+		$_options = is_null($_options) ? $_defaults : array_merge($_defaults, $_options);
+		// As per feature request (issue 208: https://github.com/Domochip/jMQTT/issues/208#issuecomment-1206207191)
+		// If request is empty, the corresponding subtype option is implied (Default/other = '')
+		if ($request == '') {
+			$request = $_options[$this->getSubType()];
+		} else { // Otherwise replace all tags
+			$replace = array('#slider#', '#title#', '#message#', '#color#', '#select#');
+			$replaceBy = array($_options['slider'], $_options['title'], $_options['message'], $_options['color'], $_options['select']);
+			$request = str_replace($replace, $replaceBy, $request);
 		}
 		$request = jeedom::evaluateExpression($request);
 		$this->getEqLogic()->publish($this->getHumanName(), $topic, $request, $qos, $retain);
