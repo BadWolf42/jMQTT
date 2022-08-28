@@ -21,6 +21,8 @@
  */
 class jMQTTCmd extends cmd {
 
+	const CONF_KEY_JSON_PATH            = 'jsonPath';
+
 	/**
 	 * @var int maximum length of command name supported by the database scheme
 	 */
@@ -482,6 +484,7 @@ class jMQTTCmd extends cmd {
 		return $this->getConfiguration(jMQTT::CONF_KEY_JSON_PATH, '');
 	}
 
+// TODO Move to install.php as only used by it?
 	public function splitTopicAndJsonPath() {
 		// Try to find '{'
 		$topic = $this->getTopic();
@@ -490,8 +493,7 @@ class jMQTTCmd extends cmd {
 		if ($i === false) {
 			// Just set empty jsonPath if it doesn't exists
 			$this->setJsonPath($this->getJsonPath());
-		}
-		else {
+		} else {
 			// Set cleaned Topic
 			$this->setTopic(substr($topic, 0, $i));
 
