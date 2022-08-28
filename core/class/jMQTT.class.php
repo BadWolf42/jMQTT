@@ -1454,22 +1454,25 @@ class jMQTT extends eqLogic {
 		$return['state'] = self::MQTTCLIENT_OK;
 
 		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
-			self::logger('debug', __("Le package PHP JsonPath est manquant, relancez les dépendances", __FILE__));
+			self::logger('debug', __("Relancez les dépendances, le package PHP JsonPath est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
 		if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
-			self::logger('debug', __("Le venv Python n'a pas encore été créé, relancez les dépendances", __FILE__));
+			self::logger('debug', __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
-		}
-		elseif (exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir --no-color -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null | wc -l') > 0) {
-			self::logger('debug', __("Une bibliothèque Python requise est manquante dans le venv, relancez les dépendances", __FILE__));
-			$return['state'] = self::MQTTCLIENT_NOK;
+		} else {
+			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
+			if (count($output) > 0) {
+				// TODO Make this debug message more verbose/explicit
+				self::logger('error', __("Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv : ", __FILE__).'<br />'.implode('<br />', $output));
+				$return['state'] = self::MQTTCLIENT_NOK;
+			}
 		}
 
 		// TODO: Check also if Mosquitto can be installed
 		if (config::byKey('installMosquitto', 'jMQTT', 0) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
-			self::logger('debug', __("Le paquet Debian Mosquitto est manquant, relancez les dépendances", __FILE__));
+			self::logger('debug', __("Relancez les dépendances, le paquet Debian Mosquitto est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
