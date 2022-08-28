@@ -23,6 +23,7 @@ class jMQTTCmd extends cmd {
 
 	const CONF_KEY_AUTOPUB              = 'autoPub';
 	const CONF_KEY_JSON_PATH            = 'jsonPath';
+	const CONF_KEY_PUB_QOS              = 'Qos';
 
 	/**
 	 * @var int maximum length of command name supported by the database scheme
@@ -199,7 +200,7 @@ class jMQTTCmd extends cmd {
 			return;
 		$request = $this->getConfiguration('request', "");
 		$topic = $this->getTopic();
-		$qos = $this->getConfiguration('Qos', 1);
+		$qos = $this->getConfiguration(self::CONF_KEY_PUB_QOS, 1);
 		$retain = $this->getConfiguration('retain', 0);
 		// Prevent error when $_options is null or accessing an unavailable $_options
 		$_defaults = array('other' => '', 'slider' => '#slider#', 'title' => '#title#', 'message' => '#message#', 'color' => '#color#', 'select' => '#select#');
