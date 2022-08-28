@@ -408,7 +408,7 @@ class jMQTTCmd extends cmd {
 			}
 			$listener->setOption('cmd', $this->getId());
 			$listener->setOption('eqLogic', $this->getEqLogic_id());
-			$listener->setOption('background', false);
+			$listener->setOption('background', true);
 			$listener->save();
 			$eq->log('debug', sprintf(__("Listener installé pour #%s#", __FILE__), $this->getHumanName()));
 		} else { // We don't want a listener
