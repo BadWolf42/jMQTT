@@ -32,6 +32,8 @@ Les géants du web parmi lesquels AWS ou Microsoft utilisent MQTT pour remonter 
 MQTT est un protocole de Publication/Souscription qui est léger, ouvert, simple.
 Il apporte une très grande souplesse dans les échanges d'information entre capteurs/actionneurs/systèmes domotique/etc.
 
+# Comment fonctionne le MQTT ?
+
 Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui explique les principes de base :
 
 [![Principe MQTT Youtube](https://img.youtube.com/vi/7skzc4axLKM/0.jpg)](https://www.youtube.com/watch?v=7skzc4axLKM)
@@ -39,31 +41,48 @@ Pour comprendre MQTT rapidement, je vous conseille cette vidéo de 4 minutes qui
 Crédit : François Riotte
 
 
+Une analogie simple est possible entre le MQTT et la Poste :
+
+- Un **Broker** est un service qui permet de passer les messages MQTT entre des Clients MQTT, il s'agit très souvent du service Mosquitto.
+Le Broker est un peu comme un centre postal : c'est par lui que transite le courrier des usagers.
+
+- Un **Client** est une machine qui se connecte à un Broker, il peut Souscrire à un ou plusieurs Topic pour recevoir les Messages (Payload) qui sont envoyés sur ce Topic. Il peut aussi Publier des messages sur des Topics. Il n'est pas nécessaire de souscrire à un Topic pour Publier.
+Le Client est un peu comme un usager du service postal : il peut recevoir du courrier à une ou plusieurs adresses (Topic) ou envoyer du courrier à l'adresse d'autres usagers.
+
+- Un **Topic** est une chaine de caractère par convention de la forme nom1/nom2 (/nom3... etc) et permet de représenter la destination du message.
+
+- Un **Message** ou **Payload** est la charge utile transmise sur le Topic, il peut s'agit de texte ou d'un contenu binaire, ou quoi que ce soit d'autre comme format (souvent du Json, XML ou Base64).
+L'adresse du destinataire d'un courrier n'est pas le centre postal et le contenu du dernier courrier ne reste pas dans le centre postal. Un Message part uniquement vers les Clients ayant souscrit à ce Topic et étant connectés.
+
+- Un **Message Retain** (Message conservé) a la particularité de rester sur le Broker, tant qu'il n'est pas écrasé par un autre Message Retain. Il est envoyé immédiatement à chaque Client ayant souscrit au Topic associé et est renvoyé à chaque nouveau Client souscrivant au Topic.
+Le Message Retain est un peu comme une boite postale qui ne peut contenir qu'un message à la fois : le message reste dans la boite tant qu'aucun autre arrive et peut être consulté par tous ceux qui viennent regarder la boite.
+
 Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https://www.hivemq.com/mqtt-essentials/).
-
-# Démarrage rapide
-
-Par défaut, jMQTT installe le Broker Mosquitto sur la machine hébergeant Jeedom.
-Il vous suffira ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à ce Broker (IP de votre Jeedom).
-
-La configuration jMQTT est alors très simple:
-  1. Installer et activer le plugin en laissant les paramètres par défaut
 
 # Configuration du plugin
 
-> **Important**
-> Pour ne pas installer le Broker Mosquitto sur la machine hébergeant Jeedom, commencer par décocher la case *Installer Mosquitto localement*, sans oublier de sauvegarder la configuration.
-
-
-Après installation du plugin, il suffit de l’activer. Celui-ci prend quelques minutes pour installer les dépendances. Le suivi détaillé de la progression est possible via le log `jMQTT_dep`.
-
-Le reste de la configuration principale est assez sommaire :
+Après installation du plugin, il suffit de l’activer sur la page de configuration :
 
 ![Configuration du plugin](../images/config.png)
 
-C'est aussi sur cette page qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
+jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser.
+
+Par défaut, jMQTT installe et configure le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances.
+Il suffit ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent au Broker local (IP de votre Jeedom).
+
+> **Important**
+>
+> Si vous avez déjà un Broker ou que vous utilisez aussi un autre plugin MQTT qui a déjà installé un Broker, désactivez l'installation de Mosquitto et configurez l'autre Broker dans jMQTT.
+> Pour ne pas installer le Broker Mosquitto sur la machine hébergeant Jeedom, il faut décocher la case *Installer Mosquitto localement* et sauvegarder la configuration.
+
+Quelques minutes sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
+
+C'est aussi sur la page de configuration qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
 
 # Gestion des équipements
+
+Dans Jeedom, dès que l'on souhaite récupérer ou interagir avec quelque chose, il faut créer un équipement.
+Donc, il faut créer un équipement dans jMQTT pour récupérer des données envoyées par d'autre Clients via un Broker.
 
 Le plugin jMQTT est disponible dans le menu : `Plugins → Protocole domotique → jMQTT`.
 
@@ -557,6 +576,15 @@ Ensuite, il y a deux solutions pour lier les commandes :
 Attention, quel que soit la solution, il est important de configurer la *Gestion de la répétition des valeurs* de la commande info `[Saison jMQTT][set]` à *Toujours répéter* pour que toutes les valeurs remontent au virtuel. Pour cela, toujours en cliquant sur la roue crantée à droite de cette dernière, onglet *Configuration*:
 
 ![saison répétition](../images/saison_repetition.png)
+
+# Conservation de l'état précédant une coupure de courant (exemple commande action avec "Retain")
+
+Les Messages Retain ont beaucoup d'intérêt pour renvoyer des valeurs à la reconnexion d'un périphérique.
+
+Par exemple, une prise connectée Sonoff sera OFF de base après une coupure de courant.
+Si on souhaite remettre la prise dans le dernier état avant la coupure, il peut être intéressant de passer les commandes action d'allumage/extinction de la prise dans jMQTT en Retain.
+
+En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la reconnexion au Broker, le Broker l’informe directement du dernier état demandé et la prise revient en ON si c’était le cas. (Il faut bien publier ON et OFF en retain dans ce cas, pour que le Broker envoie aussi OFF si elle était OFF, car un message non-Retain n’écrase pas la valeur Retain dans le Broker).
 
 # Registre des évolutions
 

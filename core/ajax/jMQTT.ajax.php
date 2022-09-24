@@ -135,6 +135,8 @@ try {
 
 	if (init('action') == 'moveToBroker') {
 		/** @var jMQTT $eqpt */
+		// TODO INVESTIGATE AND FIX BUG: Move cmd to other broker or Delete Broker -> jMQTT daemon failure
+
 		$eqpt = jMQTT::byId(init('id'));
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
 			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
