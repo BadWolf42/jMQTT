@@ -479,11 +479,11 @@ class jMQTTCmd extends cmd {
 	}
 
 	public function setJsonPath($jsonPath) {
-		$this->setConfiguration(jMQTT::CONF_KEY_JSON_PATH, $jsonPath);
+		$this->setConfiguration(self::CONF_KEY_JSON_PATH, $jsonPath);
 	}
 
 	public function getJsonPath() {
-		return $this->getConfiguration(jMQTT::CONF_KEY_JSON_PATH, '');
+		return $this->getConfiguration(self::CONF_KEY_JSON_PATH, '');
 	}
 
 // TODO Move to install.php as only used by it?
