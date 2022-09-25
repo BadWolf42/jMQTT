@@ -23,6 +23,14 @@ $('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
 	event.stopPropagation()
 });
 
+/*
+ * Missing stopPropagation for span.hiddenAsCard in plugin main view
+ * Without this, it is impossible to click on a link in table view without entering the equipement
+ */
+$('.eqLogicDisplayCard').on('click', 'span.hiddenAsCard', function(event) {
+	event.stopPropagation()
+});
+
 // Compatibility with Jeedom 4.1 // TODO Remove me when Jeedom 4.1 is deprecated
 if (typeof jeedom.eqLogic.buildSelectCmd !== 'function')
 	jeedom.eqLogic.buildSelectCmd = jeedom.eqLogic.builSelectCmd;
@@ -283,6 +291,12 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 			});
 		}}
 	});
+});
+
+$('.eqLogicAction[data-action=confEq]').off('click').on('click', function() {
+	var eqId = $(this).closest('div').attr('data-eqLogic_id');
+	console.log('confEq', eqId, $(this));
+	$('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + eqId).dialog('open');
 });
 
 //
