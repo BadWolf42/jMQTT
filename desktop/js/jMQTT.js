@@ -305,11 +305,11 @@ $('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function (
 		});
 	}
 	if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
-		var typ = $('.eqLogicAttr[data-l2key=type]').value() == 'broker' ? 'broker' : 'module';
+		var typB = $('.eqLogicAttr[data-l2key=type]').value() == 'broker';
 		bootbox.confirm('{{Etes-vous sûr de vouloir supprimer}}' + ' ' +
-				(typ == 'broker' ? '{{le broker}}' : "{{l'équipement}}") + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
+				(typB ? '{{le broker}}' : "{{l'équipement}}") + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
 			if (result) {
-				if (typ == 'broker') {
+				if (typB) {
 					bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fas fa-exclamation-triangle" />' +
 						'</span></td><td style="vertical-align:middle">' + '{{Tous les équipements associés au broker vont être supprimés}}' +
 						'...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
