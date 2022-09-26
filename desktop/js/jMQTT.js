@@ -295,7 +295,6 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 
 $('.eqLogicAction[data-action=confEq]').off('click').on('click', function() {
 	var eqId = $(this).closest('div').attr('data-eqLogic_id');
-	console.log('confEq', eqId, $(this));
 	$('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + eqId).dialog('open');
 });
 
@@ -853,20 +852,29 @@ function printEqLogic(_eqLogic) {
 		jeedom.eqLogic.buildSelectCmd({
 			id: eqId,
 			filter: {type: 'info', subType: 'numeric'},
-			error: function (error) { $('#div_alert').showAlert({message: error.message, level: 'danger'}); },
-			success: function (result) { bat.append(result); }
+			error: function (error) {
+				$('#div_alert').showAlert({message: error.message, level: 'danger'});
+			},
+			success: function (result) {
+				bat.append(result);
+			}
 		});
 		jeedom.eqLogic.buildSelectCmd({
 			id: eqId,
 			filter: {type: 'info', subType: 'binary'},
-			error: function (error) { $('#div_alert').showAlert({message: error.message, level: 'danger'}); },
-			success: function (result) { bat.append(result); avl.append(result); }
+			error: function (error) {
+				$('#div_alert').showAlert({message: error.message, level: 'danger'});
+			},
+			success: function (result) {
+				avl.append(result);
+				bat.append(result); // Also append binary cmd to battery dropbox
+			}
 		});
 		bat.val(_eqLogic.configuration.battery_cmd);
 		avl.val(_eqLogic.configuration.availability_cmd);
 	}
 
-	// Initialise the broker dropbox
+	// Initialize the broker dropbox
 	var brokers = $("#broker");
 	brokers.empty();
 	$.each( eqBrokers, function(key, name) {
@@ -935,7 +943,7 @@ function saveEqLogic(_eqLogic) {
 		currentValue = JSON.stringify(currentValue);
 		if (currentValue.length == 0)
 			continue;
-		console.log("CMD: "+String(_eqLogic.cmd[i].id)+"="+currentValue);
+		// console.log("CMD: "+String(_eqLogic.cmd[i].id)+"="+currentValue);
 		if (currentValue[0] == '{')
 			_eqLogic.cmd[i].configuration.request = String.fromCharCode(6) + currentValue;
 		else if (currentValue.length == String.fromCharCode(6))
