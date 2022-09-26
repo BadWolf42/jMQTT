@@ -146,10 +146,10 @@ foreach (plugin::listPlugin(false, false, true, true) as $p) // use $_nameOnly=t
 		<div class="col-md-6 col-sm-12">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<h3 class="panel-title"><i class="fas fa-wrench"></i> {{Valeurs de config interne}}</h3>
+					<h3 class="panel-title"><i class="fas fa-wrench"></i> {{Valeurs de config interne}} <a class="btn btn-info btn-xs btn-success pull-right" style="top:-2px!important" id="bt_debugShowHideConf"><i class="fas fa-pen"></i> {{Afficher la config}}</a></h3>
 				</div>
 				<div class="panel-body">
-					<table class="table table-bordered" id="bt_debugTabConfig" style="table-layout:fixed;width:100%;">
+					<table class="table table-bordered hidden" id="bt_debugTabConfig" style="table-layout:fixed;width:100%;">
 						<thead>
 							<tr>
 								<th style="width:180px">Clé</th>
@@ -168,6 +168,16 @@ foreach (plugin::listPlugin(false, false, true, true) as $p) // use $_nameOnly=t
 						</tbody>
 					</table>
 					<script>
+$('#bt_debugShowHideConf').on('click', function () {
+	if ($(this).hasClass('btn-warning')) {
+		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-pen"></i> {{Afficher la config}}');
+		$('#bt_debugTabConfig').addClass('hidden');
+	} else {
+		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Masquer la config}}');
+		$('#bt_debugTabConfig').removeClass('hidden');
+	}
+});
+
 $('#bt_debugAddConfig').on('click', function () {
 	bootbox.confirm({
 		title: '{{Ajouter un paramètre de configuration interne}}',
@@ -265,14 +275,13 @@ $('#bt_debugTabConfig').on('click', '.bt_debugDelConfig', function () {
 		<div class="col-md-6 col-sm-12">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
-					<h3 class="panel-title"><i class="fas fa-book"></i> {{Valeurs du cache interne}}</h3>
+					<h3 class="panel-title"><i class="fas fa-book"></i> {{Valeurs du cache interne}} <a class="btn btn-info btn-xs btn-success pull-right" style="top:-2px!important" id="bt_debugShowHideCache"><i class="fas fa-pen"></i> {{Afficher le cache}}</a></h3>
 				</div>
-
 				<div class="panel-body">
-					<table class="table table-bordered" id="bt_debugTabCache" style="table-layout:fixed;width:100%;">
+					<table class="table table-bordered hidden" id="bt_debugTabCache" style="table-layout:fixed;width:100%;">
 						<thead>
 							<tr>
-								<th style="width:240px">Clé</th>
+								<th style="width:180px">Clé</th>
 								<th>Valeur (encodée en Json)</th>
 								<th style="width:85px;text-align:center"><a class="btn btn-success btn-xs pull-right" style="top:0px!important;" id="bt_debugAddCache"><i class="fas fa-check-circle icon-white"></i> Ajouter</a></th>
 							</tr>
@@ -305,7 +314,7 @@ foreach (jMQTT::getBrokers() as $brk) {
 	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_LAST_LAUNCH_TIME;
 	$cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
 
-	$printBrkH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-warning-color);">{{Broker}} '.$brk->getHumanName().' ('.$brk->getId().')</td></tr>';
+	$printBrkH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-warning-color);">{{Broker}} '.$brk->getHumanName().' (id: '.$brk->getId().')</td></tr>';
 	$printBrkB = '';
 	foreach ($cacheBrkKeys as $k) {
 		$val = cache::byKey($k)->getValue(null);
@@ -328,7 +337,7 @@ foreach(jMQTT::getNonBrokers() as $eqpts) {
 		$cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_IGNORE_TOPIC_MISMATCH;
 		// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
 		$cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
-		$printEqH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-primary-color);">{{Equipement}} '.$eqpt->getHumanName().' ('.$eqpt->getId().')</td></tr>';
+		$printEqH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-primary-color);">{{Equipement}} '.$eqpt->getHumanName().' (id: '.$eqpt->getId().')</td></tr>';
 		
 		$printEqB = '';
 		foreach ($cacheEqptKeys as $k) {
@@ -375,6 +384,16 @@ foreach (cmd::searchConfiguration('', jMQTT::class) as $cmd) {
 						</tbody>
 					</table>
 					<script>
+$('#bt_debugShowHideCache').on('click', function () {
+	if ($(this).hasClass('btn-warning')) {
+		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-pen"></i> {{Afficher le cache}}');
+		$('#bt_debugTabCache').addClass('hidden');
+	} else {
+		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Masquer le cache}}');
+		$('#bt_debugTabCache').removeClass('hidden');
+	}
+});
+
 $('#bt_debugAddCache').on('click', function () {
 	bootbox.confirm({
 		title: '{{Ajouter un paramètre au cache interne}}',
@@ -464,12 +483,13 @@ $('#bt_debugTabCache').on('click', '.bt_debugDelCache', function () {
 		}
 	});
 });
+
 $('#bt_debugTabCache').on('click', '.bt_debugShowHideCmd', function () {
 	if ($(this).hasClass('btn-warning')) {
 		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-pen"></i> {{Afficher le cache des Commandes}}');
 		$('#bt_debugTabCache .lcmd').each(function () { $(this).addClass('hidden'); });
 	} else {
-		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Cacher le cache des Commandes}}');
+		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Masquer le cache des Commandes}}');
 		$('#bt_debugTabCache .lcmd').each(function () { $(this).removeClass('hidden'); });
 	}
 });
