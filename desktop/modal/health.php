@@ -24,13 +24,6 @@ $eqNonBrokers = jMQTT::getNonBrokers();
 $eqBrokers = jMQTT::getBrokers();
 
 ?>
-<style>
-.w18 {
-	width: 18px;
-	text-align: center;
-	font-size: 0.9em;
-}
-</style>
 <legend><i class="fas fa-table"></i> {{Brokers}}</legend>
 <table class="table table-condensed tablesorter" id="table_healthMQTT_brk">
 	<thead>
@@ -45,8 +38,7 @@ $eqBrokers = jMQTT::getBrokers();
 	</thead>
 	<tbody>
 <?php
-
-foreach ($eqBrokers as $eqB) {
+foreach ($eqBrokers as $eqB) { // List all Brokers on top
 	echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
 	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:70px">' . $eqB->getId() . '</span></td>';
 	echo '<td>' . $eqB->getMqttClientInfo()['message'] . '</td>';
@@ -54,13 +46,11 @@ foreach ($eqBrokers as $eqB) {
 	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqB->getConfiguration('createtime') . '</span></td>';
 	echo '<td class="center">&nbsp;</td></tr>';
 }
-
 ?>
 	</tbody>
 </table>
 <?php
-
-foreach ($eqBrokers as $eqB) {
+foreach ($eqBrokers as $eqB) { // For each Broker
 	echo '<legend><i class="fas fa-table"></i> ';
 	if (!array_key_exists($eqB->getId(), $eqNonBrokers))
 		echo '{{Aucun équipement connectés à}}';
@@ -85,7 +75,7 @@ foreach ($eqBrokers as $eqB) {
 	</thead>
 	<tbody>
 <?php
-		foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
+		foreach ($eqNonBrokers[$eqB->getId()] as $eqL) { // List every equipment on the Broker
 			echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" class="hName" data-key="' . $eqL->getHumanName() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
 			echo '<td class="center"><span class="label label-info hId" style="font-size:1em;cursor:default;width:70px">' . $eqL->getId() . '</span></td>';
 			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getTopic() . '</span></td>';
@@ -103,7 +93,6 @@ foreach ($eqBrokers as $eqB) {
 	}
 }
 ?>
-
 <script>
 // Remove jMQTT equipment callback
 $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
