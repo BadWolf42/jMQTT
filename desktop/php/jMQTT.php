@@ -14,7 +14,61 @@ foreach ($eqBrokers as $id => $eqL) {
 }
 sendVarToJS('eqBrokers', $eqBrokersName);
 
-$node_images = scandir(__DIR__ . '/../../core/img/');
+// $node_images = scandir(__DIR__ . '/../../core/img/');
+$icons = array(
+	['id' => '', 'name' => __('Aucun', __FILE__), 'file' => 'node_.svg'],
+	['id' => 'barometre', 'name' => __('Baromètre', __FILE__), 'file' => 'node_barometre.svg'],
+	['id' => 'bell', 'name' => __('Sonnerie', __FILE__), 'file' => 'node_bell.svg'],
+	['id' => 'boiteauxlettres', 'name' => __('Boite aux Lettres', __FILE__), 'file' => 'node_boiteauxlettres.svg'],
+	['id' => 'bt', 'name' => __('Bluetooth', __FILE__), 'file' => 'node_bt.svg'],
+	['id' => 'chauffage', 'name' => __('Chauffage', __FILE__), 'file' => 'node_chauffage.svg'],
+	['id' => 'compteur', 'name' => __('Compteur', __FILE__), 'file' => 'node_compteur.svg'],
+	['id' => 'contact', 'name' => __('Contact', __FILE__), 'file' => 'node_contact.svg'],
+	['id' => 'custom', 'name' => __('Custom', __FILE__), 'file' => 'node_custom.svg'],
+	['id' => 'dimmer', 'name' => __('Dimmer', __FILE__), 'file' => 'node_dimmer.svg'],
+	['id' => 'door', 'name' => __('Porte', __FILE__), 'file' => 'node_door.svg'],
+	['id' => 'energie', 'name' => __('Energie', __FILE__), 'file' => 'node_energie.svg'],
+	['id' => 'fan', 'name' => __('Ventilation', __FILE__), 'file' => 'node_fan.svg'],
+	['id' => 'feuille', 'name' => __('Culture', __FILE__), 'file' => 'node_feuille.svg'],
+	['id' => 'fire', 'name' => __('Incendie', __FILE__), 'file' => 'node_fire.svg'],
+	['id' => 'garage', 'name' => __('Garage', __FILE__), 'file' => 'node_garage.svg'],
+	['id' => 'gate', 'name' => __('Portail', __FILE__), 'file' => 'node_gate.svg'],
+	['id' => 'home-flood', 'name' => __('Inondation', __FILE__), 'file' => 'node_home-flood.svg'],
+	['id' => 'humidity', 'name' => __('Humidité', __FILE__), 'file' => 'node_humidity.png'],
+	['id' => 'humiditytemp', 'name' => __('Humidité et Température', __FILE__), 'file' => 'node_humiditytemp.png'],
+	['id' => 'hydro', 'name' => __('Hydrométrie', __FILE__), 'file' => 'node_hydro.png'],
+	['id' => 'ir2', 'name' => __('Infra Rouge', __FILE__), 'file' => 'node_ir2.png'],
+	['id' => 'jauge', 'name' => __('Jauge', __FILE__), 'file' => 'node_jauge.svg'],
+	['id' => 'light', 'name' => __('Luminosité', __FILE__), 'file' => 'node_light.png'],
+	['id' => 'lightbulb', 'name' => __('Lumière', __FILE__), 'file' => 'node_lightbulb.svg'],
+	['id' => 'meteo', 'name' => __('Météo', __FILE__), 'file' => 'node_meteo.png'],
+	['id' => 'molecule-co', 'name' => __('CO', __FILE__), 'file' => 'node_molecule-co.svg'],
+	['id' => 'motion', 'name' => __('Mouvement', __FILE__), 'file' => 'node_motion.png'],
+	['id' => 'motion-sensor', 'name' => __('Présence', __FILE__), 'file' => 'node_motion-sensor.svg'],
+	['id' => 'multisensor', 'name' => __('Multisensor', __FILE__), 'file' => 'node_multisensor.png'],
+	['id' => 'nab', 'name' => __('Nabaztag', __FILE__), 'file' => 'node_nab.png'],
+	['id' => 'power-plug', 'name' => __('Prise de courant', __FILE__), 'file' => 'node_power-plug.svg'],
+	['id' => 'prise', 'name' => __('Prise', __FILE__), 'file' => 'node_prise.png'],
+	['id' => 'radiator', 'name' => __('Radiateur', __FILE__), 'file' => 'node_radiator.svg'],
+	['id' => 'relay', 'name' => __('Relais', __FILE__), 'file' => 'node_relay.png'],
+	['id' => 'remote', 'name' => __('Télécommande', __FILE__), 'file' => 'node_remote.svg'],
+	['id' => 'rf433', 'name' => __('RF433', __FILE__), 'file' => 'node_rf433.svg'],
+	['id' => 'rfid', 'name' => __('RFID', __FILE__), 'file' => 'node_rfid.png'],
+	['id' => 'sms', 'name' => __('SMS', __FILE__), 'file' => 'node_sms.png'],
+	['id' => 'teleinfo', 'name' => __('Téléinfo', __FILE__), 'file' => 'node_teleinfo.png'],
+	['id' => 'temp', 'name' => __('Température', __FILE__), 'file' => 'node_temp.png'],
+	['id' => 'thermostat', 'name' => __('Thermostat', __FILE__), 'file' => 'node_thermostat.png'],
+	['id' => 'tv', 'name' => __('Télévison', __FILE__), 'file' => 'node_tv.svg'],
+	['id' => 'volet', 'name' => __('Volet', __FILE__), 'file' => 'node_volet.svg'],
+	['id' => 'water-boiler', 'name' => __('Chaudière', __FILE__), 'file' => 'node_water-boiler.svg'],
+	['id' => 'wifi', 'name' => __('Wifi', __FILE__), 'file' => 'node_wifi.svg'],
+	['id' => 'window-closed-variant', 'name' => __('Fenêtre', __FILE__), 'file' => 'node_window-closed-variant.svg'],
+	['id' => 'zigbee', 'name' => __('Zigbee', __FILE__), 'file' => 'node_zigbee.svg'],
+	['id' => 'zwave', 'name' => __('ZWave', __FILE__), 'file' => 'node_zwave.svg']
+);
+usort($icons, function ($a, $b) { return strcmp($a["name"], $b["name"]); });
+sendVarToJS('jmqttIcons', $icons);
+
 ?>
 
 <style>
@@ -44,7 +98,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
  *
  * @param jMQTT $eqL
  */
-function displayEqLogicCard($eqL, $node_images) {
+function displayEqLogicCard($eqL, $icons) {
 	$opacity = $eqL->getIsEnable() ? '' : ' disableCard';
 	echo '<div class="eqLogicDisplayCard cursor' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
 	echo '<span class="hiddenAsTable">';
@@ -56,8 +110,9 @@ function displayEqLogicCard($eqL, $node_images) {
 		$st = $eqL->getMqttClientState();
 		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>';
 	} else {
-		$icon = 'node_' . $eqL->getConfiguration('icone');
-		$file = (in_array($icon.'.svg', $node_images) ? $icon.'.svg' : (in_array($icon.'.png', $node_images) ? $icon.'.png' : 'node_.png'));
+		$icon = $eqL->getConfiguration('icone');
+		$key = array_search($icon, array_column($icons, 'id'));
+		$file = ($key ? $icons[$key]['file'] : 'node_.svg');
 	}
 	echo '</span>';
 	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
@@ -163,7 +218,7 @@ function displayEqLogicCard($eqL, $node_images) {
 					$has_orphans = true;
 				}
 				foreach ($nonBrokers as $eqL) {
-					displayEqLogicCard($eqL, $node_images);
+					displayEqLogicCard($eqL, $icons);
 				}
 			}
 		}
@@ -180,10 +235,10 @@ function displayEqLogicCard($eqL, $node_images) {
 				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
 			echo ' <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
-			displayEqLogicCard($eqB, $node_images);
+			displayEqLogicCard($eqB, $icons);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
-					displayEqLogicCard($eqL, $node_images);
+					displayEqLogicCard($eqL, $icons);
 				}
 			}
 			echo '</div>';

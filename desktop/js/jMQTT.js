@@ -474,14 +474,8 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 });
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
-	var text = 'plugins/jMQTT/core/img/node_' + $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val();
-	$("#icon_visu").attr("src", text + '.svg');
-});
-
-$("#icon_visu").on("error", function () {
-	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val() != '') {
-		$(this).attr("src", 'plugins/jMQTT/core/img/node_' + $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').val() + '.png');
-	}
+	var elt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone] option:selected');
+	$("#icon_visu").attr("src", 'plugins/jMQTT/core/img/' + elt.attr('file'));
 });
 
 // Configure the sortable functionality of the commands array
