@@ -91,11 +91,6 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospac
 </style>
 
 <?php
-function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
-	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
-	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
-}
-
 /**
  *
  * @param jMQTT $eqL
@@ -184,9 +179,17 @@ function displayEqLogicCard($eqL, $icons) {
 <div id="div_cmdMsg"></div>
 <div id="div_newEqptMsg"></div>
 <div id="div_inclusionModeMsg"></div>
-<?php if(strpos(trim(update::byLogicalId('jeedom')->getLocalVersion()), '3.') === 0) { ?>
-<div class="col-xs-12"><span class="label control-label label-danger" style="width:100%;font-size: 13px!important">{{Ceci est la dernière version de jMQTT supportant Jeedom 3. Passez Jeedom en version 4 pour bénéficier des prochaines évolutions de jMQTT}}</span></div>
-<?php } ?>
+<?php
+// Warning banner for Jeedom v3 users.
+if(strpos(trim(config::byKey('version')), '3.') === 0) {
+	echo '<span class="label control-label label-danger" style="width:100%;font-size:13px!important;padding:0px;">{{Ceci est la dernière version de jMQTT supportant Jeedom 3. Passez Jeedom en version 4 pour bénéficier des prochaines évolutions de jMQTT}}</span>';
+}
+
+function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
+	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
+	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
+}
+?>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
 		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
