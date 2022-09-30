@@ -1,0 +1,131 @@
+{
+    "Zigbee2mqtt Osram AB3257001NJ Smart plus": {
+        "name": "Zigbee2mqtt Osram AB3257001NJ Smart plus",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2022-05-27 23:22:06",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s\/#",
+            "battery_type": "Secteur",
+            "commentaire": "Zigbee2mqtt Osram AB3257001NJ Smart plus\nGithub: https:\/\/github.com\/Domochip\/jMQTT\/issues\/212",
+            "icone": "power-plug",
+            "updatetime": "2022-08-25 08:55:21"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "1",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "status": {
+            "lastCommunication": "2022-08-19 12:56:06",
+            "enableDatime": "2022-08-19 12:56:06"
+        },
+        "cache": [],
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "linkquality",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "lqi",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[linkquality]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "state",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s",
+                    "jsonPath": "[state]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "on",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/set",
+                    "request": "{\"state\": \"ON\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "off",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/set",
+                    "request": "{\"state\": \"OFF\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "toggle",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/set",
+                    "request": "{\"state\": \"TOGGLE\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}
