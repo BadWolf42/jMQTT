@@ -400,6 +400,9 @@ class jMQTT extends eqLogic {
 			}
 		}
 
+		// TODO FIX ME: Commands used in templates are not converted on template import/export:
+		// cf: https://community.jeedom.com/t/evolution-modele-template-dequipement/52701/24
+
 		// Remove brkId from eqpt configuration
 		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
 
