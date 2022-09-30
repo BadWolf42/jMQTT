@@ -1,19 +1,26 @@
 # Registre des évolutions
 
-## 2022-07-29 Beta
+## 2022-10-01 Beta
  - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**
- - Changement de la page Broker des Brokers pour resembler à la page de configuration du plugin MQTT Manager
- - Affichage de la liste des équipements orphelins avant les équipements ratachés à des brokers
- - Mise en surbrillance des changements en temps réel sur la page des Commandes d'un équipement
- - Déplacement de l'ajout d'équipement depuis la second du broker vers le haut de page (selection du broker en même temps que le nom
- - Ajout d'une fonction ajax pour lister les Brokers
+ - Correction de problèmes de compatibilité avec Jeedom 3.3
+ - Mise en place d'un bandeau indiquant que Jeedom 3.3 ne sera plus supporté par les prochaines versions
+ - Déplacement de l'ajout d'équipement jMQTT en haut de page
  - Suppression du mode Inclusion global (sera remplacé plus tard)
- - Suppression de la gestion des certificats par upload (sera remplacé plus tard)
- - Déplacement des équipements Broker au debut de chaque sections (mis en évidence en jaune)
- - Implémentation de la TableView
- - Déplacement des certificats en base de donnée
- - Préparatifs pour les modals "Découverte" et "Temps réel"
+ - Déplacement des équipements Broker au début de chaque sections (mis en évidence en jaune)
+ - Changement de l'onglet Broker pour ressembler à la page de configuration du plugin MQTT Manager
+ - Suppression de la gestion des certificats par upload (mis en base de données), cela se configure maintenant sur chaque Broker
+ - Implémentation de la TableView et reprise d'une partie des informations de santé dans cette vue
+ - Ajout d'un bouton de configuration avancée des équipements en TableView
+ - Affichage de la liste des équipements orphelins avant les équipements rattachés à des brokers
+ - Mise en surbrillance des changements en temps réel sur la page des Commandes d'un équipement
+ - Ajout de 3 templates : "Fibaro FGRGBW-442 RGBW Controller 2" (merci jerome6994), "Shelly 1PM PLUS" (merci Furaxworld) et "Fibaro FGMS-001 Motion Sensor" (merci mimilamy2000)
+ - Passage de l'exécution des listeners (pour Pub. Auto) en arrière-plan, pour augmenter les performances
+ - Dans le cas d'une commande action, si la valeur est vide, alors le tag correspondant est utilisé (slider, message, color, select)
+ - Ajout de plus de détails lors de l'installation (et de l'échec) des dépendances
+ - Suppression de reliquats de la bibliothèque "websocket-client"
  - Découpage de Changelog en 2 pages pour une meilleure lisibilité
+ - Grosse mise à jour de la documentation avec plus d'explications autour de MQTT en général
+ - Mise à jour de la bibliothèque galbar/jsonpath -> 2.1
  - Corrections syntaxiques et orthographiques & Changelog
 
 ## 2022-07-25
