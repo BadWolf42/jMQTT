@@ -188,10 +188,6 @@ var observer = new MutationObserver(function(mutations) {
 observer.observe($("#brokertab")[0], {attributes: true});
 // /TODO
 
-$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
-	showMqttClientInfo(_options);
-});
-
 $(document).ready(function() {
 	// On page load, show the commandtab menu bar if necessary (fix #64)
 	if (document.location.hash == '#commandtab' && $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
