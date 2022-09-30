@@ -35,7 +35,7 @@
 		<div class="panel panel-primary" id="div_brokerLog">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<i class="fa fa-file-o"></i> {{Log}}
+					<i class="far fa-file"></i> {{Log}}
 				</h3>
 			</div>
 			<div class="panel-body">
