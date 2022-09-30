@@ -150,10 +150,12 @@ function showMqttClientInfo(data) {
 	$('.mqttClientState span.state').text(' ' + data.message);
 	$("#div_broker_mqttclient").closest('.panel').removeClass('panel-success panel-warning panel-danger').addClass('panel-' + color);
 	$('.mqttClientLastLaunch').empty().append(data.last_launch);
+	// TODO Check if this timer/refresh is still needed !
 	if ($("#div_broker_mqttclient").is(':visible')) {
 		clearTimeout(timeout_refreshMqttClientInfo);
 		timeout_refreshMqttClientInfo = setTimeout(refreshMqttClientInfo, 5000);
 	}
+	// /TODO
 }
 
 function refreshMqttClientInfo() {
@@ -174,6 +176,8 @@ function refreshMqttClientInfo() {
 /*
  * Observe attribute change of #brokertab. When tab is made visible, trigger refreshMqttClientInfo
  */
+// TODO Check if "observer" can be removed -> "jMQTT::EventState" is more relevant and less aggressive
+//      Then "refreshMqttClientInfo()" only use will be in "printEqLogic()" (and maybe "showMqttClientInfo()")
 var observer = new MutationObserver(function(mutations) {
 	mutations.forEach(function(mutation) {
 		if ($("#brokertab").is(':visible')) {
@@ -182,6 +186,7 @@ var observer = new MutationObserver(function(mutations) {
 	});
 });
 observer.observe($("#brokertab")[0], {attributes: true});
+// /TODO
 
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
 	showMqttClientInfo(_options);
