@@ -20,8 +20,8 @@
 						</thead>
 						<tbody>
 							<tr>
-								<td class="mqttClientLaunchable"></td>
-								<td class="mqttClientState"></td>
+								<td class="mqttClientLaunchable"><span class="label" style="font-size:1em;"></span><span class="state"></span></td>
+								<td class="mqttClientState"><span class="label" style="font-size:1em;"></span><span class="state"></span></td>
 								<td><a class="btn btn-success btn-sm eqLogicAction" data-action="startMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
 								<td class="mqttClientLastLaunch"></td>
 							</tr>

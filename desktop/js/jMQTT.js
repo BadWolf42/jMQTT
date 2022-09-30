@@ -127,35 +127,28 @@ function refreshEqLogicPage() {
 		refreshPage();
 }
 
+/*
+ * Function to update Broker status on a Broker eqLogic page
+ */
 function showMqttClientInfo(data) {
+	$('.mqttClientLaunchable span.label').removeClass('label-success label-warning label-danger').text(data.launchable.toUpperCase());
 	switch(data.launchable) {
 		case 'ok':
 			$('.eqLogicAction[data-action=startMqttClient]').show();
-			$('.mqttClientLaunchable').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
+			$('.mqttClientLaunchable span.label').addClass('label-success');
 			break;
 		case 'nok':
 			$('.eqLogicAction[data-action=startMqttClient]').hide();
-			$('.mqttClientLaunchable').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
+			$('.mqttClientLaunchable span.label').addClass('label-danger');
 			break;
 		default:
-			$('.mqttClientLaunchable').empty().append('<span class="label label-warning" style="font-size:1em;">' + data.state + '</span>');
+			$('.mqttClientLaunchable span.label').addClass('label-warning');
+			$('.mqttClientLaunchable span.state').text(' ' + data.message);
 	}
-	switch (data.state) {
-		case 'ok':
-			$('.mqttClientState').empty().append('<span class="label label-success" style="font-size:1em;">{{OK}}</span>');
-			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-danger').addClass('panel-success');
-			break;
-		case 'pok':
-			$('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">{{POK}}</span> ' + data.message);
-			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-danger').removeClass('panel-success').addClass('panel-warning');
-			break;
-		case 'nok':
-			$('.mqttClientState').empty().append('<span class="label label-danger" style="font-size:1em;">{{NOK}}</span> ' + data.message);
-			$("#div_broker_mqttclient").closest('.panel').removeClass('panel-warning').removeClass('panel-success').addClass('panel-danger');
-			break;
-		default:
-			$('.mqttClientState').empty().append('<span class="label label-warning" style="font-size:1em;">'+data.state+'</span>');
-	}
+	var color = data.state == 'ok' ? 'success' : (data.state == 'nok' ? 'danger' : 'warning');
+	$('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + color).text(data.state.toUpperCase());
+	$('.mqttClientState span.state').text(' ' + data.message);
+	$("#div_broker_mqttclient").closest('.panel').removeClass('panel-success panel-warning panel-danger').addClass('panel-' + color);
 	$('.mqttClientLastLaunch').empty().append(data.last_launch);
 	if ($("#div_broker_mqttclient").is(':visible')) {
 		clearTimeout(timeout_refreshMqttClientInfo);
