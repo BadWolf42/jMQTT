@@ -97,81 +97,35 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospac
  * @param array $icons
  */
 function displayEqLogicCard($eqL, $icons) {
-	$opacity = $eqL->getIsEnable() ? '' : ' disableCard';
-	echo '<div class="eqLogicDisplayCard cursor' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
-	echo '<span class="hiddenAsTable">';
-	if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT)
-		echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
-	echo '<i class="fas eyed ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>';
+	$btnData = array();
+	$btnData['enabled'] = boolval($eqL->getIsEnable());
+	$btnData['visible'] = boolval($eqL->getIsVisible());
+	if ($eqL->getType() != jMQTT::TYP_EQPT) {
+		$info = $eqL->getMqttClientInfo();
+		$btnData['broker'] = true;
+		$btnData['state'] = $info['state'];
+		$btnData['icon'] = $info['icon'];
+		$btnData['include'] = boolval($eqL->getIncludeMode());
+	} else {
+		$btnData['eqpt'] = false;
+		$btnData['include'] = boolval($eqL->getAutoAddCmd());
+		$btnData['bat'] = ($eqL->getConfiguration('battery_cmd') == '' ? '0' : ($eqL->getStatus('batterydanger') ? '1' : ($eqL->getStatus('batterywarning') ? '2' : '3')));
+		$btnData['avail'] = ($eqL->getConfiguration('availability_cmd') == '' ? '0' : ($eqL->getStatus('warning') ? '1' : '2'));
+	}
+	echo '<div class="eqLogicDisplayCard cursor' . ($eqL->getIsEnable() ? '' : ' disableCard') . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '"  btn-data="' .htmlentities(json_encode($btnData), ENT_QUOTES, 'UTF-8'). '">';
+	echo '<span class="hiddenAsTable"></span>';
 	if ($eqL->getType() == jMQTT::TYP_BRK) {
 		$file = 'node_broker.svg';
-		$st = $eqL->getMqttClientState();
-		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>';
 	} else {
 		$icon = $eqL->getConfiguration('icone');
 		$key = array_search($icon, array_column($icons, 'id'));
 		$file = ($key ? $icons[$key]['file'] : 'node_.svg');
 	}
-	echo '</span>';
 	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
-	echo "<br>";
+	echo '<br>';
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
-	echo '<span class="hiddenAsCard input-group displayTableRight hidden">';
-	if ($eqL->getType() != jMQTT::TYP_EQPT) {
-		$info = $eqL->getMqttClientInfo();
-		if ($info['state'] == jMQTT::MQTTCLIENT_NOK) { // equivalent to !$eqL->getIsEnable()
-			echo '<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas '.$info['icon'].' w18 tooltips" title="{{Connexion au Broker désactivée}}"></i></a>';
-			echo '<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash w18 tooltips" title="{{Connexion désactivée}}"></i></a>';
-			echo '<a class="btn btn-xs cursor w30"><i class="far fa-square w18 tooltips" title="{{Connexion désactivé}}"></i></a>';
-		} else {
-			echo '<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas '.$info['icon'].' w18 tooltips" title="'.(($info['state'] == jMQTT::MQTTCLIENT_OK) ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}').'"></i></a>';
-			if ($eqL->getIsVisible())
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-eye w18 tooltips" title="{{Broker visible}}"></i></a>';
-			else
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Broker masqué}}"></i></a>';
-			if ($eqL->getIncludeMode())
-				echo '<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt warning w18 fa-rotate-90 tooltips" title="{{Inclusion automatique activée}}"></i></a>';
-			else
-				echo '<a class="btn btn-xs cursor w30"><i class="far fa-square w18 tooltips" title="{{Inclusion automatique désactivée}}"></i></a>';
-		}
-		echo '<a class="btn btn-xs cursor w30">&nbsp;</a>';
-		echo '<a class="btn btn-xs cursor w30">&nbsp;</a>';
-	} else {
-		if (!$eqL->getIsEnable()) {
-			echo '<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas fa-times danger w18 tooltips" title="{{Equipement désactivé}}"></i></a>';
-			echo '<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash w18 tooltips" title="{{Equipement désactivé}}"></i></a>';
-			echo '<a class="btn btn-xs cursor w30"><i class="far fa-square w18 tooltips" title="{{Equipement désactivé}}"></i></a>';
-			echo '<a class="btn btn-xs cursor w30"><i class="fas fa-plug w18 tooltips" title="{{Equipement désactivé}}"></i></a>';
-			echo '<a class="btn btn-xs cursor w30"><i class="far fa-bell w18 tooltips" title="{{Equipement désactivé}}"></i></a>';
-		} else {
-			echo '<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas fa-check success w18 tooltips" title="{{Equipement activé}}"></i></a>';
-			if ($eqL->getIsVisible())
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-eye w18 tooltips" title="{{Equipement visible}}"></i></a>';
-			else
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Equipement masqué}}"></i></a>';
-			if ($eqL->getAutoAddCmd())
-				echo '<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt warning fa-rotate-90 w18 tooltips" title="{{Inclusion automatique activée}}"></i></a>';
-			else
-				echo '<a class="btn btn-xs cursor w30"><i class="far fa-square w18 tooltips" title="{{Inclusion automatique désactivée}}"></i></a>';
-			if ($eqL->getConfiguration('battery_cmd') == '')
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-plug w18 tooltips" title="{{Pas d\'état de la batterie}}"></i></a>';
-			elseif ($eqL->getStatus('batterydanger'))
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-battery-empty w18 danger tooltips" title="{{Batterie en fin de vie}}"></i></a>';
-			elseif ($eqL->getStatus('batterywarning'))
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-battery-quarter w18 warning tooltips" title="{{Batterie en alarme}}"></i></a>';
-			else
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-battery-full w18 success tooltips" title="{{Batterie OK}}"></i></a>';
-			if ($eqL->getConfiguration('availability_cmd') == '')
-				echo '<a class="btn btn-xs cursor w30"><i class="far fa-bell w18 tooltips" title="{{Pas d\'état de disponibilité}}"></i></a>';
-			elseif ($eqL->getStatus('warning'))
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-bell danger w18 tooltips" title="{{Equipement indisponible}}"></i></a>';
-			else
-				echo '<a class="btn btn-xs cursor w30"><i class="fas fa-bell success w18 tooltips" title="{{Equipement disponible}}"></i></a>';
-		}
-	}
-	echo '<a class="btn btn-xs roundedRight cursor w30"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
-	echo '</span>';
-	echo '</div>';
+	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span>';
+	echo "</div>\n";
 }
 
 ?>

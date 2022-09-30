@@ -208,6 +208,96 @@ $(document).ready(function() {
 });
 
 //
+// Add icons on main page load
+//
+$('.eqLogicDisplayCard[btn-data]').each(function () {
+	var data = $.parseJSON($(this).attr('btn-data')); // Get descriptive json
+	$(this).removeAttr('btn-data');
+	$(this).children('.hiddenAsTable').each(function (_, b) { // Put icons in CardView
+		if (!data.broker && data.include)
+			$(this).append('<i class="fas fa-sign-in-alt fa-rotate-90"></i>');
+		$(this).append('<i class="fas eyed ' + (data.visible ? 'fa-eye' : 'fa-eye-slash') + '"></i>');
+		if (data.broker)
+			$(this).append('<i class="status-circle fas ' + data['icon'] + '"></i>');
+	});
+	$(this).children('.hiddenAsCard').each(function () { // Put icons in TableView
+		if (data.broker) {
+			if (!data.enabled) {
+				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="status-circle fas ' + data.icon + ' w18 tooltips" title="{{Connexion au Broker désactivée}}"></i></a>');
+				if (data.visible)
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye w18"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash w18"></i></a>');
+				$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18"></i></a>');
+			} else {
+				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="status-circle fas ' + data.icon + ' w18 tooltips" title="' + ((data.state == 'ok') ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}') + '"></i></a>');
+				if (data.visible)
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye success w18 tooltips" title="{{Broker visible}}"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Broker masqué}}"></i></a>');
+				if (data.include)
+					$(this).append('<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt warning w18 fa-rotate-90 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18 tooltips" title="{{Inclusion automatique désactivée}}"></i></a>');
+			}
+			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
+			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
+		} else {
+			if (!data.enabled) {
+				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas fa-times danger w18 tooltips" title="{{Equipement désactivé}}"></i></a>');
+				if (data.visible)
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye w18"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash w18"></i></a>');
+				if (data.include)
+					$(this).append('<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt fa-rotate-90 w18"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18"></i></a>');
+				if (data.bat == '0')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-plug w18"></i></a>');
+				else if (data.bat == '1')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-empty w18"></i></a>');
+				else if (data.bat == '2')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-quarter w18"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-full w18"></i></a>');
+				if (data.avail == '0')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-bell w18"></i></a>');
+				else if (data.avail == '1')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell w18"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell w18"></i></a>');
+			} else {
+				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas fa-check success w18 tooltips" title="{{Equipement activé}}"></i></a>');
+				if (data.visible)
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye success w18 tooltips" title="{{Equipement visible}}"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Equipement masqué}}"></i></a>');
+				if (data.include)
+					$(this).append('<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt warning fa-rotate-90 w18 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18 success tooltips" title="{{Inclusion automatique désactivée}}"></i></a>');
+				if (data.bat == '0')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-plug w18 tooltips" title="{{Pas d\'état de la batterie}}"></i></a>');
+				else if (data.bat == '1')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-empty w18 danger tooltips" title="{{Batterie en fin de vie}}"></i></a>');
+				else if (data.bat == '2')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-quarter w18 warning tooltips" title="{{Batterie en alarme}}"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-full w18 success tooltips" title="{{Batterie OK}}"></i></a>');
+				if (data.avail == '0')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-bell w18 tooltips" title="{{Pas d\'état de disponibilité}}"></i></a>');
+				else if (data.avail == '1')
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell danger w18 tooltips" title="{{Equipement indisponible}}"></i></a>');
+				else
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell success w18 tooltips" title="{{Equipement disponible}}"></i></a>');
+			}
+		}
+		$(this).append('<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>');
+	});
+});
+
+//
 // Actions on main plugin view
 //
 $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function () {
@@ -607,7 +697,6 @@ $('.eqLogicAction[data-action=jsonView]').on('click', function() {
 	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-default').addClass('btn-primary');
 	$('.eqLogicAction[data-action=classicView]').removeClass('btn-primary').addClass('btn-default');
 });
-
 
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
