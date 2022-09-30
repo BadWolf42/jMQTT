@@ -1,5 +1,7 @@
-## Evolutions récentes
+# Registre des évolutions récentes
 Voir ici : [Evolutions récentes](changelog)
+
+# Registre des évolutions antérieures
 
 ## 2019-12-02
   - Corrige [domotruc\#94](https://github.com/domotruc/jMQTT/issues/94): non rafraichissement de payload json ayant la valeur false

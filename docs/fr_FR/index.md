@@ -46,7 +46,7 @@ Une analogie simple est possible entre le MQTT et la Poste :
 - Un **Broker** est un service qui permet de passer les messages MQTT entre des Clients MQTT, il s'agit très souvent du service Mosquitto.
 Le Broker est un peu comme un centre postal : c'est par lui que transite le courrier des usagers.
 
-- Un **Client** est une machine qui se connecte à un Broker, il peut Souscrire à un ou plusieurs Topic pour recevoir les Messages (Payload) qui sont envoyés sur ce Topic. Il peut aussi Publier des messages sur des Topics. Il n'est pas nécessaire de souscrire à un Topic pour Publier.
+- Un **Client** est une machine qui se connecte à un Broker, il peut Souscrire à un ou plusieurs Topic pour recevoir les Messages (Payload) qui sont envoyés sur ce Topic. Il peut aussi Publier des messages sur des Topics. Il n'est pas nécessaire de souscrire à un Topic pour Publier dessus.
 Le Client est un peu comme un usager du service postal : il peut recevoir du courrier à une ou plusieurs adresses (Topic) ou envoyer du courrier à l'adresse d'autres usagers.
 
 - Un **Topic** est une chaine de caractère par convention de la forme nom1/nom2 (/nom3... etc) et permet de représenter la destination du message.
