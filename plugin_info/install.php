@@ -101,7 +101,6 @@ function installNewDependancies() {
 }
 
 function tagBrokersStatusCmd() {
-
 	// for each brokers
 	foreach ((jMQTT::getBrokers()) as $broker) {
 		// for each cmd of this broker
@@ -114,7 +113,6 @@ function tagBrokersStatusCmd() {
 			}
 		}
 	}
-
 	jMQTT::logger('info', __("Ajout de tags sur le statut des Broker", __FILE__));
 }
 
@@ -160,7 +158,6 @@ function cleanLeakedInfoInEqpts() {
 }
 
 function cleanLeakedInfoInTemplates() {
-
 	// list of broker configurations
 	$configToRemove = array('mqttAddress',
 							'mqttPort',
@@ -177,50 +174,38 @@ function cleanLeakedInfoInTemplates() {
 							'api',
 							'mqttPahoLog',
 							'loglevel');
-
-	$templateFolderPath = dirname(__FILE__) . '/../data/template';
-
+	$templateFolderPath = __DIR__ . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 		try {
 			$content = file_get_contents($templateFolderPath . '/' . $file);
 			if (is_json($content)) {
-
 				// decode template file content to json
 				$templateContent = json_decode($content, true);
-
 				// first key is the template itself
 				$templateKey = array_keys($templateContent)[0];
-
 				// if 'configuration' key exists in this template
 				if (array_key_exists('configuration', $templateContent[$templateKey])) {
-
 					// for each keys under 'configuration'
 					foreach (array_keys($templateContent[$templateKey]['configuration']) as $configurationKey) {
-
 						// if this configurationKey is in keys to remove
 						if (in_array($configurationKey, $configToRemove)) {
-
 							// remove it
 							unset($templateContent[$templateKey]['configuration'][$configurationKey]);
 						}
 					}
 				}
-
 				// Save back template in the file
 				$jsonExport = json_encode($templateContent, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 				file_put_contents($templateFolderPath . '/' . $file, $jsonExport);
 			}
 		} catch (Throwable $e) {}
 	}
-
 	jMQTT::logger('info', __("Templates nettoyés des informations du Broker", __FILE__));
 }
 
 function splitJsonPathOfjMQTTCmd() {
-
 	$eqLogics = jMQTT::byType('jMQTT');
 	foreach ($eqLogics as $eqLogic) {
-
 		// get info cmds of current eqLogic
 		$infoCmds = jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info');
 		foreach ($infoCmds as $cmd) {
@@ -228,47 +213,38 @@ function splitJsonPathOfjMQTTCmd() {
 			$cmd->splitTopicAndJsonPath();
 		}
 	}
-
 	jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les commandes info jMQTT", __FILE__));
 }
 
 function splitJsonPathOfTemplates() {
-
-	$templateFolderPath = dirname(__FILE__) . '/../data/template';
+	$templateFolderPath = __DIR__ . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 		jMQTT::templateSplitJsonPathByFile($file);
 	}
-
 	jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les Templates jMQTT", __FILE__));
 }
 
 function moveTopicOfjMQTTeqLogic() {
-
 	$eqLogics = jMQTT::byType('jMQTT');
 	foreach ($eqLogics as $eqLogic) {
-
 		$eqLogic->moveTopicToConfiguration();
 	}
-
 	jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les équipements jMQTT", __FILE__));
 }
 
 function moveTopicOfTemplates() {
-
-	$templateFolderPath = dirname(__FILE__) . '/../data/template';
+	$templateFolderPath = __DIR__ . '/../data/template';
 	foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 		jMQTT::moveTopicToConfigurationByFile($file);
 	}
-
 	jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les Templates jMQTT", __FILE__));
 }
 
 function convertBatteryStatus() {
-
 	foreach (jMQTT::byType('jMQTT') as $eqLogic) {
 		// Protect already modified Eq
 		$batId = $eqLogic->getBatteryCmd();
-		if ($batId != '') {
+		if ($batId != false && $batId != '') {
 			$cmd = jMQTTCmd::byId($batId);
 			jMQTT::logger('info', sprintf(__("#%1\$s# définit DÉJÀ la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
 			continue;
@@ -280,14 +256,39 @@ function convertBatteryStatus() {
 				$eqLogic->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, $cmd->getId());
 				jMQTT::logger('info', sprintf(__("#%1\$s# définit la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
 				$eqLogic->save();
-				continue;
 			}
 		}
 	}
-
 	jMQTT::logger('info', __("Commandes batterie définies directement sur les équipements jMQTT", __FILE__));
 }
 
+function moveCertsInDb() {
+	$oldPath = realpath(dirname(__FILE__) . '/../data/jmqtt/certs');
+	// for each brokers
+	foreach ((jMQTT::getBrokers()) as $broker) {
+		$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_PROTO, boolval($broker->getConfiguration('mqttTls', 0)) ? 'mqtts' : 'mqtt');
+		$broker->setConfiguration('mqttTls', null);
+		$cert = $broker->getConfiguration('mqttTlsCaFile', '');
+		$broker->setConfiguration('mqttTlsCaFile', null);
+		if ($cert != '')
+			$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_TLS_CA, file_get_contents($oldPath.'/'.$cert));
+		$cert = $broker->getConfiguration('mqttTlsClientCertFile', '');
+		$broker->setConfiguration('mqttTlsClientCertFile', null);
+		if ($cert != '')
+			$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_TLS_CLI_CERT, file_get_contents($oldPath.'/'.$cert));
+		$cert = $broker->getConfiguration('mqttTlsClientKeyFile', '');
+		$broker->setConfiguration('mqttTlsClientKeyFile', null);
+		if ($cert != '')
+			$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_TLS_CLI_KEY, file_get_contents($oldPath.'/'.$cert));
+		$broker->save();
+	}
+	// rm -rf $oldPath
+	foreach (array_diff(scandir($oldPath), array('.','..')) as $file) {
+		unlink($oldPath.'/'.$file);
+	}
+	rmdir($oldPath);
+	jMQTT::logger('info', __("Certificats déplacés dans la base de donnée", __FILE__));
+}
 
 function jMQTT_install() {
 	jMQTT::logger('debug', 'install.php: jMQTT_install()');
@@ -367,9 +368,14 @@ function jMQTT_update($_direct=true) {
 			convertBatteryStatus();
 			config::save(VERSION, 10, 'jMQTT');
 		}
+		// VERSION = 11
+		if ($versionFromDB < 11) {
+			moveCertsInDb();
+			config::save(VERSION, 11, 'jMQTT');
+		}
 	}
 	else
-		config::save(VERSION, 10, 'jMQTT');
+		config::save(VERSION, 11, 'jMQTT');
 }
 
 function jMQTT_remove() {

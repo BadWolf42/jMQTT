@@ -27,57 +27,55 @@ include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
 class jMQTT extends eqLogic {
 
-	const FORCE_DEPENDANCY_INSTALL = 'forceDepInstall';
+	const FORCE_DEPENDANCY_INSTALL      = 'forceDepInstall';
 
-	const API_TOPIC = 'api';
-	const API_ENABLE = 'enable';
-	const API_DISABLE = 'disable';
+	const API_TOPIC                     = 'api';
+	const API_ENABLE                    = 'enable';
+	const API_DISABLE                   = 'disable';
 
-	const CLIENT_STATUS = 'status';
-	const OFFLINE = 'offline';
-	const ONLINE = 'online';
+	const CLIENT_STATUS                 = 'status';
+	const OFFLINE                       = 'offline';
+	const ONLINE                        = 'online';
 
-	const MQTTCLIENT_OK = 'ok';
-	const MQTTCLIENT_POK = 'pok';
-	const MQTTCLIENT_NOK = 'nok';
+	const MQTTCLIENT_OK                 = 'ok';
+	const MQTTCLIENT_POK                = 'pok';
+	const MQTTCLIENT_NOK                = 'nok';
 
-	const CONF_KEY_TYPE = 'type';
-	const CONF_KEY_BRK_ID = 'brkId';
-	const CONF_KEY_MQTT_CLIENT_ID = 'mqttId';
-	const CONF_KEY_MQTT_ADDRESS = 'mqttAddress';
-	const CONF_KEY_MQTT_PORT = 'mqttPort';
-	const CONF_KEY_MQTT_USER = 'mqttUser';
-	const CONF_KEY_MQTT_PASS = 'mqttPass';
-	const CONF_KEY_MQTT_PUB_STATUS = 'mqttPubStatus';
-	const CONF_KEY_MQTT_INC_TOPIC = 'mqttIncTopic';
-	const CONF_KEY_MQTT_TLS = 'mqttTls';
-	const CONF_KEY_MQTT_TLS_CHECK = 'mqttTlsCheck';
-	const CONF_KEY_MQTT_TLS_CA = 'mqttTlsCaFile';
-	const CONF_KEY_MQTT_TLS_CLI_CERT= 'mqttTlsClientCertFile';
-	const CONF_KEY_MQTT_TLS_CLI_KEY = 'mqttTlsClientKeyFile';
-	const CONF_KEY_MQTT_PAHO_LOG = 'mqttPahoLog';
-	const CONF_KEY_QOS = 'Qos';
-	const CONF_KEY_AUTO_ADD_CMD = 'auto_add_cmd';
-	const CONF_KEY_AUTO_ADD_TOPIC = 'auto_add_topic';
-	const CONF_KEY_JSON_PATH = 'jsonPath';
-	const CONF_KEY_BATTERY_CMD = 'battery_cmd';
-	const CONF_KEY_AVAILABILITY_CMD = 'availability_cmd';
-	const CONF_KEY_TEMPLATE_UUID = 'templateUUID';
-	const CONF_KEY_API = 'api';
-	const CONF_KEY_LOGLEVEL = 'loglevel';
+	const CONF_KEY_TYPE                 = 'type';
+	const CONF_KEY_BRK_ID               = 'brkId';
+	const CONF_KEY_MQTT_CLIENT_ID       = 'mqttId';
+	const CONF_KEY_MQTT_ADDRESS         = 'mqttAddress';
+	const CONF_KEY_MQTT_PORT            = 'mqttPort';
+	const CONF_KEY_MQTT_USER            = 'mqttUser';
+	const CONF_KEY_MQTT_PASS            = 'mqttPass';
+	const CONF_KEY_MQTT_PUB_STATUS      = 'mqttPubStatus';
+	const CONF_KEY_MQTT_INC_TOPIC       = 'mqttIncTopic';
+	const CONF_KEY_MQTT_PROTO           = 'mqttProto';
+	const CONF_KEY_MQTT_TLS_CHECK       = 'mqttTlsCheck';
+	const CONF_KEY_MQTT_TLS_CA          = 'mqttTlsCa';
+	const CONF_KEY_MQTT_TLS_CLI_CERT    = 'mqttTlsClientCert';
+	const CONF_KEY_MQTT_TLS_CLI_KEY     = 'mqttTlsClientKey';
+	const CONF_KEY_QOS                  = 'Qos';
+	const CONF_KEY_AUTO_ADD_CMD         = 'auto_add_cmd';
+	const CONF_KEY_AUTO_ADD_TOPIC       = 'auto_add_topic';
+	const CONF_KEY_BATTERY_CMD          = 'battery_cmd';
+	const CONF_KEY_AVAILABILITY_CMD     = 'availability_cmd';
+	const CONF_KEY_TEMPLATE_UUID        = 'templateUUID';
+	const CONF_KEY_API                  = 'api';
+	const CONF_KEY_LOGLEVEL             = 'loglevel';
 
-	const CACHE_DAEMON_LAST_SND          = 'daemonLastSnd';
-	const CACHE_DAEMON_LAST_RCV          = 'daemonLastRcv';
-	const CACHE_DAEMON_PORT              = 'daemonPort';
-	const CACHE_DAEMON_UID               = 'daemonUid';
-	const CACHE_IGNORE_TOPIC_MISMATCH    = 'ignore_topic_mismatch';
-	const CACHE_INCLUDE_MODE             = 'include_mode';
-	const CACHE_MQTTCLIENT_CONNECTED     = 'mqttClientConnected';
-	const CACHE_LAST_LAUNCH_TIME         = 'lastLaunchTime';
+	const CACHE_DAEMON_LAST_SND         = 'daemonLastSnd';
+	const CACHE_DAEMON_LAST_RCV         = 'daemonLastRcv';
+	const CACHE_DAEMON_PORT             = 'daemonPort';
+	const CACHE_DAEMON_UID              = 'daemonUid';
+	const CACHE_IGNORE_TOPIC_MISMATCH   = 'ignore_topic_mismatch';
+	const CACHE_INCLUDE_MODE            = 'include_mode';
+	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
+	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
 
-	const PATH_CERTIFICATES = 'data/jmqtt/certs/';
+	const PATH_TEMPLATES_PERSO          = 'data/template/';
+	const PATH_TEMPLATES_JMQTT          = 'core/config/template/';
 
-	const DEFAULT_PYTHON_PORT = 1025;
 
 	/**
 	 * To define a standard jMQTT equipment
@@ -144,21 +142,21 @@ class jMQTT extends eqLogic {
 		// self::logger('debug', 'templateList()');
 		$return = array();
 		// Get personal templates
-		foreach (ls(dirname(__FILE__) . '/../../data/template', '*.json', false, array('files', 'quiet')) as $file) {
+		foreach (ls(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO, '*.json', false, array('files', 'quiet')) as $file) {
 			try {
-				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $file);
-				$return[] = array('[Perso] '.$templateKey, 'plugins/jMQTT/data/template/' . $file);
+				[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $file);
+				$return[] = array('[Perso] '.$templateKey, 'plugins/jMQTT/' . self::PATH_TEMPLATES_PERSO . $file);
 			} catch (Throwable $e) {
-				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), "data/template/".$file));
+				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), self::PATH_TEMPLATES_PERSO . $file));
 			}
 		}
 		// Get official templates
-		foreach (ls(dirname(__FILE__) . '/../config/template', '*.json', false, array('files', 'quiet')) as $file) {
+		foreach (ls(__DIR__ . '/../../' . self::PATH_TEMPLATES_JMQTT, '*.json', false, array('files', 'quiet')) as $file) {
 			try {
-				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../config/template/' . $file);
-				$return[] = array($templateKey, 'plugins/jMQTT/core/config/template/' . $file);
+				[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_JMQTT . $file);
+				$return[] = array($templateKey, 'plugins/jMQTT/' . self::PATH_TEMPLATES_JMQTT . $file);
 			} catch (Throwable $e) {
-				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), "core/config/template/".$file));
+				self::logger('warning', sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), self::PATH_TEMPLATES_JMQTT . $file));
 			}
 		}
 		return $return;
@@ -174,15 +172,15 @@ class jMQTT extends eqLogic {
 		if (strpos($_name , '[Perso] ') === 0) {
 			// Get personal templates
 			$name = substr($_name, strlen('[Perso] '));
-			$folder = '/../../data/template/';
+			$folder = '/../../' . self::PATH_TEMPLATES_PERSO;
 		} else {
 			// Get official templates
 			$name = $_name;
-			$folder = '/../config/template/';
+			$folder = '/../../' . self::PATH_TEMPLATES_JMQTT;
 		}
-		foreach (ls(dirname(__FILE__) . $folder, '*.json', false, array('files', 'quiet')) as $file) {
+		foreach (ls(__DIR__ . $folder, '*.json', false, array('files', 'quiet')) as $file) {
 			try {
-				[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . $folder . $file);
+				[$templateKey, $templateValue] = self::templateRead(__DIR__ . $folder . $file);
 				if ($templateKey == $name)
 					return $templateValue;
 			} catch (Throwable $e) {
@@ -208,9 +206,9 @@ class jMQTT extends eqLogic {
 			}
 		if (!$exists)
 			throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
-		// self::logger('debug', '    get='.dirname(__FILE__) . '/../../../../' . $_filename);
+		// self::logger('debug', '    get='.__DIR__ . '/../../../../' . $_filename);
 		try {
-			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../../../' . $_filename);
+			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../../../' . $_filename);
 			return $templateValue;
 		} catch (Throwable $e) {
 			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
@@ -225,7 +223,7 @@ class jMQTT extends eqLogic {
 	public static function templateSplitJsonPathByFile($_filename = '') {
 
 		try {
-			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $_filename);
+			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename);
 
 			// Keep track of any change
 			$changed = false;
@@ -245,8 +243,8 @@ class jMQTT extends eqLogic {
 						$i = strpos($topic, '{');
 						if ($i === false) {
 							// Just set empty jsonPath if it doesn't exists
-							if (!array_key_exists(jMQTT::CONF_KEY_JSON_PATH, $cmd['configuration'])) {
-								$cmd['configuration'][jMQTT::CONF_KEY_JSON_PATH] = '';
+							if (!array_key_exists(jMQTTCmd::CONF_KEY_JSON_PATH, $cmd['configuration'])) {
+								$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = '';
 								$changed = true;
 							}
 						} else {
@@ -268,7 +266,7 @@ class jMQTT extends eqLogic {
 								else
 									$jsonPath .= '[' . $index . ']';
 							}
-							$cmd['configuration'][jMQTT::CONF_KEY_JSON_PATH] = $jsonPath;
+							$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = $jsonPath;
 						}
 					}
 				}
@@ -280,7 +278,7 @@ class jMQTT extends eqLogic {
 
 			// Save back template in the file
 			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
+			file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename, $jsonExport);
 		} catch (Throwable $e) {
 			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
 		}
@@ -293,7 +291,7 @@ class jMQTT extends eqLogic {
 	public static function moveTopicToConfigurationByFile($_filename = '') {
 
 		try {
-			[$templateKey, $templateValue] = self::templateRead(dirname(__FILE__) . '/../../data/template/' . $_filename);
+			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename);
 
 			// if 'configuration' key exists in this template
 			if (array_key_exists('configuration', $templateValue)) {
@@ -308,7 +306,7 @@ class jMQTT extends eqLogic {
 
 			// Save back template in the file
 			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-			file_put_contents(dirname(__FILE__) . '/../../data/template/' . $_filename, $jsonExport);
+			file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename, $jsonExport);
 		} catch (Throwable $e) {
 			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
 		}
@@ -331,7 +329,7 @@ class jMQTT extends eqLogic {
 			}
 		if (!$exists)
 			return false;
-		return unlink(dirname(__FILE__) . '/../../../../' . $_filename);
+		return unlink(__DIR__ . '/../../../../' . $_filename);
 	}
 
 	/**
@@ -402,6 +400,9 @@ class jMQTT extends eqLogic {
 			}
 		}
 
+		// TODO FIX ME: Commands used in templates are not converted on template import/export:
+		// cf: https://community.jeedom.com/t/evolution-modele-template-dequipement/52701/24
+
 		// Remove brkId from eqpt configuration
 		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
 
@@ -409,7 +410,7 @@ class jMQTT extends eqLogic {
 		$jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 		$formatedTemplateName = str_replace(' ', '_', $_template);
 		$formatedTemplateName = preg_replace('/[^a-zA-Z0-9_]+/', '', $formatedTemplateName);
-		file_put_contents(dirname(__FILE__) . '/../../data/template/' . $formatedTemplateName . '.json', $jsonExport);
+		file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $formatedTemplateName . '.json', $jsonExport);
 	}
 
 	/**
@@ -483,7 +484,7 @@ class jMQTT extends eqLogic {
 		if (!is_null($uuid)) {
 			// Search for a jMQTT Eq with $uuid, if found apply template to it
 			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
-			$eqpts = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+			$eqpts = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 			foreach ($eqpts as $eqpt) {
 				// If it's attached to correct broker
 				if ($eqpt->getBrkId() == $broker->getId()) {
@@ -593,7 +594,7 @@ class jMQTT extends eqLogic {
 	public static function getBrokers() {
 		$type = json_encode(array('type' => self::TYP_BRK));
 		/** @var jMQTT[] $brokers */
-		$brokers = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+		$brokers = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 		$returns = array();
 		foreach ($brokers as $broker) {
 			$returns[$broker->getId()] = $broker;
@@ -660,7 +661,7 @@ class jMQTT extends eqLogic {
 			return;
 		// Find eqLogic using the same topic AND the same Broker
 		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
-		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
+		$eqLogics = jMQTT::byTypeAndSearhConfiguration(__CLASS__, $topicConfiguration); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 		foreach ($eqLogics as $eqLogic) {
 			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
 				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
@@ -705,16 +706,7 @@ class jMQTT extends eqLogic {
 			}
 			// --- Existing broker ---
 			else {
-				// Check certificate binding information if TLS is disabled
-				if (!boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) {
-					// If a CA is specified and this file doesn't exists, remove it
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CA) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA) && !file_exists(realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CA))))
-						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CA, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CA));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT) && !file_exists(realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT))))
-						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_CERT));
-					if($this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY) != $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY) && !file_exists(realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY))))
-						$this->setConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY, $this->getDefaultConfiguration(self::CONF_KEY_MQTT_TLS_CLI_KEY));
-				}
+
 			}
 		}
 		// ------------------------ Normal eqpt ------------------------
@@ -748,11 +740,10 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
 				self::CONF_KEY_MQTT_USER,       self::CONF_KEY_MQTT_PASS,
 				self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
-				self::CONF_KEY_MQTT_TLS,        self::CONF_KEY_MQTT_TLS_CHECK,
+				self::CONF_KEY_MQTT_PROTO,      self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
 				self::CONF_KEY_BATTERY_CMD,     self::CONF_KEY_AVAILABILITY_CMD,
-				self::CONF_KEY_MQTT_PAHO_LOG,   self::CONF_KEY_MQTT_TLS_CLI_KEY,
-				self::CONF_KEY_QOS);
+				self::CONF_KEY_QOS,             self::CONF_KEY_MQTT_TLS_CLI_KEY);
 			foreach ($backupVal as $key)
 				$this->_preSaveInformations[$key] = $eqLogic->getConf($key);
 		}
@@ -814,10 +805,9 @@ class jMQTT extends eqLogic {
 				// 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', etc changed
 				$checkChanged = array(self::CONF_KEY_MQTT_ADDRESS,      self::CONF_KEY_MQTT_PORT,
 									  self::CONF_KEY_MQTT_USER,         self::CONF_KEY_MQTT_PASS,
-									  self::CONF_KEY_MQTT_PUB_STATUS,   self::CONF_KEY_MQTT_TLS,
+									  self::CONF_KEY_MQTT_PUB_STATUS,   self::CONF_KEY_MQTT_PROTO,
 									  self::CONF_KEY_MQTT_TLS_CHECK,    self::CONF_KEY_MQTT_TLS_CA,
-									  self::CONF_KEY_MQTT_TLS_CLI_CERT, self::CONF_KEY_MQTT_TLS_CLI_KEY,
-									  self::CONF_KEY_MQTT_PAHO_LOG);
+									  self::CONF_KEY_MQTT_TLS_CLI_CERT, self::CONF_KEY_MQTT_TLS_CLI_KEY);
 				foreach ($checkChanged as $key) {
 					if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
 						if (!$stopped) {
@@ -1070,7 +1060,7 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * cron callback
-	 * check MQTT Clients are up and connected to Websocket
+	 * check MQTT Clients are up and connected
 	 */
 	public static function cron() {
 		self::checkAllMqttClients();
@@ -1186,7 +1176,7 @@ class jMQTT extends eqLogic {
 		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_SND, time());
 		// Start Python daemon
-		$path = realpath(dirname(__FILE__) . '/../../resources/jmqttd');
+		$path = realpath(__DIR__ . '/../../resources/jmqttd');
 		$callbackURL = self::get_callback_url();
 		// To fix issue: https://community.jeedom.com/t/87727/39
 		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, '0')) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
@@ -1465,22 +1455,26 @@ class jMQTT extends eqLogic {
 		$return['progress_file'] = $depProgressFile;
 		$return['state'] = self::MQTTCLIENT_OK;
 
-		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
-			self::logger('debug', __("Le package PHP JsonPath est manquant, relancez les dépendances", __FILE__));
+		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
+			self::logger('debug', __("Relancez les dépendances, le package PHP JsonPath est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
-		if (!file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/python3')) {
-			self::logger('debug', __("Le venv Python n'a pas encore été créé, relancez les dépendances", __FILE__));
+		if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
+			self::logger('debug', __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
-		}
-		elseif (exec(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir --no-color -r '.dirname(__FILE__) . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null | wc -l') > 0) {
-			self::logger('debug', __("Une bibliothèque Python requise est manquante dans le venv, relancez les dépendances", __FILE__));
-			$return['state'] = self::MQTTCLIENT_NOK;
+		} else {
+			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
+			if (count($output) > 0) {
+				// TODO Make this debug message more verbose/explicit
+				self::logger('error', __("Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv : ", __FILE__).'<br />'.implode('<br />', $output));
+				$return['state'] = self::MQTTCLIENT_NOK;
+			}
 		}
 
-		if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
-			self::logger('debug', __("Le paquet Debian Mosquitto est manquant, relancez les dépendances", __FILE__));
+		// TODO: Check also if Mosquitto can be installed
+		if (config::byKey('installMosquitto', 'jMQTT', 0) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
+			self::logger('debug', __("Relancez les dépendances, le paquet Debian Mosquitto est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
@@ -1497,7 +1491,7 @@ class jMQTT extends eqLogic {
 		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
 		log::remove($depLogFile);
 		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 1),
+			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 0) . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
 			'log' => log::getPathToLog($depLogFile)
 		);
 	}
@@ -1508,9 +1502,10 @@ class jMQTT extends eqLogic {
 	public static function post_dependancy_install() {
 		echo "Starting post_dependancy_install()\n";
 		// if Mosquitto is installed
-		if (config::byKey('installMosquitto', 'jMQTT', 1)) {
+		if (config::byKey('installMosquitto', 'jMQTT', 0)) {
 			echo "Mosquitto installation requested => looking for Broker eqpt\n";
 
+			// TODO: Check also if Mosquitto can be installed
 			//looking for broker pointing to local mosquitto
 			$brokerexists = false;
 			foreach(self::getBrokers() as $broker) {
@@ -1566,7 +1561,7 @@ class jMQTT extends eqLogic {
 
 // Create or update all autoPub listeners
 	public static function listenersAddAll() {
-		foreach (cmd::searchConfiguration('"autoPub":"1"', __CLASS__) as $cmd)
+		foreach (cmd::searchConfiguration('"'.jMQTTCmd::CONF_KEY_AUTOPUB.'":"1"', __CLASS__) as $cmd)
 			$cmd->listenerUpdate();
 	}
 
@@ -1578,7 +1573,7 @@ class jMQTT extends eqLogic {
 
 // Create or update all autoPub listeners from this eqLogic
 	public function listenersAdd() {
-		foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"autoPub":"1"') as $cmd)
+		foreach (jMQTTCmd::searchConfigurationEqLogic($this->getId(), '"'.jMQTTCmd::CONF_KEY_AUTOPUB.'":"1"') as $cmd)
 			$cmd->listenerUpdate();
 	}
 
@@ -1709,33 +1704,25 @@ class jMQTT extends eqLogic {
 		$params['statustopic']       = $this->getMqttClientStatusTopic();
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
-		$params['paholog']           = $this->getConf(self::CONF_KEY_MQTT_PAHO_LOG);
-		$params['tls']               = boolval($this->getConf(self::CONF_KEY_MQTT_TLS));
+		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
 				$params['tlsinsecure'] = true;
-				$params['tlscafile'] = '';
+				$params['tlsca'] = '';
 				break;
 			case 'public':
 				$params['tlsinsecure'] = false;
-				$params['tlscafile'] = '';
+				$params['tlsca'] = '';
 				break;
 			case 'private':
 				$params['tlsinsecure'] = false;
-				$params['tlscafile'] = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
+				$params['tlsca'] = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
 				break;
 		}
-		$params['tlsclicertfile']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
-		$params['tlsclikeyfile']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
-		// Realpaths
-		if ($params['tlscafile'] != '')
-			$params['tlscafile']     = realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $params['tlscafile']);
-		if ($params['tlsclicertfile'] != '')
-			$params['tlsclicertfile'] = realpath(dirname(__FILE__).'/../../' . self::PATH_CERTIFICATES . $params['tlsclicertfile']);
-		else
-			$params['tlsclikeyfile'] = '';
-		if ($params['tlsclikeyfile'] != '')
-			$params['tlsclikeyfile'] = realpath(dirname(__FILE__) . '/../../' . self::PATH_CERTIFICATES . $params['tlsclikeyfile']);
+		$params['tlsclicert']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
+		$params['tlsclikey']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
+		if ($params['tlsclicert'] == '')
+			$params['tlsclikey'] = '';
 		self::toDaemon_newClient($this->getId(), $this->getMqttAddress(), $params);
 	}
 
@@ -2025,8 +2012,8 @@ class jMQTT extends eqLogic {
 	/**
 	 * Publish a given message to the MQTT broker attached to this object
 	 *
-	 * @param string $eqName
-	 *            equipment name (for log purpose)
+	 * @param string $cmdName
+	 *            command name (for log purpose only)
 	 * @param string $topic
 	 *            topic
 	 * @param string $message
@@ -2034,7 +2021,7 @@ class jMQTT extends eqLogic {
 	 * @param string $qos
 	 *            quality of service used to send the message ('0', '1' or '2')
 	 * @param string $retain
-	 *            whether or not the message is a retained message ('0' or '1')
+	 *            whether or not the message should be retained ('0' or '1')
 	 */
 	public function publish($cmdName, $topic, $payload, $qos, $retain) {
 		if (is_bool($payload) || is_array($payload)) {
@@ -2103,7 +2090,7 @@ class jMQTT extends eqLogic {
 		if (! is_object($this->getMqttClientStatusCmd())) {
 			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
 			$cmd->setLogicalId(self::CLIENT_STATUS);
-			$cmd->setConfiguration(jMQTT::CONF_KEY_JSON_PATH, '');
+			$cmd->setJsonPath('');
 			$cmd->setIrremovable();
 			$cmd->save();
 		}
@@ -2177,14 +2164,21 @@ class jMQTT extends eqLogic {
 	}
 
 	private function getDefaultConfiguration($_key) {
-		if ($_key == self::CONF_KEY_MQTT_PORT)
-			return (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) ? 8883 : 1883;
+		if ($_key == self::CONF_KEY_MQTT_PORT) {
+			$proto = $this->getConf(self::CONF_KEY_MQTT_PROTO);
+			if ($proto == 'mqtt')
+				return 1883;
+			elseif ($proto == 'mqtts')
+				return 8883;
+			else // TODO handle ws
+				return 0;
+		}
 		$defValues = array(
 			self::CONF_KEY_MQTT_ADDRESS => 'localhost',
 			self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
 			self::CONF_KEY_QOS => '1',
 			self::CONF_KEY_MQTT_PUB_STATUS => '1',
-			self::CONF_KEY_MQTT_TLS => '0',
+			self::CONF_KEY_MQTT_PROTO => 'mqtt',
 			self::CONF_KEY_MQTT_TLS_CHECK => 'public',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
 			self::CONF_KEY_AUTO_ADD_TOPIC => '',
@@ -2341,18 +2335,6 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Check if a certificate file is used by the Broker
-	 * @param string $certname Certificate file name
-	 * @return boolean true if certificat is used
-	 */
-	public function isCertUsed($certname) {
-		return (boolval($this->getConf(self::CONF_KEY_MQTT_TLS))) &&
-				(($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CA)) ||
-				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT)) ||
-				 ($certname == $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY)));
-	}
-
-	/**
 	 * Get the Battery command defined in this eqLogic
 	 * @return string Return the Battery command defined
 	 */
@@ -2393,7 +2375,7 @@ class jMQTT extends eqLogic {
 	public static function byBrkId($id) {
 		$brkId = json_encode(array('brkId' => $id));
 		/** @var jMQTT[] $eqpts */
-		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
+		$returns = self::byTypeAndSearhConfiguration(jMQTT::class, substr($brkId, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 		return $returns;
 	}
 

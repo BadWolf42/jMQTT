@@ -23,7 +23,6 @@ try {
 	if (!isConnect('admin')) {
 		throw new Exception(__('401 - Accès non autorisé', __FILE__));
 	}
-	define('PATH_TPLTS', __DIR__ . '/../../data/template');
 
 	if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
 		if (!isset($_FILES['file'])) {
@@ -37,9 +36,7 @@ try {
 			throw new Exception(__('Le fichier est trop gros (maximum 500Ko)', __FILE__));
 		}
 		if (init('dir') == 'template') {
-			$uploaddir = PATH_TPLTS;
-		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
+			$uploaddir = realpath(__DIR__ . '/../../' . jMQTT::PATH_TEMPLATES_PERSO);
 		} else {
 			throw new Exception(__('Téléversement invalide', __FILE__));
 		}
@@ -138,13 +135,14 @@ try {
 
 	if (init('action') == 'moveToBroker') {
 		/** @var jMQTT $eqpt */
+		// TODO INVESTIGATE AND FIX BUG: Move cmd to other broker or Delete Broker -> jMQTT daemon failure
+
 		$eqpt = jMQTT::byId(init('id'));
 		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
 			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
 		}
-		$old_broker_id = $eqpt->getBrkId();
 		$new_broker = jMQTT::getBrokerFromId(init('brk_id'));
-		jMQTT::logger('info', sprintf(__("Déplacement de l'Equipement %1\$s vers le broker %2\$s", __FILE__), $eqpt->getHumanName(), $new_broker->getName()));
+		jMQTT::logger('info', sprintf(__("Déplacement de l'Equipement %1\$s du broker %2\$s vers le broker %3\$s", __FILE__), $eqpt->getHumanName(), $eqpt->getBroker()->getHumanName(), $new_broker->getName()));
 		$eqpt->setBrkId($new_broker->getId());
 		$eqpt->cleanEquipment();
 		$eqpt->save();
@@ -152,26 +150,11 @@ try {
 		ajax::success();
 	}
 
-	if (init('action') == 'filedelete') {
-		$fname = init('name');
-		if (init('dir') == 'template') {
-			$uploaddir = PATH_TPLTS;
-		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
-		} else {
-			throw new Exception(__('Suppression invalide', __FILE__));
-		}
-		if (!file_exists($uploaddir . '/' . $fname)) {
-			throw new Exception(__('Impossible de supprimer le fichier, car il n\'existe pas.', __FILE__));
-		} else {
-			// Check if cert is used by a Broker!
-			foreach (jMQTT::getBrokers() as $broker)
-				if ($broker->isCertUsed($fname))
-					throw new Exception(sprintf(__('Impossible de supprimer le fichier, car il est utilisé par le Broker %s.', __FILE__), $broker->getName()));
-			unlink($uploaddir . '/' . $fname);
-		}
-		jMQTT::logger('info', sprintf(__("Fichier %s supprimé", __FILE__), $fname));
-		ajax::success();
+	if (init('action') == 'getBrokerList') {
+		$returns = array();
+		foreach (jMQTT::getBrokers() as $id => $brk)
+			$returns[$id] = $brk->getName();
+		ajax::success($returns);
 	}
 
 	if (init('action') == 'sendLoglevel') {
@@ -184,27 +167,6 @@ try {
 		config::save('urlOverrideValue', init('valUrl'), 'jMQTT');
 		ajax::success();
 	}
-
-
-/*    if (init('action') == 'filelist') {
-		// jMQTT::logger('info', 'filelist: ' . init('dir'));
-		if (init('dir') == 'template') {
-			$uploaddir = PATH_TPLTS;
-			$patern = array('.json');
-		} elseif (init('dir') == 'certs') {
-			$uploaddir = realpath(dirname(__FILE__) . '/../../' . jMQTT::PATH_CERTIFICATES);
-			$patern = array('.crt', '.key', '.pem');
-		} else {
-			throw new Exception(__('Suppression invalide', __FILE__));
-		}
-		$res = [];
-		foreach (ls($uploaddir) as $file) {
-			if (in_array(strtolower(strrchr($file, '.')), $patern))
-				$res[] = $file;
-		}
-		ajax::success($res);
-	}
-*/
 
 	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
 	/*     * *********Catch exeption*************** */

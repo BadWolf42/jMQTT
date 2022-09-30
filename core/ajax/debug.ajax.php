@@ -49,34 +49,6 @@ try {
 		ajax::success();
 	}
 
-/*
-	if (init('action') == 'getTemplateList') {
-		$cache = cache::delete('hour');
-		ajax::success();
-		ajax::success(jMQTT::templateList());
-	}
-
-	if (init('action') == 'getTemplateByFile') {
-		ajax::success(jMQTT::templateByFile(init('file')));
-	}
-
-	if (init('action') == 'deleteTemplateByFile') {
-		if (!jMQTT::deleteTemplateByFile(init('file')))
-			throw new Exception(__('Impossible de supprimer le fichier', __FILE__));
-		ajax::success(true);
-	}
-
-	if (init('action') == 'applyTemplate') {
-		$eqpt = jMQTT::byId(init('id'));
-		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
-			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
-		}
-		$template = jMQTT::templateByName(init('name'));
-		$eqpt->applyATemplate($template, init('topic'), init('keepCmd'));
-		ajax::success();
-	}
-*/
-
 	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

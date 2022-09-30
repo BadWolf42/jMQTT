@@ -21,6 +21,13 @@
  */
 class jMQTTCmd extends cmd {
 
+	const CONF_KEY_AUTOPUB              = 'autoPub';
+	const CONF_KEY_IRREMOVABLE          = 'irremovable';
+	const CONF_KEY_JSON_PATH            = 'jsonPath';
+	const CONF_KEY_PUB_QOS              = 'Qos';
+	const CONF_KEY_REQUEST              = 'request';
+	const CONF_KEY_RETAIN               = 'retain';
+
 	/**
 	 * @var int maximum length of command name supported by the database scheme
 	 */
@@ -28,7 +35,7 @@ class jMQTTCmd extends cmd {
 
 	/**
 	 * Data shared between preSave and postSave
-	 * @var array values from preSave used fro postSave actions
+	 * @var array values from preSave used for postSave actions
 	 */
 	private $_preSaveInformations;
 
@@ -194,27 +201,21 @@ class jMQTTCmd extends cmd {
 	public function execute($_options = null) {
 		if ($this->getType() != 'action')
 			return;
-		$request = $this->getConfiguration('request', "");
+		$request = $this->getConfiguration(self::CONF_KEY_REQUEST, "");
 		$topic = $this->getTopic();
-		$qos = $this->getConfiguration('Qos', 1);
-		$retain = $this->getConfiguration('retain', 0);
-		switch ($this->getSubType()) {
-			case 'slider':
-				$request = str_replace('#slider#', $_options['slider'], $request);
-				break;
-			case 'color':
-				$request = str_replace('#color#', $_options['color'], $request);
-				break;
-			case 'message':
-				if ($_options != null)  {
-					$replace = array('#title#', '#message#');
-					$replaceBy = array($_options['title'], $_options['message']);
-					$request = str_replace($replace, $replaceBy, $request);
-				}
-				break;
-			case 'select':
-				$request = str_replace('#select#', $_options['select'], $request);
-				break;
+		$qos = $this->getConfiguration(self::CONF_KEY_PUB_QOS, 1);
+		$retain = $this->getConfiguration(self::CONF_KEY_RETAIN, 0);
+		// Prevent error when $_options is null or accessing an unavailable $_options
+		$_defaults = array('other' => '', 'slider' => '#slider#', 'title' => '#title#', 'message' => '#message#', 'color' => '#color#', 'select' => '#select#');
+		$_options = is_null($_options) ? $_defaults : array_merge($_defaults, $_options);
+		// As per feature request (issue 208: https://github.com/Domochip/jMQTT/issues/208#issuecomment-1206207191)
+		// If request is empty, the corresponding subtype option is implied (Default/other = '')
+		if ($request == '') {
+			$request = $_options[$this->getSubType()];
+		} else { // Otherwise replace all tags
+			$replace = array('#slider#', '#title#', '#message#', '#color#', '#select#');
+			$replaceBy = array($_options['slider'], $_options['title'], $_options['message'], $_options['color'], $_options['select']);
+			$request = str_replace($replace, $replaceBy, $request);
 		}
 		$request = jeedom::evaluateExpression($request);
 		$this->getEqLogic()->publish($this->getHumanName(), $topic, $request, $qos, $retain);
@@ -225,19 +226,16 @@ class jMQTTCmd extends cmd {
 	 * preSave callback called by the core before saving this command in the DB
 	 */
 	public function preSave() {
-
-		foreach(array('request') as $key) {
-			$conf = $this->getConfiguration($key);
+		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
 // TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
-			// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
-			// https://github.com/jeedom/core/pull/1825
-			// https://github.com/jeedom/core/pull/1829
-			if (is_string($conf) && strlen($conf) >= 1 && $conf[0] == chr(6)) $this->setConfiguration($key, substr($conf, 1));
+		// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
+		// https://github.com/jeedom/core/pull/1825
+		// https://github.com/jeedom/core/pull/1829
+		if (is_string($conf) && strlen($conf) >= 1 && $conf[0] == chr(6)) $this->setConfiguration(self::CONF_KEY_REQUEST, substr($conf, 1));
 // End of DELETEME
-			// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
-			if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
-				$this->setConfiguration($key, $conf);
-		}
+		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
+		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
+			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
 		// Specific command : status for Broker eqpt
 		if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
 			if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
@@ -256,15 +254,15 @@ class jMQTTCmd extends cmd {
 		}
 
 		// Reset autoPub if info cmd (should not happen or be possible)
-		if ($this->getType() == 'info' && $this->getConfiguration('autoPub', 0))
-			$this->setConfiguration('autoPub', 0);
+		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
+			$this->setConfiguration(self::CONF_KEY_AUTOPUB, 0);
 		// Check "request" if autoPub enabled
-		if ($this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
-			$req = $this->getConfiguration('request', '');
+		if ($this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
+			$req = $this->getConfiguration(self::CONF_KEY_REQUEST, '');
 			// Must check If New cmd, autoPub changed or Request changed
 			$must_chk = $this->getId() == '';
-			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration('autoPub', 0));
-			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration('request', '') != $req);
+			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration(self::CONF_KEY_AUTOPUB, 0));
+			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration(self::CONF_KEY_REQUEST, '') != $req);
 			if ($must_chk) {
 				// Get all commands
 				preg_match_all("/#([0-9]*)#/", $req, $matches);
@@ -291,10 +289,10 @@ class jMQTTCmd extends cmd {
 		else {
 			$cmd = self::byId($this->getId());
 			$this->_preSaveInformations = array(
-				'retain' => $cmd->getConfiguration('retain', 0),
+				self::CONF_KEY_RETAIN => $cmd->getConfiguration(self::CONF_KEY_RETAIN, 0),
 				'brokerStatusTopic' => $cmd->getTopic(),
-				'autoPub' => $cmd->getConfiguration('autoPub', 0),
-				'request' => $cmd->getConfiguration('request', '')
+				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
+				self::CONF_KEY_REQUEST => $cmd->getConfiguration(self::CONF_KEY_REQUEST, '')
 			);
 		}
 	}
@@ -336,10 +334,10 @@ class jMQTTCmd extends cmd {
 		else { // the cmd has been updated
 
 			// If retain mode changed
-			if ($this->_preSaveInformations['retain'] != $this->getConfiguration('retain', 0)) {
+			if ($this->_preSaveInformations[self::CONF_KEY_RETAIN] != $this->getConfiguration(self::CONF_KEY_RETAIN, 0)) {
 
 				// It's enabled now
-				if ($this->getConfiguration('retain', 0)) {
+				if ($this->getConfiguration(self::CONF_KEY_RETAIN, 0)) {
 					$eqLogic->log('info', sprintf(__("Mode retain activé sur la commande #%s#", __FILE__), $this->getHumanName()));
 				} else {
 					//If broker eqpt is enabled
@@ -363,8 +361,8 @@ class jMQTTCmd extends cmd {
 
 			// Only Update listener if "autoPub" or "request" has changed
 			if ($eqLogic->getType() == jMQTT::TYP_EQPT &&
-					($this->_preSaveInformations['autoPub'] != $this->getConfiguration('autoPub', 0) ||
-					 $this->_preSaveInformations['request'] != $this->getConfiguration('request', '')))
+					($this->_preSaveInformations[self::CONF_KEY_AUTOPUB] != $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0) ||
+					 $this->_preSaveInformations[self::CONF_KEY_REQUEST] != $this->getConfiguration(self::CONF_KEY_REQUEST, '')))
 				$this->listenerUpdate();
 		}
 
@@ -383,8 +381,8 @@ class jMQTTCmd extends cmd {
 	public function listenerUpdate() {
 		$cmds = array();
 		$eq = $this->getEqLogic();
-		if ($eq->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration('autoPub', 0)) {
-			preg_match_all("/#([0-9]*)#/", $this->getConfiguration('request', ''), $matches);
+		if ($eq->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
+			preg_match_all("/#([0-9]*)#/", $this->getConfiguration(self::CONF_KEY_REQUEST, ''), $matches);
 			$cmds = array_unique($matches[1]);
 		}
 		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
@@ -408,7 +406,7 @@ class jMQTTCmd extends cmd {
 			}
 			$listener->setOption('cmd', $this->getId());
 			$listener->setOption('eqLogic', $this->getEqLogic_id());
-			$listener->setOption('background', false);
+			$listener->setOption('background', true);
 			$listener->save();
 			$eq->log('debug', sprintf(__("Listener installé pour #%s#", __FILE__), $this->getHumanName()));
 		} else { // We don't want a listener
@@ -421,7 +419,7 @@ class jMQTTCmd extends cmd {
 
 	public static function listenerAction($_options) {
 		$cmd = self::byId($_options['cmd']);
-		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration('autoPub', 0)) {
+		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
 			listener::byId($_options['listener_id'])->remove();
 			$cmd->getEqLogic()->log('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $_options['cmd']));
 		} else {
@@ -469,7 +467,7 @@ class jMQTTCmd extends cmd {
 	 * Set this command as irremovable
 	 */
 	public function setIrremovable() {
-		$this->setConfiguration('irremovable', 1);
+		$this->setConfiguration(self::CONF_KEY_IRREMOVABLE, 1);
 	}
 
 	public function setTopic($topic) {
@@ -481,13 +479,14 @@ class jMQTTCmd extends cmd {
 	}
 
 	public function setJsonPath($jsonPath) {
-		$this->setConfiguration(jMQTT::CONF_KEY_JSON_PATH, $jsonPath);
+		$this->setConfiguration(self::CONF_KEY_JSON_PATH, $jsonPath);
 	}
 
 	public function getJsonPath() {
-		return $this->getConfiguration(jMQTT::CONF_KEY_JSON_PATH, '');
+		return $this->getConfiguration(self::CONF_KEY_JSON_PATH, '');
 	}
 
+// TODO Move to install.php as only used by it?
 	public function splitTopicAndJsonPath() {
 		// Try to find '{'
 		$topic = $this->getTopic();
@@ -496,8 +495,7 @@ class jMQTTCmd extends cmd {
 		if ($i === false) {
 			// Just set empty jsonPath if it doesn't exists
 			$this->setJsonPath($this->getJsonPath());
-		}
-		else {
+		} else {
 			// Set cleaned Topic
 			$this->setTopic(substr($topic, 0, $i));
 

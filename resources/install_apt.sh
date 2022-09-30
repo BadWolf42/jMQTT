@@ -12,11 +12,19 @@ pre
 step 0 "Checking parameters"
 
 INSTALL_MOSQUITTO=1
-if [ ! -z $2 ] && [ $2 -eq 1 -o $2 -eq 0 ]; then
+if [ -n $2 ] && [ $2 -eq 1 -o $2 -eq 0 ]; then
 	INSTALL_MOSQUITTO=$2
 fi
 
-echo "== Should install Mosquitto:" ${INSTALL_MOSQUITTO}
+LOCAL_VERSION="????"
+if [ -n $3 ]; then
+	LOCAL_VERSION=$3
+fi
+
+echo "== System: "`uname -a`
+echo "== Jeedom version: "`cat ${BASEDIR}/../../../core/config/version`
+echo "== jMQTT version: "${LOCAL_VERSION}
+echo "== Install Mosquitto:" ${INSTALL_MOSQUITTO}
 
 step 5 "Synchronize the package index"
 try sudo apt-get update

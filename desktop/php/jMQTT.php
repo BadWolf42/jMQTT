@@ -14,59 +14,118 @@ foreach ($eqBrokers as $id => $eqL) {
 }
 sendVarToJS('eqBrokers', $eqBrokersName);
 
-$has_orphans = false;
-$node_images = scandir(__DIR__ . '/../../core/img/');
+// $node_images = scandir(__DIR__ . '/../../core/img/');
+$icons = array(
+	['id' => '', 'name' => __('Aucun', __FILE__), 'file' => 'node_.svg'],
+	['id' => 'barometre', 'name' => __('Baromètre', __FILE__), 'file' => 'node_barometre.svg'],
+	['id' => 'bell', 'name' => __('Sonnerie', __FILE__), 'file' => 'node_bell.svg'],
+	['id' => 'boiteauxlettres', 'name' => __('Boite aux Lettres', __FILE__), 'file' => 'node_boiteauxlettres.svg'],
+	['id' => 'bt', 'name' => __('Bluetooth', __FILE__), 'file' => 'node_bt.svg'],
+	['id' => 'chauffage', 'name' => __('Chauffage', __FILE__), 'file' => 'node_chauffage.svg'],
+	['id' => 'compteur', 'name' => __('Compteur', __FILE__), 'file' => 'node_compteur.svg'],
+	['id' => 'contact', 'name' => __('Contact', __FILE__), 'file' => 'node_contact.svg'],
+	['id' => 'custom', 'name' => __('Custom', __FILE__), 'file' => 'node_custom.svg'],
+	['id' => 'dimmer', 'name' => __('Dimmer', __FILE__), 'file' => 'node_dimmer.svg'],
+	['id' => 'door', 'name' => __('Porte', __FILE__), 'file' => 'node_door.svg'],
+	['id' => 'energie', 'name' => __('Energie', __FILE__), 'file' => 'node_energie.svg'],
+	['id' => 'fan', 'name' => __('Ventilation', __FILE__), 'file' => 'node_fan.svg'],
+	['id' => 'feuille', 'name' => __('Culture', __FILE__), 'file' => 'node_feuille.svg'],
+	['id' => 'fire', 'name' => __('Incendie', __FILE__), 'file' => 'node_fire.svg'],
+	['id' => 'garage', 'name' => __('Garage', __FILE__), 'file' => 'node_garage.svg'],
+	['id' => 'gate', 'name' => __('Portail', __FILE__), 'file' => 'node_gate.svg'],
+	['id' => 'home-flood', 'name' => __('Inondation', __FILE__), 'file' => 'node_home-flood.svg'],
+	['id' => 'humidity', 'name' => __('Humidité', __FILE__), 'file' => 'node_humidity.png'],
+	['id' => 'humiditytemp', 'name' => __('Humidité et Température', __FILE__), 'file' => 'node_humiditytemp.png'],
+	['id' => 'hydro', 'name' => __('Hydrométrie', __FILE__), 'file' => 'node_hydro.png'],
+	['id' => 'ir2', 'name' => __('Infra Rouge', __FILE__), 'file' => 'node_ir2.png'],
+	['id' => 'jauge', 'name' => __('Jauge', __FILE__), 'file' => 'node_jauge.svg'],
+	['id' => 'light', 'name' => __('Luminosité', __FILE__), 'file' => 'node_light.png'],
+	['id' => 'lightbulb', 'name' => __('Lumière', __FILE__), 'file' => 'node_lightbulb.svg'],
+	['id' => 'meteo', 'name' => __('Météo', __FILE__), 'file' => 'node_meteo.png'],
+	['id' => 'molecule-co', 'name' => __('CO', __FILE__), 'file' => 'node_molecule-co.svg'],
+	['id' => 'motion', 'name' => __('Mouvement', __FILE__), 'file' => 'node_motion.png'],
+	['id' => 'motion-sensor', 'name' => __('Présence', __FILE__), 'file' => 'node_motion-sensor.svg'],
+	['id' => 'multisensor', 'name' => __('Multisensor', __FILE__), 'file' => 'node_multisensor.png'],
+	['id' => 'nab', 'name' => __('Nabaztag', __FILE__), 'file' => 'node_nab.png'],
+	['id' => 'power-plug', 'name' => __('Prise de courant', __FILE__), 'file' => 'node_power-plug.svg'],
+	['id' => 'prise', 'name' => __('Prise', __FILE__), 'file' => 'node_prise.png'],
+	['id' => 'radiator', 'name' => __('Radiateur', __FILE__), 'file' => 'node_radiator.svg'],
+	['id' => 'relay', 'name' => __('Relais', __FILE__), 'file' => 'node_relay.png'],
+	['id' => 'remote', 'name' => __('Télécommande', __FILE__), 'file' => 'node_remote.svg'],
+	['id' => 'rf433', 'name' => __('RF433', __FILE__), 'file' => 'node_rf433.svg'],
+	['id' => 'rfid', 'name' => __('RFID', __FILE__), 'file' => 'node_rfid.png'],
+	['id' => 'sms', 'name' => __('SMS', __FILE__), 'file' => 'node_sms.png'],
+	['id' => 'teleinfo', 'name' => __('Téléinfo', __FILE__), 'file' => 'node_teleinfo.png'],
+	['id' => 'temp', 'name' => __('Température', __FILE__), 'file' => 'node_temp.png'],
+	['id' => 'thermostat', 'name' => __('Thermostat', __FILE__), 'file' => 'node_thermostat.png'],
+	['id' => 'tv', 'name' => __('Télévison', __FILE__), 'file' => 'node_tv.svg'],
+	['id' => 'volet', 'name' => __('Volet', __FILE__), 'file' => 'node_volet.svg'],
+	['id' => 'water-boiler', 'name' => __('Chaudière', __FILE__), 'file' => 'node_water-boiler.svg'],
+	['id' => 'wifi', 'name' => __('Wifi', __FILE__), 'file' => 'node_wifi.svg'],
+	['id' => 'window-closed-variant', 'name' => __('Fenêtre', __FILE__), 'file' => 'node_window-closed-variant.svg'],
+	['id' => 'zigbee', 'name' => __('Zigbee', __FILE__), 'file' => 'node_zigbee.svg'],
+	['id' => 'zwave', 'name' => __('ZWave', __FILE__), 'file' => 'node_zwave.svg']
+);
+usort($icons, function ($a, $b) { return strcmp($a["name"], $b["name"]); });
+sendVarToJS('jmqttIcons', $icons);
+
 ?>
 
 <style>
-.eqLogicThumbnailContainer div.eqLogicDisplayAction	{ padding-top: 25px !important; height: 168px; }
-.row div.eqLogicDisplayAction.card.include .fas		{ color: #8000FF !important; font-size: 52px !important; }
-.row div.eqLogicDisplayAction.card.include span		{ font-weight: bold; color: #8000FF; }
 td.fitwidth											{ white-space: nowrap; }
-span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:10px;margin-left:3px; }
-// span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:3px; }
+div.eqLogicThumbnailContainer.containerAsTable i.fa-sign-in-alt.fa-rotate-90	{ margin-bottom: 0px; }
+span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:3px; }
 span.hiddenAsTable i.fas.status-circle				{ font-size:1em !important;  position:absolute;margin-top:23px;margin-left:55px; }
 span.hiddenAsTable i.fas.eyed						{ font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px; }
 span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px; }
+span.hiddenAsCard i.fas.status-circle				{ margin-right:6px; }
+textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font-weight: bold!important; }
+div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; }
+textarea.eqLogicAttr.form-control.blured			{ filter: blur(4px); }
+textarea.eqLogicAttr.form-control.blured:hover		{ filter: none; }
+textarea.eqLogicAttr.form-control.blured:focus		{ filter: none; }
+textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospace; height: 90px; }
+.w30												{ width: 30px; }
+.w18												{ width: 18px; text-align: center; font-size: 0.9em; }
+.pdg1												{ padding-right:1px;padding-left:1px; }
 </style>
 
 <?php
-function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
-	echo '<div class="eqLogicDisplayAction eqLogicAction cursor ' . $class . '" ' . $attr . '>';
-	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
-}
-
 /**
  *
  * @param jMQTT $eqL
+ * @param array $icons
  */
-function displayEqLogicCard($eqL, $node_images) {
-	$opacity = $eqL->getIsEnable() ? '' : 'disableCard';
-	echo '<div class="eqLogicDisplayCard cursor ' . $opacity . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
-	echo '<span class="hiddenAsTable">';
-	if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT)
-		echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
-	echo '<i class="fas eyed ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>';
+function displayEqLogicCard($eqL, $icons) {
+	$btnData = array();
+	$btnData['enabled'] = boolval($eqL->getIsEnable());
+	$btnData['visible'] = boolval($eqL->getIsVisible());
+	if ($eqL->getType() != jMQTT::TYP_EQPT) {
+		$info = $eqL->getMqttClientInfo();
+		$btnData['broker'] = true;
+		$btnData['state'] = $info['state'];
+		$btnData['icon'] = $info['icon'];
+		$btnData['include'] = boolval($eqL->getIncludeMode());
+	} else {
+		$btnData['eqpt'] = false;
+		$btnData['include'] = boolval($eqL->getAutoAddCmd());
+		$btnData['bat'] = ($eqL->getConfiguration('battery_cmd') == '' ? '0' : ($eqL->getStatus('batterydanger') ? '1' : ($eqL->getStatus('batterywarning') ? '2' : '3')));
+		$btnData['avail'] = ($eqL->getConfiguration('availability_cmd') == '' ? '0' : ($eqL->getStatus('warning') ? '1' : '2'));
+	}
+	echo '<div class="eqLogicDisplayCard cursor' . ($eqL->getIsEnable() ? '' : ' disableCard') . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '"  btn-data="' .htmlentities(json_encode($btnData), ENT_QUOTES, 'UTF-8'). '">';
+	echo '<span class="hiddenAsTable"></span>';
 	if ($eqL->getType() == jMQTT::TYP_BRK) {
 		$file = 'node_broker.svg';
-		$st = $eqL->getMqttClientState();
-		echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>';
 	} else {
-		$icon = 'node_' . $eqL->getConfiguration('icone');
-		$file = (in_array($icon.'.svg', $node_images) ? $icon.'.svg' : (in_array($icon.'.png', $node_images) ? $icon.'.png' : 'node_.png'));
+		$icon = $eqL->getConfiguration('icone');
+		$key = array_search($icon, array_column($icons, 'id'));
+		$file = ($key ? $icons[$key]['file'] : 'node_.svg');
 	}
-	echo '</span>';
 	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
-	echo "<br>";
+	echo '<br>';
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
-	// TODO: Cleanup icon sizes for Tableview
-	// Core javascripts here : https://github.com/jeedom/core/blob/3ee8314bb8bd024d0a217a8f7c8997cf0f16ec25/core/js/plugin.template.js#L136
-	// echo '<span class="hiddenAsCard displayTableRight hidden">';
-	// if ($eqL->getAutoAddCmd() && $eqL->getType() == jMQTT::TYP_EQPT) echo '<i class="fas fa-sign-in-alt fa-rotate-90"></i>&nbsp;';
-	// echo '<i class="fas ' . (($eqL->getIsVisible()) ? 'fa-eye' : 'fa-eye-slash') . '"></i>&nbsp;';
-	// if ($eqL->getType() == jMQTT::TYP_BRK) echo '<i class="status-circle fas '.jMQTT::getBrokerIconFromState($st).'"></i>&nbsp;';
-	// echo '</span>';
-	echo '</div>';
+	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span>';
+	echo "</div>\n";
 }
 
 ?>
@@ -74,32 +133,59 @@ function displayEqLogicCard($eqL, $node_images) {
 <div id="div_cmdMsg"></div>
 <div id="div_newEqptMsg"></div>
 <div id="div_inclusionModeMsg"></div>
+<?php
+// Warning banner for Jeedom v3 users.
+if(strpos(trim(config::byKey('version')), '3.') === 0) {
+	echo '<span class="label control-label label-danger" style="width:100%;font-size:13px!important;padding:0px;">{{Ceci est la dernière version de jMQTT supportant Jeedom 3. Passez Jeedom en version 4 pour bénéficier des prochaines évolutions de jMQTT}}</span>';
+}
+
+function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
+	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
+	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
+}
+?>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
-		<legend><i class="fas fa-cog"></i> {{Gestion plugin et brokers}}</legend>
+		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 		<div class="eqLogicThumbnailContainer">
 		<?php
 		displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
+		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'data-action="addJmqttBrk"', 'logoSecondary');
 		displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
 		if (isset($_GET['debug']))
 		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
-			displayActionCard('{{Debug}}', 'fa-cog', 'data-action="debugJMQTT"', 'logoSecondary');
+			displayActionCard('{{Debug}}', 'fa-bug', 'data-action="debugJMQTT"', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
-		displayActionCard('{{Ajouter un broker}}', 'fa-plus-circle', 'data-action="addJmqtt"', 'logoSecondary');
-		foreach ($eqBrokers as $eqB) {
-			displayEqLogicCard($eqB, $node_images);
-		}
+		// displayActionCard('{{Découverte}}', 'fa-flag', 'data-action="discoveryJMQTT"', 'logoSecondary');
+		// displayActionCard('{{Temps réel}}', 'fa-stream', 'data-action="realTimeJMQTT"', 'logoSecondary');
+		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="addJmqttEq"', 'logoSecondary');
 		?>
 		</div>
 		<div class="input-group" style="margin:5px;">
 			<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">
 			<div class="input-group-btn">
 				<a id="bt_resetSearch" class="btn" style="width:30px"><i class="fas fa-times"></i></a>
-				<!-- TODO FIXME mode tableau incompatible avec la classe eqLogicDisplayAction (servant à l'alignement des eqLogicDisplay et eqLogicAction) -->
-				<!--<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>-->
+				<a class="btn roundedRight hidden" id="bt_pluginDisplayAsTable" data-coreSupport="1" data-state="0"><i class="fas fa-grip-lines"></i></a>
 			</div>
 		</div>
 		<?php
+		// Check there are orphans first
+		$has_orphans = false;
+		foreach ($eqNonBrokers as $id => $nonBrokers) {
+			if (! array_key_exists($id, $eqBrokers)) {
+				if (!$has_orphans) {
+					echo '<legend><i class="fas fa-table"></i>{{Equipements orphelins}}</legend>';
+					echo '<div class="eqLogicThumbnailContainer">';
+					$has_orphans = true;
+				}
+				foreach ($nonBrokers as $eqL) {
+					displayEqLogicCard($eqL, $icons);
+				}
+			}
+		}
+		if ($has_orphans)
+			echo '</div>';
+
 		foreach ($eqBrokers as $eqB) {
 			echo '<legend><i class="fas fa-table"></i> ';
 			if (!array_key_exists($eqB->getId(), $eqNonBrokers))
@@ -110,31 +196,15 @@ function displayEqLogicCard($eqL, $node_images) {
 				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
 			echo ' <b>' . $eqB->getName() . '</b></legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
-			displayActionCard('{{Ajouter un équipement}}', 'fa-plus-circle',
-				'data-action="addJmqtt" brkId="' . $eqB->getId() . '"', 'logoSecondary');
-			displayActionCard('{{Mode inclusion}}', 'fa-sign-in-alt fa-rotate-90',
-				'data-action="changeIncludeMode" brkId="' . $eqB->getId() . '"', 'logoSecondary card');
+			displayEqLogicCard($eqB, $icons);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
-					displayEqLogicCard($eqL, $node_images);
+					displayEqLogicCard($eqL, $icons);
 				}
 			}
 			echo '</div>';
 		}
 		
-// TODO: Check if this is still usefull (condition is always false)
-		if ($has_orphans) {
-			echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';
-			echo '<div class="eqLogicThumbnailContainer">';
-			foreach ($eqNonBrokers as $id => $nonBrokers) {
-				if (! array_key_exists($id, $eqBrokers)) {
-					foreach ($nonBrokers as $eqL) {
-						displayEqLogicCard($eqL, $node_images);
-					}
-				}
-			}
-			echo '</div>';
-		}
 		?>
 	</div>
 
@@ -147,7 +217,7 @@ function displayEqLogicCard($eqL, $node_images) {
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
-				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="removeJmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>
+				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="removeJmqtt"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>&nbsp;
 			</div>
 			<div class="input-group pull-left" style="display:inline-flex">
 				<ul class="nav nav-tabs" role="tablist">
