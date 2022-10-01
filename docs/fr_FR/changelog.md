@@ -3,6 +3,7 @@
 ## 2022-10-01 Beta
  - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**
  - Correction de problèmes de compatibilité avec Jeedom 3.3
+ - Correction d'un problème de souscription lors du changement d'équipement de Broker
  - Mise en place d'un bandeau indiquant que Jeedom 3.3 ne sera plus supporté par les prochaines versions
  - Déplacement de l'ajout d'équipement jMQTT en haut de page
  - Suppression du mode Inclusion global (sera remplacé plus tard)
