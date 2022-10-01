@@ -627,19 +627,20 @@ class jMQTT extends eqLogic {
 			if ($this->getType() == self::TYP_EQPT)
 				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
 			else
-				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
+				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getHumanName()));
 			return;
 		}
 		$broker = $this->getBroker();
 		// If broker eqpt is disabled, don't need to send subscribe
-		if(!$broker->getIsEnable())
+		if(!$broker->getIsEnable()) {
+			$this->log('debug', sprintf(__("Le Broker %1\$s n'est pas actif, impossible de s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
 			return;
+		}
 		if ($this->getType() == self::TYP_EQPT)
 			$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
 		else
-			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
+			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
 		self::toDaemon_subscribe($broker->getId(), $topic, $qos);
-
 	}
 
 	/**
@@ -905,9 +906,10 @@ class jMQTT extends eqLogic {
 
 				// brkId changed (action moveToBroker in jMQTT.ajax.php)
 				if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] != $this->getConf(self::CONF_KEY_BRK_ID)) {
-
-					//need to unsubscribe the topic on the PREVIOUS Broker
+					//need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
 					$this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					//force Broker change
+					$this->_broker = self::getBrokerFromId($this->getBrkId());
 					//and subscribe on the new broker
 					$subscribeRequested = true;
 				}
