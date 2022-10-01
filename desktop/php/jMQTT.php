@@ -260,6 +260,10 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 							<th style="width:1px;">{{Unité}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
 							<th style="min-width:135px;width:135px;"></th>
+<!-- TODO Change when adding Advanced parameters
+							<th style="min-width:90px;width:100px;">{{Options}}</th>
+							<th style="min-width:160px;width:160px;"></th>
+-->
 						</tr>
 					</thead>
 					<tbody>
