@@ -124,6 +124,7 @@
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPubStatus" checked>
 							</div>
 						</div>
+			<!-- TODO ADD here LWT topic, value online and value offline -->
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.

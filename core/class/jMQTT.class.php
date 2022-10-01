@@ -1466,7 +1466,6 @@ class jMQTT extends eqLogic {
 		} else {
 			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
 			if (count($output) > 0) {
-				// TODO Make this debug message more verbose/explicit
 				self::logger('error', __("Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv : ", __FILE__).'<br />'.implode('<br />', $output));
 				$return['state'] = self::MQTTCLIENT_NOK;
 			}
@@ -1705,6 +1704,7 @@ class jMQTT extends eqLogic {
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
 		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
+		// TODO Implement WS and options with it (Python side with Paho.Client() parameter transport="websockets" & Paho.Client.ws_set_options() function)
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
 				$params['tlsinsecure'] = true;
@@ -2170,7 +2170,13 @@ class jMQTT extends eqLogic {
 				return 1883;
 			elseif ($proto == 'mqtts')
 				return 8883;
-			else // TODO handle ws
+/* TODO Handle WS & WSS
+			elseif ($proto == 'ws')
+				return 1084;
+			elseif ($proto == 'wss')
+				return 8884;
+*/
+			else
 				return 0;
 		}
 		$defValues = array(

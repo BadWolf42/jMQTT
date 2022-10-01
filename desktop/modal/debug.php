@@ -695,6 +695,8 @@ METHOD POST
 -->
 <!--
 TODO
+- Kill all daemons
+- Remove PID file
 - Relaunch plugin install
 - Stop heatbeat
 - Request Thread Dump

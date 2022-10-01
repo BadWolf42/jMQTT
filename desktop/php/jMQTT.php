@@ -248,6 +248,8 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 			<div role="tabpanel" class="tab-pane toDisable" id="brokertab">
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
+			<!-- TODO Add here realtime/stream tab, "Classic Discovery" tab and HA MQTT discovery tab -->
+			<!-- TODO Remove all commands on Brokers -->
 			<div role="tabpanel" class="tab-pane toDisable" id="commandtab">
 				<table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
 					<thead>
