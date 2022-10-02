@@ -423,8 +423,6 @@ class jMQTT extends eqLogic {
 	 * return new jMQTT object
 	 */
 	public static function createEquipment($broker, $name, $topic) {
-
-		self::logger('debug', 'createEquipment: ' . $name . ', topic=' . $topic);
 		$eqpt = new jMQTT();
 		$eqpt->setName($name);
 		$eqpt->setIsEnable(1);
@@ -1658,7 +1656,7 @@ class jMQTT extends eqLogic {
 	 * Return MQTT Client state
 	 *   - self::MQTTCLIENT_OK: MQTT Client is running and mqtt broker is online
 	 *   - self::MQTTCLIENT_POK: MQTT Client is running but mqtt broker is offline
-	 *   - self::MQTTCLIENT_NOK: no cron exists or cron is not running
+	 *   - self::MQTTCLIENT_NOK: daemon is not running or Eq is disabled
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
@@ -2374,7 +2372,7 @@ class jMQTT extends eqLogic {
 		/** @var jMQTT $broker */
 		$broker = self::byId($id);
 		if (!is_object($broker)) {
-			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
+			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s.", __FILE__), $id));
 		}
 		if ($broker->getType() != self::TYP_BRK) {
 			throw new Exception(__("L'équipement n'est pas de type Broker", __FILE__) . ' (id=' . $id . ')');

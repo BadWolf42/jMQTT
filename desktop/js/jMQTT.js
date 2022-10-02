@@ -127,6 +127,7 @@ function refreshEqLogicPage() {
 		refreshPage();
 }
 
+// TODO MERGE with $('.eqLogicDisplayCard[btn-data]').each() call
 /*
  * Function to update Broker status on a Broker eqLogic page
  */
@@ -329,6 +330,8 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=templates').dialog('open');
 });
 
+/*
+// TODO Move to a new Broker tab
 $('.eqLogicAction[data-action=discoveryJMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Découverte automatique}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=discovery').dialog('open');
@@ -338,6 +341,7 @@ $('.eqLogicAction[data-action=realTimeJMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Découverte automatique}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=realtime').dialog('open');
 });
+*/
 
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Choisissez un broker : }}</label> ';
@@ -483,7 +487,7 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
 });
 
 //
-// Actions on Broker view
+// Actions on Broker tab
 //
 $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
@@ -513,7 +517,7 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 });
 
 //
-// Automations on Broker view attributes
+// Automations on Broker tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
 	if ($(this).val() == 'mqtts')
@@ -541,7 +545,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClientCert]').change
 });
 
 //
-// Automations on Equipment view attributes
+// Automations on Equipment tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', function(e) {
 	if($(e.target).value() == 'broker') {
@@ -883,13 +887,13 @@ function printEqLogic(_eqLogic) {
 
 	// Show UI elements depending on the type
 	if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0))
-			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) {
+			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
 		$('.toDisable').addClass('disabled');
 		$('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 	}
-	else if (_eqLogic.configuration.type == 'broker') {
+	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
 		$('.eqLogicAction[data-action="configure"]').addClass('roundedLeft');
 		$('.typ-std').hide();
@@ -913,7 +917,7 @@ function printEqLogic(_eqLogic) {
 			}
 		});
 	}
-	else if (_eqLogic.configuration.type == 'eqpt') {
+	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
 		$('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
@@ -1275,6 +1279,35 @@ function addCmdToTable(_cmd) {
 }
 
 /**
+ * Called by the plugin core to inform about the inclusion of an equipment
+ *
+ * @param {string} _event event name (jMQTT::eqptAdded in this context)
+ * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
+ */
+$('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_options) {
+	var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être inclu}}';
+
+	// If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
+	// Otherwise: display an alert message and reload the page
+	if (modifyWithoutSave || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
+		$('#div_newEqptMsg').showAlert({message: msg + '.', level: 'warning'});
+	}
+	else {
+		$('#div_newEqptMsg').showAlert({
+			message: msg + '. {{La page va se réactualiser automatiquement}}.',
+			level: 'warning'
+		});
+		// Reload the page after a delay to let the user read the message
+		if (refreshTimeout === undefined) {
+			refreshTimeout = setTimeout(function() {
+				refreshTimeout = undefined;
+				window.location.reload();
+			}, 3000);
+		}
+	}
+});
+
+/**
  * Management of cmdTopicMismatch event sent by the plugin core
  * @param _event string event name
  * @param _options['eqlogic_name'] string name of the eqLogic command is added to
@@ -1289,7 +1322,6 @@ $('body').off('jMQTT::cmdTopicMismatch').on('jMQTT::cmdTopicMismatch', function(
 
 	$('#div_cmdMsg').showAlert({message: msg, level: 'warning'});
 });
-
 
 /**
  * Management of the display when an information command is added
@@ -1394,34 +1426,5 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_opt
 $('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', function (_event,_options) {
 	// Change display accordingly
 	configureIncludeModeDisplay(_options['brkId'], 0);
-});
-
-/**
- * Called by the plugin core to inform about the inclusion of an equipment
- *
- * @param {string} _event event name (jMQTT::eqptAdded in this context)
- * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
- */
-$('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_options) {
-	var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être inclu}}';
-
-	// If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
-	// Otherwise: display an alert message and reload the page
-	if (modifyWithoutSave || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
-		$('#div_newEqptMsg').showAlert({message: msg + '.', level: 'warning'});
-	}
-	else {
-		$('#div_newEqptMsg').showAlert({
-			message: msg + '. {{La page va se réactualiser automatiquement}}.',
-			level: 'warning'
-		});
-		// Reload the page after a delay to let the user read the message
-		if (refreshTimeout === undefined) {
-			refreshTimeout = setTimeout(function() {
-				refreshTimeout = undefined;
-				window.location.reload();
-			}, 3000);
-		}
-	}
 });
 

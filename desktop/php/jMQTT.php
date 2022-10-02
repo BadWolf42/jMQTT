@@ -205,9 +205,9 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	<div class="col-xs-12 eqLogic" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
-				<a class="btn btn-success btn-sm eqLogicAction typ-std" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std toDisable" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>

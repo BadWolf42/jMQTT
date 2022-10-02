@@ -58,9 +58,8 @@
 								<a class="btn btn-info eqLogicAction" data-action="modalViewLog" data-slaveId="-1" data-log=""></a>
 							</div>
 						</fieldset>
-					</form>
+					</form><br/>
 				</div>
-				<div class="form-actions"></div>
 			</div>
 		</div>
 	</div>
