@@ -208,6 +208,8 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
 				<a class="btn btn-primary btn-sm eqLogicAction typ-std toDisable" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-brk roundedLeft toDisable" data-action="startIncludeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Mode inclusion}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-brk btn-danger roundedLeft toDisable" data-action="stopIncludeMode"><i class="fas fa-square"></i> {{Arrêter l'inclusion}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
@@ -271,15 +273,3 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
-
-<script>
-
-<?php
-// Initialise the automatic inclusion button display according to include_mode configuration parameter
-foreach ($eqBrokers as $eqL) {
-	echo 'setIncludeModeActivation(' . $eqL->getId() . ',"' . $eqL->getMqttClientState() . '");';
-	echo 'configureIncludeModeDisplay(' . $eqL->getId() . ',' . $eqL->getIncludeMode() . ');';
-}
-?>
-
-</script>

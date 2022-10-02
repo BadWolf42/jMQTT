@@ -1628,10 +1628,12 @@ class jMQTT extends eqLogic {
 		if ($this->getType() != self::TYP_BRK)
 			return $return;
 		$return['brkId'] = $this->getId();
+		$return['name'] = $this->getName();
 		$return['log'] = $this->getMqttClientLogFile();
 		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));
 		$return['state'] = $this->getMqttClientState();
 		$return['icon'] = self::getBrokerIconFromState($return['state']);
+		$return['include'] = boolval($this->getIncludeMode());
 		if (!self::daemon_state()) { // Daemon is down
 			$return['message'] = __("Démon non démarré", __FILE__);
 			return $return;
@@ -2422,13 +2424,9 @@ class jMQTT extends eqLogic {
 			$this->log('info', __("L'inclusion automatique est activée", __FILE__));
 		else
 			$this->log('info', __("L'inclusion automatique est désactivée", __FILE__));
-		if (! $mode) {
-			// Advise the desktop page (jMQTT.js) that the inclusion mode is disabled
-			event::add('jMQTT::disableIncludeMode', array('brkId' => $this->getId()));
-		}
+		$this->sendMqttClientStateEvent();
 
 		// A cron process is used to reset the automatic mode after a delay
-
 		// If the cron process is already defined, remove it
 		$cron = cron::byClassAndFunction(__CLASS__, 'disableIncludeMode', array('id' => $this->getId()));
 		if (is_object($cron)) {

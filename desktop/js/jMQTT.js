@@ -151,6 +151,37 @@ function showMqttClientInfo(data) {
 	$('.mqttClientState span.state').text(' ' + data.message);
 	$("#div_broker_mqttclient").closest('.panel').removeClass('panel-success panel-warning panel-danger').addClass('panel-' + color);
 	$('.mqttClientLastLaunch').empty().append(data.last_launch);
+
+	if (data.state == "ok") {
+		// TODO FIXME: avoid setting color on card include icon
+		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] span.hiddenAsTable i.inc-status') // only as card
+		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] span.hiddenAsCard i.inc-status') // only as table
+		// Update borker on main page and show an alert
+		if (data.include) {
+			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').hasClass('fa-sign-in-alt')) { // Only if Include Mode is disabled
+				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').removeClass('far fa-square success').addClass('fas fa-sign-in-alt fa-rotate-90 warning');
+				$('#div_inclusionModeMsg').showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + data.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
+			}
+		} else {
+			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').hasClass('fa-square')) { // Only if Include Mode is enabled
+				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
+				$('#div_inclusionModeMsg').hideAlert();
+				$('#div_inclusionModeMsg').showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + data.name + '</b>.', level: 'warning'});
+			}
+		}
+
+		// Set which inclusion button is visible
+		if (data.brkId == $('.eqLogicAttr[data-l1key=id]').value()) {
+			if (data.include) { // Include Start
+				$('.eqLogicAction[data-action=startIncludeMode]').hide();
+				$('.eqLogicAction[data-action=stopIncludeMode]').show();
+			} else { // Include Stop
+				$('.eqLogicAction[data-action=startIncludeMode]').show();
+				$('.eqLogicAction[data-action=stopIncludeMode]').hide();
+			}
+		}
+	}
+
 	// TODO Check if this timer/refresh is still needed !
 	if ($("#div_broker_mqttclient").is(':visible')) {
 		clearTimeout(timeout_refreshMqttClientInfo);
@@ -170,6 +201,20 @@ function refreshMqttClientInfo() {
 		},
 		success: function(data) {
 			showMqttClientInfo(data);
+		}
+	});
+}
+
+/*
+ * Management of the include button and mode
+ */
+function setIncludeMode(_id, _mode) {
+	// Ajax call to inform the plugin core of the change
+	callPluginAjax({
+		data: {
+			action: "changeIncludeMode",
+			mode: _mode,
+			id: _id
 		}
 	});
 }
@@ -209,8 +254,15 @@ $('.eqLogicDisplayCard[btn-data]').each(function () {
 	var data = $.parseJSON($(this).attr('btn-data')); // Get descriptive json
 	$(this).removeAttr('btn-data');
 	$(this).children('.hiddenAsTable').each(function (_, b) { // Put icons in CardView
-		if (!data.broker && data.include)
-			$(this).append('<i class="fas fa-sign-in-alt fa-rotate-90"></i>');
+		if (data.broker) {
+			if (data.include)
+				$(this).append('<i class="inc-status fas fa-sign-in-alt fa-rotate-90"></i>');
+			else
+				$(this).append('<i class="inc-status far fa-square"></i>');
+		} else {
+			if (data.include)
+				$(this).append('<i class="fas fa-sign-in-alt fa-rotate-90"></i>');
+		}
 		$(this).append('<i class="fas eyed ' + (data.visible ? 'fa-eye' : 'fa-eye-slash') + '"></i>');
 		if (data.broker)
 			$(this).append('<i class="status-circle fas ' + data['icon'] + '"></i>');
@@ -489,6 +541,16 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
 //
 // Actions on Broker tab
 //
+$('.eqLogicAction[data-action=startIncludeMode]').on('click', function() {
+	// Enable include mode for a Broker
+	setIncludeMode($('.eqLogicAttr[data-l1key=id]').value(), 1);
+});
+
+$('.eqLogicAction[data-action=stopIncludeMode]').on('click', function() {
+	// Disable include mode for a Broker
+	setIncludeMode($('.eqLogicAttr[data-l1key=id]').value(), 0);
+});
+
 $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
@@ -889,15 +951,27 @@ function printEqLogic(_eqLogic) {
 	if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0))
 			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
 		$('.toDisable').addClass('disabled');
-		$('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
+		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
-		$('.eqLogicAction[data-action="configure"]').addClass('roundedLeft');
+		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
+		// $('.eqLogicAction[data-action=startIncludeMode]').addClass('roundedLeft');
+		// $('.eqLogicAction[data-action=stopIncludeMode]').addClass('roundedLeft').
 		$('.typ-std').hide();
 		$('.typ-brk').show();
+		if (_eqLogic.isEnable != '1') {
+			$('.eqLogicAction[data-action=startIncludeMode]').show().addClass('disabled');
+			$('.eqLogicAction[data-action=stopIncludeMode]').hide();
+		} else if (_eqLogic.cache.include_mode != '1') {
+			$('.eqLogicAction[data-action=startIncludeMode]').show().removeClass('disabled');
+			$('.eqLogicAction[data-action=stopIncludeMode]').hide();
+		} else {
+			$('.eqLogicAction[data-action=startIncludeMode]').show().hide();
+			$('.eqLogicAction[data-action=stopIncludeMode]').addClass('roundedLeft');
+		}
 		$('#mqtttopic').prop('readonly', true);
 		var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
 		$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
@@ -919,7 +993,7 @@ function printEqLogic(_eqLogic) {
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
-		$('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
+		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 		$('#mqtttopic').prop('readonly', false);
@@ -1359,72 +1433,14 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 	}
 });
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Management of the include button and mode
-//
-
-// Configure the display according to the given mode
-//If given mode is not provided, use the bt_changeIncludeMode data-mode attribute value
-function configureIncludeModeDisplay(brkId, mode) {
-	if (mode == 1) {
-		//$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').removeClass('btn-default').addClass('btn-success');
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 1);
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'] span').text('{{Arrêter l\'inclusion}}');
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('include');
-		$('#div_inclusionModeMsg').showAlert({message: '{{Mode inclusion automatique pendant 2 à 3min. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
-	} else {
-		//$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']:not(.card)').addClass('btn-default').removeClass('btn-success btn-danger');
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').attr('data-mode', 0);
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+'] span').text('{{Mode inclusion}}');
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('include');
-		$('#div_inclusionModeMsg').hideAlert();
-	}
-}
-
-function setIncludeModeActivation(brkId, broker_state) {
-	if (broker_state == 'ok') {
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').removeClass('disableCard').on('click', changeIncludeMode);
-	}
-	else {
-		$('.eqLogicAction[data-action=changeIncludeMode][brkId='+brkId+']').addClass('disableCard').unbind();;
-	}
-}
-
-function changeIncludeMode() {
-	var el = $(this);
-
-	// Invert the button display and show the alert message
-	if (el.attr('data-mode') == 1) {
-		configureIncludeModeDisplay(el.attr('brkId'),0);
-	} else {
-		configureIncludeModeDisplay(el.attr('brkId'),1);
-	}
-
-	// Ajax call to inform the plugin core of the change
-	callPluginAjax({
-		data: {
-			action: "changeIncludeMode",
-			mode: el.attr('data-mode'),
-			id: el.attr('brkId')
-		}
-	});
-}
-
-// Update the broker icon and the include mode activation on reception of a new state event
+/*
+ * Update the broker icon and the include mode activation on reception of a new state event
+ */
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
 	showMqttClientInfo(_options);
-	setIncludeModeActivation(_options.brkId, _options.state);
 	if (_options.launchable == 'ok')
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').removeClass('disableCard')
 	else
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').addClass('disableCard')
 	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
 });
-
-// Called by the plugin core to inform about the automatic inclusion mode disabling
-$('body').off('jMQTT::disableIncludeMode').on('jMQTT::disableIncludeMode', function (_event,_options) {
-	// Change display accordingly
-	configureIncludeModeDisplay(_options['brkId'], 0);
-});
-
