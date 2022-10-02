@@ -75,9 +75,10 @@ sendVarToJS('jmqttIcons', $icons);
 td.fitwidth											{ white-space: nowrap; }
 div.eqLogicThumbnailContainer.containerAsTable i.fa-sign-in-alt.fa-rotate-90	{ margin-bottom: 0px; }
 span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:3px; }
+span.hiddenAsTable i.far.fa-square					{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:5px; }
 span.hiddenAsTable i.fas.status-circle				{ font-size:1em !important;  position:absolute;margin-top:23px;margin-left:55px; }
 span.hiddenAsTable i.fas.eyed						{ font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px; }
-span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px; }
+span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px;margin-left:-5px!important; }
 span.hiddenAsCard i.fas.status-circle				{ margin-right:6px; }
 textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font-weight: bold!important; }
 div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; }
@@ -88,7 +89,6 @@ i.fas.fa-minus-circle.cmdAction						{ margin-top: 5px; }
 textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospace; height: 90px; }
 .w30												{ width: 30px; }
 .w18												{ width: 18px; text-align: center; font-size: 0.9em; }
-.pdg1												{ padding-right:1px;padding-left:1px; }
 </style>
 
 <?php

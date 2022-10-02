@@ -230,9 +230,9 @@ $('.eqLogicDisplayCard[btn-data]').each(function () {
 				else
 					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Broker masqué}}"></i></a>');
 				if (data.include)
-					$(this).append('<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt warning w18 fa-rotate-90 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="inc-status fas fa-sign-in-alt warning w18 fa-rotate-90 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
 				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18 tooltips" title="{{Inclusion automatique désactivée}}"></i></a>');
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="inc-status far fa-square success w18 tooltips" title="{{Inclusion automatique désactivée}}"></i></a>');
 			}
 			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
 			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
@@ -244,7 +244,7 @@ $('.eqLogicDisplayCard[btn-data]').each(function () {
 				else
 					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash w18"></i></a>');
 				if (data.include)
-					$(this).append('<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt fa-rotate-90 w18"></i></a>');
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-sign-in-alt fa-rotate-90 w18"></i></a>');
 				else
 					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18"></i></a>');
 				if (data.bat == '0')
@@ -268,7 +268,7 @@ $('.eqLogicDisplayCard[btn-data]').each(function () {
 				else
 					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Equipement masqué}}"></i></a>');
 				if (data.include)
-					$(this).append('<a class="btn btn-xs cursor w30 pdg1"><i class="fas fa-sign-in-alt warning fa-rotate-90 w18 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
+					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-sign-in-alt warning fa-rotate-90 w18 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
 				else
 					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18 success tooltips" title="{{Inclusion automatique désactivée}}"></i></a>');
 				if (data.bat == '0')
