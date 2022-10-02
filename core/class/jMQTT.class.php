@@ -1791,7 +1791,15 @@ class jMQTT extends eqLogic {
 
 	public static function fromDaemon_brkDown($id) {
 		try { // Catch if broker is unknown / deleted
-			$broker = self::getBrokerFromId(intval($id));
+			$broker = self::byId($id);
+			if (!is_object($broker)) {
+				self::logger('warning', sprintf(__("Le Broker %s n'existe plus", __FILE__), $id));
+				return;
+			}
+			if ($broker->getType() != self::TYP_BRK) {
+				self::logger('error', sprintf(__("L'équipement %s n'est pas de type Broker", __FILE__), $id));
+				return;
+			}
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
 			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event / Remove STATUS CMD to fix issue https://community.jeedom.com/t/87060/54
 				$statusCmd->event(self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
