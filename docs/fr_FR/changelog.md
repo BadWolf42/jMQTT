@@ -1,12 +1,14 @@
 # Registre des évolutions
 
-## 2022-10-01 Beta
+## 2022-10-03 Beta
  - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**
  - Correction de problèmes de compatibilité avec Jeedom 3.3
  - Correction d'un problème de souscription lors du changement d'équipement de Broker
+ - Correction d'une erreur dans les logs lorsqu'un Broker n'a pas d'équipement qui lui est rattaché
+ - Correction d'une erreur lors de la suppression d'un Broker encore en fonctionnement
  - Mise en place d'un bandeau indiquant que Jeedom 3.3 ne sera plus supporté par les prochaines versions
  - Déplacement de l'ajout d'équipement jMQTT en haut de page
- - Suppression du mode Inclusion global (sera remplacé plus tard)
+ - Suppression du mode Inclusion global, déplacé dans les actions en haut à droite dans l'équipement Broker
  - Déplacement des équipements Broker au début de chaque sections (mis en évidence en jaune)
  - Changement de l'onglet Broker pour ressembler à la page de configuration du plugin MQTT Manager
  - Suppression de la gestion des certificats par upload (mis en base de données), cela se configure maintenant sur chaque Broker
@@ -14,7 +16,8 @@
  - Ajout d'un bouton de configuration avancée des équipements en TableView
  - Affichage de la liste des équipements orphelins avant les équipements rattachés à des brokers
  - Mise en surbrillance des changements en temps réel sur la page des Commandes d'un équipement
- - Ajout de 3 templates : "Fibaro FGRGBW-442 RGBW Controller 2" (merci jerome6994), "Shelly 1PM PLUS" (merci Furaxworld) et "Fibaro FGMS-001 Motion Sensor" (merci mimilamy2000)
+ - Changement concernant le nombre d'équipement sur chaque Broker est affiché sur la page principale
+ - Ajout de 4 templates : "Fibaro FGRGBW-442 RGBW Controller 2" (merci jerome6994), "Shelly 1PM PLUS" (merci Furaxworld), "Fibaro FGMS-001 Motion Sensor" (merci mimilamy2000) et Osram AB3257001NJ Smart+ (merci chris777c)
  - Passage de l'exécution des listeners (pour Pub. Auto) en arrière-plan, pour augmenter les performances
  - Dans le cas d'une commande action, si la valeur est vide, alors le tag correspondant est utilisé (slider, message, color, select)
  - Ajout de plus de détails lors de l'installation (et de l'échec) des dépendances
