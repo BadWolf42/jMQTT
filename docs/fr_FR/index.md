@@ -86,81 +86,122 @@ Donc, il faut créer un équipement dans jMQTT pour récupérer des données env
 
 Le plugin jMQTT est disponible dans le menu : `Plugins → Protocole domotique → jMQTT`.
 
-jMQTT posséde 2 types d'équipements:
-  - les **équipements de type Broker** gérant la connexion avec les Broker MQTT, appelés équipements Broker dans la suite;
-  - les **équipements "classiques"**, appélés simplement équipements dans la suite,
+Le panneau supérieur gauche, intitulé *Gestion*, permet de configurer le plugin :
 
-Le panneau supérieur gauche, intitulé *Gestion plugin et Broker*, permet de configurer le plugin, et de lister les équipements Broker.
+![Gestion du plugin](../images/gestion_plugin.png)
 
-![Gestion plugin et Broker](../images/gestion_plugin_et_brokers.png)
+Détail des différents boutons :
+  - Configuration : donne accès à la page de [Configuration du plugin](#configuration-du-plugin);
+  - Ajouter un broker : sert à [ajouter un client MQTT](#ajout-manuel-dun-équipement) pour accéder à un nouveau Broker MQTT;
+  - Santé : ouvre la [fenêtre de Santé](#santé-du-plugin) de jMQTT;
+  - Templates : ouvre la [fenêtre du Gestionnaire de Template](#gestion-des-templates);
+  - Ajouter : permet d'[ajouter manuellement un équipement](#ajout-manuel-dun-équipement) lié à un des Broker;
+<!--  - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).-->
+
+En-dessous se trouve un champ de recherche, puis un panneau listant les équipements par Broker :
+
+![Brokers](../images/gestion_brokers.png)
+
+jMQTT possède 2 types d'équipements. Il est très important de faire la distinction entre :
+  - les **équipements de type Broker**, qui sont les clients MQTT qui gèrent la connexion avec les Broker MQTT.
+On les retrouve toujours en début de section et ils sont facilement identifiables grâce à leur fond jaune et leur icone particulière.
+Ils sont souvent appelés **Broker** par abus de langage, ce sera le cas dans la suite de ce document;
+  - les **équipements "classiques"**, qui portent les commandes info/action, ils sont simplement appelés **équipement**.
 
 Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :
 
 ![Status Broker](../images/broker_status.png)
 
-* Vert: la connexion au Broker est opérationnelle
-* Orange: le démon tourne mais la connexion au Broker n'est pas établie
-* Rouge: le démon est arrêté
+* Vert : le service MQTT est joignable et la communication est opérationnelle
+* Orange : le démon n'arrive pas à se connecter au service MQTT, vérifiez les paramètres de configuration
+* Rouge : le Broker est désactivé ou le démon est inactif, vérifiez le démon et les paramètres de configuration
 
-Ensuite, pour chaque Broker, un panneau présente les équipements connectés à celui-ci.
-
-![eqpt panel](../images/eqpt_panel.png)
-
-Se trouve également sur ce panneau :
-  - Un bouton **+** permettant l'[ajout manuel d'un équipement](#ajout-manuel-dun-équipement);
-  - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).
+A la suite du Broker se trouve tous les équipements rattachés à celui-ci.
 
 Un équipement :
   - Grisé est inactif
-  - Présenté avec une petite icône d’inclusion superposée, est un équipement dont l'*Ajout automatique des commandes* est activé (détails dans [Onglet Equipement](#onglet-equipement))
   - Présenté avec une petite icône d'oeil barré ou non indique qu'il est non visible ou visible
+  - Présenté avec une petite icône d’inclusion superposée, est un équipement dont l'*Ajout automatique des commandes* est activé (détails dans [Onglet Equipement](#onglet-equipement))
+
+Il existe également une vue sous forme de table (TableView) :
+
+![Table View](../images/gestion_table_view.png)
+
+Elle s'active en cliquant sur le bouton tout à droite du champ de recherche (dans l'encadré rouge ci-dessus).
+
+En plus de retrouver dans cette vue les informations classiques (icone, objet, nom, s'il est activé), des icones à droite permettent de retrouver rapidement des informations importantes.
+  - Sur un Broker, on retrouvera 3 informations : son statut (OK, POK, NOK), s'il est visible et s'il est en inclusion automatique,
+  - Sur un Equipement, on retrouvera 5 informations : son statut d'activation, s'il est visible, s'il est en inclusion automatique, son état de batterie et son état de disponibilité.
+
+Enfin tout à droite, il est possible d'accéder directement à la "Configuration avancée" de l'équipement.
+
 
 ## Equipement Broker
 ### Ajout
 
 Dans la page de [Gestion des équipements](#gestion-des-équipements), cliquer sur le bouton **+** *Ajouter un Broker* et saisir son nom.
 
-Suite à sa création, un message indique que la commande *status* a été ajoutée à l'équipement. Celle-ci donne l'état de connexion au Broker MQTT de l'équipement Broker. Elle prend 2 valeurs : *online* et *offline*. Elle est publiée de manière persistante auprès du Broker. Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion. Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via un scénario.
+Suite à sa création, un message indique que la commande *status* a été ajoutée à l'équipement.
+Celle-ci donne l'état de connexion au Broker MQTT de l'équipement Broker. Elle prend 2 valeurs : *online* et *offline*.
+Elle est publiée de manière persistante auprès du Broker. Cet état permet à un équipement externe à Jeedom de connaitre son statut de connexion.
+Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via un scénario.
 
 ### Configuration
 
 ![Configuration du Broker](../images/eqpt_broker.png)
 
-Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement. Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le status du démon devrait passer à OK.
+Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement.
+Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le statut du démon devrait passer à OK.
 
-Pour modifier les informations de connexion au Broker, les paramètres sont:
-  - _IP/Nom de Domaine du Broker_ : adresse IP du Broker (par défaut localhost i.e. la machine hébergeant Jeedom);
-  - _Port du Broker_ : port du Broker (1883 par défaut);
-  - _Identifiant de Connexion_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
-    - Cet identifiant est aussi utilisé dans le topic de la commande info *status*. Le topic est automatiquement mis à jour si l'identifiant est modifié.
-  - _Compte et Mot de passe de Connexion_ : compte et mot de passe de connexion au Broker (laisser vide par défaut, notamment si jMQTT se charge de l’installation du Broker).
-  - _Topic de souscription en mode inclusion automatique des équipements_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
-  - _MQTT Sécurisé (TLS)_ : permet le chiffrement TLS des communications avec le Broker. Trois options sont offertes : Désactivé, Activé en utilisant les Autorités Publiques et Activé en utilisant un Autorité Personnalisée. Bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls)
-  - _Vérifier l'Autorité_ : visible si TLS est activé, vérifie que le certificat du Broker est valide et correspond bien à ce Broker (IP/FQDN & CA).
-  - _Autorité Personnalisée_ : visible si TLS est activé et utilise un Autorité Personnalisée, sélectionne l'autorité de certification attendue pour le Broker. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
-  - _Certificat Client Personnalisé_ : visible si TLS est activé, sélectionne le Certificat Client attendu par le Broker. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
-  - _Clé Privée Client Personnalisée_ : visible si TLS est activé, sélectionne la Clée Privée du Client premettant de discuter avec le Broker. Cette clé privée doit être le pendant du Certificat ci-dessus, si l'un est fournit l'autre est obligatoire. Les fichiers disponibles dans la liste déroulante se trouve dans le répertoire data/jmqtt/certs/ du plugin.
+Pour modifier les informations de connexion au Broker, les paramètres sont :
+  - Section _Paramètres d'accès au Broker_ (encadré 1)
+    - _Adresse du broker_ :
+      - Protocole utilisé pour communiquer avec le Broker :
+        - _mqtt_ pour des communications en clair,
+        - _mqtts_ pour activer le chiffrement (TLS) des communications avec le Broker.
+          Une fois cette option sélectionnée il sera possible de configurer les Certificats utilisés dans la partie de droite.
+      - Adresse IP ou nom de domaine du Broker : (par défaut localhost i.e. la machine hébergeant Jeedom);
+      - Port du Broker : port du Broker (1883 par défaut en mqtt et 8883 en mqtts);
+    - _Authentification_ : compte et mot de passe de connexion au Broker (laissez le champ vide si vous n'avez pas configuré votre Broker MQTT en conséquence, notamment si jMQTT se charge de l’installation du Broker).
+    - _Identifiant/ClientId_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
+      Cet identifiant est aussi utilisé dans le topic de la commande info *status*. Le topic est automatiquement mis à jour si l'identifiant est modifié.
+    - _Publier le statut_ : active/désactive la publication du statut de connexion de cet équipement Broker en MQTT sur le Broker.
+    - _Topic de souscription en mode inclusion_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
+
+  - Section _Paramètres de Sécurité_ (encadré 2), bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls) :
+    - Cette section apparait uniquement si le protocole mqtts est sélectionné
+    - _Vérifier le certificat_ : vérifie que le certificat du Broker est valide et correspond bien à ce Broker (IP/FQDN & CA).
+       Trois options sont offertes : Désactivé, Activé en utilisant les Autorités Publiques et Activé en utilisant un Autorité Personnalisée.
+    - _Autorité Personnalisée_ : visible si utilise un Autorité Personnalisée, sélectionne l'autorité de certification attendue pour le Broker.
+    - _Certificat Client_ : sélectionne le Certificat Client attendu par le Broker.
+    - _Clé Privée Client_ : visible si Certificat Client rempli, sélectionne la Clé Privée du Client permettant de discuter avec le Broker.
+      Cette clé privée client est le pendant du certificat client ci-dessus, si l'un est fourni l'autre est obligatoire.
 
 > **Attention**: _L'identifiant de connexion_ doit être unique par client par Broker. Sinon les clients portant le même identifiant vont se déconnecter mutuellement.
 
 Une aide contextuelle est également disponible pour chaque champ.
-La sauvegarde de la configuration relance le démon et la souscription au Broker MQTT avec les nouveaux paramètres.
+La sauvegarde de la configuration relance le client MQTT et la souscription au Broker MQTT avec les nouveaux paramètres.
+Il est aussi possible de relancer volontairement le client MQTT avec le bouton _(Re)Démarrer_ (encadré 3) en haut de la page.
 
 **Info**
 
- - Dès que l'équipement Broker est activé, son démon est lancé, se connecte au Broker MQTT et traite les messages.
+ - Dès que l'équipement Broker est activé, le démon se connecte au Broker MQTT et traite les messages.
  - Si vous désactivez un équipement Broker, les équipements associés ne recevront et n'enverront plus de messages.
  - En cas de déconnection intempestive au Broker MQTT, le démon tentera immédiatement une reconnexion, puis toutes les 15s.
 
-Chaque équipement Broker possède son propre fichier de log suffixé par le nom de l'équipement. Si l'équipement est renommé, le fichier de log le sera également.
+Chaque équipement Broker possède son propre fichier de log (encadré 4) suffixé par le nom de l'équipement.
+Si l'équipement est renommé, le fichier de log le sera également.
+
+
+Le mode inclusion automatique (encadré 5) permet la découverte et la création automatique des équipements.
+Il s’active, pour le Broker concerné, en cliquant sur le bouton *Mode inclusion* en haut à droite sur l'équipement Broker.
+Il se désactive en recliquant sur le même bouton, ou automatiquement après environ 3 minutes.
 
 
 ## Equipement
-### Inclusion automatique
 
-Le mode inclusion automatique permet la découverte et la création automatique des équipements. Il s’active, pour le Broker concerné, en cliquant sur le bouton *Mode inclusion*. Il se désactive en recliquant sur le même bouton, ou automatiquement après 2 à 3 min.
-
-Le plugin souscrit auprès du Broker le topic configuré dans [l'onglet Broker](#onglet-Broker) (\# par défaut, i.e. tous les topics) de l'équipement Broker concerné. A réception d’un message auquel aucun équipement n’a souscrit, le plugin crée automatiquement un équipement associé au topic de premier niveau.
+Le plugin souscrit auprès du Broker le topic configuré dans [l'onglet Broker](#onglet-Broker) (\# par défaut, i.e. tous les topics) de l'équipement Broker concerné. 
+A réception d’un message auquel aucun équipement n’a souscrit, le plugin crée automatiquement un équipement associé au topic de premier niveau.
 
 Prenons comme exemple les messages MQTT suivants :
 
@@ -429,7 +470,7 @@ Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion
 
 ![Modal Santé](../images/health.png)
 
-Les informations présentes sont : le nom, l'ID, le Topic de souscription, la date de Dernière communication, la Date de création et l'état des Brokers (Activation et communication, Visibilité et Auto inclusion) ainsi que des équipements (Activation, Visibilité, Inclusion automatique, Batterie et Disponibilité).
+Les informations présentes sont : le nom, l'ID, le Topic de souscription, la date de Dernière communication, la Date de création, l'état des Brokers, ainsi que le nombre de commande sur chaque équipement.
 
 # Gestion des templates
 
@@ -440,11 +481,7 @@ Dans un permier temps, il est possible de [créer](#création-dun-template-depui
 
 ![Boutons sur un Equipement](../images/eqpt_buttons.png)
 
-Ensuite, le gestionnaire de Template est présent dans la section *Gestion plugin et brokers* du plugin :
-
-![Gestion des templates](../images/gestion_templates.png)
-
-Il permet d'ajouter, de télécharger et de supprimer des templates et d'en visualiser les commandes.
+Ensuite, le gestionnaire de Template est présent dans la section *Gestion* de la page principale du plugin. Il permet d'ajouter, de télécharger et de supprimer des templates et d'en visualiser les commandes.
 
 ![Modal gestion des templates](../images/modal_gestion_templates.png)
 
