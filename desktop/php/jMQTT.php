@@ -175,7 +175,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		foreach ($eqNonBrokers as $id => $nonBrokers) {
 			if (! array_key_exists($id, $eqBrokers)) {
 				if (!$has_orphans) {
-					echo '<legend><i class="fas fa-table"></i>{{Equipements orphelins}}</legend>';
+					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}} <sup><i class="fas fa-exclamation-triangle tooltips" title="{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.<br>Il ne devrait pas y avoir d\'équipement orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					echo '<div class="eqLogicThumbnailContainer">';
 					$has_orphans = true;
 				}
