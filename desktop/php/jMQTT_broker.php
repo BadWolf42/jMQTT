@@ -58,9 +58,8 @@
 								<a class="btn btn-info eqLogicAction" data-action="modalViewLog" data-slaveId="-1" data-log=""></a>
 							</div>
 						</fieldset>
-					</form>
+					</form><br/>
 				</div>
-				<div class="form-actions"></div>
 			</div>
 		</div>
 	</div>
@@ -84,7 +83,7 @@
 							<div class="col-lg-7 input-group">
 								<span class="input-group-btn">
 									<select class="eqLogicAttr form-control roundedLeft tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
-										title="{{Choisir si le Broker attend une communication sécurité.<br />Pour plus d'information, se référer à la documentation.}}">
+										title="{{Choisir si le Broker attend une communication sécurisée.<br />Pour plus d'information, se référer à la documentation.}}">
 										<option>mqtt</option>
 										<option>mqtts</option>
 										<!--<option>ws</option>-->
@@ -101,7 +100,7 @@
 						</div>
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Authentification}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Nom d'utilisateur et Mot de passe permettant de se connecter au Broker.<br/>Remplir ces champs n'est obligatoire si le Broker est configuré pour.}}"></i></sup></label>
+							title="{{Nom d'utilisateur et Mot de passe permettant de se connecter au Broker.<br/>Remplir ces champs n'est obligatoire que si le Broker est configuré pour.}}"></i></sup></label>
 							<div class="col-lg-7 input-group">
 								<input class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="mqttUser" autocomplete="off" placeholder="{{Nom d'utilisateur}}" />
 								<span class="input-group-addon">:</span>
@@ -124,6 +123,7 @@
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPubStatus" checked>
 							</div>
 						</div>
+			<!-- TODO ADD here LWT topic, value online and value offline -->
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.

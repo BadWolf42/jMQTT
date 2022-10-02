@@ -75,19 +75,20 @@ sendVarToJS('jmqttIcons', $icons);
 td.fitwidth											{ white-space: nowrap; }
 div.eqLogicThumbnailContainer.containerAsTable i.fa-sign-in-alt.fa-rotate-90	{ margin-bottom: 0px; }
 span.hiddenAsTable i.fas.fa-sign-in-alt				{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:3px; }
+span.hiddenAsTable i.far.fa-square					{ font-size:0.9em !important;position:absolute;margin-top:67px;margin-left:5px; }
 span.hiddenAsTable i.fas.status-circle				{ font-size:1em !important;  position:absolute;margin-top:23px;margin-left:55px; }
 span.hiddenAsTable i.fas.eyed						{ font-size:0.9em !important;position:absolute;margin-top:25px;margin-left:4px; }
-span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px; }
+span.hiddenAsCard i.fas.fa-sign-in-alt				{ margin-right:10px;vertical-align:top;margin-top:-3px;margin-left:-5px!important; }
 span.hiddenAsCard i.fas.status-circle				{ margin-right:6px; }
 textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font-weight: bold!important; }
 div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; }
 textarea.eqLogicAttr.form-control.blured			{ filter: blur(4px); }
 textarea.eqLogicAttr.form-control.blured:hover		{ filter: none; }
 textarea.eqLogicAttr.form-control.blured:focus		{ filter: none; }
+i.fas.fa-minus-circle.cmdAction						{ margin-top: 5px; }
 textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospace; height: 90px; }
 .w30												{ width: 30px; }
 .w18												{ width: 18px; text-align: center; font-size: 0.9em; }
-.pdg1												{ padding-right:1px;padding-left:1px; }
 </style>
 
 <?php
@@ -174,7 +175,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		foreach ($eqNonBrokers as $id => $nonBrokers) {
 			if (! array_key_exists($id, $eqBrokers)) {
 				if (!$has_orphans) {
-					echo '<legend><i class="fas fa-table"></i>{{Equipements orphelins}}</legend>';
+					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}} <sup><i class="fas fa-exclamation-triangle tooltips" title="{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.<br>Il ne devrait pas y avoir d\'équipement orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					echo '<div class="eqLogicThumbnailContainer">';
 					$has_orphans = true;
 				}
@@ -187,14 +188,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 			echo '</div>';
 
 		foreach ($eqBrokers as $eqB) {
-			echo '<legend><i class="fas fa-table"></i> ';
-			if (!array_key_exists($eqB->getId(), $eqNonBrokers))
-				echo '{{Aucun équipement connectés à}}';
-			elseif (count($eqNonBrokers[$eqB->getId()]) == 1)
-				echo '{{1 équipement connectés à}}';
-			else
-				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
-			echo ' <b>' . $eqB->getName() . '</b></legend>';
+			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker }} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayEqLogicCard($eqB, $icons);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
@@ -211,9 +205,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	<div class="col-xs-12 eqLogic" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
-				<a class="btn btn-success btn-sm eqLogicAction typ-std" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std toDisable" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-brk roundedLeft toDisable" data-action="startIncludeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Mode inclusion}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-brk btn-danger roundedLeft toDisable" data-action="stopIncludeMode"><i class="fas fa-square"></i> {{Arrêter l'inclusion}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
@@ -231,11 +227,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		</div>
 		<div id="menu-bar" style="display: none;">
 			<div class="form-actions">
-				<a class="btn btn-default btn-sm eqLogicAction toDisable" data-action="addMQTTAction"><i class="fas fa-plus-circle"></i> {{Ajouter une commande action}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction toDisable" data-action="addMQTTInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une commande info}}</a>
+				<a class="btn btn-info btn-xs eqLogicAction toDisable" data-action="addMQTTAction"><i class="fas fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+				<a class="btn btn-warning btn-xs eqLogicAction toDisable" data-action="addMQTTInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une commande info}}</a>
 				<div class="btn-group pull-right" data-toggle="buttons">
-					<a class="btn btn-primary btn-sm eqLogicAction active" data-action="classicView"><input type="radio" autocomplete="off" checked><i class="fas fa-list-alt"></i> Classic </a>
-					<a class="btn btn-default btn-sm eqLogicAction" data-action="jsonView"><input type="radio" autocomplete="off"><i class="fas fa-sitemap"></i> JSON </a>
+					<a class="btn btn-primary btn-xs roundedLeft eqLogicAction active" data-action="classicView"><input type="radio" autocomplete="off" checked><i class="fas fa-list-alt"></i> Classic </a>
+					<a class="btn btn-default btn-xs roundedRight eqLogicAction" data-action="jsonView"><input type="radio" autocomplete="off"><i class="fas fa-sitemap"></i> JSON </a>
 				</div>
 			</div>
 			<hr style="margin-top: 5px; margin-bottom: 5px;">
@@ -247,6 +243,8 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 			<div role="tabpanel" class="tab-pane toDisable" id="brokertab">
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
+			<!-- TODO Add here realtime/stream tab, "Classic Discovery" tab and HA MQTT discovery tab -->
+			<!-- TODO Remove all commands on Brokers -->
 			<div role="tabpanel" class="tab-pane toDisable" id="commandtab">
 				<table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
 					<thead>
@@ -259,6 +257,10 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 							<th style="width:1px;">{{Unité}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
 							<th style="min-width:135px;width:135px;"></th>
+<!-- TODO Change when adding Advanced parameters
+							<th style="min-width:90px;width:100px;">{{Options}}</th>
+							<th style="min-width:160px;width:160px;"></th>
+-->
 						</tr>
 					</thead>
 					<tbody>
@@ -271,15 +273,3 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
-
-<script>
-
-<?php
-// Initialise the automatic inclusion button display according to include_mode configuration parameter
-foreach ($eqBrokers as $eqL) {
-	echo 'setIncludeModeActivation(' . $eqL->getId() . ',"' . $eqL->getMqttClientState() . '");';
-	echo 'configureIncludeModeDisplay(' . $eqL->getId() . ',' . $eqL->getIncludeMode() . ');';
-}
-?>
-
-</script>
