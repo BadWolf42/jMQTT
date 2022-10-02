@@ -188,14 +188,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 			echo '</div>';
 
 		foreach ($eqBrokers as $eqB) {
-			echo '<legend><i class="fas fa-table"></i> ';
-			if (!array_key_exists($eqB->getId(), $eqNonBrokers))
-				echo '{{Aucun équipement connectés à}}';
-			elseif (count($eqNonBrokers[$eqB->getId()]) == 1)
-				echo '{{1 équipement connectés à}}';
-			else
-				echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
-			echo ' <b>' . $eqB->getName() . '</b></legend>';
+			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker }} <b>' . $eqB->getName() . '</b> (' . count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayEqLogicCard($eqB, $icons);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
