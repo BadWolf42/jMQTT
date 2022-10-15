@@ -15,15 +15,6 @@
  */
 
 /*
- * Missing stopPropagation for textarea in command list
- * cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821 (integrated in v4.2.1)
- * TODO Remove me when Jeedom 4.1 is deprecated
- */
-$('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
-	event.stopPropagation()
-});
-
-/*
  * Missing stopPropagation for span.hiddenAsCard in plugin main view
  * Without this, it is impossible to click on a link in table view without entering the equipement
  */
@@ -1084,29 +1075,6 @@ function saveEqLogic(_eqLogic) {
 		// get hiden settings for Broker and remove them of eqLogic
 		_eqLogic = substract(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
 	}
-
-// TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
-	// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
-	// https://github.com/jeedom/core/pull/1825
-	// https://github.com/jeedom/core/pull/1829
-	for (i in _eqLogic.cmd) {
-		if (_eqLogic.cmd[i].type != 'action')
-			continue;
-		currentValue = _eqLogic.cmd[i].configuration.request;
-		if (currentValue === undefined)
-			continue;
-		currentValue = JSON.stringify(currentValue);
-		if (currentValue.length == 0)
-			continue;
-		// console.log("CMD: "+String(_eqLogic.cmd[i].id)+"="+currentValue);
-		if (currentValue[0] == '{')
-			_eqLogic.cmd[i].configuration.request = String.fromCharCode(6) + currentValue;
-		else if (currentValue.length == String.fromCharCode(6))
-			_eqLogic.cmd[i].configuration.request = '';
-		else if (currentValue.length >= 2 && currentValue[0] == String.fromCharCode(6) && currentValue[1] != '{')
-			_eqLogic.cmd[i].configuration.request = currentValue.substring(1);
-	}
-// End of DELETEME
 
 	// console.log('jMQTT After saveEqLogic:'+JSON.stringify(_eqLogic)); // TODO display when in debug
 	return _eqLogic;

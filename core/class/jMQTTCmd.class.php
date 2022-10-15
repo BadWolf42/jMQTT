@@ -227,12 +227,6 @@ class jMQTTCmd extends cmd {
 	 */
 	public function preSave() {
 		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
-// TODO: DELETEME: fix reached Jeedom Core stable since 4.2.7
-		// Add/remove special char before JSON starting by '{' because Jeedom Core breaks integer, boolean and null values
-		// https://github.com/jeedom/core/pull/1825
-		// https://github.com/jeedom/core/pull/1829
-		if (is_string($conf) && strlen($conf) >= 1 && $conf[0] == chr(6)) $this->setConfiguration(self::CONF_KEY_REQUEST, substr($conf, 1));
-// End of DELETEME
 		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
 		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
 			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
