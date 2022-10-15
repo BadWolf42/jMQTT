@@ -219,8 +219,6 @@ $(document).ready(function() {
 //
 // Actions on main plugin view
 //
-});
-
 $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Santé jMQTT}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=health').dialog('open');
