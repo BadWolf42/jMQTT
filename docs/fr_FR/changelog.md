@@ -1,12 +1,12 @@
 # Registre des évolutions
 
-## 2022-10-03 Beta
+## 2022-10-15 **Stable et Beta**
+ - **Création d'une branche spéciale pour Jeedom 3, voir plus bas**
  - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**
- - Correction de problèmes de compatibilité avec Jeedom 3.3
  - Correction d'un problème de souscription lors du changement d'équipement de Broker
  - Correction d'une erreur dans les logs lorsqu'un Broker n'a pas d'équipement qui lui est rattaché
  - Correction d'une erreur lors de la suppression d'un Broker encore en fonctionnement
- - Mise en place d'un bandeau indiquant que Jeedom 3.3 ne sera plus supporté par les prochaines versions
+ - Correction d'un problème de conversion des valeurs des batteries
  - Déplacement de l'ajout d'équipement jMQTT en haut de page
  - Suppression du mode Inclusion global, déplacé dans les actions en haut à droite dans l'équipement Broker
  - Déplacement des équipements Broker au début de chaque sections (mis en évidence en jaune)
@@ -25,7 +25,19 @@
  - Découpage de Changelog en 2 pages pour une meilleure lisibilité
  - Grosse mise à jour de la documentation avec plus d'explications autour de MQTT en général
  - Mise à jour de la bibliothèque galbar/jsonpath -> 2.1
+ - Retrait des correctifs temporaires liés à Jeedom Core 3.3, 4.0 et 4.1.
  - Corrections syntaxiques et orthographiques & Changelog
+
+## 2022-10-15 **Branche Jeedom v3**
+ - Création d'une branche spéciale pour Jeedom 3 (il n'y aura plus de mise à jour dans le futur)
+ - Mise en place d'un bandeau indiquant que Jeedom 3 ne sera plus supporté par les prochaines versions
+ - Correction des derniers problèmes de compatibilité avec Jeedom 3.3
+ - Correction d'un problème de souscription lors du changement d'équipement de Broker
+ - Correction d'une erreur lors de la suppression d'un Broker encore en fonctionnement
+ - Correction d'un problème de conversion des valeurs des batteries
+ - Passage de l'exécution des listeners (pour Pub. Auto) en arrière-plan, pour augmenter les performances
+ - Mise à jour de la bibliothèque galbar/jsonpath -> 2.1
+ - Corrections syntaxiques et orthographiques
 
 ## 2022-07-25
  - Correction de problèmes avec les Heartbeat
