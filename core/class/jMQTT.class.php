@@ -1484,8 +1484,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		// TODO: Check also if Mosquitto can be installed
-		if (config::byKey('installMosquitto', 'jMQTT', 0) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
+		if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
 			self::logger('debug', __("Relancez les dépendances, le paquet Debian Mosquitto est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
