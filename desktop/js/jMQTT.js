@@ -15,15 +15,6 @@
  */
 
 /*
- * Missing stopPropagation for textarea in command list
- * cf PR to Jeedom Core : https://github.com/jeedom/core/pull/1821 (integrated in v4.2.1)
- * TODO Remove me when Jeedom 4.1 is deprecated
- */
-$('#div_pageContainer').on('dblclick', '.cmd textarea', function(event) {
-	event.stopPropagation()
-});
-
-/*
  * Missing stopPropagation for span.hiddenAsCard in plugin main view
  * Without this, it is impossible to click on a link in table view without entering the equipement
  */
