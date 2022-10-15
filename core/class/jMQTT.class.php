@@ -483,7 +483,7 @@ class jMQTT extends eqLogic {
 		if (!is_null($uuid)) {
 			// Search for a jMQTT Eq with $uuid, if found apply template to it
 			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
-			$eqpts = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+			$eqpts = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 			foreach ($eqpts as $eqpt) {
 				// If it's attached to correct broker
 				if ($eqpt->getBrkId() == $broker->getId()) {
@@ -593,7 +593,7 @@ class jMQTT extends eqLogic {
 	public static function getBrokers() {
 		$type = json_encode(array('type' => self::TYP_BRK));
 		/** @var jMQTT[] $brokers */
-		$brokers = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+		$brokers = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 		$returns = array();
 		foreach ($brokers as $broker) {
 			$returns[$broker->getId()] = $broker;
@@ -627,19 +627,20 @@ class jMQTT extends eqLogic {
 			if ($this->getType() == self::TYP_EQPT)
 				$this->log('info', sprintf(__("L'équipement #%s# n'est pas Inscrit à un Topic", __FILE__), $this->getHumanName()));
 			else
-				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getName()));
+				$this->log('info', sprintf(__("Le Broker %s n'a pas de Topic de souscription", __FILE__), $this->getHumanName()));
 			return;
 		}
 		$broker = $this->getBroker();
 		// If broker eqpt is disabled, don't need to send subscribe
-		if(!$broker->getIsEnable())
+		if(!$broker->getIsEnable()) {
+			$this->log('debug', sprintf(__("Le Broker %1\$s n'est pas actif, impossible de s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
 			return;
+		}
 		if ($this->getType() == self::TYP_EQPT)
 			$this->log('info', sprintf(__("L'équipement #%1\$s# s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
 		else
-			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
+			$this->log('info', sprintf(__("Le Broker %1\$s s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getHumanName(), $topic, $qos));
 		self::toDaemon_subscribe($broker->getId(), $topic, $qos);
-
 	}
 
 	/**
@@ -660,7 +661,7 @@ class jMQTT extends eqLogic {
 			return;
 		// Find eqLogic using the same topic AND the same Broker
 		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
-		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
+		$eqLogics = jMQTT::byTypeAndSearhConfiguration(__CLASS__, $topicConfiguration); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 		foreach ($eqLogics as $eqLogic) {
 			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
 				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
@@ -905,9 +906,10 @@ class jMQTT extends eqLogic {
 
 				// brkId changed (action moveToBroker in jMQTT.ajax.php)
 				if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] != $this->getConf(self::CONF_KEY_BRK_ID)) {
-
-					//need to unsubscribe the topic on the PREVIOUS Broker
+					//need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
 					$this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					//force Broker change
+					$this->_broker = self::getBrokerFromId($this->getBrkId());
 					//and subscribe on the new broker
 					$subscribeRequested = true;
 				}
@@ -1465,22 +1467,25 @@ class jMQTT extends eqLogic {
 		$return['progress_file'] = $depProgressFile;
 		$return['state'] = self::MQTTCLIENT_OK;
 
-		if (exec(system::getCmdSudo() . "cat " . dirname(__FILE__) . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
-			self::logger('debug', __("Le package PHP JsonPath est manquant, relancez les dépendances", __FILE__));
+		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
+			self::logger('debug', __("Relancez les dépendances, le package PHP JsonPath est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
-		if (!file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/python3')) {
-			self::logger('debug', __("Le venv Python n'a pas encore été créé, relancez les dépendances", __FILE__));
+		if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
+			self::logger('debug', __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
-		}
-		elseif (exec(dirname(__FILE__) . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir --no-color -r '.dirname(__FILE__) . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null | wc -l') > 0) {
-			self::logger('debug', __("Une bibliothèque Python requise est manquante dans le venv, relancez les dépendances", __FILE__));
-			$return['state'] = self::MQTTCLIENT_NOK;
+		} else {
+			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
+			if (count($output) > 0) {
+				// TODO Make this debug message more verbose/explicit
+				self::logger('error', __("Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv : ", __FILE__).'<br />'.implode('<br />', $output));
+				$return['state'] = self::MQTTCLIENT_NOK;
+			}
 		}
 
 		if (config::byKey('installMosquitto', 'jMQTT', 1) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
-			self::logger('debug', __("Le paquet Debian Mosquitto est manquant, relancez les dépendances", __FILE__));
+			self::logger('debug', __("Relancez les dépendances, le paquet Debian Mosquitto est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
@@ -1785,7 +1790,15 @@ class jMQTT extends eqLogic {
 
 	public static function fromDaemon_brkDown($id) {
 		try { // Catch if broker is unknown / deleted
-			$broker = self::getBrokerFromId(intval($id));
+			$broker = self::byId($id);
+			if (!is_object($broker)) {
+				self::logger('warning', sprintf(__("Le Broker %s n'existe plus", __FILE__), $id));
+				return;
+			}
+			if ($broker->getType() != self::TYP_BRK) {
+				self::logger('error', sprintf(__("L'équipement %s n'est pas de type Broker", __FILE__), $id));
+				return;
+			}
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
 			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event / Remove STATUS CMD to fix issue https://community.jeedom.com/t/87060/54
 				$statusCmd->event(self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
@@ -2393,7 +2406,7 @@ class jMQTT extends eqLogic {
 	public static function byBrkId($id) {
 		$brkId = json_encode(array('brkId' => $id));
 		/** @var jMQTT[] $eqpts */
-		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
+		$returns = self::byTypeAndSearhConfiguration(jMQTT::class, substr($brkId, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
 		return $returns;
 	}
 

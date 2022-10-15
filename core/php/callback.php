@@ -21,7 +21,7 @@ require_once dirname(__FILE__) . '/../../core/class/jMQTT.class.php';
 if (!jeedom::apiAccess(init('apikey'), 'jMQTT')) {	// Security
 	echo 'Unauthorized access.';
 	if (init('apikey') != '')
-		jMQTT::logger('error', sprintf(__("Accès non autorisé depuis %1\$s, avec la clé API commenceant par %2\$.8s...", __FILE__), $_SERVER['REMOTE_ADDR'], init('apikey')));
+		jMQTT::logger('error', sprintf(__("Accès non autorisé depuis %1\$s, avec la clé API commençant par %2\$.8s...", __FILE__), $_SERVER['REMOTE_ADDR'], init('apikey')));
 	else
 		jMQTT::logger('error', sprintf(__("Accès non autorisé depuis %s (pas de clé API)", __FILE__), $_SERVER['REMOTE_ADDR']));
 	die();
