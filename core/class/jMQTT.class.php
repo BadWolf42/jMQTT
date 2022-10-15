@@ -482,7 +482,7 @@ class jMQTT extends eqLogic {
 		if (!is_null($uuid)) {
 			// Search for a jMQTT Eq with $uuid, if found apply template to it
 			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
-			$eqpts = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
+			$eqpts = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
 			foreach ($eqpts as $eqpt) {
 				// If it's attached to correct broker
 				if ($eqpt->getBrkId() == $broker->getId()) {
@@ -592,7 +592,7 @@ class jMQTT extends eqLogic {
 	public static function getBrokers() {
 		$type = json_encode(array('type' => self::TYP_BRK));
 		/** @var jMQTT[] $brokers */
-		$brokers = self::byTypeAndSearhConfiguration(jMQTT::class, substr($type, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
+		$brokers = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
 		$returns = array();
 		foreach ($brokers as $broker) {
 			$returns[$broker->getId()] = $broker;
@@ -660,7 +660,7 @@ class jMQTT extends eqLogic {
 			return;
 		// Find eqLogic using the same topic AND the same Broker
 		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
-		$eqLogics = jMQTT::byTypeAndSearhConfiguration(__CLASS__, $topicConfiguration); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
+		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
 		foreach ($eqLogics as $eqLogic) {
 			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
 				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
@@ -2397,7 +2397,7 @@ class jMQTT extends eqLogic {
 	public static function byBrkId($id) {
 		$brkId = json_encode(array('brkId' => $id));
 		/** @var jMQTT[] $eqpts */
-		$returns = self::byTypeAndSearhConfiguration(jMQTT::class, substr($brkId, 1, -1)); // TODO Remove support of 3.3: byTypeAndSearhConfiguration -> byTypeAndSearchConfiguration
+		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
 		return $returns;
 	}
 
