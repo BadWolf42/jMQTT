@@ -2,6 +2,10 @@
 if (! isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
+
+// TODO check if needed: detect Jeedom version (4.2 or +)
+// $jeedom_v42 = strpos(trim(config::byKey('version')), '4.2.') === 0;
+
 sendVarToJS('eqType', 'jMQTT');
 /** @var jMQTT[][] $eqNonBrokers */
 $eqNonBrokers = jMQTT::getNonBrokers();
@@ -135,11 +139,6 @@ function displayEqLogicCard($eqL, $icons) {
 <div id="div_newEqptMsg"></div>
 <div id="div_inclusionModeMsg"></div>
 <?php
-// Warning banner for Jeedom v3 users.
-if(strpos(trim(config::byKey('version')), '3.') === 0) {
-	echo '<span class="label control-label label-danger" style="width:100%;font-size:13px!important;padding:0px;">{{Ceci est la dernière version de jMQTT supportant Jeedom 3. Passez Jeedom en version 4 pour bénéficier des prochaines évolutions de jMQTT}}</span>';
-}
-
 function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
 	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
