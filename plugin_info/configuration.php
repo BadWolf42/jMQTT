@@ -24,7 +24,6 @@ if (!isConnect()) {
 }
 
 ?>
-<div class="eventDisplayMini"></div>
 <form class="form-horizontal">
 	<div class="row">
 	<div class="col-sm-6">
@@ -90,9 +89,9 @@ $('#bt_jmqttUrlOverride').on('click', function (){
 		},
 		success: function(data) {
 			if (data.state != 'ok')
-				$('.eventDisplayMini').showAlert({message: data.result,level: 'danger'});
+				$.fn.showAlert({message: data.result,level: 'danger'});
 			else
-				$('.eventDisplayMini').showAlert({message: '{{Modification effectuée. Relancez le Démon.}}' ,level: 'success'});
+				$.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}' ,level: 'success'});
 		}
 	});
 });
@@ -129,9 +128,9 @@ if (!$btSave.hasClass('jmqttLog')) {
 				},
 				success: function(data) {
 					if (data.state == 'ok') {
-						$('.eventDisplayMini').showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}" ,level: 'success'});
+						$.fn.showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}" ,level: 'success'});
 					}
-					// setTimeout(function() { $('.eventDisplayMini').hideAlert() }, 3000);
+					// setTimeout(function() { $.fn.hideAlert() }, 3000);
 				}
 			});
 		}

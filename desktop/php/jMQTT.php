@@ -133,12 +133,6 @@ function displayEqLogicCard($eqL, $icons) {
 	echo "</div>\n";
 }
 
-?>
-
-<div id="div_cmdMsg"></div>
-<div id="div_newEqptMsg"></div>
-<div id="div_inclusionModeMsg"></div>
-<?php
 function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
 	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';

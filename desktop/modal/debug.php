@@ -20,12 +20,6 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 ?>
-	<div class="floatingbar">
-		<div style="display: none;" id="md_jmqttDebug"></div>
-	</div>
-
-
-<!-- <div class="hasfloatingbar col-xs-12 col-lg-12" style=""> -->
 <!--
 	<div class="floatingbar">
 		<div class="input-group">
@@ -47,7 +41,7 @@ function callDebugAjax(_params) {
 		},
 		success: function (data) {
 			if (data.state != 'ok') {
-				$('#div_alert').showAlert({message: data.result, level: 'danger'});
+				$.fn.showAlert({message: data.result, level: 'danger'});
 			}
 			else {
 				if (typeof _params.success === 'function') {
@@ -194,10 +188,10 @@ $('#bt_debugAddConfig').on('click', function () {
 					val: $("#debugVal").val()
 				},
 				error: function(error) {
-					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
-					$('#md_jmqttDebug').showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
+					$.fn.showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
 					var row = $('#bt_debugTabConfig tbody').prepend('<tr />').children('tr:first');//.text($("#debugVal").val());
 					row.append('<td class="key">'+$("#debugKey").val()+'</td>');
 					row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
@@ -227,10 +221,10 @@ $('#bt_debugTabConfig').on('click', '.bt_debugEditConfig', function () {
 					val: $("#debugVal").val()
 				},
 				error: function(error) {
-					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
-					$('#md_jmqttDebug').showAlert({message: '{{Paramètre de config interne modifié.}}', level: 'success'});
+					$.fn.showAlert({message: '{{Paramètre de config interne modifié.}}', level: 'success'});
 					tr.find('.val').text($("#debugVal").val());
 				}
 			});
@@ -256,10 +250,10 @@ $('#bt_debugTabConfig').on('click', '.bt_debugDelConfig', function () {
 					key : debugKey
 				},
 				error: function(error) {
-					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
-					$('#md_jmqttDebug').showAlert({message: '{{Paramètre de config interne supprimé.}}', level: 'success'});
+					$.fn.showAlert({message: '{{Paramètre de config interne supprimé.}}', level: 'success'});
 					tr.remove();
 				}
 			});
@@ -410,10 +404,10 @@ $('#bt_debugAddCache').on('click', function () {
 					val: $("#debugVal").val()
 				},
 				error: function(error) {
-					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
-					$('#md_jmqttDebug').showAlert({message: '{{Paramètre de cache interne ajouté.}}', level: 'success'});
+					$.fn.showAlert({message: '{{Paramètre de cache interne ajouté.}}', level: 'success'});
 					var row = $('#bt_debugTabCache tbody').prepend('<tr />').children('tr:first');//.text($("#debugVal").val());
 					row.append('<td class="key">'+$("#debugKey").val()+'</td>');
 					row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
@@ -443,10 +437,10 @@ $('#bt_debugTabCache').on('click', '.bt_debugEditCache', function () {
 					val: $("#debugVal").val()
 				},
 				error: function(error) {
-					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
-					$('#md_jmqttDebug').showAlert({message: '{{Paramètre du cache interne modifié.}}', level: 'success'});
+					$.fn.showAlert({message: '{{Paramètre du cache interne modifié.}}', level: 'success'});
 					tr.find('.val').text($("#debugVal").val());
 				}
 			});
@@ -472,10 +466,10 @@ $('#bt_debugTabCache').on('click', '.bt_debugDelCache', function () {
 					key : debugKey
 				},
 				error: function(error) {
-					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
-					$('#md_jmqttDebug').showAlert({message: '{{Paramètre du cache interne supprimé.}}', level: 'success'});
+					$.fn.showAlert({message: '{{Paramètre du cache interne supprimé.}}', level: 'success'});
 					tr.remove();
 				}
 			});
@@ -618,10 +612,10 @@ $('#bt_debugToDaemonRaw').on('click', function () {
 					val: $("#debugVal").val()
 				},
 				error: function(error) {
-					$('#md_jmqttDebug').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
-					$('#md_jmqttDebug').showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
+					$.fn.showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
 					var row = $('#bt_debugTabConfig tbody').prepend('<tr />').children('tr:first');//.text($("#debugVal").val());
 					row.append('<td class="key">'+$("#debugKey").val()+'</td>');
 					row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');

@@ -33,7 +33,7 @@ jmqtt.callPluginAjax = function(_params) {
 		},
 		success: function (data) {
 			if (data.state != 'ok') {
-				$('#div_alert').showAlert({message: data.result, level: 'danger'});
+				$.fn.showAlert({message: data.result, level: 'danger'});
 			}
 			else {
 				if (typeof _params.success === 'function') {
@@ -141,13 +141,13 @@ jmqtt.showMqttClientInfo = function(data) {
 		if (data.include) {
 			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').hasClass('fa-sign-in-alt')) { // Only if Include Mode is disabled
 				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').removeClass('far fa-square success').addClass('fas fa-sign-in-alt fa-rotate-90 warning');
-				$('#div_inclusionModeMsg').showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + data.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
+				$.fn.showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + data.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
 			}
 		} else {
 			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').hasClass('fa-square')) { // Only if Include Mode is enabled
 				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
-				$('#div_inclusionModeMsg').hideAlert();
-				$('#div_inclusionModeMsg').showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + data.name + '</b>.', level: 'warning'});
+				$.fn.hideAlert();
+				$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + data.name + '</b>.', level: 'warning'});
 			}
 		}
 
@@ -300,7 +300,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 				type: eqType,
 				eqLogics: [ $.extend({name: result}, {type: 'broker', brkId: -1}) ],
 				error: function (error) {
-					$('#div_alert').showAlert({message: error.message, level: 'danger'});
+					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
 				success: function (data) {
 					var url = jmqtt.initPluginUrl();
@@ -354,19 +354,19 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 		callback: function (result){ if (result) {
 			var broker = $('#addJmqttBrkSelector').value();
 			if (broker === undefined || broker == null || broker == '' || broker == false) {
-				$('#div_alert').showAlert({message: "{{Broker invalide !}}", level: 'warning'});
+				$.fn.showAlert({message: "{{Broker invalide !}}", level: 'warning'});
 				return false;
 			}
 			var eqName = $('#addJmqttEqName').value();
 			if (eqName === undefined || eqName == null || eqName === '' || eqName == false) {
-				$('#div_alert').showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
+				$.fn.showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
 				return false;
 			}
 			jeedom.eqLogic.save({
 				type: eqType,
 				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', brkId: broker}) ], // TODO Set brkId here
 				error: function (error) {
-					$('#div_alert').showAlert({message: error.message, level: 'danger'});
+					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
 				success: function (data) {
 					var url = jmqtt.initPluginUrl();
@@ -393,7 +393,7 @@ $('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function (
 			type: eqType,
 			id: $('.eqLogicAttr[data-l1key=id]').value(),
 			error: function (error) {
-				$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				$.fn.showAlert({message: error.message, level: 'danger'});
 			},
 			success: function () {
 				var url = jmqtt.initPluginUrl();
@@ -423,7 +423,7 @@ $('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function (
 			}
 		});
 	} else {
-		$('#div_alert').showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
+		$.fn.showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
 	}
 });
 
@@ -905,7 +905,7 @@ function printEqLogic(_eqLogic) {
 			configuration: $('#div_broker_log').getValues('.configKey')[0],
 			plugin: 'jMQTT',
 			error: function (error) {
-				$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				$.fn.showAlert({message: error.message, level: 'danger'});
 			},
 			success: function (data) {
 				$('#div_broker_log').setValues(data, '.configKey');
@@ -929,7 +929,7 @@ function printEqLogic(_eqLogic) {
 			id: eqId,
 			filter: {type: 'info', subType: 'numeric'},
 			error: function (error) {
-				$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				$.fn.showAlert({message: error.message, level: 'danger'});
 			},
 			success: function (result) {
 				bat.append(result);
@@ -939,7 +939,7 @@ function printEqLogic(_eqLogic) {
 			id: eqId,
 			filter: {type: 'info', subType: 'binary'},
 			error: function (error) {
-				$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				$.fn.showAlert({message: error.message, level: 'danger'});
 			},
 			success: function (result) {
 				avl.append(result);
@@ -1197,7 +1197,7 @@ function addCmdToTable(_cmd) {
 			id: $('.eqLogicAttr[data-l1key=id]').value(),
 			filter: {type: 'info'},
 			error: function (error) {
-				$('#div_alert').showAlert({message: error.message, level: 'danger'});
+				$.fn.showAlert({message: error.message, level: 'danger'});
 			},
 			success: function (result) {
 				tr.find('.cmdAttr[data-l1key=value]').append(result);
@@ -1262,10 +1262,10 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
 	// If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
 	// Otherwise: display an alert message and reload the page
 	if (modifyWithoutSave || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
-		$('#div_newEqptMsg').showAlert({message: msg + '.', level: 'warning'});
+		$.fn.showAlert({message: msg + '.', level: 'warning'});
 	}
 	else {
-		$('#div_newEqptMsg').showAlert({
+		$.fn.showAlert({
 			message: msg + '. {{La page va se réactualiser automatiquement}}.',
 			level: 'warning'
 		});
@@ -1286,13 +1286,8 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
  * @param _options['cmd_name'] string name of the new command
  */
 $('body').off('jMQTT::cmdTopicMismatch').on('jMQTT::cmdTopicMismatch', function(_event,_options) {
-	if ($('#div_cmdMsg').is(':empty') || $('#div_cmdMsg').is(':hidden'))
-		var msg = '{{La commande}} <b>' + _options['cmd_name'] + "</b> {{a un topic incompatible du topic d'inscription de l\'équipement}}" +
-		' <b>' + _options['eqlogic_name'] + '</b>.';
-	else
-		var msg = "{{Plusieurs commandes ont des topics incompatibles du topic d'inscription de l\'équipement}} <b>" + _options['eqlogic_name'] + '</b>.';
-
-	$('#div_cmdMsg').showAlert({message: msg, level: 'warning'});
+	var msg = '{{La commande}} <b>' + _options['cmd_name'] + "</b> {{a un topic incompatible du topic d'inscription de l\'équipement}}" + ' <b>' + _options['eqlogic_name'] + '</b>.';
+	$.fn.showAlert({message: msg, level: 'warning'});
 });
 
 /**
@@ -1313,11 +1308,11 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 	// If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
 	if (modifyWithoutSave || ( $('.eqLogic').is(":visible") && $('.eqLogicAttr[data-l1key=id]').value() != _options['eqlogic_id'] ) ||
 			$('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
-		$('#div_cmdMsg').showAlert({message: msg, level: 'warning'});
+		$.fn.showAlert({message: msg, level: 'warning'});
 	}
 	// Otherwise: display an alert message and reload the page
 	else {
-		$('#div_cmdMsg').showAlert({
+		$.fn.showAlert({
 			message: msg + ' {{La page va se réactualiser automatiquement}}.',
 			level: 'warning'
 		});

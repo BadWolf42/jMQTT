@@ -99,7 +99,7 @@ $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
 	var eqId = $(this).closest('tr').find('.hId').value();
 	// console.log('removeEq', $(this).closest('tr').find('.hId'), $(this).closest('tr').find('.hName').attr('data-key'), this);
 	if (eqId == undefined) {
-		$('#div_alert').showAlert({message: '{{Veuillez sélectionner un équipement à supprimer}}', level: 'danger'});
+		$.fn.showAlert({message: '{{Veuillez sélectionner un équipement à supprimer}}', level: 'danger'});
 		return;
 	}
 	var eqName = $(this).closest('tr').find('.hName').attr('data-key');
@@ -109,7 +109,7 @@ $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
 				type: 'jMQTT',
 				id: eqId,
 				error: function (error) {
-					$('#div_alert').showAlert({message: error.message, level: 'danger'});
+					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
 				success: function () {
 					var url = initPluginUrl();
