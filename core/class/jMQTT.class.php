@@ -521,18 +521,6 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Clean this equipment from parameters that are no more used due to plugin evolution
-	 */
-	public function cleanEquipment() {
-		$this->setConfiguration('prev_Qos', null);
-		$this->setConfiguration('prev_isActive', null);
-		$this->setConfiguration('previousIsEnable', null);
-		$this->setConfiguration('previousIsVisible', null);
-		$this->setConfiguration('reload_d', null);
-		$this->setConfiguration('topic', null);
-	}
-
-	/**
 	 * Overload the equipment copy method
 	 * All information are copied but: suscribed topic (left empty), enable status (left disabled) and
 	 * information commands.
@@ -615,7 +603,6 @@ class jMQTT extends eqLogic {
 		}
 		return $returns;
 	}
-
 
 	/**
 	 * subscribe topic, ALWAYS
@@ -892,12 +879,18 @@ class jMQTT extends eqLogic {
 					}
 				}
 
-				// brkId changed (action moveToBroker in jMQTT.ajax.php)
+				// brkId changed
 				if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] != $this->getConf(self::CONF_KEY_BRK_ID)) {
+					// Get old and new Broker
+					$old_broker = self::getBrokerFromId($this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					$new_broker = self::getBrokerFromId($this->getBrkId());
+					// Log on old and new Broker
+					$old_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# vers le broker %2\$s", __FILE__), $this->getHumanName(), $new_broker->getName()));
+					$new_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# depuis le broker %2\$s", __FILE__), $this->getHumanName(), $old_broker->getName()));
 					//need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
 					$this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
-					//force Broker change
-					$this->_broker = self::getBrokerFromId($this->getBrkId());
+					//force Broker change in current object
+					$this->_broker = $new_broker;
 					//and subscribe on the new broker
 					$subscribeRequested = true;
 				}

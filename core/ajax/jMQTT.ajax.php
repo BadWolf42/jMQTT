@@ -133,23 +133,6 @@ try {
 		ajax::success($new_broker->startMqttClient(true));
 	}
 
-	if (init('action') == 'moveToBroker') {
-		/** @var jMQTT $eqpt */
-		// TODO INVESTIGATE AND FIX BUG: Move cmd to other broker or Delete Broker -> jMQTT daemon failure
-
-		$eqpt = jMQTT::byId(init('id'));
-		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
-			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
-		}
-		$new_broker = jMQTT::getBrokerFromId(init('brk_id'));
-		jMQTT::logger('info', sprintf(__("Déplacement de l'Equipement #%1\$s# du broker %2\$s vers le broker %3\$s", __FILE__), $eqpt->getHumanName(), $eqpt->getBroker()->getName(), $new_broker->getName()));
-		$eqpt->setBrkId($new_broker->getId());
-		$eqpt->cleanEquipment();
-		$eqpt->save();
-
-		ajax::success();
-	}
-
 	if (init('action') == 'getBrokerList') {
 		$returns = array();
 		foreach (jMQTT::getBrokers() as $id => $brk)

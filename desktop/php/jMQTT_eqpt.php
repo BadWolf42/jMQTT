@@ -49,11 +49,8 @@
 
 		<div class="form-group typ-std">
 			<label class="col-sm-3 control-label">{{Broker associé}}</label>
-			<div class="col-sm-2">
-				<select id="broker" class="eqLogicAttr form-control"></select>
-			</div>
-			<div class="col-sm-1">
-				<a class="btn btn-success btn-sm eqLogicAction" data-action="move_broker"><i class="icon jeedomapp-done"></i></a>
+			<div class="col-sm-3">
+				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="brkId"></select>
 			</div>
 		</div>
 

@@ -468,30 +468,6 @@ $('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function (
 	}
 });
 
-$('.eqLogicAction[data-action=move_broker]').off('click').on('click', function () {
-	var id = $('.eqLogicAttr[data-l1key=id]').value();
-	var brk_id = $('#broker').val();
-	if (id != undefined && brk_id != undefined) {
-		bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fas fa-exclamation-triangle" />' +
-			'</span></td><td style="vertical-align:middle">' + "{{Vous êtes sur le point de changer l'équipement de broker}}" +
-			'.<br>' + '{{Êtes vous sûr ?}}' + '</td></tr></table>', function (result) {
-			if (result) {
-				callPluginAjax({
-					async: false,
-					data: {
-						action: 'moveToBroker',
-						id: id,
-						brk_id: brk_id
-					},
-					success: function (data) {
-						window.location.reload();
-					}
-				});
-			}
-		});
-	}
-});
-
 //
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
 //
@@ -604,7 +580,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', functi
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
 	if($(this).val() == "") {
-		var brokername = $('#broker option:selected').text();
+		var brokername = $('.eqLogicAttr[data-l1key=configuration][data-l2key=brkId] option:selected').text();
 		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
 		$(this).val(brokername+'/'+eqName+'/#');
 	}
@@ -1017,7 +993,7 @@ function printEqLogic(_eqLogic) {
 	}
 
 	// Initialize the broker dropbox
-	var brokers = $("#broker");
+	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=brkId]');
 	brokers.empty();
 	$.each( eqBrokers, function(key, name) {
 		brokers.append(new Option(name, key));
