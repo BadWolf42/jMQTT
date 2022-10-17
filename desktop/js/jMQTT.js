@@ -24,7 +24,6 @@ $('.eqLogicDisplayCard').on('click', 'span.hiddenAsCard', function(event) {
 
 //To memorise page refresh timeout when set
 var refreshTimeout;
-var timeout_refreshMqttClientInfo = null;
 
 function callPluginAjax(_params) {
 	$.ajax({
@@ -168,13 +167,6 @@ function showMqttClientInfo(data) {
 			}
 		}
 	}
-
-	// TODO Check if this timer/refresh is still needed !
-	if ($("#div_broker_mqttclient").is(':visible')) {
-		clearTimeout(timeout_refreshMqttClientInfo);
-		timeout_refreshMqttClientInfo = setTimeout(refreshMqttClientInfo, 5000);
-	}
-	// /TODO
 }
 
 function refreshMqttClientInfo() {
@@ -205,21 +197,6 @@ function setIncludeMode(_id, _mode) {
 		}
 	});
 }
-
-/*
- * Observe attribute change of #brokertab. When tab is made visible, trigger refreshMqttClientInfo
- */
-// TODO Check if "observer" can be removed -> "jMQTT::EventState" is more relevant and less aggressive
-//      Then "refreshMqttClientInfo()" only use will be in "printEqLogic()" (and maybe "showMqttClientInfo()")
-var observer = new MutationObserver(function(mutations) {
-	mutations.forEach(function(mutation) {
-		if ($("#brokertab").is(':visible')) {
-			refreshMqttClientInfo();
-		}
-	});
-});
-observer.observe($("#brokertab")[0], {attributes: true});
-// /TODO
 
 $(document).ready(function() {
 	// On page load, show the commandtab menu bar if necessary (fix #64)
@@ -369,8 +346,8 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=templates').dialog('open');
 });
 
-/*
 // TODO Move to a new Broker tab
+/*
 $('.eqLogicAction[data-action=discoveryJMQTT]').on('click', function () {
 	$('#md_modal').dialog({title: "{{Découverte automatique}}"});
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=discovery').dialog('open');
@@ -518,7 +495,6 @@ $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
 		return;
-	clearTimeout(timeout_refreshMqttClientInfo);
 	callPluginAjax({
 		data: {
 			action: 'startMqttClient',
@@ -681,7 +657,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 	dialog_message += '<label class="control-label">({{Pensez à sauvegarder l\'équipement pour appliquer les modifications}})</label>';
 	bootbox.confirm({
 		title: "{{Modifier en masse les Topics de tout l'équipement}}",
-		message: dialog_message, //"{{Souhaitez-vous remplacer }} '"+oldTopic+"' {{par}} '"+newTopic+"' ?<br />({{Pensez à sauvegarder l'équipement pour appliquer la modification}})",
+		message: dialog_message,
 		callback: function (valid){ if (valid) {
 			var oldTopic = $("#oldTopic").val();
 			var newTopic = $("#newTopic").val();
@@ -962,9 +938,9 @@ function printEqLogic(_eqLogic) {
 		$('#mqtttopic').prop('readonly', false);
 
 		// Initialise battery and availability dropboxes
-		eqId = $('.eqLogicAttr[data-l1key=id]').value();
-		bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
-		avl = $('.eqLogicAttr[data-l1key=configuration][data-l2key=availability_cmd]');
+		var eqId = $('.eqLogicAttr[data-l1key=id]').value();
+		var bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
+		var avl = $('.eqLogicAttr[data-l1key=configuration][data-l2key=availability_cmd]');
 		bat.empty().append('<option value="">{{Aucune}}</option>');
 		avl.empty().append('<option value="">{{Aucune}}</option>');
 		jeedom.eqLogic.buildSelectCmd({
@@ -1131,12 +1107,12 @@ function addCmdToTable(_cmd) {
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:50px;display:inline-block;">';
 		tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:50px;display:inline-block;margin-right:5px;">';
 		tr += '</td><td>';
-			tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br> ';
-			tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
-			tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br> ';
-			tr += '</td><td align="right">';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br> ';
+		tr += '</td><td align="right">';
 // TODO Change when adding Advanced parameters
-			// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
+		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
