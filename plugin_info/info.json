@@ -9,7 +9,7 @@
 	"utilization_en_US": "- Automatic Broker Mosquitto installation;<br />- Multiple Broker support;<br />- Automatic creation of MQTT devices, automatic creation of information commands, options to disable these automatisms;<br />- Added MQTT equipment manual;<br />- Equipment duplication;<br />- Complex JSON payload decoding and creation of associated information commands;<br />- Display in Jeedom Classic view or JSON view; <br />- Added manual commands (for publishing), Retain mode support;<br />- Template manager;<br />- Emulation and raising the battery level of equipment in Jeedom; <br />- Emulation and feedback of equipment availability and alarming in Jeedom;<br />and many more...",
 	"licence": "AGPL",
 	"author": "Domochip",
-	"require": "4.2.16",
+	"require": "4.2.11",
 	"category": "automation protocol",
 	"hasDependency": true,
 	"hasOwnDeamon": true,
