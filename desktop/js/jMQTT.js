@@ -14,18 +14,13 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Missing stopPropagation for span.hiddenAsCard in plugin main view
- * Without this, it is impossible to click on a link in table view without entering the equipement
- */
-$('.eqLogicDisplayCard').on('click', 'span.hiddenAsCard', function(event) {
-	event.stopPropagation()
-});
+// New namespace
+function jmqtt() {}
 
 //To memorise page refresh timeout when set
-var refreshTimeout;
+jmqtt.refreshTimeout = null;
 
-function callPluginAjax(_params) {
+jmqtt.callPluginAjax = function(_params) {
 	$.ajax({
 		async: _params.async == undefined ? true : _params.async,
 		global: false,
@@ -57,7 +52,7 @@ function callPluginAjax(_params) {
  * hash:   if provided, it is appended at the end of the URL (shall contain the # character). If a hash was already
  *         present, it is replaced by that one.
  */
-function initPluginUrl(filter=['id', 'saveSuccessFull','removeSuccessFull', 'hash'], id='', hash='') {
+jmqtt.initPluginUrl = function(filter=['id', 'saveSuccessFull','removeSuccessFull', 'hash'], id='', hash='') {
 	var vars = getUrlVars();
 	var url = 'index.php?';
 	for (var i in vars) {
@@ -83,7 +78,7 @@ function initPluginUrl(filter=['id', 'saveSuccessFull','removeSuccessFull', 'has
  * Function to refresh the page
  * Ask confirmation if the page has been modified
  */
-function refreshEqLogicPage() {
+jmqtt.refreshEqLogicPage = function() {
 	function refreshPage() {
 		if ($('.eqLogicAttr[data-l1key=id]').value() != "") {
 			tab = null
@@ -102,7 +97,7 @@ function refreshEqLogicPage() {
 			$('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
 		}
 	}
-	//console.log('refreshEqLogicPage: ' + $('.eqLogicAttr[data-l1key=id]').value());
+	//console.log('jmqtt.refreshEqLogicPage: ' + $('.eqLogicAttr[data-l1key=id]').value());
 	if (modifyWithoutSave) {
 		bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
 			if (result)
@@ -117,7 +112,7 @@ function refreshEqLogicPage() {
 /*
  * Function to update Broker status on a Broker eqLogic page
  */
-function showMqttClientInfo(data) {
+jmqtt.showMqttClientInfo = function(data) {
 	$('.mqttClientLaunchable span.label').removeClass('label-success label-warning label-danger').text(data.launchable.toUpperCase());
 	switch(data.launchable) {
 		case 'ok':
@@ -169,17 +164,17 @@ function showMqttClientInfo(data) {
 	}
 }
 
-function refreshMqttClientInfo() {
+jmqtt.refreshMqttClientInfo = function() {
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
 		return;
-	callPluginAjax({
+	jmqtt.callPluginAjax({
 		data: {
 			action: 'getMqttClientInfo',
 			id: id,
 		},
 		success: function(data) {
-			showMqttClientInfo(data);
+			jmqtt.showMqttClientInfo(data);
 		}
 	});
 }
@@ -187,9 +182,9 @@ function refreshMqttClientInfo() {
 /*
  * Management of the include button and mode
  */
-function setIncludeMode(_id, _mode) {
+jmqtt.setIncludeMode = function(_id, _mode) {
 	// Ajax call to inform the plugin core of the change
-	callPluginAjax({
+	jmqtt.callPluginAjax({
 		data: {
 			action: "changeIncludeMode",
 			mode: _mode,
@@ -197,19 +192,6 @@ function setIncludeMode(_id, _mode) {
 		}
 	});
 }
-
-$(document).ready(function() {
-	// On page load, show the commandtab menu bar if necessary (fix #64)
-	if (document.location.hash == '#commandtab' && $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
-		$('#menu-bar').show();
-	}
-
-	// Done here, otherwise the refresh button remains selected
-	$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
-		event.stopPropagation();
-		refreshEqLogicPage();
-	});
-});
 
 //
 // Add icons on main page load
@@ -321,7 +303,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 					$('#div_alert').showAlert({message: error.message, level: 'danger'});
 				},
 				success: function (data) {
-					var url = initPluginUrl();
+					var url = jmqtt.initPluginUrl();
 					modifyWithoutSave = false;
 					url += '&id=' + data.id + '&saveSuccessFull=1';
 					loadPage(url);
@@ -387,7 +369,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 					$('#div_alert').showAlert({message: error.message, level: 'danger'});
 				},
 				success: function (data) {
-					var url = initPluginUrl();
+					var url = jmqtt.initPluginUrl();
 					modifyWithoutSave = false;
 					url += '&id=' + data.id + '&saveSuccessFull=1';
 					loadPage(url);
@@ -414,7 +396,7 @@ $('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function (
 				$('#div_alert').showAlert({message: error.message, level: 'danger'});
 			},
 			success: function () {
-				var url = initPluginUrl();
+				var url = jmqtt.initPluginUrl();
 				modifyWithoutSave = false;
 				url += '&removeSuccessFull=1';
 				loadPage(url);
@@ -483,25 +465,25 @@ $('.nav-tabs a[href="#commandtab"]').on('click', function() {
 //
 $('.eqLogicAction[data-action=startIncludeMode]').on('click', function() {
 	// Enable include mode for a Broker
-	setIncludeMode($('.eqLogicAttr[data-l1key=id]').value(), 1);
+	jmqtt.setIncludeMode($('.eqLogicAttr[data-l1key=id]').value(), 1);
 });
 
 $('.eqLogicAction[data-action=stopIncludeMode]').on('click', function() {
 	// Disable include mode for a Broker
-	setIncludeMode($('.eqLogicAttr[data-l1key=id]').value(), 0);
+	jmqtt.setIncludeMode($('.eqLogicAttr[data-l1key=id]').value(), 0);
 });
 
 $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
 		return;
-	callPluginAjax({
+	jmqtt.callPluginAjax({
 		data: {
 			action: 'startMqttClient',
 			id: id,
 		},
 		success: function(data) {
-			refreshMqttClientInfo();
+			jmqtt.refreshMqttClientInfo();
 		}
 	});
 });
@@ -579,7 +561,7 @@ $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
 // Actions in top menu on an Equipment
 //
 $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function () {
-	callPluginAjax({
+	jmqtt.callPluginAjax({
 		data: {
 			action: "getTemplateList",
 		},
@@ -606,7 +588,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 				title: '{{Appliquer un Template}}',
 				message: dialog_message,
 				callback: function (result){ if (result) {
-					callPluginAjax({
+					jmqtt.callPluginAjax({
 						data: {
 							action: "applyTemplate",
 							id: $('.eqLogicAttr[data-l1key=id]').value(),
@@ -629,7 +611,7 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 		title: "{{Nom du nouveau template ?}}",
 		callback: function (result) {
 			if (result !== null) {
-				callPluginAjax({
+				jmqtt.callPluginAjax({
 					data: {
 						action: "createTemplate",
 						id: $('.eqLogicAttr[data-l1key=id]').value(),
@@ -686,13 +668,13 @@ $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
 });
 
 $('.eqLogicAction[data-action=classicView]').on('click', function() {
-	refreshEqLogicPage();
+	jmqtt.refreshEqLogicPage();
 	$('.eqLogicAction[data-action=classicView]').removeClass('btn-default').addClass('btn-primary');
 	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-primary').addClass('btn-default');
 });
 
 $('.eqLogicAction[data-action=jsonView]').on('click', function() {
-	refreshEqLogicPage();
+	jmqtt.refreshEqLogicPage();
 	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-default').addClass('btn-primary');
 	$('.eqLogicAction[data-action=classicView]').removeClass('btn-primary').addClass('btn-default');
 });
@@ -917,7 +899,7 @@ function printEqLogic(_eqLogic) {
 		$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
 		$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
 
-		refreshMqttClientInfo();
+		jmqtt.refreshMqttClientInfo();
 
 		jeedom.config.load({
 			configuration: $('#div_broker_log').getValues('.configKey')[0],
@@ -1020,7 +1002,7 @@ function saveEqLogic(_eqLogic) {
 
 	// if this eqLogic is not a broker
 	if (_eqLogic.configuration.type != 'broker') {
-		// get hiden settings for Broker and remove them of eqLogic
+		// get hidden settings for Broker and remove them of eqLogic
 		_eqLogic = substract(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
 	}
 
@@ -1288,9 +1270,9 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
 			level: 'warning'
 		});
 		// Reload the page after a delay to let the user read the message
-		if (refreshTimeout === undefined) {
-			refreshTimeout = setTimeout(function() {
-				refreshTimeout = undefined;
+		if (jmqtt.refreshTimeout === undefined) {
+			jmqtt.refreshTimeout = setTimeout(function() {
+				jmqtt.refreshTimeout = undefined;
 				window.location.reload();
 			}, 3000);
 		}
@@ -1340,9 +1322,9 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 			level: 'warning'
 		});
 		// Reload the page after a delay to let the user read the message
-		if (refreshTimeout === undefined) {
-			refreshTimeout = setTimeout(function() {
-				refreshTimeout = undefined;
+		if (jmqtt.refreshTimeout === undefined) {
+			jmqtt.refreshTimeout = setTimeout(function() {
+				jmqtt.refreshTimeout = undefined;
 				$('.eqLogicAction[data-action=refreshPage]').click();
 			}, 3000);
 		}
@@ -1353,10 +1335,34 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
  * Update the broker icon and the include mode activation on reception of a new state event
  */
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
-	showMqttClientInfo(_options);
+	jmqtt.showMqttClientInfo(_options);
 	if (_options.launchable == 'ok')
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').removeClass('disableCard')
 	else
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').addClass('disableCard')
 	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
+});
+
+/*
+ * Apply some changes when document is loaded
+ */
+$(document).ready(function() {
+	// On page load, show the commandtab menu bar if necessary (fix #64)
+	if (document.location.hash == '#commandtab' && $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
+		$('#menu-bar').show();
+	}
+
+	// Done here, otherwise the refresh button remains selected
+	$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
+		event.stopPropagation();
+		jmqtt.refreshEqLogicPage();
+	});
+
+	/*
+	 * Missing stopPropagation for span.hiddenAsCard in plugin main view
+	 * Without this, it is impossible to click on a link in table view without entering the equipement
+	 */
+	$('.eqLogicDisplayCard').on('click', 'span.hiddenAsCard', function(event) {
+		event.stopPropagation()
+	});
 });
