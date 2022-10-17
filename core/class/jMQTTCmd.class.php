@@ -103,16 +103,16 @@ class jMQTTCmd extends cmd {
 	 * @param string $value new command value
 	 */
 	public function updateCmdValue($value) {
-		if(in_array(strtolower($this->getName()), ["color","colour","couleur","rgb"]) || $this->getGeneric_type() == "LIGHT_COLOR") {
-			if(is_numeric($value)) {
-				$value=jMQTTCmd::DECtoHEX($value);
+		if (in_array(strtolower($this->getName()), ["color", "colour", "couleur", "rgb"]) || $this->getGeneric_type() == "LIGHT_COLOR") {
+			if (is_numeric($value)) {
+				$value = jMQTTCmd::DECtoHEX($value);
 			} else {
-				$json=json_decode($value);
-				if($json != null){
-					if(isset($json->x) && isset($json->y)){
-						$value=jMQTTCmd::XYtoHTML($json->x,$json->y);
+				$json = json_decode($value);
+				if ($json != null) {
+					if (isset($json->x) && isset($json->y)) {
+						$value = jMQTTCmd::XYtoHTML($json->x,$json->y);
 					} elseif(isset($json->r) && isset($json->g) && isset($json->b)) {
-						$value=jMQTTCmd::RGBtoHTML($json->r,$json->g,$json->b);
+						$value = jMQTTCmd::RGBtoHTML($json->r, $json->g, $json->b);
 					}
 				}
 			}
