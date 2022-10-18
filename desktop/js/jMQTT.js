@@ -1329,10 +1329,7 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
  * @param _options['reload'] bool whether or not a reload of the page is requested
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options) {
-	if ($('#div_cmdMsg').is(':empty') || $('#div_cmdMsg').is(':hidden'))
-		var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{est ajoutée à l\'équipement}}' + ' <b>' + _options['eqlogic_name'] + '</b>.';
-	else
-		var msg = '{{Plusieurs commandes sont ajoutées à l\'équipement}} <b>' + _options['eqlogic_name'] + '</b>.';
+	var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{est ajoutée à l\'équipement}}' + ' <b>' + _options['eqlogic_name'] + '</b>.';
 
 	// If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
 	if (modifyWithoutSave || ( $('.eqLogic').is(":visible") && $('.eqLogicAttr[data-l1key=id]').value() != _options['eqlogic_id'] ) ||
