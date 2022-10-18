@@ -74,7 +74,7 @@ $('#bt_jmqttTemplateUp').fileupload({
 });
 
 function refreshJmqttTemplateList() {
-	callPluginAjax({
+	jmqtt.callPluginAjax({
 		data: {
 			action: "getTemplateList",
 		},
@@ -104,7 +104,7 @@ $('#ul_jmqttTemplateList').on({
 			$('#bt_jmqttTemplateDelete').show()
 		else
 			$('#bt_jmqttTemplateDelete').hide()
-		callPluginAjax({
+		jmqtt.callPluginAjax({
 			data: {
 				action: "getTemplateByFile",
 				file: $(this).attr('data-file')
@@ -263,7 +263,7 @@ $('#bt_jmqttTemplateDelete').on('click', function() {
 	}
 	bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer ce template ?}}', function(result) {
 		if (result) {
-			callPluginAjax({
+			jmqtt.callPluginAjax({
 				data: {
 					action: "deleteTemplateByFile",
 					file: $('#ul_jmqttTemplateList li.active').attr('data-file'),
