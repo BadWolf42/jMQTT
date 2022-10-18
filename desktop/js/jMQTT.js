@@ -569,9 +569,9 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('chang
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
 	if($(this).val() == "") {
-		var brokername = $('.eqLogicAttr[data-l1key=configuration][data-l2key=brkId] option:selected').text();
+		var objectname = $('.eqLogicAttr[data-l1key=object_id] option:selected').text();
 		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
-		$(this).val(brokername+'/'+eqName+'/#');
+		$(this).val(objectname.trim()+'/'+eqName+'/#');
 		jmqtt.onMainTopicChange();
 	}
 });
