@@ -20,6 +20,30 @@ function jmqtt() {}
 //To memorise page refresh timeout when set
 jmqtt.refreshTimeout = null;
 
+jmqtt.mainTopic = '';
+
+jmqtt.checkTopicMismatch = function (item) {
+	if (jmqtt.mainTopic == '') {
+			item.addClass('topicMismatch');
+	} else {
+		var subRegex = new RegExp(`^${jmqtt.mainTopic}\$`.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'))
+		// console.log('jmqtt.checkTopicMismatch: subRegex=', subRegex.toString(), ' topic=', item.value());
+		if (!subRegex.test(item.value()))
+			item.addClass('topicMismatch');
+		else
+			item.removeClass('topicMismatch');
+	}
+}
+
+jmqtt.onMainTopicChange = function () {
+	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
+	jmqtt.mainTopic = mt.val();
+	if (jmqtt.mainTopic == '')
+		mt.addClass('topicMismatch');
+	else
+		mt.removeClass('topicMismatch');
+}
+
 jmqtt.callPluginAjax = function(_params) {
 	$.ajax({
 		async: _params.async == undefined ? true : _params.async,
@@ -532,11 +556,23 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', functi
 	}
 });
 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('input', function() {
+	jmqtt.onMainTopicChange();
+});
+
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('change', function() {
+	jmqtt.onMainTopicChange();
+	$('input.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
+		jmqtt.checkTopicMismatch($(this));
+	});
+});
+
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
 	if($(this).val() == "") {
 		var brokername = $('.eqLogicAttr[data-l1key=configuration][data-l2key=brkId] option:selected').text();
 		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
 		$(this).val(brokername+'/'+eqName+'/#');
+		jmqtt.onMainTopicChange();
 	}
 });
 
@@ -568,9 +604,11 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 			dialog_message += '</select><br>';
 
 			dialog_message += '<label class="control-label">{{Saisissez le Topic de base : }}</label> ';
-			var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
-			if (currentTopic.endsWith("#") || currentTopic.endsWith("+")) {currentTopic = currentTopic.substr(0,currentTopic.length-1);}
-			if (currentTopic.endsWith("/")) {currentTopic = currentTopic.substr(0,currentTopic.length-1);}
+			var currentTopic = jmqtt.mainTopic;
+			if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
+				currentTopic = currentTopic.substr(0,currentTopic.length-1);
+			if (currentTopic.endsWith("/"))
+				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'
 
 			dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ' +
@@ -624,7 +662,7 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 
 $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
-	var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
+	var currentTopic = jmqtt.mainTopic
 	if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
 		currentTopic = currentTopic.substr(0,currentTopic.length-1);
 	if (currentTopic.endsWith("/"))
@@ -915,6 +953,7 @@ function printEqLogic(_eqLogic) {
 		$('.typ-std').show();
 		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', false);
 
+		jmqtt.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
 		// Initialise battery and availability dropboxes
 		var eqId = $('.eqLogicAttr[data-l1key=id]').value();
 		var bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
@@ -1101,6 +1140,11 @@ function addCmdToTable(_cmd) {
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
+		// Validate topic against subscription topic
+		$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
+			jmqtt.checkTopicMismatch($(this));
+		});
+
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
 		if (isset(_cmd.type)) {
 			$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]').value(init(_cmd.type));
@@ -1276,17 +1320,6 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
 });
 
 /**
- * Management of cmdTopicMismatch event sent by the plugin core
- * @param _event string event name
- * @param _options['eqlogic_name'] string name of the eqLogic command is added to
- * @param _options['cmd_name'] string name of the new command
- */
-$('body').off('jMQTT::cmdTopicMismatch').on('jMQTT::cmdTopicMismatch', function(_event,_options) {
-	var msg = '{{La commande}} <b>' + _options['cmd_name'] + "</b> {{a un topic incompatible du topic d'inscription de l\'équipement}}" + ' <b>' + _options['eqlogic_name'] + '</b>.';
-	$.fn.showAlert({message: msg, level: 'warning'});
-});
-
-/**
  * Management of the display when an information command is added
  * Triggerred when the plugin core send a jMQTT::cmdAdded event
  * @param _event string event name
@@ -1355,5 +1388,46 @@ $(document).ready(function() {
 	 */
 	$('.eqLogicDisplayCard').on('click', 'span.hiddenAsCard', function(event) {
 		event.stopPropagation()
+	});
+
+	// Wrap plugin.template save action handler
+	var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
+	$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
+		// Alert user that there is N mismatch before saveEqLogic
+		if ($('.topicMismatch').length > 0) {
+			var dialog_message = '';
+			var no_name = false;
+			if (jmqtt.mainTopic == '')
+				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br>";
+			else {
+				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>" + jmqtt.mainTopic + '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
+				$('.topicMismatch').each(function (_, item) {
+					if (!$(item).hasClass('eqLogicAttr')) {
+						var cmd = $(item).closest('tr.cmd').find('.cmdAttr[data-l1key=name]').value();
+						if (cmd == '') no_name = true;
+						var topic = $(item).value();
+						if (cmd != '' && topic == '')
+							dialog_message += '<li>{{Le topic est <b>vide</b> sur la commande}} "<b>' + cmd + '</b>"</li>';
+						else if (cmd == '' && topic != '')
+							dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur une <b>commande sans nom</b>}}</li>';
+						else
+							dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur la commande}} "<b>' + cmd + '</b>"</li>';
+					}
+				});
+			}
+			if (no_name) dialog_message += "<br>{{(Notez que les commandes sans nom seront supprimées lors de la sauvegarde)}}";
+			dialog_message += "<br>{{Souhaitez-vous tout de même sauvegarder l'équipement ?}}";
+			bootbox.confirm({
+				title: "<b>{{Des problèmes ont été identifiés dans la configuration}}</b>",
+				message: dialog_message,
+				callback: function (result) { if (result) { // Do save
+					core_save();
+				}}
+			});
+		} else {
+			core_save();
+		}
+
+
 	});
 });

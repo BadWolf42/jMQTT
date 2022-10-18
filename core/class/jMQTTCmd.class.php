@@ -75,13 +75,6 @@ class jMQTTCmd extends cmd {
 		event::add('jMQTT::cmdAdded', array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(), 'cmd_name' => $this->getName(), 'reload' => $reload));
 	}
 
-	private function eventTopicMismatch() {
-		$eqLogic = $this->getEqLogic();
-		$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible du topic de l'équipement associé", __FILE__), $this->getHumanName()));
-		// Advise the desktop page (jMQTT.js) of the topic mismatch
-		event::add('jMQTT::cmdTopicMismatch', array('eqlogic_name' => $eqLogic->getName(), 'cmd_name' => $this->getName()));
-	}
-
 	/**
 	 * Return a full export of this command as an array.
 	 * @return array
@@ -363,10 +356,8 @@ class jMQTTCmd extends cmd {
 		// For Equipments
 		if ($eqLogic->getType() == jMQTT::TYP_EQPT) {
 			// For info commands, check that the topic is compatible with the subscription command
-			if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0)) {
-				if (! $this->topicMatchesSubscription($eqLogic->getTopic())) {
-					$this->eventTopicMismatch();
-				}
+			if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0) && !$this->topicMatchesSubscription($eqLogic->getTopic())) {
+				$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible du topic de l'équipement associé", __FILE__), $this->getHumanName()));
 			}
 		}
 	}
