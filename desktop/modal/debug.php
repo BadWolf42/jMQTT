@@ -27,6 +27,16 @@ if (!isConnect('admin')) {
 		</div>
 	</div>
 -->
+
+<?php
+function panelCreator($title, $type, $icon, $builder) {
+	echo '			<div class="panel panel-'.$type.'">';
+	echo '				<div class="panel-heading"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
+	echo '				<a class="btn btn-info btn-show-hide btn-xs btn-success pull-right" builder="'.$builder.'" style="top:-2px!important">';
+	echo '				<i class="fas fa-search-plus"></i> {{Afficher}} </a></h3></div><div class="panel-body hidden"></div>';
+	echo '			</div>';
+}
+?>
 	<script>
 function callDebugAjax(_params) {
 	$.ajax({
@@ -41,7 +51,11 @@ function callDebugAjax(_params) {
 		},
 		success: function (data) {
 			if (data.state != 'ok') {
-				$.fn.showAlert({message: data.result, level: 'danger'});
+				if (typeof _params.error === 'function') {
+					_params.error(data.result);
+				} else {
+					$.fn.showAlert({message: data.result, level: 'danger'});
+				}
 			}
 			else {
 				if (typeof _params.success === 'function') {
@@ -51,9 +65,294 @@ function callDebugAjax(_params) {
 		}
 	});
 }
+
+function builder_cfgCache(_div, _action, _buttons) {
+	callDebugAjax({
+		data: { action: _action },
+		error: function(error) { $.fn.showAlert({message: error, level: 'danger'}) },
+		success: function(_data) {
+			var res = '<table class="table table-bordered" style="table-layout:fixed;width:100%;">';
+			res += '<thead><tr><th style="width:180px">{{Clé}}</th><th>{{Valeur (encodée en Json)}}</th>';
+			res += '<th style="width:85px;text-align:center"><a class="btn btn-success btn-xs pull-right add" style="top:0px!important;">';
+			res += '<i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a></th></tr></thead><tbody>';
+			for (var group of _data) {
+				if (group.header != '')
+					res += '<tr><td colspan="3" style="font-weight:bolder;">' + group.header + '</td></tr>';
+				for (var d of group.data) {
+					res += '<tr><td class="key">' + d.key + '</td><td><pre class="val">' + JSON.stringify(d.value) + '</pre></td>';
+					res += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i> </a>';
+					res += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
+				}
+			}
+			res += '</tbody></table>';
+			_div.html(res);
+			if(typeof _buttons === 'function')
+				_buttons(_div);
+		}
+	});
+}
+
+function configButtons(div) {
+	div.on('click', 'a.add', function() {
+		bootbox.confirm({
+			title: '{{Ajouter un paramètre de configuration interne}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configSet",
+						key : $("#debugKey").val(),
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
+						var row = div.find('tbody').prepend('<tr />').children('tr:first');
+						row.append('<td class="key">'+$("#debugKey").val()+'</td>');
+						row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
+						row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td>');
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.edit', function() {
+		var tr = $(this).closest('tr');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Modifier le paramètre de configuration interne}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configSet",
+						key : debugKey,
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config interne modifié.}}', level: 'success'});
+						tr.find('.val').text($("#debugVal").val());
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.del', function() {
+		var tr = $(this).closest('tr');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Supprimer le paramètre de configuration interne}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configDel",
+						key : debugKey
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config interne supprimé.}}', level: 'success'});
+						tr.remove();
+					}
+				});
+				}
+			}
+		});
+	});
+}
+function cacheButtons(div) {
+	div.on('click', 'a.add', function() {
+		bootbox.confirm({
+			title: '{{Ajouter un paramètre au cache}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "cacheSet",
+						key : $("#debugKey").val(),
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de cache ajouté.}}', level: 'success'});
+						var row = div.find('tbody').prepend('<tr />').children('tr:first');
+						row.append('<td class="key">'+$("#debugKey").val()+'</td>');
+						row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
+						row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td>');
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.edit', function() {
+		var tr = $(this).closest('tr');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Modifier le paramètre du cache}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result){
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "cacheSet",
+						key : debugKey,
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre du cache modifié.}}', level: 'success'});
+						tr.find('.val').text($("#debugVal").val());
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.del', function() {
+		var tr = $(this).closest('tr');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Supprimer le paramètre du cache}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result){
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "cacheDel",
+						key : debugKey
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre du cache supprimé.}}', level: 'success'});
+						tr.remove();
+					}
+				});
+				}
+			}
+		});
+	});
+}
+
+function builder_daemon(div) {
+	var res = '<form class="form-horizontal"><fieldset>';
+	// Send to Daemon
+	res += '<legend><i class="fas fa-upload"></i> {{Simuler un évènement envoyé au Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
+	res += '<textarea class="bootbox-input bootbox-input-text form-control toDaemon" style="min-height:65px;">';
+	res += '{"cmd": "newMqttClient", "id": "", "hostname": "", "port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}\n';
+	res += '{"cmd": "removeMqttClient", "id": ""}\n';
+	res += '{"cmd": "subscribeTopic", "id": "", "topic": "", "qos": ""}\n';
+	res += '{"cmd": "unsubscribeTopic", "id": "", "topic": ""}\n';
+	res += '{"cmd": "messageOut", "id": "", "topic": "", "payload": "", "qos": "", "retain": ""}\n';
+	res += '{"cmd": "hb", "id": ""}\n';
+	res += '{"cmd": "loglevel", "id": "", "level": ""}';
+	res += '\n';
+	res += '{"cmd": "", "id": "", "hostname": "", "port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}\n';
+
+	res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toDaemon" style="top:0px!important;">';
+	res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div>';
+	// Send to Jeedom
+	res += '<legend><i class="fas fa-download"></i> {{Simuler un évènement reçu du Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
+	res += '<textarea class="bootbox-input bootbox-input-text form-control toJeedom" style="min-height:65px;">';
+
+	res += '{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}\n';
+	res += '{"cmd":"brokerUp", "id":string}\n';
+	res += '{"cmd":"brokerDown"}\n';
+	res += '{"cmd":"daemonUp"}\n';
+	res += '{"cmd":"daemonDown"}\n';
+	res += '{"cmd":"hb"}';
+
+	res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toJeedom" style="top:0px!important;">';
+	res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div><br />';
+
+	res += '</fieldset></form>';
+	div.html(res);
+
+	div.on('click', 'a.toDaemon', function() {
+		callDebugAjax({
+			data: {
+				action: "sendToDaemon",
+				data : $(this).closest('form').find('textarea.toDaemon').value()
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Evènement envoyé au Démon', level: 'success'});
+			}
+		});
+	});
+	div.on('click', 'a.toJeedom', function() {
+		callDebugAjax({
+			data: {
+				action: "sendToJeedom",
+				data : $(this).closest('form').find('textarea.toJeedom').value()
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Evènement envoyé au Démon', level: 'success'});
+			}
+		});
+	});
+}
+
+function builder_configInt(div)  { builder_cfgCache(div, "configGetInternal",       configButtons); }
+function builder_configBrk(div)  { builder_cfgCache(div, "configGetBrokers",        null); } // TODO set/delete config brkLogic/eqLogic
+function builder_configEqp(div)  { builder_cfgCache(div, "configGetEquipments",     null); } // TODO set/delete config brkLogic/eqLogic
+function builder_configCmdI(div) { builder_cfgCache(div, "configGetCommandsInfo",   null); } // TODO set/delete config cmd
+function builder_configCmdA(div) { builder_cfgCache(div, "configGetCommandsAction", null); } // TODO set/delete config cmd
+
+function builder_cacheInt(div)   { builder_cfgCache(div, "cacheGetInternal",        cacheButtons); }
+function builder_cacheBrk(div)   { builder_cfgCache(div, "cacheGetBrokers",         cacheButtons); }
+function builder_cacheEqp(div)   { builder_cfgCache(div, "cacheGetEquipments",      cacheButtons); }
+function builder_cacheCmdI(div)  { builder_cfgCache(div, "cacheGetCommandsInfo",    cacheButtons); }
+function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction",  cacheButtons); }
 	</script>
 	<div class="row">
-		<div class="col-md-6 col-sm-12">
+		<div class="col-md-6 col-sm-12"><!-- General status of Jeedom -->
 			<div class="panel panel-primary">
 				<div class="panel-heading">
 					<h3 class="panel-title"><i class="fas fa-circle-notch"></i> {{Etat Général de Jeedom}}</h3>
@@ -96,8 +395,18 @@ foreach (plugin::listPlugin(false, false, true, true) as $p) // use $_nameOnly=t
 					</form>
 				</div>
 			</div>
+<?php
+// Simulate send to daemon
+panelCreator('{{Simuler une communication avec le Démon}}','primary', 'fas fa-exchange-alt', 'builder_daemon');
+// Config values
+panelCreator('{{Valeurs de config du Démon}}',             'primary', 'fas fa-wrench', 'builder_configInt');
+panelCreator('{{Valeurs de config des Brokers}}',          'primary', 'fas fa-wrench', 'builder_configBrk');
+panelCreator('{{Valeurs de config des Equipements}}',      'primary', 'fas fa-wrench', 'builder_configEqp');
+panelCreator('{{Valeurs de config des Commandes Info}}',   'primary', 'fas fa-wrench', 'builder_configCmdI');
+panelCreator('{{Valeurs de config des Commandes Action}}', 'primary', 'fas fa-wrench', 'builder_configCmdA');
+?>
 		</div>
-		<div class="col-md-6 col-sm-12">
+		<div class="col-md-6 col-sm-12"><!-- General status of jMQTT -->
 			<div class="panel panel-primary">
 				<div class="panel-heading">
 					<h3 class="panel-title"><i class="fas fa-certificate"></i> {{Etat Général de jMQTT}}</h3>
@@ -134,559 +443,28 @@ foreach (plugin::listPlugin(false, false, true, true) as $p) // use $_nameOnly=t
 					</form>
 				</div>
 			</div>
+<?php
+// Cache values
+panelCreator('{{Valeurs du cache du Démon}}',             'primary', 'fas fa-book',   'builder_cacheInt');
+panelCreator('{{Valeurs du cache des Brokers}}',          'primary', 'fas fa-book',   'builder_cacheBrk');
+panelCreator('{{Valeurs du cache des Equipements}}',      'primary', 'fas fa-book',   'builder_cacheEqp');
+panelCreator('{{Valeurs du cache des Commandes Info}}',   'primary', 'fas fa-book',   'builder_cacheCmdI');
+panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-book',   'builder_cacheCmdA');
+?>
 		</div>
 	</div>
 	<div class="row">
 		<div class="col-md-6 col-sm-12">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title"><i class="fas fa-wrench"></i> {{Valeurs de config interne}} <a class="btn btn-info btn-xs btn-success pull-right" style="top:-2px!important" id="bt_debugShowHideConf"><i class="fas fa-pen"></i> {{Afficher la config}}</a></h3>
-				</div>
-				<div class="panel-body">
-					<table class="table table-bordered hidden" id="bt_debugTabConfig" style="table-layout:fixed;width:100%;">
-						<thead>
-							<tr>
-								<th style="width:180px">Clé</th>
-								<th>Valeur (encodée en Json)</th>
-								<th style="width:85px;text-align:center"><a class="btn btn-success btn-xs pull-right" style="top:0px!important;" id="bt_debugAddConfig"><i class="fas fa-check-circle icon-white"></i> Ajouter</a></th>
-							</tr>
-						</thead>
-						<tbody>
-<?php foreach (config::searchKey('', "jMQTT") as $c) { ?>
-							<tr>
-								<td class="key"><?php echo $c['key']; ?></td>
-								<td><pre class="val"><?php echo json_encode($c['value']); ?></pre></td>
-								<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditConfig"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm bt_debugDelConfig"><i class="fas fa-trash"></i> </a></td>
-							</tr>
-<?php } ?>
-						</tbody>
-					</table>
-					<script>
-$('#bt_debugShowHideConf').on('click', function () {
-	if ($(this).hasClass('btn-warning')) {
-		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-pen"></i> {{Afficher la config}}');
-		$('#bt_debugTabConfig').addClass('hidden');
-	} else {
-		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Masquer la config}}');
-		$('#bt_debugTabConfig').removeClass('hidden');
-	}
-});
-
-$('#bt_debugAddConfig').on('click', function () {
-	bootbox.confirm({
-		title: '{{Ajouter un paramètre de configuration interne}}',
-		message: '<label class="control-label">{{Clé :}} </label> '
-				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
-				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
-		callback: function (result){
-			if (result) {
-			callDebugAjax({
-				data: {
-					action: "configSet",
-					key : $("#debugKey").val(),
-					val: $("#debugVal").val()
-				},
-				error: function(error) {
-					$.fn.showAlert({message: error.message, level: 'danger'})
-				},
-				success: function(data) {
-					$.fn.showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
-					var row = $('#bt_debugTabConfig tbody').prepend('<tr />').children('tr:first');//.text($("#debugVal").val());
-					row.append('<td class="key">'+$("#debugKey").val()+'</td>');
-					row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
-					row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditConfig"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm bt_debugDelConfig"><i class="fas fa-trash"></i> </a></td>');
-				}
-			});
-			}
-		}
-	});
-});
-
-$('#bt_debugTabConfig').on('click', '.bt_debugEditConfig', function () {
-	var tr = $(this).closest('tr');
-	var debugKey = tr.find('.key').text();
-	bootbox.confirm({
-		title: '{{Modifier le paramètre de configuration interne}}',
-		message: '<label class="control-label">{{Clé :}} </label> '
-				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
-				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
-		callback: function (result){
-			if (result) {
-			callDebugAjax({
-				data: {
-					action: "configSet",
-					key : debugKey,
-					val: $("#debugVal").val()
-				},
-				error: function(error) {
-					$.fn.showAlert({message: error.message, level: 'danger'})
-				},
-				success: function(data) {
-					$.fn.showAlert({message: '{{Paramètre de config interne modifié.}}', level: 'success'});
-					tr.find('.val').text($("#debugVal").val());
-				}
-			});
-			}
-		}
-	});
-});
-
-$('#bt_debugTabConfig').on('click', '.bt_debugDelConfig', function () {
-	var tr = $(this).closest('tr');
-	var debugKey = tr.find('.key').text();
-	bootbox.confirm({
-		title: '{{Supprimer le paramètre de configuration interne}}',
-		message: '<label class="control-label">{{Clé :}} </label> '
-				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
-				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
-		callback: function (result){
-			if (result) {
-			callDebugAjax({
-				data: {
-					action: "configDel",
-					key : debugKey
-				},
-				error: function(error) {
-					$.fn.showAlert({message: error.message, level: 'danger'})
-				},
-				success: function(data) {
-					$.fn.showAlert({message: '{{Paramètre de config interne supprimé.}}', level: 'success'});
-					tr.remove();
-				}
-			});
-			}
-		}
-	});
-});
-					</script>
-				</div>
-			</div>
-
-		</div>
-		<div class="col-md-6 col-sm-12">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title"><i class="fas fa-book"></i> {{Valeurs du cache interne}} <a class="btn btn-info btn-xs btn-success pull-right" style="top:-2px!important" id="bt_debugShowHideCache"><i class="fas fa-pen"></i> {{Afficher le cache}}</a></h3>
-				</div>
-				<div class="panel-body">
-					<table class="table table-bordered hidden" id="bt_debugTabCache" style="table-layout:fixed;width:100%;">
-						<thead>
-							<tr>
-								<th style="width:180px">Clé</th>
-								<th>Valeur (encodée en Json)</th>
-								<th style="width:85px;text-align:center"><a class="btn btn-success btn-xs pull-right" style="top:0px!important;" id="bt_debugAddCache"><i class="fas fa-check-circle icon-white"></i> Ajouter</a></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td colspan="3" style="font-weight:bolder;color:var(--al-danger-color);">{{Deamon}}</td>
-							</tr>
 <?php
-$cacheKeys = array();
-$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_RCV;
-$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_SND;
-$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_PORT;
-$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_UID;
-// $cacheKeys[] = 'jMQTT::dummy';
-// $cacheKeys[] = ;
-foreach ($cacheKeys as $k) {
+
 ?>
-							<tr>
-								<td class="key"><?php echo $k; ?></td>
-								<td><pre class="val"><?php echo json_encode(cache::byKey($k)->getValue(null), JSON_UNESCAPED_UNICODE); ?></pre></td>
-								<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a> <a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>
-							</tr>
+		</div><div class="col-md-6 col-sm-12">
 <?php
-}
-
-foreach (jMQTT::getBrokers() as $brk) {
-	$cacheBrkKeys = array();
-	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_INCLUDE_MODE;
-	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_LAST_LAUNCH_TIME;
-	$cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
-
-	$printBrkH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-warning-color);">{{Broker}} '.$brk->getHumanName().' (id: '.$brk->getId().')</td></tr>';
-	$printBrkB = '';
-	foreach ($cacheBrkKeys as $k) {
-		$val = cache::byKey($k)->getValue(null);
-		if (!is_null($val)) {
-			$printBrkB .= '							<tr>';
-			$printBrkB .= '<td class="key">'.$k.'</td>';
-			$printBrkB .= '<td><pre class="val">'.json_encode($val, JSON_UNESCAPED_UNICODE).'</pre></td>';
-			$printBrkB .= '<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a> <a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>';
-			$printBrkB .= '</tr>';
-		}
-	}
-	if ($printBrkB !== '')
-		echo $printBrkH, $printBrkB;
-}
-
-foreach(jMQTT::getNonBrokers() as $eqpts) {
-	//jMQTT::byType(jMQTT::class)
-	foreach ($eqpts as $eqpt) {
-		$cacheEqptKeys = array();
-		$cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_IGNORE_TOPIC_MISMATCH;
-		// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
-		$cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
-		$printEqH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-primary-color);">{{Equipement}} '.$eqpt->getHumanName().' (id: '.$eqpt->getId().')</td></tr>';
-		
-		$printEqB = '';
-		foreach ($cacheEqptKeys as $k) {
-			$val = cache::byKey($k)->getValue(null);
-			if (!is_null($val)) {
-				$printEqB .= '							<tr>';
-				$printEqB .= '<td class="key">'.$k.'</td>';
-				$printEqB .= '<td><pre class="val">'.json_encode($val, JSON_UNESCAPED_UNICODE).'</pre></td>';
-				$printEqB .= '<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a> <a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>';
-				$printEqB .= '</tr>';
-			}
-		}
-		if ($printEqB !== '')
-			echo $printEqH, $printEqB;
-	}
-}
-?>
-							<tr><td colspan="3"><a class="btn btn-success btn-xs pull-right bt_debugShowHideCmd"><i class="fas fa-pen"></i> {{Afficher le cache des Commandes}}</a></td></tr>
-<?php
-/*
-// TODO FIXME Listing of cmd in cache TOO SLOW, fetch dynamicaly?
-*/
-foreach (cmd::searchConfiguration('', jMQTT::class) as $cmd) {
-	$cacheCmdKeys = array();
-	$cacheCmdKeys[] = 'cmdCacheAttr'.$cmd->getId();
-	$printCmdH = '							<tr class="lcmd hidden"><td colspan="3" style="font-weight:bolder;color:var(--al-success-color);">{{Commande}} '.$cmd->getHumanName().' ('.$cmd->getId().')</td></tr>';
-	
-	$printCmdB = '';
-	foreach ($cacheCmdKeys as $k) {
-		$val = cache::byKey($k)->getValue(null);
-		if (!is_null($val)) {
-			$printCmdB .= '							<tr class="lcmd hidden">';
-			$printCmdB .= '<td class="key">'.$k.'</td>';
-			$printCmdB .= '<td><pre class="val">'.json_encode($val, JSON_UNESCAPED_UNICODE).'</pre></td>';
-			$printCmdB .= '<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a> <a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>';
-			$printCmdB .= '</tr>';
-		}
-	}
-	if ($printCmdB !== '')
-		echo $printCmdH, $printCmdB;
-}
 
 ?>
-						</tbody>
-					</table>
-					<script>
-$('#bt_debugShowHideCache').on('click', function () {
-	if ($(this).hasClass('btn-warning')) {
-		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-pen"></i> {{Afficher le cache}}');
-		$('#bt_debugTabCache').addClass('hidden');
-	} else {
-		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Masquer le cache}}');
-		$('#bt_debugTabCache').removeClass('hidden');
-	}
-});
-
-$('#bt_debugAddCache').on('click', function () {
-	bootbox.confirm({
-		title: '{{Ajouter un paramètre au cache interne}}',
-		message: '<label class="control-label">{{Clé :}} </label> '
-				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
-				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
-		callback: function (result){
-			if (result) {
-			callDebugAjax({
-				data: {
-					action: "cacheSet",
-					key : $("#debugKey").val(),
-					val: $("#debugVal").val()
-				},
-				error: function(error) {
-					$.fn.showAlert({message: error.message, level: 'danger'})
-				},
-				success: function(data) {
-					$.fn.showAlert({message: '{{Paramètre de cache interne ajouté.}}', level: 'success'});
-					var row = $('#bt_debugTabCache tbody').prepend('<tr />').children('tr:first');//.text($("#debugVal").val());
-					row.append('<td class="key">'+$("#debugKey").val()+'</td>');
-					row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
-					row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditCache"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm bt_debugDelCache"><i class="fas fa-trash"></i> </a></td>');
-				}
-			});
-			}
-		}
-	});
-});
-
-$('#bt_debugTabCache').on('click', '.bt_debugEditCache', function () {
-	var tr = $(this).closest('tr');
-	var debugKey = tr.find('.key').text();
-	bootbox.confirm({
-		title: '{{Modifier le paramètre du cache interne}}',
-		message: '<label class="control-label">{{Clé :}} </label> '
-				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
-				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
-		callback: function (result){
-			if (result) {
-			callDebugAjax({
-				data: {
-					action: "cacheSet",
-					key : debugKey,
-					val: $("#debugVal").val()
-				},
-				error: function(error) {
-					$.fn.showAlert({message: error.message, level: 'danger'})
-				},
-				success: function(data) {
-					$.fn.showAlert({message: '{{Paramètre du cache interne modifié.}}', level: 'success'});
-					tr.find('.val').text($("#debugVal").val());
-				}
-			});
-			}
-		}
-	});
-});
-
-$('#bt_debugTabCache').on('click', '.bt_debugDelCache', function () {
-	var tr = $(this).closest('tr');
-	var debugKey = tr.find('.key').text();
-	bootbox.confirm({
-		title: '{{Supprimer le paramètre du cache interne}}',
-		message: '<label class="control-label">{{Clé :}} </label> '
-				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
-				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
-		callback: function (result){
-			if (result) {
-			callDebugAjax({
-				data: {
-					action: "cacheDel",
-					key : debugKey
-				},
-				error: function(error) {
-					$.fn.showAlert({message: error.message, level: 'danger'})
-				},
-				success: function(data) {
-					$.fn.showAlert({message: '{{Paramètre du cache interne supprimé.}}', level: 'success'});
-					tr.remove();
-				}
-			});
-			}
-		}
-	});
-});
-
-$('#bt_debugTabCache').on('click', '.bt_debugShowHideCmd', function () {
-	if ($(this).hasClass('btn-warning')) {
-		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-pen"></i> {{Afficher le cache des Commandes}}');
-		$('#bt_debugTabCache .lcmd').each(function () { $(this).addClass('hidden'); });
-	} else {
-		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-pen"></i> {{Masquer le cache des Commandes}}');
-		$('#bt_debugTabCache .lcmd').each(function () { $(this).removeClass('hidden'); });
-	}
-});
-					</script>
-				</div>
-
-<!--
-				<div class="panel-body">
-					<form class="form-horizontal">
-						<fieldset>
-							<div class="form-group">
-								<label class="col-sm-12" style="background-color:#f5f5f5!important;">Deamon</label>
-							</div>
-< ?php
-$cacheKeys = array();
-$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_CONNECTED;
-// $cacheKeys[] = ;
-foreach ($cacheKeys as $k) {
-?>
-							<div class="form-group">
-								<label class="col-sm-4">< ?php echo $k; ?></label>
-								<span class="col-sm-7"><pre>< ?php echo json_encode(cache::byKey($k)->getValue(null), JSON_UNESCAPED_UNICODE); ?></pre></span>
-								<!--<span class="input-group-btn"><a class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> </a></span>- ->
-							</div>
-< ?php
-}
-
-foreach (jMQTT::getBrokers() as $brk) {
-	$cacheBrkKeys = array();
-	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_IGNORE_TOPIC_MISMATCH;
-	$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
-	$cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
-?>
-							<div class="form-group">
-								<label class="col-sm-12" style="background-color:#f5f5f5!important;">Broker < ?php echo $brk->getName(); ?></label>
-							</div>
-< ?php
-	foreach ($cacheBrkKeys as $k) {
-?>
-							<div class="form-group">
-								<label class="col-sm-4">< ?php echo $k; ?></label>
-								<span class="col-sm-7"><pre>< ?php echo json_encode(cache::byKey($k)->getValue(null), JSON_UNESCAPED_UNICODE); ?></pre></span>
-								<!--<span class="input-group-btn"><a class="btn btn-warning btn-sm"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> </a></span>- ->
-							</div>
-< ?php
-	}
-}
-?>
-						</fieldset>
-					</form>
-				</div>
--->
-			</div>
 		</div>
 	</div>
 
-<!--
-TODO IMPLEMENT sent to / receive from daemon
-	<div class="row">
-		<div class="col-md-6 col-sm-12">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title"><i class="fas fa-upload"></i> {{Simuler un event envoyé au Démon}}</h3>
-				</div>
-				<div class="panel-body">
-					<form class="form-horizontal">
-							<fieldset>
-							<div><pre>
-sendToDaemon($params)
-	{"cmd": "", "id": "", "hostname": "", "port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}
-
-toDaemon_newClient($id, $hostname, $params = array())
-	{"port": "", "clientid": "", "statustopic": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}
-
-toDaemon_removeClient($id)
-toDaemon_subscribe($id, $topic, $qos = 1)
-toDaemon_unsubscribe($id, $topic)
-toDaemon_publish($id, $topic, $payload, $qos = 1, $retain = false)
-toDaemon_setLogLevel()
-							</pre></div>
-							<legend><i class="fas fa-cog"></i>sendToDaemon</legend>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-							</div>
-							<legend><i class="fas fa-cog"></i>new_mqtt_client</legend>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-9">
-									<span>XXXXXX</span>
-								</div>
-							</div>
-						</fieldset>
-					</form>
-					<script>
-/*
-$('#bt_debugToDaemonRaw').on('click', function () {
-	bootbox.confirm({
-		title: '{{Ajouter un paramètre de configuration interne}}',
-		message: '<label class="control-label">{{Clé :}} </label> '
-				+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
-				+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-				+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
-		callback: function (result){
-			if (result) {
-			callDebugAjax({
-				data: {
-					action: "configSet",
-					key : $("#debugKey").val(),
-					val: $("#debugVal").val()
-				},
-				error: function(error) {
-					$.fn.showAlert({message: error.message, level: 'danger'})
-				},
-				success: function(data) {
-					$.fn.showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
-					var row = $('#bt_debugTabConfig tbody').prepend('<tr />').children('tr:first');//.text($("#debugVal").val());
-					row.append('<td class="key">'+$("#debugKey").val()+'</td>');
-					row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
-					row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm bt_debugEditConfig"><i class="fas fa-pen"></i> </a><a class="btn btn-danger btn-sm bt_debugDelConfig"><i class="fas fa-trash"></i> </a></td>');
-				}
-			});
-			}
-		}
-	});
-});
-*/
-					</script>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6 col-sm-12">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title"><i class="fas fa-download"></i> {{Simuler un event reçu du Démon}}</h3>
-				</div>
-				<div class="panel-body">
-					<form class="form-horizontal">
-							<fieldset>
-							<div><pre>
-METHOD POST
-"uid" in URL
-{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}
-{"cmd":"brokerUp", "id":string}
-{"cmd":"brokerDown"}
-{"cmd":"daemonUp"}
-{"cmd":"daemonDown"}
-{"cmd":"hb"}
-							</pre></div>
-							<legend><i class="fas fa-cog"></i>messageIn</legend>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-3">
-									<span>XXXXXX</span>
-								</div>
-							</div>
-							<legend><i class="fas fa-cog"></i>brokerUp</legend>
-							<div class="form-group">
-								<label class="col-sm-3 control-label">XXXXXX</label>
-								<div class="col-sm-9">
-									<span>XXXXXX</span>
-								</div>
-							</div>
-						</fieldset>
-					</form>
-					<script>
-// TODO Placeholder
-					</script>
-				</div>
-			</div>
-		</div>
-	</div>
--->
 <!--
 TODO
 - Kill all daemons
@@ -697,3 +475,23 @@ TODO
 - Enable/disable listeners
 - Clean directories deps / dynamic content
 -->
+
+	<script>
+// Function to hide, show and build sections content on the fly
+$('a.btn.btn-info.btn-show-hide').on('click', function () {
+	var div = $(this).closest('div.panel').find('div.panel-body');
+	if ($(this).hasClass('btn-warning')) {
+		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-search-plus"></i> {{Afficher}}');
+		div.addClass('hidden');
+	} else {
+		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-search-minus"></i> {{Masquer}}');
+		div.removeClass('hidden');
+	}
+	if ($(this).hasAttr('builder')) {
+		var builder = window[$(this).attr('builder')];
+		$(this).removeAttr('builder');
+		if(typeof builder === 'function')
+			builder(div);
+	}
+});
+	</script>
