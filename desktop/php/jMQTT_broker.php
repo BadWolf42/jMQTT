@@ -176,7 +176,7 @@
 									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientCert"></textarea>
 								</div>
 							</div>
-							<div id="jmqttDivTlsClientKey" class="form-group">
+							<div class="form-group">
 								<label class="col-lg-3 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
 								<div class="col-lg-8">
