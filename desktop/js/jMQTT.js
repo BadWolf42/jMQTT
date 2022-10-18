@@ -889,7 +889,7 @@ function printEqLogic(_eqLogic) {
 			$('.eqLogicAction[data-action=startIncludeMode]').show().hide();
 			$('.eqLogicAction[data-action=stopIncludeMode]').addClass('roundedLeft');
 		}
-		$('#mqtttopic').prop('readonly', true);
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', true);
 		var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
 		$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
 		$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
@@ -913,7 +913,7 @@ function printEqLogic(_eqLogic) {
 		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
-		$('#mqtttopic').prop('readonly', false);
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', false);
 
 		// Initialise battery and availability dropboxes
 		var eqId = $('.eqLogicAttr[data-l1key=id]').value();

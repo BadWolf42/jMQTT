@@ -129,7 +129,7 @@ $('#ul_jmqttTemplateList').on({
 				eq += '</div></div>';
 				// Topic
 				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-3">';
-				eq += '<input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
+				eq += '<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
 				eq += '</div></div>';
 				// Qos
 				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Qos}}</label><div id="mqttqos" class="col-sm-1">';
