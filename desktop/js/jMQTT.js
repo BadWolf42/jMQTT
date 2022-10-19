@@ -484,7 +484,7 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 // Automations on Broker tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
-	if ($(this).val() == 'mqtts')
+	if ($(this).val() == 'mqtts' || $(this).val() == 'wss')
 		$('#jmqttDivTls').show();
 	else
 		$('#jmqttDivTls').hide();

@@ -122,6 +122,12 @@ class jMqttClient:
 		self.id = self.message['id']
 		self._log = logging.getLogger('Client'+self.id)
 		self.mqtthostname = self.message['hostname']
+		if 'proto' not in self.message:
+			self.message['proto'] = 'mqtt'
+		if 'port' not in self.message:
+			self.message['port'] = ''
+		if self.message['port'] == '':
+			self.mqttport = {'mqtt': 1883, 'mqtts': 8883, 'ws': 1884, 'wss': 8884}.get(message['proto'], 1883)
 		self.mqttport = self.message['port'] if 'port' in self.message else 1883
 		self.mqttlwt = self.message['lwt']
 		self.mqttlwt_topic = self.message['lwtTopic']
@@ -139,7 +145,10 @@ class jMqttClient:
 #		self._log.debug('jMqttClient.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
 
 		# Create MQTT Client
-		self.mqttclient = mqtt.Client(self.message['clientid'])
+		if self.message['proto'].startswith('ws'):
+			self.mqttclient = mqtt.Client(self.message['clientid'], transport="websockets")
+		else:
+			self.mqttclient = mqtt.Client(self.message['clientid'])
 		# Enable Paho logging functions
 		if self._log.isEnabledFor(logging.VERBOSE):
 			self.mqttclient.enable_logger(self._log)

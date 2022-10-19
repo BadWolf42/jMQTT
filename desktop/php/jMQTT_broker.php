@@ -86,8 +86,8 @@
 										title="{{Choisir si le Broker attend une communication sécurisée.<br />Pour plus d'information, se référer à la documentation.}}">
 										<option>mqtt</option>
 										<option>mqtts</option>
-										<!--<option>ws</option>-->
-										<!--<option>wss</option>-->
+										<option>ws</option>
+										<option>wss</option>
 									</select>
 								</span>
 								<span class="input-group-addon">://</span>
@@ -95,7 +95,7 @@
 									title="{{Entrer l'adresse IP ou le Nom de Domaine du Broker.<br/>Valeur si vide, 'localhost' (la machine hébergeant Jeedom).}}">
 								<span class="input-group-addon">:</span>
 								<input class="eqLogicAttr form-control tooltips roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="{{Port}}"
-									title="{{Entrer le port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt ou 8883 en mqtts.}}">
+									title="{{Entrer le port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
 							</div>
 						</div>
 						<div class="form-group">

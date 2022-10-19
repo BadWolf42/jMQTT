@@ -2,7 +2,8 @@
 
 ## Dev
  - **Support minimum de la version 4.2.11 de Jeedom**
- - **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker.**
+ - **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker**
+ - **Ajout du transport du protocole MQTT sur Web Sockets (ws) et Web Sockets Secure (wss)**
  - Mise en place de champs dans le broker pour pouvoir définir le topic LWT et les valeurs quand le broker est en-ligne et hors-ligne
  - Meilleure gestion du "topicMismatch", avertissement avant de sauvegarder et visuellement dans les champs lors de la saisie
  - Utilisation du nom de l'objet (plutôt que du nom du broker) et du nom de l'équipement pour construire le topic, lors du double-clique sur un topic d'inclusion vide

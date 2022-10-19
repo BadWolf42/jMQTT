@@ -2041,9 +2041,9 @@ class jMQTT extends eqLogic {
 		}
 		$payloadLogMsg = ($payload === '') ? '(null)' : $payload;
 		if (log::getLogLevel(__CLASS__) > 100)
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic %3\$s", __FILE__), $cmdName, $payloadLogMsg, $topic));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s'", __FILE__), $cmdName, $payloadLogMsg, $topic));
 		else
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic %3\$s (qos=%4\$s, retain=%5\$s)", __FILE__), $cmdName, $payload, $topic, $qos, $retain));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic '%3\$s' (qos=%4\$s, retain=%5\$s)", __FILE__), $cmdName, $payload, $topic, $qos, $retain));
 		$broker = $this->getBroker();
 		if (!self::daemon_state()) {
 			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le démon jMQTT n'est pas démarré/connecté", __FILE__), $cmdName));
@@ -2141,7 +2141,7 @@ class jMQTT extends eqLogic {
 			elseif ($proto == 'mqtts')
 				return 8883;
 			elseif ($proto == 'ws')
-				return 1084;
+				return 1884;
 			elseif ($proto == 'wss')
 				return 8884;
 			else

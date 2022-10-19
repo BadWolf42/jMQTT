@@ -157,11 +157,14 @@ Pour modifier les informations de connexion au Broker, les paramètres sont :
   - Section _Paramètres d'accès au Broker_ (encadré 1)
     - _Adresse du broker_ :
       - Protocole utilisé pour communiquer avec le Broker :
-        - _mqtt_ pour des communications en clair,
-        - _mqtts_ pour activer le chiffrement (TLS) des communications avec le Broker.
+        - _mqtt_ pour des communications MQTT en clair,
+        - _mqtts_ pour activer le chiffrement (TLS) des communications MQTT avec le Broker.
+          Une fois cette option sélectionnée il sera possible de configurer les Certificats utilisés dans la partie de droite.
+        - _ws_ pour des communications WebSockets en clair,
+        - _wss_ pour activer le chiffrement (TLS) des communications WebSockets avec le Broker.
           Une fois cette option sélectionnée il sera possible de configurer les Certificats utilisés dans la partie de droite.
       - Adresse IP ou nom de domaine du Broker : (par défaut localhost i.e. la machine hébergeant Jeedom);
-      - Port du Broker : port du Broker (1883 par défaut en mqtt et 8883 en mqtts);
+      - Port du Broker : port du Broker (par défaut 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss);
     - _Authentification_ : compte et mot de passe de connexion au Broker (laissez le champ vide si vous n'avez pas configuré votre Broker MQTT en conséquence, notamment si jMQTT se charge de l’installation du Broker).
     - _Identifiant/ClientId_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
       Cet identifiant est aussi utilisé dans le topic de la commande info *status*. Le topic est automatiquement mis à jour si l'identifiant est modifié.
