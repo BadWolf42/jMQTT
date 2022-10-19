@@ -23,8 +23,10 @@ jmqtt.refreshTimeout = null;
 jmqtt.mainTopic = '';
 
 jmqtt.checkTopicMismatch = function (item) {
-	if (jmqtt.mainTopic == '') {
+	if (jmqtt.mainTopic == '') { // Nothing matches empty main subscription topic
 			item.addClass('topicMismatch');
+	} else if (jmqtt.mainTopic == '#') { // Everything matches '#' main subscription topic
+			item.removeClass('topicMismatch');
 	} else {
 		var subRegex = new RegExp(`^${jmqtt.mainTopic}\$`.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'))
 		// console.log('jmqtt.checkTopicMismatch: subRegex=', subRegex.toString(), ' topic=', item.value());
