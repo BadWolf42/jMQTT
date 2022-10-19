@@ -110,7 +110,7 @@
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Identifiant/ClientId}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT.
-							<br/>Cet identifiant est aussi utilisé dans les topics status et api.
+							<br/>Cet identifiant est aussi utilisé dans le topic de l'API.
 							<br/>Il est important que cet identifiant ne soit utilisé que par jMQTT sur ce Broker.}}"></i></sup></label>
 							<div class="col-lg-7">
 								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId" placeholder="jeedom" />

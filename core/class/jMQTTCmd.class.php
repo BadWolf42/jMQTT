@@ -225,6 +225,19 @@ class jMQTTCmd extends cmd {
 		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
 			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
 
+		// Command on a Broker must fail
+		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+			if ($this->getId() == '') {
+				$err  = __("Impossible de créer la commande <b>#%1\$s#</b>, ", __FILE__);
+				$err .= __("car il ne peut pas y avoir de commande sur un équipement Broker (%2\$s#)", __FILE__);
+			} else {
+				$err  = __("Impossible de modifier la commande <b>#%1\$s#</b>, ", __FILE__);
+				$err .= __("car il ne peut pas y avoir de commande sur un équipement Broker (%2\$s#)", __FILE__);
+				$err .= __(", ce cas ne dvrait pas arriver, merci de contacter les développeurs", __FILE__);
+			}
+			throw new Exception(sprintf($err, $this->getHumanName(), $this->getEqLogic()->getName()));
+		}
+
 		// Reset autoPub if info cmd (should not happen or be possible)
 		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
 			$this->setConfiguration(self::CONF_KEY_AUTOPUB, 0);
@@ -263,7 +276,6 @@ class jMQTTCmd extends cmd {
 			$cmd = self::byId($this->getId());
 			$this->_preSaveInformations = array(
 				self::CONF_KEY_RETAIN => $cmd->getConfiguration(self::CONF_KEY_RETAIN, 0),
-				'brokerStatusTopic' => $cmd->getTopic(),
 				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
 				self::CONF_KEY_REQUEST => $cmd->getConfiguration(self::CONF_KEY_REQUEST, '')
 			);
@@ -320,15 +332,6 @@ class jMQTTCmd extends cmd {
 						$eqLogic->log('info', sprintf(__("Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker", __FILE__), $this->getHumanName()));
 						$eqLogic->publish($this->getHumanName(), $this->getTopic(), '', 1, 1);
 					}
-				}
-			}
-
-			// Specific command : status for Broker eqpt
-			if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $eqLogic->getType() == jMQTT::TYP_BRK && $eqLogic->getIsEnable()) {
-				// If it's topic changed
-				if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
-					// Just try to remove the previous status topic
-					$eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
 				}
 			}
 

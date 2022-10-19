@@ -1,5 +1,12 @@
 # Registre des évolutions
 
+## Dev
+ - **Support minimum de la version 4.2.11 de Jeedom**
+ - **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker.**
+ - Meilleure gestion du "topicMismatch", avertissement avant de sauvegarder et visuellement dans les champs lors de la saisie
+ - Utilisation du nom de l'objet (plutôt que du nom du broker) et du nom de l'équipement pour construire le topic, lors du double-clique sur un topic d'inclusion vide
+ - Gros nettoyage du code JS pour retirer des correctifs temporaires liés au Core < 4.2
+
 ## 2022-10-15 **Stable et Beta**
  - **Création d'une branche spéciale pour Jeedom 3, voir plus bas**
  - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**

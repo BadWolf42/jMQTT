@@ -33,10 +33,6 @@ class jMQTT extends eqLogic {
 	const API_ENABLE                    = 'enable';
 	const API_DISABLE                   = 'disable';
 
-	const CLIENT_STATUS                 = 'status';
-	const OFFLINE                       = 'offline';
-	const ONLINE                        = 'online';
-
 	const MQTTCLIENT_OK                 = 'ok';
 	const MQTTCLIENT_POK                = 'pok';
 	const MQTTCLIENT_NOK                = 'nok';
@@ -108,12 +104,6 @@ class jMQTT extends eqLogic {
 	 * @var jMQTT broker object
 	 */
 	private $_broker;
-
-	/**
-	 * Status command of the broker related to this object
-	 * @var jMQTTCmd
-	 */
-	private $_statusCmd;
 
 	/**
 	 * Log file related to this broker.
@@ -730,9 +720,6 @@ class jMQTT extends eqLogic {
 
 				// Create log of this broker
 				config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
-
-				// Create Status cmd
-				$this->createMqttClientStatusCmd();
 
 				// Enabled => Start MqttClient
 				if ($this->getIsEnable()) $this->startMqttClient();
@@ -1682,7 +1669,7 @@ class jMQTT extends eqLogic {
 		$params = array();
 		$params['port']              = $this->getMqttPort();
 		$params['clientid']          = $this->getMqttClientId();
-		$params['statustopic']       = $this->getMqttClientStatusTopic();
+		$params['statustopic']       = (!$this->getConf(self::CONF_KEY_MQTT_PUB_STATUS) ? '' : ($this->getMqttClientId() . '/status'));
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
 		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
@@ -1721,8 +1708,6 @@ class jMQTT extends eqLogic {
 	public static function fromDaemon_brkUp($id) {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
-			if ($statusCmd = $broker->getMqttClientStatusCmd())				// TODO Check if can be removed as Daemon sends this event
-				$statusCmd->event(self::ONLINE);							// TODO Remove STATUS CMD to fix issue https://community.jeedom.com/t/87060/54
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
@@ -1764,8 +1749,6 @@ class jMQTT extends eqLogic {
 				return;
 			}
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
-			if ($statusCmd = $broker->getMqttClientStatusCmd()) // TODO Check if can be removed as Daemon sends this event / Remove STATUS CMD to fix issue https://community.jeedom.com/t/87060/54
-				$statusCmd->event(self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			// if includeMode is enabled, disable it
 			if ($broker->getIncludeMode())
 				$broker->changeIncludeMode(0);
@@ -2049,41 +2032,6 @@ class jMQTT extends eqLogic {
 		if ($this->getType() == self::TYP_EQPT)
 			$broker->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
 		$this->log('debug', __('Message publié', __FILE__));
-	}
-
-	/**
-	 * Return the MQTT topic name of this broker status command
-	 * @return string broker status topic name
-	 */
-	public function getMqttClientStatusTopic()  {
-		if (! $this->getConf(self::CONF_KEY_MQTT_PUB_STATUS)) return '';
-		return $this->getMqttClientId() . '/' . self::CLIENT_STATUS;
-	}
-
-	/**
-	 * Return the MQTT status information command of this broker
-	 * @return cmd status information command.
-	 */
-	public function getMqttClientStatusCmd() {
-		if (! is_object($this->_statusCmd)) {
-			$this->_statusCmd = cmd::byEqLogicIdAndLogicalId($this->getId(), self::CLIENT_STATUS);
-		}
-		return $this->_statusCmd;
-	}
-
-	/**
-	 * Create and save the MQTT status information command of this broker if not already existing
-	 * It is the responsability of the caller to check that this object is a broker before
-	 * calling the method.
-	 */
-	public function createMqttClientStatusCmd() {
-		if (! is_object($this->getMqttClientStatusCmd())) {
-			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, $this->getMqttClientStatusTopic());
-			$cmd->setLogicalId(self::CLIENT_STATUS);
-			$cmd->setJsonPath('');
-			$cmd->setIrremovable();
-			$cmd->save();
-		}
 	}
 
 	###################################################################################################################
