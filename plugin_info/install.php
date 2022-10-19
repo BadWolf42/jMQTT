@@ -366,6 +366,20 @@ function moveCmdOutOfBrokers() {
 		$broker->save();
 	}
 }
+function modifyBrkIdConfKeyInEq() {
+	foreach (jMQTT::byType(jMQTT::class) as $eqLogic) {
+		if ($eqLogic->getType() == jMQTT::TYP_BRK) {
+			jMQTT::logger('debug', $eqLogic->getHumanName() . ' est un Broker');
+			continue;
+		}
+		// copy 'brkId' value to 'eqLogic' in broker config
+		$eqLogic->setConfiguration(jMQTT::CONF_KEY_BRK_ID, $eqLogic->getConfiguration('brkId', -1));
+		// delete 'brkId' from broker config
+		$eqLogic->setConfiguration('brkId', null);
+		$eqLogic->save(true); // Direct save to avoid issues while saving
+	}
+	jMQTT::logger('info', __("Clés de configuration des id des Brokers modifiées dans les équipements jMQTT", __FILE__));
+}
 
 function jMQTT_install() {
 	jMQTT::logger('debug', 'install.php: jMQTT_install()');
@@ -453,6 +467,7 @@ function jMQTT_update($_direct=true) {
 		// VERSION = 12
 		if ($versionFromDB < 12) {
 			moveCmdOutOfBrokers();
+			modifyBrkIdConfKeyInEq();
 			config::save(VERSION, 12, 'jMQTT');
 		}
 	}

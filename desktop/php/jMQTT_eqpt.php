@@ -50,7 +50,7 @@
 		<div class="form-group typ-std">
 			<label class="col-sm-3 control-label">{{Broker associé}}</label>
 			<div class="col-sm-3">
-				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="brkId"></select>
+				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="eqLogic"></select>
 			</div>
 		</div>
 

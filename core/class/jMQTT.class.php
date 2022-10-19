@@ -38,7 +38,7 @@ class jMQTT extends eqLogic {
 	const MQTTCLIENT_NOK                = 'nok';
 
 	const CONF_KEY_TYPE                 = 'type';
-	const CONF_KEY_BRK_ID               = 'brkId';
+	const CONF_KEY_BRK_ID               = 'eqLogic';
 	const CONF_KEY_MQTT_CLIENT_ID       = 'mqttId';
 	const CONF_KEY_MQTT_ADDRESS         = 'mqttAddress';
 	const CONF_KEY_MQTT_PORT            = 'mqttPort';
@@ -2355,7 +2355,7 @@ class jMQTT extends eqLogic {
 	 * @return jMQTT[]
 	 */
 	public static function byBrkId($id) {
-		$brkId = json_encode(array('brkId' => $id));
+		$brkId = json_encode(array('eqLogic' => $id));
 		/** @var jMQTT[] $eqpts */
 		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
 		return $returns;

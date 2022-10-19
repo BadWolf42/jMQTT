@@ -322,7 +322,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 		if (result !== null) {
 			jeedom.eqLogic.save({
 				type: eqType,
-				eqLogics: [ $.extend({name: result}, {type: 'broker', brkId: -1}) ],
+				eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
@@ -388,7 +388,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 			}
 			jeedom.eqLogic.save({
 				type: eqType,
-				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', brkId: broker}) ], // TODO Set brkId here
+				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
@@ -406,49 +406,6 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 $('.eqLogicAction[data-action=confEq]').off('click').on('click', function() {
 	var eqId = $(this).closest('div').attr('data-eqLogic_id');
 	$('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + eqId).dialog('open');
-});
-
-//
-// Remove / Move jMQTT equipment callback
-//
-$('.eqLogicAction[data-action=removeJmqtt]').off('click').on('click', function () {
-	function removeJmqtt() {
-		jeedom.eqLogic.remove({
-			type: eqType,
-			id: $('.eqLogicAttr[data-l1key=id]').value(),
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'danger'});
-			},
-			success: function () {
-				var url = jmqtt.initPluginUrl();
-				modifyWithoutSave = false;
-				url += '&removeSuccessFull=1';
-				loadPage(url);
-			}
-		});
-	}
-	if ($('.eqLogicAttr[data-l1key=id]').value() != undefined) {
-		var typB = $('.eqLogicAttr[data-l2key=type]').value() == 'broker';
-		bootbox.confirm('{{Etes-vous sûr de vouloir supprimer}}' + ' ' +
-				(typB ? '{{le broker}}' : "{{l'équipement}}") + ' <b>' + $('.eqLogicAttr[data-l1key=name]').value() + '</b> ?', function (result) {
-			if (result) {
-				if (typB) {
-					bootbox.confirm('<table><tr><td style="vertical-align:middle;font-size:2em;padding-right:10px"><span class="label label-warning"><i class="fas fa-exclamation-triangle" />' +
-						'</span></td><td style="vertical-align:middle">' + '{{Tous les équipements associés au broker vont être supprimés}}' +
-						'...<br><b>' + '{{Êtes vous sûr ?}}' + '</b></td></tr></table>', function (result) {
-						if (result) {
-							removeJmqtt();
-						}
-					});
-				}
-				else {
-					removeJmqtt();
-				}
-			}
-		});
-	} else {
-		$.fn.showAlert({message: '{{Veuillez d\'abord sélectionner un}} ' + eqType, level: 'danger'});
-	}
 });
 
 //
@@ -910,7 +867,7 @@ function printEqLogic(_eqLogic) {
 	}
 
 	// Show UI elements depending on the type
-	if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.brkId == undefined || _eqLogic.configuration.brkId < 0))
+	if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.eqLogic == undefined || _eqLogic.configuration.eqLogic < 0))
 			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
 		$('.toDisable').addClass('disabled');
 		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
@@ -993,12 +950,12 @@ function printEqLogic(_eqLogic) {
 	}
 
 	// Initialize the broker dropbox
-	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=brkId]');
+	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
 	brokers.empty();
 	$.each( eqBrokers, function(key, name) {
 		brokers.append(new Option(name, key));
 	});
-	brokers.val(_eqLogic.configuration.brkId);
+	brokers.val(_eqLogic.configuration.eqLogic);
 }
 
 /**

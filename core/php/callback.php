@@ -88,7 +88,7 @@ foreach($messages as $message) {					// Iterate through the messages
 
 // TODO: Later
 /*
-		case 'value':								// {"cmd":"value", "c":[string], "v":string} #BrkId, cmdIds, value
+		case 'value':								// {"cmd":"value", "c":[string], "v":string} # c: list of cmdId v: value to set
 			if (!isset($message['c']) || !isset($message['v']))
 				break;
 			foreach($message['c'] as $cmdId)
