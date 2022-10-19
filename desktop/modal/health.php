@@ -112,7 +112,7 @@ $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
 				success: function () {
-					var url = initPluginUrl();
+					var url = jmqtt.initPluginUrl();
 					modifyWithoutSave = false;
 					url += '&removeSuccessFull=1';
 					loadPage(url);
