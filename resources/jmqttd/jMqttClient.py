@@ -41,9 +41,9 @@ class jMqttClient:
 
 	def on_connect(self, client, userdata, flags, rc):
 		self.connected = True
-		if self.mqttstatustopic != '':
-			client.will_set(self.mqttstatustopic, 'offline', 1, True)
-			client.publish(self.mqttstatustopic, 'online', 1, True)
+		if self.mqttlwt:
+			client.will_set(self.mqttlwt_topic, self.mqttlwt_offline, 1, True)
+			client.publish(self.mqttlwt_topic, self.mqttlwt_online, 1, True)
 		self._log.info('Connected to broker %s:%d', self.mqtthostname, self.mqttport)
 		with self.mqttsub_lock:
 			for topic in self.mqttsubscribedtopics:
@@ -123,7 +123,10 @@ class jMqttClient:
 		self._log = logging.getLogger('Client'+self.id)
 		self.mqtthostname = self.message['hostname']
 		self.mqttport = self.message['port'] if 'port' in self.message else 1883
-		self.mqttstatustopic = self.message['statustopic'] if 'statustopic' in self.message else ''
+		self.mqttlwt = self.message['lwt']
+		self.mqttlwt_topic = self.message['lwtTopic']
+		self.mqttlwt_online = self.message['lwtOnline']
+		self.mqttlwt_offline = self.message['lwtOffline']
 		if 'clientid' not in self.message:
 			self.message['clientid'] = ''
 		if 'username' not in self.message:
@@ -183,8 +186,8 @@ class jMqttClient:
 
 	def stop(self):
 		if self.mqttclient is not None:
-			if self.mqttstatustopic != '':
-				self.mqttclient.publish(self.mqttstatustopic, 'offline', 1, True)
+			if self.mqttlwt:
+				self.mqttclient.publish(self.mqttlwt_topic, self.mqttlwt_offline, 1, True)
 			self.mqttclient.disconnect()
 			self.mqttclient.loop_stop()
 			self.mqttclient = None

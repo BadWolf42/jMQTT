@@ -44,7 +44,10 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_PORT            = 'mqttPort';
 	const CONF_KEY_MQTT_USER            = 'mqttUser';
 	const CONF_KEY_MQTT_PASS            = 'mqttPass';
-	const CONF_KEY_MQTT_PUB_STATUS      = 'mqttPubStatus';
+	const CONF_KEY_MQTT_LWT             = 'mqttLwt';
+	const CONF_KEY_MQTT_LWT_TOPIC       = 'mqttLwtTopic';
+	const CONF_KEY_MQTT_LWT_ONLINE      = 'mqttLwtOnline';
+	const CONF_KEY_MQTT_LWT_OFFLINE     = 'mqttLwtOffline';
 	const CONF_KEY_MQTT_INC_TOPIC       = 'mqttIncTopic';
 	const CONF_KEY_MQTT_PROTO           = 'mqttProto';
 	const CONF_KEY_MQTT_TLS_CHECK       = 'mqttTlsCheck';
@@ -693,15 +696,27 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
 			);
 
-			$backupVal = array( // load trivials eqLogic from DB
-				self::CONF_KEY_LOGLEVEL,        self::CONF_KEY_MQTT_CLIENT_ID,
-				self::CONF_KEY_MQTT_ADDRESS,    self::CONF_KEY_MQTT_PORT,
-				self::CONF_KEY_MQTT_USER,       self::CONF_KEY_MQTT_PASS,
-				self::CONF_KEY_MQTT_PUB_STATUS, self::CONF_KEY_MQTT_INC_TOPIC,
-				self::CONF_KEY_MQTT_PROTO,      self::CONF_KEY_MQTT_TLS_CHECK,
-				self::CONF_KEY_MQTT_TLS_CA,     self::CONF_KEY_MQTT_TLS_CLI_CERT,
-				self::CONF_KEY_BATTERY_CMD,     self::CONF_KEY_AVAILABILITY_CMD,
-				self::CONF_KEY_QOS,             self::CONF_KEY_MQTT_TLS_CLI_KEY);
+			// load trivials eqLogic from DB
+			$backupVal = array(
+				self::CONF_KEY_LOGLEVEL,
+				self::CONF_KEY_MQTT_CLIENT_ID,
+				self::CONF_KEY_MQTT_ADDRESS,
+				self::CONF_KEY_MQTT_PORT,
+				self::CONF_KEY_MQTT_USER,
+				self::CONF_KEY_MQTT_PASS,
+				self::CONF_KEY_MQTT_LWT,
+				self::CONF_KEY_MQTT_LWT_TOPIC,
+				self::CONF_KEY_MQTT_LWT_ONLINE,
+				self::CONF_KEY_MQTT_LWT_OFFLINE,
+				self::CONF_KEY_MQTT_INC_TOPIC,
+				self::CONF_KEY_MQTT_PROTO,
+				self::CONF_KEY_MQTT_TLS_CHECK,
+				self::CONF_KEY_MQTT_TLS_CA,
+				self::CONF_KEY_MQTT_TLS_CLI_CERT,
+				self::CONF_KEY_BATTERY_CMD,
+				self::CONF_KEY_AVAILABILITY_CMD,
+				self::CONF_KEY_QOS,
+				self::CONF_KEY_MQTT_TLS_CLI_KEY);
 			foreach ($backupVal as $key)
 				$this->_preSaveInformations[$key] = $eqLogic->getConf($key);
 		}
@@ -747,7 +762,6 @@ class jMQTT extends eqLogic {
 
 				// Name changed
 				if ($this->_preSaveInformations['name'] != $this->getName()) {
-
 					$old_log = __CLASS__ . '_' . str_replace(' ', '_', $this->_preSaveInformations['name']);
 					$new_log = $this->getMqttClientLogFile(true);
 					if (file_exists(log::getPathToLog($old_log)))
@@ -756,12 +770,21 @@ class jMQTT extends eqLogic {
 					config::remove('log::level::' . $old_log, __CLASS__);
 				}
 
-				// 'mqttAddress', 'mqttPort', 'mqttUser', 'mqttPass', etc changed
-				$checkChanged = array(self::CONF_KEY_MQTT_ADDRESS,      self::CONF_KEY_MQTT_PORT,
-									  self::CONF_KEY_MQTT_USER,         self::CONF_KEY_MQTT_PASS,
-									  self::CONF_KEY_MQTT_PUB_STATUS,   self::CONF_KEY_MQTT_PROTO,
-									  self::CONF_KEY_MQTT_TLS_CHECK,    self::CONF_KEY_MQTT_TLS_CA,
-									  self::CONF_KEY_MQTT_TLS_CLI_CERT, self::CONF_KEY_MQTT_TLS_CLI_KEY);
+				// Check changes that would trigger MQTT Client reload
+				$checkChanged = array(
+					self::CONF_KEY_MQTT_ADDRESS,
+					self::CONF_KEY_MQTT_PORT,
+					self::CONF_KEY_MQTT_USER,
+					self::CONF_KEY_MQTT_PASS,
+					self::CONF_KEY_MQTT_PROTO,
+					self::CONF_KEY_MQTT_LWT,
+					self::CONF_KEY_MQTT_LWT_TOPIC,
+					self::CONF_KEY_MQTT_LWT_ONLINE,
+					self::CONF_KEY_MQTT_LWT_OFFLINE,
+					self::CONF_KEY_MQTT_TLS_CHECK,
+					self::CONF_KEY_MQTT_TLS_CA,
+					self::CONF_KEY_MQTT_TLS_CLI_CERT,
+					self::CONF_KEY_MQTT_TLS_CLI_KEY);
 				foreach ($checkChanged as $key) {
 					if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
 						if (!$stopped) {
@@ -793,6 +816,13 @@ class jMQTT extends eqLogic {
 						//Subscribe the new one
 						$this->subscribeTopic($this->getConf(self::CONF_KEY_MQTT_INC_TOPIC), $this->getQos());
 					}
+				}
+
+				// LWT Topic changed
+				if ($this->_preSaveInformations[self::CONF_KEY_MQTT_LWT]       != $this->getConf(self::CONF_KEY_MQTT_LWT) ||
+					$this->_preSaveInformations[self::CONF_KEY_MQTT_LWT_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_LWT_TOPIC)) {
+					// Just try to remove the previous status topic
+					$this->publish($this->getName(), $this->_preSaveInformations[self::CONF_KEY_MQTT_LWT], '', 1, 1);
 				}
 
 				// APIEnabled changed
@@ -1669,7 +1699,10 @@ class jMQTT extends eqLogic {
 		$params = array();
 		$params['port']              = $this->getMqttPort();
 		$params['clientid']          = $this->getMqttClientId();
-		$params['statustopic']       = (!$this->getConf(self::CONF_KEY_MQTT_PUB_STATUS) ? '' : ($this->getMqttClientId() . '/status'));
+		$params['lwt']               = ($this->getConf(self::CONF_KEY_MQTT_LWT) == '1');
+		$params['lwtTopic']          = $this->getConf(self::CONF_KEY_MQTT_LWT_TOPIC);
+		$params['lwtOnline']         = $this->getConf(self::CONF_KEY_MQTT_LWT_ONLINE);
+		$params['lwtOffline']        = $this->getConf(self::CONF_KEY_MQTT_LWT_OFFLINE);
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
 		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
@@ -2098,6 +2131,7 @@ class jMQTT extends eqLogic {
 	}
 
 	private function getConf($_key) {
+		// Default value is returned if config is null or an empty string
 		return $this->getConfiguration($_key, $this->getDefaultConfiguration($_key));
 	}
 
@@ -2116,12 +2150,16 @@ class jMQTT extends eqLogic {
 */
 			else
 				return 0;
+		} elseif ($_key == self::CONF_KEY_MQTT_LWT_TOPIC) {
+			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/status";
 		}
 		$defValues = array(
 			self::CONF_KEY_MQTT_ADDRESS => 'localhost',
 			self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
 			self::CONF_KEY_QOS => '1',
-			self::CONF_KEY_MQTT_PUB_STATUS => '1',
+			self::CONF_KEY_MQTT_LWT => '1',
+			self::CONF_KEY_MQTT_LWT_ONLINE => 'online',
+			self::CONF_KEY_MQTT_LWT_OFFLINE => 'offline',
 			self::CONF_KEY_MQTT_PROTO => 'mqtt',
 			self::CONF_KEY_MQTT_TLS_CHECK => 'public',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',

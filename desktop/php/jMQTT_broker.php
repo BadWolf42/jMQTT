@@ -116,14 +116,29 @@
 								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId" placeholder="jeedom" />
 							</div>
 						</div>
+
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Publier le statut}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Active/Désactive la publication du statut en MQTT sur le Broker (sur le topic {ClientId}/status).}}"></i></sup></label>
-							<div class="col-lg-7">
-								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttPubStatus" checked>
+							<label class="col-lg-4 control-label">{{Publier le statut LWT}} <sup><i class="fa fa-question-circle tooltips"
+							title="{{Active/Désactive la publication du statut LWT en MQTT sur le Broker.}}"></i></sup></label>
+							<div class="col-lg-1">
+								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttLwt" checked>
+							</div>
+							<div class="col-lg-6 jmqttLwt">
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="{{ClientId/status}}"
+								title="{{Topic de publication du statut LWT en MQTT sur le Broker ('ClientId/status' par défaut).}}">
 							</div>
 						</div>
-			<!-- TODO ADD here LWT topic, value online and value offline -->
+						<div class="form-group jmqttLwt" style="display:none">
+							<div class="col-lg-5"></div>
+							<div class="col-lg-6 input-group">
+								<input class="eqLogicAttr form-control tooltips roundedLeft" data-l1key="configuration" data-l2key="mqttLwtOnline" placeholder="online"
+								title="{{Valeur du statut lorsque jMQTT est connecté à ce Broker ('online' par défaut).}}">
+								<span class="input-group-addon">/</span>
+								<input class="eqLogicAttr form-control tooltips roundedRight" data-l1key="configuration" data-l2key="mqttLwtOffline" placeholder="offline"
+								title="{{Valeur du statut lorsque jMQTT est déconnecté de ce Broker ('offline' par défaut).}}">
+							</div>
+						</div>
+
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.

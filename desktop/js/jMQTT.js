@@ -546,6 +546,13 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(func
 	}
 });
 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(){
+	if ($(this).value() == '1')
+		$('.jmqttLwt').show();
+	else
+		$('.jmqttLwt').hide();
+});
+
 
 //
 // Automations on Equipment tab attributes
