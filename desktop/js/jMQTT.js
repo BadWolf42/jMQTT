@@ -543,8 +543,12 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 });
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
-	var elt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone] option:selected');
-	$("#icon_visu").attr("src", 'plugins/jMQTT/core/img/' + elt.attr('file'));
+	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') {
+		$("#icon_visu").attr("src", 'plugins/jMQTT/core/img/node_broker.svg');
+	} else {
+		var elt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone] option:selected');
+		$("#icon_visu").attr("src", 'plugins/jMQTT/core/img/' + elt.attr('file'));
+	}
 });
 
 // Configure the sortable functionality of the commands array
