@@ -828,8 +828,10 @@ class jMQTT extends eqLogic {
 				// LWT Topic changed
 				if ($this->_preSaveInformations[self::CONF_KEY_MQTT_LWT]       != $this->getConf(self::CONF_KEY_MQTT_LWT) ||
 					$this->_preSaveInformations[self::CONF_KEY_MQTT_LWT_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_LWT_TOPIC)) {
-					// Just try to remove the previous status topic
-					$this->publish($this->getName(), $this->_preSaveInformations[self::CONF_KEY_MQTT_LWT], '', 1, 1);
+					if (!$stopped) {
+						// Just try to remove the previous status topic
+						$this->publish($this->getName(), $this->_preSaveInformations[self::CONF_KEY_MQTT_LWT], '', 1, 1);
+					}
 				}
 
 				// In the end, does MqttClient need to be Started
