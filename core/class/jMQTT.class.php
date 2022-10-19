@@ -666,9 +666,8 @@ class jMQTT extends eqLogic {
 	 * Overload preSave to apply some checks/initialization and prepare postSave
 	 */
 	public function preSave() {
-
-		//Check Type: No Type => self::TYP_EQPT
-		if ($this->getType() != self::TYP_BRK && $this->getType() != self::TYP_EQPT){
+		// Check Type: No Type => self::TYP_EQPT
+		if ($this->getType() != self::TYP_BRK && $this->getType() != self::TYP_EQPT) {
 			$this->setType(self::TYP_EQPT);
 		}
 
@@ -677,38 +676,21 @@ class jMQTT extends eqLogic {
 			$this->setEqType_name(__CLASS__);
 		}
 
-		// ------------------------ Broker eqpt ------------------------
+		// ------------------------ New or Existing Broker eqpt ------------------------
 		if ($this->getType() == self::TYP_BRK) {
-
 			// Check for a broker eqpt with the same name (which is not this)
 			foreach(self::getBrokers() as $broker) {
 				if ($broker->getName() == $this->getName() && $broker->getId() != $this->getId()) {
 					throw new Exception(sprintf(__("Le Broker #%s# porte déjà le même nom", __FILE__), $this->getHumanName())); // use humain name here
 				}
 			}
-
-			// --- New broker ---
-			if ($this->getId() == '') {
-			}
-			// --- Existing broker ---
-			else {
-
-			}
-		}
-		// ------------------------ Normal eqpt ------------------------
-		else{
-
-			// --- New eqpt ---
-			if ($this->getId() == '') {
-			}
-			// --- Existing eqpt ---
-			else {
-			}
 		}
 
+		// ------------------------ New or Existing Broker or Normal eqpt ------------------------
 
 		// It's time to gather informations that will be used in postSave
-		if ($this->getId() == '') $this->_preSaveInformations = null; // New eqpt => Nothing to collect
+		if ($this->getId() == '')
+			$this->_preSaveInformations = null; // New eqpt => Nothing to collect
 		else { // Existing eqpt
 
 			// load eqLogic from DB
@@ -781,9 +763,8 @@ class jMQTT extends eqLogic {
 
 					$old_log = __CLASS__ . '_' . str_replace(' ', '_', $this->_preSaveInformations['name']);
 					$new_log = $this->getMqttClientLogFile(true);
-					if (file_exists(log::getPathToLog($old_log))) {
+					if (file_exists(log::getPathToLog($old_log)))
 						rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
-					}
 					config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, __CLASS__), __CLASS__);
 					config::remove('log::level::' . $old_log, __CLASS__);
 				}

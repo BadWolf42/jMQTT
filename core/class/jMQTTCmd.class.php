@@ -219,26 +219,11 @@ class jMQTTCmd extends cmd {
 	 * preSave callback called by the core before saving this command in the DB
 	 */
 	public function preSave() {
+		// --- New cmd or Existing cmd ---
 		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
 		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
 		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
 			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
-		// Specific command : status for Broker eqpt
-		if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
-			if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
-			if ($this->getSubType() != 'string') $this->setSubType('string');
-			$this->setTopic($this->getEqLogic()->getMqttClientStatusTopic()); // just for display as it's not used to start the MqttClient
-			$this->setJsonPath(''); // just for display as it's not used to start the MqttClient
-		}
-
-		// --- New cmd ---
-		if ($this->getId() == '') {
-
-		}
-		// --- Existing cmd ---
-		else {
-
-		}
 
 		// Reset autoPub if info cmd (should not happen or be possible)
 		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
@@ -272,7 +257,8 @@ class jMQTTCmd extends cmd {
 		}
 
 		// It's time to gather informations that will be used in postSave
-		if ($this->getId() == '') $this->_preSaveInformations = null;
+		if ($this->getId() == '')
+			$this->_preSaveInformations = null;
 		else {
 			$cmd = self::byId($this->getId());
 			$this->_preSaveInformations = array(
