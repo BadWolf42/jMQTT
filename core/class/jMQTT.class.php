@@ -460,7 +460,7 @@ class jMQTT extends eqLogic {
 		$brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);
 		$broker = null;
 		foreach(self::getBrokers() as $brk) {
-			$ip = gethostbyname($brk->getMqttAddress());
+			$ip = gethostbyname($brk->getConf(self::CONF_KEY_MQTT_ADDRESS));
 			if ($ip == $brk_addr || (substr($ip, 0, 4) == '127.' && substr($brk_addr, 0, 4) == '127.')) {
 				$broker = $brk;
 				self::logger('debug', sprintf(__("createEqWithTemplate %1\$s: Le Broker #%2\$s# a été trouvé", __FILE__), $name, $broker->getName()));
@@ -700,6 +700,7 @@ class jMQTT extends eqLogic {
 			$backupVal = array(
 				self::CONF_KEY_LOGLEVEL,
 				self::CONF_KEY_MQTT_CLIENT_ID,
+				self::CONF_KEY_MQTT_PROTO,
 				self::CONF_KEY_MQTT_ADDRESS,
 				self::CONF_KEY_MQTT_PORT,
 				self::CONF_KEY_MQTT_USER,
@@ -709,14 +710,13 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_LWT_ONLINE,
 				self::CONF_KEY_MQTT_LWT_OFFLINE,
 				self::CONF_KEY_MQTT_INC_TOPIC,
-				self::CONF_KEY_MQTT_PROTO,
 				self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,
 				self::CONF_KEY_MQTT_TLS_CLI_CERT,
+				self::CONF_KEY_MQTT_TLS_CLI_KEY,
 				self::CONF_KEY_BATTERY_CMD,
 				self::CONF_KEY_AVAILABILITY_CMD,
-				self::CONF_KEY_QOS,
-				self::CONF_KEY_MQTT_TLS_CLI_KEY);
+				self::CONF_KEY_QOS);
 			foreach ($backupVal as $key)
 				$this->_preSaveInformations[$key] = $eqLogic->getConf($key);
 		}
@@ -1381,9 +1381,9 @@ class jMQTT extends eqLogic {
 	}
 
 	public static function toDaemon_setLogLevel($_level=null) {
-		$params['cmd'] = 'loglevel';
-		$params['id'] = 0;
-		$params['level'] = is_null($_level) ? log::convertLogLevel(log::getLogLevel(__class__)) : $_level;
+		$params['cmd']      = 'loglevel';
+		$params['id']       = 0;
+		$params['level']    = is_null($_level) ? log::convertLogLevel(log::getLogLevel(__class__)) : $_level;
 		self::sendToDaemon($params);
 	}
 
@@ -1425,18 +1425,15 @@ class jMQTT extends eqLogic {
 	}
 */
 
-	public static function toDaemon_newClient($id, $hostname, $params = array()) {
-		$params['cmd']                  = 'newMqttClient';
-		$params['id']                   = $id;
-		$params['hostname']             = $hostname;
-		// set port IF (port not 0 and numeric) THEN (intval) ELSE (default for TLS and clear MQTT) #DoubleTernaryAreCute
-		$params['port']=($params['port'] != 0 && is_numeric($params['port'])) ? intval($params['port']) : (($params['tls']) ? 8883 : 1883);
+	public static function toDaemon_newClient($id, $params = array()) {
+		$params['cmd']      = 'newMqttClient';
+		$params['id']       = $id;
 		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_removeClient($id) {
-		$params['cmd']='removeMqttClient';
-		$params['id']=$id;
+		$params['cmd']      = 'removeMqttClient';
+		$params['id']       = $id;
 		self::sendToDaemon($params);
 	}
 
@@ -1505,7 +1502,7 @@ class jMQTT extends eqLogic {
 			//looking for broker pointing to local mosquitto
 			$brokerexists = false;
 			foreach(self::getBrokers() as $broker) {
-				$hn = $broker->getMqttAddress();
+				$hn = $broker->getConf(self::CONF_KEY_MQTT_ADDRESS);
 				$ip = gethostbyname($hn);
 				$localips = explode(' ', exec(system::getCmdSudo() . 'hostname -I'));
 				if ($hn == '' || substr($ip, 0, 4) == '127.' || in_array($ip, $localips)) {
@@ -1697,15 +1694,16 @@ class jMQTT extends eqLogic {
 		$this->sendMqttClientStateEvent();
 		// Preparing some additional data for the broker
 		$params = array();
-		$params['port']              = $this->getMqttPort();
-		$params['clientid']          = $this->getMqttClientId();
+		$params['hostname']          = $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
+		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
+		$params['port']              = intval($this->getConf(self::CONF_KEY_MQTT_PORT));
+		$params['clientid']          = $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID);
 		$params['lwt']               = ($this->getConf(self::CONF_KEY_MQTT_LWT) == '1');
 		$params['lwtTopic']          = $this->getConf(self::CONF_KEY_MQTT_LWT_TOPIC);
 		$params['lwtOnline']         = $this->getConf(self::CONF_KEY_MQTT_LWT_ONLINE);
 		$params['lwtOffline']        = $this->getConf(self::CONF_KEY_MQTT_LWT_OFFLINE);
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
-		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
 		// TODO Implement WS and options with it (Python side with Paho.Client() parameter transport="websockets" & Paho.Client.ws_set_options() function)
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
@@ -1725,7 +1723,7 @@ class jMQTT extends eqLogic {
 		$params['tlsclikey']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
 		if ($params['tlsclicert'] == '')
 			$params['tlsclikey'] = '';
-		self::toDaemon_newClient($this->getId(), $this->getMqttAddress(), $params);
+		self::toDaemon_newClient($this->getId(), $params);
 	}
 
 	/**
@@ -2142,12 +2140,10 @@ class jMQTT extends eqLogic {
 				return 1883;
 			elseif ($proto == 'mqtts')
 				return 8883;
-/* TODO Handle WS & WSS
 			elseif ($proto == 'ws')
 				return 1084;
 			elseif ($proto == 'wss')
 				return 8884;
-*/
 			else
 				return 0;
 		} elseif ($_key == self::CONF_KEY_MQTT_LWT_TOPIC) {
@@ -2247,43 +2243,11 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Get the MQTT client id used by jMQTT to connect to the broker (default value = jeedom)
-	 * @return string MQTT id.
-	 */
-	public function getMqttClientId() {
-		return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID);
-	}
-
-	/**
-	 * Get this jMQTT object broker address
-	 * @return string
-	 */
-	public function getMqttAddress() {
-		return $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
-	}
-
-	/**
-	 * Get this jMQTT object broker port
-	 * @return string
-	 */
-	public function getMqttPort() {
-		return $this->getConf(self::CONF_KEY_MQTT_PORT);
-	}
-
-	/**
 	 * Get this jMQTT object Qos
 	 * @return string
 	 */
 	public function getQos() {
 		return $this->getConf(self::CONF_KEY_QOS);
-	}
-
-	/**
-	 * Set this jMQTT object Qos
-	 * @var string $Qos
-	 */
-	public function setQos($Qos) {
-		$this->setConfiguration(self::CONF_KEY_QOS, $Qos);
 	}
 
 	/**
@@ -2367,7 +2331,7 @@ class jMQTT extends eqLogic {
 	 * @return string API topic
 	 */
 	private function getMqttApiTopic() {
-		return $this->getMqttClientId() . '/' . self::API_TOPIC;
+		return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . '/' . self::API_TOPIC;
 	}
 
 	/**

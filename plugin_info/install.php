@@ -354,7 +354,7 @@ function moveCmdOutOfBrokers() {
 				// cleanup 'status' cmd from broker to new eq
 				$cmd->setLogicalId('');
 				$cmd->setConfiguration('irremovable', 0);
-				$cmd->setTopic($broker->getMqttClientId() . '/status');
+				$cmd->setTopic($broker->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . '/status');
 				$cmd->setJsonPath('');
 				$cmd->save();
 			}
