@@ -1618,7 +1618,7 @@ class jMQTT extends eqLogic {
 		$return = array('message' => '', 'launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK, 'log' => self::MQTTCLIENT_NOK);
 		if ($this->getType() != self::TYP_BRK)
 			return $return;
-		$return['brkId'] = $this->getId();
+		$return['eqLogic'] = $this->getId();
 		$return['name'] = $this->getName();
 		$return['log'] = $this->getMqttClientLogFile();
 		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));

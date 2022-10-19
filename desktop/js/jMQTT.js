@@ -159,24 +159,24 @@ jmqtt.showMqttClientInfo = function(data) {
 
 	if (data.state == "ok") {
 		// TODO FIXME: avoid setting color on card include icon
-		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] span.hiddenAsTable i.inc-status') // only as card
-		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] span.hiddenAsCard i.inc-status') // only as table
+		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] span.hiddenAsTable i.inc-status') // only as card
+		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] span.hiddenAsCard i.inc-status') // only as table
 		// Update borker on main page and show an alert
 		if (data.include) {
-			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').hasClass('fa-sign-in-alt')) { // Only if Include Mode is disabled
-				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').removeClass('far fa-square success').addClass('fas fa-sign-in-alt fa-rotate-90 warning');
+			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').hasClass('fa-sign-in-alt')) { // Only if Include Mode is disabled
+				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').removeClass('far fa-square success').addClass('fas fa-sign-in-alt fa-rotate-90 warning');
 				$.fn.showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + data.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
 			}
 		} else {
-			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').hasClass('fa-square')) { // Only if Include Mode is enabled
-				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.brkId + '"] .inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
+			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').hasClass('fa-square')) { // Only if Include Mode is enabled
+				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
 				$.fn.hideAlert();
 				$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + data.name + '</b>.', level: 'warning'});
 			}
 		}
 
 		// Set which inclusion button is visible
-		if (data.brkId == $('.eqLogicAttr[data-l1key=id]').value()) {
+		if (data.eqLogic == $('.eqLogicAttr[data-l1key=id]').value()) {
 			if (data.include) { // Include Start
 				$('.eqLogicAction[data-action=startIncludeMode]').hide();
 				$('.eqLogicAction[data-action=stopIncludeMode]').show();
@@ -1365,10 +1365,10 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
 	jmqtt.showMqttClientInfo(_options);
 	if (_options.launchable == 'ok')
-		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').removeClass('disableCard')
+		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"]').removeClass('disableCard')
 	else
-		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"]').addClass('disableCard')
-	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.brkId + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
+		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"]').addClass('disableCard')
+	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
 });
 
 /*
