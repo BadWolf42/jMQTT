@@ -29,10 +29,6 @@ class jMQTT extends eqLogic {
 
 	const FORCE_DEPENDANCY_INSTALL      = 'forceDepInstall';
 
-	const API_TOPIC                     = 'api';
-	const API_ENABLE                    = 'enable';
-	const API_DISABLE                   = 'disable';
-
 	const MQTTCLIENT_OK                 = 'ok';
 	const MQTTCLIENT_POK                = 'pok';
 	const MQTTCLIENT_NOK                = 'nok';
@@ -54,13 +50,14 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_TLS_CA          = 'mqttTlsCa';
 	const CONF_KEY_MQTT_TLS_CLI_CERT    = 'mqttTlsClientCert';
 	const CONF_KEY_MQTT_TLS_CLI_KEY     = 'mqttTlsClientKey';
+	const CONF_KEY_MQTT_API             = 'mqttApi';
+	const CONF_KEY_MQTT_API_TOPIC       = 'mqttApiTopic';
 	const CONF_KEY_QOS                  = 'Qos';
 	const CONF_KEY_AUTO_ADD_CMD         = 'auto_add_cmd';
 	const CONF_KEY_AUTO_ADD_TOPIC       = 'auto_add_topic';
 	const CONF_KEY_BATTERY_CMD          = 'battery_cmd';
 	const CONF_KEY_AVAILABILITY_CMD     = 'availability_cmd';
 	const CONF_KEY_TEMPLATE_UUID        = 'templateUUID';
-	const CONF_KEY_API                  = 'api';
 	const CONF_KEY_LOGLEVEL             = 'loglevel';
 
 	const CACHE_DAEMON_LAST_SND         = 'daemonLastSnd';
@@ -698,7 +695,6 @@ class jMQTT extends eqLogic {
 			$this->_preSaveInformations = array(
 				'name'                  => $eqLogic->getName(),
 				'isEnable'              => $eqLogic->getIsEnable(),
-				self::CONF_KEY_API      => $eqLogic->isApiEnable(),
 				'topic'                 => $eqLogic->getTopic(),
 				self::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
 			);
@@ -721,6 +717,8 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_TLS_CA,
 				self::CONF_KEY_MQTT_TLS_CLI_CERT,
 				self::CONF_KEY_MQTT_TLS_CLI_KEY,
+				self::CONF_KEY_MQTT_API,
+				self::CONF_KEY_MQTT_API_TOPIC,
 				self::CONF_KEY_BATTERY_CMD,
 				self::CONF_KEY_AVAILABILITY_CMD,
 				self::CONF_KEY_QOS);
@@ -791,7 +789,9 @@ class jMQTT extends eqLogic {
 					self::CONF_KEY_MQTT_TLS_CHECK,
 					self::CONF_KEY_MQTT_TLS_CA,
 					self::CONF_KEY_MQTT_TLS_CLI_CERT,
-					self::CONF_KEY_MQTT_TLS_CLI_KEY);
+					self::CONF_KEY_MQTT_TLS_CLI_KEY,
+					self::CONF_KEY_MQTT_API,
+					self::CONF_KEY_MQTT_API_TOPIC);
 				foreach ($checkChanged as $key) {
 					if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
 						if (!$stopped) {
@@ -830,22 +830,6 @@ class jMQTT extends eqLogic {
 					$this->_preSaveInformations[self::CONF_KEY_MQTT_LWT_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_LWT_TOPIC)) {
 					// Just try to remove the previous status topic
 					$this->publish($this->getName(), $this->_preSaveInformations[self::CONF_KEY_MQTT_LWT], '', 1, 1);
-				}
-
-				// APIEnabled changed
-				if ($this->_preSaveInformations[self::CONF_KEY_API] != $this->isApiEnable()) {
-					// If MqttClient not stopped
-					if (!$stopped) {
-						// If API is now enabled
-						if ($this->isApiEnable()) {
-							//Subscribe API topic
-							$this->subscribeTopic($this->getMqttApiTopic(), $this->getQos());
-						}
-						else {
-							//Unsubscribe API topic
-							$this->unsubscribeTopic($this->getMqttApiTopic());
-						}
-					}
 				}
 
 				// In the end, does MqttClient need to be Started
@@ -1757,9 +1741,9 @@ class jMQTT extends eqLogic {
 				}
 			}
 			// Enable API
-			if ($broker->isApiEnable()) {
-				$broker->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $broker->getMqttApiTopic()));
-				$broker->subscribeTopic($broker->getMqttApiTopic(), '1');
+			if ($broker->getConf(self::CONF_KEY_MQTT_API)) {
+				$broker->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $broker->getConf(self::CONF_KEY_MQTT_API_TOPIC)));
+				$broker->subscribeTopic($broker->getConf(self::CONF_KEY_MQTT_API_TOPIC), '1');
 			} else {
 				$broker->log('info', __("L'accès à l'API est désactivée", __FILE__));
 			}
@@ -1884,7 +1868,7 @@ class jMQTT extends eqLogic {
 		$this->log('debug', sprintf(__("Payload '%1\$s' reçu sur le Topic '%2\$s'", __FILE__), $msgValue, $msgTopic));
 
 		// If this is the API topic, process the request
-		if ($msgTopic == $this->getMqttApiTopic()) {
+		if ($msgTopic == $this->getConf(self::CONF_KEY_MQTT_API_TOPIC)) {
 			$this->processApiRequest($msgValue);
 			return;
 		}
@@ -2132,7 +2116,7 @@ class jMQTT extends eqLogic {
 	 * return boolean
 	 */
 	public function isApiEnable() {
-		return $this->getConf(self::CONF_KEY_API) == self::API_ENABLE ? TRUE : FALSE;
+		return $this->getConf(self::CONF_KEY_MQTT_API);
 	}
 
 	private function getConf($_key) {
@@ -2155,6 +2139,8 @@ class jMQTT extends eqLogic {
 				return 0;
 		} elseif ($_key == self::CONF_KEY_MQTT_LWT_TOPIC) {
 			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/status";
+		} elseif ($_key == self::CONF_KEY_MQTT_API_TOPIC) {
+			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/api";
 		}
 		$defValues = array(
 			self::CONF_KEY_MQTT_ADDRESS => 'localhost',
@@ -2168,7 +2154,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
 			self::CONF_KEY_AUTO_ADD_TOPIC => '',
 			self::CONF_KEY_MQTT_INC_TOPIC => '#',
-			self::CONF_KEY_API => self::API_DISABLE,
+			self::CONF_KEY_MQTT_API => '0',
 			self::CONF_KEY_BRK_ID => -1
 		);
 		// If not in list, default value is ''
@@ -2330,15 +2316,6 @@ class jMQTT extends eqLogic {
 		/** @var jMQTT[] $eqpts */
 		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
 		return $returns;
-	}
-
-	/**
-	 * Return the topic used to interact with the jeeAPI using mqtt
-	 *
-	 * @return string API topic
-	 */
-	private function getMqttApiTopic() {
-		return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . '/' . self::API_TOPIC;
 	}
 
 	/**

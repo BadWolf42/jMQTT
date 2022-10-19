@@ -110,7 +110,6 @@
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Identifiant/ClientId}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT.
-							<br/>Cet identifiant est aussi utilisé dans le topic de l'API.
 							<br/>Il est important que cet identifiant ne soit utilisé que par jMQTT sur ce Broker.}}"></i></sup></label>
 							<div class="col-lg-7">
 								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId" placeholder="jeedom" />
@@ -125,7 +124,7 @@
 							</div>
 							<div class="col-lg-6 jmqttLwt">
 								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="{{ClientId/status}}"
-								title="{{Topic de publication du statut LWT en MQTT sur le Broker ('ClientId/status' par défaut).}}">
+								title="{{Topic de publication du statut LWT en MQTT sur ce Broker ('ClientId/status' par défaut).}}">
 							</div>
 						</div>
 						<div class="form-group jmqttLwt" style="display:none">
@@ -151,11 +150,12 @@
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Accès API}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
-							<div class="col-lg-7">
-								<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="api">
-									<option value="disable">{{Désactivé}}</option>
-									<option value="enable">{{Activé}}</option>
-								</select>
+							<div class="col-lg-1">
+								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttApi">
+							</div>
+							<div class="col-lg-6 jmqttApi">
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttApiTopic" placeholder="{{ClientId/api}}"
+								title="{{Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('ClientId/status' par défaut).}}">
 							</div>
 						</div>
 						<div class="form-group"><br /></div>

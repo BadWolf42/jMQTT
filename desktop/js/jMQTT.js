@@ -512,6 +512,12 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(
 		$('.jmqttLwt').hide();
 });
 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(){
+	if ($(this).value() == '1')
+		$('.jmqttApi').show();
+	else
+		$('.jmqttApi').hide();
+});
 
 //
 // Automations on Equipment tab attributes

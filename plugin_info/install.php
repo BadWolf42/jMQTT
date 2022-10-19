@@ -140,7 +140,8 @@ function cleanLeakedInfoInEqpts() {
 							'mqttTlsCaFile',
 							'mqttTlsClientCertFile',
 							'mqttTlsClientKeyFile',
-							'api',
+							'mqttApi',
+							'mqttApiTopic',
 							'mqttPahoLog',
 							'loglevel');
 
@@ -179,7 +180,8 @@ function cleanLeakedInfoInTemplates() {
 							'mqttTlsCaFile',
 							'mqttTlsClientCertFile',
 							'mqttTlsClientKeyFile',
-							'api',
+							'mqttApi',
+							'mqttApiTopic',
 							'mqttPahoLog',
 							'loglevel');
 	$templateFolderPath = __DIR__ . '/../data/template';
@@ -359,13 +361,21 @@ function moveCmdOutOfBrokers() {
 				$cmd->save();
 			}
 		}
+
 		// copy 'mqttPubStatus' value to 'mqttLwt' in broker config
 		$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_LWT, $broker->getConfiguration('mqttPubStatus', '0'));
 		// delete 'mqttPubStatus' from broker config
 		$broker->setConfiguration('mqttPubStatus', null);
+
+		// copy 'api' value to 'mqttApi' in broker config
+		$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_API, ($broker->getConfiguration('api', '0') == 'enable') ? '1' : '0');
+		// delete 'api' from broker config
+		$broker->setConfiguration('api', null);
+
 		$broker->save();
 	}
 }
+
 function modifyBrkIdConfKeyInEq() {
 	foreach (jMQTT::byType(jMQTT::class) as $eqLogic) {
 		if ($eqLogic->getType() == jMQTT::TYP_BRK) {
@@ -380,6 +390,7 @@ function modifyBrkIdConfKeyInEq() {
 	}
 	jMQTT::logger('info', __("Clés de configuration des id des Brokers modifiées dans les équipements jMQTT", __FILE__));
 }
+
 
 function jMQTT_install() {
 	jMQTT::logger('debug', 'install.php: jMQTT_install()');
