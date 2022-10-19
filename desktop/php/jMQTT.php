@@ -72,7 +72,6 @@ $icons = array(
 );
 usort($icons, function ($a, $b) { return strcmp($a["name"], $b["name"]); });
 sendVarToJS('jmqttIcons', $icons);
-
 ?>
 
 <style>
@@ -258,7 +257,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 -->
 						</tr>
 					</thead>
-					<tbody>
+					<tbody><!-- TODO Limit the number of displayed lines (by pages of 25? 50? 100?) -->
 					</tbody>
 				</table>
 			</div>

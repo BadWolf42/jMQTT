@@ -377,7 +377,8 @@ class jMQTT extends eqLogic {
 		// Add string format to eqLogic configuration
 		$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = str_replace($baseTopic, '%s', $this->getTopic());
 
-		// older version of Jeedom (4.2 and bellow) export commands in 'cmd'
+		// TODO Remove me?
+		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
 		if (array_key_exists('cmd', $exportedTemplate[$_template]))
 		{
@@ -677,6 +678,12 @@ class jMQTT extends eqLogic {
 					throw new Exception(sprintf(__("Le Broker #%s# porte déjà le même nom", __FILE__), $this->getHumanName())); // use humain name here
 				}
 			}
+
+			// TODO Check if certificates are OK
+			// self::CONF_KEY_MQTT_TLS_CHECK
+			// self::CONF_KEY_MQTT_TLS_CA
+			// self::CONF_KEY_MQTT_TLS_CLI_CERT
+			// self::CONF_KEY_MQTT_TLS_CLI_KEY
 		}
 
 		// ------------------------ New or Existing Broker or Normal eqpt ------------------------
@@ -1704,7 +1711,7 @@ class jMQTT extends eqLogic {
 		$params['lwtOffline']        = $this->getConf(self::CONF_KEY_MQTT_LWT_OFFLINE);
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
-		// TODO Implement WS and options with it (Python side with Paho.Client() parameter transport="websockets" & Paho.Client.ws_set_options() function)
+		// TODO Implement WS url option
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
 				$params['tlsinsecure'] = true;

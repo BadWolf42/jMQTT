@@ -128,6 +128,7 @@ try {
 			$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_INCLUDE_MODE;
 			$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_LAST_LAUNCH_TIME;
 			$cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
+			$cacheBrkKeys[] = 'eqLogicStatusAttr'.$brk->getId();
 			$data = array();
 			foreach ($cacheBrkKeys as $k) {
 				$val = cache::byKey($k)->getValue(null);
@@ -151,6 +152,7 @@ try {
 				$cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_IGNORE_TOPIC_MISMATCH;
 				// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
 				$cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
+				$cacheEqptKeys[] = 'eqLogicStatusAttr'.$eqpt->getId();
 				$data = array();
 				foreach ($cacheEqptKeys as $k) {
 					$val = cache::byKey($k)->getValue(null);
@@ -174,6 +176,7 @@ try {
 				continue;
 			$cacheCmdKeys = array();
 			$cacheCmdKeys[] = 'cmdCacheAttr'.$cmd->getId();
+			$cacheCmdKeys[] = 'cmd'.$cmd->getId();
 			$data = array();
 			foreach ($cacheCmdKeys as $k) {
 				$val = cache::byKey($k)->getValue(null);

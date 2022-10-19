@@ -864,6 +864,7 @@ function printEqLogic(_eqLogic) {
 		// JSON view: disable the sortable functionality
 		$("#table_cmd").sortable('disable');
 	} else {
+		// CLASSIC view button is active
 		for (var c of _eqLogic.cmd) {
 			c.tree_id = (n_cmd++).toString();
 		}
@@ -1260,6 +1261,26 @@ function addCmdToTable(_cmd) {
 	}
 }
 
+/*
+// TODO replace jMQTT::EventState, and change visual on dashboard
+$('body').off('jMQTT::brkEvent').on('jMQTT::brkEvent', function (_event,_options) {
+	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
+	console.log(msg, _options);
+});
+
+// TODO replace eqptAdded and handle modified + removed, and change visual on dashboard
+$('body').off('jMQTT::eqptEvent').on('jMQTT::eqptEvent', function (_event,_options) {
+	var msg = '{{L\'équipement}} <b>' + _options['name'] + '</b> {{vient d\'être}}' + _options['action'];
+	console.log(msg, _options);
+});
+
+// TODO replace cmdAdded and handle modified + removed
+$('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options) {
+	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
+	console.log(msg, _options);
+});
+*/
+
 /**
  * Called by the plugin core to inform about the inclusion of an equipment
  *
@@ -1267,7 +1288,7 @@ function addCmdToTable(_cmd) {
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
  */
 $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_options) {
-	var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être inclu}}';
+	var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être ajouté}}';
 
 	// If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
 	// Otherwise: display an alert message and reload the page
