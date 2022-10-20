@@ -143,13 +143,13 @@ class jMQTTCmd extends cmd {
 			$this->getEqLogic()->log('error', __("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
 			return;
 		}
-		// Create JsonObject for JsonPath
-		$jsonobject=new JsonPath\JsonObject($jsonArray);
-		// Get and prepare the jsonPath
-		$jsonPath = $this->getJsonPath();
-		if ($jsonPath == '') return;
-		if ($jsonPath[0] != '$') $jsonPath = '$' . $jsonPath;
 		try {
+			// Get and prepare the jsonPath
+			$jsonPath = $this->getJsonPath();
+			if ($jsonPath == '') return;
+			if ($jsonPath[0] != '$') $jsonPath = '$' . $jsonPath;
+			// Create JsonObject for JsonPath
+			$jsonobject=new JsonPath\JsonObject($jsonArray);
 			$value = $jsonobject->get($jsonPath);
 			if ($value !== false)
 				$this->updateCmdValue(json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
@@ -157,7 +157,12 @@ class jMQTTCmd extends cmd {
 				$this->getEqLogic()->log('info', sprintf(__("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__), $this->getHumanName()));
 		}
 		catch (Throwable $e) {
-			$this->getEqLogic()->log('error', sprintf(__("Chemin JSON de la commande #%1\$s# incorrect : '%2\$s'", __FILE__), $this->getHumanName(), $this->getJsonPath()));
+			if (log::getLogLevel(__CLASS__) > 100)
+				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
+															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
+			else // More info in debug mode, no big log otherwise
+				$this->getEqLogic()->log('warning', str_replace("\n",' </br> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",</br>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
 		}
 	}
 
