@@ -50,6 +50,8 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_TLS_CA          = 'mqttTlsCa';
 	const CONF_KEY_MQTT_TLS_CLI_CERT    = 'mqttTlsClientCert';
 	const CONF_KEY_MQTT_TLS_CLI_KEY     = 'mqttTlsClientKey';
+	const CONF_KEY_MQTT_INT             = 'mqttInt';
+	const CONF_KEY_MQTT_INT_TOPIC       = 'mqttIntTopic';
 	const CONF_KEY_MQTT_API             = 'mqttApi';
 	const CONF_KEY_MQTT_API_TOPIC       = 'mqttApiTopic';
 	const CONF_KEY_QOS                  = 'Qos';
@@ -717,6 +719,8 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_TLS_CA,
 				self::CONF_KEY_MQTT_TLS_CLI_CERT,
 				self::CONF_KEY_MQTT_TLS_CLI_KEY,
+				self::CONF_KEY_MQTT_INT,
+				self::CONF_KEY_MQTT_INT_TOPIC,
 				self::CONF_KEY_MQTT_API,
 				self::CONF_KEY_MQTT_API_TOPIC,
 				self::CONF_KEY_BATTERY_CMD,
@@ -790,6 +794,8 @@ class jMQTT extends eqLogic {
 					self::CONF_KEY_MQTT_TLS_CA,
 					self::CONF_KEY_MQTT_TLS_CLI_CERT,
 					self::CONF_KEY_MQTT_TLS_CLI_KEY,
+					self::CONF_KEY_MQTT_INT,
+					self::CONF_KEY_MQTT_INT_TOPIC,
 					self::CONF_KEY_MQTT_API,
 					self::CONF_KEY_MQTT_API_TOPIC);
 				foreach ($checkChanged as $key) {
@@ -1742,13 +1748,22 @@ class jMQTT extends eqLogic {
 					$eq->subscribeTopic($eq->getTopic(), $eq->getQos());
 				}
 			}
+
+			// Enable Interactions
+			if ($broker->getConf(self::CONF_KEY_MQTT_INT)) {
+				$broker->log('info', sprintf(__("Souscription au topic d'Intercation '%s'", __FILE__), $broker->getConf(self::CONF_KEY_MQTT_INT_TOPIC)));
+				$broker->subscribeTopic($broker->getConf(self::CONF_KEY_MQTT_INT_TOPIC), '1');
+				$broker->subscribeTopic($broker->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/advanced', '1');
+			} else
+				$broker->log('debug', __("L'accès aux Interactions est désactivé", __FILE__));
+
 			// Enable API
 			if ($broker->getConf(self::CONF_KEY_MQTT_API)) {
 				$broker->log('info', sprintf(__("Souscription au topic API '%s'", __FILE__), $broker->getConf(self::CONF_KEY_MQTT_API_TOPIC)));
 				$broker->subscribeTopic($broker->getConf(self::CONF_KEY_MQTT_API_TOPIC), '1');
-			} else {
-				$broker->log('info', __("L'accès à l'API est désactivée", __FILE__));
-			}
+			} else
+				$broker->log('debug', __("L'accès à l'API est désactivé", __FILE__));
+
 			// Active listeners
 			self::listenersAddAll();
 		} catch (Throwable $e) {
@@ -1856,6 +1871,55 @@ class jMQTT extends eqLogic {
 	###################################################################################################################
 
 	/**
+	 * Function to handle message matching Interaction subscribed topic.
+	 * Reply Payload is sent on self::CONF_KEY_MQTT_INT_TOPIC/reply
+	 *       with value in json like: $param + {"query": string, "reply": string}
+	 *
+	 * @param $query string Interaction Query message
+	 * @param $param array Interaction Query advanced options
+	 */
+	private function interactMessage($query, $param=array()) {
+		try {
+			// Validate query
+			if (is_null($query) || is_string($query) || $query == '')
+				$param['query'] = '';
+			else
+				$param['query'] = $query;
+			// Process parameters
+			if (isset($param['utf8']) && $param['utf8'])
+				$query = utf8_encode($query);
+			if (isset($param['reply_cmd'])) {
+				$reply_cmd = cmd::byId($param['reply_cmd']);
+				if (is_object($reply_cmd)) {
+					$param['reply_cmd'] = $reply_cmd;
+					$param['force_reply_cmd'] = 1;
+				}
+			}
+
+			// Process Interactions
+			$reply = interactQuery::tryToReply($query, $param);
+
+			// Put some logs on the Broker
+			$this->log('info', sprintf(__("Interaction demandée '%1\$s', réponse '%2\$s'", __FILE__), $query, $reply['reply']));
+
+			// Send reply on a /reply subtopic
+			if (!is_array($reply))
+				$reply = array('reply' => $reply);
+			$reply = array_merge(array('status' => ''), $param, $reply, array('status' => 'ok'));
+			$this->publish($this->getName(), $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/reply', json_encode($reply, true), 1, 0);
+		} catch (Throwable $e) {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('warning', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__), $query, $e->getMessage()));
+			else // More info in debug mode, no big log otherwise
+				self::logger('warning', str_replace("\n",' </br> ', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
+							",</br>@Stack: %3\$s.", $query, $e->getMessage(), $e->getTraceAsString())));
+			// Send reply on a /reply subtopic
+			$reply = array_merge(array('status' => ''), $param, array('reply' => '', 'status' => 'nok', 'error' => $e->getMessage()));
+			$this->publish($this->getName(), $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/reply', json_encode($reply, true), 1, 0);
+		}
+	}
+
+	/**
 	 * Callback called each time a message matching subscribed topic is received from the broker.
 	 *
 	 * @param $msgTopic string
@@ -1869,8 +1933,27 @@ class jMQTT extends eqLogic {
 
 		$this->log('debug', sprintf(__("Payload '%1\$s' reçu sur le Topic '%2\$s'", __FILE__), $msgValue, $msgTopic));
 
+		// Is Interact topic enabled ?
+		if ($this->getConf(self::CONF_KEY_MQTT_INT)) {
+			// If "simple" Interact topic, process the request
+			if ($msgTopic == $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC)) {
+				// Request Payload: string
+				$this->interactMessage($msgValue);
+				// Reply Payload on /reply: {"query": string, "reply": string}
+				return;
+			}
+			// If "advanced" Interact topic, process the request
+			if ($msgTopic == $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/advanced') {
+				// Request Payload on /advanced: {"query": string, "utf8": bool, "emptyReply": ???, profile": ???, "reply_cmd": <cmdId>, "force_reply_cmd": bool}
+				$param = json_decode($msgValue, true);
+				$this->interactMessage($param['query'], $param);
+				// Reply Payload on /reply: $param + {"reply": string}
+				return;
+			}
+		}
+
 		// If this is the API topic, process the request
-		if ($msgTopic == $this->getConf(self::CONF_KEY_MQTT_API_TOPIC)) {
+		if ($this->getConf(self::CONF_KEY_MQTT_API) && $msgTopic == $this->getConf(self::CONF_KEY_MQTT_API_TOPIC)) {
 			$this->processApiRequest($msgValue);
 			return;
 		}
@@ -2066,7 +2149,7 @@ class jMQTT extends eqLogic {
 	private function processApiRequest($msg) {
 		try {
 			$request = new mqttApiRequest($msg, $this);
-			$request->processRequest();
+			$request->processRequest($this->getConf(self::CONF_KEY_MQTT_API));
 		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
@@ -2113,14 +2196,6 @@ class jMQTT extends eqLogic {
 		log::add(__CLASS__, $level, $msg);
 	}
 
-	/**
-	 * Return whether or not the MQTT API is enable
-	 * return boolean
-	 */
-	public function isApiEnable() {
-		return $this->getConf(self::CONF_KEY_MQTT_API);
-	}
-
 	private function getConf($_key) {
 		// Default value is returned if config is null or an empty string
 		return $this->getConfiguration($_key, $this->getDefaultConfiguration($_key));
@@ -2141,6 +2216,8 @@ class jMQTT extends eqLogic {
 				return 0;
 		} elseif ($_key == self::CONF_KEY_MQTT_LWT_TOPIC) {
 			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/status";
+		} elseif ($_key == self::CONF_KEY_MQTT_INT_TOPIC) {
+			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/interact";
 		} elseif ($_key == self::CONF_KEY_MQTT_API_TOPIC) {
 			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/api";
 		}
@@ -2156,6 +2233,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
 			self::CONF_KEY_AUTO_ADD_TOPIC => '',
 			self::CONF_KEY_MQTT_INC_TOPIC => '#',
+			self::CONF_KEY_MQTT_INT => '0',
 			self::CONF_KEY_MQTT_API => '0',
 			self::CONF_KEY_BRK_ID => -1
 		);

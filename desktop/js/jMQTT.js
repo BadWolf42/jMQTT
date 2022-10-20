@@ -512,6 +512,14 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(
 		$('.jmqttLwt').hide();
 });
 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttInt]').change(function(){
+	console.log($(this));
+	if ($(this).value() == '1')
+		$('.jmqttInt').show();
+	else
+		$('.jmqttInt').hide();
+});
+
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(){
 	if ($(this).value() == '1')
 		$('.jmqttApi').show();

@@ -108,11 +108,20 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Identifiant/ClientId}} <sup><i class="fa fa-question-circle tooltips"
+							<label class="col-lg-4 control-label">{{Client-Id}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT.
 							<br/>Il est important que cet identifiant ne soit utilisé que par jMQTT sur ce Broker.}}"></i></sup></label>
 							<div class="col-lg-7">
 								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId" placeholder="jeedom" />
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion}} <sup><i class="fa fa-question-circle tooltips"
+							title="{{Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.
+							<br/>Ne pas modifier sans en comprendre les implications.}}"></i></sup></label>
+							<div class="col-lg-7">
+								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic" placeholder="#" />
 							</div>
 						</div>
 
@@ -122,9 +131,9 @@
 							<div class="col-lg-1">
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttLwt" checked>
 							</div>
-							<div class="col-lg-6 jmqttLwt">
-								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="{{ClientId/status}}"
-								title="{{Topic de publication du statut LWT en MQTT sur ce Broker ('ClientId/status' par défaut).}}">
+							<div class="col-lg-6 jmqttLwt" style="display: none;">
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="{{Client-Id/status}}"
+								title="{{Topic de publication du statut LWT en MQTT sur ce Broker ('Client-Id/status' par défaut).}}">
 							</div>
 						</div>
 						<div class="form-group jmqttLwt" style="display:none">
@@ -139,23 +148,26 @@
 						</div>
 
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.
-							<br/>Ne pas modifier sans en comprendre les implications.}}"></i></sup></label>
-							<div class="col-lg-7">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic" placeholder="#" />
+							<label class="col-lg-4 control-label">{{Topic des interactions de Jeedom}} <sup><i class="fa fa-question-circle tooltips"
+							title="{{Permet d’envoyer des interactions à Jeedom au travers du protocole MQTT.<br/>!!! TODO !!! Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
+							<div class="col-lg-1">
+								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttInt">
+							</div>
+							<div class="col-lg-6 jmqttInt" style="display: none;">
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttIntTopic" placeholder="{{Client-Id/interact}}"
+								title="{{Topic d'accès aux interactions de Jeedom sur ce Broker ('Client-Id/interact' par défaut).}}">
 							</div>
 						</div>
 
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Accès API}} <sup><i class="fa fa-question-circle tooltips"
+							<label class="col-lg-4 control-label">{{Topic de l'API de Jeedom}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
 							<div class="col-lg-1">
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttApi">
 							</div>
-							<div class="col-lg-6 jmqttApi">
-								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttApiTopic" placeholder="{{ClientId/api}}"
-								title="{{Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('ClientId/status' par défaut).}}">
+							<div class="col-lg-6 jmqttApi" style="display: none;">
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttApiTopic" placeholder="{{Client-Id/api}}"
+								title="{{Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('Client-Id/status' par défaut).}}">
 							</div>
 						</div>
 						<div class="form-group"><br /></div>

@@ -85,8 +85,8 @@ class mqttApiRequest {
 	/**
 	 * Process this request
 	 */
-	public function processRequest() {
-		if (! $this->broker->isApiEnable()) {
+	public function processRequest($enabled = false) {
+		if (!$enabled) {
 			$this->publishError(
 				self::newErrorArray(- 32001, "Vous n'êtes pas autorisé à effectuer cette action (API is disable)"));
 			return;
