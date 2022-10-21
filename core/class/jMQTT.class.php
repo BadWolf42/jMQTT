@@ -1071,6 +1071,7 @@ class jMQTT extends eqLogic {
 		cache::delete('jMQTT::' . self::CACHE_DAEMON_PORT);
 		cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_SND);
 		cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_RCV);
+		self::sendMqttDaemonStateEvent(false);
 	}
 
 	public static function valid_uid($ruid) {
@@ -1119,7 +1120,7 @@ class jMQTT extends eqLogic {
 	/**
 	 * Simple tests if a daemon is connected (do not validate it)
 	 */
-	private static function daemon_state() {
+	public static function daemon_state() {
 		return (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_UID)->getValue("0:0")) !== "0:0";
 	}
 
@@ -1302,6 +1303,7 @@ class jMQTT extends eqLogic {
 		cache::set('jMQTT::'.self::CACHE_DAEMON_PORT, $rport);
 		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_SND, time());
+		self::sendMqttDaemonStateEvent(true);
 		// Launch MQTT Clients
 		self::checkAllMqttClients();
 		// Active listeners
@@ -1853,6 +1855,10 @@ class jMQTT extends eqLogic {
 	private function sendMqttClientStateEvent() {
 		// $this->log('debug','jMQTT::EventState:'.json_encode($this->getMqttClientInfo()));
 		event::add('jMQTT::EventState', $this->getMqttClientInfo());
+	}
+
+	private static function sendMqttDaemonStateEvent($_state) {
+		event::add('jMQTT::EventDaemonState', $_state);
 	}
 
 

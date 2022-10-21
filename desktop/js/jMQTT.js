@@ -980,7 +980,7 @@ function printEqLogic(_eqLogic) {
 	// Initialize the broker dropbox
 	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
 	brokers.empty();
-	$.each( eqBrokers, function(key, name) {
+	$.each(eqBrokers, function(key, name) {
 		brokers.append(new Option(name, key));
 	});
 	brokers.val(_eqLogic.configuration.eqLogic);
@@ -1304,7 +1304,7 @@ $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options
  * @param {string} _event event name (jMQTT::eqptAdded in this context)
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
  */
-$('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_options) {
+$('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _options) {
 	var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être ajouté}}';
 
 	// If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
@@ -1336,7 +1336,7 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event,_optio
  * @param _options['cmd_name'] string name of the new command
  * @param _options['reload'] bool whether or not a reload of the page is requested
  */
-$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options) {
+$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
 	var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{est ajoutée à l\'équipement}}' + ' <b>' + _options['eqlogic_name'] + '</b>.';
 
 	// If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
@@ -1363,13 +1363,17 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event,_options)
 /*
  * Update the broker icon and the include mode activation on reception of a new state event
  */
-$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event,_options) {
+$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _options) {
 	jmqtt.showMqttClientInfo(_options);
 	if (_options.launchable == 'ok')
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"]').removeClass('disableCard')
 	else
 		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"]').addClass('disableCard')
 	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
+});
+
+$('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function (_event, _options) {
+	jmqttDaemonState = _options;
 });
 
 /*

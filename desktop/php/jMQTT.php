@@ -18,6 +18,9 @@ foreach ($eqBrokers as $id => $eqL) {
 }
 sendVarToJS('eqBrokers', $eqBrokersName);
 
+// Send daemon current state
+sendVarToJS('jmqttDaemonState', jMQTT::daemon_state());
+
 // $node_images = scandir(__DIR__ . '/../../core/img/');
 $icons = array(
 	['id' => '', 'name' => __('Aucun', __FILE__), 'file' => 'node_.svg'],
