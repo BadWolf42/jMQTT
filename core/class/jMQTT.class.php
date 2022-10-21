@@ -1337,10 +1337,7 @@ class jMQTT extends eqLogic {
 		// Get all brokers and set them as disconnected
 		foreach(self::getBrokers() as $broker) {
 			try {
-				if ($broker->getMqttClientState() != self::MQTTCLIENT_OK)
-					self::fromDaemon_brkDown($broker->getId());
-				else
-					$broker->sendMqttClientStateEvent();
+				self::fromDaemon_brkDown($broker->getId());
 			} catch (Throwable $e) {
 				if (log::getLogLevel(__CLASS__) > 100)
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
@@ -1781,12 +1778,14 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("L'équipement %s n'est pas de type Broker", __FILE__), $id));
 				return;
 			}
-			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
-			// if includeMode is enabled, disable it
-			if ($broker->getIncludeMode())
-				$broker->changeIncludeMode(0);
-			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
-			$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
+			if ($broker->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false)) {
+				$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
+				// if includeMode is enabled, disable it
+				if ($broker->getIncludeMode())
+					$broker->changeIncludeMode(0);
+				cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+				$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
+			}
 			$broker->sendMqttClientStateEvent();
 		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
@@ -1857,6 +1856,10 @@ class jMQTT extends eqLogic {
 		event::add('jMQTT::EventState', $this->getMqttClientInfo());
 	}
 
+	/**
+	 * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
+	 * @param $_state bool True if Daemon is running and connected
+	 */
 	private static function sendMqttDaemonStateEvent($_state) {
 		event::add('jMQTT::EventDaemonState', $_state);
 	}
