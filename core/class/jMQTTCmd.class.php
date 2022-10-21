@@ -22,7 +22,6 @@
 class jMQTTCmd extends cmd {
 
 	const CONF_KEY_AUTOPUB              = 'autoPub';
-	const CONF_KEY_IRREMOVABLE          = 'irremovable';
 	const CONF_KEY_JSON_PATH            = 'jsonPath';
 	const CONF_KEY_PUB_QOS              = 'Qos';
 	const CONF_KEY_REQUEST              = 'request';
@@ -440,13 +439,6 @@ class jMQTTCmd extends cmd {
 		// Since 3.3.22, the core removes / from command names
 		$name = str_replace("/", ":", $name);
 		parent::setName($name);
-	}
-
-	/**
-	 * Set this command as irremovable
-	 */
-	public function setIrremovable() {
-		$this->setConfiguration(self::CONF_KEY_IRREMOVABLE, 1);
 	}
 
 	public function setTopic($topic) {
