@@ -1398,8 +1398,8 @@ $(document).ready(function() {
 	// Wrap plugin.template save action handler
 	var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
 	$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
-		// Alert user that there is N mismatch before saveEqLogic
-		if ($('.topicMismatch').length > 0) {
+		// Alert user that there is N mismatch before saveEqLogic (on eqLogic, not on eqBroker)
+		if ($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker' && $('.topicMismatch').length > 0) {
 			var dialog_message = '';
 			var no_name = false;
 			if (jmqtt.mainTopic == '')
