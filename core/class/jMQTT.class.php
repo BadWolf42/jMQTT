@@ -1619,7 +1619,17 @@ class jMQTT extends eqLogic {
 		$return['log'] = $this->getMqttClientLogFile();
 		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));
 		$return['state'] = $this->getMqttClientState();
-		$return['icon'] = self::getBrokerIconFromState($return['state']);
+		switch ($return['state']) {
+			case self::MQTTCLIENT_OK:
+				$return['icon'] = 'fa-check-circle success';
+				break;
+			case self::MQTTCLIENT_POK:
+				$return['icon'] = 'fa-minus-circle warning';
+				break;
+			default:
+				$return['icon'] = 'fa-times-circle danger';
+				break;
+		}
 		$return['include'] = boolval($this->getIncludeMode());
 		if (!self::daemon_state()) { // Daemon is down
 			$return['message'] = __("Démon non démarré", __FILE__);
@@ -1656,24 +1666,6 @@ class jMQTT extends eqLogic {
 		if ($this->getIsEnable())
 			return self::MQTTCLIENT_POK;
 		return self::MQTTCLIENT_NOK;
-	}
-
-	/**
-	 * Return icon string depending state passed
-	 * @return string fa-circle icon
-	 */
-	public static function getBrokerIconFromState($state) {
-		switch ($state) {
-			case self::MQTTCLIENT_OK:
-				return 'fa-check-circle success';
-				break;
-			case self::MQTTCLIENT_POK:
-				return 'fa-minus-circle warning';
-				break;
-			default:
-				return 'fa-times-circle danger';
-				break;
-		}
 	}
 
 	/**
