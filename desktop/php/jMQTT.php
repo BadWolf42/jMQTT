@@ -113,7 +113,7 @@ function displayEqLogicCard($eqL, $icons) {
 		$btnData['icon'] = $info['icon'];
 		$btnData['include'] = boolval($eqL->getIncludeMode());
 	} else {
-		$btnData['eqpt'] = false;
+		$btnData['broker'] = false;
 		$btnData['include'] = boolval($eqL->getAutoAddCmd());
 		$btnData['bat'] = ($eqL->getConfiguration('battery_cmd') == '' ? '0' : ($eqL->getStatus('batterydanger') ? '1' : ($eqL->getStatus('batterywarning') ? '2' : '3')));
 		$btnData['avail'] = ($eqL->getConfiguration('availability_cmd') == '' ? '0' : ($eqL->getStatus('warning') ? '1' : '2'));
