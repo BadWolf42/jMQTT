@@ -1610,42 +1610,21 @@ class jMQTT extends eqLogic {
 	 * @return string[] MQTT Client information array
 	 */
 	public function getMqttClientInfo() {
-		$return = array('message' => '', 'launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK, 'log' => self::MQTTCLIENT_NOK);
+		$return = array('message' => '', 'launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK);
 		if ($this->getType() != self::TYP_BRK)
 			return $return;
-		$return['eqLogic'] = $this->getId();
-		$return['name'] = $this->getName();
-		$return['log'] = $this->getMqttClientLogFile();
-		$return['last_launch'] = $this->getCache(self::CACHE_LAST_LAUNCH_TIME, __('Inconnue', __FILE__));
-		$return['state'] = $this->getMqttClientState();
-		switch ($return['state']) {
-			case self::MQTTCLIENT_OK:
-				$return['icon'] = 'fa-check-circle success';
-				break;
-			case self::MQTTCLIENT_POK:
-				$return['icon'] = 'fa-minus-circle warning';
-				break;
-			default:
-				$return['icon'] = 'fa-times-circle danger';
-				break;
-		}
-		$return['include'] = boolval($this->getIncludeMode());
+
+		$return['launchable'] = self::MQTTCLIENT_OK;
+		$return['message'] = __("La connexion à ce Broker est désactivée", __FILE__);
 		if (!self::daemon_state()) { // Daemon is down
 			$return['message'] = __("Démon non démarré", __FILE__);
-			return $return;
-		}
-		if (!$this->getIsEnable()) {
-			$return['message'] = __("La connexion à ce Broker est désactivée", __FILE__);
-		} elseif ($return['state'] == self::MQTTCLIENT_NOK) {
-			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Le Démon jMQTT n'est pas encore connecté à ce Broker", __FILE__);
-		} elseif ($return['state'] == self::MQTTCLIENT_POK) {
-			$return['launchable'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__);
-		} else {
-			$return['launchable'] = self::MQTTCLIENT_OK;
+			$return['launchable'] = self::MQTTCLIENT_NOK;
+		} elseif ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false)) {
 			$return['state'] = self::MQTTCLIENT_OK;
 			$return['message'] = __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__);
+		} elseif (!$this->getIsEnable()) {
+			$return['state'] = self::MQTTCLIENT_POK;
+			$return['message'] = __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__);
 		}
 		return $return;
 	}
@@ -1848,12 +1827,10 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Send a jMQTT::EventState event to the UI containing MQTT Client info
-	 * The method shall be called on a broker equipment eqLogic
+	 * Send a jMQTT::EventState event to the UI containing eqLogic
 	 */
 	private function sendMqttClientStateEvent() {
-		// $this->log('debug','jMQTT::EventState:'.json_encode($this->getMqttClientInfo()));
-		event::add('jMQTT::EventState', $this->getMqttClientInfo());
+		event::add('jMQTT::EventState', $this->getId());
 	}
 
 	/**

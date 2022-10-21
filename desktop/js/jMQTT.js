@@ -29,7 +29,6 @@ jmqtt.checkTopicMismatch = function (item) {
 			item.removeClass('topicMismatch');
 	} else {
 		var subRegex = new RegExp(`^${jmqtt.mainTopic}\$`.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'))
-		// console.log('jmqtt.checkTopicMismatch: subRegex=', subRegex.toString(), ' topic=', item.value());
 		if (!subRegex.test(item.value()))
 			item.addClass('topicMismatch');
 		else
@@ -123,7 +122,6 @@ jmqtt.refreshEqLogicPage = function() {
 			$('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
 		}
 	}
-	//console.log('jmqtt.refreshEqLogicPage: ' + $('.eqLogicAttr[data-l1key=id]').value());
 	if (modifyWithoutSave) {
 		bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
 			if (result)
@@ -134,13 +132,26 @@ jmqtt.refreshEqLogicPage = function() {
 		refreshPage();
 }
 
-// TODO MERGE with $('.eqLogicDisplayCard[btn-data]').each() call
+// TODO MERGE with updateDisplayCard and resplit according to updateDisplayCard TODO
 /*
  * Function to update Broker status on a Broker eqLogic page
  */
-jmqtt.showMqttClientInfo = function(data) {
-	$('.mqttClientLaunchable span.label').removeClass('label-success label-warning label-danger').text(data.launchable.toUpperCase());
-	switch(data.launchable) {
+jmqtt.showMqttClientInfo = function(_eq) {
+	var state = 'nok';
+	var message = "{{La connexion à ce Broker est désactivée}}";
+	var launchable = jmqttDaemonState ? 'ok' : 'nok';
+	if (!jmqttDaemonState) { // Daemon is down
+		state = 'nok';
+		message = "{{Démon non démarré}}";
+	} else if (_eq.cache.mqttClientConnected) {
+		state = 'ok';
+		message = "{{Le Démon jMQTT est correctement connecté à ce Broker}}";
+	} else if (_eq.isEnable == '1') {
+		state = 'pok';
+		message = "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}";
+	}
+	$('.mqttClientLaunchable span.label').removeClass('label-success label-warning label-danger').text(launchable.toUpperCase());
+	switch(launchable) {
 		case 'ok':
 			$('.eqLogicAction[data-action=startMqttClient]').show();
 			$('.mqttClientLaunchable span.label').addClass('label-success');
@@ -151,35 +162,35 @@ jmqtt.showMqttClientInfo = function(data) {
 			break;
 		default:
 			$('.mqttClientLaunchable span.label').addClass('label-warning');
-			$('.mqttClientLaunchable span.state').text(' ' + data.message);
+			$('.mqttClientLaunchable span.state').text(' ' + message);
 	}
-	var color = data.state == 'ok' ? 'success' : (data.state == 'nok' ? 'danger' : 'warning');
-	$('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + color).text(data.state.toUpperCase());
-	$('.mqttClientState span.state').text(' ' + data.message);
+	var color = state == 'ok' ? 'success' : (state == 'nok' ? 'danger' : 'warning');
+	$('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + color).text(state.toUpperCase());
+	$('.mqttClientState span.state').text(' ' + message);
 	$("#div_broker_mqttclient").closest('.panel').removeClass('panel-success panel-warning panel-danger').addClass('panel-' + color);
-	$('.mqttClientLastLaunch').empty().append(data.last_launch);
+	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
-	if (data.state == "ok") {
-		// TODO FIXME: avoid setting color on card include icon
-		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] span.hiddenAsTable i.inc-status') // only as card
-		//$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] span.hiddenAsCard i.inc-status') // only as table
+	if (state == "ok") {
+		brk = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']');
 		// Update borker on main page and show an alert
-		if (data.include) {
-			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').hasClass('fa-sign-in-alt')) { // Only if Include Mode is disabled
-				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').removeClass('far fa-square success').addClass('fas fa-sign-in-alt fa-rotate-90 warning');
-				$.fn.showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + data.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
+		if (_eq.cache.include_mode == '1') {
+			if (brk.find('span.hiddenAsTable i.inc-status').hasClass('fa-square')) {
+				// Only if Include Mode is already disabled
+				brk.find('span.hiddenAsTable i.inc-status').removeClass('far fa-square').addClass('fas fa-sign-in-alt fa-rotate-90');
+				brk.find('span.hiddenAsCard i.inc-status').removeClass('far fa-square success').addClass('fas fa-sign-in-alt fa-rotate-90 warning');
+				$.fn.showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
 			}
-		} else {
-			if (!$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').hasClass('fa-square')) { // Only if Include Mode is enabled
-				$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + data.eqLogic + '"] .inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
-				$.fn.hideAlert();
-				$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + data.name + '</b>.', level: 'warning'});
-			}
+		} else if (brk.find('span.hiddenAsTable i.inc-status').hasClass('fa-sign-in-alt')) {
+			// Only if Include Mode is already enabled
+			brk.find('span.hiddenAsTable i.inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90').addClass('far fa-square');
+			brk.find('span.hiddenAsCard i.inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
+			$.fn.hideAlert();
+			$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>.', level: 'warning'});
 		}
 
-		// Set which inclusion button is visible
-		if (data.eqLogic == $('.eqLogicAttr[data-l1key=id]').value()) {
-			if (data.include) { // Include Start
+		// Set which inclusion button is visible on the right eqBroker
+		if (_eq.id == $('.eqLogicAttr[data-l1key=id]').value()) {
+			if (_eq.cache.include_mode == '1') { // Include Start
 				$('.eqLogicAction[data-action=startIncludeMode]').hide();
 				$('.eqLogicAction[data-action=stopIncludeMode]').show();
 			} else { // Include Stop
@@ -188,21 +199,6 @@ jmqtt.showMqttClientInfo = function(data) {
 			}
 		}
 	}
-}
-
-jmqtt.refreshMqttClientInfo = function() {
-	var id = $('.eqLogicAttr[data-l1key=id]').value();
-	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
-		return;
-	jmqtt.callPluginAjax({
-		data: {
-			action: 'getMqttClientInfo',
-			id: id,
-		},
-		success: function(data) {
-			jmqtt.showMqttClientInfo(data);
-		}
-	});
 }
 
 /*
@@ -219,109 +215,130 @@ jmqtt.setIncludeMode = function(_id, _mode) {
 	});
 }
 
-//
-// Add icons on main page load
-//
-$('.eqLogicDisplayCard[btn-data]').each(function () {
-	// Get descriptive json
-	var data = $.parseJSON($(this).attr('btn-data'));
-	// Remove descriptive json
-	$(this).removeAttr('btn-data');
+/*
+ * Eqlogic Icon helper
+ */
+jmqtt.iconHelper = function(_eq) {
+	// Broker icon is always the same
+	if (_eq.configuration.type == 'broker')
+		return 'node_broker.svg';
 
-	// Put icons in CardView
-	$(this).children('.hiddenAsTable').each(function (_, b) {
-		if (data.broker)
-			$(this).append('<i class="inc-status ' + (data.include ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square') + '"></i>');
-		else if (data.include)
-			$(this).append('<i class="fas fa-sign-in-alt fa-rotate-90"></i>');
-		$(this).append('<i class="fas eyed ' + (data.visible ? 'fa-eye' : 'fa-eye-slash') + '"></i>');
-		if (data.broker)
-			$(this).append('<i class="status-circle fas ' + data['icon'] + '"></i>');
-	});
+	// Find icon from eqLogic config and jmqtt.icons table
+	var tmp = jmqtt.icons.find(function (item) { return item.id == _eq.configuration.icone; });
+	return tmp == undefined ? "node_.svg" : tmp.file;
+}
 
-	// Put icons in TableView
-	$(this).children('.hiddenAsCard').each(function () {
-		function appendStatusIcon(item, icl, tip, acl) {
-			if (tip == '')
-				item.append('<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18"></i></a>');
+/*
+ * Update display card on plugin main page
+ */
+jmqtt.updateDisplayCard = function (_card) {
+	var _id = _card.attr('data-eqlogic_id');
+	jeedom.eqLogic.byId({
+		id: _id,
+		noCache: true,
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'warning'});
+		},
+		success: function(_eq) {
+			// Set visibility
+			if (_eq.isEnable == '1')
+				_card.removeClass('disableCard');
 			else
-				item.append('<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18 tooltips" title="' + tip + '"></i></a>');
-		}
+				_card.addClass('disableCard');
 
-		if (data.broker) {
-			// On Brokers
-			if (!data.enabled) {
-				// On disabled Brokers
-				appendStatusIcon($(this), 'status-circle fas ' + data.icon, '{{Connexion au Broker désactivée}}', ' roundedLeft');
-				appendStatusIcon($(this), data.visible ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
-				appendStatusIcon($(this), 'far fa-square w18', '', '');
-			} else {
-				// On enabled Brokers
-				appendStatusIcon($(this), 'status-circle fas ' + data.icon,
-								 (data.state == 'ok') ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}', ' roundedLeft');
-				appendStatusIcon($(this), data.visible ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
-								 data.visible ? '{{Broker visible}}' : '{{Broker masqué}}', '');
-				appendStatusIcon($(this), 'inc-status ' + (data.include ? 'fas fa-sign-in-alt warning fa-rotate-90' : 'far fa-square success'),
-								 data.include ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
-			}
-			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
-			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
-		} else {
-			// On normal equipements
-			if (!data.enabled) {
-				// On disabled normal equipements
-				appendStatusIcon($(this), 'fas fa-times danger', '{{Equipement désactivé}}', ' roundedLeft');
-				appendStatusIcon($(this), data.visible ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
-				appendStatusIcon($(this), data.include ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square', '', '');
-				if (data.bat == '0')
-					var bat = 'fas fa-plug';
-				else if (data.bat == '1')
-					var bat = 'fas fa-battery-empty';
-				else if (data.bat == '2')
-					var bat = 'fas fa-battery-quarter';
+			// Set icon
+			_card.find('img').attr('src', 'plugins/jMQTT/core/img/' + jmqtt.iconHelper(_eq));
+
+// TODO cut in 2 specific functions specialized in updating an eqBroker or normal eqLogic
+
+			// Udpate other stuff on eqBroker
+			if (_eq.configuration.type == 'broker')
+				jmqtt.showMqttClientInfo(_eq);
+
+			// Set hiddenAsTable span
+			var hiddenAsTable = '';
+			if (_eq.configuration.type == 'broker') {
+				hiddenAsTable += '<i class="inc-status ' + ((_eq.cache.include_mode == '1') ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square') + '"></i>';
+				hiddenAsTable += '<i class="status-circle fas ' + (!jmqttDaemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : (_eq.isEnable == '1' ? 'fa-minus-circle warning' : 'fa-times-circle danger'))) + '"></i>';
+			} else if (_eq.cache.include_mode == '1')
+				hiddenAsTable += '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
+			hiddenAsTable += '<i class="fas eyed ' + ((_eq.isVisible == '1') ? 'fa-eye' : 'fa-eye-slash') + '"></i>';
+			// if (_eq.configuration.type == 'broker')
+			_card.find('span.hiddenAsTable').empty().html(hiddenAsTable);
+
+			// Set hiddenAsCard span
+			function aitool(icl, tip, acl) {
+				if (tip == '')
+					return '<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18"></i></a>';
 				else
-					var bat = 'fas fa-battery-full';
-				appendStatusIcon($(this), bat, '', '');
-				appendStatusIcon($(this), (data.avail == '0') ? 'far fa-bell' : 'fas fa-bell', '', '');
-			} else {
-				// On enabled normal equipements
-				appendStatusIcon($(this), 'fas fa-check success', '{{Equipement activé}}', ' roundedLeft');
-				appendStatusIcon($(this), data.visible ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
-								 (data.visible == 'ok') ? '{{Equipement visible}}' : '{{Equipement masqué}}', '');
-				appendStatusIcon($(this), data.include ? 'fas fa-sign-in-alt fa-rotate-90 warning' : 'far fa-square success',
-								 (data.include == 'ok') ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
-				if (data.bat == '0') {
-					var bat = 'fas fa-plug';
-					var desc = '{{Pas d\'état de la batterie}}';
-				} else if (data.bat == '1') {
-					var bat = 'fas fa-battery-empty danger';
-					var desc = '{{Batterie en fin de vie}}';
-				} else if (data.bat == '2') {
-					var bat = 'fas fa-battery-quarter warning';
-					var desc = '{{Batterie en alarme}}';
-				} else {
-					var bat = 'fas fa-battery-full success';
-					var desc = '{{Batterie OK}}';
-				}
-				appendStatusIcon($(this), bat, desc, '');
-
-				if (data.avail == '0') {
-					var avail = 'far fa-bell';
-					var desc = '{{Pas d\'état de disponibilité}}';
-				} else if (data.avail == '1') {
-					var avail = 'fas fa-bell danger';
-					var desc = '{{Equipement indisponible}}';
-				} else {
-					var avail = 'fas fa-bell success';
-					var desc = '{{Equipement disponible}}';
-				}
-				appendStatusIcon($(this), avail, desc, '');
+					return '<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18 tooltips" title="' + tip + '"></i></a>';
 			}
+			var hiddenAsCard = '';
+			if (_eq.configuration.type == 'broker') {
+				// On Brokers
+				(_eq.cache.mqttClientConnected ? 'fa-check-circle success' : (_eq.isEnable == '1' ? 'fa-minus-circle warning' : 'fa-times-circle danger'))
+				if (_eq.isEnable != '1') {
+					// On disabled Brokers
+					hiddenAsCard += aitool('status-circle fas fa-times-circle danger', '{{Connexion au Broker désactivée}}', ' roundedLeft');
+					hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
+					hiddenAsCard += aitool('far fa-square w18', '', '');
+				} else {
+					// On enabled Brokers
+					hiddenAsCard += aitool('status-circle fas ' + (!jmqttDaemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : 'fa-minus-circle warning' )),
+										   !jmqttDaemonState ? "{{Le Démon n'est pas démarré}}" : (_eq.cache.mqttClientConnected ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}'), ' roundedLeft');
+					hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
+										   _eq.isVisible == '1' ? '{{Broker visible}}' : '{{Broker masqué}}', '');
+					hiddenAsCard += aitool('inc-status ' + (_eq.cache.include_mode == '1' ? 'fas fa-sign-in-alt warning fa-rotate-90' : 'far fa-square success'),
+										   _eq.cache.include_mode == '1' ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
+				}
+				hiddenAsCard += '<a class="btn btn-xs cursor w30">&nbsp;</a>';
+				hiddenAsCard += '<a class="btn btn-xs cursor w30">&nbsp;</a>';
+			} else {
+				// On normal equipements
+				if (_eq.isEnable != '1') {
+					// On disabled normal equipements
+					hiddenAsCard += aitool('fas fa-times danger', '{{Equipement désactivé}}', ' roundedLeft');
+					hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
+					hiddenAsCard += aitool(_eq.configuration.auto_add_cmd == '1' ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square', '', '');
+					if (_eq.configuration.battery_cmd == '')
+						var bat = 'fas fa-plug';
+					else if (_eq.status.batterydanger)
+						var bat = 'fas fa-battery-empty';
+					else if (_eq.status.batterywarning)
+						var bat = 'fas fa-battery-quarter';
+					else
+						var bat = 'fas fa-battery-full';
+					hiddenAsCard += aitool(bat, '', '');
+					hiddenAsCard += aitool(_eq.configuration.availability_cmd == '' ? 'far fa-bell' : 'fas fa-bell', '', '');
+				} else {
+					// On enabled normal equipements
+					hiddenAsCard += aitool('fas fa-check success', '{{Equipement activé}}', ' roundedLeft');
+					hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
+										   (_eq.isVisible == '1' == 'ok') ? '{{Equipement visible}}' : '{{Equipement masqué}}', '');
+					hiddenAsCard += aitool(_eq.configuration.auto_add_cmd == '1' ? 'fas fa-sign-in-alt fa-rotate-90 warning' : 'far fa-square success',
+										   _eq.configuration.auto_add_cmd == '1' ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
+					if (_eq.configuration.battery_cmd == '')
+						hiddenAsCard += aitool('fas fa-plug', '{{Pas d\'état de la batterie}}', '');
+					else if (_eq.status.batterydanger)
+						hiddenAsCard += aitool('fas fa-battery-empty danger', '{{Batterie en fin de vie}}', '');
+					else if (_eq.status.batterywarning)
+						hiddenAsCard += aitool('fas fa-battery-quarter warning', '{{Batterie en alarme}}', '');
+					else
+						hiddenAsCard += aitool('fas fa-battery-full success', '{{Batterie OK}}', '');
+					if (_eq.configuration.availability_cmd == '')
+						hiddenAsCard += aitool('far fa-bell', '{{Pas d\'état de disponibilité}}', '');
+					else if (_eq.status.warning)
+						hiddenAsCard += aitool('fas fa-bell danger', '{{Equipement indisponible}}', '');
+					else
+						hiddenAsCard += aitool('fas fa-bell success', '{{Equipement disponible}}', '');
+				}
+			}
+			// Add advanced configuration cog
+			hiddenAsCard += '<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
+			_card.find('span.hiddenAsCard').empty().html(hiddenAsCard);
 		}
-		// Add advanced configuration cog
-		$(this).append('<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>');
 	});
-});
+}
 
 //
 // Actions on main plugin view
@@ -467,15 +484,7 @@ $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 	var id = $('.eqLogicAttr[data-l1key=id]').value();
 	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
 		return;
-	jmqtt.callPluginAjax({
-		data: {
-			action: 'startMqttClient',
-			id: id,
-		},
-		success: function(data) {
-			jmqtt.refreshMqttClientInfo();
-		}
-	});
+	jmqtt.callPluginAjax({data: {action: 'startMqttClient', id: id}});
 });
 
 $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
@@ -520,7 +529,6 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(
 });
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttInt]').change(function(){
-	console.log($(this));
 	if ($(this).value() == '1')
 		$('.jmqttInt').show();
 	else
@@ -898,15 +906,11 @@ function printEqLogic(_eqLogic) {
 	if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.eqLogic == undefined || _eqLogic.configuration.eqLogic < 0))
 			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
 		$('.toDisable').addClass('disabled');
-		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
-		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
-		// $('.eqLogicAction[data-action=startIncludeMode]').addClass('roundedLeft');
-		// $('.eqLogicAction[data-action=stopIncludeMode]').addClass('roundedLeft').
 		$('.typ-std').hide();
 		$('.typ-brk').show();
 		if (_eqLogic.isEnable != '1') {
@@ -925,8 +929,6 @@ function printEqLogic(_eqLogic) {
 		$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
 		$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
 
-		jmqtt.refreshMqttClientInfo();
-
 		jeedom.config.load({
 			configuration: $('#div_broker_log').getValues('.configKey')[0],
 			plugin: 'jMQTT',
@@ -940,7 +942,6 @@ function printEqLogic(_eqLogic) {
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
-		// $('.eqLogicAction[data-action="configure"]').removeClass('roundedLeft');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', false);
@@ -994,8 +995,6 @@ function saveEqLogic(_eqLogic) {
 		// not on an jMQTT eqLogic, to fix issue #153
 		return _eqLogic;
 	}
-	// console.log('jMQTT Before saveEqLogic:'+JSON.stringify(_eqLogic)); // TODO display when in debug
-
 	// pass the log level when defined for a broker object
 	if (_eqLogic.configuration.type == 'broker') {
 		var log_level = $('#div_broker_log').getValues('.configKey')[0];
@@ -1033,7 +1032,6 @@ function saveEqLogic(_eqLogic) {
 		_eqLogic = substract(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
 	}
 
-	// console.log('jMQTT After saveEqLogic:'+JSON.stringify(_eqLogic)); // TODO display when in debug
 	return _eqLogic;
 }
 
@@ -1363,13 +1361,8 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options
 /*
  * Update the broker icon and the include mode activation on reception of a new state event
  */
-$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _options) {
-	jmqtt.showMqttClientInfo(_options);
-	if (_options.launchable == 'ok')
-		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"]').removeClass('disableCard')
-	else
-		$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"]').addClass('disableCard')
-	$('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _options.eqLogic + '"] .status-circle').removeClass('fa-check-circle fa-minus-circle fa-times-circle success warning danger').addClass(_options.icon);
+$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _id) {
+	jmqtt.updateDisplayCard($('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _id + '"]'));
 });
 
 $('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function (_event, _options) {
@@ -1389,6 +1382,13 @@ $(document).ready(function() {
 	$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
 		event.stopPropagation();
 		jmqtt.refreshEqLogicPage();
+	});
+
+	//
+	// update DisplayCards on main page at load
+	//
+	$('.eqLogicDisplayCard').each(function () {
+		jmqtt.updateDisplayCard($(this));
 	});
 
 	/*
@@ -1439,4 +1439,5 @@ $(document).ready(function() {
 
 
 	});
+
 });

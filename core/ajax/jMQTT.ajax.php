@@ -109,35 +109,9 @@ try {
 		ajax::success();
 	}
 
-	if (init('action') == 'getMqttClientInfo') {
-		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		$broker = jMQTT::getBrokerFromId(init('id'));
-		ajax::success($broker->getMqttClientInfo());
-	}
-
-	if (init('action') == 'getMqttClientState') {
-		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		$broker = jMQTT::getBrokerFromId(init('id'));
-		ajax::success($broker->getMqttClientState());
-	}
-
 	if (init('action') == 'startMqttClient') {
-		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
 		$broker = jMQTT::getBrokerFromId(init('id'));
 		ajax::success($broker->startMqttClient(true));
-	}
-
-	if (init('action') == 'getBrokerList') {
-		$returns = array();
-		foreach (jMQTT::getBrokers() as $id => $brk)
-			$returns[$id] = $brk->getName();
-		ajax::success($returns);
 	}
 
 	if (init('action') == 'sendLoglevel') {

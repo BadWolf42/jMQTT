@@ -103,43 +103,17 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospac
 /**
  *
  * @param jMQTT $eqL
- * @param array $icons
  */
-function displayEqLogicCard($eqL, $icons) {
-	$btnData = array();
-	$btnData['enabled'] = boolval($eqL->getIsEnable());
-	$btnData['visible'] = boolval($eqL->getIsVisible());
-	if ($eqL->getType() != jMQTT::TYP_EQPT) {
-		$info = $eqL->getMqttClientInfo();
-		$btnData['broker'] = true;
-		$btnData['state'] = $info['state'];
-		$btnData['icon'] = $info['icon'];
-		$btnData['include'] = boolval($eqL->getIncludeMode());
-	} else {
-		$btnData['broker'] = false;
-		$btnData['include'] = boolval($eqL->getAutoAddCmd());
-		$btnData['bat'] = ($eqL->getConfiguration('battery_cmd') == '' ? '0' : ($eqL->getStatus('batterydanger') ? '1' : ($eqL->getStatus('batterywarning') ? '2' : '3')));
-		$btnData['avail'] = ($eqL->getConfiguration('availability_cmd') == '' ? '0' : ($eqL->getStatus('warning') ? '1' : '2'));
-	}
-	echo '<div class="eqLogicDisplayCard cursor' . ($eqL->getIsEnable() ? '' : ' disableCard') . '" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '"  btn-data="' .htmlentities(json_encode($btnData), ENT_QUOTES, 'UTF-8'). '">';
-	echo '<span class="hiddenAsTable"></span>';
-	if ($eqL->getType() == jMQTT::TYP_BRK) {
-		$file = 'node_broker.svg';
-	} else {
-		$icon = $eqL->getConfiguration('icone');
-		$key = array_search($icon, array_column($icons, 'id'));
-		$file = ($key ? $icons[$key]['file'] : 'node_.svg');
-	}
-	echo '<img class="lazy" src="plugins/jMQTT/core/img/' . $file . '"/>';
-	echo '<br>';
+function displayEqLogicCard($eqL) {
+	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
+	echo '<span class="hiddenAsTable"></span><img class="lazy" /><br>';
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
-	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span>';
-	echo "</div>\n";
+	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }
 
 function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
-	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>';
+	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>'."\n";
 }
 ?>
 <div class="row row-overflow">
@@ -177,7 +151,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					$has_orphans = true;
 				}
 				foreach ($nonBrokers as $eqL) {
-					displayEqLogicCard($eqL, $icons);
+					displayEqLogicCard($eqL);
 				}
 			}
 		}
@@ -187,10 +161,10 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		foreach ($eqBrokers as $eqB) {
 			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker }} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
-			displayEqLogicCard($eqB, $icons);
+			displayEqLogicCard($eqB);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
-					displayEqLogicCard($eqL, $icons);
+					displayEqLogicCard($eqL);
 				}
 			}
 			echo '</div>';
