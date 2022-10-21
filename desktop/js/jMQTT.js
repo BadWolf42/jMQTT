@@ -223,95 +223,102 @@ jmqtt.setIncludeMode = function(_id, _mode) {
 // Add icons on main page load
 //
 $('.eqLogicDisplayCard[btn-data]').each(function () {
-	var data = $.parseJSON($(this).attr('btn-data')); // Get descriptive json
+	// Get descriptive json
+	var data = $.parseJSON($(this).attr('btn-data'));
+	// Remove descriptive json
 	$(this).removeAttr('btn-data');
-	$(this).children('.hiddenAsTable').each(function (_, b) { // Put icons in CardView
-		if (data.broker) {
-			if (data.include)
-				$(this).append('<i class="inc-status fas fa-sign-in-alt fa-rotate-90"></i>');
-			else
-				$(this).append('<i class="inc-status far fa-square"></i>');
-		} else {
-			if (data.include)
-				$(this).append('<i class="fas fa-sign-in-alt fa-rotate-90"></i>');
-		}
+
+	// Put icons in CardView
+	$(this).children('.hiddenAsTable').each(function (_, b) {
+		if (data.broker)
+			$(this).append('<i class="inc-status ' + (data.include ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square') + '"></i>');
+		else if (data.include)
+			$(this).append('<i class="fas fa-sign-in-alt fa-rotate-90"></i>');
 		$(this).append('<i class="fas eyed ' + (data.visible ? 'fa-eye' : 'fa-eye-slash') + '"></i>');
 		if (data.broker)
 			$(this).append('<i class="status-circle fas ' + data['icon'] + '"></i>');
 	});
-	$(this).children('.hiddenAsCard').each(function () { // Put icons in TableView
+
+	// Put icons in TableView
+	$(this).children('.hiddenAsCard').each(function () {
+		function appendStatusIcon(item, icl, tip, acl) {
+			if (tip == '')
+				item.append('<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18"></i></a>');
+			else
+				item.append('<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18 tooltips" title="' + tip + '"></i></a>');
+		}
+
 		if (data.broker) {
+			// On Brokers
 			if (!data.enabled) {
-				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="status-circle fas ' + data.icon + ' w18 tooltips" title="{{Connexion au Broker désactivée}}"></i></a>');
-				if (data.visible)
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye w18"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash w18"></i></a>');
-				$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18"></i></a>');
+				// On disabled Brokers
+				appendStatusIcon($(this), 'status-circle fas ' + data.icon, '{{Connexion au Broker désactivée}}', ' roundedLeft');
+				appendStatusIcon($(this), data.visible ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
+				appendStatusIcon($(this), 'far fa-square w18', '', '');
 			} else {
-				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="status-circle fas ' + data.icon + ' w18 tooltips" title="' + ((data.state == 'ok') ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}') + '"></i></a>');
-				if (data.visible)
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye success w18 tooltips" title="{{Broker visible}}"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Broker masqué}}"></i></a>');
-				if (data.include)
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="inc-status fas fa-sign-in-alt warning w18 fa-rotate-90 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="inc-status far fa-square success w18 tooltips" title="{{Inclusion automatique désactivée}}"></i></a>');
+				// On enabled Brokers
+				appendStatusIcon($(this), 'status-circle fas ' + data.icon,
+								 (data.state == 'ok') ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}', ' roundedLeft');
+				appendStatusIcon($(this), data.visible ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
+								 data.visible ? '{{Broker visible}}' : '{{Broker masqué}}', '');
+				appendStatusIcon($(this), 'inc-status ' + (data.include ? 'fas fa-sign-in-alt warning fa-rotate-90' : 'far fa-square success'),
+								 data.include ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
 			}
 			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
 			$(this).append('<a class="btn btn-xs cursor w30">&nbsp;</a>');
 		} else {
+			// On normal equipements
 			if (!data.enabled) {
-				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas fa-times danger w18 tooltips" title="{{Equipement désactivé}}"></i></a>');
-				if (data.visible)
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye w18"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash w18"></i></a>');
-				if (data.include)
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-sign-in-alt fa-rotate-90 w18"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18"></i></a>');
+				// On disabled normal equipements
+				appendStatusIcon($(this), 'fas fa-times danger', '{{Equipement désactivé}}', ' roundedLeft');
+				appendStatusIcon($(this), data.visible ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
+				appendStatusIcon($(this), data.include ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square', '', '');
 				if (data.bat == '0')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-plug w18"></i></a>');
+					var bat = 'fas fa-plug';
 				else if (data.bat == '1')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-empty w18"></i></a>');
+					var bat = 'fas fa-battery-empty';
 				else if (data.bat == '2')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-quarter w18"></i></a>');
+					var bat = 'fas fa-battery-quarter';
 				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-full w18"></i></a>');
-				if (data.avail == '0')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-bell w18"></i></a>');
-				else if (data.avail == '1')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell w18"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell w18"></i></a>');
+					var bat = 'fas fa-battery-full';
+				appendStatusIcon($(this), bat, '', '');
+				appendStatusIcon($(this), (data.avail == '0') ? 'far fa-bell' : 'fas fa-bell', '', '');
 			} else {
-				$(this).append('<a class="btn btn-xs cursor w30 roundedLeft"><i class="fas fa-check success w18 tooltips" title="{{Equipement activé}}"></i></a>');
-				if (data.visible)
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye success w18 tooltips" title="{{Equipement visible}}"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-eye-slash warning w18 tooltips" title="{{Equipement masqué}}"></i></a>');
-				if (data.include)
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-sign-in-alt warning fa-rotate-90 w18 tooltips" title="{{Inclusion automatique activée}}"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-square w18 success tooltips" title="{{Inclusion automatique désactivée}}"></i></a>');
-				if (data.bat == '0')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-plug w18 tooltips" title="{{Pas d\'état de la batterie}}"></i></a>');
-				else if (data.bat == '1')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-empty w18 danger tooltips" title="{{Batterie en fin de vie}}"></i></a>');
-				else if (data.bat == '2')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-quarter w18 warning tooltips" title="{{Batterie en alarme}}"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-battery-full w18 success tooltips" title="{{Batterie OK}}"></i></a>');
-				if (data.avail == '0')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="far fa-bell w18 tooltips" title="{{Pas d\'état de disponibilité}}"></i></a>');
-				else if (data.avail == '1')
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell danger w18 tooltips" title="{{Equipement indisponible}}"></i></a>');
-				else
-					$(this).append('<a class="btn btn-xs cursor w30"><i class="fas fa-bell success w18 tooltips" title="{{Equipement disponible}}"></i></a>');
+				// On enabled normal equipements
+				appendStatusIcon($(this), 'fas fa-check success', '{{Equipement activé}}', ' roundedLeft');
+				appendStatusIcon($(this), data.visible ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
+								 (data.visible == 'ok') ? '{{Equipement visible}}' : '{{Equipement masqué}}', '');
+				appendStatusIcon($(this), data.include ? 'fas fa-sign-in-alt fa-rotate-90 warning' : 'far fa-square success',
+								 (data.include == 'ok') ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
+				if (data.bat == '0') {
+					var bat = 'fas fa-plug';
+					var desc = '{{Pas d\'état de la batterie}}';
+				} else if (data.bat == '1') {
+					var bat = 'fas fa-battery-empty danger';
+					var desc = '{{Batterie en fin de vie}}';
+				} else if (data.bat == '2') {
+					var bat = 'fas fa-battery-quarter warning';
+					var desc = '{{Batterie en alarme}}';
+				} else {
+					var bat = 'fas fa-battery-full success';
+					var desc = '{{Batterie OK}}';
+				}
+				appendStatusIcon($(this), bat, desc, '');
+
+				if (data.avail == '0') {
+					var avail = 'far fa-bell';
+					var desc = '{{Pas d\'état de disponibilité}}';
+				} else if (data.avail == '1') {
+					var avail = 'fas fa-bell danger';
+					var desc = '{{Equipement indisponible}}';
+				} else {
+					var avail = 'fas fa-bell success';
+					var desc = '{{Equipement disponible}}';
+				}
+				appendStatusIcon($(this), avail, desc, '');
 			}
 		}
+		// Add advanced configuration cog
 		$(this).append('<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>');
 	});
 });
