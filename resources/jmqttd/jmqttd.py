@@ -39,13 +39,12 @@ from jMqttClient import *
 #   The return value is False if an error occurs, True otherwise
 def validate_params(msg, constraints):
 	res = True
-	bid = "% 4s" % (str(msg['id']))  if  'id' in msg else "????"
-	cmd = "%16s" % (str(msg['cmd'])) if 'cmd' in msg else "?               "
+	cmd = str(msg['cmd']) if 'cmd' in msg else "?"
 	for (key, mandatory, default_val, expected_type) in constraints:
 		if key not in msg or msg[key] == '':
 			if mandatory:
 				if default_val is None:
-					logging.error('Cmd "%s" is missing parameter "%s" dump=%s', bid, cmd, key, json.dumps(msg))
+					logging.error('Cmd "%s" is missing parameter "%s" dump=%s', cmd, key, json.dumps(msg))
 					res = False
 				else:
 					msg[key] = default_val
@@ -56,7 +55,7 @@ def validate_params(msg, constraints):
 				else:
 					msg[key] = expected_type(msg[key])
 			except:
-				logging.error('Cmd "%s" has incorrect parameter "%s" (is %s, should be %s) dump=%s', bid, cmd, key, type(msg[key]), expected_type, json.dumps(msg))
+				logging.error('Cmd "%s" has incorrect parameter "%s" (is %s, should be %s) dump=%s', cmd, key, type(msg[key]), expected_type, json.dumps(msg))
 				res = False
 	return res
 

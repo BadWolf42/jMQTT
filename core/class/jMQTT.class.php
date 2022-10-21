@@ -1349,7 +1349,7 @@ class jMQTT extends eqLogic {
 		}
 	}
 
-	private static function sendToDaemon($params, $except = true) {
+	public static function sendToDaemon($params, $except = true) {
 		if (!self::daemon_state()) {
 			if ($except)
 				throw new Exception(__("Le démon n'est pas démarré", __FILE__));

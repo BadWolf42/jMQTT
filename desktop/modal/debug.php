@@ -296,12 +296,12 @@ function builder_daemon(div) {
 	res += '<legend><i class="fas fa-download"></i> {{Simuler un évènement reçu du Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
 	res += '<textarea class="bootbox-input bootbox-input-text form-control toJeedom" style="min-height:65px;">';
 
-	res += '{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}\n';
-	res += '{"cmd":"brokerUp", "id":string}\n';
-	res += '{"cmd":"brokerDown"}\n';
-	res += '{"cmd":"daemonUp"}\n';
-	res += '{"cmd":"daemonDown"}\n';
-	res += '{"cmd":"hb"}';
+	res += '[{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}]\n';
+	res += '[{"cmd":"brokerUp", "id":string}]\n';
+	res += '[{"cmd":"brokerDown"}]\n';
+	res += '[{"cmd":"daemonUp"}]\n';
+	res += '[{"cmd":"daemonDown"}]\n';
+	res += '[{"cmd":"hb"}]';
 
 	res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toJeedom" style="top:0px!important;">';
 	res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div><br />';

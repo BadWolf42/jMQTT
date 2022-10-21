@@ -231,7 +231,8 @@ try {
 		if (is_null($data) || !is_array($data)) {
 			ajax::error(__('Format invalide', __FILE__));
 		}
-		// TODO Send to Daemon
+		// Send to Daemon
+		jMQTT::sendToDaemon($data);
 		ajax::success();
 	}
 	if (init('action') == 'sendToJeedom') {
@@ -240,8 +241,23 @@ try {
 		if (is_null($data) || !is_array($data)) {
 			ajax::error(__('Format invalide', __FILE__));
 		}
-		// TODO Send to Jeedom
-		ajax::success();
+		// Prepare url
+		$callbackURL = jMQTT::get_callback_url();
+		// To fix issue: https://community.jeedom.com/t/87727/39
+		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0')) && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1')
+			$callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
+		$url = $callbackURL . '?apikey=' . jeedom::getApiKey('jMQTT') . '&uid=' . (@cache::byKey('jMQTT::'.jMQTT::CACHE_DAEMON_UID)->getValue("0:0"));
+
+		// Send to Jeedom
+		$curl = curl_init($url);
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, init('data'));
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($curl);
+		curl_close($curl);
+
+		ajax::success($response);
 	}
 
 	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
