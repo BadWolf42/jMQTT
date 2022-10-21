@@ -356,19 +356,27 @@ function moveCmdOutOfBrokers() {
 				// cleanup 'status' cmd from broker to new eq
 				$cmd->setLogicalId('');
 				$cmd->setConfiguration('irremovable', 0);
-				$cmd->setTopic($broker->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . '/status');
-				$cmd->setJsonPath('');
+				if ($cmd->getTopic() == '') {
+					$cmd->setTopic($broker->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . '/status');
+					$cmd->setJsonPath('');
+				}
 				$cmd->save();
 			}
 		}
 
-		// copy 'mqttPubStatus' value to 'mqttLwt' in broker config
-		$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_LWT, $broker->getConfiguration('mqttPubStatus', '0'));
+		// Set 'mqttLwt' config only if not already set
+		if ($broker->getConfiguration(jMQTT::CONF_KEY_MQTT_LWT, 'NotThere') == 'NotThere') {
+			// copy 'mqttPubStatus' value to 'mqttLwt' in broker config
+			$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_LWT, $broker->getConfiguration('mqttPubStatus', '0'));
+		}
 		// delete 'mqttPubStatus' from broker config
 		$broker->setConfiguration('mqttPubStatus', null);
 
-		// copy 'api' value to 'mqttApi' in broker config
-		$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_API, ($broker->getConfiguration('api', '0') == 'enable') ? '1' : '0');
+		// Set 'mqttApi' config only if not already set
+		if ($broker->getConfiguration(jMQTT::CONF_KEY_MQTT_API, 'NotThere') == 'NotThere') {
+			// copy 'api' value to 'mqttApi' in broker config
+			$broker->setConfiguration(jMQTT::CONF_KEY_MQTT_API, ($broker->getConfiguration('api', '0') == 'enable') ? '1' : '0');
+		}
 		// delete 'api' from broker config
 		$broker->setConfiguration('api', null);
 
