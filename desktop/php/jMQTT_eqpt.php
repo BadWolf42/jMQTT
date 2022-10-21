@@ -123,17 +123,6 @@
 			<label class="col-sm-3 control-label">{{Catégorie du topic}}</label>
 			<div class="col-sm-3">
 				<select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone"></select>
-				<script>
-					// Initialize Icon dropbox from jmqttIcons global var
-					// This MUST be done here, only once and before loading plugin.template.js
-					var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
-					icos.html('');
-					$.each(jmqttIcons, function(key) {
-						opt = new Option(jmqttIcons[key]['name'], jmqttIcons[key]['id']);
-						opt.setAttribute('file', jmqttIcons[key]['file']);
-						icos.append(opt);
-					});
-				</script>
 			</div>
 		</div>
 
