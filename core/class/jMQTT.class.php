@@ -1310,7 +1310,8 @@ class jMQTT extends eqLogic {
 		self::listenersAddAll();
 		// Prepare and send initial data
 		// TODO Edit Daemon to be enable to receive this information
-		// $returns = self::full_export(true);
+		// $returns = self::full_export(true); // FIX ME there is only a jMQTT->full_export() no static one !!!
+		// TODO use array_filter on each level of the array?
 		// return json_encode($returns, JSON_UNESCAPED_UNICODE);
 	}
 

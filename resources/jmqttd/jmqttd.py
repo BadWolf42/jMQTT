@@ -189,9 +189,9 @@ class Main():
 			return False
 		if self.jcom.send_test(): # Test communication channel TO Jeedom
 			self.jcom.sender_start()									# Start sender
-			self.jcom.send_async({"cmd":"daemonUp"})
+			data = self.jcom.send([{"cmd":"daemonUp"}])					# Must use send to be synchronous and get a reply
 			# self.log.info('Successfully informed Jeedom')
-			self.log.debug('Open Comm   : Sent Daemon Up signal to Jeedom')
+			self.log.debug('Open Comm   : Sent Daemon Up signal to Jeedom, got data: "%s"', data)
 		else:
 			self.log.critical('Open Comm   : Failed to Open the communication channel to send informations back TO Jeedom')
 			self.jcom.receiver_stop()
