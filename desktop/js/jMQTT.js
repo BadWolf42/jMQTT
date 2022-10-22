@@ -1056,17 +1056,9 @@ function printEqLogic(_eqLogic) {
 		$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
 		$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
 		$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
-
-		jeedom.config.load({
-			configuration: $('#div_broker_log').getValues('.configKey')[0],
-			plugin: 'jMQTT',
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'danger'});
-			},
-			success: function (data) {
-				$('#div_broker_log').setValues(data, '.configKey');
-			}
-		});
+		var levels = {};
+		levels['log::level::' + log] = _eqLogic.configuration.loglevel
+		$('#div_broker_log').setValues(levels, '.configKey');
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
