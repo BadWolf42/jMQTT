@@ -1382,7 +1382,11 @@ class jMQTT extends eqLogic {
 	public static function toDaemon_setLogLevel($_level=null) {
 		$params['cmd']      = 'loglevel';
 		$params['id']       = 0;
-		$params['level']    = is_null($_level) ? log::convertLogLevel(log::getLogLevel(__class__)) : $_level;
+		$params['level']    = is_null($_level) ? log::getLogLevel(__class__) : $_level;
+		if ($params['level'] == 'default') // Replace 'default' log level
+			$params['level'] = log::getConfig('log::level');
+		if (is_numeric($params['level'])) // Replace numeric log level par text level
+			$params['level'] = log::convertLogLevel($params['level']);
 		self::sendToDaemon($params);
 	}
 
@@ -1498,6 +1502,8 @@ class jMQTT extends eqLogic {
 			echo "Mosquitto installation requested => looking for Broker eqpt\n";
 
 			// TODO: Check also if Mosquitto can be installed
+			// dpkg -s mosquitto                // 1 not installed ; 0 installed
+			// systemctl status mosquitto.service | grep -- -c | sed -r "s/^.* -c (.*)$/\1/"       // Get config file
 			//looking for broker pointing to local mosquitto
 			$brokerexists = false;
 			foreach(self::getBrokers() as $broker) {

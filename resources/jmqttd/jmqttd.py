@@ -96,11 +96,11 @@ class Main():
 			'info':     logging.INFO,
 			'warning':  logging.WARNING,
 			'error':    logging.ERROR,
-			'critical': logging.CRITICAL,
-			'none':     logging.NONE
+			'critical': logging.CRITICAL
 		}.get(level, logging.NONE)
-		logging.getLogger().setLevel(newlevel)
+		logging.getLogger().setLevel(logging.INFO)
 		self.log.info('New log level set to: %s', logging.getLevelName(newlevel))
+		logging.getLogger().setLevel(newlevel)
 		debuglevel = (newlevel <= logging.VERBOSE) #TODO check if needed
 		# HTTPConnection.debuglevel = int(debuglevel)
 		requests_log = logging.getLogger("requests.packages.urllib3")

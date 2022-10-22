@@ -115,7 +115,7 @@ try {
 	}
 
 	if (init('action') == 'sendLoglevel') {
-		jMQTT::toDaemon_setLogLevel();
+		jMQTT::toDaemon_setLogLevel(init('level'));
 		ajax::success();
 	}
 
