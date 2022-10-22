@@ -312,10 +312,6 @@ jmqtt.updateDisplayCard = function (_card) {
 
 // TODO cut in 2 specific functions specialized in updating an eqBroker or normal eqLogic
 
-			// Udpate other stuff on eqBroker
-			if (_eq.configuration.type == 'broker')
-				jmqtt.showMqttClientInfo(_eq);
-
 			// Set hiddenAsTable span
 			var hiddenAsTable = '';
 			if (_eq.configuration.type == 'broker') {
@@ -1059,6 +1055,9 @@ function printEqLogic(_eqLogic) {
 		var levels = {};
 		levels['log::level::' + log] = _eqLogic.configuration.loglevel
 		$('#div_broker_log').setValues(levels, '.configKey');
+
+		// Udpate other stuff on eqBroker
+		jmqtt.showMqttClientInfo(_eqLogic);
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
