@@ -607,15 +607,19 @@ $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
 	// TODO Add from Realtime tab
 })
 
-jmqtt.newRealTimeCmd = function(_data, _date) {
+jmqtt.newRealTimeCmd = function(_data) {
 	var tr = '<tr>';
-	tr += '<td class="fitwidth"><span class="cmdAttr">' + _date + '</span></td>';
+	tr += '<td class="fitwidth"><span class="cmdAttr">' + (_data.date ? _data.date : '') + '</span></td>';
 	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic + '" disabled>';
 	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
 	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
-	tr += '<td align="center"><span class="cmdAttr tooltips" data-l1key="retain" title="{{Message en Retain sur le Broker}}">' + (_data.retain ? '<i class="fas fa-retweet"></i>' : '') + '</span>';
-	tr += '<br/><input class="cmdAttr form-control input-sm tooltips" data-l1key="qos" style="width:35px;display:inline-block;" title="{{Qos}}" value="' + _data.qos + '" disabled></td>';
-	tr += '<td align="right"><a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
+	tr += '<td align="center"><input class="cmdAttr form-control" data-l1key="qos" style="display:none;" value="' + _data.qos + '" disabled>';
+	tr += '<span class="cmdAttr tooltips" data-l1key="retain" title="{{Ce message est stocké sur le Broker (Retain)}}">' + (_data.retain ? '<i class="fas fa-database warning"></i>' : '') + '</span>';
+	if (_data.retain && _data.included)
+		tr += '<br /><br />';
+	if (_data.included)
+		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement/commande :}}<br/>' + _data.included + '"></i>';
+	tr += '</td><td align="right"><a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
 	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
 		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
 	else
@@ -642,7 +646,7 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 		if (item.match(/[^\w-]/)) // Escape if a special character is found
 			item = '\'' + item.replace(/'/g,"\\'") + '\'';
 		_data.jsonPath = jsonPath + '[' + item + ']';
-		var new_tr = jmqtt.newRealTimeCmd(_data, '');
+		var new_tr = jmqtt.newRealTimeCmd(_data);
 		tr.before(new_tr);
 	}
 })
@@ -659,9 +663,12 @@ $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _option
 	if ($('.eqLogicAttr[data-l1key=id]').value() == _options.id) {
 		modifyWithoutSave = true;
 
-		_options.jsonPath = '';
 		var d = new Date();
-		var tr = jmqtt.newRealTimeCmd(_options, d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds());
+		_options.date = d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds();
+		_options.jsonPath = '';
+		if (d.getMilliseconds() % 2 == 0)
+			_options.included = 'tutu tete';
+		var tr = jmqtt.newRealTimeCmd(_options);
 		$('#table_realtime tbody').prepend(tr);
 	}
 });
