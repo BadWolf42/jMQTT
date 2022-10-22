@@ -1783,18 +1783,18 @@ class jMQTT extends eqLogic {
 		}
 	}
 
-	public static function fromDaemon_msgIn($id, $topic, $payload) {
+	public static function fromDaemon_msgIn($id, $topic, $payload, $qos, $retain) {
 		try {
 			$broker = self::getBrokerFromId(intval($id));
-			$broker->brokerMessageCallback($topic, $payload);
+			$broker->brokerMessageCallback($topic, $payload, $qos, $retain);
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
 				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
-							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
+							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s,</br>@Qos: %7\$s,</br>@Retain: %8\$s.",
+							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload, $qos, $retain)));
 		}
 	}
 
@@ -1838,6 +1838,13 @@ class jMQTT extends eqLogic {
 	 */
 	private function sendMqttClientStateEvent() {
 		event::add('jMQTT::EventState', $this->getId());
+	}
+
+	/**
+	 * Send a jMQTT::RealTime event to the UI containing eqLogic
+	 */
+	private function sendMqttRealTimeEvent($topic, $payload, $qos, $retain) {
+		event::add('jMQTT::RealTime', array('id' => $this->getId(), 'topic' => $topic, 'payload' => $payload, 'qos' => $qos, 'retain' => $retain));
 	}
 
 	/**
@@ -1912,7 +1919,7 @@ class jMQTT extends eqLogic {
 	 * @param $msgValue string
 	 *            payload of the message
 	 */
-	public function brokerMessageCallback($msgTopic, $msgValue) {
+	public function brokerMessageCallback($msgTopic, $msgValue, $msgQos, $msgRetain) {
 
 		$this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
 
@@ -1972,6 +1979,12 @@ class jMQTT extends eqLogic {
 			$eqpt = self::createEquipment($this, $msgTopicArray[0], ($msgTopic[0] == '/' ? '/' : '') . $msgTopicArray[0] . '/#');
 			$elogics[] = $eqpt;
 		}
+
+/*
+		if ($this->getIncludeMode()) {
+			$this->sendMqttRealTimeEvent($msgTopic, $msgValue, $msgQos, $msgRetain);
+		}
+*/
 
 		// No equipment listening to the current message is found
 		// Should not occur: log a warning and return

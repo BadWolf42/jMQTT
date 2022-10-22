@@ -136,6 +136,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
 					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
+					<li role="presentation" class="typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps réel}}</a></li>
 					<li role="presentation" class="typ-std"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
@@ -159,8 +160,22 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 			<div role="tabpanel" class="tab-pane toDisable" id="brokertab">
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
-			<!-- TODO Add here realtime/stream tab, "Classic Discovery" tab and HA MQTT discovery tab -->
-			<!-- TODO Remove all commands on Brokers -->
+			<div role="tabpanel" class="tab-pane toDisable" id="realtimetab">
+				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped">
+					<thead>
+						<tr>
+							<th style="min-width:170px;width:170px;">{{Date du message}}</th>
+							<th style="min-width:180px;">{{Topic}}</th>
+							<th style="min-width:180px;">{{Valeur}}</th>
+							<th style="min-width:60px;width:70px;">{{Options}}</th>
+							<th style="min-width:135px;width:135px;"></th>
+						</tr>
+					</thead>
+					<tbody>
+					</tbody>
+				</table>
+			</div>
+			<!-- TODO Add here "Discovery" tab and HA MQTT discovery tab -->
 			<div role="tabpanel" class="tab-pane toDisable" id="commandtab">
 				<table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
 					<thead>

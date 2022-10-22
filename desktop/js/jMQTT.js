@@ -89,6 +89,14 @@ jmqtt.checkTopicMismatch = function (item) {
 	}
 }
 
+jmqtt.toJson = function($_string) {
+	try {
+		return JSON.parse($_string);
+	} catch (e) {
+		return undefined;
+	}
+}
+
 jmqtt.onMainTopicChange = function () {
 	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
 	jmqtt.mainTopic = mt.val();
@@ -510,7 +518,7 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 //
 // Hide / Show top menu depending of the selected Tab in Eq/Brk
 //
-$('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"]').on('click', function() {
+$('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"],.nav-tabs a[href="#realtimetab"]').on('click', function() {
 	$('#menu-bar').hide();
 });
 
@@ -593,6 +601,73 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 		$('.jmqttApi').show();
 	else
 		$('.jmqttApi').hide();
+});
+
+//
+// Automations on Realtime tab attributes
+//
+$('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
+	console.log('addTo: ', $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val());
+	// TODO Add from Realtime tab
+})
+
+jmqtt.newRealTimeCmd = function(_data, _date) {
+	var tr = '<tr>';
+	tr += '<td class="fitwidth"><span class="cmdAttr">' + _date + '</span></td>';
+	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic + '" disabled>';
+	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
+	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
+	tr += '<td align="center"><span class="cmdAttr tooltips" data-l1key="retain" title="{{Message en Retain sur le Broker}}">' + (_data.retain ? '<i class="fas fa-retweet"></i>' : '') + '</span>';
+	tr += '<br/><input class="cmdAttr form-control input-sm tooltips" data-l1key="qos" style="width:35px;display:inline-block;" title="{{Qos}}" value="' + _data.qos + '" disabled></td>';
+	tr += '<td align="right"><a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
+	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
+		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
+	else
+		tr += '<a class="btn btn-default disabled btn-sm cmdAction" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
+	tr += '<a class="btn btn-danger btn-sm roundedRight cmdAction tooltips" data-action="remove" title="{{Supprimer de la vue}}"><i class="fas fa-minus-circle"></i></a></td>';
+	tr += '</tr>';
+	return tr;
+}
+
+$('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function() {
+	$(this).removeClass('btn-warning').addClass('btn-default disabled');
+	var tr = $(this).closest('tr');
+	var payload = tr.find('.cmdAttr[data-l1key=payload]').text();
+	var json = jmqtt.toJson(payload);
+	if (typeof(json) !== 'object')
+		return;
+	var topic = tr.find('.cmdAttr[data-l1key=topic]').val();
+	var jsonPath = tr.find('.cmdAttr[data-l1key=jsonPath]').val();
+	var qos = tr.find('.cmdAttr[data-l1key=qos]').value();
+	tr = tr.next();
+
+	for (item in json) {
+		var _data = {topic: topic, payload: JSON.stringify(json[item]), qos: qos, retain: false};
+		if (item.match(/[^\w-]/)) // Escape if a special character is found
+			item = '\'' + item.replace(/'/g,"\\'") + '\'';
+		_data.jsonPath = jsonPath + '[' + item + ']';
+		var new_tr = jmqtt.newRealTimeCmd(_data, '');
+		tr.before(new_tr);
+	}
+})
+
+$('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
+	modifyWithoutSave = true;
+	$(this).closest('tr').remove();
+})
+
+/*
+ * Update the realtime view of broker if displayed on reception of a new RealTime event
+ */
+$('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
+	if ($('.eqLogicAttr[data-l1key=id]').value() == _options.id) {
+		modifyWithoutSave = true;
+
+		_options.jsonPath = '';
+		var d = new Date();
+		var tr = jmqtt.newRealTimeCmd(_options, d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds());
+		$('#table_realtime tbody').prepend(tr);
+	}
 });
 
 //
