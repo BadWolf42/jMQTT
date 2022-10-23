@@ -70,9 +70,10 @@ jmqtt.icons = [
 ]
 jmqtt.icons.sort(function(a, b) { return a.name.localeCompare(b.name); });
 
-//To memorise page refresh timeout when set
+// To memorise page refresh timeout when set
 jmqtt.refreshTimeout = null;
 
+// To memorise current eqLogic main subscription topic
 jmqtt.mainTopic = '';
 
 jmqtt.checkTopicMismatch = function (item) {
@@ -89,15 +90,7 @@ jmqtt.checkTopicMismatch = function (item) {
 	}
 }
 
-jmqtt.toJson = function($_string) {
-	try {
-		return JSON.parse($_string);
-	} catch (e) {
-		return undefined;
-	}
-}
 
-jmqtt.onMainTopicChange = function () {
 	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
 	jmqtt.mainTopic = mt.val();
 	if (jmqtt.mainTopic == '')
@@ -262,9 +255,7 @@ jmqtt.showMqttClientInfo = function(_eq) {
 	}
 }
 
-/*
- * Management of the include button and mode
- */
+// Inform Jeedom to change include mode
 jmqtt.setIncludeMode = function(_id, _mode) {
 	// Ajax call to inform the plugin core of the change
 	jmqtt.callPluginAjax({
@@ -395,6 +386,22 @@ jmqtt.updateDisplayCard = function (_card) {
 		}
 	});
 }
+
+
+//
+// Utilitary functions
+//
+
+// Check if a string is a valid Json, returns json object if true, undefined otherwise
+jmqtt.toJson = function(_string) {
+	try {
+		return JSON.parse(_string);
+	} catch (e) {
+		return undefined;
+	}
+}
+
+// Check if a topic matches a subscription, return bool
 
 //
 // Actions on main plugin view
@@ -693,10 +700,12 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', functi
 	}
 });
 
+// On eqLogic subscription topic field typing
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('input', function() {
 	jmqtt.onMainTopicChange();
 });
 
+// On eqLogic subscription topic field set (initial set and finish typing)
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('change', function() {
 	jmqtt.onMainTopicChange();
 	$('input.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
@@ -704,6 +713,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('chang
 	});
 });
 
+// On eqLogic subscription topic field typing
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
 	if($(this).val() == "") {
 		var objectname = $('.eqLogicAttr[data-l1key=object_id] option:selected').text();
@@ -731,9 +741,12 @@ $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
 	event.stopPropagation()
 });
 
+
 //
 // Actions in top menu on an Equipment
 //
+
+// On applyTemplate click
 $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function () {
 	jmqtt.callPluginAjax({
 		data: {
@@ -782,6 +795,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 	});
 });
 
+// On createTemplate click
 $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', function () {
 	bootbox.prompt({
 		title: "{{Nom du nouveau template ?}}",
@@ -802,6 +816,7 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 	});
 });
 
+// On updateTopics click
 $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
 	var currentTopic = jmqtt.mainTopic
@@ -831,24 +846,28 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 	});
 });
 
+// On addMQTTInfo click
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
 	var _cmd = {type: 'info'};
 	addCmdToTable(_cmd);
 	modifyWithoutSave = true;
 });
 
+// On addMQTTAction click
 $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
 	var _cmd = {type: 'action'};
 	addCmdToTable(_cmd);
 	modifyWithoutSave = true;
 });
 
+// On classicView click
 $('.eqLogicAction[data-action=classicView]').on('click', function() {
 	jmqtt.refreshEqLogicPage();
 	$('.eqLogicAction[data-action=classicView]').removeClass('btn-default').addClass('btn-primary');
 	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-primary').addClass('btn-default');
 });
 
+// On jsonView click
 $('.eqLogicAction[data-action=jsonView]').on('click', function() {
 	jmqtt.refreshEqLogicPage();
 	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-default').addClass('btn-primary');
@@ -1181,12 +1200,11 @@ function addCmdToTable(_cmd) {
 	const expander_expanded_class = 'fas fa-minus';
 	const expander_collapsed_class = 'fas fa-plus';
 
-	if (!isset(_cmd)) {
+	// Set _cmd and config if empty
+	if (!isset(_cmd))
 		var _cmd = {configuration: {}};
-	}
-	if (!isset(_cmd.configuration)) {
+	if (!isset(_cmd.configuration))
 		_cmd.configuration = {};
-	}
 
 	// Is the JSON view is active
 	var is_json_view = $('.eqLogicAction[data-action=jsonView].active').length != 0;
@@ -1198,8 +1216,7 @@ function addCmdToTable(_cmd) {
 		//if some tree-id has been found
 		if (root_tree_ids.length > 0) {
 			_cmd.tree_id = (Math.max.apply(null, root_tree_ids) + 1).toString(); //use the highest one plus one
-		}
-		else {
+		} else {
 			_cmd.tree_id = '1'; // else this is the first one
 		}
 	}
@@ -1266,15 +1283,16 @@ function addCmdToTable(_cmd) {
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
-		// Validate topic against subscription topic
+
+		// Update mismatch status of this cmd on change and input
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
 			jmqtt.checkTopicMismatch($(this));
 		});
 
+		// Set cmdAttr values of cmd from json _cmd
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
-		if (isset(_cmd.type)) {
+		if (isset(_cmd.type))
 			$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]').value(init(_cmd.type));
-		}
 		jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
 		// Fill in value of current cmd. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
@@ -1282,8 +1300,8 @@ function addCmdToTable(_cmd) {
 			$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.value);
 		}
 
+		// Get and display the value in CLASSIC view (for JSON view, see few lines above)
 		if (_cmd.id != undefined) {
-			// Get and display the value in CLASSIC view (for JSON view, see few lines above)
 			if (! is_json_view) {
 				jeedom.cmd.execute({
 					id: _cmd.id,
