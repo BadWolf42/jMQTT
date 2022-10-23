@@ -559,23 +559,35 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 // Automations on Broker tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
-	if ($(this).val() == 'mqtts' || $(this).val() == 'wss')
-		$('#jmqttDivTls').show();
+	var val = $(this).val();
+	if (val == 'mqtts' || val == 'wss')
+		$('#jmqttTls').show();
 	else
-		$('#jmqttDivTls').hide();
+		$('#jmqttTls').hide();
+	if (val == 'ws' || val == 'wss')
+		$('.jmqttWS').show();
+	else
+		$('.jmqttWS').hide();
 });
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(function(){
 	switch ($(this).val()) {
 		case 'public':
-			$('#jmqttDivTlsCa').hide();
+			$('#jmqttTlsCa').hide();
 			break;
 		case 'private':
-			$('#jmqttDivTlsCa').show();
+			$('#jmqttTlsCa').show();
 			break;
 		default:
-			$('#jmqttDivTlsCa').hide();
+			$('#jmqttTlsCa').hide();
 	}
+});
+
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClient]').change(function(){
+	if ($(this).value() == '1')
+		$('.jmqttTlsClient').show();
+	else
+		$('.jmqttTlsClient').hide();
 });
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(){

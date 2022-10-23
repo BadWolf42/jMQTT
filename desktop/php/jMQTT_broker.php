@@ -96,6 +96,10 @@
 								<span class="input-group-addon">:</span>
 								<input class="eqLogicAttr form-control tooltips roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="{{Port}}"
 									title="{{Entrer le port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
+<!-- TODO Implement WS url option
+								<span class="input-group-addon jmqttWS" style="display:none">/</span>
+								<input class="eqLogicAttr form-control tooltips roundedRight jmqttWS" data-l1key="configuration" data-l2key="mqttUrl" style="display:none" placeholder="{{mqtt}}" title="{{TODO}}">
+-->
 							</div>
 						</div>
 						<div class="form-group">
@@ -176,12 +180,12 @@
 
 				<div class="form-group col-lg-6">
 					<fieldset>
-						<div id="jmqttDivTls" style="display:none">
+						<div id="jmqttTls" style="display:none">
 							<legend><i class="fas fa-key"></i>{{Paramètres de Sécurité}}</legend>
 							<div class="form-group">
 								<label class="col-lg-3 control-label">{{Vérifier le certificat}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet corresponde à l'IP/Nom de Domaine du Broker.}}"></i></sup></label>
-								<div class="col-lg-8">
+								<div class="col-lg-9">
 									<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
 										<option value="public">{{Activé - Autorités Publiques}}</option>
 										<option value="private">{{Activé - Autorité Personnalisée}}</option>
@@ -189,9 +193,10 @@
 									</select>
 								</div>
 							</div>
-							<div id="jmqttDivTlsCa" class="form-group">
+							<div id="jmqttTlsCa" class="form-group">
 								<label class="col-lg-3 control-label">{{Autorité Personnalisée}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Autorité de certification attendue pour le Broker.}}"></i></sup></label>
+								<div class="col-lg-1"></div>
 								<div class="col-lg-8">
 									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsCa"></textarea>
 								</div>
@@ -199,13 +204,17 @@
 							<div class="form-group">
 								<label class="col-lg-3 control-label">{{Certificat Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Certificat Client attendu par le Broker.<br/>Ce Certificat doit être associé à la Clé Privée, dans le champ qui apparaîtra en-dessous, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
-								<div class="col-lg-8">
+								<div class="col-lg-1">
+									<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClient">
+								</div>
+								<div class="col-lg-8 jmqttTlsClient" style="display:none">
 									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientCert"></textarea>
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group jmqttTlsClient" style="display:none">
 								<label class="col-lg-3 control-label">{{Clé Privée Client}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
+								<div class="col-lg-1"></div>
 								<div class="col-lg-8">
 									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientKey"></textarea>
 								</div>

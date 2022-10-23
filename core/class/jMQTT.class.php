@@ -48,6 +48,7 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_PROTO           = 'mqttProto';
 	const CONF_KEY_MQTT_TLS_CHECK       = 'mqttTlsCheck';
 	const CONF_KEY_MQTT_TLS_CA          = 'mqttTlsCa';
+	const CONF_KEY_MQTT_TLS_CLI         = 'mqttTlsClient';
 	const CONF_KEY_MQTT_TLS_CLI_CERT    = 'mqttTlsClientCert';
 	const CONF_KEY_MQTT_TLS_CLI_KEY     = 'mqttTlsClientKey';
 	const CONF_KEY_MQTT_INT             = 'mqttInt';
@@ -717,6 +718,7 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_INC_TOPIC,
 				self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,
+				self::CONF_KEY_MQTT_TLS_CLI,
 				self::CONF_KEY_MQTT_TLS_CLI_CERT,
 				self::CONF_KEY_MQTT_TLS_CLI_KEY,
 				self::CONF_KEY_MQTT_INT,
@@ -792,6 +794,7 @@ class jMQTT extends eqLogic {
 					self::CONF_KEY_MQTT_LWT_OFFLINE,
 					self::CONF_KEY_MQTT_TLS_CHECK,
 					self::CONF_KEY_MQTT_TLS_CA,
+					self::CONF_KEY_MQTT_TLS_CLI,
 					self::CONF_KEY_MQTT_TLS_CLI_CERT,
 					self::CONF_KEY_MQTT_TLS_CLI_KEY,
 					self::CONF_KEY_MQTT_INT,
@@ -1697,24 +1700,29 @@ class jMQTT extends eqLogic {
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
 		// TODO Implement WS url option
+		$params['tlscheck']          = $this->getConf(self::CONF_KEY_MQTT_TLS_CHECK);
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
 				$params['tlsinsecure'] = true;
-				$params['tlsca'] = '';
 				break;
 			case 'public':
 				$params['tlsinsecure'] = false;
-				$params['tlsca'] = '';
 				break;
 			case 'private':
 				$params['tlsinsecure'] = false;
-				$params['tlsca'] = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
+				$params['tlsca']       = $this->getConf(self::CONF_KEY_MQTT_TLS_CA);
 				break;
 		}
-		$params['tlsclicert']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
-		$params['tlsclikey']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
-		if ($params['tlsclicert'] == '')
-			$params['tlsclikey'] = '';
+		$params['tlscli']            = ($this->getConf(self::CONF_KEY_MQTT_TLS_CLI) == '1');
+		if ($params['tlscli']) {
+			$params['tlsclicert']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
+			$params['tlsclikey']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
+			if ($params['tlsclicert'] == '' || $params['tlsclikey'] = '') {
+				$params['tlscli']    = false;
+				unset($params['tlsclicert']);
+				unset($params['tlsclikey']);
+			}
+		}
 		self::toDaemon_newClient($this->getId(), $params);
 	}
 
@@ -2248,6 +2256,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_MQTT_LWT_OFFLINE => 'offline',
 			self::CONF_KEY_MQTT_PROTO => 'mqtt',
 			self::CONF_KEY_MQTT_TLS_CHECK => 'public',
+			self::CONF_KEY_MQTT_TLS_CLI => '0',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
 			self::CONF_KEY_AUTO_ADD_TOPIC => '',
 			self::CONF_KEY_MQTT_INC_TOPIC => '#',

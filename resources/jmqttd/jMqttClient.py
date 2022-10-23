@@ -160,22 +160,41 @@ class jMqttClient:
 				self.mqttclient.username_pw_set(self.message['username'], self.message['password'])
 			else:
 				self.mqttclient.username_pw_set(self.message['username'])
-		if self.message['proto'] == 'mqtts':
+		if self.message['proto'] == 'mqtts' or self.message['proto'] == 'wss':
 			try:
-				ca = NamedTemporaryFile(delete=False)
-				ca.write(str.encode(self.message['tlsca']))
-				ca.close()
-				cert = NamedTemporaryFile(delete=False)
-				cert.write(str.encode(self.message['tlsclicert']))
-				cert.close()
-				key = NamedTemporaryFile(delete=False)
-				key.write(str.encode(self.message['tlsclikey']))
-				key.close()
-				self.mqttclient.tls_set(ca_certs=ca.name, certfile=cert.name, keyfile=key.name)
-				self.mqttclient.tls_insecure_set(('tlsinsecure' in self.message) and self.message['tlsinsecure'])
-				unlink(ca.name)
-				unlink(cert.name)
-				unlink(key.name)
+				# Get authority type
+				tlscheck = 'public' if ('tlscheck' not in self.message) else self.message['tlscheck']
+				insecure = tlscheck == 'disabled'
+				reqs = ssl.CERT_NONE if insecure else ssl.CERT_REQUIRED
+				# Get CA cert if needed
+				certs = None
+				if tlscheck == 'private' and 'tlsca' in self.message:
+					fca = NamedTemporaryFile(delete=False)
+					fca.write(str.encode(self.message['tlsca']))
+					fca.close()
+					certs = fca.name
+				# Get Private Cert / Key if needed
+				cert = None
+				key = None
+				if {'tlscli', 'tlsclicert', 'tlsclikey'} <= self.message.keys() and self.message['tlscli']:
+					fcert = NamedTemporaryFile(delete=False)
+					fcert.write(str.encode(self.message['tlsclicert']))
+					fcert.close()
+					cert = fcert.name
+					fkey = NamedTemporaryFile(delete=False)
+					fkey.write(str.encode(self.message['tlsclikey']))
+					fkey.close()
+					key = fkey.name
+				# Setup TLS
+				self.mqttclient.tls_set(ca_certs=certs, cert_reqs=reqs, certfile=cert, keyfile=key)
+				self.mqttclient.tls_insecure_set(insecure)
+				# Remove temporary files
+				if certs is not None:
+					unlink(fca.name)
+				if cert is not None:
+					unlink(fcert.name)
+				if key is not None:
+					unlink(fkey.name)
 			except:
 				self._log.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
 
