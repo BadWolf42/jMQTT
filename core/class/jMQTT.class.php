@@ -1582,6 +1582,22 @@ class jMQTT extends eqLogic {
 			$l->remove();
 	}
 
+	/**
+	 * Callback on daemon auto mode change
+	 */
+	public static function deamon_changeAutoMode($_mode) {
+	if ($_mode)
+		self::logger('info', __("Le démarrage automatique du Démon est maintenant Activé", __FILE__));
+	else
+		self::logger('warning', __("Le démarrage automatique du Démon est maintenant Désactivé", __FILE__));
+	}
+
+	/**
+	 * Callback to check daemon auto mode status
+	 */
+	public static function getDaemonAutoMode() {
+		return (config::byKey('deamonAutoMode', __CLASS__, 1) == 1);
+	}
 
 	###################################################################################################################
 	##
@@ -2110,33 +2126,37 @@ class jMQTT extends eqLogic {
 			//   * If payload contains ", they are backslashed \"
 			// Fix #110
 			// Since Core commit https://github.com/jeedom/core/commit/430f0049dc74e914c4166b109fb48b4375f11ead
-			// payload can be more than int/bool/string
+			// payload can become more than int/bool/string
 			$payload = json_encode($payload, JSON_UNESCAPED_UNICODE);
 		}
-		$payloadLogMsg = ($payload === '') ? '(null)' : $payload;
-		if (log::getLogLevel(__CLASS__) > 100)
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s'", __FILE__), $cmdName, $payloadLogMsg, $topic));
-		else
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> '%2\$s' sur le topic '%3\$s' (qos=%4\$s, retain=%5\$s)", __FILE__), $cmdName, $payload, $topic, $qos, $retain));
-		$broker = $this->getBroker();
+		$payloadLogMsg = ($payload === '') ? '\'\' (null)' : "'".$payload."'";
 		if (!self::daemon_state()) {
-			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le démon jMQTT n'est pas démarré/connecté", __FILE__), $cmdName));
+			if (!self::getDaemonAutoMode()) {
+				$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT est désactivé", __FILE__), $cmdName, $payloadLogMsg));
+				return;
+			}
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT n'est pas démarré/connecté", __FILE__), $cmdName, $payloadLogMsg));
 			return;
 		}
+		$broker = $this->getBroker();
 		if (!$broker->getIsEnable()) {
-			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le Broker jMQTT %2\$s n'est pas activé", __FILE__), $cmdName, $broker->getName()));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas activé", __FILE__), $cmdName, $payloadLogMsg, $broker->getName()));
 			return;
 		}
 		if ($broker->getMqttClientState() != self::MQTTCLIENT_OK) {
-			$this->log('warning', sprintf(__("Cmd #%1\$s# -> Message non publié, car le Broker jMQTT %2\$s n'est pas connecté au Broker MQTT", __FILE__), $cmdName, $broker->getName()));
+			$this->log('warning', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas connecté au Broker MQTT", __FILE__), $cmdName, $payloadLogMsg, $broker->getName()));
 			return;
 		}
+		if (log::getLogLevel(__CLASS__) > 100)
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s'", __FILE__), $cmdName, $payloadLogMsg, $topic));
+		else
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s' (qos=%4\$s, retain=%5\$s)", __FILE__), $cmdName, $payloadLogMsg, $topic, $qos, $retain));
 		self::toDaemon_publish($this->getBrkId(), $topic, $payload, $qos, $retain);
 		$d = date('Y-m-d H:i:s');
 		$this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
 		if ($this->getType() == self::TYP_EQPT)
 			$broker->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
-		$this->log('debug', __('Message publié', __FILE__));
+		// $this->log('debug', __('Message publié', __FILE__));
 	}
 
 	###################################################################################################################
