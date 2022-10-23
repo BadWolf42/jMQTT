@@ -276,17 +276,16 @@ jmqtt.setIncludeMode = function(_id, _mode) {
 	});
 }
 
-/*
- * Eqlogic Icon helper
- */
-jmqtt.iconHelper = function(_eq) {
+// Eqlogic Icon helper
+jmqtt.iconHelper = function(_id) {
 	// Broker icon is always the same
-	if (_eq.configuration.type == 'broker')
-		return 'node_broker.svg';
+	if (_id == 'broker')
+		return 'plugins/jMQTT/core/img/node_broker.svg';
 
-	// Find icon from eqLogic config and jmqtt.icons table
-	var tmp = jmqtt.icons.find(function (item) { return item.id == _eq.configuration.icone; });
-	return tmp == undefined ? "node_.svg" : tmp.file;
+	// Search for an icon with this id
+	var tmp = jmqtt.icons.find(function (item) { return item.id == _id; });
+	// Return path to an image according to id
+	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
 }
 
 /*
@@ -308,7 +307,7 @@ jmqtt.updateDisplayCard = function (_card) {
 				_card.addClass('disableCard');
 
 			// Set icon
-			_card.find('img').attr('src', 'plugins/jMQTT/core/img/' + jmqtt.iconHelper(_eq));
+			_card.find('img').attr('src', jmqtt.iconHelper(_eq.configuration.icone));
 
 // TODO cut in 2 specific functions specialized in updating an eqBroker or normal eqLogic
 
@@ -714,12 +713,13 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 	}
 });
 
+// On eqLogic icon field set (initial set and finish typing)
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
 	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') {
-		$("#icon_visu").attr("src", 'plugins/jMQTT/core/img/node_broker.svg');
+		$("#icon_visu").attr("src", jmqtt.iconHelper('broker'));
 	} else {
 		var elt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone] option:selected');
-		$("#icon_visu").attr("src", 'plugins/jMQTT/core/img/' + elt.attr('file'));
+		$("#icon_visu").attr("src", jmqtt.iconHelper(elt.val()));
 	}
 });
 
@@ -1527,7 +1527,6 @@ $(document).ready(function() {
 	icos.html('');
 	$.each(jmqtt.icons, function(key) {
 		opt = new Option(jmqtt.icons[key]['name'], jmqtt.icons[key]['id']);
-		opt.setAttribute('file', jmqtt.icons[key]['file']);
 		icos.append(opt);
 	});
 
