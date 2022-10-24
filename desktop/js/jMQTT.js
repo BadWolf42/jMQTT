@@ -136,7 +136,7 @@ jmqtt.updateIncludeButtons = function(enabled, active) {
  */
 
 // On eqBroker, on Broker tab, change MQTT Client panel
-jmqtt.updateMqttClientPanel = function(_eq) {
+jmqtt.updateBrokerTabs = function(_eq) {
 	var info = jmqtt.getMqttClientInfo(_eq);
 
 	// Update panel heading color
@@ -1012,9 +1012,8 @@ function printEqLogic(_eqLogic) {
 
 		// Update include mode buttons
 		jmqtt.updateIncludeButtons(_eqLogic.isEnable == '1', _eqLogic.cache.include_mode == '1');
-
 		// Udpate panel on eqBroker
-		jmqtt.updateMqttClientPanel(_eqLogic);
+		jmqtt.updateBrokerTabs(_eqLogic);
 
 		// Display only relevant Realtime data
 		$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eqLogic.id + '"]').hide();
@@ -1430,7 +1429,7 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 		return;
 	jmqtt.updateDisplayCard(card, _eq);
 	if (jmqtt.getEqId() != _eq.id) { // Update Panel and menu only when on the right Broker
-		jmqtt.updateMqttClientPanel(_eq);
+		jmqtt.updateBrokerTabs(_eq);
 	}
 });
 
