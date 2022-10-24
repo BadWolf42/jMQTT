@@ -210,7 +210,7 @@ jmqtt.logoHelper = function(_id) {
 }
 
 // Helper to build an icon in hiddenAsTable card span
-jmqtt.globals.asCardHelper = function(_eq, _item, iClass) {
+jmqtt.asCardHelper = function(_eq, _item, iClass) {
 	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
 	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
 	var icon = (_item == 'status' || _eq.cache.include_mode == '1') ? (i.icon + ' ' + i.color) : i.icon;
@@ -220,7 +220,7 @@ jmqtt.globals.asCardHelper = function(_eq, _item, iClass) {
 }
 
 // Helper to build an icon in hiddenAsCard card span
-jmqtt.globals.asTableHelper = function(_eq, _item, aClass) {
+jmqtt.asTableHelper = function(_eq, _item, aClass) {
 	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
 	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
 	var icon = (_eq.isEnable == '1' || _item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
@@ -248,19 +248,19 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 		_card.find('img').attr('src', jmqtt.logoHelper(_eq.configuration.icone));
 
 	// Set hiddenAsTable span
-	var asCard = jmqtt.globals.asCardHelper(_eq, 'visible', 'eyed');
+	var asCard = jmqtt.asCardHelper(_eq, 'visible', 'eyed');
 	if (_eq.configuration.type == 'broker') {
-		asCard += jmqtt.globals.asCardHelper(_eq, 'status', 'status-circle');
-		asCard += jmqtt.globals.asCardHelper(_eq, 'include', 'inc-status');
+		asCard += jmqtt.asCardHelper(_eq, 'status', 'status-circle');
+		asCard += jmqtt.asCardHelper(_eq, 'include', 'inc-status');
 	}
 	_card.find('span.hiddenAsTable').empty().html(asCard);
 
 	var asTable = '';
-	asTable += jmqtt.globals.asTableHelper(_eq, 'status', 'roundedLeft');
-	asTable += jmqtt.globals.asTableHelper(_eq, 'visible', '');
-	asTable += jmqtt.globals.asTableHelper(_eq, 'include', '');
-	asTable += jmqtt.globals.asTableHelper(_eq, 'battery', '');
-	asTable += jmqtt.globals.asTableHelper(_eq, 'availability', '');
+	asTable += jmqtt.asTableHelper(_eq, 'status', 'roundedLeft');
+	asTable += jmqtt.asTableHelper(_eq, 'visible', '');
+	asTable += jmqtt.asTableHelper(_eq, 'include', '');
+	asTable += jmqtt.asTableHelper(_eq, 'battery', '');
+	asTable += jmqtt.asTableHelper(_eq, 'availability', '');
 	asTable += '<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
 	_card.find('span.hiddenAsCard').empty().html(asTable);
 }
