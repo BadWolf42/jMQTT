@@ -266,7 +266,7 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 }
 
 
-//
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Utilitary functions
 //
 
@@ -319,7 +319,7 @@ jmqtt.substractKeys = function(a, b) {
 }
 
 
-//
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on main plugin view
 //
 $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function () {
@@ -413,7 +413,8 @@ $('.eqLogicAction[data-action=confEq]').off('click').on('click', function() {
 	$('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + eqId).dialog('open');
 });
 
-//
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
 //
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
@@ -433,7 +434,8 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 	});
 });
 
-//
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
 $('.eqLogicAction[data-action=startIncludeMode]').on('click', function() {
@@ -464,7 +466,8 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 	}
 });
 
-//
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Automations on Broker tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
@@ -520,7 +523,8 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 		$('.jmqttApi').hide();
 });
 
-//
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Realtime tab attributes
 //
 $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
@@ -605,7 +609,8 @@ $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _option
 	$('#table_realtime tbody').prepend(tr);
 });
 
-//
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Automations on Equipment tab attributes
 //
 
@@ -666,7 +671,7 @@ $('#table_cmd').on('dblclick', '.cmd[data-cmd_id=""]', function(event) {
 });
 
 
-//
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions in top menu on an Equipment
 //
 
@@ -798,7 +803,8 @@ $('.eqLogicAction[data-action=jsonView]').on('click', function() {
 	$('.eqLogicAction[data-action=classicView]').removeClass('btn-primary').addClass('btn-default');
 });
 
-//
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
 // Standard Jeedom callback functions
 //
 
@@ -1437,9 +1443,9 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _id
 });
 
 
-/*
- * Apply some changes when document is loaded
- */
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Apply some changes when document is loaded
+//
 $(document).ready(function() {
 	// Done here, otherwise the refresh button remains selected
 	$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
@@ -1517,8 +1523,6 @@ $(document).ready(function() {
 		} else {
 			core_save();
 		}
-
-
 	});
 
 });
