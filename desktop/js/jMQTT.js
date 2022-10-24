@@ -130,6 +130,7 @@ jmqtt.updateIncludeButtons = function(enabled, active) {
 	}
 }
 
+// Display an Alert if inclusion mode has changed for this Broker
 jmqtt.displayIncludeEvent = function(_eq) {
 	// Fetch current inclusion mode for this Broker
 	var include = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.inc-status');
@@ -557,7 +558,7 @@ jmqtt.newRealTimeCmd = function(_data) {
 	if (_data.retain && _data.included)
 		tr += '<br /><br />';
 	if (_data.included)
-		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement/commande :}}<br/>' + _data.included + '"></i>';
+		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement/commande :}}' + _data.included + '"></i>';
 	tr += '</td><td align="right"><a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
 	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
 		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
@@ -602,8 +603,6 @@ $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _option
 	var d = new Date();
 	_options.date = d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds();
 	_options.jsonPath = '';
-	if (d.getMilliseconds() % 2 == 0)
-		_options.included = 'tutu tete';
 	var tr = jmqtt.newRealTimeCmd(_options);
 	$('#table_realtime tbody').prepend(tr);
 });

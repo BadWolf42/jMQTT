@@ -1867,8 +1867,8 @@ class jMQTT extends eqLogic {
 	/**
 	 * Send a jMQTT::RealTime event to the UI containing eqLogic
 	 */
-	private function sendMqttRealTimeEvent($topic, $payload, $qos, $retain) {
-		event::add('jMQTT::RealTime', array('id' => $this->getId(), 'topic' => $topic, 'payload' => $payload, 'qos' => $qos, 'retain' => $retain));
+	private function sendMqttRealTimeEvent($topic, $payload, $qos, $retain, $eqNames) {
+		event::add('jMQTT::RealTime', array('id' => $this->getId(), 'topic' => $topic, 'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'included' => $eqNames));
 	}
 
 	/**
@@ -1980,6 +1980,15 @@ class jMQTT extends eqLogic {
 			if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) $elogics[] = $eqpt;
 		}
 
+		if ($this->getIncludeMode()) {
+			$eqNames = '';
+			foreach($elogics as $eq)
+				$eqNames .= '<br />#'.$eq->getHumanName().'#';
+			$this->sendMqttRealTimeEvent($msgTopic, $msgValue, $msgQos, $msgRetain, $eqNames);
+		}
+
+/* TODO Check if this should deleted or not
+
 		// If no equipment listening to the current message is found and the automatic inclusion mode is active
 		if (empty($elogics) && $this->getIncludeMode()) {
 
@@ -2004,18 +2013,13 @@ class jMQTT extends eqLogic {
 			$elogics[] = $eqpt;
 		}
 
-/*
-		if ($this->getIncludeMode()) {
-			$this->sendMqttRealTimeEvent($msgTopic, $msgValue, $msgQos, $msgRetain);
-		}
-*/
-
 		// No equipment listening to the current message is found
 		// Should not occur: log a warning and return
 		if (empty($elogics)) {
 			$this->log('warning', sprintf(__("Aucun équipement n'est inscrit au topic %s, cette erreur ne devrait pas se produire (W103)", __FILE__), $msgTopic));
 			return;
 		}
+*/
 
 		//
 		// Loop on enabled equipments listening to the current message
