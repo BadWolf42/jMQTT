@@ -1861,7 +1861,7 @@ class jMQTT extends eqLogic {
 	 * Send a jMQTT::EventState event to the UI containing eqLogic
 	 */
 	private function sendMqttClientStateEvent() {
-		event::add('jMQTT::EventState', $this->getId());
+		event::add('jMQTT::EventState', $this->toArray());
 	}
 
 	/**

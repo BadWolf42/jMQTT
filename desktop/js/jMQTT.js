@@ -1423,23 +1423,15 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options
 	}
 });
 
-// Update the broker icon and the include mode activation on reception of a new state event
-$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _id) {
-	var card = $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _id + '"]');
-	if (!card.length) // Don't try to update cards when left the page and js is still loaded
+// Update the broker card and the include mode activation on reception of a new state event
+$('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq) {
+	var card = $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _eq.id + '"]');
+	if (!card.length) // Don't try to update cards when left jMQTT and js is still loaded
 		return;
-	console.log('-> EventState', _id);
-	jeedom.eqLogic.byId({
-		id: _id,
-		noCache: true,
-		error: function (error) {
-			$.fn.showAlert({message: error.message, level: 'warning'});
-		},
-		success: function(_eq) {
-			jmqtt.updateDisplayCard(card, _eq);
-			jmqtt.updateMqttClientPanel(_eq);
-		}
-	});
+	jmqtt.updateDisplayCard(card, _eq);
+	if (jmqtt.getEqId() != _eq.id) { // Update Panel and menu only when on the right Broker
+		jmqtt.updateMqttClientPanel(_eq);
+	}
 });
 
 
