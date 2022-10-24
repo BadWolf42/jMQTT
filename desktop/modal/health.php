@@ -94,8 +94,11 @@ foreach ($eqBrokers as $eqB) { // For each Broker
 }
 ?>
 <script>
-// Remove jMQTT equipment callback
+// Callback to remove jMQTT equipment
 $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
+	// Equivalent to click on $('.eqLogicAction[data-action=remove]') in plugin.template.js
+	// Just different eqId/eqName handling
+
 	var eqId = $(this).closest('tr').find('.eId').value();
 	// console.log('removeEq', $(this).closest('tr').find('.eId'), $(this).closest('tr').find('.eName').attr('data-key'), this);
 	if (eqId == undefined) {
