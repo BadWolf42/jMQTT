@@ -197,7 +197,7 @@ jmqtt.setIncludeMode = function(_id, _mode) {
 	});
 }
 
-// Eqlogic Logo helper
+// Helper to find a logo for each Eqlogic
 jmqtt.logoHelper = function(_id) {
 	// Broker logo is always the same
 	if (_id == 'broker')
@@ -209,6 +209,30 @@ jmqtt.logoHelper = function(_id) {
 	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
 }
 
+// Helper to build an icon in hiddenAsTable card span
+jmqtt.globals.asCardHelper = function(_eq, _item, iClass) {
+	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
+	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
+	var icon = (_item == 'status' || _eq.cache.include_mode == '1') ? (i.icon + ' ' + i.color) : i.icon;
+	iClass   = iClass != '' ? ' ' + iClass : '';
+
+	return '<i class="' + icon + iClass + '"></i>';
+}
+
+// Helper to build an icon in hiddenAsCard card span
+jmqtt.globals.asTableHelper = function(_eq, _item, aClass) {
+	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
+	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
+	var icon = (_eq.isEnable == '1' || _item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
+	var msg  = (_eq.isEnable == '1' || _item == 'status') ? (i.msg) : '';
+	aClass   = aClass != '' ? ' ' + aClass : '';
+
+	if (msg == '')
+		return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="' + icon + ' w18"></i></a>';
+	else
+		return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="' + icon + ' w18 tooltips" title="' + msg + '"></i></a>';
+}
+
 // Update display card on plugin main page
 jmqtt.updateDisplayCard = function (_card, _eq) {
 	// Set visibility
@@ -218,91 +242,27 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 		_card.addClass('disableCard');
 
 	// Set logo
-	_card.find('img').attr('src', jmqtt.logoHelper(_eq.configuration.icone));
-
-// TODO cut in 2 specific functions specialized in updating an eqBroker or normal eqLogic
+	if (_eq.configuration.type == 'broker')
+		_card.find('img').attr('src', jmqtt.logoHelper('broker'));
+	else
+		_card.find('img').attr('src', jmqtt.logoHelper(_eq.configuration.icone));
 
 	// Set hiddenAsTable span
-	var hiddenAsTable = '';
+	var asCard = jmqtt.globals.asCardHelper(_eq, 'visible', 'eyed');
 	if (_eq.configuration.type == 'broker') {
-		hiddenAsTable += '<i class="inc-status ' + ((_eq.cache.include_mode == '1') ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square') + '"></i>';
-		hiddenAsTable += '<i class="status-circle fas ' + (!jmqtt.globals.daemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : (_eq.isEnable == '1' ? 'fa-minus-circle warning' : 'fa-times-circle danger'))) + '"></i>';
-	} else if (_eq.cache.include_mode == '1')
-		hiddenAsTable += '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
-	hiddenAsTable += '<i class="fas eyed ' + ((_eq.isVisible == '1') ? 'fa-eye' : 'fa-eye-slash') + '"></i>';
-	// if (_eq.configuration.type == 'broker')
-	_card.find('span.hiddenAsTable').empty().html(hiddenAsTable);
+		asCard += jmqtt.globals.asCardHelper(_eq, 'status', 'status-circle');
+		asCard += jmqtt.globals.asCardHelper(_eq, 'include', 'inc-status');
+	}
+	_card.find('span.hiddenAsTable').empty().html(asCard);
 
-	// Set hiddenAsCard span
-	function aitool(icl, tip, acl) {
-		if (tip == '')
-			return '<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18"></i></a>';
-		else
-			return '<a class="btn btn-xs cursor w30' + acl + '"><i class="' + icl + ' w18 tooltips" title="' + tip + '"></i></a>';
-	}
-	var hiddenAsCard = '';
-	if (_eq.configuration.type == 'broker') {
-		// On Brokers
-		(_eq.cache.mqttClientConnected ? 'fa-check-circle success' : (_eq.isEnable == '1' ? 'fa-minus-circle warning' : 'fa-times-circle danger'))
-		if (_eq.isEnable != '1') {
-			// On disabled Brokers
-			hiddenAsCard += aitool('status-circle fas fa-times-circle danger', '{{Connexion au Broker désactivée}}', ' roundedLeft');
-			hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
-			hiddenAsCard += aitool('far fa-square w18', '', '');
-		} else {
-			// On enabled Brokers
-			hiddenAsCard += aitool('status-circle fas ' + (!jmqtt.globals.daemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : 'fa-minus-circle warning' )),
-								   !jmqtt.globals.daemonState ? "{{Le Démon n'est pas démarré}}" : (_eq.cache.mqttClientConnected ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}'), ' roundedLeft');
-			hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
-								   _eq.isVisible == '1' ? '{{Broker visible}}' : '{{Broker masqué}}', '');
-			hiddenAsCard += aitool('inc-status ' + (_eq.cache.include_mode == '1' ? 'fas fa-sign-in-alt warning fa-rotate-90' : 'far fa-square success'),
-								   _eq.cache.include_mode == '1' ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
-		}
-		hiddenAsCard += '<a class="btn btn-xs cursor w30">&nbsp;</a>';
-		hiddenAsCard += '<a class="btn btn-xs cursor w30">&nbsp;</a>';
-	} else {
-		// On normal equipements
-		if (_eq.isEnable != '1') {
-			// On disabled normal equipements
-			hiddenAsCard += aitool('fas fa-times danger', '{{Equipement désactivé}}', ' roundedLeft');
-			hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye' : 'fas fa-eye-slash', '', '');
-			hiddenAsCard += aitool(_eq.configuration.auto_add_cmd == '1' ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square', '', '');
-			if (_eq.configuration.battery_cmd == '')
-				var bat = 'fas fa-plug';
-			else if (_eq.status.batterydanger)
-				var bat = 'fas fa-battery-empty';
-			else if (_eq.status.batterywarning)
-				var bat = 'fas fa-battery-quarter';
-			else
-				var bat = 'fas fa-battery-full';
-			hiddenAsCard += aitool(bat, '', '');
-			hiddenAsCard += aitool(_eq.configuration.availability_cmd == '' ? 'far fa-bell' : 'fas fa-bell', '', '');
-		} else {
-			// On enabled normal equipements
-			hiddenAsCard += aitool('fas fa-check success', '{{Equipement activé}}', ' roundedLeft');
-			hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
-								   (_eq.isVisible == '1' == 'ok') ? '{{Equipement visible}}' : '{{Equipement masqué}}', '');
-			hiddenAsCard += aitool(_eq.configuration.auto_add_cmd == '1' ? 'fas fa-sign-in-alt fa-rotate-90 warning' : 'far fa-square success',
-								   _eq.configuration.auto_add_cmd == '1' ? '{{Inclusion automatique activée}}' : '{{Inclusion automatique désactivée}}', '');
-			if (_eq.configuration.battery_cmd == '')
-				hiddenAsCard += aitool('fas fa-plug', '{{Pas d\'état de la batterie}}', '');
-			else if (_eq.status.batterydanger)
-				hiddenAsCard += aitool('fas fa-battery-empty danger', '{{Batterie en fin de vie}}', '');
-			else if (_eq.status.batterywarning)
-				hiddenAsCard += aitool('fas fa-battery-quarter warning', '{{Batterie en alarme}}', '');
-			else
-				hiddenAsCard += aitool('fas fa-battery-full success', '{{Batterie OK}}', '');
-			if (_eq.configuration.availability_cmd == '')
-				hiddenAsCard += aitool('far fa-bell', '{{Pas d\'état de disponibilité}}', '');
-			else if (_eq.status.warning)
-				hiddenAsCard += aitool('fas fa-bell danger', '{{Equipement indisponible}}', '');
-			else
-				hiddenAsCard += aitool('fas fa-bell success', '{{Equipement disponible}}', '');
-		}
-	}
-	// Add advanced configuration cog
-	hiddenAsCard += '<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
-	_card.find('span.hiddenAsCard').empty().html(hiddenAsCard);
+	var asTable = '';
+	asTable += jmqtt.globals.asTableHelper(_eq, 'status', 'roundedLeft');
+	asTable += jmqtt.globals.asTableHelper(_eq, 'visible', '');
+	asTable += jmqtt.globals.asTableHelper(_eq, 'include', '');
+	asTable += jmqtt.globals.asTableHelper(_eq, 'battery', '');
+	asTable += jmqtt.globals.asTableHelper(_eq, 'availability', '');
+	asTable += '<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
+	_card.find('span.hiddenAsCard').empty().html(asTable);
 }
 
 

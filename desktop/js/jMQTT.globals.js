@@ -72,6 +72,67 @@ jmqtt.globals.logos = [
 ]
 jmqtt.globals.logos.sort(function(a, b) { return a.name.localeCompare(b.name); });
 
+// Array of Status Icons descriptors
+jmqtt.globals.icons = {
+	broker: {
+		status: {
+			selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (info.la == 'nok') ? false : info.state; },
+			ok:       { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connection au Broker active}}' },
+			pok:      { icon: 'fas fa-minus-circle', color: 'warning', msg: '{{Connexion au Broker en échec}}' },
+			nok:      { icon: 'fas fa-times-circle', color: 'danger',  msg: "{{Le Démon n'est pas démarré}}" },
+			false:    { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker désactivée}}' }
+		},
+		visible: {
+			selector: function(_eq) { return _eq.isVisible == '1'; },
+			true:     { icon: 'fas fa-eye',       color: 'success', msg: '{{Broker visible}}' },
+			false:    { icon: 'fas fa-eye-slash', color: 'warning', msg: '{{Broker masqué}}' }
+		},
+		include: {
+			selector: function(_eq) { return _eq.cache.include_mode == '1'; },
+			true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'warning', msg: '{{Inclusion automatique activée}}' },
+			false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Inclusion automatique désactivée}}' }
+		},
+		battery: {
+			selector: function(_eq) { return 'none'; },
+			none:     { icon: '', color: '', msg: "" }
+		},
+		availability: {
+			selector: function(_eq) { return 'none'; },
+			none:     { icon: '', color: '', msg: "" }
+		}
+	},
+	eqpt: {
+		status: {
+			selector: function(_eq) { return _eq.isEnable == '1'; },
+			true:     { icon: 'fas fa-check', color: 'success', msg: '{{Equipement activé}}' },
+			false:    { icon: 'fas fa-times', color: 'danger',  msg: '{{Equipement désactivé}}' }
+		},
+		visible: {
+			selector: function(_eq) { return _eq.isVisible == '1'; },
+			true:     { icon: 'fas fa-eye',       color: 'success', msg: '{{Equipement visible}}' },
+			false:    { icon: 'fas fa-eye-slash', color: 'warning', msg: '{{Equipement masqué}}' }
+		},
+		include: {
+			selector: function(_eq) { return _eq.configuration.auto_add_cmd == '1'; },
+			true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'warning', msg: '{{Inclusion automatique activée}}' },
+			false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Inclusion automatique désactivée}}' }
+		},
+		battery: {
+			selector: function(_eq) { return (_eq.configuration.battery_cmd == '') ? 'none' : (_eq.status.batterydanger ? 'nok' : (_eq.status.batterywarning ? 'pok' : 'ok')); },
+			none:     { icon: 'fas fa-plug',            color: '',        msg: "{{Pas d'état de la batterie}}" },
+			ok:       { icon: 'fas fa-battery-full',    color: 'success', msg: '{{Batterie OK}}' },
+			pok:      { icon: 'fas fa-battery-quarter', color: 'warning', msg: '{{Batterie en alarme}}' },
+			nok:      { icon: 'fas fa-battery-empty',   color: 'danger',  msg: '{{Batterie en fin de vie}}' }
+		},
+		availability: {
+			selector: function(_eq) { return (_eq.configuration.availability_cmd == '') ? 'none' : (_eq.status.warning ? 'nok' : 'ok'); },
+			none:     { icon: 'far fa-bell', color: '',        msg: "{{Pas d'état de disponibilité}}" },
+			ok:       { icon: 'fas fa-bell', color: 'success', msg: '{{Equipement disponible}}' },
+			nok:      { icon: 'fas fa-bell', color: 'danger',  msg: '{{Equipement indisponible}}' }
+		}
+	}
+};
+
 // To memorise page refresh timeout when set
 jmqtt.globals.refreshTimeout = null;
 
