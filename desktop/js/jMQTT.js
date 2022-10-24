@@ -543,19 +543,6 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 });
 
 //
-// Hide / Show top menu depending of the selected Tab in Eq/Brk
-//
-$('.nav-tabs a[href="#eqlogictab"],.nav-tabs a[href="#brokertab"],.nav-tabs a[href="#realtimetab"]').on('click', function() {
-	$('#menu-bar').hide();
-});
-
-$('.nav-tabs a[href="#commandtab"]').on('click', function() {
-	if($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
-		$('#menu-bar').show();
-	}
-});
-
-//
 // Actions on Broker tab
 //
 $('.eqLogicAction[data-action=startIncludeMode]').on('click', function() {
@@ -734,10 +721,13 @@ $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _option
 //
 // Automations on Equipment tab attributes
 //
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', function(e) {
-	if($(e.target).value() == 'broker') {
+
+// Show top menu on commandtab only
+$('.nav-tabs a[href]').on('click', function() {
+	if ($(this).attr('href') == '#commandtab')
+		$('#menu-bar').show();
+	else
 		$('#menu-bar').hide();
-	}
 });
 
 // On eqLogic subscription topic field typing
@@ -1550,11 +1540,6 @@ $('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function 
  * Apply some changes when document is loaded
  */
 $(document).ready(function() {
-	// On page load, show the commandtab menu bar if necessary (fix #64)
-	if (document.location.hash == '#commandtab' && $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker') {
-		$('#menu-bar').show();
-	}
-
 	// Done here, otherwise the refresh button remains selected
 	$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
 		event.stopPropagation();
