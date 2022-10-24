@@ -219,7 +219,7 @@ jmqtt.updateIncludeButtons = function(enabled, active) {
 /*
  * Function to update Broker status on a Broker eqLogic page
  */
-jmqtt.showMqttClientInfo = function(_eq) {
+jmqtt.updateMqttClientPanel = function(_eq) {
 	var info = jmqtt.getMqttClientInfo(_eq);
 
 	// Update panel heading color
@@ -238,9 +238,15 @@ jmqtt.showMqttClientInfo = function(_eq) {
 	// Update LastLaunch span
 	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
-	// Set which inclusion button is visible on the right eqBroker
-	if (_eq.id == $('.eqLogicAttr[data-l1key=id]').value())
-		jmqtt.updateIncludeButtons(_eq.isEnable == '1', _eq.cache.include_mode == '1');
+	var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
+	$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
+	$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
+	$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
+
+	// Set logs level
+	var levels = {};
+	levels['log::level::' + log] = _eqLogic.configuration.loglevel
+	$('#div_broker_log').setValues(levels, '.configKey');
 
 	if (info.state == "ok") {
 		brk = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']');
@@ -1086,17 +1092,10 @@ function printEqLogic(_eqLogic) {
 		// Update include mode buttons
 		jmqtt.updateIncludeButtons(_eqLogic.isEnable == '1', _eqLogic.cache.include_mode == '1');
 
-		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', true);
-		var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
-		$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
-		$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
-		$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
-		var levels = {};
-		levels['log::level::' + log] = _eqLogic.configuration.loglevel
-		$('#div_broker_log').setValues(levels, '.configKey');
+		// Udpate panel on eqBroker
+		jmqtt.updateMqttClientPanel(_eqLogic);
 
-		// Udpate other stuff on eqBroker
-		jmqtt.showMqttClientInfo(_eqLogic);
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', true);
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
