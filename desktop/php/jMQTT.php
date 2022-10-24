@@ -7,6 +7,11 @@ if (! isConnect('admin')) {
 // $jeedom_v42 = strpos(trim(config::byKey('version')), '4.2.') === 0;
 
 sendVarToJS('eqType', 'jMQTT');
+include_file('desktop', 'jMQTT.globals', 'js', 'jMQTT');
+
+// Send daemon current state
+sendVarToJS('jmqtt.globals.daemonState', jMQTT::daemon_state());
+
 /** @var jMQTT[][] $eqNonBrokers */
 $eqNonBrokers = jMQTT::getNonBrokers();
 /** @var jMQTT[] $eqBrokers */
@@ -16,10 +21,8 @@ $eqBrokersName = array();
 foreach ($eqBrokers as $id => $eqL) {
 	$eqBrokersName[$id] = $eqL->getName();
 }
-sendVarToJS('eqBrokers', $eqBrokersName);
+sendVarToJS('jmqtt.globals.eqBrokers', $eqBrokersName);
 
-// Send daemon current state
-sendVarToJS('jmqttDaemonState', jMQTT::daemon_state());
 ?>
 
 <style>

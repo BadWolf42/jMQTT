@@ -14,68 +14,6 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// New namespace
-function jmqtt() {}
-
-jmqtt.icons = [
-	{id: '', name: "{{Aucun}}", file: 'node_.svg'},
-	{id: 'barometre', name: "{{Baromètre}}", file: 'node_barometre.svg'},
-	{id: 'bell', name: "{{Sonnerie}}", file: 'node_bell.svg'},
-	{id: 'boiteauxlettres', name: "{{Boite aux Lettres}}", file: 'node_boiteauxlettres.svg'},
-	{id: 'bt', name: "{{Bluetooth}}", file: 'node_bt.svg'},
-	{id: 'chauffage', name: "{{Chauffage}}", file: 'node_chauffage.svg'},
-	{id: 'compteur', name: "{{Compteur}}", file: 'node_compteur.svg'},
-	{id: 'contact', name: "{{Contact}}", file: 'node_contact.svg'},
-	{id: 'custom', name: "{{Custom}}", file: 'node_custom.svg'},
-	{id: 'dimmer', name: "{{Dimmer}}", file: 'node_dimmer.svg'},
-	{id: 'door', name: "{{Porte}}", file: 'node_door.svg'},
-	{id: 'energie', name: "{{Energie}}", file: 'node_energie.svg'},
-	{id: 'fan', name: "{{Ventilation}}", file: 'node_fan.svg'},
-	{id: 'feuille', name: "{{Culture}}", file: 'node_feuille.svg'},
-	{id: 'fire', name: "{{Incendie}}", file: 'node_fire.svg'},
-	{id: 'garage', name: "{{Garage}}", file: 'node_garage.svg'},
-	{id: 'gate', name: "{{Portail}}", file: 'node_gate.svg'},
-	{id: 'home-flood', name: "{{Inondation}}", file: 'node_home-flood.svg'},
-	{id: 'humidity', name: "{{Humidité}}", file: 'node_humidity.png'},
-	{id: 'humiditytemp', name: "{{Humidité et Température}}", file: 'node_humiditytemp.png'},
-	{id: 'hydro', name: "{{Hydrométrie}}", file: 'node_hydro.png'},
-	{id: 'ir2', name: "{{Infra Rouge}}", file: 'node_ir2.png'},
-	{id: 'jauge', name: "{{Jauge}}", file: 'node_jauge.svg'},
-	{id: 'light', name: "{{Luminosité}}", file: 'node_light.png'},
-	{id: 'lightbulb', name: "{{Lumière}}", file: 'node_lightbulb.svg'},
-	{id: 'meteo', name: "{{Météo}}", file: 'node_meteo.png'},
-	{id: 'molecule-co', name: "{{CO}}", file: 'node_molecule-co.svg'},
-	{id: 'motion', name: "{{Mouvement}}", file: 'node_motion.png'},
-	{id: 'motion-sensor', name: "{{Présence}}", file: 'node_motion-sensor.svg'},
-	{id: 'multisensor', name: "{{Multisensor}}", file: 'node_multisensor.png'},
-	{id: 'nab', name: "{{Nabaztag}}", file: 'node_nab.png'},
-	{id: 'power-plug', name: "{{Prise de courant}}", file: 'node_power-plug.svg'},
-	{id: 'prise', name: "{{Prise}}", file: 'node_prise.png'},
-	{id: 'radiator', name: "{{Radiateur}}", file: 'node_radiator.svg'},
-	{id: 'relay', name: "{{Relais}}", file: 'node_relay.png'},
-	{id: 'remote', name: "{{Télécommande}}", file: 'node_remote.svg'},
-	{id: 'rf433', name: "{{RF433}}", file: 'node_rf433.svg'},
-	{id: 'rfid', name: "{{RFID}}", file: 'node_rfid.png'},
-	{id: 'sms', name: "{{SMS}}", file: 'node_sms.png'},
-	{id: 'teleinfo', name: "{{Téléinfo}}", file: 'node_teleinfo.png'},
-	{id: 'temp', name: "{{Température}}", file: 'node_temp.png'},
-	{id: 'thermostat', name: "{{Thermostat}}", file: 'node_thermostat.png'},
-	{id: 'tv', name: "{{Télévison}}", file: 'node_tv.svg'},
-	{id: 'volet', name: "{{Volet}}", file: 'node_volet.svg'},
-	{id: 'water-boiler', name: "{{Chaudière}}", file: 'node_water-boiler.svg'},
-	{id: 'wifi', name: "{{Wifi}}", file: 'node_wifi.svg'},
-	{id: 'window-closed-variant', name: "{{Fenêtre}}", file: 'node_window-closed-variant.svg'},
-	{id: 'zigbee', name: "{{Zigbee}}", file: 'node_zigbee.svg'},
-	{id: 'zwave', name: "{{ZWave}}", file: 'node_zwave.svg'}
-]
-jmqtt.icons.sort(function(a, b) { return a.name.localeCompare(b.name); });
-
-// To memorise page refresh timeout when set
-jmqtt.refreshTimeout = null;
-
-// To memorise current eqLogic main subscription topic
-jmqtt.mainTopic = '';
-
 jmqtt.callPluginAjax = function(_params) {
 	$.ajax({
 		async: _params.async == undefined ? true : _params.async,
@@ -166,7 +104,7 @@ jmqtt.refreshEqLogicPage = function() {
 // Helper to get information abour Broker state (launchable, launchable color, state, message, message color)
 jmqtt.getMqttClientInfo = function(_eq) {
 	// Daemon is down
-	if (!jmqttDaemonState)
+	if (!jmqtt.globals.daemonState)
 		return {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{Démon non démarré}}",                                      color:'danger'};
 	// Client is connected to the Broker
 	if (_eq.cache.mqttClientConnected)
@@ -266,7 +204,7 @@ jmqtt.iconHelper = function(_id) {
 		return 'plugins/jMQTT/core/img/node_broker.svg';
 
 	// Search for an icon with this id
-	var tmp = jmqtt.icons.find(function (item) { return item.id == _id; });
+	var tmp = jmqtt.globals.icons.find(function (item) { return item.id == _id; });
 	// Return path to an image according to id
 	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
 }
@@ -298,7 +236,7 @@ jmqtt.updateDisplayCard = function (_card) {
 			var hiddenAsTable = '';
 			if (_eq.configuration.type == 'broker') {
 				hiddenAsTable += '<i class="inc-status ' + ((_eq.cache.include_mode == '1') ? 'fas fa-sign-in-alt fa-rotate-90' : 'far fa-square') + '"></i>';
-				hiddenAsTable += '<i class="status-circle fas ' + (!jmqttDaemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : (_eq.isEnable == '1' ? 'fa-minus-circle warning' : 'fa-times-circle danger'))) + '"></i>';
+				hiddenAsTable += '<i class="status-circle fas ' + (!jmqtt.globals.daemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : (_eq.isEnable == '1' ? 'fa-minus-circle warning' : 'fa-times-circle danger'))) + '"></i>';
 			} else if (_eq.cache.include_mode == '1')
 				hiddenAsTable += '<i class="fas fa-sign-in-alt fa-rotate-90"></i>';
 			hiddenAsTable += '<i class="fas eyed ' + ((_eq.isVisible == '1') ? 'fa-eye' : 'fa-eye-slash') + '"></i>';
@@ -323,8 +261,8 @@ jmqtt.updateDisplayCard = function (_card) {
 					hiddenAsCard += aitool('far fa-square w18', '', '');
 				} else {
 					// On enabled Brokers
-					hiddenAsCard += aitool('status-circle fas ' + (!jmqttDaemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : 'fa-minus-circle warning' )),
-										   !jmqttDaemonState ? "{{Le Démon n'est pas démarré}}" : (_eq.cache.mqttClientConnected ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}'), ' roundedLeft');
+					hiddenAsCard += aitool('status-circle fas ' + (!jmqtt.globals.daemonState ? 'fa-times-circle danger' : (_eq.cache.mqttClientConnected ? 'fa-check-circle success' : 'fa-minus-circle warning' )),
+										   !jmqtt.globals.daemonState ? "{{Le Démon n'est pas démarré}}" : (_eq.cache.mqttClientConnected ? '{{Connection au Broker active}}' : '{{Connexion au Broker en échec}}'), ' roundedLeft');
 					hiddenAsCard += aitool(_eq.isVisible == '1' ? 'fas fa-eye success' : 'fas fa-eye-slash warning',
 										   _eq.isVisible == '1' ? '{{Broker visible}}' : '{{Broker masqué}}', '');
 					hiddenAsCard += aitool('inc-status ' + (_eq.cache.include_mode == '1' ? 'fas fa-sign-in-alt warning fa-rotate-90' : 'far fa-square success'),
@@ -406,8 +344,8 @@ jmqtt.checkTopicMatch = function (subscription, topic) {
 // Action on eqLogic subscription topic field update
 jmqtt.onMainTopicUpdate = function () {
 	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
-	jmqtt.mainTopic = mt.val();
-	if (jmqtt.mainTopic == '')
+	jmqtt.globals.mainTopic = mt.val();
+	if (jmqtt.globals.mainTopic == '')
 		mt.addClass('topicMismatch');
 	else
 		mt.removeClass('topicMismatch');
@@ -482,7 +420,7 @@ $('.eqLogicAction[data-action=realTimeJMQTT]').on('click', function () {
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Choisissez un broker : }}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
-	for(var i in eqBrokers){ dialog_message += '<option value="'+i+'">'+eqBrokers[i]+'</option>'; } // Use global var in jMQTT.php !!!
+	$.each(jmqtt.globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br>';
 	dialog_message += '<label class="control-label">{{Nom du nouvel équipement : }}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>'
@@ -630,7 +568,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 });
 
 //
-// Automations on Realtime tab attributes
+// Actions on Realtime tab attributes
 //
 $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
 	console.log('addTo: ', $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val());
@@ -738,7 +676,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('chang
 	jmqtt.onMainTopicUpdate();
 	// Update mismatch status of all cmd
 	$('input.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
-		if (jmqtt.checkTopicMatch(jmqtt.mainTopic, $(this).value()))
+		if (jmqtt.checkTopicMatch(jmqtt.globals.mainTopic, $(this).value()))
 			$(this).removeClass('topicMismatch');
 		else
 			$(this).addClass('topicMismatch');
@@ -792,7 +730,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 			dialog_message += '</select><br>';
 
 			dialog_message += '<label class="control-label">{{Saisissez le Topic de base : }}</label> ';
-			var currentTopic = jmqtt.mainTopic;
+			var currentTopic = jmqtt.globals.mainTopic;
 			if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			if (currentTopic.endsWith("/"))
@@ -852,7 +790,7 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 // On updateTopics click
 $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
-	var currentTopic = jmqtt.mainTopic
+	var currentTopic = jmqtt.globals.mainTopic;
 	if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
 		currentTopic = currentTopic.substr(0,currentTopic.length-1);
 	if (currentTopic.endsWith("/"))
@@ -906,6 +844,10 @@ $('.eqLogicAction[data-action=jsonView]').on('click', function() {
 	$('.eqLogicAction[data-action=jsonView]').removeClass('btn-default').addClass('btn-primary');
 	$('.eqLogicAction[data-action=classicView]').removeClass('btn-primary').addClass('btn-default');
 });
+
+//
+// Standard Jeedom callback functions
+//
 
 /**
  * printEqLogic callback called by plugin.template before calling addCmdToTable.
@@ -1124,7 +1066,7 @@ function printEqLogic(_eqLogic) {
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 
-		jmqtt.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
+		jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
 		// Initialise battery and availability dropboxes
 		var eqId = $('.eqLogicAttr[data-l1key=id]').value();
 		var bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
@@ -1159,7 +1101,7 @@ function printEqLogic(_eqLogic) {
 	// Initialize the broker dropbox
 	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
 	brokers.empty();
-	$.each(eqBrokers, function(key, name) {
+	$.each(jmqtt.globals.eqBrokers, function(key, name) {
 		brokers.append(new Option(name, key));
 	});
 	brokers.val(_eqLogic.configuration.eqLogic);
@@ -1291,7 +1233,7 @@ function addCmdToTable(_cmd) {
 
 		// Update mismatch status of this cmd on change and input
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
-			if (jmqtt.checkTopicMatch(jmqtt.mainTopic, $(this).value()))
+			if (jmqtt.checkTopicMatch(jmqtt.globals.mainTopic, $(this).value()))
 				$(this).removeClass('topicMismatch');
 			else
 				$(this).addClass('topicMismatch');
@@ -1480,9 +1422,9 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 			level: 'warning'
 		});
 		// Reload the page after a delay to let the user read the message
-		if (jmqtt.refreshTimeout === undefined) {
-			jmqtt.refreshTimeout = setTimeout(function() {
-				jmqtt.refreshTimeout = undefined;
+		if (jmqtt.globals.refreshTimeout === undefined) {
+			jmqtt.globals.refreshTimeout = setTimeout(function() {
+				jmqtt.globals.refreshTimeout = undefined;
 				window.location.reload();
 			}, 3000);
 		}
@@ -1513,25 +1455,20 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options
 			level: 'warning'
 		});
 		// Reload the page after a delay to let the user read the message
-		if (jmqtt.refreshTimeout === undefined) {
-			jmqtt.refreshTimeout = setTimeout(function() {
-				jmqtt.refreshTimeout = undefined;
+		if (jmqtt.globals.refreshTimeout === undefined) {
+			jmqtt.globals.refreshTimeout = setTimeout(function() {
+				jmqtt.globals.refreshTimeout = undefined;
 				$('.eqLogicAction[data-action=refreshPage]').click();
 			}, 3000);
 		}
 	}
 });
 
-/*
- * Update the broker icon and the include mode activation on reception of a new state event
- */
+// Update the broker icon and the include mode activation on reception of a new state event
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _id) {
 	jmqtt.updateDisplayCard($('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _id + '"]'));
 });
 
-$('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function (_event, _options) {
-	jmqttDaemonState = _options;
-});
 
 /*
  * Apply some changes when document is loaded
@@ -1543,11 +1480,11 @@ $(document).ready(function() {
 		jmqtt.refreshEqLogicPage();
 	});
 
-	// Initialize Icon dropbox from jmqtt.icons global table
+	// Initialize Icon dropbox from icons global table
 	var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
 	icos.html('');
-	$.each(jmqtt.icons, function(key) {
-		opt = new Option(jmqtt.icons[key]['name'], jmqtt.icons[key]['id']);
+	$.each(jmqtt.globals.icons, function(key) {
+		opt = new Option(jmqtt.globals.icons[key]['name'], jmqtt.globals.icons[key]['id']);
 		icos.append(opt);
 	});
 
@@ -1573,10 +1510,10 @@ $(document).ready(function() {
 		if ($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker' && $('.topicMismatch').length > 0) {
 			var dialog_message = '';
 			var no_name = false;
-			if (jmqtt.mainTopic == '')
+			if (jmqtt.globals.mainTopic == '')
 				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br>";
 			else {
-				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>" + jmqtt.mainTopic + '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
+				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>" + jmqtt.globals.mainTopic + '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
 				$('.topicMismatch').each(function (_, item) {
 					if (!$(item).hasClass('eqLogicAttr')) {
 						var cmd = $(item).closest('tr.cmd').find('.cmdAttr[data-l1key=name]').value();
