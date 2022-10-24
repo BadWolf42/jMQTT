@@ -2341,6 +2341,10 @@ class jMQTT extends eqLogic {
 	public function setBrkId($id) {
 		$this->setConfiguration(self::CONF_KEY_BRK_ID, $id);
 	}
+	// Used by utils::a2o to set de Broker Id...
+	public function setEqLogic($id) {
+		$this->setConfiguration(self::CONF_KEY_BRK_ID, $id);
+	}
 
 	/**
 	 * Get this jMQTT object Qos
