@@ -1118,13 +1118,11 @@ function printEqLogic(_eqLogic) {
 		// Display only relevant Realtime data
 		$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eqLogic.id + '"]').hide();
 		$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eqLogic.id + '"]').show();
-		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', true);
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
-		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', false);
 
 		jmqtt.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
 		// Initialise battery and availability dropboxes
