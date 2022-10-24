@@ -76,29 +76,6 @@ jmqtt.refreshTimeout = null;
 // To memorise current eqLogic main subscription topic
 jmqtt.mainTopic = '';
 
-jmqtt.checkTopicMismatch = function (item) {
-	if (jmqtt.mainTopic == '') { // Nothing matches empty main subscription topic
-			item.addClass('topicMismatch');
-	} else if (jmqtt.mainTopic == '#') { // Everything matches '#' main subscription topic
-			item.removeClass('topicMismatch');
-	} else {
-		var subRegex = new RegExp(`^${jmqtt.mainTopic}\$`.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'))
-		if (!subRegex.test(item.value()))
-			item.addClass('topicMismatch');
-		else
-			item.removeClass('topicMismatch');
-	}
-}
-
-
-	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
-	jmqtt.mainTopic = mt.val();
-	if (jmqtt.mainTopic == '')
-		mt.addClass('topicMismatch');
-	else
-		mt.removeClass('topicMismatch');
-}
-
 jmqtt.callPluginAjax = function(_params) {
 	$.ajax({
 		async: _params.async == undefined ? true : _params.async,
@@ -415,6 +392,24 @@ jmqtt.toJson = function(_string) {
 }
 
 // Check if a topic matches a subscription, return bool
+jmqtt.checkTopicMatch = function (subscription, topic) {
+	if (subscription == '') // Nothing matches an empty subscription topic
+			return false;
+	if (subscription == '#') // Everything matches '#' subscription topic
+			return true;
+	var subRegex = new RegExp(`^${subscription}\$`.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'))
+	return subRegex.test(topic);
+}
+
+// Action on eqLogic subscription topic field update
+jmqtt.onMainTopicUpdate = function () {
+	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
+	jmqtt.mainTopic = mt.val();
+	if (jmqtt.mainTopic == '')
+		mt.addClass('topicMismatch');
+	else
+		mt.removeClass('topicMismatch');
+}
 
 //
 // Actions on main plugin view
@@ -715,14 +710,20 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').on('change', functi
 
 // On eqLogic subscription topic field typing
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('input', function() {
-	jmqtt.onMainTopicChange();
+	// Update mismatch status of this field only (cmd check will be done when leaving the field)
+	jmqtt.onMainTopicUpdate();
 });
 
 // On eqLogic subscription topic field set (initial set and finish typing)
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('change', function() {
-	jmqtt.onMainTopicChange();
+	// Update mismatch status of this field
+	jmqtt.onMainTopicUpdate();
+	// Update mismatch status of all cmd
 	$('input.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
-		jmqtt.checkTopicMismatch($(this));
+		if (jmqtt.checkTopicMatch(jmqtt.mainTopic, $(this).value()))
+			$(this).removeClass('topicMismatch');
+		else
+			$(this).addClass('topicMismatch');
 	});
 });
 
@@ -732,7 +733,8 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 		var objectname = $('.eqLogicAttr[data-l1key=object_id] option:selected').text();
 		var eqName = $('.eqLogicAttr[data-l1key=name]').value();
 		$(this).val(objectname.trim()+'/'+eqName+'/#');
-		jmqtt.onMainTopicChange();
+		// Update mismatch status of this field only (cmd check will be done when leaving the field)
+		jmqtt.onMainTopicUpdate();
 	}
 });
 
@@ -1286,7 +1288,10 @@ function addCmdToTable(_cmd) {
 
 		// Update mismatch status of this cmd on change and input
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
-			jmqtt.checkTopicMismatch($(this));
+			if (jmqtt.checkTopicMatch(jmqtt.mainTopic, $(this).value()))
+				$(this).removeClass('topicMismatch');
+			else
+				$(this).addClass('topicMismatch');
 		});
 
 		// Set cmdAttr values of cmd from json _cmd
