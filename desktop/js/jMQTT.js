@@ -411,6 +411,20 @@ jmqtt.onMainTopicUpdate = function () {
 		mt.removeClass('topicMismatch');
 }
 
+// Substract properties keys present in b from a recursively (result = a - b)
+jmqtt.substractKeys = function(a, b) {
+	var result = {};
+	for (var key in a) {
+		if (typeof(a[key]) == 'object') {
+			if (b[key] === undefined)
+				b[key] = {};
+			result[key] = jmqtt.substractKeys(a[key], b[key]);
+		} else if (a[key] !== undefined && b[key] === undefined)
+			result[key] = a[key];
+	}
+	return result;
+}
+
 //
 // Actions on main plugin view
 //
@@ -1169,26 +1183,10 @@ function saveEqLogic(_eqLogic) {
 		}
 	}
 
-	// a function that substract properties of b from a (r = a - b)
-	function substract(a, b) {
-		var r = {};
-		for (var key in a) {
-			if (typeof(a[key]) == 'object') {
-				if (b[key] === undefined) b[key] = {};
-				r[key] = substract(a[key], b[key]);
-			} else {
-				if (a[key] !== undefined && b[key] === undefined) {
-					r[key] = a[key];
-				}
-			}
-		}
-		return r;
-	}
-
 	// if this eqLogic is not a broker
 	if (_eqLogic.configuration.type != 'broker') {
 		// get hidden settings for Broker and remove them of eqLogic
-		_eqLogic = substract(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
+		_eqLogic = jmqtt.substractKeys(_eqLogic, $('#brokertab').getValues('.eqLogicAttr')[0]);
 	}
 
 	return _eqLogic;
