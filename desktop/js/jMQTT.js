@@ -186,45 +186,45 @@ jmqtt.refreshEqLogicPage = function() {
 		refreshPage();
 }
 
+// Helper to get information abour Broker state (launchable, launchable color, state, message, message color)
+jmqtt.getMqttClientInfo = function(_eq) {
+	// Daemon is down
+	if (!jmqttDaemonState)
+		return {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{Démon non démarré}}",                                      color:'danger'};
+	// Client is connected to the Broker
+	if (_eq.cache.mqttClientConnected)
+		return {la: 'ok',  lacolor: 'success', state: 'ok',  message: "{{Le Démon jMQTT est correctement connecté à ce Broker}}",   color:'success'};
+	// Client is disconnected from the Broker
+	if (_eq.isEnable == '1')
+		return {la: 'ok',  lacolor: 'success', state: 'pok', message: "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}", color:'warning'};
+	// Client is disabled
+	return     {la: 'ok',  lacolor: 'success', state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
+}
+
 // TODO MERGE with updateDisplayCard and resplit according to updateDisplayCard TODO
 /*
  * Function to update Broker status on a Broker eqLogic page
  */
 jmqtt.showMqttClientInfo = function(_eq) {
-	var state = 'nok';
-	var message = "{{La connexion à ce Broker est désactivée}}";
-	var launchable = jmqttDaemonState ? 'ok' : 'nok';
-	if (!jmqttDaemonState) { // Daemon is down
-		state = 'nok';
-		message = "{{Démon non démarré}}";
-	} else if (_eq.cache.mqttClientConnected) {
-		state = 'ok';
-		message = "{{Le Démon jMQTT est correctement connecté à ce Broker}}";
-	} else if (_eq.isEnable == '1') {
-		state = 'pok';
-		message = "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}";
-	}
-	$('.mqttClientLaunchable span.label').removeClass('label-success label-warning label-danger').text(launchable.toUpperCase());
-	switch(launchable) {
-		case 'ok':
-			$('.eqLogicAction[data-action=startMqttClient]').show();
-			$('.mqttClientLaunchable span.label').addClass('label-success');
-			break;
-		case 'nok':
-			$('.eqLogicAction[data-action=startMqttClient]').hide();
-			$('.mqttClientLaunchable span.label').addClass('label-danger');
-			break;
-		default:
-			$('.mqttClientLaunchable span.label').addClass('label-warning');
-			$('.mqttClientLaunchable span.state').text(' ' + message);
-	}
-	var color = state == 'ok' ? 'success' : (state == 'nok' ? 'danger' : 'warning');
-	$('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + color).text(state.toUpperCase());
-	$('.mqttClientState span.state').text(' ' + message);
-	$(".mqttClientPanel").removeClass('panel-success panel-warning panel-danger').addClass('panel-' + color);
+	var info = jmqtt.getMqttClientInfo(_eq);
+
+	// Update panel heading color
+	$(".mqttClientPanel").removeClass('panel-success panel-warning panel-danger').addClass('panel-' + info.color);
+
+	// Update Launchable span
+	$('.mqttClientLaunchable span.label').removeClass('label-success label-warning label-danger').addClass('label-' + info.lacolor).text(info.la.toUpperCase());
+
+	// Update Status color
+	$('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + info.color).text(info.state.toUpperCase());
+	$('.mqttClientState span.state').text(' ' + info.message);
+
+	// Show / hide startMqttClient button
+	(info.la == 'ok') ? $('.eqLogicAction[data-action=startMqttClient]').show() : $('.eqLogicAction[data-action=startMqttClient]').hide();
+
+	// Update LastLaunch span
 	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
-	if (state == "ok") {
+	if (info.state == "ok") {
 		brk = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']');
 		// Update borker on main page and show an alert
 		if (_eq.cache.include_mode == '1') {
