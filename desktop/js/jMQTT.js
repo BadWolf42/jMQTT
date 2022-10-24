@@ -221,7 +221,7 @@ jmqtt.showMqttClientInfo = function(_eq) {
 	var color = state == 'ok' ? 'success' : (state == 'nok' ? 'danger' : 'warning');
 	$('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + color).text(state.toUpperCase());
 	$('.mqttClientState span.state').text(' ' + message);
-	$("#div_broker_mqttclient").closest('.panel').removeClass('panel-success panel-warning panel-danger').addClass('panel-' + color);
+	$(".mqttClientPanel").removeClass('panel-success panel-warning panel-danger').addClass('panel-' + color);
 	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
 	if (state == "ok") {
