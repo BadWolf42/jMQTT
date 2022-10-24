@@ -130,6 +130,21 @@ jmqtt.updateIncludeButtons = function(enabled, active) {
 	}
 }
 
+jmqtt.displayIncludeEvent = function(_eq) {
+	// Fetch current inclusion mode for this Broker
+	var include = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.inc-status');
+	if (_eq.cache.include_mode == '1') {
+		if (include.hasClass('fa-square')) {
+			// Show an alert only if Include Mode was disabled
+			$.fn.showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
+		}
+	} else if (include.hasClass('fa-sign-in-alt')) {
+		// Show an alert only if Include Mode was enabled
+		$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>.', level: 'warning'});
+	}
+}
+
+
 // TODO MERGE with updateDisplayCard and resplit according to updateDisplayCard TODO
 /*
  * Function to update Broker status on a Broker eqLogic page
@@ -155,34 +170,18 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	// Update LastLaunch span
 	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
+	// Set logs file
 	var log = 'jMQTT_' + (_eq.name.replace(' ', '_') || 'jeedom');
 	$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
 	$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
 	$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
 
 	// Set logs level
-	var levels = {};
-	levels['log::level::' + log] = _eq.configuration.loglevel
+	var levels = {}; levels['log::level::' + log] = _eq.configuration.loglevel; // Hack to build the array
 	$('#div_broker_log').setValues(levels, '.configKey');
 
-	if (info.state == "ok") {
-		brk = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']');
-		// Update borker on main page and show an alert
-		if (_eq.cache.include_mode == '1') {
-			if (brk.find('span.hiddenAsTable i.inc-status').hasClass('fa-square')) {
-				// Only if Include Mode is already disabled
-				brk.find('span.hiddenAsTable i.inc-status').removeClass('far fa-square').addClass('fas fa-sign-in-alt fa-rotate-90');
-				brk.find('span.hiddenAsCard i.inc-status').removeClass('far fa-square success').addClass('fas fa-sign-in-alt fa-rotate-90 warning');
-				$.fn.showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
-			}
-		} else if (brk.find('span.hiddenAsTable i.inc-status').hasClass('fa-sign-in-alt')) {
-			// Only if Include Mode is already enabled
-			brk.find('span.hiddenAsTable i.inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90').addClass('far fa-square');
-			brk.find('span.hiddenAsCard i.inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
-			$.fn.hideAlert();
-			$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>.', level: 'warning'});
-		}
-	}
+	// Update include mode buttons
+	jmqtt.updateIncludeButtons(_eq.isEnable == '1', _eq.cache.include_mode == '1');
 }
 
 // Inform Jeedom to change include mode
@@ -1010,8 +1009,6 @@ function printEqLogic(_eqLogic) {
 		$('.typ-std').hide();
 		$('.typ-brk').show();
 
-		// Update include mode buttons
-		jmqtt.updateIncludeButtons(_eqLogic.isEnable == '1', _eqLogic.cache.include_mode == '1');
 		// Udpate panel on eqBroker
 		jmqtt.updateBrokerTabs(_eqLogic);
 
@@ -1425,12 +1422,13 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options
 // Update the broker card and the include mode activation on reception of a new state event
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq) {
 	var card = $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _eq.id + '"]');
-	if (!card.length) // Don't try to update cards when left jMQTT and js is still loaded
+	if (!card.length) // Don't try to update anything when left jMQTT and js is still loaded
 		return;
-	jmqtt.updateDisplayCard(card, _eq);
-	if (jmqtt.getEqId() != _eq.id) { // Update Panel and menu only when on the right Broker
+	// Display an alert if inclusion mode has changed on this Broker
+	jmqtt.displayIncludeEvent(_eq);
+	if (jmqtt.getEqId() == _eq.id) // Update Panel and menu only when on the right Broker
 		jmqtt.updateBrokerTabs(_eq);
-	}
+	jmqtt.updateDisplayCard(card, _eq);
 });
 
 
