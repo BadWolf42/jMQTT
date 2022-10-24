@@ -201,6 +201,20 @@ jmqtt.getMqttClientInfo = function(_eq) {
 	return     {la: 'ok',  lacolor: 'success', state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
 }
 
+// Helper to show/hide/disable include buttons
+jmqtt.updateIncludeButtons = function(enabled, active) {
+	if (!enabled) {       // Disable buttons if eqBroker is disabled
+		$('.eqLogicAction[data-action=startIncludeMode]').show().addClass('disabled');
+		$('.eqLogicAction[data-action=stopIncludeMode]').hide();
+	} else if (!active) { // Show only startIncludeMode button
+		$('.eqLogicAction[data-action=startIncludeMode]').show().removeClass('disabled');
+		$('.eqLogicAction[data-action=stopIncludeMode]').hide();
+	} else {              // Show only stopIncludeMode button
+		$('.eqLogicAction[data-action=startIncludeMode]').hide();
+		$('.eqLogicAction[data-action=stopIncludeMode]').show();
+	}
+}
+
 // TODO MERGE with updateDisplayCard and resplit according to updateDisplayCard TODO
 /*
  * Function to update Broker status on a Broker eqLogic page
@@ -224,6 +238,10 @@ jmqtt.showMqttClientInfo = function(_eq) {
 	// Update LastLaunch span
 	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
+	// Set which inclusion button is visible on the right eqBroker
+	if (_eq.id == $('.eqLogicAttr[data-l1key=id]').value())
+		jmqtt.updateIncludeButtons(_eq.isEnable == '1', _eq.cache.include_mode == '1');
+
 	if (info.state == "ok") {
 		brk = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']');
 		// Update borker on main page and show an alert
@@ -240,17 +258,6 @@ jmqtt.showMqttClientInfo = function(_eq) {
 			brk.find('span.hiddenAsCard i.inc-status').removeClass('fas fa-sign-in-alt fa-rotate-90 warning').addClass('far fa-square success');
 			$.fn.hideAlert();
 			$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>.', level: 'warning'});
-		}
-
-		// Set which inclusion button is visible on the right eqBroker
-		if (_eq.id == $('.eqLogicAttr[data-l1key=id]').value()) {
-			if (_eq.cache.include_mode == '1') { // Include Start
-				$('.eqLogicAction[data-action=startIncludeMode]').hide();
-				$('.eqLogicAction[data-action=stopIncludeMode]').show();
-			} else { // Include Stop
-				$('.eqLogicAction[data-action=startIncludeMode]').show();
-				$('.eqLogicAction[data-action=stopIncludeMode]').hide();
-			}
 		}
 	}
 }
@@ -1075,16 +1082,10 @@ function printEqLogic(_eqLogic) {
 		$('.toDisable').removeClass('disabled');
 		$('.typ-std').hide();
 		$('.typ-brk').show();
-		if (_eqLogic.isEnable != '1') {
-			$('.eqLogicAction[data-action=startIncludeMode]').show().addClass('disabled');
-			$('.eqLogicAction[data-action=stopIncludeMode]').hide();
-		} else if (_eqLogic.cache.include_mode != '1') {
-			$('.eqLogicAction[data-action=startIncludeMode]').show().removeClass('disabled');
-			$('.eqLogicAction[data-action=stopIncludeMode]').hide();
-		} else {
-			$('.eqLogicAction[data-action=startIncludeMode]').show().hide();
-			$('.eqLogicAction[data-action=stopIncludeMode]').addClass('roundedLeft');
-		}
+
+		// Update include mode buttons
+		jmqtt.updateIncludeButtons(_eqLogic.isEnable == '1', _eqLogic.cache.include_mode == '1');
+
 		$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').prop('readonly', true);
 		var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
 		$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
