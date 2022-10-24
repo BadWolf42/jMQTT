@@ -1499,14 +1499,15 @@ $(document).ready(function() {
 	// update DisplayCards on main page at load
 	//
 	$('.eqLogicDisplayCard').each(function () {
+		var _card = $(this);
 		jeedom.eqLogic.byId({
-			id: $(this).attr('data-eqlogic_id'),
+			id: _card.attr('data-eqlogic_id'),
 			noCache: true,
 			error: function (error) {
 				$.fn.showAlert({message: error.message, level: 'warning'});
 			},
 			success: function(_eq) {
-				jmqtt.updateDisplayCard($(this), _eq);
+				jmqtt.updateDisplayCard(_card, _eq);
 			}
 		});
 	});
