@@ -196,6 +196,8 @@ jmqtt.updateIncludeButtons = function(enabled, active) {
 /*
  * Function to update Broker status on a Broker eqLogic page
  */
+
+// On eqBroker, on Broker tab, change MQTT Client panel
 jmqtt.updateMqttClientPanel = function(_eq) {
 	var info = jmqtt.getMqttClientInfo(_eq);
 
@@ -215,14 +217,14 @@ jmqtt.updateMqttClientPanel = function(_eq) {
 	// Update LastLaunch span
 	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
-	var log = 'jMQTT_' + (_eqLogic.name.replace(' ', '_') || 'jeedom');
+	var log = 'jMQTT_' + (_eq.name.replace(' ', '_') || 'jeedom');
 	$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
 	$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
 	$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
 
 	// Set logs level
 	var levels = {};
-	levels['log::level::' + log] = _eqLogic.configuration.loglevel
+	levels['log::level::' + log] = _eq.configuration.loglevel
 	$('#div_broker_log').setValues(levels, '.configKey');
 
 	if (info.state == "ok") {
@@ -424,6 +426,7 @@ jmqtt.substractKeys = function(a, b) {
 	}
 	return result;
 }
+
 
 //
 // Actions on main plugin view
@@ -645,6 +648,21 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
 	console.log('addTo: ', $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val());
 	// TODO Add from Realtime tab
+
+/*
+	jeedom.eqLogic.buildSelectCmd({ // selectEq ? // jeedom.eqLogic.getSelectModal
+		id: eqId,
+		filter: {type: 'info', subType: 'numeric'},
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'danger'});
+		},
+		success: function (result) {
+			bat.append(result);
+		}
+	});
+
+	jeedom.eqLogic.getSelectModal({}, function(result) { console.log(result); });
+*/
 })
 
 jmqtt.newRealTimeCmd = function(_data) {
