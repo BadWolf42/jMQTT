@@ -144,18 +144,19 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-3">';
 				eq += '<textarea class="eqLogicAttr form-control" style="resize:none!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
 				eq += '</div></div>';
-				// Icone
-				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Icone}}</label><div class="col-sm-3" style="text-align: center"><img id="icon_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
+				// Logo
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label"></label><div class="col-sm-3" style="text-align: center"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 				// Display equipements
 				$('#div_jmqttTemplateEqlogic').empty().html(eq);
-				// Handle error with icon
-				$("#icon_visu_tpl").on("error", function () {
+				// TODO rework with jmqtt.logoHelper() function
+				// Handle error with logo
+				$("#logo_visu_tpl").on("error", function () {
 					if ($(this).attr("src") != '') {
 						$(this).attr("src", $(this).attr("src").slice(0, -4) + '.png');
 					}
 				});
-				// Load icon
-				$("#icon_visu_tpl").attr("src", 'plugins/jMQTT/core/img/node_' + init(data.configuration.icone) + '.svg');
+				// Load logo
+				$("#logo_visu_tpl").attr("src", 'plugins/jMQTT/core/img/node_' + init(data.configuration.icone) + '.svg');
 
 				// Load commands
 				for (var i in data['commands']) {

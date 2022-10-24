@@ -197,14 +197,14 @@ jmqtt.setIncludeMode = function(_id, _mode) {
 	});
 }
 
-// Eqlogic Icon helper
-jmqtt.iconHelper = function(_id) {
-	// Broker icon is always the same
+// Eqlogic Logo helper
+jmqtt.logoHelper = function(_id) {
+	// Broker logo is always the same
 	if (_id == 'broker')
 		return 'plugins/jMQTT/core/img/node_broker.svg';
 
-	// Search for an icon with this id
-	var tmp = jmqtt.globals.icons.find(function (item) { return item.id == _id; });
+	// Search for an logo with this id
+	var tmp = jmqtt.globals.logos.find(function (item) { return item.id == _id; });
 	// Return path to an image according to id
 	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
 }
@@ -217,8 +217,8 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 	else
 		_card.addClass('disableCard');
 
-	// Set icon
-	_card.find('img').attr('src', jmqtt.iconHelper(_eq.configuration.icone));
+	// Set logo
+	_card.find('img').attr('src', jmqtt.logoHelper(_eq.configuration.icone));
 
 // TODO cut in 2 specific functions specialized in updating an eqBroker or normal eqLogic
 
@@ -687,13 +687,13 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 	}
 });
 
-// On eqLogic icon field set (initial set and finish typing)
+// On eqLogic logo field set (initial set and finish typing)
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
 	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') {
-		$("#icon_visu").attr("src", jmqtt.iconHelper('broker'));
+		$("#logo_visu").attr("src", jmqtt.logoHelper('broker'));
 	} else {
 		var elt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone] option:selected');
-		$("#icon_visu").attr("src", jmqtt.iconHelper(elt.val()));
+		$("#logo_visu").attr("src", jmqtt.logoHelper(elt.val()));
 	}
 });
 
@@ -1487,11 +1487,11 @@ $(document).ready(function() {
 		jmqtt.refreshEqLogicPage();
 	});
 
-	// Initialize Icon dropbox from icons global table
+	// Initialize Logo dropbox from logos global table
 	var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
 	icos.html('');
-	$.each(jmqtt.globals.icons, function(key) {
-		opt = new Option(jmqtt.globals.icons[key]['name'], jmqtt.globals.icons[key]['id']);
+	$.each(jmqtt.globals.logos, function(key) {
+		opt = new Option(jmqtt.globals.logos[key]['name'], jmqtt.globals.logos[key]['id']);
 		icos.append(opt);
 	});
 

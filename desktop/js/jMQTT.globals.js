@@ -18,7 +18,8 @@
 function jmqtt() {}
 jmqtt.globals = {};
 
-jmqtt.globals.icons = [
+// Array of Equipment logo descriptors
+jmqtt.globals.logos = [
 	{id: '', name: "{{Aucun}}", file: 'node_.svg'},
 	{id: 'barometre', name: "{{Baromètre}}", file: 'node_barometre.svg'},
 	{id: 'bell', name: "{{Sonnerie}}", file: 'node_bell.svg'},
@@ -69,7 +70,7 @@ jmqtt.globals.icons = [
 	{id: 'zigbee', name: "{{Zigbee}}", file: 'node_zigbee.svg'},
 	{id: 'zwave', name: "{{ZWave}}", file: 'node_zwave.svg'}
 ]
-jmqtt.globals.icons.sort(function(a, b) { return a.name.localeCompare(b.name); });
+jmqtt.globals.logos.sort(function(a, b) { return a.name.localeCompare(b.name); });
 
 // To memorise page refresh timeout when set
 jmqtt.globals.refreshTimeout = null;
