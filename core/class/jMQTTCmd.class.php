@@ -22,7 +22,6 @@
 class jMQTTCmd extends cmd {
 
 	const CONF_KEY_AUTOPUB              = 'autoPub';
-	const CONF_KEY_IRREMOVABLE          = 'irremovable';
 	const CONF_KEY_JSON_PATH            = 'jsonPath';
 	const CONF_KEY_PUB_QOS              = 'Qos';
 	const CONF_KEY_REQUEST              = 'request';
@@ -75,13 +74,6 @@ class jMQTTCmd extends cmd {
 		event::add('jMQTT::cmdAdded', array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(), 'cmd_name' => $this->getName(), 'reload' => $reload));
 	}
 
-	private function eventTopicMismatch() {
-		$eqLogic = $this->getEqLogic();
-		$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible du topic de l'équipement associé", __FILE__), $this->getHumanName()));
-		// Advise the desktop page (jMQTT.js) of the topic mismatch
-		event::add('jMQTT::cmdTopicMismatch', array('eqlogic_name' => $eqLogic->getName(), 'cmd_name' => $this->getName()));
-	}
-
 	/**
 	 * Return a full export of this command as an array.
 	 * @return array
@@ -103,16 +95,16 @@ class jMQTTCmd extends cmd {
 	 * @param string $value new command value
 	 */
 	public function updateCmdValue($value) {
-		if(in_array(strtolower($this->getName()), ["color","colour","couleur","rgb"]) || $this->getGeneric_type() == "LIGHT_COLOR") {
-			if(is_numeric($value)) {
-				$value=jMQTTCmd::DECtoHEX($value);
+		if (in_array(strtolower($this->getName()), ["color", "colour", "couleur", "rgb"]) || $this->getGeneric_type() == "LIGHT_COLOR") {
+			if (is_numeric($value)) {
+				$value = jMQTTCmd::DECtoHEX($value);
 			} else {
-				$json=json_decode($value);
-				if($json != null){
-					if(isset($json->x) && isset($json->y)){
-						$value=jMQTTCmd::XYtoHTML($json->x,$json->y);
+				$json = json_decode($value);
+				if ($json != null) {
+					if (isset($json->x) && isset($json->y)) {
+						$value = jMQTTCmd::XYtoHTML($json->x,$json->y);
 					} elseif(isset($json->r) && isset($json->g) && isset($json->b)) {
-						$value=jMQTTCmd::RGBtoHTML($json->r,$json->g,$json->b);
+						$value = jMQTTCmd::RGBtoHTML($json->r, $json->g, $json->b);
 					}
 				}
 			}
@@ -150,13 +142,13 @@ class jMQTTCmd extends cmd {
 			$this->getEqLogic()->log('error', __("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
 			return;
 		}
-		// Create JsonObject for JsonPath
-		$jsonobject=new JsonPath\JsonObject($jsonArray);
-		// Get and prepare the jsonPath
-		$jsonPath = $this->getJsonPath();
-		if ($jsonPath == '') return;
-		if ($jsonPath[0] != '$') $jsonPath = '$' . $jsonPath;
 		try {
+			// Get and prepare the jsonPath
+			$jsonPath = $this->getJsonPath();
+			if ($jsonPath == '') return;
+			if ($jsonPath[0] != '$') $jsonPath = '$' . $jsonPath;
+			// Create JsonObject for JsonPath
+			$jsonobject=new JsonPath\JsonObject($jsonArray);
 			$value = $jsonobject->get($jsonPath);
 			if ($value !== false)
 				$this->updateCmdValue(json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
@@ -164,7 +156,12 @@ class jMQTTCmd extends cmd {
 				$this->getEqLogic()->log('info', sprintf(__("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__), $this->getHumanName()));
 		}
 		catch (Throwable $e) {
-			$this->getEqLogic()->log('error', sprintf(__("Chemin JSON de la commande #%1\$s# incorrect : '%2\$s'", __FILE__), $this->getHumanName(), $this->getJsonPath()));
+			if (log::getLogLevel(__CLASS__) > 100)
+				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
+															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
+			else // More info in debug mode, no big log otherwise
+				$this->getEqLogic()->log('warning', str_replace("\n",' </br> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",</br>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
 		}
 	}
 
@@ -226,25 +223,29 @@ class jMQTTCmd extends cmd {
 	 * preSave callback called by the core before saving this command in the DB
 	 */
 	public function preSave() {
+		// Check if name is unique on the equipment for a New cmd
+			$this->getEqLogic()->log('warning', 'this is it !');
+		if ($this->getId() == '' && is_object(jMQTTCmd::byEqLogicIdCmdName($this->getEqLogic()->getId(), $this->getName()))) {
+			throw new Exception(sprintf(__("Impossible de créer la commande <b>#%s#</b>, car une commande avec le même nom existe déjà !", __FILE__), $this->getHumanName()));
+		}
+
+		// --- New cmd or Existing cmd ---
 		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
 		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
 		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
 			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
-		// Specific command : status for Broker eqpt
-		if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
-			if (!isset($this->name)) $this->setName(jMQTT::CLIENT_STATUS);
-			if ($this->getSubType() != 'string') $this->setSubType('string');
-			$this->setTopic($this->getEqLogic()->getMqttClientStatusTopic()); // just for display as it's not used to start the MqttClient
-			$this->setJsonPath(''); // just for display as it's not used to start the MqttClient
-		}
 
-		// --- New cmd ---
-		if ($this->getId() == '') {
-
-		}
-		// --- Existing cmd ---
-		else {
-
+		// Command on a Broker must fail
+		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+			if ($this->getId() == '') {
+				$err  = __("Impossible de créer la commande <b>#%1\$s#</b>, ", __FILE__);
+				$err .= __("car il ne peut pas y avoir de commande sur un équipement Broker (%2\$s#)", __FILE__);
+			} else {
+				$err  = __("Impossible de modifier la commande <b>#%1\$s#</b>, ", __FILE__);
+				$err .= __("car il ne peut pas y avoir de commande sur un équipement Broker (%2\$s#)", __FILE__);
+				$err .= __(", ce cas ne dvrait pas arriver, merci de contacter les développeurs", __FILE__);
+			}
+			throw new Exception(sprintf($err, $this->getHumanName(), $this->getEqLogic()->getName()));
 		}
 
 		// Reset autoPub if info cmd (should not happen or be possible)
@@ -279,12 +280,12 @@ class jMQTTCmd extends cmd {
 		}
 
 		// It's time to gather informations that will be used in postSave
-		if ($this->getId() == '') $this->_preSaveInformations = null;
+		if ($this->getId() == '')
+			$this->_preSaveInformations = null;
 		else {
 			$cmd = self::byId($this->getId());
 			$this->_preSaveInformations = array(
 				self::CONF_KEY_RETAIN => $cmd->getConfiguration(self::CONF_KEY_RETAIN, 0),
-				'brokerStatusTopic' => $cmd->getTopic(),
 				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
 				self::CONF_KEY_REQUEST => $cmd->getConfiguration(self::CONF_KEY_REQUEST, '')
 			);
@@ -344,15 +345,6 @@ class jMQTTCmd extends cmd {
 				}
 			}
 
-			// Specific command : status for Broker eqpt
-			if ($this->getLogicalId() == jMQTT::CLIENT_STATUS && $eqLogic->getType() == jMQTT::TYP_BRK && $eqLogic->getIsEnable()) {
-				// If it's topic changed
-				if ($this->_preSaveInformations['brokerStatusTopic'] != $this->getTopic()) {
-					// Just try to remove the previous status topic
-					$eqLogic->publish($eqLogic->getName(), $this->_preSaveInformations['brokerStatusTopic'], '', 1, 1);
-				}
-			}
-
 			// Only Update listener if "autoPub" or "request" has changed
 			if ($eqLogic->getType() == jMQTT::TYP_EQPT &&
 					($this->_preSaveInformations[self::CONF_KEY_AUTOPUB] != $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0) ||
@@ -363,10 +355,8 @@ class jMQTTCmd extends cmd {
 		// For Equipments
 		if ($eqLogic->getType() == jMQTT::TYP_EQPT) {
 			// For info commands, check that the topic is compatible with the subscription command
-			if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0)) {
-				if (! $this->topicMatchesSubscription($eqLogic->getTopic())) {
-					$this->eventTopicMismatch();
-				}
+			if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0) && !$this->topicMatchesSubscription($eqLogic->getTopic())) {
+				$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible du topic de l'équipement associé", __FILE__), $this->getHumanName()));
 			}
 		}
 	}
@@ -455,13 +445,6 @@ class jMQTTCmd extends cmd {
 		// Since 3.3.22, the core removes / from command names
 		$name = str_replace("/", ":", $name);
 		parent::setName($name);
-	}
-
-	/**
-	 * Set this command as irremovable
-	 */
-	public function setIrremovable() {
-		$this->setConfiguration(self::CONF_KEY_IRREMOVABLE, 1);
 	}
 
 	public function setTopic($topic) {

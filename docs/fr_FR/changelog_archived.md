@@ -1,5 +1,8 @@
 # Registre des évolutions récentes
-Voir ici : [Evolutions récentes](changelog)
+
+[Evolutions de la branche beta](changelog_beta)
+
+[Evolutions de la branche stable](changelog)
 
 # Registre des évolutions antérieures
 

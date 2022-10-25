@@ -20,7 +20,6 @@ if (!isConnect('admin')) {
 }
 ?>
 
-<div style="display: none;" id="md_jmqttTemplate"></div>
 <div class="col-lg-3 col-md-3 col-sm-3" id="div_listJmqtt" style="z-index:999">
 	<div class="bs-sidebar nav nav-list bs-sidenav">
 		<div class="form-group">
@@ -65,9 +64,9 @@ $('#bt_jmqttTemplateUp').fileupload({
 	replaceFileInput: false,
 	done: function (e, data) {
 		if (data.result.state != '<?php echo jMQTT::MQTTCLIENT_OK; ?>') {
-			$('#md_jmqttTemplate').showAlert({message: data.result.result, level: 'danger'});
+			$.fn.showAlert({message: data.result.result, level: 'danger'});
 		} else {
-			$('#md_jmqttTemplate').showAlert({message: 'Template ajouté avec succès', level: 'success'});
+			$.fn.showAlert({message: 'Template ajouté avec succès', level: 'success'});
 			refreshJmqttTemplateList()
 		}
 		$('#bt_jmqttTemplateUp').val(null);
@@ -75,12 +74,12 @@ $('#bt_jmqttTemplateUp').fileupload({
 });
 
 function refreshJmqttTemplateList() {
-	callPluginAjax({
+	jmqtt.callPluginAjax({
 		data: {
 			action: "getTemplateList",
 		},
 		error: function(error) {
-			$('#md_jmqttTemplate').showAlert({message: error.message, level: 'danger'})
+			$.fn.showAlert({message: error.message, level: 'danger'})
 		},
 		success: function (dataresult) {
 			$('#div_listJmqttTemplate').hide()
@@ -105,13 +104,13 @@ $('#ul_jmqttTemplateList').on({
 			$('#bt_jmqttTemplateDelete').show()
 		else
 			$('#bt_jmqttTemplateDelete').hide()
-		callPluginAjax({
+		jmqtt.callPluginAjax({
 			data: {
 				action: "getTemplateByFile",
 				file: $(this).attr('data-file')
 			},
 			error: function(error) {
-				$('#md_jmqttTemplate').showAlert({message: error.message, level: 'danger'})
+				$.fn.showAlert({message: error.message, level: 'danger'})
 			},
 			success: function (data) {
 				$('#div_listJmqttTemplate').show()
@@ -130,7 +129,7 @@ $('#ul_jmqttTemplateList').on({
 				eq += '</div></div>';
 				// Topic
 				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-3">';
-				eq += '<input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
+				eq += '<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
 				eq += '</div></div>';
 				// Qos
 				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Qos}}</label><div id="mqttqos" class="col-sm-1">';
@@ -145,18 +144,19 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-3">';
 				eq += '<textarea class="eqLogicAttr form-control" style="resize:none!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
 				eq += '</div></div>';
-				// Icone
-				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Icone}}</label><div class="col-sm-3" style="text-align: center"><img id="icon_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
+				// Logo
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label"></label><div class="col-sm-3" style="text-align: center"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 				// Display equipements
 				$('#div_jmqttTemplateEqlogic').empty().html(eq);
-				// Handle error with icon
-				$("#icon_visu_tpl").on("error", function () {
+				// TODO rework with jmqtt.logoHelper() function
+				// Handle error with logo
+				$("#logo_visu_tpl").on("error", function () {
 					if ($(this).attr("src") != '') {
 						$(this).attr("src", $(this).attr("src").slice(0, -4) + '.png');
 					}
 				});
-				// Load icon
-				$("#icon_visu_tpl").attr("src", 'plugins/jMQTT/core/img/node_' + init(data.configuration.icone) + '.svg');
+				// Load logo
+				$("#logo_visu_tpl").attr("src", 'plugins/jMQTT/core/img/node_' + init(data.configuration.icone) + '.svg');
 
 				// Load commands
 				for (var i in data['commands']) {
@@ -259,25 +259,25 @@ $('#ul_jmqttTemplateList').on({
 
 $('#bt_jmqttTemplateDelete').on('click', function() {
 	if ($('#ul_jmqttTemplateList li.active').attr('data-file') == undefined) {
-		$('#md_jmqttTemplate').showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
+		$.fn.showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
 		return
 	}
 	bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer ce template ?}}', function(result) {
 		if (result) {
-			callPluginAjax({
+			jmqtt.callPluginAjax({
 				data: {
 					action: "deleteTemplateByFile",
 					file: $('#ul_jmqttTemplateList li.active').attr('data-file'),
 				},
 				error: function(error) {
-					$('#md_jmqttTemplate').showAlert({message: error.message, level: 'danger'})
+					$.fn.showAlert({message: error.message, level: 'danger'})
 				},
 				success: function(data) {
 					if (data) {
-						$('#md_jmqttTemplate').showAlert({message: '{{Template supprimé.}}', level: 'success'})
+						$.fn.showAlert({message: '{{Template supprimé.}}', level: 'success'})
 						refreshJmqttTemplateList()
 					} else
-						$('#md_jmqttTemplate').showAlert({message: '{{Ce template ne peut pas être supprimé.}}', level: 'danger'})
+						$.fn.showAlert({message: '{{Ce template ne peut pas être supprimé.}}', level: 'danger'})
 				}
 			})
 		}
@@ -286,7 +286,7 @@ $('#bt_jmqttTemplateDelete').on('click', function() {
 
 $('#bt_jmqttTemplateDownload').on('click',function() {
 	if ($('#ul_jmqttTemplateList li.active').attr('data-file') == undefined) {
-		$('#md_jmqttTemplate').showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
+		$.fn.showAlert({message: "{{Sélectionnez d'abord un template}}", level: 'danger'})
 		return
 	}
 	window.open('core/php/downloadFile.php?pathfile=' + $('#ul_jmqttTemplateList li.active').attr('data-file'), "_blank", null)

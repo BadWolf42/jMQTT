@@ -24,7 +24,6 @@ if (!isConnect()) {
 }
 
 ?>
-<div class="eventDisplayMini"></div>
 <form class="form-horizontal">
 	<div class="row">
 	<div class="col-sm-6">
@@ -45,7 +44,9 @@ if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == 
 ?>
 		<div class="form-group">
 			<label class="col-sm-4 control-label" style="color:var(--al-danger-color);">{{URL de Callback}} <sup><i class="fa fa-question-circle tooltips"
-				title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br />Dans ce cas uniquement, il peut être nécessaire de personaliser cette url, car elle est mal détectée par jMQTT.<br /><b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>
+				title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br />
+				Dans ce cas uniquement, il peut être nécessaire de personaliser cette url, car elle est mal détectée par jMQTT.<br />
+				<b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>
 			<div class="col-sm-7">
 				<div class="row">
 					<div class="col-sm-1">
@@ -90,9 +91,9 @@ $('#bt_jmqttUrlOverride').on('click', function (){
 		},
 		success: function(data) {
 			if (data.state != 'ok')
-				$('.eventDisplayMini').showAlert({message: data.result,level: 'danger'});
+				$.fn.showAlert({message: data.result,level: 'danger'});
 			else
-				$('.eventDisplayMini').showAlert({message: '{{Modification effectuée. Relancez le Démon.}}' ,level: 'success'});
+				$.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}' ,level: 'success'});
 		}
 	});
 });
@@ -111,16 +112,17 @@ $('#jmqttUrlOverrideEnable').change(function(){
 });
 
 $btSave = $('#bt_savePluginLogConfig');
-if (!$btSave.hasClass('jmqttLog')) {
+if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event on the button
 	$btSave.addClass('jmqttLog');
 	$btSave.on('click', function() {
-		if ($('#span_plugin_id').text() == 'jMQTT') {
-			sleep(1000);
+		var level = $('input.configKey[data-l1key="log::level::jMQTT"]:checked')
+		if (level.length == 1) { // Found 1 checked log::level::jMQTT input
 			$.ajax({
 				type: "POST",
 				url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
 				data: {
-					action: "sendLoglevel"
+					action: "sendLoglevel",
+					level: level.attr('data-l2key')
 				},
 				global : false,
 				dataType: 'json',
@@ -128,10 +130,8 @@ if (!$btSave.hasClass('jmqttLog')) {
 					handleAjaxError(request, status, error);
 				},
 				success: function(data) {
-					if (data.state == 'ok') {
-						$('.eventDisplayMini').showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}" ,level: 'success'});
-					}
-					// setTimeout(function() { $('.eventDisplayMini').hideAlert() }, 3000);
+					if (data.state == 'ok')
+						$.fn.showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}" ,level: 'success'});
 				}
 			});
 		}

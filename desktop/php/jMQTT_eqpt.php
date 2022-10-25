@@ -49,11 +49,8 @@
 
 		<div class="form-group typ-std">
 			<label class="col-sm-3 control-label">{{Broker associé}}</label>
-			<div class="col-sm-2">
-				<select id="broker" class="eqLogicAttr form-control"></select>
-			</div>
-			<div class="col-sm-1">
-				<a class="btn btn-success btn-sm eqLogicAction" data-action="move_broker"><i class="icon jeedomapp-done"></i></a>
+			<div class="col-sm-3">
+				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="eqLogic"></select>
 			</div>
 		</div>
 
@@ -67,7 +64,7 @@
 		<div class="form-group toDisable typ-std">
 			<label class="col-sm-3 control-label">{{Inscrit au Topic}}</label>
 			<div class="col-sm-3">
-				<input id="mqtttopic" type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" placeholder="{{Topic principal de l'équipement jMQTT}}" />
+				<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" placeholder="{{Topic principal de l'équipement jMQTT}}" />
 			</div>
 		</div>
 
@@ -126,24 +123,13 @@
 			<label class="col-sm-3 control-label">{{Catégorie du topic}}</label>
 			<div class="col-sm-3">
 				<select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone"></select>
-				<script>
-					// Initialize Icon dropbox from jmqttIcons global var
-					// This MUST be done here, only once and before loading plugin.template.js
-					var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
-					icos.html('');
-					$.each(jmqttIcons, function(key) {
-						opt = new Option(jmqttIcons[key]['name'], jmqttIcons[key]['id']);
-						opt.setAttribute('file', jmqttIcons[key]['file']);
-						icos.append(opt);
-					});
-				</script>
 			</div>
 		</div>
 
-		<div class="form-group toDisable typ-std">
+		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label"></label>
 			<div class="col-sm-3" style="text-align: center">
-				<br /><img id="icon_visu" src="" height="200" />
+				<br /><img id="logo_visu" src="" height="200" />
 			</div>
 		</div>
 

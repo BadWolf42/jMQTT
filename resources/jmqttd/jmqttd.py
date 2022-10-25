@@ -39,13 +39,12 @@ from jMqttClient import *
 #   The return value is False if an error occurs, True otherwise
 def validate_params(msg, constraints):
 	res = True
-	bid = "% 4s" % (str(msg['id']))  if  'id' in msg else "????"
-	cmd = "%16s" % (str(msg['cmd'])) if 'cmd' in msg else "?               "
+	cmd = str(msg['cmd']) if 'cmd' in msg else "?"
 	for (key, mandatory, default_val, expected_type) in constraints:
 		if key not in msg or msg[key] == '':
 			if mandatory:
 				if default_val is None:
-					logging.error('Cmd "%s" is missing parameter "%s" dump=%s', bid, cmd, key, json.dumps(msg))
+					logging.error('Cmd "%s" is missing parameter "%s" dump=%s', cmd, key, json.dumps(msg))
 					res = False
 				else:
 					msg[key] = default_val
@@ -56,7 +55,7 @@ def validate_params(msg, constraints):
 				else:
 					msg[key] = expected_type(msg[key])
 			except:
-				logging.error('Cmd "%s" has incorrect parameter "%s" (is %s, should be %s) dump=%s', bid, cmd, key, type(msg[key]), expected_type, json.dumps(msg))
+				logging.error('Cmd "%s" has incorrect parameter "%s" (is %s, should be %s) dump=%s', cmd, key, type(msg[key]), expected_type, json.dumps(msg))
 				res = False
 	return res
 
@@ -97,11 +96,11 @@ class Main():
 			'info':     logging.INFO,
 			'warning':  logging.WARNING,
 			'error':    logging.ERROR,
-			'critical': logging.CRITICAL,
-			'none':     logging.NONE
+			'critical': logging.CRITICAL
 		}.get(level, logging.NONE)
-		logging.getLogger().setLevel(newlevel)
+		logging.getLogger().setLevel(logging.INFO)
 		self.log.info('New log level set to: %s', logging.getLevelName(newlevel))
+		logging.getLogger().setLevel(newlevel)
 		debuglevel = (newlevel <= logging.VERBOSE) #TODO check if needed
 		# HTTPConnection.debuglevel = int(debuglevel)
 		requests_log = logging.getLogger("requests.packages.urllib3")
@@ -190,9 +189,9 @@ class Main():
 			return False
 		if self.jcom.send_test(): # Test communication channel TO Jeedom
 			self.jcom.sender_start()									# Start sender
-			self.jcom.send_async({"cmd":"daemonUp"})
+			data = self.jcom.send([{"cmd":"daemonUp"}])					# Must use send to be synchronous and get a reply
 			# self.log.info('Successfully informed Jeedom')
-			self.log.debug('Open Comm   : Sent Daemon Up signal to Jeedom')
+			self.log.debug('Open Comm   : Sent Daemon Up signal to Jeedom, got data: "%s"', data)
 		else:
 			self.log.critical('Open Comm   : Failed to Open the communication channel to send informations back TO Jeedom')
 			self.jcom.receiver_stop()

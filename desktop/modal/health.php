@@ -39,12 +39,12 @@ $eqBrokers = jMQTT::getBrokers();
 	<tbody>
 <?php
 foreach ($eqBrokers as $eqB) { // List all Brokers on top
-	echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
-	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:70px">' . $eqB->getId() . '</span></td>';
+	echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" class="eName" data-key="' . $eqB->getHumanName() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
+	echo '<td class="center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px;height:20px;">' . $eqB->getId() . '</span></td>';
 	echo '<td>' . $eqB->getMqttClientInfo()['message'] . '</td>';
-	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqB->getStatus('lastCommunication') . '</span></td>';
-	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqB->getConfiguration('createtime') . '</span></td>';
-	echo '<td class="center">&nbsp;</td></tr>';
+	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getStatus('lastCommunication') . ' </span></td>';
+	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getConfiguration('createtime') . ' </span></td>';
+	echo '<td class="center"><i class="fas fa-cogs eqLogicAction" data-action="configureEq"></i> <i class="fas fa-minus-circle eqLogicAction" data-action="removeEq"></i></td></tr>';
 }
 ?>
 	</tbody>
@@ -76,13 +76,13 @@ foreach ($eqBrokers as $eqB) { // For each Broker
 	<tbody>
 <?php
 		foreach ($eqNonBrokers[$eqB->getId()] as $eqL) { // List every equipment on the Broker
-			echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" class="hName" data-key="' . $eqL->getHumanName() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
-			echo '<td class="center"><span class="label label-info hId" style="font-size:1em;cursor:default;width:70px">' . $eqL->getId() . '</span></td>';
+			echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" class="eName" data-key="' . $eqL->getHumanName() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
+			echo '<td class="center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px">' . $eqL->getId() . '</span></td>';
 			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getTopic() . '</span></td>';
-			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px">' . count($eqL->getCmd()) . '</span></td>';
-			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getStatus('lastCommunication') . '</span></td>';
-			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getConfiguration('createtime') . '</span></td>';
-			echo '<td class="center"><i class="fas fa-cogs eqLogicAction" data-action="configure"></i> <i class="fas fa-minus-circle eqLogicAction" data-action="removeEq"></i></td></tr>';
+			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . count($eqL->getCmd()) . '</span></td>';
+			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getStatus('lastCommunication') . ' </span></td>';
+			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getConfiguration('createtime') . ' </span></td>';
+			echo '<td class="center"><i class="fas fa-cogs eqLogicAction" data-action="configureEq"></i> <i class="fas fa-minus-circle eqLogicAction" data-action="removeEq"></i></td></tr>';
 		}
 ?>
 	</tbody>
@@ -94,37 +94,62 @@ foreach ($eqBrokers as $eqB) { // For each Broker
 }
 ?>
 <script>
-// Remove jMQTT equipment callback
+// Callback to remove jMQTT equipment
 $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
-	var eqId = $(this).closest('tr').find('.hId').value();
-	// console.log('removeEq', $(this).closest('tr').find('.hId'), $(this).closest('tr').find('.hName').attr('data-key'), this);
+	// Equivalent to click on $('.eqLogicAction[data-action=remove]') in plugin.template.js
+	// Just different eqId/eqName handling
+
+	var eqId = $(this).closest('tr').find('.eId').value();
+	// console.log('removeEq', $(this).closest('tr').find('.eId'), $(this).closest('tr').find('.eName').attr('data-key'), this);
 	if (eqId == undefined) {
-		$('#div_alert').showAlert({message: '{{Veuillez sélectionner un équipement à supprimer}}', level: 'danger'});
+		$.fn.showAlert({message: '{{Veuillez sélectionner un équipement à supprimer}}', level: 'danger'});
 		return;
 	}
-	var eqName = $(this).closest('tr').find('.hName').attr('data-key');
-	bootbox.confirm('{{Etes-vous sûr de vouloir supprimer}}' + ' ' + "{{l'équipement}}" + ' <b>' + eqName + '</b> ?', function (result) {
-		if (result) {
-			jeedom.eqLogic.remove({
-				type: 'jMQTT',
-				id: eqId,
-				error: function (error) {
-					$('#div_alert').showAlert({message: error.message, level: 'danger'});
-				},
-				success: function () {
-					var url = initPluginUrl();
-					modifyWithoutSave = false;
-					url += '&removeSuccessFull=1';
-					loadPage(url);
+	var eqName = $(this).closest('tr').find('.eName').attr('data-key');
+	jeedom.eqLogic.getUseBeforeRemove({
+		id: eqId,
+		error: function(error) { $.fn.showAlert({ message: error.message, level: 'danger' }); },
+		success: function(data) {
+			var text = '{{Êtes-vous sûr de vouloir supprimer l\'équipement}} ' + eqType + ' <b>' + eqName + '</b> ?';
+			if (Object.keys(data).length > 0) {
+				text += ' </br> {{Il est utilisé par ou utilise :}}</br>';
+				var complement = null;
+				for (var i in data) {
+					complement = '';
+					if ('sourceName' in data[i])
+						complement = ' (' + data[i].sourceName + ')';
+					text += '- ' + '<a href="' + data[i].url + '" target="_blank">' + data[i].type + '</a> : <b>' + data[i].name + '</b>' + complement;
+					text += ' <sup><a href="' + data[i].url + '" target="_blank"><i class="fas fa-external-link-alt"></i></a></sup></br>';
 				}
-			});
+			}
+			text = text.substring(0, text.length - 2);
+			bootbox.confirm(text, function(result) {
+				if (result) {
+					jeedom.eqLogic.remove({
+						type: eqType,
+						id: eqId,
+						error: function(error) { $.fn.showAlert({ message: error.message, level: 'danger' }); },
+						success: function() {
+							var vars = getUrlVars();
+							var url = 'index.php?';
+							for (var i in vars) {
+								if (i != 'id' && i != 'removeSuccessFull' && i != 'saveSuccessFull')
+									url += i + '=' + vars[i].replace('#', '') + '&';
+							}
+							modifyWithoutSave = false;
+							url += 'removeSuccessFull=1';
+							jeedomUtils.loadPage(url);
+						}
+					})
+				}
+			})
 		}
 	});
 });
 
 // Display eqLogic Advanced parameters
-$('.eqLogicAction[data-action=configure]').off('click').on('click', function() {
-	var eqId = $(this).closest('tr').find('.hId').value();
+$('.eqLogicAction[data-action=configureEq]').off('click').on('click', function() {
+	var eqId = $(this).closest('tr').find('.eId').value();
 	$('#md_modal3').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + eqId).dialog('open');
 });
 </script>
