@@ -123,14 +123,14 @@
 						</div>
 
 						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Publier le statut LWT}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Active/Désactive la publication du statut LWT en MQTT sur le Broker.}}"></i></sup></label>
+							<label class="col-lg-4 control-label">{{Publier le statut (LWT)}} <sup><i class="fa fa-question-circle tooltips"
+							title="{{Active/Désactive la publication du statut (Last Will and Testament) en MQTT sur le Broker.}}"></i></sup></label>
 							<div class="col-lg-1">
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttLwt" checked>
 							</div>
 							<div class="col-lg-6 jmqttLwt" style="display: none;">
 								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="{{Client-Id/status}}"
-								title="{{Topic de publication du statut LWT en MQTT sur ce Broker ('Client-Id/status' par défaut).}}">
+								title="{{Topic de publication du statut (Last Will and Testament) en MQTT sur ce Broker ('<i>Client-Id</i>/status' par défaut).}}">
 							</div>
 						</div>
 						<div class="form-group jmqttLwt" style="display:none">
@@ -146,13 +146,16 @@
 
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Topic des interactions de Jeedom}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Permet d’envoyer des interactions à Jeedom au travers du protocole MQTT.<br/>!!! TODO !!! Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
+							title="{{Active/Désactive les interactions au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.}}"></i></sup></label>
 							<div class="col-lg-1">
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttInt">
 							</div>
 							<div class="col-lg-6 jmqttInt" style="display: none;">
 								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttIntTopic" placeholder="{{Client-Id/interact}}"
-								title="{{Topic d'accès aux interactions de Jeedom sur ce Broker ('Client-Id/interact' par défaut).}}">
+								title="{{Topic d'accès aux interactions de Jeedom sur ce Broker ('<i>Client-Id</i>/interact' par défaut).
+								<br/>Envoyer la demande en texte directement sur ce topic, elle sera transmise au moteur d'interaction de Jeedom.
+								<br/>La réponse sera envoyée sur le sous-topic '/reply' (donc '<i>Client-Id</i>/interact/reply' par défaut).
+								<br/>Pour des interactions avancées, il est possible de formuler une demande complexe sur le sous-topic '/advanced'.}}">
 							</div>
 						</div>
 
@@ -164,7 +167,7 @@
 							</div>
 							<div class="col-lg-6 jmqttApi" style="display: none;">
 								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttApiTopic" placeholder="{{Client-Id/api}}"
-								title="{{Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('Client-Id/status' par défaut).}}">
+								title="{{Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('<i>Client-Id</i>/status' par défaut).}}">
 							</div>
 						</div>
 
