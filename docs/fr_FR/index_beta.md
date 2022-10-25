@@ -65,7 +65,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation du plugin, il suffit de l’activer sur la page de configuration :
 
-![Configuration du plugin](2022-10-26_config.png)
+![Configuration du plugin](../images/2022-10-26_config.png)
 
 jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser.
 Par défaut, jMQTT n'installe plus le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances.
@@ -640,3 +640,5 @@ En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la recon
 [Evolutions archivées](changelog_archived)
 
 [Documentation de la branche beta](index_beta)
+
+[Documentation de la branche stable](index)
