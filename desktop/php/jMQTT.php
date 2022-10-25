@@ -123,11 +123,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	<div class="col-xs-12 eqLogic" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-warning btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std toDisable" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-brk roundedLeft toDisable" data-action="startRealTimeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Mode Temps Réel}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-brk btn-danger roundedLeft toDisable" data-action="stopRealTimeMode"><i class="fas fa-square"></i> {{Arrêter le mode Temps Réel}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-brk btn-danger roundedLeft toDisable" data-action="stopRealTimeMode"><i class="fas fa-square"></i> {{Arrêter mode Temps Réel}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
@@ -170,7 +170,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 							<th style="min-width:180px;">{{Topic}}</th>
 							<th style="min-width:180px;">{{Valeur}}</th>
 							<th style="min-width:60px;width:70px;">{{Options}}</th>
-							<th style="min-width:135px;width:135px;"></th>
+							<th style="min-width:100px;width:100px;"></th>
 						</tr>
 					</thead>
 					<tbody>

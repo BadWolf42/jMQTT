@@ -268,7 +268,6 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 	var topic = tr.find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = tr.find('.cmdAttr[data-l1key=jsonPath]').val();
 	var qos = tr.find('.cmdAttr[data-l1key=qos]').value();
-	tr = tr.next();
 
 	for (item in json) {
 		var _data = {id: id, topic: topic, payload: JSON.stringify(json[item]), qos: qos, retain: false};
@@ -276,7 +275,8 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 			item = '\'' + item.replace(/'/g,"\\'") + '\'';
 		_data.jsonPath = jsonPath + '[' + item + ']';
 		var new_tr = jmqtt.newRealTimeCmd(_data);
-		tr.before(new_tr);
+		tr.after(new_tr);
+		tr = tr.next();
 	}
 })
 
