@@ -72,7 +72,7 @@ jmqtt.globals.logos = [
 ]
 jmqtt.globals.logos.sort(function(a, b) { return a.name.localeCompare(b.name); });
 
-// Array of Status Icons descriptors
+// Array of Status Icons descriptors and selectors
 jmqtt.globals.icons = {
 	broker: {
 		status: {
@@ -87,10 +87,10 @@ jmqtt.globals.icons = {
 			true:     { icon: 'fas fa-eye',       color: 'success', msg: '{{Broker visible}}' },
 			false:    { icon: 'fas fa-eye-slash', color: 'warning', msg: '{{Broker masqué}}' }
 		},
-		include: {
-			selector: function(_eq) { return _eq.cache.include_mode == '1'; },
-			true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'warning', msg: '{{Inclusion automatique activée}}' },
-			false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Inclusion automatique désactivée}}' }
+		learning: {
+			selector: function(_eq) { return _eq.cache.realtime_mode == '1'; },
+			true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'danger',  msg: '{{Temps Réel activé}}' },
+			false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Temps Réel désactivé}}' }
 		},
 		battery: {
 			selector: function(_eq) { return 'none'; },
@@ -112,10 +112,10 @@ jmqtt.globals.icons = {
 			true:     { icon: 'fas fa-eye',       color: 'success', msg: '{{Equipement visible}}' },
 			false:    { icon: 'fas fa-eye-slash', color: 'warning', msg: '{{Equipement masqué}}' }
 		},
-		include: {
+		learning: {
 			selector: function(_eq) { return _eq.configuration.auto_add_cmd == '1'; },
-			true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'warning', msg: '{{Inclusion automatique activée}}' },
-			false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Inclusion automatique désactivée}}' }
+			true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'warning', msg: '{{Ajout automatique de commandes activée}}' },
+			false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Ajout automatique de commandes désactivée}}' }
 		},
 		battery: {
 			selector: function(_eq) { return (_eq.configuration.battery_cmd == '') ? 'none' : (_eq.status.batterydanger ? 'nok' : (_eq.status.batterywarning ? 'pok' : 'ok')); },

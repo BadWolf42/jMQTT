@@ -102,6 +102,7 @@
 -->
 							</div>
 						</div>
+
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Authentification}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Nom d'utilisateur et Mot de passe permettant de se connecter au Broker.<br/>Remplir ces champs n'est obligatoire que si le Broker est configuré pour.}}"></i></sup></label>
@@ -111,21 +112,13 @@
 								<input class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="mqttPass" type="password" autocomplete="off" placeholder="{{Mot de passe}}" />
 							</div>
 						</div>
+
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Client-Id}} <sup><i class="fa fa-question-circle tooltips"
 							title="{{Identifiant avec lequel l’équipement broker s’inscrit auprès du Broker MQTT.
 							<br/>Il est important que cet identifiant ne soit utilisé que par jMQTT sur ce Broker.}}"></i></sup></label>
 							<div class="col-lg-7">
 								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId" placeholder="jeedom" />
-							</div>
-						</div>
-
-						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Topic de souscription en mode inclusion}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Souscris uniquement aux Topics correspondants sur ce Broker. '#' par défaut, i.e. tous les Topics.
-							<br/>Ne pas modifier sans en comprendre les implications.}}"></i></sup></label>
-							<div class="col-lg-7">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic" placeholder="#" />
 							</div>
 						</div>
 
@@ -174,6 +167,15 @@
 								title="{{Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('Client-Id/status' par défaut).}}">
 							</div>
 						</div>
+
+						<div class="form-group">
+							<label class="col-lg-4 control-label">{{Topic du mode Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+							title="{{Topic de souscription utilisé lorsque le mode Temps Réel est actif sur ce Broker. '#' par défaut soit tous les Topics.}}"></i></sup></label>
+							<div class="col-lg-7">
+								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic" placeholder="#" />
+							</div>
+						</div>
+
 						<div class="form-group"><br /></div>
 					</fieldset>
 				</div>

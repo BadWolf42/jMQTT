@@ -44,7 +44,7 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_LWT_TOPIC       = 'mqttLwtTopic';
 	const CONF_KEY_MQTT_LWT_ONLINE      = 'mqttLwtOnline';
 	const CONF_KEY_MQTT_LWT_OFFLINE     = 'mqttLwtOffline';
-	const CONF_KEY_MQTT_INC_TOPIC       = 'mqttIncTopic';
+	const CONF_KEY_MQTT_REALTIME_TOPIC  = 'mqttIncTopic';
 	const CONF_KEY_MQTT_PROTO           = 'mqttProto';
 	const CONF_KEY_MQTT_TLS_CHECK       = 'mqttTlsCheck';
 	const CONF_KEY_MQTT_TLS_CA          = 'mqttTlsCa';
@@ -68,7 +68,7 @@ class jMQTT extends eqLogic {
 	const CACHE_DAEMON_PORT             = 'daemonPort';
 	const CACHE_DAEMON_UID              = 'daemonUid';
 	const CACHE_IGNORE_TOPIC_MISMATCH   = 'ignore_topic_mismatch';
-	const CACHE_INCLUDE_MODE            = 'include_mode';
+	const CACHE_REALTIME_MODE           = 'realtime_mode';
 	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
 	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
 
@@ -715,7 +715,7 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_LWT_TOPIC,
 				self::CONF_KEY_MQTT_LWT_ONLINE,
 				self::CONF_KEY_MQTT_LWT_OFFLINE,
-				self::CONF_KEY_MQTT_INC_TOPIC,
+				self::CONF_KEY_MQTT_REALTIME_TOPIC,
 				self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,
 				self::CONF_KEY_MQTT_TLS_CLI,
@@ -823,14 +823,14 @@ class jMQTT extends eqLogic {
 					$startRequested = true;
 				}
 
-				// IncludeModeTopic changed
-				if ($this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC)) {
-					// If MqttClient not stopped and includeMode is enabled
-					if (!$stopped && $this->getIncludeMode()) {
-						//Unsubscribe previous include topic
-						$this->unsubscribeTopic($this->_preSaveInformations[self::CONF_KEY_MQTT_INC_TOPIC]);
-						//Subscribe the new one
-						$this->subscribeTopic($this->getConf(self::CONF_KEY_MQTT_INC_TOPIC), $this->getQos());
+				// Real Time mode Topic changed
+				if ($this->_preSaveInformations[self::CONF_KEY_MQTT_REALTIME_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_REALTIME_TOPIC)) {
+					// If MqttClient not stopped and Real Time mode is enabled
+					if (!$stopped && $this->getRealTimeMode()) {
+						//Unsubscribe previous Real Time topic
+						$this->unsubscribeTopic($this->_preSaveInformations[self::CONF_KEY_MQTT_REALTIME_TOPIC]);
+						//Subscribe the Real Time topic
+						$this->subscribeTopic($this->getConf(self::CONF_KEY_MQTT_REALTIME_TOPIC), $this->getQos());
 					}
 				}
 
@@ -1069,6 +1069,7 @@ class jMQTT extends eqLogic {
 		// for each id, clean cached values
 		foreach (self::getBrokers() as $broker) {
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
+			$broker->setCache(self::CACHE_REALTIME_MODE, false);
 		}
 		cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
 		cache::delete('jMQTT::' . self::CACHE_DAEMON_PORT);
@@ -1790,9 +1791,9 @@ class jMQTT extends eqLogic {
 			}
 			if ($broker->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false)) {
 				$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
-				// if includeMode is enabled, disable it
-				if ($broker->getIncludeMode())
-					$broker->changeIncludeMode(0);
+				// if Real Time mode is enabled, disable it
+				if ($broker->getRealTimeMode())
+					$broker->changeRealTimeMode(0);
 				cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 				$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
 			}
@@ -1868,7 +1869,7 @@ class jMQTT extends eqLogic {
 	 * Send a jMQTT::RealTime event to the UI containing eqLogic
 	 */
 	private function sendMqttRealTimeEvent($topic, $payload, $qos, $retain, $eqNames) {
-		event::add('jMQTT::RealTime', array('id' => $this->getId(), 'topic' => $topic, 'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'included' => $eqNames));
+		event::add('jMQTT::RealTime', array('id' => $this->getId(), 'topic' => $topic, 'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'existing' => $eqNames));
 	}
 
 	/**
@@ -1980,7 +1981,7 @@ class jMQTT extends eqLogic {
 			if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) $elogics[] = $eqpt;
 		}
 
-		if ($this->getIncludeMode()) {
+		if ($this->getRealTimeMode()) {
 			$eqNames = '';
 			foreach($elogics as $eq)
 				$eqNames .= '<br />#'.$eq->getHumanName().'#';
@@ -2263,7 +2264,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_MQTT_TLS_CLI => '0',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
 			self::CONF_KEY_AUTO_ADD_TOPIC => '',
-			self::CONF_KEY_MQTT_INC_TOPIC => '#',
+			self::CONF_KEY_MQTT_REALTIME_TOPIC => '#',
 			self::CONF_KEY_MQTT_INT => '0',
 			self::CONF_KEY_MQTT_API => '0',
 			self::CONF_KEY_BRK_ID => -1
@@ -2437,63 +2438,61 @@ class jMQTT extends eqLogic {
 	 * Disable the equipment automatic inclusion mode and inform the desktop page
 	 * @param string[] $option $option[id]=broker id
 	 */
-	public static function disableIncludeMode($option) {
+	public static function disableRealTimeMode($option) {
 		$broker = self::getBrokerFromId($option['id']);
-		$broker->changeIncludeMode(0);
+		$broker->changeRealTimeMode(0);
 	}
 
 	/**
-	 * Manage the include_mode of this broker object
+	 * Manage the Real Time mode of this broker object
 	 * Called by ajax when the button is pressed by the user
 	 * @param int $mode 0 or 1
 	 */
-	public function changeIncludeMode($mode) {
+	public function changeRealTimeMode($mode) {
 
-		// Update the include mode value
-		$this->setCache(self::CACHE_INCLUDE_MODE, $mode);
+		// Update the Real Time mode value
+		$this->setCache(self::CACHE_REALTIME_MODE, $mode);
 		if ($mode)
-			$this->log('info', __("L'inclusion automatique est activée", __FILE__));
+			$this->log('info', __("Mode Temps Réel activé", __FILE__));
 		else
-			$this->log('info', __("L'inclusion automatique est désactivée", __FILE__));
+			$this->log('info', __("Mode Temps Réel désactivé", __FILE__));
 		$this->sendMqttClientStateEvent();
 
 		// A cron process is used to reset the automatic mode after a delay
 		// If the cron process is already defined, remove it
-		$cron = cron::byClassAndFunction(__CLASS__, 'disableIncludeMode', array('id' => $this->getId()));
+		$cron = cron::byClassAndFunction(__CLASS__, 'disableRealTimeMode', array('id' => $this->getId()));
 		if (is_object($cron)) {
 			$cron->remove();
 		}
 
-		$includeTopic = $this->getConf(self::CONF_KEY_MQTT_INC_TOPIC);
+		$realTimeTopic = $this->getConf(self::CONF_KEY_MQTT_REALTIME_TOPIC);
 
-		// If includeMode needs to be enabled
+		// If Real Time mode needs to be enabled
 		if ($mode == 1) {
-			// Subscribe include topic
-			$this->log('debug', __("Inscription au topic d'inclusion automatique du Broker", __FILE__));
-			$this->subscribeTopic($includeTopic, $this->getQos());
+			// Subscribe Real Time topic
+			$this->log('debug', __("Inscription au topic Temps Réel du Broker", __FILE__));
+			$this->subscribeTopic($realTimeTopic, $this->getQos());
 
-			// Create and configure the cron process to disable include mode later
+			// Create and configure the cron process to disable Real Time mode later
 			$cron = new cron();
 			$cron->setClass(__CLASS__);
 			$cron->setOption(array('id' => $this->getId()));
-			$cron->setFunction('disableIncludeMode');
+			$cron->setFunction('disableRealTimeMode');
 			// Add 150s => actual delay between 2 and 3min
-			$cron->setSchedule(cron::convertDateToCron(strtotime('now') + 150));
+			$cron->setSchedule(cron::convertDateToCron(strtotime('now') + 200));
 			$cron->setOnce(1);
 			$cron->save();
-		}
-		// includeMode needs to be disabled
-		else {
-			// Unsubscribe include topic
-			$this->unsubscribeTopic($includeTopic);
+		} else { // Real Time mode needs to be disabled
+			// Unsubscribe Real Time topic
+			$this->unsubscribeTopic($realTimeTopic);
 		}
 	}
 
 	/**
-	 * Return this broker object include mode parameter
+	 * Returns this broker object Real Time mode status
 	 * @return int 0 or 1
 	 */
-	public function getIncludeMode() {
-		return $this->getCache(self::CACHE_INCLUDE_MODE, 0);
+	public function getRealTimeMode() {
+		return $this->getCache(self::CACHE_REALTIME_MODE, 0);
 	}
 }

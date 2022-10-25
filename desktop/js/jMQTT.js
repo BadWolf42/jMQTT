@@ -116,32 +116,32 @@ jmqtt.getMqttClientInfo = function(_eq) {
 	return     {la: 'ok',  lacolor: 'success', state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
 }
 
-// Helper to show/hide/disable include buttons
-jmqtt.updateIncludeButtons = function(enabled, active) {
+// Helper to show/hide/disable Real Time buttons
+jmqtt.updateRealTimeButtons = function(enabled, active) {
 	if (!enabled) {       // Disable buttons if eqBroker is disabled
-		$('.eqLogicAction[data-action=startIncludeMode]').show().addClass('disabled');
-		$('.eqLogicAction[data-action=stopIncludeMode]').hide();
-	} else if (!active) { // Show only startIncludeMode button
-		$('.eqLogicAction[data-action=startIncludeMode]').show().removeClass('disabled');
-		$('.eqLogicAction[data-action=stopIncludeMode]').hide();
-	} else {              // Show only stopIncludeMode button
-		$('.eqLogicAction[data-action=startIncludeMode]').hide();
-		$('.eqLogicAction[data-action=stopIncludeMode]').show();
+		$('.eqLogicAction[data-action=startRealTimeMode]').show().addClass('disabled');
+		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
+	} else if (!active) { // Show only startRealTimeMode button
+		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
+		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
+	} else {              // Show only stopRealTimeMode button
+		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
+		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
 	}
 }
 
-// Display an Alert if inclusion mode has changed for this Broker
-jmqtt.displayIncludeEvent = function(_eq) {
-	// Fetch current inclusion mode for this Broker
-	var include = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.inc-status');
-	if (_eq.cache.include_mode == '1') {
-		if (include.hasClass('fa-square')) {
-			// Show an alert only if Include Mode was disabled
-			$.fn.showAlert({message: '{{Inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>{{ pendant 3 minutes. Cliquez sur le bouton pour forcer la sortie de ce mode avant.}}', level: 'warning'});
+// Display an Alert if Real time mode has changed for this eqBroker
+jmqtt.displayRealTimeEvent = function(_eq) {
+	// Fetch current Real Time mode for this Broker
+	var realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.rt-status');
+	if (_eq.cache.realtime_mode == '1') {
+		if (realtime.hasClass('fa-square')) {
+			// Show an alert only if Real time mode was disabled
+			$.fn.showAlert({message: `{{Mode Temps Réel sur le Broker <b>${_eq.name}</b> pendant 3 minutes.}}`, level: 'warning'});
 		}
-	} else if (include.hasClass('fa-sign-in-alt')) {
-		// Show an alert only if Include Mode was enabled
-		$.fn.showAlert({message: '{{Fin de l\'inclusion automatique sur le Broker }}<b>' + _eq.name + '</b>.', level: 'warning'});
+	} else if (realtime.hasClass('fa-sign-in-alt')) {
+		// Show an alert only if Real time mode was enabled
+		$.fn.showAlert({message: `{{Fin du mode Temps Réel sur le Broker <b>${_eq.name}</b>.}}`, level: 'warning'});
 	}
 }
 
@@ -181,16 +181,16 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	var levels = {}; levels['log::level::' + log] = _eq.configuration.loglevel; // Hack to build the array
 	$('#div_broker_log').setValues(levels, '.configKey');
 
-	// Update include mode buttons
-	jmqtt.updateIncludeButtons(_eq.isEnable == '1', _eq.cache.include_mode == '1');
+	// Update Real Time mode buttons
+	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1');
 }
 
-// Inform Jeedom to change include mode
-jmqtt.setIncludeMode = function(_id, _mode) {
+// Inform Jeedom to change Real Time mode
+jmqtt.setRealTimeMode = function(_id, _mode) {
 	// Ajax call to inform the plugin core of the change
 	jmqtt.callPluginAjax({
 		data: {
-			action: "changeIncludeMode",
+			action: "changeRealTimeMode",
 			mode: _mode,
 			id: _id
 		}
@@ -213,7 +213,7 @@ jmqtt.logoHelper = function(_id) {
 jmqtt.asCardHelper = function(_eq, _item, iClass) {
 	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
 	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
-	var icon = (_item == 'status' || _eq.cache.include_mode == '1') ? (i.icon + ' ' + i.color) : i.icon;
+	var icon = (_item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
 	iClass   = iClass != '' ? ' ' + iClass : '';
 
 	return '<i class="' + icon + iClass + '"></i>';
@@ -251,14 +251,14 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 	var asCard = jmqtt.asCardHelper(_eq, 'visible', 'eyed');
 	if (_eq.configuration.type == 'broker') {
 		asCard += jmqtt.asCardHelper(_eq, 'status', 'status-circle');
-		asCard += jmqtt.asCardHelper(_eq, 'include', 'inc-status');
+		asCard += jmqtt.asCardHelper(_eq, 'learning', 'rt-status');
 	}
 	_card.find('span.hiddenAsTable').empty().html(asCard);
 
 	var asTable = '';
 	asTable += jmqtt.asTableHelper(_eq, 'status', 'roundedLeft');
 	asTable += jmqtt.asTableHelper(_eq, 'visible', '');
-	asTable += jmqtt.asTableHelper(_eq, 'include', '');
+	asTable += jmqtt.asTableHelper(_eq, 'learning', '');
 	asTable += jmqtt.asTableHelper(_eq, 'battery', '');
 	asTable += jmqtt.asTableHelper(_eq, 'availability', '');
 	asTable += '<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
@@ -463,14 +463,14 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
-$('.eqLogicAction[data-action=startIncludeMode]').on('click', function() {
-	// Enable include mode for a Broker
-	jmqtt.setIncludeMode(jmqtt.getEqId(), 1);
+$('.eqLogicAction[data-action=startRealTimeMode]').on('click', function() {
+	// Enable Real Time mode for a Broker
+	jmqtt.setRealTimeMode(jmqtt.getEqId(), 1);
 });
 
-$('.eqLogicAction[data-action=stopIncludeMode]').on('click', function() {
-	// Disable include mode for a Broker
-	jmqtt.setIncludeMode(jmqtt.getEqId(), 0);
+$('.eqLogicAction[data-action=stopRealTimeMode]').on('click', function() {
+	// Disable Real Time mode for a Broker
+	jmqtt.setRealTimeMode(jmqtt.getEqId(), 0);
 });
 
 $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
@@ -550,7 +550,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Actions on Realtime tab attributes
+// Actions on Real Time tab attributes
 //
 $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
@@ -582,7 +582,6 @@ $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
 						$.fn.showAlert({message: error.message, level: 'danger'});
 					},
 					success: function (data) {
-						console.log('res: ', broker, topic, jsonPath, eq.id, eq.human, data);
 						$.fn.showAlert({message: `{{La commande <b>${data.human}</b> a bien été ajoutée.}}`, level: 'success'});
 					}
 				});
@@ -601,10 +600,10 @@ jmqtt.newRealTimeCmd = function(_data) {
 	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
 	tr += '<td align="center"><input class="cmdAttr form-control" data-l1key="qos" style="display:none;" value="' + _data.qos + '" disabled>';
 	tr += '<span class="cmdAttr tooltips" data-l1key="retain" title="{{Ce message est stocké sur le Broker (Retain)}}">' + (_data.retain ? '<i class="fas fa-database warning"></i>' : '') + '</span>';
-	if (_data.retain && _data.included)
+	if (_data.retain && _data.existing)
 		tr += '<br /><br />';
-	if (_data.included)
-		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement :}}' + _data.included + '"></i>';
+	if (_data.existing)
+		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement :}}' + _data.existing + '"></i>';
 	tr += '</td><td align="right"><a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
 	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
 		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
@@ -643,7 +642,7 @@ $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 })
 
 /*
- * Update the realtime view of broker if displayed on reception of a new RealTime event
+ * Update the Real Time view of broker if displayed on reception of a new Real Time event
  */
 $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
 	var d = new Date();
@@ -1057,7 +1056,7 @@ function printEqLogic(_eqLogic) {
 		// Udpate panel on eqBroker
 		jmqtt.updateBrokerTabs(_eqLogic);
 
-		// Display only relevant Realtime data
+		// Display only relevant Real Time data
 		$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eqLogic.id + '"]').hide();
 		$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eqLogic.id + '"]').show();
 	}
@@ -1403,7 +1402,7 @@ $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options
 */
 
 /**
- * Called by the plugin core to inform about the inclusion of an equipment
+ * Called by the plugin core to inform about the creation of an equipment
  *
  * @param {string} _event event name (jMQTT::eqptAdded in this context)
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
@@ -1464,13 +1463,13 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options
 	}
 });
 
-// Update the broker card and the include mode activation on reception of a new state event
+// Update the broker card and the real time mode display on reception of a new state event
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq) {
 	var card = $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _eq.id + '"]');
 	if (!card.length) // Don't try to update anything when left jMQTT and js is still loaded
 		return;
-	// Display an alert if inclusion mode has changed on this Broker
-	jmqtt.displayIncludeEvent(_eq);
+	// Display an alert if real time mode has changed on this Broker
+	jmqtt.displayRealTimeEvent(_eq);
 	if (jmqtt.getEqId() == _eq.id) // Update Panel and menu only when on the right Broker
 		jmqtt.updateBrokerTabs(_eq);
 	jmqtt.updateDisplayCard(card, _eq);

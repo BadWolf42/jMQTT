@@ -102,10 +102,10 @@ try {
 		ajax::success();
 	}
 
-	// To change the equipment automatic inclusion mode
-	if (init('action') == 'changeIncludeMode') {
+	// Enable/Disable Real Time mode on this Broker
+	if (init('action') == 'changeRealTimeMode') {
 		$broker = jMQTT::getBrokerFromId(init('id'));
-		$broker->changeIncludeMode(init('mode'));
+		$broker->changeRealTimeMode(init('mode'));
 		ajax::success();
 	}
 

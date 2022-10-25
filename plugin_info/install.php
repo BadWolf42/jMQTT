@@ -382,6 +382,9 @@ function moveCmdOutOfBrokers() {
 		// delete 'api' from broker config
 		$broker->setConfiguration('api', null);
 
+		// remove old include_mode cache key
+		$broker->setCache('include_mode', null);
+
 		$broker->save();
 	}
 }
