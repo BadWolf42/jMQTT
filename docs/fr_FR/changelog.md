@@ -272,4 +272,5 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
 # Autres registres des évolutions
 
 [Evolutions de la branche beta](changelog_beta)
+
 [Evolutions archivées](changelog_archived)

@@ -634,7 +634,9 @@ En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la recon
 # Registres des évolutions
 
 [Evolutions de la branche beta](changelog_beta)
+
 [Evolutions de la branche stable](changelog)
+
 [Evolutions archivées](changelog_archived)
 
 [Documentation de la branche beta](index_beta)
