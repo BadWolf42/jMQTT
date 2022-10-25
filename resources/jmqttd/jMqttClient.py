@@ -147,7 +147,9 @@ class jMqttClient:
 		# Create MQTT Client
 		if self.message['proto'].startswith('ws'):
 			self.mqttclient = mqtt.Client(self.message['clientid'], transport="websockets")
-			# TODO Implement WS url option with self.mqttclient.ws_set_options(url)
+			if 'mqttWsUrl' in self.message and self.message['mqttWsUrl'] != '':
+				self.message['mqttWsUrl'] = (self.message['mqttWsUrl'] if (self.message['mqttWsUrl'][0] == '/') else '/' + self.message['mqttWsUrl'])
+				self.mqttclient.ws_set_options(self.message['mqttWsUrl'])
 		else:
 			self.mqttclient = mqtt.Client(self.message['clientid'])
 		# Enable Paho logging functions

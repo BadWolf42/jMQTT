@@ -83,7 +83,7 @@
 							<div class="col-lg-7 input-group">
 								<span class="input-group-btn">
 									<select class="eqLogicAttr form-control roundedLeft tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
-										title="{{Choisir si le Broker attend une communication sécurisée.<br />Pour plus d'information, se référer à la documentation.}}">
+										title="{{Choisir quel protocole attend le Broker pour la communication.<br />Pour plus d'information, se référer à la documentation.}}">
 										<option>mqtt</option>
 										<option>mqtts</option>
 										<option>ws</option>
@@ -91,15 +91,14 @@
 									</select>
 								</span>
 								<span class="input-group-addon">://</span>
-								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttAddress" placeholder="{{IP/Nom de Domaine}}"
-									title="{{Entrer l'adresse IP ou le Nom de Domaine du Broker.<br/>Valeur si vide, 'localhost' (la machine hébergeant Jeedom).}}">
+								<input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttAddress" placeholder="localhost"
+									title="{{Adresse IP ou nom de domaine du Broker.<br/>Valeur si vide, 'localhost' (donc la machine hébergeant Jeedom).}}">
 								<span class="input-group-addon">:</span>
-								<input class="eqLogicAttr form-control tooltips roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="{{Port}}"
-									title="{{Entrer le port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
-<!-- TODO Implement WS url option
-								<span class="input-group-addon jmqttWS" style="display:none">/</span>
-								<input class="eqLogicAttr form-control tooltips roundedRight jmqttWS" data-l1key="configuration" data-l2key="mqttUrl" style="display:none" placeholder="{{mqtt}}" title="{{TODO}}">
--->
+								<input class="eqLogicAttr form-control tooltips jmqttPort roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="port"
+									title="{{Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
+								<span class="input-group-addon jmqttWsUrl" style="display:none">/</span>
+								<input class="eqLogicAttr form-control tooltips roundedRight jmqttWsUrl" data-l1key="configuration" data-l2key="mqttWsUrl" style="display:none" placeholder="{{mqtt}}"
+									title="{{URL de la connexion Web Sockets du serveur distant, sans '/' initial.<br />Valeur si vide, 'mqtt'. Ne pas modifier si vous ne savez pas ce que vous faites.}}">
 							</div>
 						</div>
 
@@ -173,7 +172,7 @@
 
 						<div class="form-group">
 							<label class="col-lg-4 control-label">{{Topic du mode Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Topic de souscription utilisé lorsque le mode Temps Réel est actif sur ce Broker. '#' par défaut soit tous les Topics.}}"></i></sup></label>
+							title="{{Topic de souscription utilisé lorsque le mode Temps Réel est actif sur ce Broker. '#' par défaut, donc tous les Topics.}}"></i></sup></label>
 							<div class="col-lg-7">
 								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic" placeholder="#" />
 							</div>

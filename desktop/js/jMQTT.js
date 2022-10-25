@@ -496,15 +496,28 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 // Automations on Broker tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
-	var val = $(this).val();
-	if (val == 'mqtts' || val == 'wss')
-		$('#jmqttTls').show();
-	else
-		$('#jmqttTls').hide();
-	if (val == 'ws' || val == 'wss')
-		$('.jmqttWS').show();
-	else
-		$('.jmqttWS').hide();
+	switch ($(this).val()) {
+		case 'mqtts':
+			$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight').attr('placeholder', '8883');
+			$('.jmqttWsUrl').hide();
+			$('#jmqttTls').show();
+			break;
+		case 'ws':
+			$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight').attr('placeholder', '1884');
+			$('.jmqttWsUrl').show();
+			$('#jmqttTls').hide();
+			break;
+		case 'wss':
+			$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight').attr('placeholder', '8884');
+			$('.jmqttWsUrl').show();
+			$('#jmqttTls').show();
+			break;
+		default: // mqtt
+			$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight').attr('placeholder', '1883');
+			$('.jmqttWsUrl').hide();
+			$('#jmqttTls').hide();
+			break;
+	}
 });
 
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(function(){
@@ -603,13 +616,14 @@ jmqtt.newRealTimeCmd = function(_data) {
 	if (_data.retain && _data.existing)
 		tr += '<br /><br />';
 	if (_data.existing)
-		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement :}}' + _data.existing + '"></i>';
-	tr += '</td><td align="right"><a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
+		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est compatible avec le(s) équipement(s) :}}' + _data.existing + '"></i>';
+	tr += '</td><td align="right"><div class="input-group pull-right" style="display:inline-flex">';
+	tr += '<a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
 	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
 		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
 	else
 		tr += '<a class="btn btn-default disabled btn-sm cmdAction" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
-	tr += '<a class="btn btn-danger btn-sm roundedRight cmdAction tooltips" data-action="remove" title="{{Supprimer de la vue}}"><i class="fas fa-minus-circle"></i></a></td>';
+	tr += '<a class="btn btn-danger btn-sm roundedRight cmdAction tooltips" data-action="remove" title="{{Supprimer de la vue}}"><i class="fas fa-minus-circle"></i></a></div></td>';
 	tr += '</tr>';
 	return tr;
 }

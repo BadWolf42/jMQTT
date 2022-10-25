@@ -38,6 +38,7 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_CLIENT_ID       = 'mqttId';
 	const CONF_KEY_MQTT_ADDRESS         = 'mqttAddress';
 	const CONF_KEY_MQTT_PORT            = 'mqttPort';
+	const CONF_KEY_MQTT_WS_URL          = 'mqttWsUrl';
 	const CONF_KEY_MQTT_USER            = 'mqttUser';
 	const CONF_KEY_MQTT_PASS            = 'mqttPass';
 	const CONF_KEY_MQTT_LWT             = 'mqttLwt';
@@ -709,6 +710,7 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_PROTO,
 				self::CONF_KEY_MQTT_ADDRESS,
 				self::CONF_KEY_MQTT_PORT,
+				self::CONF_KEY_MQTT_WS_URL,
 				self::CONF_KEY_MQTT_USER,
 				self::CONF_KEY_MQTT_PASS,
 				self::CONF_KEY_MQTT_LWT,
@@ -785,6 +787,7 @@ class jMQTT extends eqLogic {
 				$checkChanged = array(
 					self::CONF_KEY_MQTT_ADDRESS,
 					self::CONF_KEY_MQTT_PORT,
+					self::CONF_KEY_MQTT_WS_URL,
 					self::CONF_KEY_MQTT_USER,
 					self::CONF_KEY_MQTT_PASS,
 					self::CONF_KEY_MQTT_PROTO,
@@ -1693,6 +1696,7 @@ class jMQTT extends eqLogic {
 		$params['hostname']          = $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
 		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
 		$params['port']              = intval($this->getConf(self::CONF_KEY_MQTT_PORT));
+		$params['wsUrl']             = $this->getConf(self::CONF_KEY_MQTT_WS_URL);
 		$params['clientid']          = $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID);
 		$params['lwt']               = ($this->getConf(self::CONF_KEY_MQTT_LWT) == '1');
 		$params['lwtTopic']          = $this->getConf(self::CONF_KEY_MQTT_LWT_TOPIC);
