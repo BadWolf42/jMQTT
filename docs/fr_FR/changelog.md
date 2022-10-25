@@ -1,17 +1,6 @@
 # Registre des évolutions
 
-## Dev
- - **Support minimum de la version 4.2.11 de Jeedom**
- - **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker**
- - **Ajout du transport du protocole MQTT sur Web Sockets (ws) et Web Sockets Secure (wss)**
- - **Ajout du support des Interactions Jeedom via MQTT**
- - Mise en place de champs dans le broker pour définir le topic LWT et les valeurs quand le broker est en-ligne et hors-ligne
- - Mise en place de champs dans le broker pour définir le topic API
- - Meilleure gestion du "topicMismatch", avertissement avant de sauvegarder et visuellement dans les champs lors de la saisie
- - Utilisation du nom de l'objet (plutôt que du nom du broker) et du nom de l'équipement pour construire le topic, lors du double-clique sur un topic d'inclusion vide
- - Gros nettoyage du code JS pour retirer des correctifs temporaires liés au Core < 4.2
-
-## 2022-10-15 **Stable et Beta**
+## 2022-10-16
  - **Création d'une branche spéciale pour Jeedom 3, voir plus bas**
  - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**
  - Correction d'un problème de souscription lors du changement d'équipement de Broker
@@ -70,7 +59,7 @@
  - Correction d'un bug avec Jeedom en Docker si lancé sans `--privileged=true`
  - Correction du nom de la commande dans le log lors d'une publication
 
-## 2022-07-19 Suppression du démon PHP
+## 2022-07-19 Démon uniquement en Python
  - **Suppression du démon PHP, sans que jMQTT ne perdre de fonctionnalité**
  - **Amélioration les performances et réduction de la consommation mémoire**
  - **Prise en compte immédiate du changement du niveau de log par le démon**
@@ -280,7 +269,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
   - Correction : Le Titre n'est plus obligatoire lors d'envoi de message par une commande action de type message
 
 
-## Registre des évolutions antérieures
+# Autres registres des évolutions
 
-Voir ici : [Evolutions plus anciennes](changelog_archived) (archivées)
-
+[Evolutions de la branche beta](changelog_beta)
+[Evolutions archivées](changelog_archived)
