@@ -359,7 +359,7 @@ function moveCmdOutOfBrokers() {
 				$cmd->setLogicalId('');
 				$cmd->setConfiguration('irremovable', 0);
 				if ($cmd->getTopic() == '') {
-					$cmd->setTopic($broker->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . '/status');
+					$cmd->setTopic($broker->getConf(jMQTT::CONF_KEY_MQTT_CLIENT_ID) . '/status');
 					$cmd->setJsonPath('');
 				}
 				$cmd->save();
