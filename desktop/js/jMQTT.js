@@ -14,336 +14,6 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-jmqtt.callPluginAjax = function(_params) {
-	$.ajax({
-		async: _params.async == undefined ? true : _params.async,
-		global: false,
-		type: "POST",
-		url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
-		data: _params.data,
-		dataType: 'json',
-		error: function (request, status, error) {
-			handleAjaxError(request, status, error);
-		},
-		success: function (data) {
-			if (data.state != 'ok') {
-				$.fn.showAlert({message: data.result, level: 'danger'});
-			}
-			else {
-				if (typeof _params.success === 'function') {
-					_params.success(data.result);
-				}
-			}
-		}
-	});
-}
-
-/*
- * Rebuild the page URL from the current URL
- *
- * filter: array of parameters to be removed from the URL
- * id:     if not empty, it is appended to the URL (in that case, 'id' should be passed within the filter.
- * hash:   if provided, it is appended at the end of the URL (shall contain the # character). If a hash was already
- *         present, it is replaced by that one.
- */
-jmqtt.initPluginUrl = function(filter=['id', 'saveSuccessFull','removeSuccessFull', 'hash'], id='', hash='') {
-	var vars = getUrlVars();
-	var url = 'index.php?';
-	for (var i in vars) {
-		if ($.inArray(i,filter) < 0) {
-			if (url.substr(-1) != '?')
-				url += '&';
-			url += i + '=' + vars[i].replace('#', '');
-		}
-	};
-	if (id != '') {
-		url += '&id=' + id;
-	}
-	if (document.location.hash != "" && $.inArray('hash',filter) < 0) {
-		url += document.location.hash;
-	}
-	if (hash != '' ) {
-		url += hash
-	}
-	return url;
-}
-
-/*
- * Function to refresh the page
- * Ask confirmation if the page has been modified
- */
-jmqtt.refreshEqLogicPage = function() {
-	function refreshPage() {
-		if (jmqtt.getEqId() != "") {
-			tab = null
-			if (document.location.toString().match('#')) {
-				tab = '#' + document.location.toString().split('#')[1];
-				if (tab != '#') {
-					tab = $('a[href="' + tab + '"]')
-				} else {
-					tab = null
-				}
-			}
-			$('.eqLogicDisplayCard[data-eqlogic_id="' + jmqtt.getEqId() + '"]').click();
-			if (tab) tab.click();
-		}
-		else {
-			$('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
-		}
-	}
-	if (modifyWithoutSave) {
-		bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
-			if (result)
-				refreshPage();
-		});
-	}
-	else
-		refreshPage();
-}
-
-// Helper to get information abour Broker state (launchable, launchable color, state, message, message color)
-jmqtt.getMqttClientInfo = function(_eq) {
-	// Daemon is down
-	if (!jmqtt.globals.daemonState)
-		return {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{Démon non démarré}}",                                      color:'danger'};
-	// Client is connected to the Broker
-	if (_eq.cache.mqttClientConnected)
-		return {la: 'ok',  lacolor: 'success', state: 'ok',  message: "{{Le Démon jMQTT est correctement connecté à ce Broker}}",   color:'success'};
-	// Client is disconnected from the Broker
-	if (_eq.isEnable == '1')
-		return {la: 'ok',  lacolor: 'success', state: 'pok', message: "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}", color:'warning'};
-	// Client is disabled
-	return     {la: 'ok',  lacolor: 'success', state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
-}
-
-// Helper to show/hide/disable Real Time buttons
-jmqtt.updateRealTimeButtons = function(enabled, active) {
-	if (!enabled) {       // Disable buttons if eqBroker is disabled
-		$('.eqLogicAction[data-action=startRealTimeMode]').show().addClass('disabled');
-		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
-	} else if (!active) { // Show only startRealTimeMode button
-		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
-		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
-	} else {              // Show only stopRealTimeMode button
-		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
-		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
-	}
-}
-
-// Display an Alert if Real time mode has changed for this eqBroker
-jmqtt.displayRealTimeEvent = function(_eq) {
-	// Fetch current Real Time mode for this Broker
-	var realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.rt-status');
-	if (_eq.cache.realtime_mode == '1') {
-		if (realtime.hasClass('fa-square')) {
-			// Show an alert only if Real time mode was disabled
-			$.fn.showAlert({message: `{{Mode Temps Réel sur le Broker <b>${_eq.name}</b> pendant 3 minutes.}}`, level: 'warning'});
-		}
-	} else if (realtime.hasClass('fa-sign-in-alt')) {
-		// Show an alert only if Real time mode was enabled
-		$.fn.showAlert({message: `{{Fin du mode Temps Réel sur le Broker <b>${_eq.name}</b>.}}`, level: 'warning'});
-	}
-}
-
-
-// TODO MERGE with updateDisplayCard and resplit according to updateDisplayCard TODO
-/*
- * Function to update Broker status on a Broker eqLogic page
- */
-
-// On eqBroker, on Broker tab, change MQTT Client panel
-jmqtt.updateBrokerTabs = function(_eq) {
-	var info = jmqtt.getMqttClientInfo(_eq);
-
-	// Update panel heading color
-	$(".mqttClientPanel").removeClass('panel-success panel-warning panel-danger').addClass('panel-' + info.color);
-
-	// Update Launchable span
-	$('.mqttClientLaunchable span.label').removeClass('label-success label-warning label-danger').addClass('label-' + info.lacolor).text(info.la.toUpperCase());
-
-	// Update Status color
-	$('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + info.color).text(info.state.toUpperCase());
-	$('.mqttClientState span.state').text(' ' + info.message);
-
-	// Show / hide startMqttClient button
-	(info.la == 'ok') ? $('.eqLogicAction[data-action=startMqttClient]').show() : $('.eqLogicAction[data-action=startMqttClient]').hide();
-
-	// Update LastLaunch span
-	$('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
-
-	// Set logs file
-	var log = 'jMQTT_' + (_eq.name.replace(' ', '_') || 'jeedom');
-	$('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
-	$('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
-	$('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
-
-	// Set logs level
-	var levels = {}; levels['log::level::' + log] = _eq.configuration.loglevel; // Hack to build the array
-	$('#div_broker_log').setValues(levels, '.configKey');
-
-	// Update Real Time mode buttons
-	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1');
-}
-
-// Inform Jeedom to change Real Time mode
-jmqtt.setRealTimeMode = function(_id, _mode) {
-	// Ajax call to inform the plugin core of the change
-	jmqtt.callPluginAjax({
-		data: {
-			action: "changeRealTimeMode",
-			mode: _mode,
-			id: _id
-		}
-	});
-}
-
-// Helper to find a logo for each Eqlogic
-jmqtt.logoHelper = function(_id) {
-	// Broker logo is always the same
-	if (_id == 'broker')
-		return 'plugins/jMQTT/core/img/node_broker.svg';
-
-	// Search for an logo with this id
-	var tmp = jmqtt.globals.logos.find(function (item) { return item.id == _id; });
-	// Return path to an image according to id
-	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
-}
-
-// Helper to build an icon in hiddenAsTable card span
-jmqtt.asCardHelper = function(_eq, _item, iClass) {
-	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
-	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
-	var icon = (_item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
-	iClass   = iClass != '' ? ' ' + iClass : '';
-
-	return '<i class="' + icon + iClass + '"></i>';
-}
-
-// Helper to build an icon in hiddenAsCard card span
-jmqtt.asTableHelper = function(_eq, _item, aClass) {
-	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
-	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
-	var icon = (_eq.isEnable == '1' || _item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
-	var msg  = (_eq.isEnable == '1' || _item == 'status') ? (i.msg) : '';
-	aClass   = aClass != '' ? ' ' + aClass : '';
-
-	if (msg == '')
-		return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="' + icon + ' w18"></i></a>';
-	else
-		return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="' + icon + ' w18 tooltips" title="' + msg + '"></i></a>';
-}
-
-// Update display card on plugin main page
-jmqtt.updateDisplayCard = function (_card, _eq) {
-	// Set visibility
-	if (_eq.isEnable == '1')
-		_card.removeClass('disableCard');
-	else
-		_card.addClass('disableCard');
-
-	// Set logo
-	if (_eq.configuration.type == 'broker')
-		_card.find('img').attr('src', jmqtt.logoHelper('broker'));
-	else
-		_card.find('img').attr('src', jmqtt.logoHelper(_eq.configuration.icone));
-
-	// Set hiddenAsTable span
-	var asCard = jmqtt.asCardHelper(_eq, 'visible', 'eyed');
-	if (_eq.configuration.type == 'broker') {
-		asCard += jmqtt.asCardHelper(_eq, 'status', 'status-circle');
-		asCard += jmqtt.asCardHelper(_eq, 'learning', 'rt-status');
-	}
-	_card.find('span.hiddenAsTable').empty().html(asCard);
-
-	var asTable = '';
-	asTable += jmqtt.asTableHelper(_eq, 'status', 'roundedLeft');
-	asTable += jmqtt.asTableHelper(_eq, 'visible', '');
-	asTable += jmqtt.asTableHelper(_eq, 'learning', '');
-	asTable += jmqtt.asTableHelper(_eq, 'battery', '');
-	asTable += jmqtt.asTableHelper(_eq, 'availability', '');
-	asTable += '<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
-	_card.find('span.hiddenAsCard').empty().html(asTable);
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Utilitary functions
-//
-
-// Get currently displayed eqId
-jmqtt.getEqId = function() {
-	return $('.eqLogicAttr[data-l1key=id]').value();
-}
-
-// Check if a string is a valid Json, returns json object if true, undefined otherwise
-jmqtt.toJson = function(_string) {
-	try {
-		return JSON.parse(_string);
-	} catch (e) {
-		return undefined;
-	}
-}
-
-// Check if a topic matches a subscription, return bool
-jmqtt.checkTopicMatch = function (subscription, topic) {
-	if (subscription == '') // Nothing matches an empty subscription topic
-			return false;
-	if (subscription == '#') // Everything matches '#' subscription topic
-			return true;
-	var subRegex = new RegExp(`^${subscription}\$`.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'))
-	return subRegex.test(topic);
-}
-
-// Action on eqLogic subscription topic field update
-jmqtt.updateGlobalMainTopic = function () {
-	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
-	jmqtt.globals.mainTopic = mt.val();
-	if (jmqtt.globals.mainTopic == '')
-		mt.addClass('topicMismatch');
-	else
-		mt.removeClass('topicMismatch');
-}
-
-// Substract properties keys present in b from a recursively (result = a - b)
-jmqtt.substractKeys = function(a, b) {
-	var result = {};
-	for (var key in a) {
-		if (typeof(a[key]) == 'object') {
-			if (b[key] === undefined)
-				b[key] = {};
-			result[key] = jmqtt.substractKeys(a[key], b[key]);
-		} else if (a[key] !== undefined && b[key] === undefined)
-			result[key] = a[key];
-	}
-	return result;
-}
-
-// Override changeObjectEqLogic function of jeedom.eqLogic.getSelectModal to take configuration (type, eqLogic) in account
-jmqtt.overrideChangeObjectEqLogic = function(_eqBrokerId) {
-	mod_insertEqLogic.changeObjectEqLogic = function(_select) {
-		jeedom.object.getEqLogic({
-			id: (_select.value() == '' ? -1 : _select.value()),
-			orderByName : true,
-			error: function(error) {
-				$.fn.showAlert({message: error.message, level: 'danger'})
-			},
-			success: function(eqLogics) {
-				_select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').empty()
-				var selectEqLogic = '<select class="form-control">'
-				for (var i in eqLogics) {
-					if (eqLogics[i].eqType_name                  == 'jMQTT'
-							&& eqLogics[i].configuration.type    == 'eqpt'
-							&& eqLogics[i].configuration.eqLogic == _eqBrokerId)
-						selectEqLogic += '<option value="' + eqLogics[i].id + '">' + eqLogics[i].name + '</option>'
-				}
-				selectEqLogic += '</select>'
-				_select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').append(selectEqLogic)
-			}
-		})
-	}
-	mod_insertEqLogic.changeObjectEqLogic($('#table_mod_insertEqLogicValue_valueEqLogicToMessage td.mod_insertEqLogicValue_object select'), mod_insertEqLogic.options);
-}
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on main plugin view
 //
@@ -382,19 +52,6 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=templates').dialog('open');
 });
 
-// TODO Move to a new Broker tab
-/*
-$('.eqLogicAction[data-action=discoveryJMQTT]').on('click', function () {
-	$('#md_modal').dialog({title: "{{Découverte automatique}}"});
-	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=discovery').dialog('open');
-});
-
-$('.eqLogicAction[data-action=realTimeJMQTT]').on('click', function () {
-	$('#md_modal').dialog({title: "{{Découverte automatique}}"});
-	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=realtime').dialog('open');
-});
-*/
-
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Choisissez un broker : }}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
@@ -431,11 +88,6 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 			});
 		}}
 	});
-});
-
-$('.eqLogicAction[data-action=confEq]').off('click').on('click', function() {
-	var eqId = $(this).closest('div').attr('data-eqLogic_id');
-	$('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + eqId).dialog('open');
 });
 
 
@@ -605,29 +257,6 @@ $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
 	jmqtt.overrideChangeObjectEqLogic(broker);
 })
 
-jmqtt.newRealTimeCmd = function(_data) {
-	var tr = '<tr class="rtCmd" data-brkId="' + _data.id + '"' + ((_data.id == jmqtt.getEqId()) ? '' : ' style="display: none;"') + '>';
-	tr += '<td class="fitwidth"><span class="cmdAttr">' + (_data.date ? _data.date : '') + '</span></td>';
-	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic + '" disabled>';
-	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
-	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
-	tr += '<td align="center"><input class="cmdAttr form-control" data-l1key="qos" style="display:none;" value="' + _data.qos + '" disabled>';
-	tr += '<span class="cmdAttr tooltips" data-l1key="retain" title="{{Ce message est stocké sur le Broker (Retain)}}">' + (_data.retain ? '<i class="fas fa-database warning"></i>' : '') + '</span>';
-	if (_data.retain && _data.existing)
-		tr += '<br /><br />';
-	if (_data.existing)
-		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est compatible avec le(s) équipement(s) :}}' + _data.existing + '"></i>';
-	tr += '</td><td align="right"><div class="input-group pull-right" style="display:inline-flex">';
-	tr += '<a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
-	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
-		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
-	else
-		tr += '<a class="btn btn-default disabled btn-sm cmdAction" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
-	tr += '<a class="btn btn-danger btn-sm roundedRight cmdAction tooltips" data-action="remove" title="{{Supprimer de la vue}}"><i class="fas fa-minus-circle"></i></a></div></td>';
-	tr += '</tr>';
-	return tr;
-}
-
 $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function() {
 	$(this).removeClass('btn-warning').addClass('btn-default disabled');
 	var tr = $(this).closest('tr');
@@ -654,17 +283,6 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
 })
-
-/*
- * Update the Real Time view of broker if displayed on reception of a new Real Time event
- */
-$('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
-	var d = new Date();
-	_options.date = d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds();
-	_options.jsonPath = '';
-	var tr = jmqtt.newRealTimeCmd(_options);
-	$('#table_realtime tbody').prepend(tr);
-});
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1415,6 +1033,11 @@ $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options
 });
 */
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Events
+//
+
 /**
  * Called by the plugin core to inform about the creation of an equipment
  *
@@ -1487,6 +1110,15 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 	if (jmqtt.getEqId() == _eq.id) // Update Panel and menu only when on the right Broker
 		jmqtt.updateBrokerTabs(_eq);
 	jmqtt.updateDisplayCard(card, _eq);
+});
+
+// Update the Real Time view of broker if displayed on reception of a new Real Time event
+$('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
+	var d = new Date();
+	_options.date = d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds();
+	_options.jsonPath = '';
+	var tr = jmqtt.newRealTimeCmd(_options);
+	$('#table_realtime tbody').prepend(tr);
 });
 
 

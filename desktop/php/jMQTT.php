@@ -8,6 +8,7 @@ if (! isConnect('admin')) {
 
 sendVarToJS('eqType', 'jMQTT');
 include_file('desktop', 'jMQTT.globals', 'js', 'jMQTT');
+include_file('desktop', 'jMQTT.functions', 'js', 'jMQTT');
 
 // Send daemon current state
 sendVarToJS('jmqtt.globals.daemonState', jMQTT::daemon_state());
@@ -76,8 +77,6 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
 			displayActionCard('{{Debug}}', 'fa-bug', 'data-action="debugJMQTT"', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
-		// displayActionCard('{{Découverte}}', 'fa-flag', 'data-action="discoveryJMQTT"', 'logoSecondary');
-		// displayActionCard('{{Temps Réel}}', 'fa-stream', 'data-action="realTimeJMQTT"', 'logoSecondary');
 		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="addJmqttEq"', 'logoSecondary');
 		?>
 		</div>
