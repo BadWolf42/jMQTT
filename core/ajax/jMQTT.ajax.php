@@ -109,6 +109,17 @@ try {
 		ajax::success();
 	}
 
+	// Add a new command on an existing jMQTT equipment
+	if (init('action') == 'newCmd') {
+		$eqpt = jMQTT::byId(init('id'));
+		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
+			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
+		}
+		$new_cmd = jMQTTCmd::newCmd($eqpt, init('name'), init('topic'), init('jsonPath'));
+		$new_cmd->save();
+		ajax::success(array('id' => $new_cmd->getId(), 'human' => $new_cmd->getHumanName()));
+	}
+
 	if (init('action') == 'startMqttClient') {
 		$broker = jMQTT::getBrokerFromId(init('id'));
 		ajax::success($broker->startMqttClient(true));

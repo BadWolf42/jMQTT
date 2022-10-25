@@ -318,6 +318,31 @@ jmqtt.substractKeys = function(a, b) {
 	return result;
 }
 
+// Override changeObjectEqLogic function of jeedom.eqLogic.getSelectModal to take configuration (type, eqLogic) in account
+jmqtt.overrideChangeObjectEqLogic = function(_eqBrokerId) {
+	mod_insertEqLogic.changeObjectEqLogic = function(_select) {
+		jeedom.object.getEqLogic({
+			id: (_select.value() == '' ? -1 : _select.value()),
+			orderByName : true,
+			error: function(error) {
+				$.fn.showAlert({message: error.message, level: 'danger'})
+			},
+			success: function(eqLogics) {
+				_select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').empty()
+				var selectEqLogic = '<select class="form-control">'
+				for (var i in eqLogics) {
+					if (eqLogics[i].eqType_name                  == 'jMQTT'
+							&& eqLogics[i].configuration.type    == 'eqpt'
+							&& eqLogics[i].configuration.eqLogic == _eqBrokerId)
+						selectEqLogic += '<option value="' + eqLogics[i].id + '">' + eqLogics[i].name + '</option>'
+				}
+				selectEqLogic += '</select>'
+				_select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').append(selectEqLogic)
+			}
+		})
+	}
+	mod_insertEqLogic.changeObjectEqLogic($('#table_mod_insertEqLogicValue_valueEqLogicToMessage td.mod_insertEqLogicValue_object select'), mod_insertEqLogic.options);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on main plugin view
@@ -528,23 +553,44 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 // Actions on Realtime tab attributes
 //
 $('#table_realtime').on('click', '.cmdAction[data-action=addTo]', function() {
-	console.log('addTo: ', $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val());
-	// TODO Add from Realtime tab
+	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
+	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
+	var broker   = jmqtt.getEqId();
 
-/*
-	jeedom.eqLogic.buildSelectCmd({ // selectEq ? // jeedom.eqLogic.getSelectModal
-		id: eqId,
-		filter: {type: 'info', subType: 'numeric'},
-		error: function (error) {
-			$.fn.showAlert({message: error.message, level: 'danger'});
-		},
-		success: function (result) {
-			bat.append(result);
-		}
+	// Display EqLogic selector modal
+	jeedom.eqLogic.getSelectModal({}, function(eq) {
+		bootbox.confirm({
+			title: `{{Ajouter une nouvelle commande sur <b>${eq.human}</b>}}`,
+			message: '<label class="control-label">{{Nom de la commande :}}</label> '+
+			'<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName"><br><br>',
+			callback: function (result){ if (result) {
+				var cmdName = $('#addJmqttCmdName').value();
+				if (cmdName === undefined || cmdName == null || cmdName === '' || cmdName == false) {
+					$.fn.showAlert({message: "{{Le nom de la commande ne peut pas être vide !}}", level: 'warning'});
+					return false;
+				}
+				// Create a new jMQTTCmd
+				jmqtt.callPluginAjax({
+					data: {
+						action: "newCmd",
+						id: eq.id,
+						name: cmdName,
+						topic: topic,
+						jsonPath: jsonPath
+					},
+					error: function (error) {
+						$.fn.showAlert({message: error.message, level: 'danger'});
+					},
+					success: function (data) {
+						console.log('res: ', broker, topic, jsonPath, eq.id, eq.human, data);
+						$.fn.showAlert({message: `{{La commande <b>${data.human}</b> a bien été ajoutée.}}`, level: 'success'});
+					}
+				});
+			}}
+		});
 	});
-
-	jeedom.eqLogic.getSelectModal({}, function(result) { console.log(result); });
-*/
+	// Override jeedom.eqLogic.getSelectModal internals to take select only jMQTT eqpt on this Broker
+	jmqtt.overrideChangeObjectEqLogic(broker);
 })
 
 jmqtt.newRealTimeCmd = function(_data) {
@@ -558,7 +604,7 @@ jmqtt.newRealTimeCmd = function(_data) {
 	if (_data.retain && _data.included)
 		tr += '<br /><br />';
 	if (_data.included)
-		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement/commande :}}' + _data.included + '"></i>';
+		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est déjà présent sur l\'équipement :}}' + _data.included + '"></i>';
 	tr += '</td><td align="right"><a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addTo" title="{{Ajouter à un équipement existant}}"><i class="fas fa-check-circle"></i> {{Ajouter}}</a>';
 	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
 		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';

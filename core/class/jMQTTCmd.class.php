@@ -223,6 +223,12 @@ class jMQTTCmd extends cmd {
 	 * preSave callback called by the core before saving this command in the DB
 	 */
 	public function preSave() {
+		// Check if name is unique on the equipment for a New cmd
+			$this->getEqLogic()->log('warning', 'this is it !');
+		if ($this->getId() == '' && is_object(jMQTTCmd::byEqLogicIdCmdName($this->getEqLogic()->getId(), $this->getName()))) {
+			throw new Exception(sprintf(__("Impossible de créer la commande <b>#%s#</b>, car une commande avec le même nom existe déjà !", __FILE__), $this->getHumanName()));
+		}
+
 		// --- New cmd or Existing cmd ---
 		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
 		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
