@@ -328,9 +328,9 @@ function v12_modifyConfKeysInBrk() {
 			$broker->save();
 		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
-				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
+				jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+				jMQTT::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
 							"</br>@Stack: %3\$s,</br>@BrokerId: %4\$s.",
 							__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 		}
@@ -354,9 +354,9 @@ function v12_modifyBrkIdConfKeyInEq() {
 			}
 		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
-				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
+				jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+				jMQTT::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
 							"</br>@Stack: %3\$s,</br>@EqlogicId: %4\$s.",
 							__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $eqLogic->getId())));
 		}
@@ -429,9 +429,9 @@ function v12_moveCmdOutOfBrokers() {
 						$cmd->save();
 					} catch (Throwable $e) {
 						if (log::getLogLevel(__CLASS__) > 100)
-							self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
+							jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 						else
-							self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							jMQTT::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
 										"</br>@Stack: %3\$s,</br>@CmdId: %4\$s.",
 										__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $cmd->getId())));
 					}
@@ -439,9 +439,9 @@ function v12_moveCmdOutOfBrokers() {
 			}
 		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
-				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
+				jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+				jMQTT::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
 							"</br>@Stack: %3\$s,</br>@BrokerId: %4\$s.",
 							__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 		}
