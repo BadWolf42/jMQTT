@@ -326,7 +326,7 @@ function v12_modifyConfKeysInBrk() {
 			$broker->setCache('include_mode', null);
 
 			$broker->save();
-		} (Throwable $e) {
+		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 			else
@@ -352,7 +352,7 @@ function v12_modifyBrkIdConfKeyInEq() {
 				$eqLogic->setConfiguration('brkId', null);
 				$eqLogic->save(true); // Direct save to avoid issues while saving
 			}
-		} (Throwable $e) {
+		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 			else
@@ -427,7 +427,7 @@ function v12_moveCmdOutOfBrokers() {
 							$cmd->setJsonPath('');
 						}
 						$cmd->save();
-					} (Throwable $e) {
+					} catch (Throwable $e) {
 						if (log::getLogLevel(__CLASS__) > 100)
 							self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 						else
@@ -437,7 +437,7 @@ function v12_moveCmdOutOfBrokers() {
 					}
 				}
 			}
-		} (Throwable $e) {
+		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 			else
