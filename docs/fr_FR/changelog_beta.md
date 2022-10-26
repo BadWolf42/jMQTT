@@ -1,10 +1,11 @@
 # Registre des évolutions BETA
 
-## 2022-10-26 13:00
+## 2022-10-26 à 14h
+ - Correction d'un bug dans le script d'installation du plugin, **il est NÉCESSAIRE DE RESTAURER UNE BACKUP si vous avez mis à jour avec la version de la nuit**
  - Ajout de 8 templates : "Shelly 1 (Light)", "Shelly 1 (Relay)", "Shelly 1 (Relay & Temperature)", "Shelly 2.5 (Relay)" et "Shelly 2.5 (Roller Shutter)" (merci ngrataloup), "Shelly Bulb Duo RGBW" (merci Jeandhom), "Zwavejs2mqtt Fibaro Motion Sensor FGMS-001-ZW5" (merci mimilamy2000), "Zigbee2mqtt Lidl HG07834B" (merci seb49), "Zwavejs2mqtt NodOn Wall Switch CWS-3-1-01" (merci pifou)
  - Retrait de 2 anciens templates : "Zwave2mqtt Qubino ZMNHCD" et "Zwave2mqtt Qubino ZMNHOD"
 
-## 2022-10-26 01:01 Mode Temps Réel
+## 2022-10-26 à 01h Mode Temps Réel
  - **Suppression du mode "Inclusion" au profit du mode "Temps Réel"**
  - Utilisation des fonctions de suppression du Core avec un résumé des liaisons
  - Suppression du bouton pour effectuer un changement de Broker, c'est fait à la sauvegarde de l'équipement
