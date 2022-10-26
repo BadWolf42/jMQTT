@@ -8,6 +8,7 @@
             "auto_add_cmd": "0",
             "auto_add_topic": "%s\/#",
             "Qos": "1",
+            "commentaire": "Zigbee2mqtt Lidl HG07834B\nAmpoule LED E14 Blanc 2000-6500K, 16M couleurs\nGithub: https:\/\/github.com\/Domochip\/jMQTT\/pull\/220",
             "icone": "lightbulb",
             "updatetime": "2022-10-02 12:04:43"
         },

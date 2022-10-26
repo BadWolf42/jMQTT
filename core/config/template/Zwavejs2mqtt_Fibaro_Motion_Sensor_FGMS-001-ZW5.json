@@ -1,45 +1,82 @@
 {
-    "Zwavejs2mqtt Fibaro FGD-212 Dimmer 2": {
-        "name": "Zwavejs2mqtt Fibaro FGD-212 Dimmer 2",
+    "Zwavejs2mqtt Fibaro Motion Sensor FGMS-001-ZW5": {
+        "name": "Zwavejs2mqtt Fibaro Motion Sensor FGMS-001-ZW5",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
-            "createtime": "2021-06-03 17:58:08",
+            "createtime": "2022-07-21 00:36:46",
             "auto_add_cmd": "0",
+            "auto_add_topic": "%s\/#",
+            "commentaire": "Fibaro Motion Sensor FGMS-001-ZW5\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template-discussions\/72902\/48",
             "Qos": "1",
-            "battery_type": "Secteur",
-            "commentaire": "Fibaro FGD-212 Dimmer 2\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
-            "icone": "dimmer",
-            "updatetime": "2021-06-05 12:12:36",
-            "auto_add_topic": "%s\/#"
+            "icone": "motion-sensor",
+            "updatetime": "2022-07-23 15:53:24",
+            "batterytime": "2022-07-21 10:25:24",
+            "battery_cmd": "15206"
         },
         "category": {
             "heating": "0",
             "security": "0",
             "energy": "0",
-            "light": "1",
+            "light": "0",
             "opening": "0",
             "automatism": "0",
             "multimedia": "0",
             "default": "0"
         },
-        "display": {
-            "width": "232px",
-            "height": "312px"
-        },
         "status": {
-            "lastCommunication": "2021-09-10 15:19:35"
+            "lastCommunication": "2022-07-24 18:52:17",
+            "enableDatime": "2022-07-24 18:52:17"
         },
-        "logicalId": "",
         "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "temperature",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Air_temperature",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "batterie",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/128\/0\/level",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
             {
                 "eqType": "jMQTT",
                 "name": "Etat",
                 "type": "info",
-                "subType": "numeric",
+                "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/currentValue",
+                    "topic": "%s\/156\/0\/state\/0",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -54,113 +91,12 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "On",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "99",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "value": "Etat",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Off",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "0",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "value": "Etat",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Intensité",
-                "type": "action",
-                "subType": "slider",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "#slider#",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "value": "Etat",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Intensité 10",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "10",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "value": "Etat",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Intensité 20",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "20",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "value": "Etat",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Puissance",
+                "name": "Présence",
                 "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "W",
+                "subType": "binary",
+                "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66049",
+                    "topic": "%s\/48\/0\/Any",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -175,14 +111,93 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Consommation",
+                "name": "Luminosité",
                 "type": "info",
                 "subType": "numeric",
                 "isHistorized": "0",
-                "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65536",
+                    "topic": "%s\/49\/0\/Illuminance",
                     "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Sabotage",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/156\/0\/state\/0",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie-Alerte",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/128\/0\/isLow",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Statut nœud",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[status]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "nodeId",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[nodeId]"
                 },
                 "template": {
                     "dashboard": "core::default",

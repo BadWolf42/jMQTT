@@ -127,7 +127,7 @@ class jMqttClient:
 		if 'port' not in self.message:
 			self.message['port'] = ''
 		if self.message['port'] == '':
-			self.mqttport = {'mqtt': 1883, 'mqtts': 8883, 'ws': 1884, 'wss': 8884}.get(message['proto'], 1883)
+			self.mqttport = {'mqtt': 1883, 'mqtts': 8883, 'ws': 1884, 'wss': 8884}.get(self.message['proto'], 1883)
 		self.mqttport = self.message['port'] if 'port' in self.message else 1883
 		self.mqttlwt = self.message['lwt']
 		self.mqttlwt_topic = self.message['lwtTopic']
@@ -167,7 +167,7 @@ class jMqttClient:
 				# Get authority type
 				tlscheck = 'public' if ('tlscheck' not in self.message) else self.message['tlscheck']
 				insecure = tlscheck == 'disabled'
-				reqs = ssl.CERT_NONE if insecure else ssl.CERT_REQUIRED
+				reqs = mqtt.ssl.CERT_NONE if insecure else mqtt.ssl.CERT_REQUIRED
 				# Get CA cert if needed
 				certs = None
 				if tlscheck == 'private' and 'tlsca' in self.message:

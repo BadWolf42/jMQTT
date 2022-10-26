@@ -1757,7 +1757,7 @@ class jMQTT extends eqLogic {
 
 			// Enable Interactions
 			if ($broker->getConf(self::CONF_KEY_MQTT_INT)) {
-				$broker->log('info', sprintf(__("Souscription au topic d'Intercation '%s'", __FILE__), $broker->getConf(self::CONF_KEY_MQTT_INT_TOPIC)));
+				$broker->log('info', sprintf(__("Souscription au topic d'Interaction '%s'", __FILE__), $broker->getConf(self::CONF_KEY_MQTT_INT_TOPIC)));
 				$broker->subscribeTopic($broker->getConf(self::CONF_KEY_MQTT_INT_TOPIC), '1');
 				$broker->subscribeTopic($broker->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/advanced', '1');
 			} else
