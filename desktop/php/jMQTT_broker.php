@@ -170,14 +170,6 @@
 							</div>
 						</div>
 
-						<div class="form-group">
-							<label class="col-lg-4 control-label">{{Topic du mode Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
-							title="{{Topic de souscription utilisé lorsque le mode Temps Réel est actif sur ce Broker. '#' par défaut, donc tous les Topics.}}"></i></sup></label>
-							<div class="col-lg-7">
-								<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttIncTopic" placeholder="#" />
-							</div>
-						</div>
-
 						<div class="form-group"><br /></div>
 					</fieldset>
 				</div>

@@ -126,12 +126,18 @@ jmqtt.updateRealTimeButtons = function(enabled, active) {
 	if (!enabled) {       // Disable buttons if eqBroker is disabled
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().addClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
+		$('#mqttIncTopic').attr('disabled', '');
+		$('#mqttExcTopic').attr('disabled', '');
 	} else if (!active) { // Show only startRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
+		$('#mqttIncTopic').removeAttr('disabled');
+		$('#mqttExcTopic').removeAttr('disabled');
 	} else {              // Show only stopRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
+		$('#mqttIncTopic').attr('disabled', '');
+		$('#mqttExcTopic').attr('disabled', '');
 	}
 }
 
@@ -290,7 +296,9 @@ jmqtt.setRealTimeMode = function(_id, _mode) {
 		data: {
 			action: "changeRealTimeMode",
 			mode: _mode,
-			id: _id
+			id: _id,
+			subscribe: $('#mqttIncTopic').val(),
+			exclude: $('#mqttExcTopic').val()
 		}
 	});
 }

@@ -45,7 +45,6 @@ class jMQTT extends eqLogic {
 	const CONF_KEY_MQTT_LWT_TOPIC       = 'mqttLwtTopic';
 	const CONF_KEY_MQTT_LWT_ONLINE      = 'mqttLwtOnline';
 	const CONF_KEY_MQTT_LWT_OFFLINE     = 'mqttLwtOffline';
-	const CONF_KEY_MQTT_REALTIME_TOPIC  = 'mqttIncTopic';
 	const CONF_KEY_MQTT_PROTO           = 'mqttProto';
 	const CONF_KEY_MQTT_TLS_CHECK       = 'mqttTlsCheck';
 	const CONF_KEY_MQTT_TLS_CA          = 'mqttTlsCa';
@@ -70,6 +69,8 @@ class jMQTT extends eqLogic {
 	const CACHE_DAEMON_UID              = 'daemonUid';
 	const CACHE_IGNORE_TOPIC_MISMATCH   = 'ignore_topic_mismatch';
 	const CACHE_REALTIME_MODE           = 'realtime_mode';
+	const CACHE_REALTIME_INC_TOPICS     = 'mqttIncTopic';
+	const CACHE_REALTIME_EXC_TOPICS     = 'mqttExcTopic';
 	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
 	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
 
@@ -199,7 +200,7 @@ class jMQTT extends eqLogic {
 				break;
 			}
 		if (!$exists)
-			throw new Exception(__('Le template demandé n\'existe pas !', __FILE__));
+			throw new Exception(__("Le template demandé n'existe pas !", __FILE__));
 		// self::logger('debug', '    get='.__DIR__ . '/../../../../' . $_filename);
 		try {
 			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../../../' . $_filename);
@@ -717,7 +718,6 @@ class jMQTT extends eqLogic {
 				self::CONF_KEY_MQTT_LWT_TOPIC,
 				self::CONF_KEY_MQTT_LWT_ONLINE,
 				self::CONF_KEY_MQTT_LWT_OFFLINE,
-				self::CONF_KEY_MQTT_REALTIME_TOPIC,
 				self::CONF_KEY_MQTT_TLS_CHECK,
 				self::CONF_KEY_MQTT_TLS_CA,
 				self::CONF_KEY_MQTT_TLS_CLI,
@@ -824,17 +824,6 @@ class jMQTT extends eqLogic {
 						$stopped = true;
 					}
 					$startRequested = true;
-				}
-
-				// Real Time mode Topic changed
-				if ($this->_preSaveInformations[self::CONF_KEY_MQTT_REALTIME_TOPIC] != $this->getConf(self::CONF_KEY_MQTT_REALTIME_TOPIC)) {
-					// If MqttClient not stopped and Real Time mode is enabled
-					if (!$stopped && $this->getRealTimeMode()) {
-						//Unsubscribe previous Real Time topic
-						$this->unsubscribeTopic($this->_preSaveInformations[self::CONF_KEY_MQTT_REALTIME_TOPIC]);
-						//Subscribe the Real Time topic
-						$this->subscribeTopic($this->getConf(self::CONF_KEY_MQTT_REALTIME_TOPIC), $this->getQos());
-					}
 				}
 
 				// LWT Topic changed
@@ -1986,10 +1975,30 @@ class jMQTT extends eqLogic {
 		}
 
 		if ($this->getRealTimeMode()) {
-			$eqNames = '';
-			foreach($elogics as $eq)
-				$eqNames .= '<br />#'.$eq->getHumanName().'#';
-			$this->sendMqttRealTimeEvent($msgTopic, $msgValue, $msgQos, $msgRetain, $eqNames);
+			$sendRealTime = False;
+			// Check for subscriptions
+			foreach($this->getCache(self::CACHE_REALTIME_INC_TOPICS, []) as $t) {
+				if(mosquitto_topic_matches_sub($t, $msgTopic)) {
+					$sendRealTime = True;
+					break;
+				}
+			}
+			if ($sendRealTime) {
+				// Check for exclusions
+				foreach($this->getCache(self::CACHE_REALTIME_EXC_TOPICS, []) as $t) {
+					if(mosquitto_topic_matches_sub($t, $msgTopic)) {
+						$sendRealTime = False;
+						break;
+					}
+				}
+				if ($sendRealTime) {
+					// Send event to WebUI
+					$eqNames = '';
+					foreach($elogics as $eq)
+						$eqNames .= '<br />#'.$eq->getHumanName().'#';
+					$this->sendMqttRealTimeEvent($msgTopic, $msgValue, $msgQos, $msgRetain, $eqNames);
+				}
+			}
 		}
 
 /* TODO Check if this should deleted or not
@@ -2268,7 +2277,6 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_MQTT_TLS_CLI => '0',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
 			self::CONF_KEY_AUTO_ADD_TOPIC => '',
-			self::CONF_KEY_MQTT_REALTIME_TOPIC => '#',
 			self::CONF_KEY_MQTT_INT => '0',
 			self::CONF_KEY_MQTT_API => '0',
 			self::CONF_KEY_BRK_ID => -1
@@ -2452,31 +2460,43 @@ class jMQTT extends eqLogic {
 	 * Called by ajax when the button is pressed by the user
 	 * @param int $mode 0 or 1
 	 */
-	public function changeRealTimeMode($mode) {
-
-		// Update the Real Time mode value
-		$this->setCache(self::CACHE_REALTIME_MODE, $mode);
-		if ($mode)
-			$this->log('info', __("Mode Temps Réel activé", __FILE__));
-		else
-			$this->log('info', __("Mode Temps Réel désactivé", __FILE__));
-		$this->sendMqttClientStateEvent();
-
+	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#') {
 		// A cron process is used to reset the automatic mode after a delay
 		// If the cron process is already defined, remove it
 		$cron = cron::byClassAndFunction(__CLASS__, 'disableRealTimeMode', array('id' => $this->getId()));
-		if (is_object($cron)) {
-			$cron->remove();
-		}
+		if (is_object($cron))
+			$cron->remove(false); // Do not halt a running cron (comming from disableRealTimeMode)
 
-		$realTimeTopic = $this->getConf(self::CONF_KEY_MQTT_REALTIME_TOPIC);
-
-		// If Real Time mode needs to be enabled
-		if ($mode == 1) {
-			// Subscribe Real Time topic
-			$this->log('debug', __("Inscription au topic Temps Réel du Broker", __FILE__));
-			$this->subscribeTopic($realTimeTopic, $this->getQos());
-
+		if($mode) { // If Real Time mode needs to be enabled
+			// Check if a subscription topic is provided
+			if (trim($subscribe) == '')
+				throw new Exception(__("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__));
+			$subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
+			// Cleanup subscriptions
+			$subscriptions = [];
+			foreach ($subscribe as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				// Subscribe Real Time topic
+				$this->subscribeTopic($t, $this->getQos());
+				$subscriptions[] = $t;
+			}
+			if (count($subscriptions) == 0)
+				throw new Exception(__("Impossible d'activer le mode Temps Réel sans topic de souscription", __FILE__));
+			// Cleanup exclusions
+			$exclude = (trim($exclude) == '') ? [] : explode('|', $exclude);
+			$exclusions = [];
+			foreach ($exclude as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$exclusions[] = $t;
+			}
+			// Update cache
+			$this->setCache(self::CACHE_REALTIME_MODE, $mode);
+			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, $subscriptions);
+			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, $exclusions);
 			// Create and configure the cron process to disable Real Time mode later
 			$cron = new cron();
 			$cron->setClass(__CLASS__);
@@ -2488,8 +2508,16 @@ class jMQTT extends eqLogic {
 			$cron->save();
 		} else { // Real Time mode needs to be disabled
 			// Unsubscribe Real Time topic
-			$this->unsubscribeTopic($realTimeTopic);
+			foreach ($this->getCache(self::CACHE_REALTIME_INC_TOPICS, []) as $t)
+				$this->unsubscribeTopic(trim($t));
+			// Update cache
+			$this->setCache(self::CACHE_REALTIME_MODE, $mode);
+			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, null);
+			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, null);
 		}
+		// Send event to WebUI and write a log
+		$this->sendMqttClientStateEvent();
+		$this->log('info', $mode ? __("Mode Temps Réel activé", __FILE__) : __("Mode Temps Réel désactivé", __FILE__));
 	}
 
 	/**
