@@ -29,6 +29,10 @@ class jMQTT extends eqLogic {
 
 	const FORCE_DEPENDANCY_INSTALL      = 'forceDepInstall';
 
+	const CLIENT_STATUS                 = 'status';
+	const OFFLINE                       = 'offline';
+	const ONLINE                        = 'online';
+
 	const MQTTCLIENT_OK                 = 'ok';
 	const MQTTCLIENT_POK                = 'pok';
 	const MQTTCLIENT_NOK                = 'nok';
@@ -109,6 +113,12 @@ class jMQTT extends eqLogic {
 	 * @var jMQTT broker object
 	 */
 	private $_broker;
+
+	/**
+	 * Status command of the broker related to this object
+	 * @var jMQTTCmd
+	 */
+	private $_statusCmd;
 
 	/**
 	 * Log file related to this broker.
@@ -743,6 +753,9 @@ class jMQTT extends eqLogic {
 		// ------------------------ Broker eqpt ------------------------
 		if ($this->getType() == self::TYP_BRK) {
 
+			// Create Status cmd
+			$this->getMqttClientStatusCmd(true);
+
 			// --- New broker ---
 			if (is_null($this->_preSaveInformations)) {
 
@@ -761,6 +774,8 @@ class jMQTT extends eqLogic {
 				// isEnable changed
 				if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
 					if ($this->getIsEnable()) {
+						$this->getMqttClientStatusCmd(true)->event(self::OFFLINE); // Force current status to offline
+						$this->setStatus('warning', 1); // And a warning
 						$startRequested = true; //If nothing happens in between, it will be restarted
 					} else {
 						// Note that $stopped is always true here
@@ -1328,7 +1343,7 @@ class jMQTT extends eqLogic {
 		if (file_exists($pid_file = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid'))
 			shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 		// Delete in cache the daemon uid (as it is disconnected)
-		self::clean_cache();
+		cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
 		// Remove listeners
 		self::listenersRemoveAll();
 		// Get all brokers and set them as disconnected
@@ -1679,7 +1694,7 @@ class jMQTT extends eqLogic {
 			throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
 		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
 		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
-		$this->sendMqttClientStateEvent();
+		$this->sendMqttClientStateEvent(); // TODO Check if needed (done in brkUp)
 		// Preparing some additional data for the broker
 		$params = array();
 		$params['hostname']          = $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
@@ -1724,9 +1739,12 @@ class jMQTT extends eqLogic {
 	 * Stop the MQTT Client of this broker type object
 	 */
 	public function stopMqttClient() {
+		$daemon_info = self::deamon_info();
+		if ($daemon_info['state'] == self::MQTTCLIENT_NOK)
+			return; // Return if client is not running
 		$this->log('info', __('Arrêt du Client MQTT', __FILE__));
 		self::toDaemon_removeClient($this->getId());
-		$this->sendMqttClientStateEvent();
+		$this->sendMqttClientStateEvent(); // TODO Check if needed (done in brkDown)
 	}
 
 
@@ -1734,6 +1752,8 @@ class jMQTT extends eqLogic {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
+			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(true), self::ONLINE); // If not existing at brkUp, create it
+			$broker->setStatus('warning', null);
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
 			$broker->sendMqttClientStateEvent();
@@ -1782,14 +1802,19 @@ class jMQTT extends eqLogic {
 				self::logger('error', sprintf(__("L'équipement %s n'est pas de type Broker", __FILE__), $id));
 				return;
 			}
-			if ($broker->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false)) {
-				$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false); // Save in cache that Mqtt Client is disconnected
-				// if Real Time mode is enabled, disable it
-				if ($broker->getRealTimeMode())
-					$broker->changeRealTimeMode(0);
-				cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
-				$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
-			}
+			// Save in cache that Mqtt Client is disconnected
+			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
+
+			// If command exists update the status (used to get broker connection status inside Jeedom)
+			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(), self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+			$broker->setStatus('warning', $broker->getIsEnable() ? 1 : null); // Also set a warning if eq is enabled (should be always true)
+
+			// if Real Time mode is enabled, disable it
+			if ($broker->getRealTimeMode())
+				$broker->changeRealTimeMode(0);
+
+			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+			$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
 			$broker->sendMqttClientStateEvent();
 		} catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
@@ -2183,6 +2208,27 @@ class jMQTT extends eqLogic {
 		if ($this->getType() == self::TYP_EQPT)
 			$broker->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
 		// $this->log('debug', __('Message publié', __FILE__));
+	}
+
+	/**
+	 * Return the MQTT status information command of this broker
+	 * It is the responsability of the caller to check that this object is a broker before
+	 * calling the method.
+	 * If $creat, then create and save the MQTT status information command of this broker if not already existing
+	 * @param $create bool create the command if it does not exist
+	 * @return cmd status information command.
+	 */
+	public function getMqttClientStatusCmd($create = false) {
+		if (!is_object($this->_statusCmd)) // Get cmd if it exists
+			$this->_statusCmd = cmd::byEqLogicIdAndLogicalId($this->getId(), self::CLIENT_STATUS);
+		if ($create && !is_object($this->_statusCmd)) { // status cmd does not exist
+			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, '', ''); // Topic and jsonPath are irrelevant here
+			$cmd->setLogicalId(self::CLIENT_STATUS);
+			$cmd->setConfiguration('irremovable', 1);
+			$cmd->save();
+			$this->_statusCmd = $cmd;
+		}
+		return $this->_statusCmd;
 	}
 
 	###################################################################################################################

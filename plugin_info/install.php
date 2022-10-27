@@ -106,9 +106,9 @@ function tagBrokersStatusCmd() {
 		// for each cmd of this broker
 		foreach (jMQTTCmd::byEqLogicId($broker->getId()) as $cmd) {
 			// if name is 'status'
-			if ($cmd->getName() == 'status') {
+			if ($cmd->getName() == jMQTT::CLIENT_STATUS) {
 				//set logicalId to status (new method to manage broker status cmd)
-				$cmd->setLogicalId('status');
+				$cmd->setLogicalId(jMQTT::CLIENT_STATUS);
 				$cmd->save();
 			}
 		}
@@ -364,90 +364,6 @@ function v12_modifyBrkIdConfKeyInEq() {
 	jMQTT::logger('info', __("Clés de configuration des Brokers jMQTT modifiées", __FILE__));
 }
 
-function v12_moveCmdOutOfBrokers() {
-	// for each Broker
-	foreach ((jMQTT::getBrokers()) as $broker) {
-		try {
-			// prepare a slot for the new eqLogic (if needed)
-			$newEq = null;
-			// search for a name for the new eqLogic (if needed)
-			$newEqName = '';
-			$objectName = is_object($broker->getObject()) ? $broker->getObject()->getName() : __('Aucun', __FILE__);
-			for ($i = 0; $i < 10; $i++) {
-				$tmpName = $broker->getName().' '.(($i == 0) ? 'Status' : $i);
-				$eqLogic = eqLogic::byObjectNameEqLogicName($objectName, $tmpName);
-				if (!isset($eqLogic[0]) || !is_object($eqLogic[0])) {
-					$newEqName = $tmpName;
-					break;
-				}
-			}
-			if ($newEqName == '') // Failsafe on name
-				$newEqName = hash("md4", $objectName . $broker->getName() . rand());
-			// for each cmd on Broker
-			foreach (jMQTTCmd::byEqLogicId($broker->getId()) as $cmd) {
-				// Check if cmds are used
-				$used = false;
-				foreach ($cmd->getUsedBy() as $item=>$val) {
-					if ($val != array()) {
-						$used = true;
-						break;
-					}
-				}
-				if (!$used && !$broker->getConfiguration('mqttPubStatus', '0')) { // Status cmd not used, just remove it.
-					jMQTT::logger('info', sprintf(__("La commande #%1\$s# sur le Broker #%2\$s# n'est pas utilisée, elle va être supprimée", __FILE__),
-												  $cmd->getHumanName(), $broker->getHumanName()));
-					$cmd->remove();
-				} else { // Cmd is in use, migrate is to a new Eq.
-					try {
-						jMQTT::logger('info', sprintf(__("La commande #%1\$s# sur le Broker #%2\$s# va être déplacée vers le nouvel équipement #[%3\$s][%4\$s]#", __FILE__),
-													  $cmd->getHumanName(), $broker->getHumanName(), $objectName, $newEqName));
-						if (!is_object($newEq)) {
-							// enable/set new eq etc
-							$newEq = new jMQTT();
-							$newEq->setName($newEqName);
-							$newEq->setObject_id($broker->getObject_id());
-							$newEq->setIsVisible($broker->getIsVisible());
-							$newEq->setIsEnable($broker->getIsEnable());
-							foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
-								$newEq->setCategory($key, $broker->getCategory($key, '0'));
-							$newEq->setBrkId($broker->getId());
-							$newEq->setAutoAddCmd('0');
-							$newEq->setTopic('#');
-							$newEq->save();
-							event::add('jMQTT::eqptAdded', array('eqlogic_name' => $newEqName));
-						}
-						// move 'status' cmd from broker to new eq
-						$cmd->setEqLogic($newEq);
-						$cmd->setEqLogic_id($newEq->getId());
-						// cleanup 'status' cmd from broker to new eq
-						$cmd->setLogicalId('');
-						$cmd->setConfiguration('irremovable', 0);
-						if ($cmd->getTopic() == '') {
-							$cmd->setTopic($broker->getConf(jMQTT::CONF_KEY_MQTT_CLIENT_ID) . '/status');
-							$cmd->setJsonPath('');
-						}
-						$cmd->save();
-					} catch (Throwable $e) {
-						if (log::getLogLevel(jMQTT::class) > 100)
-							jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
-						else
-							jMQTT::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-										"</br>@Stack: %3\$s,</br>@CmdId: %4\$s.",
-										__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $cmd->getId())));
-					}
-				}
-			}
-		} catch (Throwable $e) {
-			if (log::getLogLevel(jMQTT::class) > 100)
-				jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
-			else
-				jMQTT::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"</br>@Stack: %3\$s,</br>@BrokerId: %4\$s.",
-							__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
-		}
-	}
-}
-
 function jMQTT_install() {
 	jMQTT::logger('debug', 'install.php: jMQTT_install()');
 	jMQTT_update(false);
@@ -535,7 +451,6 @@ function jMQTT_update($_direct=true) {
 		if ($versionFromDB < 12) {
 			v12_modifyConfKeysInBrk();
 			v12_modifyBrkIdConfKeyInEq();
-			v12_moveCmdOutOfBrokers();
 			config::save(VERSION, 12, 'jMQTT');
 		}
 	}

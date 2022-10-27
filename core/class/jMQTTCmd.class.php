@@ -224,19 +224,13 @@ class jMQTTCmd extends cmd {
 	 */
 	public function preSave() {
 		// Check if name is unique on the equipment for a New cmd
-			$this->getEqLogic()->log('warning', 'this is it !');
 		if ($this->getId() == '' && is_object(jMQTTCmd::byEqLogicIdCmdName($this->getEqLogic()->getId(), $this->getName()))) {
 			throw new Exception(sprintf(__("Impossible de créer la commande <b>#%s#</b>, car une commande avec le même nom existe déjà !", __FILE__), $this->getHumanName()));
 		}
 
 		// --- New cmd or Existing cmd ---
-		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
-		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
-		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
-			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
-
-		// Command on a Broker must fail
-		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK) {
+		// Save a command on a Broker must fail, except status command
+		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getLogicalId() != jMQTT::CLIENT_STATUS) {
 			if ($this->getId() == '') {
 				$err  = __("Impossible de créer la commande <b>#%1\$s#</b>, ", __FILE__);
 				$err .= __("car il ne peut pas y avoir de commande sur un équipement Broker (%2\$s#)", __FILE__);
@@ -247,6 +241,11 @@ class jMQTTCmd extends cmd {
 			}
 			throw new Exception(sprintf($err, $this->getHumanName(), $this->getEqLogic()->getName()));
 		}
+
+		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
+		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
+		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
+			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
 
 		// Reset autoPub if info cmd (should not happen or be possible)
 		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
@@ -298,6 +297,11 @@ class jMQTTCmd extends cmd {
 	public function postSave() {
 		$eqLogic = $this->getEqLogic();
 
+		// Nothing must be done in postSave on Broker command
+		if ($eqLogic->getType() == jMQTT::TYP_BRK)
+			return;
+
+
 		// If _preSaveInformations is null, It's a fresh new cmd.
 		if (is_null($this->_preSaveInformations)) {
 
@@ -320,10 +324,10 @@ class jMQTTCmd extends cmd {
 				}
 			}
 
-			// Only update listener on Eq (not Broker) at creation
-			if ($eqLogic->getType() == jMQTT::TYP_EQPT)
-				$this->listenerUpdate();
+			// Update listener on Eq (not Broker) at creation
+			$this->listenerUpdate();
 
+			// Send an event regarding this new cmd
 			$this->eventNewCmd();
 		}
 		else { // the cmd has been updated
@@ -346,18 +350,14 @@ class jMQTTCmd extends cmd {
 			}
 
 			// Only Update listener if "autoPub" or "request" has changed
-			if ($eqLogic->getType() == jMQTT::TYP_EQPT &&
-					($this->_preSaveInformations[self::CONF_KEY_AUTOPUB] != $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0) ||
-					 $this->_preSaveInformations[self::CONF_KEY_REQUEST] != $this->getConfiguration(self::CONF_KEY_REQUEST, '')))
+			if ($this->_preSaveInformations[self::CONF_KEY_AUTOPUB] != $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)
+					|| $this->_preSaveInformations[self::CONF_KEY_REQUEST] != $this->getConfiguration(self::CONF_KEY_REQUEST, ''))
 				$this->listenerUpdate();
 		}
 
-		// For Equipments
-		if ($eqLogic->getType() == jMQTT::TYP_EQPT) {
-			// For info commands, check that the topic is compatible with the subscription command
-			if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0) && !$this->topicMatchesSubscription($eqLogic->getTopic())) {
-				$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible du topic de l'équipement associé", __FILE__), $this->getHumanName()));
-			}
+		// For info commands (on Equipments), log that the topic is compatible with the subscription command
+		if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0) && !$this->topicMatchesSubscription($eqLogic->getTopic())) {
+			$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible du topic de l'équipement associé", __FILE__), $this->getHumanName()));
 		}
 	}
 
