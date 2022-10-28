@@ -163,14 +163,50 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
 			<div role="tabpanel" class="tab-pane toDisable" id="realtimetab">
-				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped">
+				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped tablesorter stickyHead">
 					<thead>
 						<tr>
-							<th style="min-width:170px;width:170px;">{{Date du message}}</th>
-							<th style="min-width:180px;">{{Topic}}</th>
-							<th style="min-width:180px;">{{Valeur}}</th>
-							<th style="min-width:60px;width:70px;">{{Options}}</th>
-							<th style="min-width:100px;width:100px;"></th>
+							<td colspan="5" data-sorter="false" data-filter="false">
+								<label class="col-lg-2 control-label">{{Topics de souscription Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
+								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
+								<br />Par défaut, le topic de souscritpion est '#', donc tous les topics, ce qui peut être beaucoup sur cetaines installations.}}"></i></sup></label>
+								<div class="col-lg-3">
+									<input class="form-control" id="mqttIncTopic" value="#" />
+								</div>
+								<label class="col-lg-1 control-label"></label>
+								<label class="col-lg-2 control-label">{{Topics exclus du Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
+								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
+								<br />Par défaut, le topic d'auto-découverte HA ('homeassistant/#') est exclu, car il est trop verbeux.}}"></i></sup></label>
+								<div class="col-lg-3">
+									<input class="form-control" id="mqttExcTopic" value="homeassistant/#" />
+								</div>
+								<div class="col-lg-1">
+									<a class="btn btn-warning btn-sm pull-right eqLogicAction" data-action="emptyRealTime"><i class="fas fa-trash"></i> {{Vider}}</a>&nbsp;
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="5" data-sorter="false" data-filter="false">
+								<div class="pager">
+									<nav class="left" style="float:left;">
+										<a href="#" class="current">10</a> | <a href="#">50</a> | <a href="#">100</a> | <a href="#">200</a> {{par page}}
+									</nav>
+									<nav class="right" style="float:right;">
+										<span class="prev cursor"><i class="fas fa-arrow-left"></i></span>
+										<span class="pagecount"></span>
+										<span class="next cursor"><i class="fas fa-arrow-right"></i></span>
+									</nav>
+								<div>
+							</td>
+						</tr>
+						<tr>
+							<th data-sorter="text">{{Date du message}}</th>
+							<th data-sorter="inputs">{{Topic}}</th>
+							<th data-sorter="inputs">{{Valeur}}</th>
+							<th>{{Options}}</th>
+							<th data-sorter="false" data-filter="false"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -204,5 +240,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	</div>
 </div>
 
+<?php include_file('3rdparty', 'jquery.tablesorter/extras/jquery.tablesorter.pager.min', 'js'); ?>
+<?php include_file('3rdparty', 'jquery.tablesorter/_jeedom/pager-custom-constrols', 'js'); ?>
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>

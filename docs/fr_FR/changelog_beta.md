@@ -1,6 +1,12 @@
 # Registre des évolutions BETA
 
-## 2022-10-26 à 14h
+## 2022-10-29
+ - **Retour en arrière sur la suppression des commandes 'status' sur les équipements Broker permettant d'avoir l'état de connexion de jMQTT au Broker**
+ - Mise en warning des équipements Broker lorsqu'ils n'arrivent pas à se connecter
+ - Amélioration du mode Temps Réel
+ - Mise à jour de la documentation
+
+## 2022-10-26 à 15h
  - Correction d'un bug dans le script d'installation du plugin, **il est NÉCESSAIRE DE RESTAURER UNE BACKUP si vous avez mis à jour avec la version de la nuit**
  - Ajout de 8 templates : "Shelly 1 (Light)", "Shelly 1 (Relay)", "Shelly 1 (Relay & Temperature)", "Shelly 2.5 (Relay)" et "Shelly 2.5 (Roller Shutter)" (merci ngrataloup), "Shelly Bulb Duo RGBW" (merci Jeandhom), "Zwavejs2mqtt Fibaro Motion Sensor FGMS-001-ZW5" (merci mimilamy2000), "Zigbee2mqtt Lidl HG07834B" (merci seb49), "Zwavejs2mqtt NodOn Wall Switch CWS-3-1-01" (merci pifou)
  - Retrait de 2 anciens templates : "Zwave2mqtt Qubino ZMNHCD" et "Zwave2mqtt Qubino ZMNHOD"
@@ -13,10 +19,10 @@
  - Amélioration du code JS pour rendre le plugin plus léger et réactif lors du chargement
 
 ## 2022-10-19 Interactions
- - **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker**
+ - --- Annulé par la version 2022-10-19 --- **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker**
  - **Meilleure gestion du "topicMismatch", avertissement avant de sauvegarder et visuellement dans les champs lors de la saisie**
  - **Ajout du support des Interactions Jeedom via MQTT**
- - Support minimum de la version 4.2.11 de Jeedom
+ - Support minimum avancé à la version 4.2.11 de Jeedom (au lieu de la version 4.2.16)
  - Ajout du transport du protocole MQTT sur Web Sockets (ws) et Web Sockets Secure (wss)
  - Ajout de champs dans le broker pour définir le topic LWT et les valeurs quand le broker est en-ligne et hors-ligne
  - Mise en place de champs dans le broker pour définir le topic API

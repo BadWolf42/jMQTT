@@ -343,6 +343,7 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
+	$('#table_realtime').trigger("update");
 })
 
 
@@ -1180,6 +1181,7 @@ $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _option
 	_options.jsonPath = '';
 	var tr = jmqtt.newRealTimeCmd(_options);
 	$('#table_realtime tbody').prepend(tr);
+	$('#table_realtime').trigger("update");
 });
 
 
@@ -1265,4 +1267,50 @@ $(document).ready(function() {
 		}
 	});
 
+	// Button to empty RealTime view
+	$('.eqLogicAction[data-action=emptyRealTime]').on('click', function() {
+		$('#table_realtime tbody').empty();
+		$('#table_realtime').trigger("update");
+	});
+
+	jeedomUtils.initTableSorter();
+	$("#table_realtime")[0].config.widgetOptions.resizable_widths = ['180px', '', '', '80px', '130px'];
+	$("#table_realtime").trigger('resizableReset');
+	$("#table_realtime").width('100%');
+	$.tablesorter.addParser({
+		id: 'topics',
+		is: function() {
+			return false
+		},
+		format: function(s, table, cell, cellIndex) {
+			val = $(cell).find('.cmdAttr[data-l1key=topic]').val() + ' ' + $(cell).find('.cmdAttr[data-l1key=jsonPath]').val();
+			console.log(cell, val);
+			return val;
+		},
+		type: 'text'
+	})
+	$.tablesorter.customPagerControls({
+		table          : $("#table_realtime"),        // point at correct table (string or jQuery object)
+		pager          : $('.pager'),                 // pager wrapper (string or jQuery object)
+		pageSize       : '.left a',                   // container for page sizes
+		currentPage    : '.right a',                  // container for page selectors
+		ends           : 2,                           // number of pages to show of either end
+		aroundCurrent  : 1,                           // number of pages surrounding the current page
+		link           : '<a href="#">{page}</a>',    // page element; use {page} to include the page number
+		currentClass   : 'current',                   // current page class name
+		adjacentSpacer : '<span> | </span>',          // spacer for page numbers next to each other
+		distanceSpacer : '<span> &#133; <span>',      // spacer for page numbers away from each other (ellipsis = &#133;)
+		addKeyboard    : true,                        // use left,right,up,down,pageUp,pageDown,home, or end to change current page
+		pageKeyStep    : 10,                          // page step to use for pageUp and pageDown
+	});
+	$("#table_realtime").tablesorterPager({
+		container: $('.pager'),
+		size: 10,
+		savePages: false,
+		page: 0,
+		pageReset: 0,
+		removeRows: false,
+		countChildRows: false,
+		output: 'showing: {startRow} to {endRow} ({filteredRows})'
+	});
 });

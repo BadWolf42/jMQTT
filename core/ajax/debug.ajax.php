@@ -125,8 +125,6 @@ try {
 		$res = array();
 		foreach (jMQTT::getBrokers() as $brk) {
 			$cacheBrkKeys = array();
-			$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_REALTIME_MODE;
-			$cacheBrkKeys[] = 'jMQTT::' . $brk->getId() . '::' . jMQTT::CACHE_LAST_LAUNCH_TIME;
 			$cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
 			$cacheBrkKeys[] = 'eqLogicStatusAttr'.$brk->getId();
 			$data = array();

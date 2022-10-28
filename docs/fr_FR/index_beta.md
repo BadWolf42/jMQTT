@@ -105,7 +105,7 @@ En-dessous se trouve un champ de recherche, puis un panneau listant les équipem
 
 jMQTT possède 2 types d'équipements. Il est très important de faire la distinction entre :
   - les **équipements de type Broker**, qui sont les clients MQTT qui gèrent la connexion avec les Broker MQTT.
-On les retrouve toujours en début de section et ils sont facilement identifiables grâce à leur fond jaune et leur icone particulière.
+On les retrouve toujours en début de section et ils sont facilement identifiables grâce à leur fond jaune et leur icône particulière.
 Ils sont souvent appelés **Broker** par abus de langage, ce sera le cas dans la suite de ce document;
   - les **équipements "classiques"**, qui portent les commandes info/action, ils sont simplement appelés **équipement**.
 
@@ -130,7 +130,7 @@ Il existe également une vue sous forme de table (TableView) :
 
 Elle s'active en cliquant sur le bouton tout à droite du champ de recherche (dans l'encadré rouge ci-dessus).
 
-En plus de retrouver dans cette vue les informations classiques (icone, objet, nom, s'il est activé), des icones à droite permettent de retrouver rapidement des informations importantes.
+En plus de retrouver dans cette vue les informations classiques (icône, objet, nom, s'il est activé), des icônes à droite permettent de retrouver rapidement des informations importantes.
   - Sur un Broker, on retrouvera 3 informations : son statut (OK, POK, NOK), s'il est visible et s'il est en Mode Temps Réel,
   - Sur un Equipement, on retrouvera 5 informations : son statut d'activation, s'il est visible, s'il est en ajout automatique de commande, son état de batterie et son état de disponibilité.
 
@@ -171,9 +171,8 @@ Pour modifier les informations de connexion au Broker, les paramètres sont :
     - _Client-Id_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
     - _Publier le statut (LWT)_ : active/désactive la publication du statut de connexion de cet équipement Broker en MQTT sur le Broker.
       Une fois cette option sélectionnée il sera possible de configurer le topic du LWT, ainsi que les messages envoyés lorsque jMQTT est connecté ou non.
-    - _Topic des interactions de Jeedom_ : topic de premettant d'envoyer des [demandes d'interaction](#TODO) à Jeedom (par défaut, le Client-Id suivi de '/interact' est utilisé).
+    - _Topic des interactions de Jeedom_ : topic de premettant d'envoyer des [demandes d'interaction](#gestion-des-interactions) à Jeedom (par défaut, le Client-Id suivi de '/interact' est utilisé).
     - _Topic de l'API de Jeedom_ : (obsolète) topic présentant l'API JSON RPC de Jeedom (par défaut, le Client-Id suivi de '/api' est utilisé).
-    - _Topic du mode Temps Réel_ : topic de souscription utilisé lorsque le [mode Temps Réel](#TODO) est activé (\# par défaut, i.e. tous les topics).
 
   - Section _Paramètres de Sécurité_ (encadré 2), bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls) :
     - Cette section apparait uniquement si le protocole mqtts est sélectionné
@@ -192,30 +191,52 @@ Il est aussi possible de relancer volontairement le client MQTT avec le bouton _
 
 **Info**
 
- - Dès que l'équipement Broker est activé, le démon se connecte au Broker MQTT et traite les messages.
- - Si vous désactivez un équipement Broker, les équipements associés ne recevront et n'enverront plus de messages.
- - En cas de déconnection intempestive au Broker MQTT, le démon tentera immédiatement une reconnexion, puis toutes les 15s.
+  - Dès que l'équipement Broker est activé, le démon se connecte au Broker MQTT et traite les messages.
+  - Si vous désactivez un équipement Broker, les équipements associés ne recevront et n'enverront plus de messages.
+  - En cas de déconnection intempestive au Broker MQTT, le démon tentera immédiatement une reconnexion, puis toutes les 15s.
 
 Chaque équipement Broker possède son propre fichier de log (encadré 4) suffixé par le nom de l'équipement.
 Si l'équipement est renommé, le fichier de log le sera également.
 
+#### Mode Temps Réel
 
-Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des messages qui arrivent (selon le Topic du mode Temps Réel configuré) et la création de nouvelles commandes sur les équipements.
-Il s’active, pour le Broker concerné, en cliquant sur le bouton *Mode Temps Réel* en haut à droite sur l'équipement Broker.
-Il se désactive en recliquant sur le même bouton, ou automatiquement après environ 3 minutes.
+Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des messages qui arrivent :
 
-<!-- TODO here
+![Mode Temps Réel](../images/2022-10-26_broker_realtime.png)
 
-Gestion des Interactions
+Après avoir configuré les Topics de souscription Temps Réel et éventuellement les Topics exclus du Temps Réel utilisés pour récupérer les messages (encadré 1)
 
--->
+Le mode temps réel s’active, pour le Broker concerné, en cliquant sur le bouton *Mode Temps Réel* en haut à droite sur l'équipement Broker et se désactive en recliquant sur le même bouton (encadré 2), ou automatiquement après environ 3 minutes.
+
+Les messages reçu sont stockés uniquement coté navigateur.
+
+Les Outils de recherche et de pagination (encadré 3) permettent de rechercher, trier et sélectionner facilement des messages MQTT.
+
+Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option (encadré 4) :
+
+  - Les icônes orange signifient que les messages ont été republiés lors de l'activation du mode Temps Réel et son stockées dans le Broker (elles sont Retain),
+  - Les icônes vertes montrent permettent de savoir que ce topic est déjà porté par un équipement jMQTT. En passant la souris sur l'icône les équipements concernés sont affichés.
+
+Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 5) pour les utiliser.
+
+  - La première icône permet d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
+  - La seconde de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,
+  - La troisième icône sert à supprimer la ligne de la vue Temps Réel.
+
+#### Gestion des Interactions
+
+Il est possible d'envoyer en MQTT des demandes d'interaction à Jeedom au travers du "Topic des interactions de Jeedom" décrit dans la section [Configuration de l'équipement Broker](#configuration).
+
+3 topic sont utilisé pour les interaction :
+
+ - jMQTT attend des demandes d'interaction directement sur le topic présent dans la case "Topic des interactions de Jeedom". Par exemple, pour exécuter la commande `#[Chambre][Lampe][On]#`, il est possible d'envoyer la demande "Allume la lampe dans la Chambre" sur ce topic.
+ - Une réponse du moteur d'interaction sera effectuée en json sur le sous-topic '/reply'. Par exemple, dans le cas précédent, la réponse `{"status":"ok","query":"","reply":"C'est fait (Chambre Lampe On)"}` y serait envoyée.
+ - Pour des attentes d'interaction particulières, il est aussi possible d'envoyer une demande en json selon les paramètres attendus par la fonction du Core Jeedom `interactQuery::tryToReply()` sur le sous-topic '/advanced'. Le format attendu est du type : `{"query": string, "reply_cmd": <cmdId>, "profile": <user>, "emptyReply": bool, "force_reply_cmd": bool, "utf8": bool}` (se rapprocher de la documentation du Core pour plus d'information), la réponse a lieu sur le même topic que précédemment.
+
 
 ## Equipement
 
 Le plugin souscrit auprès du Broker le topic configuré dans [l'onglet Broker](#onglet-Broker) (\# par défaut, i.e. tous les topics) de l'équipement Broker concerné. 
-<!-- TODO here
-A réception d’un message auquel aucun équipement n’a souscrit, le plugin crée automatiquement un équipement associé au topic de premier niveau.
--->
 
 Prenons comme exemple les messages MQTT suivants :
 
