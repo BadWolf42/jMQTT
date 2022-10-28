@@ -994,7 +994,7 @@ class jMQTT extends eqLogic {
 				unlink(log::getPathToLog($log));
 			}
 			config::remove('log::level::' . $log, 'jMQTT');
-			cache::delete('jMQTT::' . $this->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
+			@cache::delete('jMQTT::' . $this->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 
 			// Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
 			foreach (self::byBrkId($this->_preRemoveInformations['id']) as $eqpt) {
@@ -1078,10 +1078,10 @@ class jMQTT extends eqLogic {
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
 			$broker->setCache(self::CACHE_REALTIME_MODE, false);
 		}
-		cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
-		cache::delete('jMQTT::' . self::CACHE_DAEMON_PORT);
-		cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_SND);
-		cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_RCV);
+		@cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
+		@cache::delete('jMQTT::' . self::CACHE_DAEMON_PORT);
+		@cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_SND);
+		@cache::delete('jMQTT::' . self::CACHE_DAEMON_LAST_RCV);
 		self::sendMqttDaemonStateEvent(false);
 	}
 
@@ -1343,7 +1343,7 @@ class jMQTT extends eqLogic {
 		if (file_exists($pid_file = jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid'))
 			shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 		// Delete in cache the daemon uid (as it is disconnected)
-		cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
+		@cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
 		// Remove listeners
 		self::listenersRemoveAll();
 		// Get all brokers and set them as disconnected
