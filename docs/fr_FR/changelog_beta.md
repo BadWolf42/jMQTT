@@ -1,8 +1,10 @@
 # Registre des évolutions BETA
 
-## 2022-10-28 à 01h
- - **Retour en arrière sur la suppression des commandes 'status' sur les équipements Broker. Elles sont utilisées pour avoir l'état de connexion de jMQTT au Broker**
- - Paufinage du mode Temps Réel
+## 2022-10-29
+ - **Retour en arrière sur la suppression des commandes 'status' sur les équipements Broker permettant d'avoir l'état de connexion de jMQTT au Broker**
+ - Mise en warning des équipements Broker lorsqu'ils n'arrivent pas à se connecter
+ - Amélioration du mode Temps Réel
+ - Mise à jour de la documentation
 
 ## 2022-10-26 à 15h
  - Correction d'un bug dans le script d'installation du plugin, **il est NÉCESSAIRE DE RESTAURER UNE BACKUP si vous avez mis à jour avec la version de la nuit**
@@ -17,10 +19,10 @@
  - Amélioration du code JS pour rendre le plugin plus léger et réactif lors du chargement
 
 ## 2022-10-19 Interactions
- - **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker**
+ - --- Annulé par la version 2022-10-19 --- **Déplacement/Suppression de toutes les commandes présentes sur les équipements Broker**
  - **Meilleure gestion du "topicMismatch", avertissement avant de sauvegarder et visuellement dans les champs lors de la saisie**
  - **Ajout du support des Interactions Jeedom via MQTT**
- - Support minimum de la version 4.2.11 de Jeedom
+ - Support minimum avancé à la version 4.2.11 de Jeedom (au lieu de la version 4.2.16)
  - Ajout du transport du protocole MQTT sur Web Sockets (ws) et Web Sockets Secure (wss)
  - Ajout de champs dans le broker pour définir le topic LWT et les valeurs quand le broker est en-ligne et hors-ligne
  - Mise en place de champs dans le broker pour définir le topic API

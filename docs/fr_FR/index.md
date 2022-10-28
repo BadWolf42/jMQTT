@@ -148,7 +148,7 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../2022-10-16_images/eqpt_broker.png)
+![Configuration du Broker](../images/2022-10-16_eqpt_broker.png)
 
 Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement.
 Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le statut du démon devrait passer à OK.
