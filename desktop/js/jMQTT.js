@@ -343,6 +343,7 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
+	$('#table_realtime').trigger("update");
 })
 
 
