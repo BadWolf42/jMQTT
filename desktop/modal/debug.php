@@ -466,12 +466,13 @@ panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-boo
 	</div>
 
 <!--
-TODO
+TODO (low) for Debug modal
 - Kill all daemons
 - Remove PID file
 - Relaunch plugin install
 - Stop heatbeat
 - Request Thread Dump
+- Send loglevel (including verbose)
 - Enable/disable listeners
 - Clean directories deps / dynamic content
 -->

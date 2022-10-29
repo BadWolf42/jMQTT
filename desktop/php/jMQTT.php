@@ -3,7 +3,7 @@ if (! isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 
-// TODO check if needed: detect Jeedom version (4.2 or +)
+// TODO (nice to have) check if needed: detect Jeedom version (4.2 or +)
 // $jeedom_v42 = strpos(trim(config::byKey('version')), '4.2.') === 0;
 
 sendVarToJS('eqType', 'jMQTT');
@@ -213,7 +213,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					</tbody>
 				</table>
 			</div>
-			<!-- TODO Add here "Discovery" tab and HA MQTT discovery tab -->
+			<!-- TODO (high) Add here "Discovery" tab and HA MQTT discovery tab -->
 			<div role="tabpanel" class="tab-pane toDisable" id="commandtab">
 				<table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
 					<thead>
@@ -226,13 +226,13 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 							<th style="width:1px;">{{Unité}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
 							<th style="min-width:135px;width:135px;"></th>
-<!-- TODO Change when adding Advanced parameters
+<!-- TODO (medium) Change when adding Advanced parameters
 							<th style="min-width:90px;width:100px;">{{Options}}</th>
 							<th style="min-width:160px;width:160px;"></th>
 -->
 						</tr>
 					</thead>
-					<tbody><!-- TODO Limit the number of displayed lines (by pages of 25? 50? 100?) -->
+					<tbody><!-- TODO (low) Limit the number of displayed lines (by pages of 25? 50? 100?) how? as handled by plugin.template -->
 					</tbody>
 				</table>
 			</div>

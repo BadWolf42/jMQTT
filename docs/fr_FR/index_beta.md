@@ -13,7 +13,7 @@ Ses principales fonctionnalités sont :
  - Affichage en vue Classique Jeedom ou en vue JSON ;
  - Ajout manuel de commandes (pour la publication), prise en charge du mode Retain ;
  - Gestionnaire de templates ;
- - Gestion des Interactions ; <!-- TODO -->
+ - Gestion des Interactions ;
  - Affichage des messages en temps réel ;
  - Emulation et remontée du niveau de batterie d'un équipement dans Jeedom ;
  - Emulation et remontée de la disponibilité et mise en alarme de l'équipement dans Jeedom ;

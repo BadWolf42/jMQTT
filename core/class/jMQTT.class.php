@@ -389,7 +389,7 @@ class jMQTT extends eqLogic {
 		// Add string format to eqLogic configuration
 		$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = str_replace($baseTopic, '%s', $this->getTopic());
 
-		// TODO Remove me?
+		// TODO (nice to have) Remove me when 4.4 is out
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
 		if (array_key_exists('cmd', $exportedTemplate[$_template]))
@@ -406,7 +406,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		// TODO FIX ME: Commands used in templates are not converted on template import/export:
+		// TODO (critical bug fix) FIX ME: Commands used in templates are not converted on template import/export:
 		// cf: https://community.jeedom.com/t/evolution-modele-template-dequipement/52701/24
 
 		// Remove brkId from eqpt configuration
@@ -691,7 +691,7 @@ class jMQTT extends eqLogic {
 				}
 			}
 
-			// TODO Check if certificates are OK
+			// TODO (low) Check if certificates are OK
 			// self::CONF_KEY_MQTT_TLS_CHECK
 			// self::CONF_KEY_MQTT_TLS_CA
 			// self::CONF_KEY_MQTT_TLS_CLI_CERT
@@ -1320,9 +1320,9 @@ class jMQTT extends eqLogic {
 		// Active listeners
 		self::listenersAddAll();
 		// Prepare and send initial data
-		// TODO Edit Daemon to be enable to receive this information
+		// TODO (next step) Edit Daemon to be enable to receive this information
 		// $returns = self::full_export(true); // FIX ME there is only a jMQTT->full_export() no static one !!!
-		// TODO use array_filter on each level of the array?
+		// TODO (code idea) use array_filter on each level of the array?
 		// return json_encode($returns, JSON_UNESCAPED_UNICODE);
 	}
 
@@ -1386,7 +1386,7 @@ class jMQTT extends eqLogic {
 
 	public static function toDaemon_hb() {
 		$params['cmd']      = 'hb';
-		$params['id']       = '0'; // TODO tmp fix?
+		$params['id']       = '0'; // TODO (low) tmp fix?
 		self::sendToDaemon($params, false);
 	}
 
@@ -1401,7 +1401,7 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params);
 	}
 
-/* TODO Implemented for later
+/* TODO (medium) Implemented for later
 	public static function toDaemon_brkRestart($brkId) {
 		$params['cmd']      = 'brkRestart';
 		$params['brkId']    = $brkId;
@@ -1479,7 +1479,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		// TODO: Check also if Mosquitto can be installed
+		// TODO (important) Check also if Mosquitto can be installed
 		if (config::byKey('installMosquitto', 'jMQTT', 0) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
 			self::logger('debug', __("Relancez les dépendances, le paquet Debian Mosquitto est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
@@ -1512,7 +1512,7 @@ class jMQTT extends eqLogic {
 		if (config::byKey('installMosquitto', 'jMQTT', 0)) {
 			echo "Mosquitto installation requested => looking for Broker eqpt\n";
 
-			// TODO: Check also if Mosquitto can be installed
+			// TODO (important) Check also if Mosquitto can be installed
 			// dpkg -s mosquitto                // 1 not installed ; 0 installed
 			// systemctl status mosquitto.service | grep -- -c | sed -r "s/^.* -c (.*)$/\1/"       // Get config file
 			//looking for broker pointing to local mosquitto
@@ -1694,7 +1694,7 @@ class jMQTT extends eqLogic {
 			throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
 		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
 		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
-		$this->sendMqttClientStateEvent(); // TODO Check if needed (done in brkUp)
+		$this->sendMqttClientStateEvent(); // TODO (important) Check if needed (done in brkUp)
 		// Preparing some additional data for the broker
 		$params = array();
 		$params['hostname']          = $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
@@ -1708,7 +1708,6 @@ class jMQTT extends eqLogic {
 		$params['lwtOffline']        = $this->getConf(self::CONF_KEY_MQTT_LWT_OFFLINE);
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
-		// TODO Implement WS url option
 		$params['tlscheck']          = $this->getConf(self::CONF_KEY_MQTT_TLS_CHECK);
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
@@ -1744,7 +1743,7 @@ class jMQTT extends eqLogic {
 			return; // Return if client is not running
 		$this->log('info', __('Arrêt du Client MQTT', __FILE__));
 		self::toDaemon_removeClient($this->getId());
-		$this->sendMqttClientStateEvent(); // TODO Check if needed (done in brkDown)
+		$this->sendMqttClientStateEvent(); // TODO (important) Check if needed (done in brkDown)
 	}
 
 
@@ -2026,7 +2025,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-/* TODO Check if this should deleted or not
+/* TODO (CRITICAL) Check if this should deleted or not
 
 		// If no equipment listening to the current message is found and the automatic inclusion mode is active
 		if (empty($elogics) && $this->getIncludeMode()) {

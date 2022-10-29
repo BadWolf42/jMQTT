@@ -244,7 +244,7 @@ jmqtt.newRealTimeCmd = function(_data) {
 	if (_data.existing)
 		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est compatible avec le(s) équipement(s) :}}' + _data.existing + '"></i>';
 	tr += '</td><td align="right"><div class="input-group pull-right" style="display:inline-flex">';
-	// tr += '<a class="btn btn-primary btn-sm roundedLeft cmdAction tooltips" data-action="addEq" title="{{TODO<br/>Ajouter un nouvel équipement souscrivant à ce topic}}"><i class="fas fa-plus-circle"></i></a>';
+	// tr += '<a class="btn btn-primary btn-sm roundedLeft cmdAction tooltips" data-action="addEq" title="{{TODO (nice to have)<br/>Ajouter un nouvel équipement souscrivant à ce topic}}"><i class="fas fa-plus-circle"></i></a>';
 	tr += '<a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addCmd" title="{{Ajouter à un équipement existant}}"><i class="far fa-plus-square"></i></a>';
 	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
 		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';

@@ -218,7 +218,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 // Actions on Real Time tab attributes
 //
 //$('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
-/*
+/* TODO (nice to have) Implement Adding a new cmd on a new Eq
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
 	var broker   = jmqtt.getEqId();
@@ -247,7 +247,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 			// Create a new eqLogic
 			jeedom.eqLogic.save({
 				type: eqType,
-				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker, }) ], // TODO Missing enabled & mainTopic
+				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker, }) ], // TODO (nice to have) Missing enabled & mainTopic
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
@@ -862,7 +862,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'info') {
-// TODO: FIXME: is this disabled variable usefull? virtualAction never exists
+// TODO (medium) FIXME: is this disabled variable usefull? virtualAction never exists
 		var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
 
 		var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '"';
@@ -913,7 +913,7 @@ function addCmdToTable(_cmd) {
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br> ';
 		tr += '</td><td align="right">';
-// TODO Change when adding Advanced parameters
+// TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
@@ -966,7 +966,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'action') {
-// TODO: FIXME: is this disabled variable usefull? Re-added to avoid "undefined" error
+// TODO (medium) FIXME: is this disabled variable usefull? Re-added to avoid "undefined" error
 		var disabled = '';
 
 		var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
@@ -1006,7 +1006,7 @@ function addCmdToTable(_cmd) {
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td align="right">';
-// TODO Change when adding Advanced parameters
+// TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
@@ -1076,19 +1076,19 @@ function addCmdToTable(_cmd) {
 }
 
 /*
-// TODO replace jMQTT::EventState, and change visual on dashboard
+// TODO (low) replace jMQTT::EventState, and change visual on dashboard
 $('body').off('jMQTT::brkEvent').on('jMQTT::brkEvent', function (_event,_options) {
 	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
 	console.log(msg, _options);
 });
 
-// TODO replace eqptAdded and handle modified + removed, and change visual on dashboard
+// TODO (low) replace eqptAdded and handle modified + removed, and change visual on dashboard
 $('body').off('jMQTT::eqptEvent').on('jMQTT::eqptEvent', function (_event,_options) {
 	var msg = '{{L\'équipement}} <b>' + _options['name'] + '</b> {{vient d\'être}}' + _options['action'];
 	console.log(msg, _options);
 });
 
-// TODO replace cmdAdded and handle modified + removed
+// TODO (low) replace cmdAdded and handle modified + removed
 $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options) {
 	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
 	console.log(msg, _options);
@@ -1175,6 +1175,7 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 });
 
 // Update the Real Time view of broker if displayed on reception of a new Real Time event
+// TODO (CRITICAL) Don't send 1 event for each Real Time msg or find another way to send them
 $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
 	var d = new Date();
 	_options.date = d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds();

@@ -86,7 +86,7 @@ foreach($messages as $message) {					// Iterate through the messages
 			continue 2;								// Next foreach iteration
 	}
 
-// TODO: Later
+// TODO (medium) Implemented for later
 /*
 		case 'value':								// {"cmd":"value", "c":[string], "v":string} # c: list of cmdId v: value to set
 			if (!isset($message['c']) || !isset($message['v']))

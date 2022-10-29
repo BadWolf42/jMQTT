@@ -101,7 +101,7 @@ class Main():
 		logging.getLogger().setLevel(logging.INFO)
 		self.log.info('New log level set to: %s', logging.getLevelName(newlevel))
 		logging.getLogger().setLevel(newlevel)
-		debuglevel = (newlevel <= logging.VERBOSE) #TODO check if needed
+		debuglevel = (newlevel <= logging.VERBOSE) #TODO (low) check if needed
 		# HTTPConnection.debuglevel = int(debuglevel)
 		requests_log = logging.getLogger("requests.packages.urllib3")
 		pool_log = logging.getLogger("urllib3.connectionpool")
@@ -204,7 +204,7 @@ class Main():
 		self.has_stopped.clear()
 		# Wait for instructions
 		while not self.should_stop.is_set():
-# TODO FIX ME
+# TODO (important) FIX ME
 #			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedon
 #				self.should_stop.set()
 # /TODO FIXME

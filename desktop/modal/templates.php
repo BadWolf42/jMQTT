@@ -148,7 +148,7 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label"></label><div class="col-sm-3" style="text-align: center"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 				// Display equipements
 				$('#div_jmqttTemplateEqlogic').empty().html(eq);
-				// TODO rework with jmqtt.logoHelper() function
+				// TODO (medium) rework with jmqtt.logoHelper() function
 				// Handle error with logo
 				$("#logo_visu_tpl").on("error", function () {
 					if ($(this).attr("src") != '') {

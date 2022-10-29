@@ -463,7 +463,7 @@ class jMQTTCmd extends cmd {
 		return $this->getConfiguration(self::CONF_KEY_JSON_PATH, '');
 	}
 
-// TODO Move to install.php as only used by it?
+// TODO (nice to have) Move to install.php as only used by it?
 	public function splitTopicAndJsonPath() {
 		// Try to find '{'
 		$topic = $this->getTopic();
@@ -508,7 +508,7 @@ class jMQTTCmd extends cmd {
 	 * @return NULL|jMQTTCmd|array(jMQTTCmd)
 	 */
 	public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
-// TODO: replace by jMQTTCmd::searchConfigurationEqLogic() ?
+// TODO (nice to have) Replace by jMQTTCmd::searchConfigurationEqLogic() ?
 
 		// JSON_UNESCAPED_UNICODE used to correct #92
 		$confTopic = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -1);
@@ -580,7 +580,7 @@ class jMQTTCmd extends cmd {
 	 */
 	private static function checkCmdName($eqLogic, $name) {
 		if (! isset(self::$_cmdNameMaxLength)) {
-// TODO: Move lenght in plugin config and refresh at plugin enable/update or core update
+// TODO (nice to have) Move lenght in plugin config and refresh at plugin enable/update or core update
 			$field = 'character_maximum_length';
 			$sql = "SELECT " . $field . " FROM information_schema.columns WHERE table_name='cmd' AND column_name='name'";
 			$res = DB::Prepare($sql, array());
