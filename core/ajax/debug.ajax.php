@@ -32,12 +32,12 @@ try {
 		$res[] = array('header' => '', 'data' => config::searchKey('', "jMQTT"));
 		ajax::success($res);
 	}
-	if (init('action') == 'configSet') {
+	if (init('action') == 'configSetInternal') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val'));
 		config::save(init('key'), json_decode(init('val')), 'jMQTT');
 		ajax::success();
 	}
-	if (init('action') == 'configDel') {
+	if (init('action') == 'configDelInternal') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key'));
 		config::remove(init('key'), 'jMQTT');
 		ajax::success();
@@ -52,7 +52,7 @@ try {
 			foreach (utils::o2a($eqBroker)['configuration'] as $k => $val)
 				$data[] = array('key' => $k, 'value' => $val);
 			$header = $eqBroker->getHumanName().' (id: '.$eqBroker->getId().')';
-			$res[] = array('header' => $header, 'data' => $data);
+			$res[] = array('header' => $header, 'id' => $eqBroker->getId(), 'data' => $data);
 		}
 		ajax::success($res);
 	}
@@ -65,11 +65,20 @@ try {
 				foreach (utils::o2a($eqLogic)['configuration'] as $k => $val)
 					$data[] = array('key' => $k, 'value' => $val);
 				$header = $eqLogic->getHumanName().' (id: '.$eqLogic->getId().')';
-				$res[] = array('header' => $header, 'data' => $data);
+				$res[] = array('header' => $header, 'id' => $eqLogic->getId(), 'data' => $data);
 			}
 		ajax::success($res);
 	}
-// TODO set/delete config brkLogic/eqLogic
+	if (init('action') == 'configSetBrkAndEqpt') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').' key='.init('key').' value='.init('val'));
+		jMQTT::byId(init('id'))->setConfiguration(init('key'), json_decode(init('val')))->save();
+		ajax::success();
+	}
+	if (init('action') == 'configDelBrkAndEqpt') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').'key='.init('key'));
+		jMQTT::byId(init('id'))->setConfiguration(init('key'), null)->save();
+		ajax::success();
+	}
 
 // -------------------- Config cmd --------------------
 	if (init('action') == 'configGetCommandsInfo') {
@@ -82,7 +91,7 @@ try {
 			foreach (utils::o2a($cmd)['configuration'] as $k => $val)
 				$data[] = array('key' => $k, 'value' => $val);
 			$header = $cmd->getHumanName().' (id: '.$cmd->getId().')';
-			$res[] = array('header' => $header, 'data' => $data);
+			$res[] = array('header' => $header, 'id' => $cmd->getId(), 'data' => $data);
 		}
 		ajax::success($res);
 	}
@@ -96,11 +105,20 @@ try {
 			foreach (utils::o2a($cmd)['configuration'] as $k => $val)
 				$data[] = array('key' => $k, 'value' => $val);
 			$header = $cmd->getHumanName().' (id: '.$cmd->getId().')';
-			$res[] = array('header' => $header, 'data' => $data);
+			$res[] = array('header' => $header, 'id' => $cmd->getId(), 'data' => $data);
 		}
 		ajax::success($res);
 	}
-// TODO set/delete config cmd
+	if (init('action') == 'configSetCommands') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').' key='.init('key').' value='.init('val'));
+		jMQTTCmd::byId(init('id'))->setConfiguration(init('key'), json_decode(init('val')))->save();
+		ajax::success();
+	}
+	if (init('action') == 'configDelCommands') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').'key='.init('key'));
+		jMQTTCmd::byId(init('id'))->setConfiguration(init('key'), null)->save();
+		ajax::success();
+	}
 
 // -------------------- Cache Daemon --------------------
 	if (init('action') == 'cacheGetInternal') {
