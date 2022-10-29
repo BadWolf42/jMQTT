@@ -1886,7 +1886,9 @@ class jMQTT extends eqLogic {
 	 * Send a jMQTT::RealTime event to the UI containing eqLogic
 	 */
 	private function sendMqttRealTimeEvent($topic, $payload, $qos, $retain, $eqNames) {
-		event::add('jMQTT::RealTime', array('id' => $this->getId(), 'topic' => $topic, 'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'existing' => $eqNames));
+		$date = (new DateTime())->format("Y-m-d H:i:s.v");
+		event::add('jMQTT::RealTime', array('date' =>$date, 'id' => $this->getId(), 'topic' => $topic, 'jsonPath' => '',
+											'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'existing' => $eqNames));
 	}
 
 	/**

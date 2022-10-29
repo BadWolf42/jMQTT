@@ -1182,11 +1182,11 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 // Update the Real Time view of broker if displayed on reception of a new Real Time event
 // TODO (CRITICAL) Don't send 1 event for each Real Time msg or find another way to send them
 $('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
-	var d = new Date();
-	_options.date = d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds();
-	_options.jsonPath = '';
-	var tr = jmqtt.newRealTimeCmd(_options);
-	$('#table_realtime tbody').prepend(tr);
+	var realtime = $('#table_realtime tbody');
+	_options = Array.isArray(_options) ? _options : [ _options ];
+	for (var i in _options) {
+		realtime.prepend(jmqtt.newRealTimeCmd(_options[i]));
+	}
 	$('#table_realtime').trigger("update");
 });
 
