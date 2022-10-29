@@ -198,11 +198,14 @@ Il est aussi possible de relancer volontairement le client MQTT avec le bouton _
 Chaque équipement Broker possède son propre fichier de log (encadré 4) suffixé par le nom de l'équipement.
 Si l'équipement est renommé, le fichier de log le sera également.
 
+Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des messages qui arrivent.
+
+
 #### Mode Temps Réel
 
-Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des messages qui arrivent :
+La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2022-10-26_broker_realtime.png)
+![Mode Temps Réel](../images/2022-10-28_broker_realtime.png)
 
 Après avoir configuré les Topics de souscription Temps Réel et éventuellement les Topics exclus du Temps Réel utilisés pour récupérer les messages (encadré 1)
 
