@@ -346,6 +346,11 @@ $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$('#table_realtime').trigger("update");
 })
 
+// Button to empty RealTime view
+$('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', function() {
+	$('#table_realtime tbody').empty();
+	$('#table_realtime').trigger("update");
+})
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Automations on Equipment tab attributes
@@ -1264,12 +1269,6 @@ $(document).ready(function() {
 		} else {
 			core_save();
 		}
-	});
-
-	// Button to empty RealTime view
-	$('.eqLogicAction[data-action=emptyRealTime]').on('click', function() {
-		$('#table_realtime tbody').empty();
-		$('#table_realtime').trigger("update");
 	});
 
 	jeedomUtils.initTableSorter();
