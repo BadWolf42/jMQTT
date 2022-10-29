@@ -1206,18 +1206,16 @@ $(document).ready(function() {
 	//
 	// update DisplayCards on main page at load
 	//
-	$('.eqLogicDisplayCard').each(function () {
-		var _card = $(this);
-		jeedom.eqLogic.byId({
-			id: _card.attr('data-eqlogic_id'),
-			noCache: true,
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'warning'});
-			},
-			success: function(_eq) {
-				jmqtt.updateDisplayCard(_card, _eq);
-			}
-		});
+	jeedom.eqLogic.byType({
+		type: eqType,
+		noCache: true,
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'warning'});
+		},
+		success: function(_eqLogics) {
+			for (var i in _eqLogics)
+				jmqtt.updateDisplayCard($('.eqLogicDisplayCard[data-eqlogic_id=' + _eqLogics[i].id + ']'), _eqLogics[i]);
+		}
 	});
 
 	/*
