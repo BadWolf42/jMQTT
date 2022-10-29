@@ -204,7 +204,7 @@ class Main():
 		self.has_stopped.clear()
 		# Wait for instructions
 		while not self.should_stop.is_set():
-# TODO (important) FIX ME
+# TODO (important) FIX ME: Internal health-check
 #			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedon
 #				self.should_stop.set()
 # /TODO FIXME
