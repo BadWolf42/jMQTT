@@ -1347,6 +1347,8 @@ class jMQTT extends eqLogic {
 			shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 		// Delete in cache the daemon uid (as it is disconnected)
 		@cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
+		// Send state to WebUI
+		self::sendMqttDaemonStateEvent(false);
 		// Remove listeners
 		self::listenersRemoveAll();
 		// Get all brokers and set them as disconnected
@@ -1613,6 +1615,14 @@ class jMQTT extends eqLogic {
 		return (config::byKey('deamonAutoMode', __CLASS__, 1) == 1);
 	}
 
+	/**
+	 * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
+	 * @param $_state bool True if Daemon is running and connected
+	 */
+	private static function sendMqttDaemonStateEvent($_state) {
+		event::add('jMQTT::EventDaemonState', $_state);
+	}
+
 	###################################################################################################################
 	##
 	##                   MQTT CLIENT RELATED METHODS
@@ -1795,7 +1805,7 @@ class jMQTT extends eqLogic {
 
 	public static function fromDaemon_brkDown($id) {
 		try { // Catch if broker is unknown / deleted
-			$broker = self::byId($id);
+			$broker = self::byId($id); // Don't use getBrokerFromId here!
 			if (!is_object($broker)) {
 				self::logger('warning', sprintf(__("Le Broker %s n'existe plus", __FILE__), $id));
 				return;
@@ -1811,9 +1821,10 @@ class jMQTT extends eqLogic {
 			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(), self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			$broker->setStatus('warning', $broker->getIsEnable() ? 1 : null); // Also set a warning if eq is enabled (should be always true)
 
-			// if Real Time mode is enabled, disable it
-			if ($broker->getRealTimeMode())
-				$broker->changeRealTimeMode(0);
+			// Clear Real Time mode
+			$broker->setCache(self::CACHE_REALTIME_MODE, 0);
+			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, null);
+			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, null);
 
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
@@ -1892,14 +1903,6 @@ class jMQTT extends eqLogic {
 		$date = (new DateTime())->format("Y-m-d H:i:s.v");
 		event::add('jMQTT::RealTime', array('date' =>$date, 'id' => $this->getId(), 'topic' => $topic, 'jsonPath' => '',
 											'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'existing' => $eqNames));
-	}
-
-	/**
-	 * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
-	 * @param $_state bool True if Daemon is running and connected
-	 */
-	private static function sendMqttDaemonStateEvent($_state) {
-		event::add('jMQTT::EventDaemonState', $_state);
 	}
 
 
