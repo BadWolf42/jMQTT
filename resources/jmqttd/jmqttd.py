@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
-import argparse
 import json
 import logging
 import os
@@ -63,12 +62,12 @@ def validate_params(msg, constraints):
 
 class Main():
 	def __init__(self, flag):
-		# Default values
-		self._log_level   = "error"
-		self._socket_port = 0
-		self._socket_host = '127.0.0.1'
-		self._pidfile     = '/tmp/jmqttd.pid'
-		self._apikey      = ''
+		# Values from ENV with defaults
+		self._log_level   = os.getenv("LOGLEVEL", "error")
+		self._socket_port = int(os.getenv("SOCKETPORT", 0))
+		self._pidfile     = os.getenv("PIDFILE", '/tmp/jmqttd.pid')
+		self._callback    = os.getenv("CALLBACK", None)
+		self._apikey      = os.getenv("APIKEY", None)
 
 		# Class logger
 		self.log = logging.getLogger('Main')
@@ -116,29 +115,15 @@ class Main():
 		pool_log.propagate = debuglevel
 
 	def prepare(self):
-		# Parsing arguments
-		parser = argparse.ArgumentParser(description='Daemon for Jeedom plugin')
-		parser.add_argument("--loglevel",   help="Log Level for the daemon", type=str)
-		parser.add_argument("--socketport", help="Specify the port to open", type=int)
-		parser.add_argument("--callback",   help="Callback url to Jeedom",   type=str)
-		parser.add_argument("--apikey",     help="Apikey",                   type=str)
-		parser.add_argument("--pid",        help="Pid file",                 type=str)
-		args = parser.parse_args()
-
 		# Callback is mandatory
-		if args.callback:
-			self._callback = args.callback
-		else:
-			self.log.critical('Missing callback url (use parameter --callback <url>)')
+		if self._callback is None:
+			self.log.critical('Missing callback url (use ENV var CALLBACK="<url>")')
 			sys.exit(2)
-		if args.loglevel:
-			self._log_level = args.loglevel
-		if args.socketport:
-			self._socket_port = args.socketport
-		if args.pid:
-			self._pidfile = args.pid
-		if args.apikey:
-			self._apikey = args.apikey
+
+		# Apikey is mandatory
+		if self._apikey is None:
+			self.log.critical('Missing API key (use ENV var APIKEY=<key>)')
+			sys.exit(2)
 
 		# Set the global logging level
 		self.set_log_level(self._log_level)

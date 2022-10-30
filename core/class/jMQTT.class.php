@@ -1189,12 +1189,15 @@ class jMQTT extends eqLogic {
 		// To fix issue: https://community.jeedom.com/t/87727/39
 		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, '0')) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
 			$callbackURL = config::byKey('urlOverrideValue', __CLASS__, $callbackURL);
-		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
-		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd .= ' --callback "'.$callbackURL.'"';
-		$cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
-		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
-		self::logger('info', __('Lancement du démon jMQTT', __FILE__));
+		$cmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(__CLASS__));
+		$cmd .= ' CALLBACK="'.$callbackURL.'"';
+		$cmd .= ' APIKEY=' . jeedom::getApiKey(__CLASS__);
+		$cmd .= ' PIDFILE=' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid ';
+		$cmd .= $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
+		if (log::getLogLevel(__CLASS__) > 100)
+			self::logger('info', __('Lancement du démon jMQTT', __FILE__));
+		else
+			self::logger('info', __('Lancement du démon jMQTT', __FILE__) . ': ' . $cmd);
 		exec($cmd . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
 		// Wait up to 10 seconds for daemon to start
 		for ($i = 1; $i <= 40; $i++) {

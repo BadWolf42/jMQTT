@@ -98,7 +98,7 @@ class JeedomMsg():
 		i = 1
 		while i <= self._retry:
 			try:
-				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False) #TODO (low) Check 120s timeout ?!
+				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False) # TODO (low) Check 120s timeout ?!
 				if r.status_code == requests.codes.ok:
 					self._log_snd.debug('Sent TO Jeedom: %s', msgs)
 					self._log_snd.verbose('Received back FROM Jeedom: %s', r.text)
