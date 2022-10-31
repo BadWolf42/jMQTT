@@ -1623,6 +1623,7 @@ class jMQTT extends eqLogic {
 		event::add('jMQTT::EventDaemonState', $_state);
 	}
 
+
 	###################################################################################################################
 	##
 	##                   MQTT CLIENT RELATED METHODS
@@ -1707,7 +1708,7 @@ class jMQTT extends eqLogic {
 			throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
 		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
 		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
-		$this->sendMqttClientStateEvent(); // TODO (important) Check if needed (done in brkUp)
+		$this->sendMqttClientStateEvent(); // Need to send current state before brkUp give OK
 		// Preparing some additional data for the broker
 		$params = array();
 		$params['hostname']          = $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
@@ -1756,7 +1757,7 @@ class jMQTT extends eqLogic {
 			return; // Return if client is not running
 		$this->log('info', __('Arrêt du Client MQTT', __FILE__));
 		self::toDaemon_removeClient($this->getId());
-		$this->sendMqttClientStateEvent(); // TODO (important) Check if needed (done in brkDown)
+		$this->sendMqttClientStateEvent();  // Need to send current state before brkDown give NOK
 	}
 
 
@@ -1859,6 +1860,49 @@ class jMQTT extends eqLogic {
 		$cmd->getEqLogic()->getBroker()->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
 		$cmd->updateCmdValue($value);
 		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+	}
+
+	public static function fromDaemon_realTimeStarted($id) {
+		$brk = self::getBrokerFromId(intval($id));
+		// Update cache
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		$brk->setCache(self::CACHE_REALTIME_MODE, 1);
+		// Send event to WebUI
+		$brk->log('info', __("Mode Temps Réel activé", __FILE__));
+		$brk->sendMqttClientStateEvent();
+	}
+
+	public static function fromDaemon_realTimeStopped($id, $nbMsgs) {
+		$brk = self::getBrokerFromId(intval($id));
+		// Update cache
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		$brk->setCache(self::CACHE_REALTIME_MODE, 0);
+		// Send event to WebUI
+		$brk->log('info', sprintf(__("Mode Temps Réel désactivé, %s messages disponibles", __FILE__), $nbMsgs));
+		$brk->sendMqttClientStateEvent();
+	}
+
+	public function toDaemon_realTimeStart($subscribe, $exclude, $duration = 180) {
+		$params['cmd']='realTimeStart';
+		$params['id']=$this->getId();
+		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['subscribe']=$subscribe;
+		$params['exclude']=$exclude;
+		$params['duration']=$duration;
+		self::sendToDaemon($params);
+	}
+
+	public function toDaemon_realTimeStop() {
+		$params['cmd']='realTimeStop';
+		$params['id']=$this->getId();
+		self::sendToDaemon($params);
+	}
+
+	public function toDaemon_realTimeClear() {
+		$params['cmd']='realTimeClear';
+		$params['id']=$this->getId();
+		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_subscribe($id, $topic, $qos = 1) {

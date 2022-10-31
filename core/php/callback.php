@@ -69,6 +69,18 @@ foreach($messages as $message) {					// Iterate through the messages
 			jMQTT::fromDaemon_brkDown($message['id']);
 			continue 2;								// Next foreach iteration
 
+		case 'realTimeStarted':						// {"cmd":"realTimeStart", "id":string}
+			if (!isset($message['id']))
+				break;
+			jMQTT::fromDaemon_realTimeStarted($message['id']);
+			continue 2;								// Next foreach iteration
+
+		case 'realTimeStopped':						// {"cmd":"realTimeStopped", "id":string, "nbMsgs":int}
+			if (!isset($message['id']) || !isset($message['nbMsgs']))
+				break;
+			jMQTT::fromDaemon_realTimeStopped($message['id'], $message['nbMsgs']);
+			continue 2;								// Next foreach iteration
+
 		case 'hb':									// {"cmd":"hb"}
 			jMQTT::fromDaemon_hb($ruid);
 			continue 2;								// Next foreach iteration
