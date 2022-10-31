@@ -166,6 +166,12 @@ try {
 		ajax::success($res);
 	}
 
+	if (init('action') == 'realTimeClear') {
+		$broker = jMQTT::getBrokerFromId(init('id'));
+		$broker->toDaemon_realTimeClear();
+		ajax::success();
+	}
+
 	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

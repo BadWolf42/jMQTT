@@ -227,6 +227,24 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=pauseRealTime]', fu
 	jmqtt.updateRealTimeButtons(true, true, true);
 });
 
+// Button to empty RealTime view
+$('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', function() {
+	// Ask Daemon to cleanup its Real Time database
+	jmqtt.callPluginAjax({
+		data: {
+			action: "realTimeClear",
+			id: jmqtt.getEqId()
+		},
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'danger'});
+		},
+		success: function (data) {
+			$('#table_realtime tbody').empty();
+			$('#table_realtime').trigger("update");
+		}
+	});
+})
+
 //$('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
 /* TODO (nice to have) Implement Adding a new cmd on a new Eq
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
@@ -354,12 +372,6 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
-	$('#table_realtime').trigger("update");
-})
-
-// Button to empty RealTime view
-$('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', function() {
-	$('#table_realtime tbody').empty();
 	$('#table_realtime').trigger("update");
 })
 
