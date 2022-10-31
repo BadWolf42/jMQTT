@@ -217,6 +217,16 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]',
 	jmqtt.setRealTimeMode(jmqtt.getEqId(), 0);
 });
 
+$('#table_realtime').on('click', '.eqLogicAction[data-action=playRealTime]', function() {
+	// Restarts Real Time mode view
+	jmqtt.updateRealTimeButtons(true, true, false);
+});
+
+$('#table_realtime').on('click', '.eqLogicAction[data-action=pauseRealTime]', function() {
+	// Pause Real Time mode view
+	jmqtt.updateRealTimeButtons(true, true, true);
+});
+
 //$('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
 /* TODO (nice to have) Implement Adding a new cmd on a new Eq
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();

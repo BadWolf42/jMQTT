@@ -183,6 +183,8 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 									<div class="input-group pull-right">
 										<a class="btn btn-default btn-sm eqLogicAction roundedLeft" data-action="startRealTimeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Lancer}}</a>
 										<a class="btn btn-danger  btn-sm eqLogicAction roundedLeft" data-action="stopRealTimeMode" style="display: none;"><i class="fas fa-square"></i> {{Arrêter}}</a>
+										<a class="btn btn-success btn-sm eqLogicAction" data-action="playRealTime" style="display: none;"><i class="fa fa-play"></i> {{Reprendre}}</a>
+										<a class="btn btn-warning btn-sm eqLogicAction" data-action="pauseRealTime" style="display: none;"><i class="fa fa-pause"></i> {{Pause}}</a>
 										<a class="btn btn-warning btn-sm eqLogicAction roundedRight" data-action="emptyRealTime"><i class="fas fa-trash"></i> {{Vider}}</a>
 									</div>
 								</div>

@@ -122,20 +122,33 @@ jmqtt.getMqttClientInfo = function(_eq) {
 }
 
 // Helper to show/hide/disable Real Time buttons
-jmqtt.updateRealTimeButtons = function(enabled, active) {
+jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 	if (!enabled) {       // Disable buttons if eqBroker is disabled
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().addClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
+		$('.eqLogicAction[data-action=playRealTime]').hide();
+		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
 	} else if (!active) { // Show only startRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
+		$('.eqLogicAction[data-action=playRealTime]').hide();
+		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').removeAttr('disabled');
 		$('#mqttExcTopic').removeAttr('disabled');
-	} else {              // Show only stopRealTimeMode button
+	} else if (paused) { // Show only stopRealTimeMode & playRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
+		$('.eqLogicAction[data-action=playRealTime]').show();
+		$('.eqLogicAction[data-action=pauseRealTime]').hide();
+		$('#mqttIncTopic').removeAttr('disabled');
+		$('#mqttExcTopic').removeAttr('disabled');
+	} else {              // Show stopRealTimeMode & pauseRealTimeMode button
+		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
+		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
+		$('.eqLogicAction[data-action=playRealTime]').hide();
+		$('.eqLogicAction[data-action=pauseRealTime]').show();
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
 	}
@@ -286,7 +299,7 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	$('#div_broker_log').setValues(levels, '.configKey');
 
 	// Update Real Time mode buttons
-	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1');
+	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
 }
 
 // Inform Jeedom to change Real Time mode
