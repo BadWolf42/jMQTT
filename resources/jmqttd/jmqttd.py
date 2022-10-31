@@ -83,6 +83,9 @@ class Main():
 							'subscribeTopic':   self.h_subTopic,
 							'unsubscribeTopic': self.h_unsubTopic,
 							'messageOut':       self.h_messageOut,
+							'realTimeStart':    self.h_realTimeStart,
+							'realTimeStop':     self.h_realTimeStop,
+							'realTimeClear':    self.h_realTimeClear,
 							'hb':               self.h_hb,
 							'loglevel':         self.h_logLevel}
 		self.jmqttclients = {}
@@ -279,6 +282,34 @@ class Main():
 			return
 		if message['id'] in self.jmqttclients:
 			self.jmqttclients[message['id']].subscribe_topic(message['topic'], message['qos'])
+		else:
+			self.log.debug('No client found for Broker %s', message['id'])
+
+	def h_realTimeStart(self, message):
+		# Check for                               key, mandatory, default_val, expected_type
+		if not validate_params(message, [[     'file',      True,        None, str],
+										 ['subscribe',      True,          [], list],
+										 [  'exclude',      True,          [], list],
+										 [ 'duration',      True,         180, int]]):
+			return
+		if message['id'] in self.jmqttclients:
+			self.jmqttclients[message['id']].realtime_start(message['file'], message['subscribe'],
+															message['exclude'], message['duration'])
+		else:
+			self.log.debug('No client found for Broker %s', message['id'])
+
+	def h_realTimeStop(self, message):
+		if message['id'] in self.jmqttclients:
+			self.jmqttclients[message['id']].realtime_stop()
+		else:
+			self.log.debug('No client found for Broker %s', message['id'])
+
+	def h_realTimeClear(self, message):
+		# Check for                              key, mandatory, default_val, expected_type
+		if not validate_params(message, [[    'file',      True,        None, str]]):
+			return
+		if message['id'] in self.jmqttclients:
+			self.jmqttclients[message['id']].realtime_clear(message['file'])
 		else:
 			self.log.debug('No client found for Broker %s', message['id'])
 

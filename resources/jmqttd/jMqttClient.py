@@ -14,9 +14,12 @@
 # along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 
 from binascii import b2a_base64
+from datetime import datetime
+import json
 import logging
 import queue
 import sys
+import time
 import threading
 from os import unlink
 from tempfile import NamedTemporaryFile
@@ -33,11 +36,16 @@ except ImportError:
 
 class jMqttClient:
 	def __init__(self, jcom, message):
-		self._log       = logging.getLogger('Client')
+		self._log            = logging.getLogger('Client')
 #		self._log.debug('jMqttClient.init(): message=%r', message)
-		self.jcom       = jcom
-		self.message    = message
-		self.mqttclient = None
+		self.jcom            = jcom
+		self.message         = message
+		self.realtimeTimeout = 0
+		self.realtime        = []
+		self.realtimeInc     = []
+		self.realtimeExc     = []
+		self.realtimeFile    = ''
+		self.mqttclient      = None
 
 	def on_connect(self, client, userdata, flags, rc):
 		self.connected = True
@@ -71,7 +79,50 @@ class jMqttClient:
 				usablePayload = b2a_base64(message.payload, newline=False).decode('utf-8')
 				form = ' (bin in base64)'
 		self._log.info('Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', message.topic, usablePayload, form, message.qos, bool(message.retain))
-		self.jcom.send_async({"cmd":"messageIn","id":self.id,"topic":message.topic,"payload":usablePayload,"qos":message.qos,"retain":bool(message.retain)})
+		msg = {'id':self.id, 'topic':message.topic, 'payload':usablePayload, 'qos':message.qos, 'retain':bool(message.retain)}
+		self.jcom.send_async({'cmd':'messageIn', **msg})
+		if self.realtimeTimeout != 0:
+			if time.time() > self.realtimeTimeout:
+				self.realtime_stop()
+			else:
+				self.realtime_send(msg, usablePayload, form)
+
+	def realtime_send(self, msg, usablePayload, form):
+		should_pub = False
+		for i in self.realtimeInc:
+			if mqtt.topic_matches_sub(i, msg.topic):
+				should_pub = True
+				break
+		if not should_pub:
+			return
+		for e in self.realtimeExc:
+			if mqtt.topic_matches_sub(e, msg.topic):
+				return
+		self._log.info('Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', msg.topic, usablePayload, form, msg.qos, bool(msg.retain))
+		self.realtime.append({'date':datetime.now().strftime('%F %T.%f')[:-3], 'jsonPath':'', **msg})
+		with open(self.realtimeFile, 'w') as f:
+			json.dump(self.realtime, f)
+
+
+	def realtime_start(self, filename, subscribe=[], exclude=[], duration=180):
+		self.realtimeTimeout = time.time() + duration
+		self.realtimeFile = filename
+		self.realtimeInc = subscribe
+		self.realtimeExc = exclude
+		self._log.info('Real Time Started: subscribe=%s, exclude=%s, duration=%i', json.dumps(subscribe), json.dumps(exclude), duration)
+		self.jcom.send_async({'cmd':'realTimeStarted', 'id':self.id})
+
+	def realtime_stop(self):
+		self.realtimeTimeout = 0
+		nb = len(self.realtime)
+		self._log.info('Real Time Stopped: %i msgs received', nb)
+		self.jcom.send_async({'cmd':'realTimeStopped', 'id':self.id, 'nbMsgs':nb})
+
+	def realtime_clear(self, file):
+		self._log.info('Real Time Cleared')
+		self.realtime = []
+		with open(file, 'w') as f:
+			json.dump([], f)
 
 	def subscribe_topic(self, topic, qos, lock=True):
 		try:
