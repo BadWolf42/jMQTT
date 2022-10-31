@@ -144,8 +144,8 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
 		$('.eqLogicAction[data-action=playRealTime]').show();
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
-		$('#mqttIncTopic').removeAttr('disabled');
-		$('#mqttExcTopic').removeAttr('disabled');
+		$('#mqttIncTopic').attr('disabled', '');
+		$('#mqttExcTopic').attr('disabled', '');
 		clearInterval(jmqtt.globals.refreshRealTime);
 	} else {              // Show stopRealTimeMode & pauseRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
