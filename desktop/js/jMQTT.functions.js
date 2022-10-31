@@ -260,7 +260,8 @@ jmqtt.newRealTimeCmd = function(_data) {
 	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
 	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
 	tr += '<td align="center"><input class="cmdAttr form-control" data-l1key="qos" style="display:none;" value="' + _data.qos + '" disabled>';
-	tr += '<span class="cmdAttr tooltips" data-l1key="retain" title="{{Ce message est stocké sur le Broker (Retain)}}">' + (_data.retain ? '<i class="fas fa-database warning"></i>' : '') + '</span>';
+	if (_data.retain)
+		tr += '<i class="fas fa-database warning tooltips" title="{{Ce message est stocké sur le Broker (Retain)}}"></i>';
 	if (_data.retain && _data.existing)
 		tr += '<br /><br />';
 	if (_data.existing)
