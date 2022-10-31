@@ -130,6 +130,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
+		clearInterval(jmqtt.globals.refreshRealTime);
 	} else if (!active) { // Show only startRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
@@ -137,6 +138,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').removeAttr('disabled');
 		$('#mqttExcTopic').removeAttr('disabled');
+		clearInterval(jmqtt.globals.refreshRealTime);
 	} else if (paused) { // Show only stopRealTimeMode & playRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
@@ -144,6 +146,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').removeAttr('disabled');
 		$('#mqttExcTopic').removeAttr('disabled');
+		clearInterval(jmqtt.globals.refreshRealTime);
 	} else {              // Show stopRealTimeMode & pauseRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
@@ -151,6 +154,12 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').show();
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
+		// Load Real Time Data every 3s if stopRealTimeMode button is visible
+		jmqtt.globals.refreshRealTime = setInterval(function() {
+				if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length == 0)
+					return;
+				jmqtt.getRealTimeData();
+			}, 2000);
 	}
 }
 
@@ -312,6 +321,32 @@ jmqtt.setRealTimeMode = function(_id, _mode) {
 			id: _id,
 			subscribe: $('#mqttIncTopic').val(),
 			exclude: $('#mqttExcTopic').val()
+		}
+	});
+}
+
+jmqtt.getRealTimeData = function() {
+	var _since = $('#table_realtime').attr('since');
+	_since = ((_since == undefined) ? '' : _since);
+	jmqtt.callPluginAjax({
+		data: {
+			action: "realTimeGet",
+			id: jmqtt.getEqId(),
+			since: _since
+		},
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'danger'});
+		},
+		success: function (data) {
+			if (data.length > 0) {
+				var realtime = $('#table_realtime tbody');
+				for (var i in data) {
+					realtime.prepend(jmqtt.newRealTimeCmd(data[i]));
+					_since = data[i].date;
+				}
+				$('#table_realtime').attr('since', _since);
+				$('#table_realtime').trigger("update");
+			}
 		}
 	});
 }

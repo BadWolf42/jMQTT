@@ -136,6 +136,9 @@ jmqtt.globals.icons = {
 // To memorise page refresh timeout when set
 jmqtt.globals.refreshTimeout = null;
 
+// To reload Real Time view
+jmqtt.globals.refreshRealTime = null;
+
 // To memorise current eqLogic main subscription topic
 jmqtt.globals.mainTopic = '';
 

@@ -349,6 +349,7 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 		tr.after(new_tr);
 		tr = tr.next();
 	}
+	$('#table_realtime').trigger("update");
 })
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
@@ -757,6 +758,9 @@ function printEqLogic(_eqLogic) {
 		$('.typ-brk').hide();
 		$('.typ-std').hide();
 		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
+
+		// Stop Real Time data refresh
+		clearInterval(jmqtt.globals.refreshRealTime);
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
@@ -768,6 +772,7 @@ function printEqLogic(_eqLogic) {
 		jmqtt.updateBrokerTabs(_eqLogic);
 
 		// Display only relevant Real Time data
+		jmqtt.getRealTimeData();
 		$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eqLogic.id + '"]').hide();
 		$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eqLogic.id + '"]').show();
 	}
@@ -776,6 +781,9 @@ function printEqLogic(_eqLogic) {
 		$('.typ-brk').hide();
 		$('.typ-std').show();
 		$('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
+
+		// Stop Real Time data refresh
+		clearInterval(jmqtt.globals.refreshRealTime);
 
 		jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
 		// Initialise battery and availability dropboxes
