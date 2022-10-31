@@ -1179,17 +1179,6 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 	jmqtt.updateDisplayCard(card, _eq);
 });
 
-// Update the Real Time view of broker if displayed on reception of a new Real Time event
-// TODO (CRITICAL) Don't send 1 event for each Real Time msg or find another way to send them
-$('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
-	var realtime = $('#table_realtime tbody');
-	_options = Array.isArray(_options) ? _options : [ _options ];
-	for (var i in _options) {
-		realtime.prepend(jmqtt.newRealTimeCmd(_options[i]));
-	}
-	$('#table_realtime').trigger("update");
-});
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Apply some changes when document is loaded

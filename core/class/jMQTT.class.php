@@ -1940,15 +1940,6 @@ class jMQTT extends eqLogic {
 		event::add('jMQTT::EventState', $this->toArray());
 	}
 
-	/**
-	 * Send a jMQTT::RealTime event to the UI containing eqLogic
-	 */
-	private function sendMqttRealTimeEvent($topic, $payload, $qos, $retain, $eqNames) {
-		$date = (new DateTime())->format("Y-m-d H:i:s.v");
-		event::add('jMQTT::RealTime', array('date' =>$date, 'id' => $this->getId(), 'topic' => $topic, 'jsonPath' => '',
-											'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'existing' => $eqNames));
-	}
-
 
 	###################################################################################################################
 	##
@@ -2049,67 +2040,6 @@ class jMQTT extends eqLogic {
 		foreach (self::byBrkId($this->getId()) as $eqpt) {
 			if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) $elogics[] = $eqpt;
 		}
-
-		if ($this->getRealTimeMode()) {
-			$sendRealTime = False;
-			// Check for subscriptions
-			foreach($this->getCache(self::CACHE_REALTIME_INC_TOPICS, []) as $t) {
-				if(mosquitto_topic_matches_sub($t, $msgTopic)) {
-					$sendRealTime = True;
-					break;
-				}
-			}
-			if ($sendRealTime) {
-				// Check for exclusions
-				foreach($this->getCache(self::CACHE_REALTIME_EXC_TOPICS, []) as $t) {
-					if(mosquitto_topic_matches_sub($t, $msgTopic)) {
-						$sendRealTime = False;
-						break;
-					}
-				}
-				if ($sendRealTime) {
-					// Send event to WebUI
-					$eqNames = '';
-					foreach($elogics as $eq)
-						$eqNames .= '<br />#'.$eq->getHumanName().'#';
-					$this->sendMqttRealTimeEvent($msgTopic, $msgValue, $msgQos, $msgRetain, $eqNames);
-				}
-			}
-		}
-
-/* TODO (CRITICAL) Check if this should deleted or not
-
-		// If no equipment listening to the current message is found and the automatic inclusion mode is active
-		if (empty($elogics) && $this->getIncludeMode()) {
-
-			// Make some check on topic
-			if ($msgTopic == '/' || strpos($msgTopic, '//') !== false) {
-				$this->log('warning', sprintf(__("Un équipement n'a pas pu être créé automatiquement pour le topic %s (W101)", __FILE__), $msgTopic));
-				return;
-			}
-
-			// explode topic
-			$msgTopicArray = explode("/", $msgTopic);
-			// remove empty strings and reindex
-			$msgTopicArray = array_values(array_filter($msgTopicArray));
-
-			if (!count($msgTopicArray)) {
-				$this->log('warning', sprintf(__("Un équipement n'a pas pu être créé automatiquement pour le topic %s (W102)", __FILE__), $msgTopic));
-				return;
-			}
-
-			// create a new equipment subscribing to all sub-topics starting with the first topic of the current message
-			$eqpt = self::createEquipment($this, $msgTopicArray[0], ($msgTopic[0] == '/' ? '/' : '') . $msgTopicArray[0] . '/#');
-			$elogics[] = $eqpt;
-		}
-
-		// No equipment listening to the current message is found
-		// Should not occur: log a warning and return
-		if (empty($elogics)) {
-			$this->log('warning', sprintf(__("Aucun équipement n'est inscrit au topic %s, cette erreur ne devrait pas se produire (W103)", __FILE__), $msgTopic));
-			return;
-		}
-*/
 
 		//
 		// Loop on enabled equipments listening to the current message
@@ -2544,26 +2474,12 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Disable the equipment automatic inclusion mode and inform the desktop page
-	 * @param string[] $option $option[id]=broker id
-	 */
-	public static function disableRealTimeMode($option) {
-		$broker = self::getBrokerFromId($option['id']);
-		$broker->changeRealTimeMode(0);
-	}
-
-	/**
 	 * Manage the Real Time mode of this broker object
 	 * Called by ajax when the button is pressed by the user
 	 * @param int $mode 0 or 1
 	 */
 	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#') {
-		// A cron process is used to reset the automatic mode after a delay
-		// If the cron process is already defined, remove it
-		$cron = cron::byClassAndFunction(__CLASS__, 'disableRealTimeMode', array('id' => $this->getId()));
-		if (is_object($cron))
-			$cron->remove(false); // Do not halt a running cron (comming from disableRealTimeMode)
-
+		$this->log('debug', $mode ? __("Lancement du Mode Temps...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
 		if($mode) { // If Real Time mode needs to be enabled
 			// Check if a subscription topic is provided
 			if (trim($subscribe) == '')
@@ -2575,8 +2491,6 @@ class jMQTT extends eqLogic {
 				$t = trim($t);
 				if ($t == '')
 					continue;
-				// Subscribe Real Time topic
-				$this->subscribeTopic($t, $this->getQos());
 				$subscriptions[] = $t;
 			}
 			if (count($subscriptions) == 0)
@@ -2590,31 +2504,23 @@ class jMQTT extends eqLogic {
 					continue;
 				$exclusions[] = $t;
 			}
-			// Update cache
-			$this->setCache(self::CACHE_REALTIME_MODE, $mode);
-			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, $subscriptions);
-			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, $exclusions);
-			// Create and configure the cron process to disable Real Time mode later
-			$cron = new cron();
-			$cron->setClass(__CLASS__);
-			$cron->setOption(array('id' => $this->getId()));
-			$cron->setFunction('disableRealTimeMode');
-			// Add 150s => actual delay between 2 and 3min
-			$cron->setSchedule(cron::convertDateToCron(strtotime('now') + 200));
-			$cron->setOnce(1);
-			$cron->save();
+			// Start Real Time Mode (must be started before subscribe)
+			$this->toDaemon_realTimeStart($subscribe, $exclude);
+			// Subscribe Real Time topic
+			foreach ($subscribe as $t)
+				$this->subscribeTopic($t, $this->getQos());
 		} else { // Real Time mode needs to be disabled
 			// Unsubscribe Real Time topic
 			foreach ($this->getCache(self::CACHE_REALTIME_INC_TOPICS, []) as $t)
 				$this->unsubscribeTopic(trim($t));
-			// Update cache
-			$this->setCache(self::CACHE_REALTIME_MODE, $mode);
-			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, null);
-			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, null);
+			// Stop Real Time mode
+			$this->toDaemon_realTimeStop();
+			$subscriptions = null;
+			$exclusions = null;
 		}
-		// Send event to WebUI and write a log
-		$this->sendMqttClientStateEvent();
-		$this->log('info', $mode ? __("Mode Temps Réel activé", __FILE__) : __("Mode Temps Réel désactivé", __FILE__));
+		// Update cache
+		$this->setCache(self::CACHE_REALTIME_INC_TOPICS, $subscriptions);
+		$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, $exclusions);
 	}
 
 	/**
