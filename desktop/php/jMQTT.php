@@ -123,13 +123,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	<div class="col-xs-12 eqLogic" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
-				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-brk roundedLeft toDisable" data-action="startRealTimeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Mode Temps Réel}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-brk btn-danger roundedLeft toDisable" data-action="stopRealTimeMode"><i class="fas fa-square"></i> {{Arrêter mode Temps Réel}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate" style="display: none;"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate" style="display: none;"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
+				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics" style="display: none;"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy" style="display: none;"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
 				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>&nbsp;
 			</div>
@@ -139,7 +137,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
-					<li role="presentation" class="typ-std"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
+					<li role="presentation" class="typ-std" style="display: none;"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>
@@ -167,23 +165,26 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<thead>
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
-								<label class="col-lg-2 control-label">{{Topics de souscription Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics de souscription Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
 								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
 								<br />Par défaut, le topic de souscritpion est '#', donc tous les topics, ce qui peut être beaucoup sur cetaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttIncTopic" value="#" />
 								</div>
-								<label class="col-lg-1 control-label"></label>
-								<label class="col-lg-2 control-label">{{Topics exclus du Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics exclus du Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
 								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
 								<br />Par défaut, le topic d'auto-découverte HA ('homeassistant/#') est exclu, car il est trop verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttExcTopic" value="homeassistant/#" />
 								</div>
-								<div class="col-lg-1">
-									<a class="btn btn-warning btn-sm pull-right eqLogicAction" data-action="emptyRealTime"><i class="fas fa-trash"></i> {{Vider}}</a>&nbsp;
+								<div class="col-lg-2">
+									<div class="input-group pull-right">
+										<a class="btn btn-default btn-sm eqLogicAction roundedLeft" data-action="startRealTimeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Lancer}}</a>
+										<a class="btn btn-danger  btn-sm eqLogicAction roundedLeft" data-action="stopRealTimeMode" style="display: none;"><i class="fas fa-square"></i> {{Arrêter}}</a>
+										<a class="btn btn-warning btn-sm eqLogicAction roundedRight" data-action="emptyRealTime"><i class="fas fa-trash"></i> {{Vider}}</a>
+									</div>
 								</div>
 							</td>
 						</tr>

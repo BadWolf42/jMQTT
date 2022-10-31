@@ -115,16 +115,6 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
-$('.eqLogicAction[data-action=startRealTimeMode]').on('click', function() {
-	// Enable Real Time mode for a Broker
-	jmqtt.setRealTimeMode(jmqtt.getEqId(), 1);
-});
-
-$('.eqLogicAction[data-action=stopRealTimeMode]').on('click', function() {
-	// Disable Real Time mode for a Broker
-	jmqtt.setRealTimeMode(jmqtt.getEqId(), 0);
-});
-
 $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 	var id = jmqtt.getEqId();
 	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
@@ -217,6 +207,16 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Real Time tab attributes
 //
+$('#table_realtime').on('click', '.eqLogicAction[data-action=startRealTimeMode]', function() {
+	// Enable Real Time mode for a Broker
+	jmqtt.setRealTimeMode(jmqtt.getEqId(), 1);
+});
+
+$('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]', function() {
+	// Disable Real Time mode for a Broker
+	jmqtt.setRealTimeMode(jmqtt.getEqId(), 0);
+});
+
 //$('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
 /* TODO (nice to have) Implement Adding a new cmd on a new Eq
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
@@ -745,12 +745,14 @@ function printEqLogic(_eqLogic) {
 			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
 		$('.toDisable').addClass('disabled');
 		$('.typ-brk').hide();
-		$('.typ-std').show();
+		$('.typ-std').hide();
+		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
 		$('.typ-std').hide();
 		$('.typ-brk').show();
+		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
 		// Udpate panel on eqBroker
 		jmqtt.updateBrokerTabs(_eqLogic);
@@ -763,6 +765,7 @@ function printEqLogic(_eqLogic) {
 		$('.toDisable').removeClass('disabled');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
+		$('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
 
 		jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
 		// Initialise battery and availability dropboxes
@@ -1174,8 +1177,10 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 		return;
 	// Display an alert if real time mode has changed on this Broker
 	jmqtt.displayRealTimeEvent(_eq);
-	if (jmqtt.getEqId() == _eq.id) // Update Panel and menu only when on the right Broker
+	// Update Panel and menu only when on the right Broker
+	if (jmqtt.getEqId() == _eq.id)
 		jmqtt.updateBrokerTabs(_eq);
+	// Update card on main page
 	jmqtt.updateDisplayCard(card, _eq);
 });
 
