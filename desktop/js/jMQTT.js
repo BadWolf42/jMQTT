@@ -1260,44 +1260,47 @@ $(document).ready(function() {
 		}
 	});
 
-	jeedomUtils.initTableSorter();
+	// Add table sorted on Real Time tab
+	jeedomUtils.initTableSorter(true);
 	$("#table_realtime")[0].config.widgetOptions.resizable_widths = ['180px', '', '', '80px', '130px'];
-	$("#table_realtime").trigger('resizableReset');
-	$("#table_realtime").width('100%');
+	$("#table_realtime").trigger('applyWidgets').trigger('resizableReset').width('100%');
+
+/* TODO (important) Check impact of parsers on WebUI
+	// Handle topic + jsonPath normalization
 	$.tablesorter.addParser({
 		id: 'topics',
 		is: function() {
 			return false
 		},
 		format: function(s, table, cell, cellIndex) {
+			if (s != '')
+				return s;
 			val = $(cell).find('.cmdAttr[data-l1key=topic]').val() + ' ' + $(cell).find('.cmdAttr[data-l1key=jsonPath]').val();
-			console.log(cell, val);
 			return val;
 		},
 		type: 'text'
 	})
-	$.tablesorter.customPagerControls({
-		table          : $("#table_realtime"),        // point at correct table (string or jQuery object)
-		pager          : $('.pager'),                 // pager wrapper (string or jQuery object)
-		pageSize       : '.left a',                   // container for page sizes
-		currentPage    : '.right a',                  // container for page selectors
-		ends           : 2,                           // number of pages to show of either end
-		aroundCurrent  : 1,                           // number of pages surrounding the current page
-		link           : '<a href="#">{page}</a>',    // page element; use {page} to include the page number
-		currentClass   : 'current',                   // current page class name
-		adjacentSpacer : '<span> | </span>',          // spacer for page numbers next to each other
-		distanceSpacer : '<span> &#133; <span>',      // spacer for page numbers away from each other (ellipsis = &#133;)
-		addKeyboard    : true,                        // use left,right,up,down,pageUp,pageDown,home, or end to change current page
-		pageKeyStep    : 10,                          // page step to use for pageUp and pageDown
-	});
-	$("#table_realtime").tablesorterPager({
-		container: $('.pager'),
-		size: 10,
-		savePages: false,
-		page: 0,
-		pageReset: 0,
-		removeRows: false,
-		countChildRows: false,
-		output: 'showing: {startRow} to {endRow} ({filteredRows})'
-	});
+
+	// Handle options normalization
+	$.tablesorter.addParser({
+		id: 'options',
+		is: function() {
+			return false
+		},
+		format: function(s, table, cell, cellIndex) {
+			if (s != '')
+				return s;
+			var val = '';
+			if ($(cell).find('i.fas.fa-sign-in-alt').length) {
+				if ($(cell).find('i.fas.fa-database').length)
+					return '{{Les deux}}';
+				return '{{Présent}}';
+			}
+			if ($(cell).find('i.fas.fa-database').length)
+				return '{{Retain}}';
+			return '{{Aucun}}';
+		},
+		type: 'text'
+	})
+*/
 });

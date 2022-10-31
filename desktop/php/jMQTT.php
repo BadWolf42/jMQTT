@@ -188,24 +188,10 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 							</td>
 						</tr>
 						<tr>
-							<td colspan="5" data-sorter="false" data-filter="false">
-								<div class="pager">
-									<nav class="left" style="float:left;">
-										<a href="#" class="current">10</a> | <a href="#">50</a> | <a href="#">100</a> | <a href="#">200</a> {{par page}}
-									</nav>
-									<nav class="right" style="float:right;">
-										<span class="prev cursor"><i class="fas fa-arrow-left"></i></span>
-										<span class="pagecount"></span>
-										<span class="next cursor"><i class="fas fa-arrow-right"></i></span>
-									</nav>
-								<div>
-							</td>
-						</tr>
-						<tr>
 							<th data-sorter="text">{{Date du message}}</th>
-							<th data-sorter="inputs">{{Topic}}</th>
+							<th data-sorter="topics" class="filter-match /*filter-parsed*/">{{Topic}}</th>
 							<th data-sorter="inputs">{{Valeur}}</th>
-							<th>{{Options}}</th>
+							<th data-sorter="options" class="filter-select /*filter-parsed*/">{{Options}}</th>
 							<th data-sorter="false" data-filter="false"></th>
 						</tr>
 					</thead>
@@ -240,7 +226,5 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	</div>
 </div>
 
-<?php include_file('3rdparty', 'jquery.tablesorter/extras/jquery.tablesorter.pager.min', 'js'); ?>
-<?php include_file('3rdparty', 'jquery.tablesorter/_jeedom/pager-custom-constrols', 'js'); ?>
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>
