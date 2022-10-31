@@ -1,5 +1,9 @@
 # Registre des évolutions BETA
 
+## 2022-10-31
+ - Déplacement du bouton de lancement dans l'onglet Temps Réel du Broker et ajout de boutons Pause, Reprendre et Vider
+ - Amélioration du mode Temps Réel
+
 ## 2022-10-29
  - **Retour en arrière sur la suppression des commandes 'status' sur les équipements Broker permettant d'avoir l'état de connexion de jMQTT au Broker**
  - Mise en warning des équipements Broker lorsqu'ils n'arrivent pas à se connecter
