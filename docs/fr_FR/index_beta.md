@@ -646,11 +646,12 @@ Attention, quel que soit la solution, il est important de configurer la *Gestion
 
 ![saison répétition](../images/2022-10-16_saison_repetition.png)
 
-# Conservation de l'état précédant une coupure de courant (exemple commande action avec "Retain")
+## Conservation de l'état précédant une coupure de courant (exemple commande action avec "Retain")
 
 Les Messages Retain ont beaucoup d'intérêt pour renvoyer des valeurs à la reconnexion d'un périphérique.
 
 Par exemple, une prise connectée Sonoff sera OFF de base après une coupure de courant.
+
 Si on souhaite remettre la prise dans le dernier état avant la coupure, il peut être intéressant de passer les commandes action d'allumage/extinction de la prise dans jMQTT en Retain.
 
 En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la reconnexion au Broker, le Broker l’informe directement du dernier état demandé et la prise revient en ON si c’était le cas. (Il faut bien publier ON et OFF en retain dans ce cas, pour que le Broker envoie aussi OFF si elle était OFF, car un message non-Retain n’écrase pas la valeur Retain dans le Broker).

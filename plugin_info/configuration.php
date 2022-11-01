@@ -69,7 +69,7 @@ if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == 
 <?php } ?>
 	</div>
 	<div class="col-sm-6">
-<!-- TODO (important) Backup/restore completly jMQTT
+<!-- TODO (important) Backup/restore completely jMQTT
 		<legend><i class="fas fa-exchange-alt"></i>{{Sauvegarde et Restauration}}</legend>
 		<div class="form-group ">
 			<div class="col-sm-6 col-xs-6">
