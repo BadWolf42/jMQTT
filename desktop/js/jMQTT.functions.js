@@ -198,8 +198,9 @@ jmqtt.checkTopicMatch = function (subscription, topic) {
 			return false;
 	if (subscription == '#') // Everything matches '#' subscription topic
 			return true;
-	var subRegex = new RegExp(`^${subscription}\$`.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'))
-	return subRegex.test(topic);
+	subscription = subscription.replace(/[-[\]{}()*?.,\\^$|\s]/g, '\\$&'); // Escape special character except + and #
+	subscription = subscription.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'); // Replace all + and 1 # by a regex
+	return (new RegExp(`^${subscription}\$`)).test(topic); // Return match
 }
 
 // Action on eqLogic subscription topic field update
