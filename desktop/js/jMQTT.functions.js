@@ -377,7 +377,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 }
 
 // Inform Jeedom to change Real Time mode
-jmqtt.setRealTimeMode = function(_id, _mode) {
+jmqtt.changeRealTimeMode = function(_id, _mode) {
 	// Ajax call to inform the plugin core of the change
 	jmqtt.callPluginAjax({
 		data: {

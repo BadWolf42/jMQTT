@@ -209,12 +209,12 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 //
 $('#table_realtime').on('click', '.eqLogicAction[data-action=startRealTimeMode]', function() {
 	// Enable Real Time mode for a Broker
-	jmqtt.setRealTimeMode(jmqtt.getEqId(), 1);
+	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 1);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]', function() {
 	// Disable Real Time mode for a Broker
-	jmqtt.setRealTimeMode(jmqtt.getEqId(), 0);
+	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 0);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=playRealTime]', function() {
