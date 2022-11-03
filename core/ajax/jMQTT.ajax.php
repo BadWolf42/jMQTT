@@ -172,6 +172,22 @@ try {
 		ajax::success();
 	}
 
+	if (init('action') == 'mosquittoInstall') {
+		jMQTT::mosquittoInstall();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoRepare') {
+		jMQTT::mosquittoRepare();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoRemove') {
+		sleep(3);
+		jMQTT::mosquittoRemove();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
 	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
