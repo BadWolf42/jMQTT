@@ -153,7 +153,7 @@ try {
 		// Function to filter array on date
 		function since_filter($val) { global $since; return $val['date'] > $since; }
 		// Filter array and search for matching eqLogic on remainings
-		foreach (array_filter($json, since_filter) as $msg) {
+		foreach (array_filter($json, 'since_filter') as $msg) {
 			$eqNames = '';
 			foreach ($brk_elogics as $eqpt) {
 				if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msg['topic']))
