@@ -115,16 +115,6 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
-$('.eqLogicAction[data-action=startRealTimeMode]').on('click', function() {
-	// Enable Real Time mode for a Broker
-	jmqtt.setRealTimeMode(jmqtt.getEqId(), 1);
-});
-
-$('.eqLogicAction[data-action=stopRealTimeMode]').on('click', function() {
-	// Disable Real Time mode for a Broker
-	jmqtt.setRealTimeMode(jmqtt.getEqId(), 0);
-});
-
 $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 	var id = jmqtt.getEqId();
 	if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
@@ -217,8 +207,46 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Real Time tab attributes
 //
+$('#table_realtime').on('click', '.eqLogicAction[data-action=startRealTimeMode]', function() {
+	// Enable Real Time mode for a Broker
+	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 1);
+});
+
+$('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]', function() {
+	// Disable Real Time mode for a Broker
+	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 0);
+});
+
+$('#table_realtime').on('click', '.eqLogicAction[data-action=playRealTime]', function() {
+	// Restarts Real Time mode view
+	jmqtt.updateRealTimeButtons(true, true, false);
+});
+
+$('#table_realtime').on('click', '.eqLogicAction[data-action=pauseRealTime]', function() {
+	// Pause Real Time mode view
+	jmqtt.updateRealTimeButtons(true, true, true);
+});
+
+// Button to empty RealTime view
+$('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', function() {
+	// Ask Daemon to cleanup its Real Time database
+	jmqtt.callPluginAjax({
+		data: {
+			action: "realTimeClear",
+			id: jmqtt.getEqId()
+		},
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'danger'});
+		},
+		success: function (data) {
+			$('#table_realtime tbody').empty();
+			$('#table_realtime').trigger("update");
+		}
+	});
+})
+
 //$('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
-/*
+/* TODO (nice to have) Implement Adding a new cmd on a new Eq
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
 	var broker   = jmqtt.getEqId();
@@ -247,7 +275,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 			// Create a new eqLogic
 			jeedom.eqLogic.save({
 				type: eqType,
-				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker, }) ], // TODO Missing enabled & mainTopic
+				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker, }) ], // TODO (nice to have) Missing enabled & mainTopic
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
@@ -339,13 +367,13 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 		tr.after(new_tr);
 		tr = tr.next();
 	}
+	$('#table_realtime').trigger("update");
 })
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
 	$('#table_realtime').trigger("update");
 })
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Automations on Equipment tab attributes
@@ -740,17 +768,23 @@ function printEqLogic(_eqLogic) {
 			|| (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
 		$('.toDisable').addClass('disabled');
 		$('.typ-brk').hide();
-		$('.typ-std').show();
+		$('.typ-std').hide();
+		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
+
+		// Stop Real Time data refresh
+		clearInterval(jmqtt.globals.refreshRealTime);
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
 		$('.typ-std').hide();
 		$('.typ-brk').show();
+		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
 		// Udpate panel on eqBroker
 		jmqtt.updateBrokerTabs(_eqLogic);
 
 		// Display only relevant Real Time data
+		jmqtt.getRealTimeData();
 		$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eqLogic.id + '"]').hide();
 		$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eqLogic.id + '"]').show();
 	}
@@ -758,6 +792,10 @@ function printEqLogic(_eqLogic) {
 		$('.toDisable').removeClass('disabled');
 		$('.typ-brk').hide();
 		$('.typ-std').show();
+		$('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
+
+		// Stop Real Time data refresh
+		clearInterval(jmqtt.globals.refreshRealTime);
 
 		jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
 		// Initialise battery and availability dropboxes
@@ -862,7 +900,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'info') {
-// TODO: FIXME: is this disabled variable usefull? virtualAction never exists
+// TODO (medium) FIXME: is this disabled variable usefull? virtualAction never exists
 		var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
 
 		var tr = '<tr class="cmd" tree-id="' + _cmd.tree_id + '"';
@@ -913,7 +951,7 @@ function addCmdToTable(_cmd) {
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br> ';
 		tr += '</td><td align="right">';
-// TODO Change when adding Advanced parameters
+// TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
@@ -966,7 +1004,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'action') {
-// TODO: FIXME: is this disabled variable usefull? Re-added to avoid "undefined" error
+// TODO (medium) FIXME: is this disabled variable usefull? Re-added to avoid "undefined" error
 		var disabled = '';
 
 		var tr = '<tr class="cmd" tree-id="' +  _cmd.tree_id + '" data-cmd_id="' + init(_cmd.id) + '" style="display: none;">'; // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
@@ -1006,7 +1044,7 @@ function addCmdToTable(_cmd) {
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td align="right">';
-// TODO Change when adding Advanced parameters
+// TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
 			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
@@ -1076,19 +1114,19 @@ function addCmdToTable(_cmd) {
 }
 
 /*
-// TODO replace jMQTT::EventState, and change visual on dashboard
+// TODO (low) replace jMQTT::EventState, and change visual on dashboard
 $('body').off('jMQTT::brkEvent').on('jMQTT::brkEvent', function (_event,_options) {
 	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
 	console.log(msg, _options);
 });
 
-// TODO replace eqptAdded and handle modified + removed, and change visual on dashboard
+// TODO (low) replace eqptAdded and handle modified + removed, and change visual on dashboard
 $('body').off('jMQTT::eqptEvent').on('jMQTT::eqptEvent', function (_event,_options) {
 	var msg = '{{L\'équipement}} <b>' + _options['name'] + '</b> {{vient d\'être}}' + _options['action'];
 	console.log(msg, _options);
 });
 
-// TODO replace cmdAdded and handle modified + removed
+// TODO (low) replace cmdAdded and handle modified + removed
 $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options) {
 	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
 	console.log(msg, _options);
@@ -1169,19 +1207,11 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 		return;
 	// Display an alert if real time mode has changed on this Broker
 	jmqtt.displayRealTimeEvent(_eq);
-	if (jmqtt.getEqId() == _eq.id) // Update Panel and menu only when on the right Broker
+	// Update Panel and menu only when on the right Broker
+	if (jmqtt.getEqId() == _eq.id)
 		jmqtt.updateBrokerTabs(_eq);
+	// Update card on main page
 	jmqtt.updateDisplayCard(card, _eq);
-});
-
-// Update the Real Time view of broker if displayed on reception of a new Real Time event
-$('body').off('jMQTT::RealTime').on('jMQTT::RealTime', function (_event, _options) {
-	var d = new Date();
-	_options.date = d.toISOString().slice(0,10) + " " + d.toLocaleTimeString() + "." + d.getMilliseconds();
-	_options.jsonPath = '';
-	var tr = jmqtt.newRealTimeCmd(_options);
-	$('#table_realtime tbody').prepend(tr);
-	$('#table_realtime').trigger("update");
 });
 
 
@@ -1206,18 +1236,16 @@ $(document).ready(function() {
 	//
 	// update DisplayCards on main page at load
 	//
-	$('.eqLogicDisplayCard').each(function () {
-		var _card = $(this);
-		jeedom.eqLogic.byId({
-			id: _card.attr('data-eqlogic_id'),
-			noCache: true,
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'warning'});
-			},
-			success: function(_eq) {
-				jmqtt.updateDisplayCard(_card, _eq);
-			}
-		});
+	jeedom.eqLogic.byType({
+		type: eqType,
+		noCache: true,
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'warning'});
+		},
+		success: function(_eqLogics) {
+			for (var i in _eqLogics)
+				jmqtt.updateDisplayCard($('.eqLogicDisplayCard[data-eqlogic_id=' + _eqLogics[i].id + ']'), _eqLogics[i]);
+		}
 	});
 
 	/*
@@ -1267,50 +1295,47 @@ $(document).ready(function() {
 		}
 	});
 
-	// Button to empty RealTime view
-	$('.eqLogicAction[data-action=emptyRealTime]').on('click', function() {
-		$('#table_realtime tbody').empty();
-		$('#table_realtime').trigger("update");
-	});
-
-	jeedomUtils.initTableSorter();
+	// Add table sorted on Real Time tab
+	jeedomUtils.initTableSorter(true);
 	$("#table_realtime")[0].config.widgetOptions.resizable_widths = ['180px', '', '', '80px', '130px'];
-	$("#table_realtime").trigger('resizableReset');
-	$("#table_realtime").width('100%');
+	$("#table_realtime").trigger('applyWidgets').trigger('resizableReset').width('100%');
+
+/* TODO (important) Check impact of parsers on WebUI
+	// Handle topic + jsonPath normalization
 	$.tablesorter.addParser({
 		id: 'topics',
 		is: function() {
 			return false
 		},
 		format: function(s, table, cell, cellIndex) {
+			if (s != '')
+				return s;
 			val = $(cell).find('.cmdAttr[data-l1key=topic]').val() + ' ' + $(cell).find('.cmdAttr[data-l1key=jsonPath]').val();
-			console.log(cell, val);
 			return val;
 		},
 		type: 'text'
 	})
-	$.tablesorter.customPagerControls({
-		table          : $("#table_realtime"),        // point at correct table (string or jQuery object)
-		pager          : $('.pager'),                 // pager wrapper (string or jQuery object)
-		pageSize       : '.left a',                   // container for page sizes
-		currentPage    : '.right a',                  // container for page selectors
-		ends           : 2,                           // number of pages to show of either end
-		aroundCurrent  : 1,                           // number of pages surrounding the current page
-		link           : '<a href="#">{page}</a>',    // page element; use {page} to include the page number
-		currentClass   : 'current',                   // current page class name
-		adjacentSpacer : '<span> | </span>',          // spacer for page numbers next to each other
-		distanceSpacer : '<span> &#133; <span>',      // spacer for page numbers away from each other (ellipsis = &#133;)
-		addKeyboard    : true,                        // use left,right,up,down,pageUp,pageDown,home, or end to change current page
-		pageKeyStep    : 10,                          // page step to use for pageUp and pageDown
-	});
-	$("#table_realtime").tablesorterPager({
-		container: $('.pager'),
-		size: 10,
-		savePages: false,
-		page: 0,
-		pageReset: 0,
-		removeRows: false,
-		countChildRows: false,
-		output: 'showing: {startRow} to {endRow} ({filteredRows})'
-	});
+
+	// Handle options normalization
+	$.tablesorter.addParser({
+		id: 'options',
+		is: function() {
+			return false
+		},
+		format: function(s, table, cell, cellIndex) {
+			if (s != '')
+				return s;
+			var val = '';
+			if ($(cell).find('i.fas.fa-sign-in-alt').length) {
+				if ($(cell).find('i.fas.fa-database').length)
+					return '{{Les deux}}';
+				return '{{Présent}}';
+			}
+			if ($(cell).find('i.fas.fa-database').length)
+				return '{{Retain}}';
+			return '{{Aucun}}';
+		},
+		type: 'text'
+	})
+*/
 });

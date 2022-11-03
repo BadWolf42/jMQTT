@@ -30,7 +30,7 @@ class JeedomMsg():
 		self._stopworker  = False
 		self._socketIn    = None
 		self._threadOut   = None
-		#TODO implement statistics
+# TODO (nice to have) implement statistics
 		self._last_snd    = time.time()
 		self._retry_snd   = 0
 		self._retry_max   = 5
@@ -44,7 +44,7 @@ class JeedomMsg():
 		socketserver.TCPServer.allow_reuse_address = True
 
 	def is_working(self):
-		# TODO Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
+		# TODO (important) Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
 		if self._retry_snd > self._retry_max:
 			self._log_snd.error("Nothing has been sent since %ds and after send %d attempts, Jeedom/Apache is probably dead.",
 								time.time() - self._last_snd, self._retry_snd)
@@ -98,7 +98,7 @@ class JeedomMsg():
 		i = 1
 		while i <= self._retry:
 			try:
-				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False) #TODO check 120s timeout ?!
+				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False) # TODO (low) Check 120s timeout ?!
 				if r.status_code == requests.codes.ok:
 					self._log_snd.debug('Sent TO Jeedom: %s', msgs)
 					self._log_snd.verbose('Received back FROM Jeedom: %s', r.text)
@@ -135,7 +135,7 @@ class JeedomMsg():
 				msgs.append(msg)
 			self._log_snd.debug("Sending %d msgs", len(msgs))
 			self.send(msgs)
-			# TODO Put back messages in qToJ if send failed !
+			# TODO (important) Put back messages in qToJ if send failed !
 		self.qToJ.queue.clear()
 		self._log_snd.info("Stopped")
 
@@ -182,7 +182,7 @@ class JeedomMsg():
 				self.server.jmsg.qFromJ.put(raw)
 				self.server.jmsg._last_rcv = time.time()
 				self._log.verbose("Client [%s:%d] disconnected", *(self.client_address))
-		# TODO: Implement IPv6 listening, examples:
+		# TODO (low): Implement IPv6 listening, examples:
 		#           https://www.bortzmeyer.org/files/echoserver.py
 		#           https://www.thecodingforums.com/threads/python-socketserver-with-ipv6.681964/
 		#       If so, DaemonUp PID/PORT check may need to be modified
@@ -208,7 +208,7 @@ class JeedomMsg():
 		if self._socketIn is None:
 			return
 		self._socketIn.shutdown()
-		# self._url = self._callback+'?apikey='+self._apikey     # TODO Check how to send brkDown+daemonDown without uid in url
+		# self._url = self._callback+'?apikey='+self._apikey     # TODO (low) Check how to send brkDown+daemonDown without uid in url
 		self._status &= ~self.CAN_RCV
 		self._socketIn = None
 		self._log_rcv.debug("Stopped")

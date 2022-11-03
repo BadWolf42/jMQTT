@@ -4,7 +4,7 @@
 Le plugin jMQTT permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
 Ses principales fonctionnalités sont :
 
- - Installation automatique du Broker Mosquitto ;
+ - Installation facilité d'un Broker MQTT en local sur Jeedom (service Mosquitto) ;
  - Prise en charge de plusieurs Broker ;
  - Création automatique des équipements MQTT, création automatique des commandes d'information, options pour désactiver ces automatismes ;
  - Ajout manuel d'équipement MQTT ;
@@ -13,7 +13,7 @@ Ses principales fonctionnalités sont :
  - Affichage en vue Classique Jeedom ou en vue JSON ;
  - Ajout manuel de commandes (pour la publication), prise en charge du mode Retain ;
  - Gestionnaire de templates ;
- - Gestion des Interactions ; <!-- TODO -->
+ - Gestion des Interactions ;
  - Affichage des messages en temps réel ;
  - Emulation et remontée du niveau de batterie d'un équipement dans Jeedom ;
  - Emulation et remontée de la disponibilité et mise en alarme de l'équipement dans Jeedom ;
@@ -65,21 +65,16 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation du plugin, il suffit de l’activer sur la page de configuration :
 
-![Configuration du plugin](../images/2022-10-26_config.png)
+![Configuration du plugin](../images/2022-11-03_config.png)
 
-jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser.
-Par défaut, jMQTT n'installe plus le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances.
+Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
-> **Important**
->
-> Si vous n'avez pas encore de Broker et que vous n'utilisez pas un autre plugin qui a déjà installé un Broker, activez l'installation de Mosquitto.
-> Pour installer le Broker Mosquitto sur la machine hébergeant Jeedom, il faut cocher la case *Installer Mosquitto localement* et sauvegarder la configuration, puis lancer les dépendances.
+jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser. Par défaut, jMQTT n'installe plus automatiquement le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances. A présent jMQTT essaye de détecter si Mosquitto est installé par un autre plugin (ou non). Si vous n'avez pas encore de Broker et que jMQTT n'en voit pas un installé autre plugin, lancez l'installation de Mosquitto en cliquant sur le bouton *Installer* et attendez la fin de la procédure.
 
-Quelques minutes sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
+Il suffit ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à votre Broker (s'il est installé par jMQTT l'IP du Broker est celle votre Jeedom sur le port 1883).
 
-Il suffit ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à votre Broker (s'il est installé par jMQTT l'IP du Broker est celle votre Jeedom).
+C'est tout pour la configuration générale, passons aux équipements.
 
-C'est aussi sur la page de configuration qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
 
 # Gestion des équipements
 
@@ -149,9 +144,10 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../images/2022-10-26_eqpt_broker.png)
+![Configuration du Broker](../images/2022-10-31_eqpt_broker.png)
 
-Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement.
+Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
+
 Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le statut du démon devrait passer à OK.
 
 Pour modifier les informations de connexion au Broker, les paramètres sont :
@@ -198,11 +194,14 @@ Il est aussi possible de relancer volontairement le client MQTT avec le bouton _
 Chaque équipement Broker possède son propre fichier de log (encadré 4) suffixé par le nom de l'équipement.
 Si l'équipement est renommé, le fichier de log le sera également.
 
+Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des messages qui arrivent.
+
+
 #### Mode Temps Réel
 
-Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des messages qui arrivent :
+La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2022-10-26_broker_realtime.png)
+![Mode Temps Réel](../images/2022-10-31_broker_realtime.png)
 
 Après avoir configuré les Topics de souscription Temps Réel et éventuellement les Topics exclus du Temps Réel utilisés pour récupérer les messages (encadré 1)
 
@@ -643,11 +642,12 @@ Attention, quel que soit la solution, il est important de configurer la *Gestion
 
 ![saison répétition](../images/2022-10-16_saison_repetition.png)
 
-# Conservation de l'état précédant une coupure de courant (exemple commande action avec "Retain")
+## Conservation de l'état précédant une coupure de courant (exemple commande action avec "Retain")
 
 Les Messages Retain ont beaucoup d'intérêt pour renvoyer des valeurs à la reconnexion d'un périphérique.
 
 Par exemple, une prise connectée Sonoff sera OFF de base après une coupure de courant.
+
 Si on souhaite remettre la prise dans le dernier état avant la coupure, il peut être intéressant de passer les commandes action d'allumage/extinction de la prise dans jMQTT en Retain.
 
 En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la reconnexion au Broker, le Broker l’informe directement du dernier état demandé et la prise revient en ON si c’était le cas. (Il faut bien publier ON et OFF en retain dans ce cas, pour que le Broker envoie aussi OFF si elle était OFF, car un message non-Retain n’écrase pas la valeur Retain dans le Broker).

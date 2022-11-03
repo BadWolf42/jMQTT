@@ -389,7 +389,7 @@ class jMQTT extends eqLogic {
 		// Add string format to eqLogic configuration
 		$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = str_replace($baseTopic, '%s', $this->getTopic());
 
-		// TODO Remove me?
+		// TODO (nice to have) Remove me when 4.4 is out
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
 		if (array_key_exists('cmd', $exportedTemplate[$_template]))
@@ -406,7 +406,7 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		// TODO FIX ME: Commands used in templates are not converted on template import/export:
+		// TODO (critical bug fix) FIX ME: Commands used in templates are not converted on template import/export:
 		// cf: https://community.jeedom.com/t/evolution-modele-template-dequipement/52701/24
 
 		// Remove brkId from eqpt configuration
@@ -691,7 +691,7 @@ class jMQTT extends eqLogic {
 				}
 			}
 
-			// TODO Check if certificates are OK
+			// TODO (low) Check if certificates are OK
 			// self::CONF_KEY_MQTT_TLS_CHECK
 			// self::CONF_KEY_MQTT_TLS_CA
 			// self::CONF_KEY_MQTT_TLS_CLI_CERT
@@ -1189,12 +1189,15 @@ class jMQTT extends eqLogic {
 		// To fix issue: https://community.jeedom.com/t/87727/39
 		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, '0')) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
 			$callbackURL = config::byKey('urlOverrideValue', __CLASS__, $callbackURL);
-		$cmd  = $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
-		$cmd .= ' --loglevel ' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd .= ' --callback "'.$callbackURL.'"';
-		$cmd .= ' --apikey ' . jeedom::getApiKey(__CLASS__);
-		$cmd .= ' --pid ' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid';
-		self::logger('info', __('Lancement du démon jMQTT', __FILE__));
+		$cmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(__CLASS__));
+		$cmd .= ' CALLBACK="'.$callbackURL.'"';
+		$cmd .= ' APIKEY=' . jeedom::getApiKey(__CLASS__);
+		$cmd .= ' PIDFILE=' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid ';
+		$cmd .= $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
+		if (log::getLogLevel(__CLASS__) > 100)
+			self::logger('info', __('Lancement du démon jMQTT', __FILE__));
+		else
+			self::logger('info', __('Lancement du démon jMQTT', __FILE__) . ': ' . $cmd);
 		exec($cmd . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
 		// Wait up to 10 seconds for daemon to start
 		for ($i = 1; $i <= 40; $i++) {
@@ -1320,9 +1323,9 @@ class jMQTT extends eqLogic {
 		// Active listeners
 		self::listenersAddAll();
 		// Prepare and send initial data
-		// TODO Edit Daemon to be enable to receive this information
+		// TODO (high) Edit Daemon to be enable to receive this information
 		// $returns = self::full_export(true); // FIX ME there is only a jMQTT->full_export() no static one !!!
-		// TODO use array_filter on each level of the array?
+		// TODO (code idea) use array_filter on each level of the array?
 		// return json_encode($returns, JSON_UNESCAPED_UNICODE);
 	}
 
@@ -1344,6 +1347,8 @@ class jMQTT extends eqLogic {
 			shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
 		// Delete in cache the daemon uid (as it is disconnected)
 		@cache::delete('jMQTT::' . self::CACHE_DAEMON_UID);
+		// Send state to WebUI
+		self::sendMqttDaemonStateEvent(false);
 		// Remove listeners
 		self::listenersRemoveAll();
 		// Get all brokers and set them as disconnected
@@ -1386,7 +1391,7 @@ class jMQTT extends eqLogic {
 
 	public static function toDaemon_hb() {
 		$params['cmd']      = 'hb';
-		$params['id']       = '0'; // TODO tmp fix?
+		$params['id']       = '0'; // TODO (low) tmp fix?
 		self::sendToDaemon($params, false);
 	}
 
@@ -1401,7 +1406,7 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params);
 	}
 
-/* TODO Implemented for later
+/* TODO (medium) Implemented for later
 	public static function toDaemon_brkRestart($brkId) {
 		$params['cmd']      = 'brkRestart';
 		$params['brkId']    = $brkId;
@@ -1479,12 +1484,6 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		// TODO: Check also if Mosquitto can be installed
-		if (config::byKey('installMosquitto', 'jMQTT', 0) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
-			self::logger('debug', __("Relancez les dépendances, le paquet Debian Mosquitto est manquant", __FILE__));
-			$return['state'] = self::MQTTCLIENT_NOK;
-		}
-
 		return $return;
 	}
 
@@ -1498,74 +1497,171 @@ class jMQTT extends eqLogic {
 		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
 		log::remove($depLogFile);
 		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 0) . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
+			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
 			'log' => log::getPathToLog($depLogFile)
 		);
 	}
 
-	/**
-	 * Create first broker eqpt if mosquitto has been installed
-	 */
-	public static function post_dependancy_install() {
-		echo "Starting post_dependancy_install()\n";
-		// if Mosquitto is installed
-		if (config::byKey('installMosquitto', 'jMQTT', 0)) {
-			echo "Mosquitto installation requested => looking for Broker eqpt\n";
+// Check install status of Mosquitto service
+	public static function mosquittoCheck() {
+		$res = array('installed' => false, 'by' => '', 'message' => __("Mosquitto n'est pas installé.", __FILE__), 'service' => '', 'config' => '');
+		$retval = 255;
+		$output = null;
+		// Check if Mosquitto package is installed
+		exec('dpkg -s mosquitto 2> /dev/null 1> /dev/null', $output, $retval); // retval = 1 not installed ; 0 installed
 
-			// TODO: Check also if Mosquitto can be installed
-			// dpkg -s mosquitto                // 1 not installed ; 0 installed
-			// systemctl status mosquitto.service | grep -- -c | sed -r "s/^.* -c (.*)$/\1/"       // Get config file
-			//looking for broker pointing to local mosquitto
-			$brokerexists = false;
+		// Not installed return default values
+		if ($retval != 0)
+			return $res;
+
+		// Otherwise, it is Installed
+		$res['installed'] = true;
+		// Get service active status
+		$res['service'] = ucfirst(shell_exec('systemctl status mosquitto.service | grep "Active:" | sed -r "s/^[^:]*: (.*)$/\1/"'));
+		// Get service config file (***unused for now***)
+		// $res['config'] = shell_exec('systemctl status mosquitto.service | grep -- " -c " | sed -r "s/^.* -c (.*)$/\1/"');
+
+		// Read in Core config who is supposed to have installed Mosquitto
+		$res['core'] = config::byKey('mosquitto::installedBy', '', 'Unknown');
+		// TODO (important) When config key will be widely used, resolve Mosquitto installer here
+
+		// Check if mosquitto.service has been changed by mqtt2
+		if (file_exists('/lib/systemd/system/mosquitto.service')
+				&& strpos(file_get_contents('/lib/systemd/system/mosquitto.service'), 'mqtt2') !== false) {
+			$res['by'] = 'MQTT Manager';
+			$res['message'] = __('Mosquitto est installé par <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">MQTT Manager</a> (mqtt2).', __FILE__);
+		}
+		// Check if jMQTT config file is in place
+		elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
+			$res['by'] = 'jMQTT';
+			$res['message'] = __('Mosquitto est installé par <a class="control-label success">jMQTT</a>.', __FILE__);
+		}
+		// Otherwise its considered to be a custom install
+		else {
+			$res['by'] = __("Inconnu", __FILE__);
+			$res['message'] = __("Mosquitto n'a pas est installé par un <a class='control-label sucess'>plugin connu</a>.", __FILE__);
+		}
+		return $res;
+	}
+
+// Install Mosquitto service and create first broker eqpt
+	public static function mosquittoInstall() {
+		$retval = 255;
+		$output = null;
+		// Check if Mosquitto package is installed
+		exec('dpkg -s mosquitto 2> /dev/null 1> /dev/null', $output, $retval); // retval = 1 not installed ; 0 installed
+		if ($retval == 0) {
+			self::logger('warning', __("Mosquitto est déjà installé sur ce système !", __FILE__));
+			return;
+		}
+
+		// Apt-get mosquitto
+		self::logger('info', __("Mosquitto : Démarrage de l'installation, merci de patienter...", __FILE__));
+		shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confask,confnew,confmiss" mosquitto');
+
+		$retval = 255;
+		$output = null;
+		// Check if mosquitto has already been configured (/etc/mosquitto/conf.d/jMQTT.conf is present)
+		exec('ls /etc/mosquitto/conf.d/jMQTT.conf 2>/dev/null | wc -w', $output, $retval); // retval = 1 conf ok ; 0 no conf
+		if ($retval == 0) {
+			shell_exec(system::getCmdSudo() . ' cp ' . __DIR__ . '/../../resources/mosquitto_jMQTT.conf /etc/mosquitto/conf.d/jMQTT.conf');
+		}
+
+		// Cleanup, just in case
+		shell_exec(system::getCmdSudo() . ' systemctl daemon-reload');
+		shell_exec(system::getCmdSudo() . ' systemctl enable mosquitto');
+		shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
+		shell_exec(system::getCmdSudo() . ' systemctl start mosquitto');
+
+		// Write in Core config that jMQTT has installed Mosquitto
+		config::save('mosquitto::installedBy', 'jMQTT');
+		self::logger('info', __("Mosquitto : Fin de l'installation.", __FILE__));
+
+		// Looking for eqBroker pointing to local mosquitto
+		$brokerexists = false;
+		foreach(self::getBrokers() as $broker) {
+			$hn = $broker->getConf(self::CONF_KEY_MQTT_ADDRESS);
+			$ip = gethostbyname($hn);
+			$localips = explode(' ', exec(system::getCmdSudo() . 'hostname -I'));
+			if ($hn == '' || substr($ip, 0, 4) == '127.' || in_array($ip, $localips)) {
+				$brokerexists = true;
+				self::logger('info', sprintf(__("L'équipement Broker local #%s# existe déjà, pas besoin d'en créer un.", __FILE__), $broker->getHumanName()));
+				break;
+			}
+		}
+
+		// Could not find a local eqBroker
+		if (!$brokerexists) {
+			self::logger('info', __("Aucun équipement Broker local n'a été trouvé, création en cours...", __FILE__));
+			$brokername = 'local';
+
+			// Looking for a conflict with eqBroker name
+			$brokernameconflict = false;
 			foreach(self::getBrokers() as $broker) {
-				$hn = $broker->getConf(self::CONF_KEY_MQTT_ADDRESS);
-				$ip = gethostbyname($hn);
-				$localips = explode(' ', exec(system::getCmdSudo() . 'hostname -I'));
-				if ($hn == '' || substr($ip, 0, 4) == '127.' || in_array($ip, $localips)) {
-					$brokerexists = true;
-					echo "Broker eqpt already exists\n";
+				if ($broker->getName() == $brokername) {
+					$brokernameconflict = true;
 					break;
 				}
 			}
-
-			if (!$brokerexists) {
-				echo "Broker eqpt not found\n";
-
-				$brokername = 'local';
-
-				//looking for broker name conflict
-				$brokernameconflict = false;
-				foreach(self::getBrokers() as $broker) {
-					if ($broker->getName() == $brokername) {
-						$brokernameconflict = true;
-						break;
-					}
-				}
-				if ($brokernameconflict) {
-					$i = 0;
-					do {
-						$i++;
-						$brokernameconflict = false;
-						$brokername = 'local'.$i;
-						foreach(self::getBrokers() as $broker) {
-							if ($broker->getName() == $brokername) {
-								$brokernameconflict = true;
-								break;
-							}
+			if ($brokernameconflict) {
+				$i = 0;
+				do {
+					$i++;
+					$brokernameconflict = false;
+					$brokername = 'local'.$i;
+					foreach(self::getBrokers() as $broker) {
+						if ($broker->getName() == $brokername) {
+							$brokernameconflict = true;
+							break;
 						}
-					} while ($brokernameconflict);
-				}
-
-				echo 'Creation of Broker eqpt. name : ' . $brokername . "\n";
-				$broker = new jMQTT();
-				$broker->setType(self::TYP_BRK);
-				$broker->setName($brokername);
-				$broker->setIsEnable(1);
-				$broker->save();
-
-				echo "Done\n";
+					}
+				} while ($brokernameconflict);
 			}
+
+			// Creating a new eqBroker to communicate with local Mosquitto
+			$broker = new jMQTT();
+			$broker->setType(self::TYP_BRK);
+			$broker->setName($brokername);
+			$broker->setIsEnable(1);
+			$broker->save();
+			self::logger('info', sprintf(__("L'équipement Broker #%s# a été créé.", __FILE__), $broker->getHumanName()));
 		}
+	}
+
+// Reinstall Mosquitto service over previous install
+	public static function mosquittoRepare() {
+		// Stop service
+		shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
+		// Ensure no config is remaining
+		shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive rm -rf /etc/mosquitto');
+		// Reinstall and force reapply service default config
+		shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive apt-get install --reinstall -y -o Dpkg::Options::="--force-confask,confnew,confmiss" mosquitto');
+		// Apply jMQTT config
+		shell_exec(system::getCmdSudo() . ' cp ' . __DIR__ . '/../../resources/mosquitto_jMQTT.conf /etc/mosquitto/conf.d/jMQTT.conf');
+		// Cleanup, just in case
+		shell_exec(system::getCmdSudo() . ' systemctl daemon-reload');
+		shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
+		shell_exec(system::getCmdSudo() . ' systemctl enable mosquitto');
+		shell_exec(system::getCmdSudo() . ' systemctl start mosquitto');
+		// Write in Core config that jMQTT has installed Mosquitto
+		config::save('mosquitto::installedBy', 'jMQTT');
+	}
+
+// Purge Mosquitto service and all related config files
+	public static function mosquittoRemove() {
+		$retval = 255;
+		$output = null;
+		// Check if Mosquitto package is installed
+		exec('dpkg -s mosquitto 2> /dev/null 1> /dev/null', $output, $retval); // retval = 1 not installed ; 0 installed
+		if ($retval == 1) {
+			event::add('jeedom::alert', array('level' => 'danger', 'page' => 'plugin', 'message' => __("Mosquitto n'est pas installé sur ce système !", __FILE__),));
+			return;
+		}
+		// Remove package and /etc folder
+		shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive apt-get purge -y mosquitto');
+		shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive rm -rf /etc/mosquitto');
+		// Remove from Core config that Mosquitto is installed
+		config::remove('mosquitto::installedBy');
 	}
 
 // Create or update all autoPub listeners
@@ -1609,6 +1705,15 @@ class jMQTT extends eqLogic {
 	public static function getDaemonAutoMode() {
 		return (config::byKey('deamonAutoMode', __CLASS__, 1) == 1);
 	}
+
+	/**
+	 * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
+	 * @param $_state bool True if Daemon is running and connected
+	 */
+	private static function sendMqttDaemonStateEvent($_state) {
+		event::add('jMQTT::EventDaemonState', $_state);
+	}
+
 
 	###################################################################################################################
 	##
@@ -1694,7 +1799,7 @@ class jMQTT extends eqLogic {
 			throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
 		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
 		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
-		$this->sendMqttClientStateEvent(); // TODO Check if needed (done in brkUp)
+		$this->sendMqttClientStateEvent(); // Need to send current state before brkUp give OK
 		// Preparing some additional data for the broker
 		$params = array();
 		$params['hostname']          = $this->getConf(self::CONF_KEY_MQTT_ADDRESS);
@@ -1708,7 +1813,6 @@ class jMQTT extends eqLogic {
 		$params['lwtOffline']        = $this->getConf(self::CONF_KEY_MQTT_LWT_OFFLINE);
 		$params['username']          = $this->getConf(self::CONF_KEY_MQTT_USER);
 		$params['password']          = $this->getConf(self::CONF_KEY_MQTT_PASS);
-		// TODO Implement WS url option
 		$params['tlscheck']          = $this->getConf(self::CONF_KEY_MQTT_TLS_CHECK);
 		switch ($this->getConf(self::CONF_KEY_MQTT_TLS_CHECK)) {
 			case 'disabled':
@@ -1744,7 +1848,7 @@ class jMQTT extends eqLogic {
 			return; // Return if client is not running
 		$this->log('info', __('Arrêt du Client MQTT', __FILE__));
 		self::toDaemon_removeClient($this->getId());
-		$this->sendMqttClientStateEvent(); // TODO Check if needed (done in brkDown)
+		$this->sendMqttClientStateEvent();  // Need to send current state before brkDown give NOK
 	}
 
 
@@ -1793,7 +1897,7 @@ class jMQTT extends eqLogic {
 
 	public static function fromDaemon_brkDown($id) {
 		try { // Catch if broker is unknown / deleted
-			$broker = self::byId($id);
+			$broker = self::byId($id); // Don't use getBrokerFromId here!
 			if (!is_object($broker)) {
 				self::logger('warning', sprintf(__("Le Broker %s n'existe plus", __FILE__), $id));
 				return;
@@ -1809,9 +1913,10 @@ class jMQTT extends eqLogic {
 			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(), self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			$broker->setStatus('warning', $broker->getIsEnable() ? 1 : null); // Also set a warning if eq is enabled (should be always true)
 
-			// if Real Time mode is enabled, disable it
-			if ($broker->getRealTimeMode())
-				$broker->changeRealTimeMode(0);
+			// Clear Real Time mode
+			$broker->setCache(self::CACHE_REALTIME_MODE, 0);
+			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, null);
+			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, null);
 
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
@@ -1848,6 +1953,49 @@ class jMQTT extends eqLogic {
 		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 	}
 
+	public static function fromDaemon_realTimeStarted($id) {
+		$brk = self::getBrokerFromId(intval($id));
+		// Update cache
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		$brk->setCache(self::CACHE_REALTIME_MODE, 1);
+		// Send event to WebUI
+		$brk->log('info', __("Mode Temps Réel activé", __FILE__));
+		$brk->sendMqttClientStateEvent();
+	}
+
+	public static function fromDaemon_realTimeStopped($id, $nbMsgs) {
+		$brk = self::getBrokerFromId(intval($id));
+		// Update cache
+		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		$brk->setCache(self::CACHE_REALTIME_MODE, 0);
+		// Send event to WebUI
+		$brk->log('info', sprintf(__("Mode Temps Réel désactivé, %s messages disponibles", __FILE__), $nbMsgs));
+		$brk->sendMqttClientStateEvent();
+	}
+
+	public function toDaemon_realTimeStart($subscribe, $exclude, $duration = 180) {
+		$params['cmd']='realTimeStart';
+		$params['id']=$this->getId();
+		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['subscribe']=$subscribe;
+		$params['exclude']=$exclude;
+		$params['duration']=$duration;
+		self::sendToDaemon($params);
+	}
+
+	public function toDaemon_realTimeStop() {
+		$params['cmd']='realTimeStop';
+		$params['id']=$this->getId();
+		self::sendToDaemon($params);
+	}
+
+	public function toDaemon_realTimeClear() {
+		$params['cmd']='realTimeClear';
+		$params['id']=$this->getId();
+		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		self::sendToDaemon($params);
+	}
+
 	public static function toDaemon_subscribe($id, $topic, $qos = 1) {
 		if (empty($topic)) return;
 		$params['cmd']='subscribeTopic';
@@ -1881,21 +2029,6 @@ class jMQTT extends eqLogic {
 	 */
 	private function sendMqttClientStateEvent() {
 		event::add('jMQTT::EventState', $this->toArray());
-	}
-
-	/**
-	 * Send a jMQTT::RealTime event to the UI containing eqLogic
-	 */
-	private function sendMqttRealTimeEvent($topic, $payload, $qos, $retain, $eqNames) {
-		event::add('jMQTT::RealTime', array('id' => $this->getId(), 'topic' => $topic, 'payload' => $payload, 'qos' => $qos, 'retain' => $retain, 'existing' => $eqNames));
-	}
-
-	/**
-	 * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
-	 * @param $_state bool True if Daemon is running and connected
-	 */
-	private static function sendMqttDaemonStateEvent($_state) {
-		event::add('jMQTT::EventDaemonState', $_state);
 	}
 
 
@@ -1998,67 +2131,6 @@ class jMQTT extends eqLogic {
 		foreach (self::byBrkId($this->getId()) as $eqpt) {
 			if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msgTopic)) $elogics[] = $eqpt;
 		}
-
-		if ($this->getRealTimeMode()) {
-			$sendRealTime = False;
-			// Check for subscriptions
-			foreach($this->getCache(self::CACHE_REALTIME_INC_TOPICS, []) as $t) {
-				if(mosquitto_topic_matches_sub($t, $msgTopic)) {
-					$sendRealTime = True;
-					break;
-				}
-			}
-			if ($sendRealTime) {
-				// Check for exclusions
-				foreach($this->getCache(self::CACHE_REALTIME_EXC_TOPICS, []) as $t) {
-					if(mosquitto_topic_matches_sub($t, $msgTopic)) {
-						$sendRealTime = False;
-						break;
-					}
-				}
-				if ($sendRealTime) {
-					// Send event to WebUI
-					$eqNames = '';
-					foreach($elogics as $eq)
-						$eqNames .= '<br />#'.$eq->getHumanName().'#';
-					$this->sendMqttRealTimeEvent($msgTopic, $msgValue, $msgQos, $msgRetain, $eqNames);
-				}
-			}
-		}
-
-/* TODO Check if this should deleted or not
-
-		// If no equipment listening to the current message is found and the automatic inclusion mode is active
-		if (empty($elogics) && $this->getIncludeMode()) {
-
-			// Make some check on topic
-			if ($msgTopic == '/' || strpos($msgTopic, '//') !== false) {
-				$this->log('warning', sprintf(__("Un équipement n'a pas pu être créé automatiquement pour le topic %s (W101)", __FILE__), $msgTopic));
-				return;
-			}
-
-			// explode topic
-			$msgTopicArray = explode("/", $msgTopic);
-			// remove empty strings and reindex
-			$msgTopicArray = array_values(array_filter($msgTopicArray));
-
-			if (!count($msgTopicArray)) {
-				$this->log('warning', sprintf(__("Un équipement n'a pas pu être créé automatiquement pour le topic %s (W102)", __FILE__), $msgTopic));
-				return;
-			}
-
-			// create a new equipment subscribing to all sub-topics starting with the first topic of the current message
-			$eqpt = self::createEquipment($this, $msgTopicArray[0], ($msgTopic[0] == '/' ? '/' : '') . $msgTopicArray[0] . '/#');
-			$elogics[] = $eqpt;
-		}
-
-		// No equipment listening to the current message is found
-		// Should not occur: log a warning and return
-		if (empty($elogics)) {
-			$this->log('warning', sprintf(__("Aucun équipement n'est inscrit au topic %s, cette erreur ne devrait pas se produire (W103)", __FILE__), $msgTopic));
-			return;
-		}
-*/
 
 		//
 		// Loop on enabled equipments listening to the current message
@@ -2493,26 +2565,12 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Disable the equipment automatic inclusion mode and inform the desktop page
-	 * @param string[] $option $option[id]=broker id
-	 */
-	public static function disableRealTimeMode($option) {
-		$broker = self::getBrokerFromId($option['id']);
-		$broker->changeRealTimeMode(0);
-	}
-
-	/**
 	 * Manage the Real Time mode of this broker object
 	 * Called by ajax when the button is pressed by the user
 	 * @param int $mode 0 or 1
 	 */
 	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#') {
-		// A cron process is used to reset the automatic mode after a delay
-		// If the cron process is already defined, remove it
-		$cron = cron::byClassAndFunction(__CLASS__, 'disableRealTimeMode', array('id' => $this->getId()));
-		if (is_object($cron))
-			$cron->remove(false); // Do not halt a running cron (comming from disableRealTimeMode)
-
+		$this->log('debug', $mode ? __("Lancement du Mode Temps...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
 		if($mode) { // If Real Time mode needs to be enabled
 			// Check if a subscription topic is provided
 			if (trim($subscribe) == '')
@@ -2524,8 +2582,6 @@ class jMQTT extends eqLogic {
 				$t = trim($t);
 				if ($t == '')
 					continue;
-				// Subscribe Real Time topic
-				$this->subscribeTopic($t, $this->getQos());
 				$subscriptions[] = $t;
 			}
 			if (count($subscriptions) == 0)
@@ -2539,31 +2595,23 @@ class jMQTT extends eqLogic {
 					continue;
 				$exclusions[] = $t;
 			}
-			// Update cache
-			$this->setCache(self::CACHE_REALTIME_MODE, $mode);
-			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, $subscriptions);
-			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, $exclusions);
-			// Create and configure the cron process to disable Real Time mode later
-			$cron = new cron();
-			$cron->setClass(__CLASS__);
-			$cron->setOption(array('id' => $this->getId()));
-			$cron->setFunction('disableRealTimeMode');
-			// Add 150s => actual delay between 2 and 3min
-			$cron->setSchedule(cron::convertDateToCron(strtotime('now') + 200));
-			$cron->setOnce(1);
-			$cron->save();
+			// Start Real Time Mode (must be started before subscribe)
+			$this->toDaemon_realTimeStart($subscribe, $exclude);
+			// Subscribe Real Time topic
+			foreach ($subscribe as $t)
+				$this->subscribeTopic($t, $this->getQos());
 		} else { // Real Time mode needs to be disabled
 			// Unsubscribe Real Time topic
 			foreach ($this->getCache(self::CACHE_REALTIME_INC_TOPICS, []) as $t)
 				$this->unsubscribeTopic(trim($t));
-			// Update cache
-			$this->setCache(self::CACHE_REALTIME_MODE, $mode);
-			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, null);
-			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, null);
+			// Stop Real Time mode
+			$this->toDaemon_realTimeStop();
+			$subscriptions = null;
+			$exclusions = null;
 		}
-		// Send event to WebUI and write a log
-		$this->sendMqttClientStateEvent();
-		$this->log('info', $mode ? __("Mode Temps Réel activé", __FILE__) : __("Mode Temps Réel désactivé", __FILE__));
+		// Update cache
+		$this->setCache(self::CACHE_REALTIME_INC_TOPICS, $subscriptions);
+		$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, $exclusions);
 	}
 
 	/**

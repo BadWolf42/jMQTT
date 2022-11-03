@@ -136,10 +136,13 @@ jmqtt.globals.icons = {
 // To memorise page refresh timeout when set
 jmqtt.globals.refreshTimeout = null;
 
+// To reload Real Time view
+jmqtt.globals.refreshRealTime = null;
+
 // To memorise current eqLogic main subscription topic
 jmqtt.globals.mainTopic = '';
 
-// Update daemon state global variable on reception of a new event
+// Update daemon state global variable on reception of a new event (jmqtt.globals.daemonState is initialized by sendVarToJS() in jMQTT.php)
 $('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function (_event, _options) {
 	jmqtt.globals.daemonState = _options;
 });

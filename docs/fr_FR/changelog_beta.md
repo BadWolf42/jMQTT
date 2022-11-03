@@ -1,10 +1,20 @@
 # Registre des évolutions BETA
 
+## 2022-11-04
+ - **Remplacement de la case à cocher pour l'installation de Mosquitto par des boutons Installer/Réparer/Supprimer**
+ - Détection de la présence de Mosquitto sur le système et, si possible, quel plugin l'a installé
+ - Ajout de captures d'écrans de jMQTT pour le Market
+ - Corrections mineures
+ - Mise à jour de la documentation, des captures et du Changelog
+
+## 2022-10-31
+ - Déplacement du bouton de lancement dans l'onglet Temps Réel du Broker et ajout de boutons Pause, Reprendre et Vider
+ - Amélioration du mode Temps Réel
+
 ## 2022-10-29
  - **Retour en arrière sur la suppression des commandes 'status' sur les équipements Broker permettant d'avoir l'état de connexion de jMQTT au Broker**
  - Mise en warning des équipements Broker lorsqu'ils n'arrivent pas à se connecter
  - Amélioration du mode Temps Réel
- - Mise à jour de la documentation
 
 ## 2022-10-26 à 15h
  - Correction d'un bug dans le script d'installation du plugin, **il est NÉCESSAIRE DE RESTAURER UNE BACKUP si vous avez mis à jour avec la version de la nuit**

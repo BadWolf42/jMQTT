@@ -3,7 +3,7 @@ if (! isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 
-// TODO check if needed: detect Jeedom version (4.2 or +)
+// TODO (nice to have) check if needed: detect Jeedom version (4.2 or +)
 // $jeedom_v42 = strpos(trim(config::byKey('version')), '4.2.') === 0;
 
 sendVarToJS('eqType', 'jMQTT');
@@ -123,13 +123,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	<div class="col-xs-12 eqLogic" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
-				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-brk roundedLeft toDisable" data-action="startRealTimeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Mode Temps Réel}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-brk btn-danger roundedLeft toDisable" data-action="stopRealTimeMode"><i class="fas fa-square"></i> {{Arrêter mode Temps Réel}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate" style="display: none;"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate" style="display: none;"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
+				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics" style="display: none;"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy" style="display: none;"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
 				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>&nbsp;
 			</div>
@@ -139,7 +137,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
-					<li role="presentation" class="typ-std"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
+					<li role="presentation" class="typ-std" style="display: none;"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>
@@ -167,45 +165,36 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<thead>
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
-								<label class="col-lg-2 control-label">{{Topics de souscription Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics de souscription Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
 								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
 								<br />Par défaut, le topic de souscritpion est '#', donc tous les topics, ce qui peut être beaucoup sur cetaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttIncTopic" value="#" />
 								</div>
-								<label class="col-lg-1 control-label"></label>
-								<label class="col-lg-2 control-label">{{Topics exclus du Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics exclus du Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
 								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
 								<br />Par défaut, le topic d'auto-découverte HA ('homeassistant/#') est exclu, car il est trop verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttExcTopic" value="homeassistant/#" />
 								</div>
-								<div class="col-lg-1">
-									<a class="btn btn-warning btn-sm pull-right eqLogicAction" data-action="emptyRealTime"><i class="fas fa-trash"></i> {{Vider}}</a>&nbsp;
+								<div class="col-lg-2">
+									<div class="input-group pull-right">
+										<a class="btn btn-default btn-sm eqLogicAction roundedLeft" data-action="startRealTimeMode"><i class="fas fa-sign-in-alt fa-rotate-90"></i> {{Lancer}}</a>
+										<a class="btn btn-danger  btn-sm eqLogicAction roundedLeft" data-action="stopRealTimeMode" style="display: none;"><i class="fas fa-square"></i> {{Arrêter}}</a>
+										<a class="btn btn-success btn-sm eqLogicAction" data-action="playRealTime" style="display: none;"><i class="fa fa-play"></i> {{Reprendre}}</a>
+										<a class="btn btn-warning btn-sm eqLogicAction" data-action="pauseRealTime" style="display: none;"><i class="fa fa-pause"></i> {{Pause}}</a>
+										<a class="btn btn-warning btn-sm eqLogicAction roundedRight" data-action="emptyRealTime"><i class="fas fa-trash"></i> {{Vider}}</a>
+									</div>
 								</div>
 							</td>
 						</tr>
 						<tr>
-							<td colspan="5" data-sorter="false" data-filter="false">
-								<div class="pager">
-									<nav class="left" style="float:left;">
-										<a href="#" class="current">10</a> | <a href="#">50</a> | <a href="#">100</a> | <a href="#">200</a> {{par page}}
-									</nav>
-									<nav class="right" style="float:right;">
-										<span class="prev cursor"><i class="fas fa-arrow-left"></i></span>
-										<span class="pagecount"></span>
-										<span class="next cursor"><i class="fas fa-arrow-right"></i></span>
-									</nav>
-								<div>
-							</td>
-						</tr>
-						<tr>
 							<th data-sorter="text">{{Date du message}}</th>
-							<th data-sorter="inputs">{{Topic}}</th>
+							<th data-sorter="topics" class="filter-match /*filter-parsed*/">{{Topic}}</th>
 							<th data-sorter="inputs">{{Valeur}}</th>
-							<th>{{Options}}</th>
+							<th data-sorter="options" class="filter-select /*filter-parsed*/">{{Options}}</th>
 							<th data-sorter="false" data-filter="false"></th>
 						</tr>
 					</thead>
@@ -213,7 +202,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					</tbody>
 				</table>
 			</div>
-			<!-- TODO Add here "Discovery" tab and HA MQTT discovery tab -->
+			<!-- TODO (high) Add here "Discovery" tab and HA MQTT discovery tab -->
 			<div role="tabpanel" class="tab-pane toDisable" id="commandtab">
 				<table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
 					<thead>
@@ -226,13 +215,13 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 							<th style="width:1px;">{{Unité}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
 							<th style="min-width:135px;width:135px;"></th>
-<!-- TODO Change when adding Advanced parameters
+<!-- TODO (medium) Change when adding Advanced parameters
 							<th style="min-width:90px;width:100px;">{{Options}}</th>
 							<th style="min-width:160px;width:160px;"></th>
 -->
 						</tr>
 					</thead>
-					<tbody><!-- TODO Limit the number of displayed lines (by pages of 25? 50? 100?) -->
+					<tbody><!-- TODO (low) Limit the number of displayed lines (by pages of 25? 50? 100?) how? as handled by plugin.template -->
 					</tbody>
 				</table>
 			</div>
@@ -240,7 +229,5 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 	</div>
 </div>
 
-<?php include_file('3rdparty', 'jquery.tablesorter/extras/jquery.tablesorter.pager.min', 'js'); ?>
-<?php include_file('3rdparty', 'jquery.tablesorter/_jeedom/pager-custom-constrols', 'js'); ?>
 <?php include_file('desktop', 'jMQTT', 'js', 'jMQTT'); ?>
 <?php include_file('core', 'plugin.template', 'js'); ?>

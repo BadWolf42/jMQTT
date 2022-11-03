@@ -73,13 +73,23 @@ function builder_cfgCache(_div, _action, _buttons) {
 		success: function(_data) {
 			var res = '<table class="table table-bordered" style="table-layout:fixed;width:100%;">';
 			res += '<thead><tr><th style="width:180px">{{Clé}}</th><th>{{Valeur (encodée en Json)}}</th>';
-			res += '<th style="width:85px;text-align:center"><a class="btn btn-success btn-xs pull-right add" style="top:0px!important;">';
-			res += '<i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a></th></tr></thead><tbody>';
+			res += '<th style="width:85px;text-align:center">';
+			if (_data[0] && !_data[0].id)
+				res += '<a class="btn btn-success btn-xs pull-right add" style="top:0px!important;"><i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a>';
+			res += '</th></tr></thead><tbody>';
 			for (var group of _data) {
-				if (group.header != '')
-					res += '<tr><td colspan="3" style="font-weight:bolder;">' + group.header + '</td></tr>';
+				if (group.header) {
+					if (group.id) {
+						res += '<tr eqId="' + group.id + '"><td colspan="2" style="font-weight:bolder;">' + group.header + '</td>';
+						res += '<td><a class="btn btn-success btn-xs pull-right add" style="top:0px!important;">';
+						res += '<i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a></td></tr>';
+					} else {
+						res += '<tr><td colspan="3" style="font-weight:bolder;">' + group.header + '</td></tr>';
+					}
+				}
 				for (var d of group.data) {
-					res += '<tr><td class="key">' + d.key + '</td><td><pre class="val">' + JSON.stringify(d.value) + '</pre></td>';
+					res += (group.id) ? '<tr eqId="' + group.id + '">' : '<tr>';
+					res += '<td class="key">' + d.key + '</td><td><pre class="val">' + JSON.stringify(d.value) + '</pre></td>';
 					res += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i> </a>';
 					res += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
 				}
@@ -92,7 +102,7 @@ function builder_cfgCache(_div, _action, _buttons) {
 	});
 }
 
-function configButtons(div) {
+function configIntButtons(div) {
 	div.on('click', 'a.add', function() {
 		bootbox.confirm({
 			title: '{{Ajouter un paramètre de configuration interne}}',
@@ -104,7 +114,7 @@ function configButtons(div) {
 				if (result) {
 				callDebugAjax({
 					data: {
-						action: "configSet",
+						action: "configSetInternal",
 						key : $("#debugKey").val(),
 						val: $("#debugVal").val()
 					},
@@ -137,7 +147,7 @@ function configButtons(div) {
 				if (result) {
 				callDebugAjax({
 					data: {
-						action: "configSet",
+						action: "configSetInternal",
 						key : debugKey,
 						val: $("#debugVal").val()
 					},
@@ -167,7 +177,7 @@ function configButtons(div) {
 				if (result) {
 				callDebugAjax({
 					data: {
-						action: "configDel",
+						action: "configDelInternal",
 						key : debugKey
 					},
 					error: function(error) {
@@ -175,6 +185,204 @@ function configButtons(div) {
 					},
 					success: function(data) {
 						$.fn.showAlert({message: '{{Paramètre de config interne supprimé.}}', level: 'success'});
+						tr.remove();
+					}
+				});
+				}
+			}
+		});
+	});
+}
+function configBrkEqButtons(div) {
+	div.on('click', 'a.add', function() {
+		var tr = $(this).closest('tr');
+		var debugId = tr.attr('eqId');
+		bootbox.confirm({
+			title: '{{Ajouter un paramètre de configuration}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configSetBrkAndEqpt",
+						id : debugId,
+						key : $("#debugKey").val(),
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config ajouté.}}', level: 'success'});
+						var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
+						row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
+						row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i> </a>';
+						row += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
+						tr.after(row);
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.edit', function() {
+		var tr = $(this).closest('tr');
+		var debugId = tr.attr('eqId');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Modifier le paramètre de configuration}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configSetBrkAndEqpt",
+						id : debugId,
+						key : debugKey,
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config modifié.}}', level: 'success'});
+						tr.find('.val').text($("#debugVal").val());
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.del', function() {
+		var tr = $(this).closest('tr');
+		var debugId = tr.attr('eqId');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Supprimer le paramètre de configuration}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configDelBrkAndEqpt",
+						id : debugId,
+						key : debugKey
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config supprimé.}}', level: 'success'});
+						tr.remove();
+					}
+				});
+				}
+			}
+		});
+	});
+}
+function configCmdButtons(div) {
+	div.on('click', 'a.add', function() {
+		var tr = $(this).closest('tr');
+		var debugId = tr.attr('eqId');
+		bootbox.confirm({
+			title: '{{Ajouter un paramètre de configuration}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="debugKey"><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configSetCommands",
+						id : debugId,
+						key : $("#debugKey").val(),
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config ajouté.}}', level: 'success'});
+						var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
+						row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
+						row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i> </a>';
+						row += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
+						tr.after(row);
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.edit', function() {
+		var tr = $(this).closest('tr');
+		var debugId = tr.attr('eqId');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Modifier le paramètre de configuration}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configSetCommands",
+						id : debugId,
+						key : debugKey,
+						val: $("#debugVal").val()
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config modifié.}}', level: 'success'});
+						tr.find('.val').text($("#debugVal").val());
+					}
+				});
+				}
+			}
+		});
+	});
+
+	div.on('click', 'a.del', function() {
+		var tr = $(this).closest('tr');
+		var debugId = tr.attr('eqId');
+		var debugKey = tr.find('.key').text();
+		bootbox.confirm({
+			title: '{{Supprimer le paramètre de configuration}}',
+			message: '<label class="control-label">{{Clé :}} </label> '
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+			callback: function(result) {
+				if (result) {
+				callDebugAjax({
+					data: {
+						action: "configDelCommands",
+						id : debugId,
+						key : debugKey
+					},
+					error: function(error) {
+						$.fn.showAlert({message: error, level: 'danger'})
+					},
+					success: function(data) {
+						$.fn.showAlert({message: '{{Paramètre de config supprimé.}}', level: 'success'});
 						tr.remove();
 					}
 				});
@@ -339,11 +547,11 @@ function builder_daemon(div) {
 	});
 }
 
-function builder_configInt(div)  { builder_cfgCache(div, "configGetInternal",       configButtons); }
-function builder_configBrk(div)  { builder_cfgCache(div, "configGetBrokers",        null); } // TODO set/delete config brkLogic/eqLogic
-function builder_configEqp(div)  { builder_cfgCache(div, "configGetEquipments",     null); } // TODO set/delete config brkLogic/eqLogic
-function builder_configCmdI(div) { builder_cfgCache(div, "configGetCommandsInfo",   null); } // TODO set/delete config cmd
-function builder_configCmdA(div) { builder_cfgCache(div, "configGetCommandsAction", null); } // TODO set/delete config cmd
+function builder_configInt(div)  { builder_cfgCache(div, "configGetInternal",       configIntButtons); }
+function builder_configBrk(div)  { builder_cfgCache(div, "configGetBrokers",        configBrkEqButtons); }
+function builder_configEqp(div)  { builder_cfgCache(div, "configGetEquipments",     configBrkEqButtons); }
+function builder_configCmdI(div) { builder_cfgCache(div, "configGetCommandsInfo",   configCmdButtons); }
+function builder_configCmdA(div) { builder_cfgCache(div, "configGetCommandsAction", configCmdButtons); }
 
 function builder_cacheInt(div)   { builder_cfgCache(div, "cacheGetInternal",        cacheButtons); }
 function builder_cacheBrk(div)   { builder_cfgCache(div, "cacheGetBrokers",         cacheButtons); }
@@ -466,12 +674,13 @@ panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-boo
 	</div>
 
 <!--
-TODO
+TODO (low) for Debug modal
 - Kill all daemons
 - Remove PID file
 - Relaunch plugin install
 - Stop heatbeat
 - Request Thread Dump
+- Send loglevel (including verbose)
 - Enable/disable listeners
 - Clean directories deps / dynamic content
 -->

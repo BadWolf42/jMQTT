@@ -136,6 +136,58 @@ try {
 		ajax::success();
 	}
 
+	if (init('action') == 'realTimeGet') {
+		$broker = jMQTT::getBrokerFromId(init('id'));
+		$_file = jeedom::getTmpFolder('jMQTT').'/rt' . $broker->getId() . '.json';
+		if (!file_exists($_file))
+			ajax::success([]);
+		// Read content from file without error handeling!
+		$content = file_get_contents($_file);
+		// Decode template file content to json (or raise)
+		$json = json_decode($content, true);
+		// Get filtering data
+		$since = init('since', '');
+		// Search for compatible eqLogic on this Broker
+		$brk_elogics = jMQTT::byBrkId($broker->getId());
+		$res = [];
+		// Function to filter array on date
+		function since_filter($val) { global $since; return $val['date'] > $since; }
+		// Filter array and search for matching eqLogic on remainings
+		foreach (array_filter($json, 'since_filter') as $msg) {
+			$eqNames = '';
+			foreach ($brk_elogics as $eqpt) {
+				if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msg['topic']))
+					$eqNames .= '<br />#'.$eqpt->getHumanName().'#';
+			}
+			$msg['existing'] = $eqNames;
+			$res[] = $msg;
+		}
+		// Return result
+		ajax::success($res);
+	}
+
+	if (init('action') == 'realTimeClear') {
+		$broker = jMQTT::getBrokerFromId(init('id'));
+		$broker->toDaemon_realTimeClear();
+		ajax::success();
+	}
+
+	if (init('action') == 'mosquittoInstall') {
+		jMQTT::mosquittoInstall();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoRepare') {
+		jMQTT::mosquittoRepare();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoRemove') {
+		sleep(3);
+		jMQTT::mosquittoRemove();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
 	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
