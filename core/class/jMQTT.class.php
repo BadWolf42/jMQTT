@@ -1484,12 +1484,6 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		// TODO (important) Check also if Mosquitto can be installed
-		if (config::byKey('installMosquitto', 'jMQTT', 0) && exec(system::getCmdSudo() . system::get('cmd_check') . '-Ec "mosquitto"') < 1) {
-			self::logger('debug', __("Relancez les dépendances, le paquet Debian Mosquitto est manquant", __FILE__));
-			$return['state'] = self::MQTTCLIENT_NOK;
-		}
-
 		return $return;
 	}
 
@@ -1503,74 +1497,9 @@ class jMQTT extends eqLogic {
 		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
 		log::remove($depLogFile);
 		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . config::byKey('installMosquitto', 'jMQTT', 0) . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
+			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
 			'log' => log::getPathToLog($depLogFile)
 		);
-	}
-
-	/**
-	 * Create first broker eqpt if mosquitto has been installed
-	 */
-	public static function post_dependancy_install() {
-		echo "Starting post_dependancy_install()\n";
-		// if Mosquitto is installed
-		if (config::byKey('installMosquitto', 'jMQTT', 0)) {
-			echo "Mosquitto installation requested => looking for Broker eqpt\n";
-
-			// TODO (important) Check also if Mosquitto can be installed
-			// dpkg -s mosquitto                // 1 not installed ; 0 installed
-			// systemctl status mosquitto.service | grep -- -c | sed -r "s/^.* -c (.*)$/\1/"       // Get config file
-			//looking for broker pointing to local mosquitto
-			$brokerexists = false;
-			foreach(self::getBrokers() as $broker) {
-				$hn = $broker->getConf(self::CONF_KEY_MQTT_ADDRESS);
-				$ip = gethostbyname($hn);
-				$localips = explode(' ', exec(system::getCmdSudo() . 'hostname -I'));
-				if ($hn == '' || substr($ip, 0, 4) == '127.' || in_array($ip, $localips)) {
-					$brokerexists = true;
-					echo "Broker eqpt already exists\n";
-					break;
-				}
-			}
-
-			if (!$brokerexists) {
-				echo "Broker eqpt not found\n";
-
-				$brokername = 'local';
-
-				//looking for broker name conflict
-				$brokernameconflict = false;
-				foreach(self::getBrokers() as $broker) {
-					if ($broker->getName() == $brokername) {
-						$brokernameconflict = true;
-						break;
-					}
-				}
-				if ($brokernameconflict) {
-					$i = 0;
-					do {
-						$i++;
-						$brokernameconflict = false;
-						$brokername = 'local'.$i;
-						foreach(self::getBrokers() as $broker) {
-							if ($broker->getName() == $brokername) {
-								$brokernameconflict = true;
-								break;
-							}
-						}
-					} while ($brokernameconflict);
-				}
-
-				echo 'Creation of Broker eqpt. name : ' . $brokername . "\n";
-				$broker = new jMQTT();
-				$broker->setType(self::TYP_BRK);
-				$broker->setName($brokername);
-				$broker->setIsEnable(1);
-				$broker->save();
-
-				echo "Done\n";
-			}
-		}
 	}
 
 // Create or update all autoPub listeners

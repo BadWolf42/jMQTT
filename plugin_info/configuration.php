@@ -29,10 +29,6 @@ if (!isConnect()) {
 	<div class="col-sm-6">
 		<legend><i class="fas fa-cog"></i>{{Broker MQTT en local (Service Mosquitto)}}</legend>
 		<div class="form-group">
-			<label class="col-sm-4 control-label">{{Installer Mosquitto}}</label>
-			<div class="col-sm-8">
-				<input type="checkbox" class="configKey" data-l1key="installMosquitto" />
-			</div>
 		</div>
 <?php
 $docker = false;
