@@ -90,15 +90,15 @@ class jMqttClient:
 	def realtime_send(self, msg, usablePayload, form):
 		should_pub = False
 		for i in self.realtimeInc:
-			if mqtt.topic_matches_sub(i, msg.topic):
+			if mqtt.topic_matches_sub(i, msg['topic']):
 				should_pub = True
 				break
 		if not should_pub:
 			return
 		for e in self.realtimeExc:
-			if mqtt.topic_matches_sub(e, msg.topic):
+			if mqtt.topic_matches_sub(e, msg['topic']):
 				return
-		self._log.info('Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', msg.topic, usablePayload, form, msg.qos, bool(msg.retain))
+		self._log.info('Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', msg['topic'], usablePayload, form, msg['qos'], bool(msg['retain']))
 		self.realtime.append({'date':datetime.now().strftime('%F %T.%f')[:-3], 'jsonPath':'', **msg})
 		with open(self.realtimeFile, 'w') as f:
 			json.dump(self.realtime, f)
