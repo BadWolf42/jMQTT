@@ -650,6 +650,14 @@ Si on souhaite remettre la prise dans le dernier état avant la coupure, il peut
 
 En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la reconnexion au Broker, le Broker l’informe directement du dernier état demandé et la prise revient en ON si c’était le cas. (Il faut bien publier ON et OFF en retain dans ce cas, pour que le Broker envoie aussi OFF si elle était OFF, car un message non-Retain n’écrase pas la valeur Retain dans le Broker).
 
+<!--
+# Pour aller plus loin
+
+## Schéma du fonctionnement interne de jMQTT
+
+// TODO Schéma du fonctionnement interne/externe de jMQTT
+
+-->
 # Registres des évolutions
 
 [Evolutions de la branche beta](changelog_beta)
