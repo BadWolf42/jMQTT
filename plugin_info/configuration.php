@@ -23,12 +23,48 @@ if (!isConnect()) {
 	die();
 }
 
+// Send Mosquitto installation status
+sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
+
 ?>
 <form class="form-horizontal">
 	<div class="row">
 	<div class="col-sm-6">
 		<legend><i class="fas fa-cog"></i>{{Broker MQTT en local (Service Mosquitto)}}</legend>
 		<div class="form-group">
+			<label class="col-sm-4 control-label">{{Etat d'installation}} <sup><i class="fa fa-question-circle tooltips"
+				title="{{Si Mosquitto est installé en local, jMQTT essaye de détecter par quel plugin.}}"></i></sup></label>
+			<div class="col-sm-8">
+				<span id="mosquittoStatus"></span>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-4 control-label">{{Etat du service}} <sup><i class="fa fa-question-circle tooltips"
+				title="{{Si Mosquitto est installé en local, jMQTT remonte ici l'éta deu service (systemd).}}"></i></sup></label>
+			<div class="col-sm-8">
+				<span id="mosquittoService"></span>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-4 control-label">{{Installation locale}} <sup><i class="fa fa-question-circle tooltips"
+				title="{{Ces boutons permettent de gérer l'installation de Mosquitto entant que service local sur ce système Jeedom.}}"></i></sup></label>
+			<div class="col-sm-2">
+				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="Lance l'installation de Mosquitto en local.">
+				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Installer}}</a>
+			</div>
+			<div class="col-sm-2">
+				<a id="bt_mosquittoRepare" class="btn btn-warning disabled" style="width:100%;"
+					title="Supprime la configuration actuelle de Mosquitto et remet la configuration par<br />
+					défaut de jMQTT. Cette option est particulièrement intéressante dans le cas où un<br />
+					autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.">
+				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-magic"></i> {{Réparer}}</a>
+			</div>
+			<div class="col-sm-2">
+				<a id="bt_mosquittoRemove" class="btn btn-danger disabled" style="width:100%;"
+					title="Supprime complètement Mosquitto du système, par exemple dans le cas où vous<br />
+					voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.">
+				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-trash"></i> {{Supprimer}}</a>
+			</div>
 		</div>
 <?php
 $docker = false;
@@ -113,6 +149,21 @@ function jmqttAjax(_params) {
 	});
 }
 
+// Helper to set buttons and texts
+function mosquittoStatus(_result) {
+	if (_result.installed) {
+		$('#bt_mosquittoInstall').addClass('disabled');
+		$('#bt_mosquittoRepare').removeClass('disabled');
+		$('#bt_mosquittoRemove').removeClass('disabled');
+	} else {
+		$('#bt_mosquittoInstall').removeClass('disabled');
+		$('#bt_mosquittoRepare').addClass('disabled');
+		$('#bt_mosquittoRemove').addClass('disabled');
+	}
+	$('#mosquittoStatus').empty().html(_result.message);
+	$('#mosquittoService').empty().html(_result.service);
+}
+
 <?php if ($docker) { ?>
 $('#bt_jmqttUrlOverride').on('click', function () {
 	var $valEn = $('#jmqttUrlOverrideEnable').value()
@@ -165,4 +216,8 @@ if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event 
 	});
 };
 
+// Set Mosquitto status
+$(document).ready(function() {
+	mosquittoStatus(mStatus);
+});
 </script>
