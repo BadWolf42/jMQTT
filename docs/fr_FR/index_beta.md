@@ -4,7 +4,7 @@
 Le plugin jMQTT permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
 Ses principales fonctionnalités sont :
 
- - Installation automatique du Broker Mosquitto ;
+ - Installation facilité d'un Broker MQTT en local sur Jeedom (service Mosquitto) ;
  - Prise en charge de plusieurs Broker ;
  - Création automatique des équipements MQTT, création automatique des commandes d'information, options pour désactiver ces automatismes ;
  - Ajout manuel d'équipement MQTT ;
@@ -65,21 +65,16 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation du plugin, il suffit de l’activer sur la page de configuration :
 
-![Configuration du plugin](../images/2022-10-26_config.png)
+![Configuration du plugin](../images/2022-11-03_config.png)
 
-jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser.
-Par défaut, jMQTT n'installe plus le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances.
+Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
-> **Important**
->
-> Si vous n'avez pas encore de Broker et que vous n'utilisez pas un autre plugin qui a déjà installé un Broker, activez l'installation de Mosquitto.
-> Pour installer le Broker Mosquitto sur la machine hébergeant Jeedom, il faut cocher la case *Installer Mosquitto localement* et sauvegarder la configuration, puis lancer les dépendances.
+jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser. Par défaut, jMQTT n'installe plus automatiquement le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances. A présent jMQTT essaye de détecter si Mosquitto est installé par un autre plugin (ou non). Si vous n'avez pas encore de Broker et que jMQTT n'en voit pas un installé autre plugin, lancez l'installation de Mosquitto en cliquant sur le bouton *Installer* et attendez la fin de la procédure.
 
-Quelques minutes sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
+Il suffit ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à votre Broker (s'il est installé par jMQTT l'IP du Broker est celle votre Jeedom sur le port 1883).
 
-Il suffit ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à votre Broker (s'il est installé par jMQTT l'IP du Broker est celle votre Jeedom).
+C'est tout pour la configuration générale, passons aux équipements.
 
-C'est aussi sur la page de configuration qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
 
 # Gestion des équipements
 
@@ -151,7 +146,8 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ![Configuration du Broker](../images/2022-10-31_eqpt_broker.png)
 
-Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement.
+Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
+
 Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le statut du démon devrait passer à OK.
 
 Pour modifier les informations de connexion au Broker, les paramètres sont :
