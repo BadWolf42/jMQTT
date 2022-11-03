@@ -109,15 +109,17 @@ if ($docker) {
 		<div class="form-group"><br /></div>
 	</div>
 	<div class="col-sm-6">
-<!-- TODO (important) Backup/restore completely jMQTT
-		<legend><i class="fas fa-exchange-alt"></i>{{Sauvegarde et Restauration}}</legend>
+<!-- TODO NEW Uncomment when Backup/Restore jMQTT is OK
+		<legend><i class="fas fa-exchange-alt"></i>{{Sauvegarde et Restauration de jMQTT en l'état}}</legend>
 		<div class="form-group ">
-			<div class="col-sm-6 col-xs-6">
-				<a class="btn btn-success bt_backupJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Sauvegarder en l'état jMQTT}}</a>
+			<label class="col-sm-2 control-label"> </label>
+			<div class="col-sm-3">
+				<a class="btn btn-success" id="bt_backupJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Sauvegarder}}</a>
 			</div>
-			<div class="col-sm-6 col-xs-12">
-				<a class="btn btn-warning" id="bt_restoreJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer une sauvegarde de jMQTT}}</a>
+			<div class="col-sm-3">
+				<a class="btn btn-danger" id="bt_restoreJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer}}</a>
 			</div>
+			<div class="col-sm-2"> </div>
 		</div>
 -->
 		<div class="form-group"><br /></div>
@@ -264,6 +266,18 @@ $('#bt_mosquittoRemove').on('click', function () {
 	}
 });
 <?php } /* !$docker */ ?>
+
+/* TODO NEW Uncomment when Backup/Restore jMQTT is OK
+// Launch jMQTT backup and wait for it to end
+$('#bt_backupJMQTT').on('click', function () {
+	console.log('bt_backupJMQTT');
+});
+
+// Launch jMQTT restoration and wait for it to end
+$('#bt_restoreJMQTT').on('click', function () {
+	console.log('bt_restoreJMQTT');
+});
+*/
 
 <?php if ($docker) { ?>
 $('#bt_jmqttUrlOverride').on('click', function () {
