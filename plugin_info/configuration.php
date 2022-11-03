@@ -149,6 +149,14 @@ function jmqttAjax(_params) {
 	});
 }
 
+// Toggle spinner icon on button click
+function toggleIco(_this) {
+	var h = _this.find('i.fas:hidden');
+	var v = _this.find('i.fas:visible');
+	v.hide();
+	h.show();
+}
+
 // Helper to set buttons and texts
 function mosquittoStatus(_result) {
 	if (_result.installed) {
@@ -163,6 +171,90 @@ function mosquittoStatus(_result) {
 	$('#mosquittoStatus').empty().html(_result.message);
 	$('#mosquittoService').empty().html(_result.service);
 }
+
+// Launch Mosquitto installation and wait for it to end
+$('#bt_mosquittoInstall').on('click', function () {
+	if (!$(this).hasClass('disabled')) {
+		var btn = $(this);
+		bootbox.confirm('{{Etes-vous sûr de vouloir installer le service Mosquitto en local ?}}', function (result) {
+			if (result) {
+				toggleIco(btn);
+				jmqttAjax({
+					data: { action: "mosquittoInstall" },
+					error: function (request, status, error) {
+						toggleIco(btn);
+						handleAjaxError(request, status, error);
+					},
+					success: function(data) {
+						toggleIco(btn);
+						if (data.state == 'ok') {
+							mosquittoStatus(data.result);
+							$.fn.showAlert({message: '{{Le service Mosquitto a bien été installé et configuré.}}' ,level: 'success'});
+						} else {
+							$.fn.showAlert({message: data.result ,level: 'danger'});
+						}
+					}
+				});
+			}
+		});
+	}
+});
+
+// Launch Mosquitto reparation and wait for it to end
+$('#bt_mosquittoRepare').on('click', function () {
+	if (!$(this).hasClass('disabled')) {
+		var btn = $(this);
+		bootbox.confirm('{{Etes-vous sûr de vouloir réparer le service Mosquitto local ?}}', function (result) {
+			if (result) {
+				toggleIco(btn);
+				jmqttAjax({
+					data: { action: "mosquittoRepare" },
+					error: function (request, status, error) {
+						toggleIco(btn);
+						handleAjaxError(request, status, error);
+					},
+					success: function(data) {
+						toggleIco(btn);
+						if (data.state == 'ok') {
+							mosquittoStatus(data.result);
+							$.fn.showAlert({message: '{{Le service Mosquitto a bien été réparé.}}' ,level: 'success'});
+						} else {
+							$.fn.showAlert({message: data.result ,level: 'danger'});
+						}
+					}
+				});
+			}
+		});
+	}
+});
+
+// Launch Mosquitto uninstall and wait for it to end
+$('#bt_mosquittoRemove').on('click', function () {
+	if (!$(this).hasClass('disabled')) {
+		var btn = $(this);
+		bootbox.confirm('{{Etes-vous sûr de vouloir supprimer le service Mosquitto local ?}}', function (result) {
+			if (result) {
+				toggleIco(btn);
+				jmqttAjax({
+					data: { action: "mosquittoRemove" },
+					error: function (request, status, error) {
+						toggleIco(btn);
+						handleAjaxError(request, status, error);
+					},
+					success: function(data) {
+						toggleIco(btn);
+						if (data.state == 'ok') {
+							mosquittoStatus(data.result);
+							$.fn.showAlert({message: '{{Le service Mosquitto a bien été désinstallé du système.}}' ,level: 'success'});
+						} else {
+							$.fn.showAlert({message: data.result ,level: 'danger'});
+						}
+					}
+				});
+			}
+		});
+	}
+});
 
 <?php if ($docker) { ?>
 $('#bt_jmqttUrlOverride').on('click', function () {
