@@ -27,7 +27,7 @@ if (!isConnect()) {
 <form class="form-horizontal">
 	<div class="row">
 	<div class="col-sm-6">
-		<legend><i class="fas fa-cog"></i>{{Installation}}</legend>
+		<legend><i class="fas fa-cog"></i>{{Broker MQTT en local (Service Mosquitto)}}</legend>
 		<div class="form-group">
 			<label class="col-sm-4 control-label">{{Installer Mosquitto}}</label>
 			<div class="col-sm-8">
@@ -35,15 +35,19 @@ if (!isConnect()) {
 			</div>
 		</div>
 <?php
+$docker = false;
 if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1') {
+	$docker = true;
 	// To fix issue: https://community.jeedom.com/t/87727/39
 	$regularVal = jMQTT::get_callback_url();
 	$overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
 	$overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
 	$curVal = ($overrideEn) ? $overrideVal : $regularVal;
 ?>
+		<div class="form-group"><br /></div>
+		<legend><i class="fab fa-docker "></i>{{Paramètres Docker}}</legend>
 		<div class="form-group">
-			<label class="col-sm-4 control-label" style="color:var(--al-danger-color);">{{URL de Callback}} <sup><i class="fa fa-question-circle tooltips"
+			<label class="col-sm-4 control-label">{{URL de Callback du Démon}} <sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br />
 				Dans ce cas uniquement, il peut être nécessaire de personaliser cette url, car elle est mal détectée par jMQTT.<br />
 				<b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>
@@ -67,6 +71,7 @@ if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == 
 			</div>
 		</div>
 <?php } ?>
+		<div class="form-group"><br /></div>
 	</div>
 	<div class="col-sm-6">
 <!-- TODO (important) Backup/restore completely jMQTT
@@ -85,20 +90,41 @@ if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == 
 	</div>
 </form>
 <script>
-$('#bt_jmqttUrlOverride').on('click', function (){
-	var $valEn = $('#jmqttUrlOverrideEnable').value()
+<?php if (!$docker) { ?>
+// Remove unneeded Save button
+$('#bt_savePluginConfig').remove();
+<?php } ?>
+
+// Copy of jmqtt.callPluginAjax() to handle "My plugins" page when jMQTT.functions.js is not included
+function jmqttAjax(_params) {
 	$.ajax({
+		async: _params.async == undefined ? true : _params.async,
+		global: false,
 		type: "POST",
 		url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+		data: _params.data,
+		dataType: 'json',
+		error: function (request, status, error) {
+				if (typeof _params.error === 'function')
+					_params.error(request, status, error);
+				else
+					handleAjaxError(request, status, error);
+		},
+		success: function (data) {
+			if (typeof _params.success === 'function')
+				_params.success(data);
+		}
+	});
+}
+
+<?php if ($docker) { ?>
+$('#bt_jmqttUrlOverride').on('click', function () {
+	var $valEn = $('#jmqttUrlOverrideEnable').value()
+	jmqttAjax({
 		data: {
 			action: "updateUrlOverride",
 			valEn: $valEn,
 			valUrl: (($valEn == '1') ? $('#jmqttUrlOverrideValue').value() : $('#jmqttUrlOverrideValue').attr('valOver'))
-		},
-		global : false,
-		dataType: 'json',
-		error: function(request, status, error) {
-			handleAjaxError(request, status, error);
 		},
 		success: function(data) {
 			if (data.state != 'ok')
@@ -109,7 +135,7 @@ $('#bt_jmqttUrlOverride').on('click', function (){
 	});
 });
 
-$('#jmqttUrlOverrideEnable').change(function(){
+$('#jmqttUrlOverrideEnable').change(function() {
 	$oVal = $('#jmqttUrlOverrideValue');
 	if ($(this).value() == '1') {
 		if ($oVal.attr('valOver') != "")
@@ -121,6 +147,7 @@ $('#jmqttUrlOverrideEnable').change(function(){
 		$oVal.addClass('disabled');
 	}
 });
+<?php } ?>
 
 $btSave = $('#bt_savePluginLogConfig');
 if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event on the button
@@ -128,17 +155,10 @@ if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event 
 	$btSave.on('click', function() {
 		var level = $('input.configKey[data-l1key="log::level::jMQTT"]:checked')
 		if (level.length == 1) { // Found 1 checked log::level::jMQTT input
-			$.ajax({
-				type: "POST",
-				url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
+			jmqttAjax({
 				data: {
 					action: "sendLoglevel",
 					level: level.attr('data-l2key')
-				},
-				global : false,
-				dataType: 'json',
-				error: function(request, status, error) {
-					handleAjaxError(request, status, error);
 				},
 				success: function(data) {
 					if (data.state == 'ok')
