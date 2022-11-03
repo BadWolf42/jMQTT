@@ -214,6 +214,7 @@ try {
 				continue;
 			$cacheCmdKeys = array();
 			$cacheCmdKeys[] = 'cmdCacheAttr'.$cmd->getId();
+			$cacheCmdKeys[] = 'cmd'.$cmd->getId();
 			$data = array();
 			foreach ($cacheCmdKeys as $k) {
 				$val = cache::byKey($k)->getValue(null);
