@@ -32,21 +32,21 @@ sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('
 	<div class="col-sm-6">
 		<legend><i class="fas fa-cog"></i>{{Broker MQTT en local (Service Mosquitto)}}</legend>
 		<div class="form-group">
-			<label class="col-sm-4 control-label">{{Etat d'installation}} <sup><i class="fa fa-question-circle tooltips"
+			<label class="col-sm-4 control-label">{{Etat d'installation}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Mosquitto est installé en local, jMQTT essaye de détecter par quel plugin.}}"></i></sup></label>
 			<div class="col-sm-8">
 				<span id="mosquittoStatus"></span>
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-4 control-label">{{Etat du service}} <sup><i class="fa fa-question-circle tooltips"
+			<label class="col-sm-4 control-label">{{Etat du service}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Mosquitto est installé en local, jMQTT remonte ici l'éta deu service (systemd).}}"></i></sup></label>
 			<div class="col-sm-8">
 				<span id="mosquittoService"></span>
 			</div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-4 control-label">{{Installation locale}} <sup><i class="fa fa-question-circle tooltips"
+			<label class="col-sm-4 control-label">{{Installation locale}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Ces boutons permettent de gérer l'installation de Mosquitto entant que service local sur ce système Jeedom.}}"></i></sup></label>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="Lance l'installation de Mosquitto en local.">
@@ -79,7 +79,7 @@ if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == 
 		<div class="form-group"><br /></div>
 		<legend><i class="fab fa-docker "></i>{{Paramètres Docker}}</legend>
 		<div class="form-group">
-			<label class="col-sm-4 control-label">{{URL de Callback du Démon}} <sup><i class="fa fa-question-circle tooltips"
+			<label class="col-sm-4 control-label">{{URL de Callback du Démon}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br />
 				Dans ce cas uniquement, il peut être nécessaire de personaliser cette url, car elle est mal détectée par jMQTT.<br />
 				<b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>

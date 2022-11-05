@@ -93,7 +93,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		foreach ($eqNonBrokers as $id => $nonBrokers) {
 			if (! array_key_exists($id, $eqBrokers)) {
 				if (!$has_orphans) {
-					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}} <sup><i class="fas fa-exclamation-triangle tooltips" title="{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.<br>Il ne devrait pas y avoir d\'équipement orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
+					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup><i class="fas fa-exclamation-triangle tooltips" title="{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.<br>Il ne devrait pas y avoir d\'équipement orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					echo '<div class="eqLogicThumbnailContainer">';
 					$has_orphans = true;
 				}
@@ -165,14 +165,14 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<thead>
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
-								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics de souscription Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics de souscription Temps Réel}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
 								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
 								<br />Par défaut, le topic de souscritpion est '#', donc tous les topics, ce qui peut être beaucoup sur cetaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttIncTopic" value="#" />
 								</div>
-								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics exclus du Temps Réel}} <sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics exclus du Temps Réel}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
 								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
 								<br />Par défaut, le topic d'auto-découverte HA ('homeassistant/#') est exclu, car il est trop verbeux.}}"></i></sup></label>
