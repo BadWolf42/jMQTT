@@ -72,11 +72,12 @@ class jMQTT extends eqLogic {
 	const CACHE_DAEMON_PORT             = 'daemonPort';
 	const CACHE_DAEMON_UID              = 'daemonUid';
 	const CACHE_IGNORE_TOPIC_MISMATCH   = 'ignore_topic_mismatch';
+	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
+	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
 	const CACHE_REALTIME_MODE           = 'realtime_mode';
 	const CACHE_REALTIME_INC_TOPICS     = 'mqttIncTopic';
 	const CACHE_REALTIME_EXC_TOPICS     = 'mqttExcTopic';
-	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
-	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
+	const CACHE_REALTIME_RET_TOPICS     = 'mqttRetTopic';
 
 	const PATH_TEMPLATES_PERSO          = 'data/template/';
 	const PATH_TEMPLATES_JMQTT          = 'core/config/template/';
@@ -1386,6 +1387,7 @@ class jMQTT extends eqLogic {
 			return;
 		}
 		socket_close($socket);
+		// self::logger('debug', sprintf(__("sendToDaemon: port=%1\$s, payload=%2\$s", __FILE__), $port, $payload));
 		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_SND, time());
 	}
 
@@ -1915,8 +1917,6 @@ class jMQTT extends eqLogic {
 
 			// Clear Real Time mode
 			$broker->setCache(self::CACHE_REALTIME_MODE, 0);
-			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, null);
-			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, null);
 
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
@@ -1973,12 +1973,13 @@ class jMQTT extends eqLogic {
 		$brk->sendMqttClientStateEvent();
 	}
 
-	public function toDaemon_realTimeStart($subscribe, $exclude, $duration = 180) {
+	public function toDaemon_realTimeStart($subscribe, $exclude, $retained, $duration = 180) {
 		$params['cmd']='realTimeStart';
 		$params['id']=$this->getId();
 		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
 		$params['subscribe']=$subscribe;
 		$params['exclude']=$exclude;
+		$params['retained']=$retained;
 		$params['duration']=$duration;
 		self::sendToDaemon($params);
 	}
@@ -2569,8 +2570,9 @@ class jMQTT extends eqLogic {
 	 * Called by ajax when the button is pressed by the user
 	 * @param int $mode 0 or 1
 	 */
-	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#') {
-		$this->log('debug', $mode ? __("Lancement du Mode Temps...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
+	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#', $retained=false) {
+		$this->log('info', $mode ? __("Lancement du Mode Temps...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
+		// $this->log('debug', sprintf(__("changeRealTimeMode(mode=%1\$s, subscribe=%2\$s, exclude=%3\$s, retained=%4\$s)", __FILE__), $mode, $subscribe, $exclude, $retained));
 		if($mode) { // If Real Time mode needs to be enabled
 			// Check if a subscription topic is provided
 			if (trim($subscribe) == '')
@@ -2595,23 +2597,26 @@ class jMQTT extends eqLogic {
 					continue;
 				$exclusions[] = $t;
 			}
+			// Cleanup retained
+			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
 			// Start Real Time Mode (must be started before subscribe)
-			$this->toDaemon_realTimeStart($subscribe, $exclude);
+			$this->toDaemon_realTimeStart($subscriptions, $exclusions, $retained);
 			// Subscribe Real Time topic
-			foreach ($subscribe as $t)
+			foreach ($subscriptions as $t)
 				$this->subscribeTopic($t, $this->getQos());
+			// Update cache
+			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
+			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
+			$this->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
 		} else { // Real Time mode needs to be disabled
 			// Unsubscribe Real Time topic
-			foreach ($this->getCache(self::CACHE_REALTIME_INC_TOPICS, []) as $t)
+			$subscribe = $this->getCache(self::CACHE_REALTIME_INC_TOPICS, '');
+			$subscribe = explode('|', $subscribe);
+			foreach ($subscribe as $t)
 				$this->unsubscribeTopic(trim($t));
 			// Stop Real Time mode
 			$this->toDaemon_realTimeStop();
-			$subscriptions = null;
-			$exclusions = null;
 		}
-		// Update cache
-		$this->setCache(self::CACHE_REALTIME_INC_TOPICS, $subscriptions);
-		$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, $exclusions);
 	}
 
 	/**

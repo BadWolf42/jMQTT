@@ -165,19 +165,24 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<thead>
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
-								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics de souscription Temps Réel}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-1 control-label" style="text-align: right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
-								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
-								<br />Par défaut, le topic de souscritpion est '#', donc tous les topics, ce qui peut être beaucoup sur cetaines installations.}}"></i></sup></label>
+								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
+								<br />Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
-									<input class="form-control" id="mqttIncTopic" value="#" />
+									<input class="form-control" id="mqttIncTopic">
 								</div>
-								<label class="col-lg-2 control-label" style="text-align: right;">{{Topics exclus du Temps Réel}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-1 control-label" style="text-align: right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
-								<br />Plusieurs topics peuvent être fourni en les séparrant par des '|' (pipe).
-								<br />Par défaut, le topic d'auto-découverte HA ('homeassistant/#') est exclu, car il est trop verbeux.}}"></i></sup></label>
+								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
+								<br />Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
-									<input class="form-control" id="mqttExcTopic" value="homeassistant/#" />
+									<input class="form-control" id="mqttExcTopic">
+								</div>
+								<label class="col-lg-1 control-label" style="text-align: right;">{{Retain}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+								title="{{Remonter aussi les payload retenus par le Broker.}}"></i></sup></label>
+								<div class="col-lg-1">
+									<input type="checkbox" class="form-control" id="mqttRetTopic" checked="false">
 								</div>
 								<div class="col-lg-2">
 									<div class="input-group pull-right">
