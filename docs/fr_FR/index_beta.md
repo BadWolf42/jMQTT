@@ -209,14 +209,12 @@ Le mode temps réel s’active, pour le Broker concerné, en cliquant sur le bou
 
 Les messages reçu sont stockés uniquement coté navigateur.
 
-Les Outils de recherche et de pagination (encadré 3) permettent de rechercher, trier et sélectionner facilement des messages MQTT.
+Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option (encadré 3) :
 
-Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option (encadré 4) :
-
-  - Les icônes orange signifient que les messages ont été republiés lors de l'activation du mode Temps Réel et son stockées dans le Broker (elles sont Retain),
+  - Les icônes orange signifient que les messages ont été republiés lors de l'activation du mode Temps Réel et sont retenues par le Broker (elles sont Retain),
   - Les icônes vertes montrent permettent de savoir que ce topic est déjà porté par un équipement jMQTT. En passant la souris sur l'icône les équipements concernés sont affichés.
 
-Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 5) pour les utiliser.
+Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 4) pour les utiliser.
 
   - La première icône permet d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
   - La seconde de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,
