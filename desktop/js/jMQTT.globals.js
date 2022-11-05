@@ -138,6 +138,7 @@ jmqtt.globals.refreshTimeout = null;
 
 // To reload Real Time view
 jmqtt.globals.refreshRealTime = null;
+jmqtt.globals.lockRealTime = false;
 
 // To memorise current eqLogic main subscription topic
 jmqtt.globals.mainTopic = '';

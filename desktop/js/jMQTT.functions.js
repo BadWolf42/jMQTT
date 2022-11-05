@@ -428,6 +428,10 @@ jmqtt.newRealTimeCmd = function(_data) {
 
 // Get new Real Time data from Daemon
 jmqtt.getRealTimeData = function() {
+	// Avoid simultaneous collection
+	if (jmqtt.globals.lockRealTime)
+		return;
+	jmqtt.globals.lockRealTime = true;
 	var _since = $('#table_realtime').attr('since');
 	_since = ((_since == undefined) ? '' : _since);
 	jmqtt.callPluginAjax({
@@ -438,6 +442,7 @@ jmqtt.getRealTimeData = function() {
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
+			jmqtt.globals.lockRealTime = false;
 		},
 		success: function (data) {
 			if (data.length > 0) {
@@ -449,6 +454,7 @@ jmqtt.getRealTimeData = function() {
 				$('#table_realtime').attr('since', _since);
 				$('#table_realtime').trigger("update");
 			}
+			jmqtt.globals.lockRealTime = false;
 		}
 	});
 }
