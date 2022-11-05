@@ -201,9 +201,9 @@ Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des mess
 
 La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2022-10-31_broker_realtime.png)
+![Mode Temps Réel](../images/2022-11-05_broker_realtime.png)
 
-Après avoir configuré les Topics de souscription Temps Réel et éventuellement les Topics exclus du Temps Réel utilisés pour récupérer les messages (encadré 1)
+Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel et si les messages retenus par le Broker doivent être inclus dans le Temps Réel (encadré 1).
 
 Le mode temps réel s’active, pour le Broker concerné, en cliquant sur le bouton *Mode Temps Réel* en haut à droite sur l'équipement Broker et se désactive en recliquant sur le même bouton (encadré 2), ou automatiquement après environ 3 minutes.
 
