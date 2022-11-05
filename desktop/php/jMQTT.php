@@ -161,25 +161,28 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
 			<div role="tabpanel" class="tab-pane toDisable" id="realtimetab">
+<!--
 				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped tablesorter stickyHead">
-					<thead>
+-->
+				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped">
+					<thead style="position:sticky;top:0;z-index:5;">
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
-								<label class="col-lg-1 control-label" style="text-align: right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-1 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
 								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
 								<br />Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttIncTopic">
 								</div>
-								<label class="col-lg-1 control-label" style="text-align: right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-1 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
 								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
 								<br />Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttExcTopic">
 								</div>
-								<label class="col-lg-1 control-label" style="text-align: right;">{{Retain}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+								<label class="col-lg-1 control-label" style="text-align:right;">{{Retain}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Remonter aussi les payload retenus par le Broker.}}"></i></sup></label>
 								<div class="col-lg-1">
 									<input type="checkbox" class="form-control" id="mqttRetTopic" checked="false">
@@ -196,11 +199,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 							</td>
 						</tr>
 						<tr>
-							<th data-sorter="text">{{Date du message}}</th>
+							<th style="width:180px;" data-sorter="text">{{Date du message}}</th>
 							<th data-sorter="topics" class="filter-match /*filter-parsed*/">{{Topic}}</th>
 							<th data-sorter="inputs">{{Valeur}}</th>
-							<th data-sorter="options" class="filter-select /*filter-parsed*/">{{Options}}</th>
-							<th data-sorter="false" data-filter="false"></th>
+							<th style="width:80px;" data-sorter="options" class="filter-select /*filter-parsed*/">{{Options}}</th>
+							<th style="width:130px;" data-sorter="false" data-filter="false"></th>
 						</tr>
 					</thead>
 					<tbody>

@@ -1295,10 +1295,12 @@ $(document).ready(function() {
 		}
 	});
 
+/* TODO (important) Check if filter is required
 	// Add table sorted on Real Time tab
 	jeedomUtils.initTableSorter(true);
 	$("#table_realtime")[0].config.widgetOptions.resizable_widths = ['180px', '', '', '80px', '130px'];
 	$("#table_realtime").trigger('applyWidgets').trigger('resizableReset').width('100%');
+*/
 
 /* TODO (important) Check impact of parsers on WebUI
 	// Handle topic + jsonPath normalization
