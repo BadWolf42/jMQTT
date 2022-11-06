@@ -229,16 +229,9 @@ class jMQTTCmd extends cmd {
 		}
 
 		// --- New cmd or Existing cmd ---
-		// Save a command on a Broker must fail, except status command
-		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getLogicalId() != jMQTT::CLIENT_STATUS) {
-			if ($this->getId() == '') {
-				$err  = __("Impossible de créer la commande <b>#%1\$s#</b>, ", __FILE__);
-				$err .= __("car il ne peut pas y avoir de commande sur un équipement Broker (%2\$s#)", __FILE__);
-			} else {
-				$err  = __("Impossible de modifier la commande <b>#%1\$s#</b>, ", __FILE__);
-				$err .= __("car il ne peut pas y avoir de commande sur un équipement Broker (%2\$s#)", __FILE__);
-				$err .= __(", ce cas ne dvrait pas arriver, merci de contacter les développeurs", __FILE__);
-			}
+		// Saving a new command on a Broker must fail, except for the status command
+		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getLogicalId() != jMQTT::CLIENT_STATUS && $this->getId() == '') {
+			$err  = __("Impossible de créer la commande <b>#%1\$s#</b>, seule la commande status est autorisée sur un équipement Broker (%2\$s)", __FILE__);
 			throw new Exception(sprintf($err, $this->getHumanName(), $this->getEqLogic()->getName()));
 		}
 
@@ -298,8 +291,15 @@ class jMQTTCmd extends cmd {
 		$eqLogic = $this->getEqLogic();
 
 		// Nothing must be done in postSave on Broker command
-		if ($eqLogic->getType() == jMQTT::TYP_BRK)
+		if ($eqLogic->getType() == jMQTT::TYP_BRK) {
+			// Remove all cmd other than the status cmd
+			if ($this->getLogicalId() != jMQTT::CLIENT_STATUS) {
+				$eqLogic->log('warning', sprintf(__("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule la commande status est autorisée sur un équipement Broker.", __FILE__),
+												 $this->getHumanName(), $eqLogic->getName()));
+				$this->remove();
+			}
 			return;
+		}
 
 
 		// If _preSaveInformations is null, It's a fresh new cmd.

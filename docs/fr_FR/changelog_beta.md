@@ -1,11 +1,19 @@
 # Registre des évolutions BETA
 
-## 2022-11-04
- - **Remplacement de la case à cocher pour l'installation de Mosquitto par des boutons Installer/Réparer/Supprimer**
- - Détection de la présence de Mosquitto sur le système et, si possible, quel plugin l'a installé
- - Ajout de captures d'écrans de jMQTT pour le Market
+## 2022-11-07
+ - **Ajout d'une case à cocher pour changer le Client-Id (afin d'essayer d'éviter tous les problèmes utilisateur avec le Client-Id)**
+ - **Changement des topic par défaut du LWT, des interactions et de l'API : sans personnalisation, le préfix est 'jeedom/' au lieu du Client-Id**
+ - Ajout d'un filtre sur les messages Retain dans le mode Temps Réel
+ - Sauvegarde des filtres lors du lancement du mode Temps Réel
+ - Mise à jour du Template "Shelly Bulb Duo RGBW" (merci Jeandhom)
+ - Suppression des champs de recherche/tri dans le mode Temps Réel (utilisez plutôt Ctrl-F)
  - Corrections mineures
  - Mise à jour de la documentation, des captures et du Changelog
+
+## 2022-11-04
+ - **Remplacement de la case à cocher pour l'installation de Mosquitto par des boutons Installer/Réparer/Supprimer**
+ - **Détection de la présence de Mosquitto sur le système (ou en docker) et, si possible, quel plugin l'a installé**
+ - Ajout de captures d'écrans de jMQTT pour le Market
 
 ## 2022-10-31
  - Déplacement du bouton de lancement dans l'onglet Temps Réel du Broker et ajout de boutons Pause, Reprendre et Vider

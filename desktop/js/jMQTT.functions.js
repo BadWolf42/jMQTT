@@ -166,7 +166,7 @@ jmqtt.getMqttClientInfo = function(_eq) {
 	if (_eq.isEnable == '1')
 		return {la: 'ok',  lacolor: 'success', state: 'pok', message: "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}", color:'warning'};
 	// Client is disabled
-	return     {la: 'ok',  lacolor: 'success', state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
+	return     {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
 }
 
 // On eqBroker, on Broker tab, change MQTT Client panel
@@ -198,6 +198,11 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	// Set logs level
 	var levels = {}; levels['log::level::' + log] = _eq.configuration.loglevel; // Hack to build the array
 	$('#div_broker_log').setValues(levels, '.configKey');
+
+	// Update Real Time mode values
+	$('#mqttIncTopic').value(_eq.cache.mqttIncTopic != undefined ? _eq.cache.mqttIncTopic : '#');
+	$('#mqttExcTopic').value(_eq.cache.mqttExcTopic != undefined ? _eq.cache.mqttExcTopic : 'homeassistant/#');
+	$('#mqttRetTopic').prop('checked', _eq.cache.mqttRetTopic != undefined ? _eq.cache.mqttRetTopic : false);
 
 	// Update Real Time mode buttons
 	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
@@ -343,6 +348,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
+		$('#mqttRetTopic').attr('disabled', '');
 		clearInterval(jmqtt.globals.refreshRealTime);
 	} else if (!active) { // Show only startRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
@@ -351,6 +357,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').removeAttr('disabled');
 		$('#mqttExcTopic').removeAttr('disabled');
+		$('#mqttRetTopic').removeAttr('disabled');
 		clearInterval(jmqtt.globals.refreshRealTime);
 	} else if (paused) { // Show only stopRealTimeMode & playRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
@@ -359,6 +366,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
+		$('#mqttRetTopic').attr('disabled', '');
 		clearInterval(jmqtt.globals.refreshRealTime);
 	} else {              // Show stopRealTimeMode & pauseRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
@@ -367,6 +375,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('.eqLogicAction[data-action=pauseRealTime]').show();
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
+		$('#mqttRetTopic').attr('disabled', '');
 		// Load Real Time Data every 3s if stopRealTimeMode button is visible
 		jmqtt.globals.refreshRealTime = setInterval(function() {
 				if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length == 0)
@@ -385,7 +394,8 @@ jmqtt.changeRealTimeMode = function(_id, _mode) {
 			mode: _mode,
 			id: _id,
 			subscribe: $('#mqttIncTopic').val(),
-			exclude: $('#mqttExcTopic').val()
+			exclude: $('#mqttExcTopic').val(),
+			retained: $('#mqttRetTopic').is(':checked')
 		}
 	});
 }
@@ -418,6 +428,10 @@ jmqtt.newRealTimeCmd = function(_data) {
 
 // Get new Real Time data from Daemon
 jmqtt.getRealTimeData = function() {
+	// Avoid simultaneous collection
+	if (jmqtt.globals.lockRealTime)
+		return;
+	jmqtt.globals.lockRealTime = true;
 	var _since = $('#table_realtime').attr('since');
 	_since = ((_since == undefined) ? '' : _since);
 	jmqtt.callPluginAjax({
@@ -428,6 +442,7 @@ jmqtt.getRealTimeData = function() {
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
+			jmqtt.globals.lockRealTime = false;
 		},
 		success: function (data) {
 			if (data.length > 0) {
@@ -439,6 +454,7 @@ jmqtt.getRealTimeData = function() {
 				$('#table_realtime').attr('since', _since);
 				$('#table_realtime').trigger("update");
 			}
+			jmqtt.globals.lockRealTime = false;
 		}
 	});
 }

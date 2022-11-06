@@ -290,11 +290,11 @@ class Main():
 		if not validate_params(message, [[     'file',      True,        None, str],
 										 ['subscribe',      True,          [], list],
 										 [  'exclude',      True,          [], list],
+										 [ 'retained',      True,       False, bool],
 										 [ 'duration',      True,         180, int]]):
 			return
 		if message['id'] in self.jmqttclients:
-			self.jmqttclients[message['id']].realtime_start(message['file'], message['subscribe'],
-															message['exclude'], message['duration'])
+			self.jmqttclients[message['id']].realtime_start(message['file'], message['subscribe'], message['exclude'], message['retained'], message['duration'])
 		else:
 			self.log.debug('No client found for Broker %s', message['id'])
 

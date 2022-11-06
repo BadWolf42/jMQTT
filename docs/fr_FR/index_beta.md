@@ -144,7 +144,7 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../images/2022-10-31_eqpt_broker.png)
+![Configuration du Broker](../images/2022-11-06_eqpt_broker.png)
 
 Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
 
@@ -164,11 +164,11 @@ Pour modifier les informations de connexion au Broker, les paramètres sont :
       - _Port_ du Broker : port du Broker (par défaut 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss);
       - _Chemin (URL) Web Sockets_ : ce paramètre apparait dans le cas de l'utilisation de Web Sockets, il peut être nécessaire de le modifier selon la configuration du serveur (valeur par défaut 'mqtt');
     - _Authentification_ : compte et mot de passe de connexion au Broker (laissez le champ vide si vous n'avez pas configuré votre Broker MQTT en conséquence, notamment si jMQTT se charge de l’installation du Broker).
-    - _Client-Id_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
+    - _Client-Id_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (si actif, jeedom par défaut).
     - _Publier le statut (LWT)_ : active/désactive la publication du statut de connexion de cet équipement Broker en MQTT sur le Broker.
       Une fois cette option sélectionnée il sera possible de configurer le topic du LWT, ainsi que les messages envoyés lorsque jMQTT est connecté ou non.
-    - _Topic des interactions de Jeedom_ : topic de premettant d'envoyer des [demandes d'interaction](#gestion-des-interactions) à Jeedom (par défaut, le Client-Id suivi de '/interact' est utilisé).
-    - _Topic de l'API de Jeedom_ : (obsolète) topic présentant l'API JSON RPC de Jeedom (par défaut, le Client-Id suivi de '/api' est utilisé).
+    - _Topic des interactions de Jeedom_ : topic de premettant d'envoyer des [demandes d'interaction](#gestion-des-interactions) à Jeedom (par défaut, 'jeedom/interact' est utilisé).
+    - _Topic de l'API de Jeedom_ : (obsolète) topic présentant l'API JSON RPC de Jeedom (par défaut, 'jeedom/api' est utilisé).
 
   - Section _Paramètres de Sécurité_ (encadré 2), bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls) :
     - Cette section apparait uniquement si le protocole mqtts est sélectionné
@@ -201,22 +201,20 @@ Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des mess
 
 La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2022-10-31_broker_realtime.png)
+![Mode Temps Réel](../images/2022-11-05_broker_realtime.png)
 
-Après avoir configuré les Topics de souscription Temps Réel et éventuellement les Topics exclus du Temps Réel utilisés pour récupérer les messages (encadré 1)
+Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel et si les messages retenus par le Broker doivent être inclus dans le Temps Réel (encadré 1).
 
 Le mode temps réel s’active, pour le Broker concerné, en cliquant sur le bouton *Mode Temps Réel* en haut à droite sur l'équipement Broker et se désactive en recliquant sur le même bouton (encadré 2), ou automatiquement après environ 3 minutes.
 
 Les messages reçu sont stockés uniquement coté navigateur.
 
-Les Outils de recherche et de pagination (encadré 3) permettent de rechercher, trier et sélectionner facilement des messages MQTT.
+Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option (encadré 3) :
 
-Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option (encadré 4) :
-
-  - Les icônes orange signifient que les messages ont été republiés lors de l'activation du mode Temps Réel et son stockées dans le Broker (elles sont Retain),
+  - Les icônes orange signifient que les messages ont été republiés lors de l'activation du mode Temps Réel et sont retenues par le Broker (elles sont Retain),
   - Les icônes vertes montrent permettent de savoir que ce topic est déjà porté par un équipement jMQTT. En passant la souris sur l'icône les équipements concernés sont affichés.
 
-Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 5) pour les utiliser.
+Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 4) pour les utiliser.
 
   - La première icône permet d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
   - La seconde de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,

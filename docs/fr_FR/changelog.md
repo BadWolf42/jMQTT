@@ -164,7 +164,7 @@
   - Ajout du gestionaire de Template (permet d'ajouter, de télécharger et de supprimer des Templates et d'en visualiser les commandes)
 
 ## 2021-09-18
-  - Correction : l'équipement broker "local" ne se créée plus si un équipement broker existant est configuré avec l'ip de la machine
+  - Correction : l'équipement Broker "local" ne se créée plus si un équipement Broker existant est configuré avec l'ip de la machine
 
 ## 2021-09-17 Nouveaux démons
 **ATTENTION :  De gros changements ont été apporté au plugin**

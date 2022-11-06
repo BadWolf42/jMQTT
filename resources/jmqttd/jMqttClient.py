@@ -89,6 +89,8 @@ class jMqttClient:
 
 	def realtime_send(self, msg, usablePayload, form):
 		should_pub = False
+		if msg['retain'] and not self.realtimeRet:
+			return
 		for i in self.realtimeInc:
 			if mqtt.topic_matches_sub(i, msg['topic']):
 				should_pub = True
@@ -98,18 +100,18 @@ class jMqttClient:
 		for e in self.realtimeExc:
 			if mqtt.topic_matches_sub(e, msg['topic']):
 				return
-		self._log.info('Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', msg['topic'], usablePayload, form, msg['qos'], bool(msg['retain']))
+		self._log.debug('Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', msg['topic'], usablePayload, form, msg['qos'], msg['retain'])
 		self.realtime.append({'date':datetime.now().strftime('%F %T.%f')[:-3], 'jsonPath':'', **msg})
 		with open(self.realtimeFile, 'w') as f:
 			json.dump(self.realtime, f)
 
-
-	def realtime_start(self, filename, subscribe=[], exclude=[], duration=180):
+	def realtime_start(self, filename, subscribe=[], exclude=[], retained=False, duration=180):
 		self.realtimeTimeout = time.time() + duration
 		self.realtimeFile = filename
 		self.realtimeInc = subscribe
 		self.realtimeExc = exclude
-		self._log.info('Real Time Started: subscribe=%s, exclude=%s, duration=%i', json.dumps(subscribe), json.dumps(exclude), duration)
+		self.realtimeRet = retained
+		self._log.info('Real Time Started: subscribe=%s, exclude=%s, retained=%s, duration=%i', json.dumps(subscribe), json.dumps(exclude), retained, duration)
 		self.jcom.send_async({'cmd':'realTimeStarted', 'id':self.id})
 
 	def realtime_stop(self):
@@ -184,8 +186,13 @@ class jMqttClient:
 		self.mqttlwt_topic = self.message['lwtTopic']
 		self.mqttlwt_online = self.message['lwtOnline']
 		self.mqttlwt_offline = self.message['lwtOffline']
-		if 'clientid' not in self.message:
-			self.message['clientid'] = ''
+		if 'mqttId' not in self.message:
+			self.message['mqttId'] = False
+		if self.message['mqttId']:
+			if 'mqttIdValue' not in self.message or self.message['mqttIdValue'] == '':
+				self.message['mqttIdValue'] = 'jeedom'
+		else:
+			self.message['mqttIdValue'] = ''
 		if 'username' not in self.message:
 			self.message['username'] = ''
 		if 'password' not in self.message:
@@ -197,12 +204,12 @@ class jMqttClient:
 
 		# Create MQTT Client
 		if self.message['proto'].startswith('ws'):
-			self.mqttclient = mqtt.Client(self.message['clientid'], transport="websockets")
+			self.mqttclient = mqtt.Client(client_id=self.message['mqttIdValue'], transport="websockets")
 			if 'mqttWsUrl' in self.message and self.message['mqttWsUrl'] != '':
 				self.message['mqttWsUrl'] = (self.message['mqttWsUrl'] if (self.message['mqttWsUrl'][0] == '/') else '/' + self.message['mqttWsUrl'])
 				self.mqttclient.ws_set_options(self.message['mqttWsUrl'])
 		else:
-			self.mqttclient = mqtt.Client(self.message['clientid'])
+			self.mqttclient = mqtt.Client(client_id=self.message['mqttIdValue'])
 		# Enable Paho logging functions
 		if self._log.isEnabledFor(logging.VERBOSE):
 			self.mqttclient.enable_logger(self._log)

@@ -364,6 +364,34 @@ function v12_modifyBrkIdConfKeyInEq() {
 	jMQTT::logger('info', __("Clés de configuration des Brokers jMQTT modifiées", __FILE__));
 }
 
+function v13_modifyClientIdInBrk() {
+	// for each Broker
+	foreach ((jMQTT::getBrokers()) as $broker) {
+		try {
+			// Set 'mqttId' & 'mqttIdValue' config, only if 'mqttIdValue' config not already set
+			if ($broker->getConfiguration('mqttIdValue', 'NotThere') == 'NotThere') {
+				$mqttIdValue = $broker->getConfiguration('mqttId', '');
+				// Copy 'mqttId' into 'mqttIdValue'
+				$broker->setConfiguration('mqttIdValue', $mqttIdValue);
+
+				// Set 'mqttId' to '1' if 'mqttIdValue' is set, '0' otherwise
+				$broker->setConfiguration('mqttId', ''.intval($mqttIdValue != ''));
+
+				// Save eqBroker if modified
+				$broker->save();
+			}
+		} catch (Throwable $e) {
+			if (log::getLogLevel(jMQTT::class) > 100)
+				jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
+			else
+				jMQTT::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"</br>@Stack: %3\$s,</br>@BrokerId: %4\$s.",
+							__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
+		}
+	}
+	jMQTT::logger('info', __("Configuration des Client-Id mises à jour", __FILE__));
+}
+
 function jMQTT_install() {
 	jMQTT::logger('debug', 'install.php: jMQTT_install()');
 	jMQTT_update(false);
@@ -437,25 +465,34 @@ function jMQTT_update($_direct=true) {
 			raiseForceDepInstallFlag();
 			config::save(VERSION, 9, 'jMQTT');
 		}
+
 		// VERSION = 10
 		if ($versionFromDB < 10) {
 			convertBatteryStatus();
 			config::save(VERSION, 10, 'jMQTT');
 		}
+
 		// VERSION = 11
 		if ($versionFromDB < 11) {
 			moveCertsInDb();
 			config::save(VERSION, 11, 'jMQTT');
 		}
+
 		// VERSION = 12
 		if ($versionFromDB < 12) {
 			v12_modifyConfKeysInBrk();
 			v12_modifyBrkIdConfKeyInEq();
 			config::save(VERSION, 12, 'jMQTT');
 		}
+
+		// VERSION = 13
+		if ($versionFromDB < 13) {
+			v13_modifyClientIdInBrk();
+			config::save(VERSION, 13, 'jMQTT');
+		}
 	}
 	else
-		config::save(VERSION, 12, 'jMQTT');
+		config::save(VERSION, 13, 'jMQTT');
 }
 
 function jMQTT_remove() {

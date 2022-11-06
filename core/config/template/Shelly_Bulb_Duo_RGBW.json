@@ -7,10 +7,10 @@
             "createtime": "2021-12-27 21:03:10",
             "auto_add_cmd": "0",
             "auto_add_topic": "%s\/#",
-            "commentaire": "Shelly Bulb Duo RGBW\nhttps:\/\/community.jeedom.com\/t\/shelly-colorbulb-rgbw-jmqtt\/70745\/9\nhttps:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/54",
+            "commentaire": "Shelly Bulb Duo RGBW\nhttps:\/\/community.jeedom.com\/t\/shelly-colorbulb-rgbw-jmqtt\/70745\/9 (UPDATED)\nhttps:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/54",
             "Qos": "1",
             "icone": "lightbulb",
-            "updatetime": "2022-01-02 19:54:48"
+            "updatetime": "2022-11-04 17:53:18"
         },
         "category": {
             "heating": "0",
@@ -24,9 +24,8 @@
         },
         "display": {
             "width": "232px",
-            "height": "452px"
+            "height": "574px"
         },
-        "status": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -38,8 +37,8 @@
                     "topic": "%s\/announce"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
                     "invertBinary": "0"
@@ -49,16 +48,17 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "color:0:command",
+                "name": "color:0",
                 "type": "info",
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/command"
+                    "topic": "%s\/color\/0",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
                     "invertBinary": "0"
@@ -79,9 +79,7 @@
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -94,8 +92,7 @@
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -113,13 +110,10 @@
                     "autoPub": "0",
                     "timeline::enable": "0",
                     "interact::auto::disable": "0",
-                    "actionConfirm": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "actionConfirm": "0"
                 },
                 "template": {
-                    "dashboard": "core::light",
+                    "dashboard": "core::timeLight",
                     "mobile": "core::light"
                 },
                 "display": {
@@ -128,8 +122,7 @@
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "value": "Ampoule",
                 "isVisible": "1",
@@ -137,34 +130,20 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Ampoule",
+                "name": "color:0:status",
                 "type": "info",
-                "subType": "binary",
+                "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "topic": "%s\/color\/0\/status",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
-                    "dashboard": "core::line",
-                    "mobile": "core::line"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "invertBinary": "0"
                 },
                 "isVisible": "0",
                 "alert": []
@@ -182,13 +161,10 @@
                     "autoPub": "0",
                     "timeline::enable": "0",
                     "interact::auto::disable": "0",
-                    "actionConfirm": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "actionConfirm": "0"
                 },
                 "template": {
-                    "dashboard": "core::light",
+                    "dashboard": "core::timeLight",
                     "mobile": "core::light"
                 },
                 "display": {
@@ -197,8 +173,7 @@
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "value": "Ampoule",
                 "isVisible": "1",
@@ -209,7 +184,7 @@
                 "name": "Puissance",
                 "type": "info",
                 "subType": "numeric",
-                "isHistorized": "0",
+                "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
                     "topic": "%s\/light\/0\/power",
@@ -217,11 +192,9 @@
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "historizeMode": "none",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -234,8 +207,7 @@
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -245,7 +217,7 @@
                 "name": "Consommation",
                 "type": "info",
                 "subType": "numeric",
-                "isHistorized": "0",
+                "isHistorized": "1",
                 "unite": "Wmin",
                 "configuration": {
                     "topic": "%s\/light\/0\/energy",
@@ -253,41 +225,41 @@
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "historizeMode": "none",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
                     "mobile": "core::line"
                 },
                 "display": {
+                    "showStatsOnmobile": "0",
+                    "showStatsOndashboard": "0",
                     "invertBinary": "0",
                     "showNameOndashboard": "1",
                     "showNameOnmobile": "1",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "isVisible": "1",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "color:0:set",
+                "name": "light:0:energy",
                 "type": "info",
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set"
+                    "topic": "%s\/light\/0\/energy",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
                     "invertBinary": "0"
@@ -302,30 +274,39 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{mode}"
+                    "topic": "%s\/color\/0\/status",
+                    "jsonPath": "[mode]",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
-                    "invertBinary": "0"
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "isVisible": "1",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "info",
+                "name": "light:0:power",
                 "type": "info",
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info"
+                    "topic": "%s\/light\/0\/power",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
                     "invertBinary": "0"
@@ -347,10 +328,7 @@
                     "lastCmdValue": "#3b4bd4",
                     "timeline::enable": "0",
                     "interact::auto::disable": "0",
-                    "actionConfirm": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "actionConfirm": "0"
                 },
                 "template": {
                     "dashboard": "pimpJeedom::ColorSlider",
@@ -362,8 +340,7 @@
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "value": "hexColor",
                 "isVisible": "1",
@@ -371,18 +348,87 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "setGain",
+                "name": "---set White---",
                 "type": "action",
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/color\/0\/set",
-                    "request": "{\"mode\":\"color\",\"gain\":#slider#,\"brightness\":#11782#}",
+                    "request": "{\"mode\":\"color\",\"white\":#slider#}",
+                    "minValue": "0",
+                    "maxValue": "255",
                     "retain": "0",
                     "autoPub": "0",
                     "timeline::enable": "0",
                     "interact::auto::disable": "0",
                     "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0",
+                    "parameters": []
+                },
+                "value": "white",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "white",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/color\/0\/status",
+                    "minValue": "0",
+                    "maxValue": "255",
+                    "jsonPath": "[white]",
+                    "historyPurge": "-3 years",
+                    "historizeMode": "none"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "---set Gain---",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/color\/0\/set",
+                    "request": "{\"mode\":\"color\",\"gain\":#slider#}",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "minValue": "0",
+                    "maxValue": "100",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
                     "jeedomPostExecCmd": []
@@ -412,13 +458,21 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/color\/0\/set",
-                    "request": "{\"mode\":\"white\",\"temp\":3000,\"brightness\":#11782#}",
+                    "request": "{\"mode\":\"white\",\"temp\":3000}",
                     "retain": "0",
                     "autoPub": "0"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -431,32 +485,47 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/color\/0\/set",
-                    "request": "{\"mode\":\"white\",\"temp\":4750,\"brightness\":#11782#}",
+                    "request": "{\"mode\":\"white\",\"temp\":4750}",
                     "retain": "0",
                     "autoPub": "0"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "isVisible": "1",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "status",
+                "name": "command",
                 "type": "info",
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status"
+                    "topic": "%s\/command",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
-                    "invertBinary": "0"
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
                 },
                 "isVisible": "0",
                 "alert": []
@@ -469,37 +538,356 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/color\/0\/set",
-                    "request": "{\"mode\":\"white\",\"temp\":6500,\"brightness\":#11782#}",
+                    "request": "{\"mode\":\"white\",\"temp\":6500}",
                     "retain": "0",
                     "autoPub": "0"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "isVisible": "1",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "setTemp",
+                "name": "---set Temp---",
                 "type": "action",
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/color\/0\/set",
-                    "request": "{\"mode\":\"white\",\"temp\":#slider#,\"brightness\":#11782#}",
+                    "request": "{\"mode\":\"white\",\"temp\":#slider#}",
                     "minValue": "3000",
                     "maxValue": "6500",
                     "retain": "0",
                     "autoPub": "0"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "value": "temp",
                 "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "---set Brightness---",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/color\/0\/set",
+                    "request": "{\"mode\":\"white\",\"brightness\":#slider#}",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "minValue": "0",
+                    "maxValue": "100"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "value": "brightness",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Annonce",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/command",
+                    "request": "announce",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "ID",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/announce",
+                    "jsonPath": "[id]",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "MAC",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/announce",
+                    "jsonPath": "[mac]",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "color:0:command",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/color\/0\/command",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "IP",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/announce",
+                    "jsonPath": "[ip]",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Ampoule",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/color\/0",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "repeatEventManagement": "never",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "core::line"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "MAJ Firmware",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/command",
+                    "request": "update_fw",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "color:0:set",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/color\/0\/set",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "info",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/info",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "status",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/color\/0\/status",
+                    "historyPurge": "-3 years"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
+                },
+                "isVisible": "0",
                 "alert": []
             },
             {
@@ -509,16 +897,17 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{red}",
+                    "topic": "%s\/color\/0\/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "historizeMode": "none",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jsonPath": "[red]",
+                    "minValue": "0",
+                    "maxValue": "255",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -531,45 +920,9 @@
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "setBrightness",
-                "type": "action",
-                "subType": "slider",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/color\/0\/set",
-                    "request": "{\"mode\":\"white\",\"gain\":#11781#,\"brightness\":#slider#}",
-                    "retain": "0",
-                    "autoPub": "0",
-                    "timeline::enable": "0",
-                    "interact::auto::disable": "0",
-                    "actionConfirm": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "value": "brightness",
-                "isVisible": "1",
                 "alert": []
             },
             {
@@ -579,16 +932,17 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{green}",
+                    "topic": "%s\/color\/0\/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "historizeMode": "none",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jsonPath": "[green]",
+                    "minValue": "0",
+                    "maxValue": "255",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -601,8 +955,7 @@
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "forceReturnLineAfter": "0"
                 },
                 "isVisible": "0",
                 "alert": []
@@ -614,16 +967,17 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{blue}",
+                    "topic": "%s\/color\/0\/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "historizeMode": "none",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jsonPath": "[blue]",
+                    "minValue": "0",
+                    "maxValue": "255",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -636,7 +990,6 @@
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
-                    "parameters": [],
                     "invertBinary": "0"
                 },
                 "isVisible": "0",
@@ -655,8 +1008,16 @@
                     "autoPub": "1"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "isVisible": "0",
                 "alert": []
@@ -668,14 +1029,21 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/hexColor"
+                    "topic": "%s\/hexColor",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
-                    "invertBinary": "0"
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "isVisible": "0",
                 "alert": []
@@ -687,16 +1055,17 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{gain}",
+                    "topic": "%s\/color\/0\/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "historizeMode": "none",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jsonPath": "[gain]",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -709,7 +1078,6 @@
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
-                    "parameters": [],
                     "invertBinary": "0"
                 },
                 "isVisible": "0",
@@ -722,16 +1090,17 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{brightness}",
+                    "topic": "%s\/color\/0\/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "historizeMode": "none",
                     "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
+                    "jsonPath": "[brightness]",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "historyPurge": "-3 years"
                 },
                 "template": {
                     "dashboard": "core::line",
@@ -744,7 +1113,6 @@
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
-                    "parameters": [],
                     "invertBinary": "0"
                 },
                 "isVisible": "0",
@@ -757,30 +1125,37 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{temp}",
+                    "topic": "%s\/color\/0\/status",
                     "minValue": "3000",
-                    "maxValue": "6500"
+                    "maxValue": "6500",
+                    "jsonPath": "[temp]",
+                    "historyPurge": "-3 years",
+                    "historizeMode": "none"
                 },
                 "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
                 },
                 "display": {
-                    "invertBinary": "0"
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showIconAndNamedashboard": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamemobile": "0"
                 },
                 "isVisible": "0",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "white",
+                "name": "AmpouleAutre",
                 "type": "info",
-                "subType": "numeric",
+                "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status{white}",
-                    "minValue": "0",
-                    "maxValue": "255"
+                    "topic": "%s\/color\/0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -789,28 +1164,6 @@
                 "display": {
                     "invertBinary": "0"
                 },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "setWhite",
-                "type": "action",
-                "subType": "slider",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/color\/0\/set",
-                    "request": "{\"mode\":\"color\",\"red\":#11711#,\"green\":#11712#,\"blue\":#11713#,\"white\":#slider#}",
-                    "minValue": "0",
-                    "maxValue": "255",
-                    "retain": "0",
-                    "autoPub": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "value": "white",
                 "isVisible": "0",
                 "alert": []
             }

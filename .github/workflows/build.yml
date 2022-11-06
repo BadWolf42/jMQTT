@@ -23,7 +23,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel paho-mqtt websocket-client flake8 unicodedata2
+          python -m pip install --upgrade pip setuptools wheel paho-mqtt flake8 unicodedata2
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names

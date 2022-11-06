@@ -182,6 +182,13 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClient]').change(fun
 		$('.jmqttTlsClient').hide();
 });
 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttId]').change(function(){
+	if ($(this).value() == '1')
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttIdValue]').show();
+	else
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttIdValue]').hide();
+});
+
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(){
 	if ($(this).value() == '1')
 		$('.jmqttLwt').show();
@@ -1040,7 +1047,7 @@ function addCmdToTable(_cmd) {
 		tr += '</td><td>';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}} <sup><i class="fas fa-question-circle tooltips" title="{{Publication automatique en MQTT lors d\'un changement <br>(Utiliser avec au moins une commande info dans Valeur).}}"></i></sup></label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;<sup><i class="fas fa-question-circle tooltips" title="{{Publication automatique en MQTT lors d\'un changement <br>(Utiliser avec au moins une commande info dans Valeur).}}"></i></sup></label></span><br> ';
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td align="right">';
@@ -1295,10 +1302,12 @@ $(document).ready(function() {
 		}
 	});
 
+/* TODO (important) Check if filter is required
 	// Add table sorted on Real Time tab
 	jeedomUtils.initTableSorter(true);
 	$("#table_realtime")[0].config.widgetOptions.resizable_widths = ['180px', '', '', '80px', '130px'];
 	$("#table_realtime").trigger('applyWidgets').trigger('resizableReset').width('100%');
+*/
 
 /* TODO (important) Check impact of parsers on WebUI
 	// Handle topic + jsonPath normalization
