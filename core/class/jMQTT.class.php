@@ -1744,23 +1744,24 @@ class jMQTT extends eqLogic {
 	 * @return string[] MQTT Client information array
 	 */
 	public function getMqttClientInfo() {
-		$return = array('message' => '', 'launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK);
+		// Not a Broker
 		if ($this->getType() != self::TYP_BRK)
-			return $return;
+			return array('message' => '', 'launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK);
 
-		$return['launchable'] = self::MQTTCLIENT_OK;
-		$return['message'] = __("La connexion à ce Broker est désactivée", __FILE__);
-		if (!self::daemon_state()) { // Daemon is down
-			$return['message'] = __("Démon non démarré", __FILE__);
-			$return['launchable'] = self::MQTTCLIENT_NOK;
-		} elseif ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false)) {
-			$return['state'] = self::MQTTCLIENT_OK;
-			$return['message'] = __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__);
-		} elseif (!$this->getIsEnable()) {
-			$return['state'] = self::MQTTCLIENT_POK;
-			$return['message'] = __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__);
-		}
-		return $return;
+		// Daemon is down
+		if (!self::daemon_state())
+			return array('launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK, 'message' => __("Démon non démarré", __FILE__));
+
+		// Client is connected to the Broker
+		if ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false))
+			return array('launchable' => self::MQTTCLIENT_OK, 'state' => self::MQTTCLIENT_OK, 'message' => __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__));
+
+		// Client is disconnected from the Broker
+		if ($this->getIsEnable())
+			return array('launchable' => self::MQTTCLIENT_OK, 'state' => self::MQTTCLIENT_POK, 'message' => __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__));
+
+		// Client is disabled
+		return array('launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK, 'message' => __("La connexion à ce Broker est désactivée", __FILE__));
 	}
 
 	/**
@@ -1791,7 +1792,7 @@ class jMQTT extends eqLogic {
 		//If MqttClient is not launchable (daemon is running), throw exception to get message
 		$mqttclient_info = $this->getMqttClientInfo();
 		if ($mqttclient_info['launchable'] != self::MQTTCLIENT_OK)
-			throw new Exception(__('Le client MQTT n\'est pas démarrable. Veuillez vérifier la configuration', __FILE__));
+			throw new Exception(__('Le client MQTT n\'est pas démarrable : ', __FILE__) . $mqttclient_info['message']);
 		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
 		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
 		$this->sendMqttClientStateEvent(); // Need to send current state before brkUp give OK

@@ -166,7 +166,7 @@ jmqtt.getMqttClientInfo = function(_eq) {
 	if (_eq.isEnable == '1')
 		return {la: 'ok',  lacolor: 'success', state: 'pok', message: "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}", color:'warning'};
 	// Client is disabled
-	return     {la: 'ok',  lacolor: 'success', state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
+	return     {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
 }
 
 // On eqBroker, on Broker tab, change MQTT Client panel
