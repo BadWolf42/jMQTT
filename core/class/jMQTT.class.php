@@ -1499,15 +1499,25 @@ class jMQTT extends eqLogic {
 
 // Check install status of Mosquitto service
 	public static function mosquittoCheck() {
-		$res = array('installed' => false, 'by' => '', 'message' => __("Mosquitto n'est pas installé.", __FILE__), 'service' => '', 'config' => '');
+		$res = array('installed' => false, 'by' => '', 'message' => '', 'service' => '', 'config' => '');
 		$retval = 255;
 		$output = null;
 		// Check if Mosquitto package is installed
 		exec('dpkg -s mosquitto 2> /dev/null 1> /dev/null', $output, $retval); // retval = 1 not installed ; 0 installed
 
 		// Not installed return default values
-		if ($retval != 0)
+		if ($retval != 0) {
+			$res['message'] = __("Mosquitto n'est pas installé entant que service.", __FILE__);
+			try {
+				// Checking for Mosquitto installed in Docker by MQTT Manager
+				if (is_object(update::byLogicalId('mqtt2')) && plugin::byId('mqtt2')->isActive() && config::byKey('mode', 'mqtt2', 'NotThere') == 'docker') {
+					// Plugin Active and mqtt2 mode is docker
+					$res['message'] = __('Mosquitto est installé <b>en docker</b> par le plugin <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">MQTT Manager</a> (mqtt2).', __FILE__);
+					$res['by'] = __('MQTT Manager (en docker)', __FILE__);
+				}
+			} catch (Throwable $e) {}
 			return $res;
+		}
 
 		// Otherwise, it is Installed
 		$res['installed'] = true;
@@ -1523,7 +1533,7 @@ class jMQTT extends eqLogic {
 		// Check if mosquitto.service has been changed by mqtt2
 		if (file_exists('/lib/systemd/system/mosquitto.service')
 				&& strpos(file_get_contents('/lib/systemd/system/mosquitto.service'), 'mqtt2') !== false) {
-			$res['by'] = 'MQTT Manager';
+			$res['by'] = __('MQTT Manager (en local)', __FILE__);
 			$res['message'] = __('Mosquitto est installé par <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">MQTT Manager</a> (mqtt2).', __FILE__);
 		}
 		// Check if jMQTT config file is in place
@@ -1534,7 +1544,7 @@ class jMQTT extends eqLogic {
 		// Otherwise its considered to be a custom install
 		else {
 			$res['by'] = __("Inconnu", __FILE__);
-			$res['message'] = __("Mosquitto n'a pas est installé par un <a class='control-label sucess'>plugin connu</a>.", __FILE__);
+			$res['message'] = __("Mosquitto n'a pas est installé par un plugin connu.", __FILE__);
 		}
 		return $res;
 	}
