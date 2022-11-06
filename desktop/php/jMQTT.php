@@ -43,7 +43,7 @@ textarea.eqLogicAttr.form-control.blured			{ filter: blur(4px); }
 textarea.eqLogicAttr.form-control.blured:hover		{ filter: none; }
 textarea.eqLogicAttr.form-control.blured:focus		{ filter: none; }
 i.fas.fa-minus-circle.cmdAction						{ margin-top: 5px; }
-textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode", monospace; height: 90px; }
+textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace; font-size:small!important; line-height:normal; height:90px; }
 .w30												{ width: 30px; }
 .w18												{ width: 18px; text-align: center; font-size: 0.9em; }
 </style>
