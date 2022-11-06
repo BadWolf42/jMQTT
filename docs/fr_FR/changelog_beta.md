@@ -1,6 +1,8 @@
 # Registre des évolutions BETA
 
-## 2022-11-06
+## 2022-11-07
+ - **Ajout d'une case à cocher pour changer le Client-Id (afin d'essayer d'éviter tous les problèmes utilisateur avec le Client-Id)**
+ - **Changement des topic par défaut du LWT, des interactions et de l'API : personnalisation, le préfix par défaut est 'jeedom/'**
  - Ajout d'un filtre sur les messages Retain dans le mode Temps Réel
  - Sauvegarde des filtres lors du lancement du mode Temps Réel
  - Mise à jour du Template "Shelly Bulb Duo RGBW" (merci Jeandhom)

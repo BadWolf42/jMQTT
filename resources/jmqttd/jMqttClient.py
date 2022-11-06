@@ -186,8 +186,13 @@ class jMqttClient:
 		self.mqttlwt_topic = self.message['lwtTopic']
 		self.mqttlwt_online = self.message['lwtOnline']
 		self.mqttlwt_offline = self.message['lwtOffline']
-		if 'clientid' not in self.message:
-			self.message['clientid'] = ''
+		if 'mqttId' not in self.message:
+			self.message['mqttId'] = False
+		if self.message['mqttId']:
+			if 'mqttIdValue' not in self.message or self.message['mqttIdValue'] == '':
+				self.message['mqttIdValue'] = 'jeedom'
+		else:
+			self.message['mqttIdValue'] = ''
 		if 'username' not in self.message:
 			self.message['username'] = ''
 		if 'password' not in self.message:
@@ -199,12 +204,12 @@ class jMqttClient:
 
 		# Create MQTT Client
 		if self.message['proto'].startswith('ws'):
-			self.mqttclient = mqtt.Client(self.message['clientid'], transport="websockets")
+			self.mqttclient = mqtt.Client(client_id=self.message['mqttIdValue'], transport="websockets")
 			if 'mqttWsUrl' in self.message and self.message['mqttWsUrl'] != '':
 				self.message['mqttWsUrl'] = (self.message['mqttWsUrl'] if (self.message['mqttWsUrl'][0] == '/') else '/' + self.message['mqttWsUrl'])
 				self.mqttclient.ws_set_options(self.message['mqttWsUrl'])
 		else:
-			self.mqttclient = mqtt.Client(self.message['clientid'])
+			self.mqttclient = mqtt.Client(client_id=self.message['mqttIdValue'])
 		# Enable Paho logging functions
 		if self._log.isEnabledFor(logging.VERBOSE):
 			self.mqttclient.enable_logger(self._log)

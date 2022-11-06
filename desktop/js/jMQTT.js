@@ -182,6 +182,13 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClient]').change(fun
 		$('.jmqttTlsClient').hide();
 });
 
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttId]').change(function(){
+	if ($(this).value() == '1')
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttIdValue]').show();
+	else
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttIdValue]').hide();
+});
+
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(){
 	if ($(this).value() == '1')
 		$('.jmqttLwt').show();

@@ -144,7 +144,7 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../images/2022-10-31_eqpt_broker.png)
+![Configuration du Broker](../images/2022-11-06_eqpt_broker.png)
 
 Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
 
@@ -164,11 +164,11 @@ Pour modifier les informations de connexion au Broker, les paramètres sont :
       - _Port_ du Broker : port du Broker (par défaut 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss);
       - _Chemin (URL) Web Sockets_ : ce paramètre apparait dans le cas de l'utilisation de Web Sockets, il peut être nécessaire de le modifier selon la configuration du serveur (valeur par défaut 'mqtt');
     - _Authentification_ : compte et mot de passe de connexion au Broker (laissez le champ vide si vous n'avez pas configuré votre Broker MQTT en conséquence, notamment si jMQTT se charge de l’installation du Broker).
-    - _Client-Id_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
+    - _Client-Id_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (si actif, jeedom par défaut).
     - _Publier le statut (LWT)_ : active/désactive la publication du statut de connexion de cet équipement Broker en MQTT sur le Broker.
       Une fois cette option sélectionnée il sera possible de configurer le topic du LWT, ainsi que les messages envoyés lorsque jMQTT est connecté ou non.
-    - _Topic des interactions de Jeedom_ : topic de premettant d'envoyer des [demandes d'interaction](#gestion-des-interactions) à Jeedom (par défaut, le Client-Id suivi de '/interact' est utilisé).
-    - _Topic de l'API de Jeedom_ : (obsolète) topic présentant l'API JSON RPC de Jeedom (par défaut, le Client-Id suivi de '/api' est utilisé).
+    - _Topic des interactions de Jeedom_ : topic de premettant d'envoyer des [demandes d'interaction](#gestion-des-interactions) à Jeedom (par défaut, 'jeedom/interact' est utilisé).
+    - _Topic de l'API de Jeedom_ : (obsolète) topic présentant l'API JSON RPC de Jeedom (par défaut, 'jeedom/api' est utilisé).
 
   - Section _Paramètres de Sécurité_ (encadré 2), bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls) :
     - Cette section apparait uniquement si le protocole mqtts est sélectionné

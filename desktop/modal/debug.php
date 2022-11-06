@@ -488,7 +488,7 @@ function builder_daemon(div) {
 	// Send to Daemon
 	res += '<legend><i class="fas fa-upload"></i> {{Simuler un évènement envoyé au Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
 	res += '<textarea class="bootbox-input bootbox-input-text form-control toDaemon" style="min-height:65px;">';
-	res += '{"cmd": "newMqttClient", "id": "", "hostname": "", "port": "", "clientid": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}\n';
+	res += '{"cmd": "newMqttClient", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}\n';
 	res += '{"cmd": "removeMqttClient", "id": ""}\n';
 	res += '{"cmd": "subscribeTopic", "id": "", "topic": "", "qos": ""}\n';
 	res += '{"cmd": "unsubscribeTopic", "id": "", "topic": ""}\n';
@@ -496,7 +496,7 @@ function builder_daemon(div) {
 	res += '{"cmd": "hb", "id": ""}\n';
 	res += '{"cmd": "loglevel", "id": "", "level": ""}';
 	res += '\n';
-	res += '{"cmd": "", "id": "", "hostname": "", "port": "", "clientid": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}\n';
+	res += '{"cmd": "", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}\n';
 
 	res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toDaemon" style="top:0px!important;">';
 	res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div>';

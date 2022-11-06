@@ -39,12 +39,13 @@ class jMQTT extends eqLogic {
 
 	const CONF_KEY_TYPE                 = 'type';
 	const CONF_KEY_BRK_ID               = 'eqLogic';
-	const CONF_KEY_MQTT_CLIENT_ID       = 'mqttId';
 	const CONF_KEY_MQTT_ADDRESS         = 'mqttAddress';
 	const CONF_KEY_MQTT_PORT            = 'mqttPort';
 	const CONF_KEY_MQTT_WS_URL          = 'mqttWsUrl';
 	const CONF_KEY_MQTT_USER            = 'mqttUser';
 	const CONF_KEY_MQTT_PASS            = 'mqttPass';
+	const CONF_KEY_MQTT_ID              = 'mqttId';
+	const CONF_KEY_MQTT_ID_VALUE        = 'mqttIdValue';
 	const CONF_KEY_MQTT_LWT             = 'mqttLwt';
 	const CONF_KEY_MQTT_LWT_TOPIC       = 'mqttLwtTopic';
 	const CONF_KEY_MQTT_LWT_ONLINE      = 'mqttLwtOnline';
@@ -718,13 +719,14 @@ class jMQTT extends eqLogic {
 			// load trivials eqLogic from DB
 			$backupVal = array(
 				self::CONF_KEY_LOGLEVEL,
-				self::CONF_KEY_MQTT_CLIENT_ID,
 				self::CONF_KEY_MQTT_PROTO,
 				self::CONF_KEY_MQTT_ADDRESS,
 				self::CONF_KEY_MQTT_PORT,
 				self::CONF_KEY_MQTT_WS_URL,
 				self::CONF_KEY_MQTT_USER,
 				self::CONF_KEY_MQTT_PASS,
+				self::CONF_KEY_MQTT_ID,
+				self::CONF_KEY_MQTT_ID_VALUE,
 				self::CONF_KEY_MQTT_LWT,
 				self::CONF_KEY_MQTT_LWT_TOPIC,
 				self::CONF_KEY_MQTT_LWT_ONLINE,
@@ -801,12 +803,14 @@ class jMQTT extends eqLogic {
 
 				// Check changes that would trigger MQTT Client reload
 				$checkChanged = array(
+					self::CONF_KEY_MQTT_PROTO,
 					self::CONF_KEY_MQTT_ADDRESS,
 					self::CONF_KEY_MQTT_PORT,
 					self::CONF_KEY_MQTT_WS_URL,
 					self::CONF_KEY_MQTT_USER,
 					self::CONF_KEY_MQTT_PASS,
-					self::CONF_KEY_MQTT_PROTO,
+					self::CONF_KEY_MQTT_ID,
+					self::CONF_KEY_MQTT_ID_VALUE,
 					self::CONF_KEY_MQTT_LWT,
 					self::CONF_KEY_MQTT_LWT_TOPIC,
 					self::CONF_KEY_MQTT_LWT_ONLINE,
@@ -829,17 +833,6 @@ class jMQTT extends eqLogic {
 						$startRequested = true;
 						break;
 					}
-				}
-
-				// ClientId changed
-				if ($this->_preSaveInformations[self::CONF_KEY_MQTT_CLIENT_ID] != $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID)) {
-
-					// Just Need to restart MqttClient (it needs to reconnect using new ClientId and know about the new willTopic)
-					if (!$stopped) {
-						$this->stopMqttClient();
-						$stopped = true;
-					}
-					$startRequested = true;
 				}
 
 				// LWT Topic changed
@@ -1808,7 +1801,8 @@ class jMQTT extends eqLogic {
 		$params['proto']             = $this->getConf(self::CONF_KEY_MQTT_PROTO);
 		$params['port']              = intval($this->getConf(self::CONF_KEY_MQTT_PORT));
 		$params['wsUrl']             = $this->getConf(self::CONF_KEY_MQTT_WS_URL);
-		$params['clientid']          = $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID);
+		$params['mqttId']            = $this->getConf(self::CONF_KEY_MQTT_ID) == "1";
+		$params['mqttIdValue']       = $this->getConf(self::CONF_KEY_MQTT_ID_VALUE);
 		$params['lwt']               = ($this->getConf(self::CONF_KEY_MQTT_LWT) == '1');
 		$params['lwtTopic']          = $this->getConf(self::CONF_KEY_MQTT_LWT_TOPIC);
 		$params['lwtOnline']         = $this->getConf(self::CONF_KEY_MQTT_LWT_ONLINE);
@@ -2377,27 +2371,23 @@ class jMQTT extends eqLogic {
 				return 8884;
 			else
 				return 0;
-		} elseif ($_key == self::CONF_KEY_MQTT_LWT_TOPIC) {
-			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/status";
-		} elseif ($_key == self::CONF_KEY_MQTT_INT_TOPIC) {
-			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/interact";
-		} elseif ($_key == self::CONF_KEY_MQTT_API_TOPIC) {
-			return $this->getConf(self::CONF_KEY_MQTT_CLIENT_ID) . "/api";
 		}
 		$defValues = array(
+			self::CONF_KEY_MQTT_PROTO => 'mqtt',
 			self::CONF_KEY_MQTT_ADDRESS => 'localhost',
-			self::CONF_KEY_MQTT_CLIENT_ID => 'jeedom',
+			self::CONF_KEY_MQTT_ID => '0',
 			self::CONF_KEY_QOS => '1',
 			self::CONF_KEY_MQTT_LWT => '1',
+			self::CONF_KEY_MQTT_LWT_TOPIC => 'jeedom/status',
 			self::CONF_KEY_MQTT_LWT_ONLINE => 'online',
 			self::CONF_KEY_MQTT_LWT_OFFLINE => 'offline',
-			self::CONF_KEY_MQTT_PROTO => 'mqtt',
 			self::CONF_KEY_MQTT_TLS_CHECK => 'public',
 			self::CONF_KEY_MQTT_TLS_CLI => '0',
 			self::CONF_KEY_AUTO_ADD_CMD => '1',
-			self::CONF_KEY_AUTO_ADD_TOPIC => '',
 			self::CONF_KEY_MQTT_INT => '0',
+			self::CONF_KEY_MQTT_INT_TOPIC => 'jeedom/interact',
 			self::CONF_KEY_MQTT_API => '0',
+			self::CONF_KEY_MQTT_API_TOPIC => 'jeedom/api',
 			self::CONF_KEY_BRK_ID => -1
 		);
 		// If not in list, default value is ''
