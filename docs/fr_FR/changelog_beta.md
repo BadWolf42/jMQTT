@@ -2,7 +2,7 @@
 
 ## 2022-11-07
  - **Ajout d'une case à cocher pour changer le Client-Id (afin d'essayer d'éviter tous les problèmes utilisateur avec le Client-Id)**
- - **Changement des topic par défaut du LWT, des interactions et de l'API : personnalisation, le préfix par défaut est 'jeedom/'**
+ - **Changement des topic par défaut du LWT, des interactions et de l'API : sans personnalisation, le préfix est 'jeedom/' au lieu du Client-Id**
  - Ajout d'un filtre sur les messages Retain dans le mode Temps Réel
  - Sauvegarde des filtres lors du lancement du mode Temps Réel
  - Mise à jour du Template "Shelly Bulb Duo RGBW" (merci Jeandhom)
@@ -12,7 +12,7 @@
 
 ## 2022-11-04
  - **Remplacement de la case à cocher pour l'installation de Mosquitto par des boutons Installer/Réparer/Supprimer**
- - Détection de la présence de Mosquitto sur le système et, si possible, quel plugin l'a installé
+ - **Détection de la présence de Mosquitto sur le système (ou en docker) et, si possible, quel plugin l'a installé**
  - Ajout de captures d'écrans de jMQTT pour le Market
 
 ## 2022-10-31
