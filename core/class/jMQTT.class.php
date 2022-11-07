@@ -1463,6 +1463,12 @@ class jMQTT extends eqLogic {
 		$return['progress_file'] = $depProgressFile;
 		$return['state'] = self::MQTTCLIENT_OK;
 
+		if (file_exists($depProgressFile)) {
+			self::logger('debug', sprintf(__("Dépendances en cours d'installation... (%s%%)", __FILE__), trim(file_get_contents($depProgressFile))));
+			$return['state'] = self::MQTTCLIENT_NOK;
+			return $return;
+		}
+
 		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
 			self::logger('debug', __("Relancez les dépendances, le package PHP JsonPath est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
@@ -1479,6 +1485,8 @@ class jMQTT extends eqLogic {
 			}
 		}
 
+		if ($return['state'] == self::MQTTCLIENT_OK)
+			self::logger('debug', sprintf(__('Dépendances installées.', __FILE__)));
 		return $return;
 	}
 
