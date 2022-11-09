@@ -2610,19 +2610,11 @@ class jMQTT extends eqLogic {
 			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
 			// Start Real Time Mode (must be started before subscribe)
 			$this->toDaemon_realTimeStart($subscriptions, $exclusions, $retained);
-			// Subscribe Real Time topic
-			foreach ($subscriptions as $t)
-				$this->subscribeTopic($t, $this->getQos());
 			// Update cache
 			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
 			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
 			$this->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
 		} else { // Real Time mode needs to be disabled
-			// Unsubscribe Real Time topic
-			$subscribe = $this->getCache(self::CACHE_REALTIME_INC_TOPICS, '');
-			$subscribe = explode('|', $subscribe);
-			foreach ($subscribe as $t)
-				$this->unsubscribeTopic(trim($t));
 			// Stop Real Time mode
 			$this->toDaemon_realTimeStop();
 		}
