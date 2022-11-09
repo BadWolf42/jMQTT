@@ -1,0 +1,311 @@
+#!/bin/bash
+
+TMPFOLDER=/tmp/jeedom/${PLUGIN}
+if [ -z $PROGRESS_FILENAME ]; then
+	PROGRESS_FILENAME=dependance
+fi
+PROGRESS_FILE=${TMPFOLDER}/${PROGRESS_FILENAME}
+HR=$(printf '=%.0s' {1..70})
+TAB="echo -n "________""
+declare -A fix_handlers
+h=0 # no fix_handlers
+
+if [ -z $LANG_DEP ]; then
+	LANG_DEP=fr
+fi
+
+add_fix_handler() {
+	fix_handlers[$h,grepOrFunct]=$1
+	fix_handlers[$h,msgIfFound]=$2
+	fix_handlers[$h,fixStringOrFunct]=$3
+	((h++))
+}
+
+echo_success() {
+	echo -en "[  OK  ]\r"
+	return 0
+}
+
+echo_failure() {
+	if [ "$LANG_DEP" = "fr" ]; then
+		echo -en "[Erreur]\r"
+	else
+		echo -en "[ERROR]\r"
+	fi
+	return 1
+}
+
+show_time() {
+	num=$1
+	min=0
+	if((num>59)); then
+		((sec=num%60))
+		((min=num/60))
+	else
+		((sec=num))
+	fi
+	ret="["
+	[[ $min -gt 0 ]] && ret+="$min:"
+	[[ $min -gt 0 ]] && ret+=$(printf "%02d" $sec)
+	[[ $min -lt 1 ]] && ret+="$sec"
+	[[ $min -lt 1 ]] && ret+="sec"
+	ret+="]"
+	[ "$2" != "noEndPoints" ] && ret+=" : "
+	echo -n "$ret"
+}
+
+# need to find a use for it...
+info() {
+	$TAB
+	local EXIT_CODE=0
+	if [ "$1" != "echo" ]; then
+		echo "$@"
+	else
+		$@
+		local EXIT_CODE=$?
+	fi
+	return $EXIT_CODE
+}
+
+pre() {
+	[[ $TIMED -eq 1 ]] && startFull=`date +%s`
+	echo "$HR"
+	if [ "$LANG_DEP" = "fr" ]; then
+		echo "== $(date +'%d/%m/%Y %H:%M:%S') == Installation des dépendances de $PLUGIN"
+	else
+		echo "== $(date +'%d/%m/%Y %H:%M:%S') == Dependencies installation for $PLUGIN"
+	fi
+	echo "$HR"
+	echo
+	touch $TMPFOLDER/errorLog.$$
+	echo 0 > $TMPFOLDER/hasError.$$
+	touch $PROGRESS_FILE
+	STEP_IN_PROG=0
+	
+	# disable temporary deb-multimedia
+	if ls /etc/apt/sources.list.d/deb-multimedia.list* &>/dev/null; then
+		if [ ! -f "/etc/apt/sources.list.d/deb-multimedia.list.disabledBy${PLUGIN}" ]; then
+			if [ -f "/etc/apt/sources.list.d/deb-multimedia.list" ]; then
+				sudo mv /etc/apt/sources.list.d/deb-multimedia.list /etc/apt/sources.list.d/deb-multimedia.list.disabledBy${PLUGIN} &>/dev/null
+			fi
+		fi
+	fi
+	# remove repo.jeedom.com (validated by Alex)
+	if [ -f "/media/boot/multiboot/meson64_odroidc2.dtb.linux" ]; then
+		hasRepo=$(grep "repo.jeedom.com" /etc/apt/sources.list | wc -l)
+		if [ "$hasRepo" -ne "0" ]; then
+			sudo apt-add-repository -r "deb http://repo.jeedom.com/odroid/ stable main" &>/dev/null
+		fi
+	fi
+	# remove repo.distrib.works
+	DISTRIB_WORKS=`grep "repo.distrib.works" /etc/apt/sources.list`
+	if [[ $? -eq 0 ]]; then
+		reAddDistribWorks=1
+		sudo sed -i '/repo.distrib.works/d' /etc/apt/sources.list
+	else
+		reAddDistribWorks=0
+	fi
+}
+
+step() {
+	if [[ $STEP_IN_PROG -eq 1 ]]; then
+		STEP=$(($1-1))
+		next
+	fi
+	[[ $TIMED -eq 1 ]] && startStep=`date +%s`
+	echo $1 > $PROGRESS_FILE
+	STEP_IN_PROG=1
+	STEP=$1
+	shift
+	STEP_NAME=$@
+	if [[ $STEP -lt 10 ]]; then
+		echo -e "[  $STEP% ] : $STEP_NAME..."
+	else
+		echo -e "[ $STEP% ] : $STEP_NAME..."
+	fi 
+	STEP_OK=0
+	echo $STEP_OK > $TMPFOLDER/step.$$
+}
+
+try() {
+	cmdout="$("$@" 2>&1)"
+	local EXIT_CODE=$?
+	if [[ $EXIT_CODE -ne 0 ]]; then
+		STEP_OK=$EXIT_CODE
+		echo $STEP_OK > $TMPFOLDER/step.$$
+		echo 1 > $TMPFOLDER/hasError.$$
+
+		local LINE=${BASH_LINENO[0]}
+		if [ "$LANG_DEP" = "fr" ]; then
+			echo -e "== Erreur à l'étape : $STEP_NAME" >> $TMPFOLDER/errorLog.$$
+			echo -e "== Ligne $LINE" >> $TMPFOLDER/errorLog.$$
+			echo -e "== La commande \`$*' pose problème" >> $TMPFOLDER/errorLog.$$
+			echo -e "== Le code de retour est $EXIT_CODE" >> $TMPFOLDER/errorLog.$$
+			echo -e "== Le message d'erreur :" >> $TMPFOLDER/errorLog.$$
+		else
+			echo -e "== Error in step : $STEP_NAME" >> $TMPFOLDER/errorLog.$$
+			echo -e "== Line $LINE" >> $TMPFOLDER/errorLog.$$
+			echo -e "== Command \`$*' have an issue" >> $TMPFOLDER/errorLog.$$
+			echo -e "== Return code is $EXIT_CODE" >> $TMPFOLDER/errorLog.$$
+			echo -e "== Error message :" >> $TMPFOLDER/errorLog.$$
+		fi
+		echo -e "$cmdout\n" >> $TMPFOLDER/errorLog.$$
+		echo -e "$HR" >> $TMPFOLDER/errorLog.$$
+	fi
+	return $EXIT_CODE
+}
+
+tryOrStop() {
+	try $@
+	local EXIT_CODE=$?
+	if [[ $EXIT_CODE -ne 0 ]]; then
+		post
+		exit $EXIT_CODE
+	fi
+	return $EXIT_CODE
+}
+
+silent() {
+	"$@" &>/dev/null
+	return $?
+}
+
+next() {
+	echo $STEP > ${PROGRESS_FILE}
+	[[ -f $TMPFOLDER/step.$$ ]] && { STEP_OK=$(< $TMPFOLDER/step.$$); rm -f $TMPFOLDER/step.$$; }
+	if [[ $STEP -lt 10 ]]; then
+		echo -en "[  $STEP% ] : "
+	else
+		echo -en "[ $STEP% ] : "
+	fi 
+	echo -n "$STEP_NAME : "
+	[[ $TIMED -eq 1 ]] && show_time $((`date +%s`-$startStep))
+	if [[ $STEP_OK -eq 0 ]]; then
+		echo_success
+	else
+		echo_failure
+	fi
+	echo
+	STEP_IN_PROG=0
+	return $STEP_OK
+}
+
+fix () {
+	for (( f=0;f<h;f++ )); do # for each fix handler
+		if [ "$(type -t ${fix_handlers[$f,grepOrFunct]})" = "function" ]; then
+			${fix_handlers[$f,grepOrFunct]}
+			SEARCH_RESULT=$?
+		else
+			grep "${fix_handlers[$f,grepOrFunct]}" $TMPFOLDER/errorLog.$$ &>/dev/null
+			SEARCH_RESULT=$?
+		fi
+		if [ "$SEARCH_RESULT" -eq 0 ];then
+			if [ "${fix_handlers[$f,msgIfFound]}" = "" ]; then
+				if [ "$LANG_DEP" = "fr" ]; then
+					echo "== TROUVÉ '${fix_handlers[$f,grepOrFunct]}' dans l'erreur, je lance une commande pour corriger, attendez 45sec et relancez les dépendances pour réessayer"
+				else
+					echo "== FOUND '${fix_handlers[$f,grepOrFunct]}' in error, launching countermeasures, wait 45sec and relaunch dependencies to retry"
+				fi
+			else
+				if [ "${fix_handlers[$f,msgIfFound]:0:1}" = "*" ]; then
+					if [ "$LANG_DEP" = "fr" ]; then
+						echo "== TROUVÉ '${fix_handlers[$f,msgIfFound]:1}' dans l'erreur, je lance une commande pour corriger, attendez 45sec et relancez les dépendances pour réessayer"
+					else
+						echo "== FOUND '${fix_handlers[$f,msgIfFound]:1}' in error, launching countermeasures, wait 45sec and relaunch dependencies to retry"
+					fi
+				else
+					echo ${fix_handlers[$f,msgIfFound]}
+				fi
+			fi
+			if [ "$(type -t ${fix_handlers[$f,fixStringOrFunct]})" = "function" ]; then
+				${fix_handlers[$f,fixStringOrFunct]}
+			else
+				eval ${fix_handlers[$f,fixStringOrFunct]}
+			fi
+			HAS_FIX=1
+		fi
+	done
+}
+
+post() {
+	# enable deb-multimedia
+	if [ -f /etc/apt/sources.list.d/deb-multimedia.list.disabledBy${PLUGIN} ]; then
+		sudo mv /etc/apt/sources.list.d/deb-multimedia.list.disabledBy${PLUGIN} /etc/apt/sources.list.d/deb-multimedia.list &>/dev/null
+	fi
+	if [[ $reAddDistribWorks -eq 1 ]]; then
+		sudo echo "$DISTRIB_WORKS" >> /etc/apt/sources.list
+	fi
+	if [[ $STEP_IN_PROG -eq 1 ]]; then
+		STEP=99
+		next
+	fi
+	echo 100 > ${PROGRESS_FILE}
+	if [ "$LANG_DEP" = "fr" ]; then
+		echo "[100% ] : Terminé !"
+	else
+		echo "[100% ] : Finished !"
+	fi
+	[[ -f $TMPFOLDER/hasError.$$ ]] && { hasError=$(< $TMPFOLDER/hasError.$$); rm -f $TMPFOLDER/hasError.$$; }
+	echo
+	if [[ $hasError -eq 1 ]]; then
+		echo "$HR"
+		if [ "$LANG_DEP" = "fr" ]; then
+			echo -n "== KO == Erreur d'Installation "
+			[[ $TIMED -eq 1 ]] && show_time $((`date +%s`-$startFull)) "noEndPoints"
+			echo
+		else
+			echo -n "== KO == Installation Error "
+			[[ $TIMED -eq 1 ]] && show_time $((`date +%s`-$startFull)) "noEndPoints"
+			echo
+		fi
+		echo "$HR"
+		[[ -f $TMPFOLDER/errorLog.$$ ]] && {
+			HAS_FIX=0
+			if [ "$LANG_DEP" = "fr" ]; then
+				echo "== ANALYSE DES ERREURS..."
+			else
+				echo "== ANALYSING ERRORS..."
+			fi
+			
+			#try to fix if possible
+			fix
+
+			if [[ $HAS_FIX -eq 0 ]]; then
+				#show the error
+				if [ "$LANG_DEP" = "fr" ]; then
+					echo "== AUCUNE ERREUR CONNUE DÉTECTÉE"
+				else
+					echo "== NO KNOWN ERROR DETECTED"
+				fi
+				cat $TMPFOLDER/errorLog.$$;
+			fi
+			rm -f $TMPFOLDER/errorLog.$$; 
+		}
+	else
+		echo "$HR"
+		if [ "$LANG_DEP" = "fr" ]; then
+			echo -n "== OK == Installation Réussie "
+			[[ $TIMED -eq 1 ]] && show_time $((`date +%s`-$startFull)) "noEndPoints"
+			echo
+		else
+			echo -n "== OK == Installation Successful "
+			[[ $TIMED -eq 1 ]] && show_time $((`date +%s`-$startFull)) "noEndPoints"
+			echo
+		fi
+		echo "$HR"
+	fi
+	rm -f ${PROGRESS_FILE}
+}
+
+# fix apt broken install
+add_fix_handler "apt --fix-broken install" "" "yes | sudo apt --fix-broken install"
+
+# fix dkpg error (probably stopped during apt install)
+add_fix_handler "sudo dpkg --configure -a" "*dpkg --configure -a" "sudo dpkg --configure -a --force-confdef"
+
+# if debian have changed the Suite value, allow releaseinfo change in apt-get
+add_fix_handler "changed its 'Suite' value from" "*changed its Suite value from" "sudo apt-get --allow-releaseinfo-change update"
+
+# debian signatures are missing
+add_fix_handler "NO_PUBKEY 648ACFD622F3D138" "" "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 648ACFD622F3D138"
+add_fix_handler "NO_PUBKEY 0E98404D386FA1D9" "" "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 0E98404D386FA1D9"
