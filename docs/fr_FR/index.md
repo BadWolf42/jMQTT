@@ -4,7 +4,7 @@
 Le plugin jMQTT permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
 Ses principales fonctionnalités sont :
 
- - Installation automatique du Broker Mosquitto ;
+ - Installation facilité d'un Broker MQTT en local sur Jeedom (service Mosquitto) ;
  - Prise en charge de plusieurs Broker ;
  - Création automatique des équipements MQTT, création automatique des commandes d'information, options pour désactiver ces automatismes ;
  - Ajout manuel d'équipement MQTT ;
@@ -13,6 +13,8 @@ Ses principales fonctionnalités sont :
  - Affichage en vue Classique Jeedom ou en vue JSON ;
  - Ajout manuel de commandes (pour la publication), prise en charge du mode Retain ;
  - Gestionnaire de templates ;
+ - Gestion des Interactions ;
+ - Affichage des messages en temps réel ;
  - Emulation et remontée du niveau de batterie d'un équipement dans Jeedom ;
  - Emulation et remontée de la disponibilité et mise en alarme de l'équipement dans Jeedom ;
 
@@ -63,21 +65,16 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation du plugin, il suffit de l’activer sur la page de configuration :
 
-![Configuration du plugin](../images/2022-10-16_config.png)
+![Configuration du plugin](../images/2022-11-03_config.png)
 
-jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser.
-Par défaut, jMQTT n'installe plus le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances.
+Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
-> **Important**
->
-> Si vous n'avez pas encore de Broker et que vous n'utilisez pas un autre plugin qui a déjà installé un Broker, activez l'installation de Mosquitto.
-> Pour installer le Broker Mosquitto sur la machine hébergeant Jeedom, il faut cocher la case *Installer Mosquitto localement* et sauvegarder la configuration, puis lancer les dépendances.
+jMQTT est un Client MQTT pour Jeedom, il faut donc un Broker pour pouvoir d'utiliser. Par défaut, jMQTT n'installe plus automatiquement le Broker "Mosquitto" sur la machine hébergeant Jeedom pendant l'installation des dépendances. A présent jMQTT essaye de détecter si Mosquitto est installé par un autre plugin (ou non). Si vous n'avez pas encore de Broker et que jMQTT n'en voit pas un installé autre plugin, lancez l'installation de Mosquitto en cliquant sur le bouton *Installer* et attendez la fin de la procédure.
 
-Quelques minutes sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
+Il suffit ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à votre Broker (s'il est installé par jMQTT l'IP du Broker est celle votre Jeedom sur le port 1883).
 
-Il suffit ensuite de configurer vos modules domotique compatible MQTT pour qu'ils se connectent à votre Broker (s'il est installé par jMQTT l'IP du Broker est celle votre Jeedom).
+C'est tout pour la configuration générale, passons aux équipements.
 
-C'est aussi sur la page de configuration qu'il est possible d'ajouter et de supprimer des certificats SSL pour les Broker.
 
 # Gestion des équipements
 
@@ -96,7 +93,6 @@ Détail des différents boutons :
   - Santé : ouvre la [fenêtre de Santé](#santé-du-plugin) de jMQTT;
   - Templates : ouvre la [fenêtre du Gestionnaire de Template](#gestion-des-templates);
   - Ajouter : permet d'[ajouter manuellement un équipement](#ajout-manuel-dun-équipement) lié à un des Broker;
-<!--  - Une icône d'activation du mode [Inclusion automatique des équipements](#inclusion-automatique-des-équipements).-->
 
 En-dessous se trouve un champ de recherche, puis un panneau listant les équipements par Broker :
 
@@ -104,7 +100,7 @@ En-dessous se trouve un champ de recherche, puis un panneau listant les équipem
 
 jMQTT possède 2 types d'équipements. Il est très important de faire la distinction entre :
   - les **équipements de type Broker**, qui sont les clients MQTT qui gèrent la connexion avec les Broker MQTT.
-On les retrouve toujours en début de section et ils sont facilement identifiables grâce à leur fond jaune et leur icone particulière.
+On les retrouve toujours en début de section et ils sont facilement identifiables grâce à leur fond jaune et leur icône particulière.
 Ils sont souvent appelés **Broker** par abus de langage, ce sera le cas dans la suite de ce document;
   - les **équipements "classiques"**, qui portent les commandes info/action, ils sont simplement appelés **équipement**.
 
@@ -129,9 +125,9 @@ Il existe également une vue sous forme de table (TableView) :
 
 Elle s'active en cliquant sur le bouton tout à droite du champ de recherche (dans l'encadré rouge ci-dessus).
 
-En plus de retrouver dans cette vue les informations classiques (icone, objet, nom, s'il est activé), des icones à droite permettent de retrouver rapidement des informations importantes.
-  - Sur un Broker, on retrouvera 3 informations : son statut (OK, POK, NOK), s'il est visible et s'il est en inclusion automatique,
-  - Sur un Equipement, on retrouvera 5 informations : son statut d'activation, s'il est visible, s'il est en inclusion automatique, son état de batterie et son état de disponibilité.
+En plus de retrouver dans cette vue les informations classiques (icône, objet, nom, s'il est activé), des icônes à droite permettent de retrouver rapidement des informations importantes.
+  - Sur un Broker, on retrouvera 3 informations : son statut (OK, POK, NOK), s'il est visible et s'il est en Mode Temps Réel,
+  - Sur un Equipement, on retrouvera 5 informations : son statut d'activation, s'il est visible, s'il est en ajout automatique de commande, son état de batterie et son état de disponibilité.
 
 Enfin tout à droite, il est possible d'accéder directement à la "Configuration avancée" de l'équipement.
 
@@ -148,25 +144,31 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../images/2022-10-16_eqpt_broker.png)
+![Configuration du Broker](../images/2022-11-06_eqpt_broker.png)
 
-Par défaut, un équipement Broker est configuré pour s’inscrire au Broker Mosquitto installé localement.
+Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
+
 Si cette configuration convient, activer l'équipement et sauvegarder. Revenir sur l'onglet _Broker_, le statut du démon devrait passer à OK.
 
 Pour modifier les informations de connexion au Broker, les paramètres sont :
   - Section _Paramètres d'accès au Broker_ (encadré 1)
     - _Adresse du broker_ :
       - Protocole utilisé pour communiquer avec le Broker :
-        - _mqtt_ pour des communications en clair,
-        - _mqtts_ pour activer le chiffrement (TLS) des communications avec le Broker.
+        - _mqtt_ pour des communications MQTT en clair,
+        - _mqtts_ pour activer le chiffrement (TLS) des communications MQTT avec le Broker.
           Une fois cette option sélectionnée il sera possible de configurer les Certificats utilisés dans la partie de droite.
-      - Adresse IP ou nom de domaine du Broker : (par défaut localhost i.e. la machine hébergeant Jeedom);
-      - Port du Broker : port du Broker (1883 par défaut en mqtt et 8883 en mqtts);
+        - _ws_ pour des communications Web Sockets en clair,
+        - _wss_ pour activer le chiffrement (TLS) des communications Web Sockets avec le Broker.
+          Une fois cette option sélectionnée il sera possible de configurer les Certificats utilisés dans la partie de droite.
+      - _Adresse_ du Broker : (par défaut localhost i.e. la machine hébergeant Jeedom);
+      - _Port_ du Broker : port du Broker (par défaut 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss);
+      - _Chemin (URL) Web Sockets_ : ce paramètre apparait dans le cas de l'utilisation de Web Sockets, il peut être nécessaire de le modifier selon la configuration du serveur (valeur par défaut 'mqtt');
     - _Authentification_ : compte et mot de passe de connexion au Broker (laissez le champ vide si vous n'avez pas configuré votre Broker MQTT en conséquence, notamment si jMQTT se charge de l’installation du Broker).
-    - _Identifiant/ClientId_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (jeedom par défaut).
-      Cet identifiant est aussi utilisé dans le topic de la commande info *status*. Le topic est automatiquement mis à jour si l'identifiant est modifié.
-    - _Publier le statut_ : active/désactive la publication du statut de connexion de cet équipement Broker en MQTT sur le Broker.
-    - _Topic de souscription en mode inclusion_ : topic de souscription automatique à partir duquel le plugin va découvrir les équipements, nous y revenons dans la partie équipements (\# par défaut, i.e. tous les topics).
+    - _Client-Id_ : identifiant avec lequel l'équipement Broker s’inscrit auprès du Broker MQTT (si actif, jeedom par défaut).
+    - _Publier le statut (LWT)_ : active/désactive la publication du statut de connexion de cet équipement Broker en MQTT sur le Broker.
+      Une fois cette option sélectionnée il sera possible de configurer le topic du LWT, ainsi que les messages envoyés lorsque jMQTT est connecté ou non.
+    - _Topic des interactions de Jeedom_ : topic de premettant d'envoyer des [demandes d'interaction](#gestion-des-interactions) à Jeedom (par défaut, 'jeedom/interact' est utilisé).
+    - _Topic de l'API de Jeedom_ : (obsolète) topic présentant l'API JSON RPC de Jeedom (par défaut, 'jeedom/api' est utilisé).
 
   - Section _Paramètres de Sécurité_ (encadré 2), bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls) :
     - Cette section apparait uniquement si le protocole mqtts est sélectionné
@@ -185,23 +187,53 @@ Il est aussi possible de relancer volontairement le client MQTT avec le bouton _
 
 **Info**
 
- - Dès que l'équipement Broker est activé, le démon se connecte au Broker MQTT et traite les messages.
- - Si vous désactivez un équipement Broker, les équipements associés ne recevront et n'enverront plus de messages.
- - En cas de déconnection intempestive au Broker MQTT, le démon tentera immédiatement une reconnexion, puis toutes les 15s.
+  - Dès que l'équipement Broker est activé, le démon se connecte au Broker MQTT et traite les messages.
+  - Si vous désactivez un équipement Broker, les équipements associés ne recevront et n'enverront plus de messages.
+  - En cas de déconnection intempestive au Broker MQTT, le démon tentera immédiatement une reconnexion, puis toutes les 15s.
 
 Chaque équipement Broker possède son propre fichier de log (encadré 4) suffixé par le nom de l'équipement.
 Si l'équipement est renommé, le fichier de log le sera également.
 
+Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des messages qui arrivent.
 
-Le mode inclusion automatique (encadré 5) permet la découverte et la création automatique des équipements.
-Il s’active, pour le Broker concerné, en cliquant sur le bouton *Mode inclusion* en haut à droite sur l'équipement Broker.
-Il se désactive en recliquant sur le même bouton, ou automatiquement après environ 3 minutes.
+
+#### Mode Temps Réel
+
+La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
+
+![Mode Temps Réel](../images/2022-11-05_broker_realtime.png)
+
+Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel et si les messages retenus par le Broker doivent être inclus dans le Temps Réel (encadré 1).
+
+Le mode temps réel s’active, pour le Broker concerné, en cliquant sur le bouton *Mode Temps Réel* en haut à droite sur l'équipement Broker et se désactive en recliquant sur le même bouton (encadré 2), ou automatiquement après environ 3 minutes.
+
+Les messages reçu sont stockés uniquement coté navigateur.
+
+Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option (encadré 3) :
+
+  - Les icônes orange signifient que les messages ont été republiés lors de l'activation du mode Temps Réel et sont retenues par le Broker (elles sont Retain),
+  - Les icônes vertes montrent permettent de savoir que ce topic est déjà porté par un équipement jMQTT. En passant la souris sur l'icône les équipements concernés sont affichés.
+
+Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 4) pour les utiliser.
+
+  - La première icône permet d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
+  - La seconde de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,
+  - La troisième icône sert à supprimer la ligne de la vue Temps Réel.
+
+#### Gestion des Interactions
+
+Il est possible d'envoyer en MQTT des demandes d'interaction à Jeedom au travers du "Topic des interactions de Jeedom" décrit dans la section [Configuration de l'équipement Broker](#configuration).
+
+3 topic sont utilisé pour les interaction :
+
+ - jMQTT attend des demandes d'interaction directement sur le topic présent dans la case "Topic des interactions de Jeedom". Par exemple, pour exécuter la commande `#[Chambre][Lampe][On]#`, il est possible d'envoyer la demande "Allume la lampe dans la Chambre" sur ce topic.
+ - Une réponse du moteur d'interaction sera effectuée en json sur le sous-topic '/reply'. Par exemple, dans le cas précédent, la réponse `{"status":"ok","query":"","reply":"C'est fait (Chambre Lampe On)"}` y serait envoyée.
+ - Pour des attentes d'interaction particulières, il est aussi possible d'envoyer une demande en json selon les paramètres attendus par la fonction du Core Jeedom `interactQuery::tryToReply()` sur le sous-topic '/advanced'. Le format attendu est du type : `{"query": string, "reply_cmd": <cmdId>, "profile": <user>, "emptyReply": bool, "force_reply_cmd": bool, "utf8": bool}` (se rapprocher de la documentation du Core pour plus d'information), la réponse a lieu sur le même topic que précédemment.
 
 
 ## Equipement
 
 Le plugin souscrit auprès du Broker le topic configuré dans [l'onglet Broker](#onglet-Broker) (\# par défaut, i.e. tous les topics) de l'équipement Broker concerné. 
-A réception d’un message auquel aucun équipement n’a souscrit, le plugin crée automatiquement un équipement associé au topic de premier niveau.
 
 Prenons comme exemple les messages MQTT suivants :
 
@@ -213,7 +245,7 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 
 > **Tip**
 >
-> Le mode inclusion automatique des équipements n’influe que sur la création de l’équipement, et pas sur la création des informations associées, qui dépend du paramètre *Ajout automatique des commandes* que nous verrons dans le chapitre suivant.
+> Le mode Temps Réel n’influe que sur la création de l’équipement, et pas sur la création des informations associées, qui dépend du paramètre *Ajout automatique des commandes* que nous verrons dans le chapitre suivant.
 
 > **Note**
 >
@@ -221,26 +253,17 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 
 ### Onglet Equipement
 
-![Onglet principal d'un Equipement](../images/2022-10-16_eqpt_equipement.png)
+![Onglet principal d'un Equipement](../images/2022-10-26_eqpt_equipement.png)
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
-
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
-
   - _Inscrit au Topic_ : topic de souscription auprès du Broker MQTT. Pour un équipement de type Broker, ce paramètre n'est pas modifiable, il est imposé par l'identifiant de connexion au Broker, voir [Onglet Broker](#onglet-Broker) ;
-
   - _Ajout automatique des commandes_ : si coché, les [commandes de type information](#commandes-de-type-information) seront automatiquement créés par le plugin, et l’équipement apparaitra avec une petite icône d’inclusion superposé dans la page de [Gestion des équipements](#gestion-des-équipements). La case est cochée par défaut ;
-
   - _Qos_ : qualité de service souscrit ;
-
   - _Type d'alimentation_ : paramètre libre vous permettant de préciser le type d'alimentation de l'équipement (non disponible pour un équipement Broker) ;
-
   - _Commande d'état de la batterie_ : commande de l'équipement qui sera utilisée comme niveau de batterie. Si la commande info est de type binaire, alors la valeur de la batterie sera 10% (0) ou 100% (1). Si la commande info est de type numérique, alors la valeur sera utilisée comme pourcentage de batterie (non disponible pour un équipement Broker) ;
-
   - _Commande de disponibilité_ : commande de l'équipement (info binaire) qui sera utilisée comme état de disponibilité de l'équipement. Si cette commande est à 0, alors l'équipement sera remonté en erreur "Danger" (non disponible pour un équipement Broker) ;
-
   - _Dernière communication_ : date de dernière communication avec le Broker MQTT, que ce soit en réception (commande information) ou publication (commande action) ;
-
   - _Catégorie du topic_ : sélection d’une image spécifique à l’équipement. Pour un équipement Broker, ce paramètre n'est pas disponible car l'image est imposée.
 
 
@@ -250,7 +273,7 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
 
 Concernant les boutons en haut à droite :
 
-![Boutons sur un Equipement](../images/2022-10-16_eqpt_buttons.png)
+![Boutons sur un Equipement](../images/2022-10-26_eqpt_buttons.png)
 
   - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
   - `Créer template` permet de [Créer un template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
@@ -479,7 +502,7 @@ Les templates conservent toutes les commandes d'origine, leurs configurations et
 
 Dans un permier temps, il est possible de [créer](#création-dun-template-depuis-un-équipement) ou d'[appliquer](#application-dun-template-sur-un-équipement) un template à un équipement existant, celà se passe directement sur un équipement :
 
-![Boutons sur un Equipement](../images/2022-10-16_eqpt_buttons.png)
+![Boutons sur un Equipement](../images/2022-10-26_eqpt_buttons.png)
 
 Ensuite, le gestionnaire de Template est présent dans la section *Gestion* de la page principale du plugin. Il permet d'ajouter, de télécharger et de supprimer des templates et d'en visualiser les commandes.
 
@@ -556,7 +579,10 @@ Depuis mai 2021, jMQTT supporte la connexion aux Broker publique ou privé en MQ
 
 Si vous changiez le niveau de log, le démon devait être relancé dans les anciennes version.
 Pour cela, il fallait désactiver puis réactiver l'équipement Broker concerné.
-Aujourd'hui, le démon est automatiquement informé que le niveau de log a changé et les nouveaux logs arrivent.
+
+> **Note**
+>
+> Aujourd'hui, le démon est automatiquement informé que le niveau de log a changé et les nouveaux logs arrivent.
 
 ## Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
 
@@ -614,7 +640,6 @@ Attention, quel que soit la solution, il est important de configurer la *Gestion
 
 ![saison répétition](../images/2022-10-16_saison_repetition.png)
 
-
 ## Conservation de l'état précédant une coupure de courant (exemple commande action avec "Retain")
 
 Les Messages Retain ont beaucoup d'intérêt pour renvoyer des valeurs à la reconnexion d'un périphérique.
@@ -625,17 +650,21 @@ Si on souhaite remettre la prise dans le dernier état avant la coupure, il peut
 
 En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la reconnexion au Broker, le Broker l’informe directement du dernier état demandé et la prise revient en ON si c’était le cas. (Il faut bien publier ON et OFF en retain dans ce cas, pour que le Broker envoie aussi OFF si elle était OFF, car un message non-Retain n’écrase pas la valeur Retain dans le Broker).
 
+<!--
+# Pour aller plus loin
 
-# Registre des évolutions
+## Schéma du fonctionnement interne de jMQTT
+
+// TODO Schéma du fonctionnement interne/externe de jMQTT
+
+-->
+# Registres des évolutions
 
 [Evolutions de la branche beta](changelog_beta)
 
 [Evolutions de la branche stable](changelog)
 
 [Evolutions archivées](changelog_archived)
-
-
-# Documentations
 
 [Documentation de la branche beta](index_beta)
 
