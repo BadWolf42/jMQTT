@@ -1,7 +1,7 @@
 #!/bin/bash
 ######################### INCLUSION LIB ##########################
 BASEDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-wget https://raw.githubusercontent.com/NebzHB/dependance.lib/master/dependance.lib -O $BASEDIR/dependance.lib &>/dev/null
+#wget https://raw.githubusercontent.com/NebzHB/dependance.lib/master/dependance.lib -O $BASEDIR/dependance.lib &>/dev/null
 PROGRESS_FILENAME=dependancy
 PLUGIN=$(basename "$(realpath $BASEDIR/..)")
 LANG_DEP=en
@@ -24,17 +24,15 @@ step 10 "Synchronize the package index"
 try sudo apt-get update
 
 step 20 "Install Composer"
-cd "$( dirname "${BASH_SOURCE[0]}" )"
-cd ../resources
-try wget 'https://getcomposer.org/installer' -O composer-setup.php
-try php composer-setup.php
-try rm -f composer-setup.php
+try wget 'https://getcomposer.org/installer' -O $BASEDIR/composer-setup.php
+try php $BASEDIR/composer-setup.php --install-dir=$BASEDIR/
+try rm -f $BASEDIR/composer-setup.php
 
 step 30 "Install JsonPath-PHP library"
-try sudo -u www-data php ./composer.phar update --working-dir=./JsonPath-PHP
+try sudo -u www-data php $BASEDIR/composer.phar update --working-dir=$BASEDIR/JsonPath-PHP
 
 step 40 "Remove Composer"
-silent rm composer.phar
+silent rm $BASEDIR/composer.phar
 
 step 50 "Install python3 venv and pip debian packages"
 try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-venv python3-pip

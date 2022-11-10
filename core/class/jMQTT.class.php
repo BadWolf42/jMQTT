@@ -1463,6 +1463,12 @@ class jMQTT extends eqLogic {
 		$return['progress_file'] = $depProgressFile;
 		$return['state'] = self::MQTTCLIENT_OK;
 
+		if (file_exists($depProgressFile)) {
+			self::logger('debug', sprintf(__("Dépendances en cours d'installation... (%s%%)", __FILE__), trim(file_get_contents($depProgressFile))));
+			$return['state'] = self::MQTTCLIENT_NOK;
+			return $return;
+		}
+
 		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
 			self::logger('debug', __("Relancez les dépendances, le package PHP JsonPath est manquant", __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
@@ -1479,6 +1485,8 @@ class jMQTT extends eqLogic {
 			}
 		}
 
+		if ($return['state'] == self::MQTTCLIENT_OK)
+			self::logger('debug', sprintf(__('Dépendances installées.', __FILE__)));
 		return $return;
 	}
 
@@ -1976,6 +1984,19 @@ class jMQTT extends eqLogic {
 		// Send event to WebUI
 		$brk->log('info', sprintf(__("Mode Temps Réel désactivé, %s messages disponibles", __FILE__), $nbMsgs));
 		$brk->sendMqttClientStateEvent();
+	}
+
+	// TODO (important) Remove in beta, after being put in stable
+	// Functions to cleanup existing crons on functions disableIncludeMode & disableRealTimeMode
+	public static function disableIncludeMode($option) {
+		$cron = cron::byClassAndFunction(__CLASS__, 'disableIncludeMode', array('id' => $option['id']));
+		if (is_object($cron))
+			$cron->remove(false);
+	}
+	public static function disableRealTimeMode($option) {
+		$cron = cron::byClassAndFunction(__CLASS__, 'disableRealTimeMode', array('id' => $option['id']));
+		if (is_object($cron))
+			$cron->remove(false);
 	}
 
 	public function toDaemon_realTimeStart($subscribe, $exclude, $retained, $duration = 180) {
@@ -2602,19 +2623,11 @@ class jMQTT extends eqLogic {
 			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
 			// Start Real Time Mode (must be started before subscribe)
 			$this->toDaemon_realTimeStart($subscriptions, $exclusions, $retained);
-			// Subscribe Real Time topic
-			foreach ($subscriptions as $t)
-				$this->subscribeTopic($t, $this->getQos());
 			// Update cache
 			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
 			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
 			$this->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
 		} else { // Real Time mode needs to be disabled
-			// Unsubscribe Real Time topic
-			$subscribe = $this->getCache(self::CACHE_REALTIME_INC_TOPICS, '');
-			$subscribe = explode('|', $subscribe);
-			foreach ($subscribe as $t)
-				$this->unsubscribeTopic(trim($t));
 			// Stop Real Time mode
 			$this->toDaemon_realTimeStop();
 		}

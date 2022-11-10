@@ -1,5 +1,27 @@
 # Registre des évolutions
 
+## 2022-11-10 Mode Temps Réel
+ - **Suppression du mode "Inclusion" au profit du mode "Temps Réel" dans l'onglet Temps Réel du Broker**
+ - **Ajout d'une case à cocher pour changer le Client-Id (afin d'essayer d'éviter tous les problèmes utilisateur avec le Client-Id)**
+ - **Ajout de champs dans le broker pour définir le topic LWT et les valeurs quand le broker est en-ligne et hors-ligne**
+ - **Remplacement de la case à cocher pour l'installation de Mosquitto par des boutons Installer/Réparer/Supprimer**
+ - **Détection de la présence de Mosquitto sur le système (ou en docker) et, si possible, quel plugin l'a installé**
+ - **Ajout du support des Interactions Jeedom via MQTT**
+ - **Meilleure gestion du "topicMismatch", avertissement avant de sauvegarder et visuellement dans les champs lors de la saisie**
+ - Ajout du transport du protocole MQTT sur Web Sockets (ws) et Web Sockets Secure (wss)
+ - Mise en warning des équipements Broker lorsqu'ils n'arrivent pas à se connecter
+ - Utilisation des fonctions de suppression du Core avec un résumé des liaisons
+ - Suppression du bouton pour effectuer un changement de Broker, c'est fait à la sauvegarde de l'équipement
+ - Moins de log lorsque le Démon est désactivé
+ - Ajout de 8 templates : "Shelly 1 (Light)", "Shelly 1 (Relay)", "Shelly 1 (Relay & Temperature)", "Shelly 2.5 (Relay)" et "Shelly 2.5 (Roller Shutter)" (merci ngrataloup), "Shelly Bulb Duo RGBW" (merci Jeandhom), "Zwavejs2mqtt Fibaro Motion Sensor FGMS-001-ZW5" (merci mimilamy2000), "Zigbee2mqtt Lidl HG07834B" (merci seb49), "Zwavejs2mqtt NodOn Wall Switch CWS-3-1-01" (merci pifou)
+ - Retrait de 2 anciens templates : "Zwave2mqtt Qubino ZMNHCD" et "Zwave2mqtt Qubino ZMNHOD"
+ - Gros nettoyage pour retirer des correctifs temporaires liés au Core < 4.2
+ - Support minimum avancé à la version 4.2.11 de Jeedom (au lieu de la version 4.2.16)
+ - Amélioration du code JS pour rendre le plugin plus léger et réactif lors du chargement
+ - Corrections mineures
+ - Ajout de captures d'écrans de jMQTT pour le Market
+ - Mise à jour de la documentation, des captures et du Changelog
+
 ## 2022-10-16
  - **Création d'une branche spéciale pour Jeedom 3, voir plus bas**
  - **Par défaut, la case "Installer Mosquitto" n'est plus cochée, il faut la cocher si on souhaite installer un broker sur Jeedom via jMQTT**

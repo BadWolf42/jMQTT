@@ -26,11 +26,16 @@ if (!isConnect()) {
 // Send Mosquitto installation status
 sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
+$docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
+
 ?>
 <form class="form-horizontal">
 	<div class="row">
 	<div class="col-sm-6">
-		<legend><i class="fas fa-cog"></i>{{Broker MQTT en local (Service Mosquitto)}}</legend>
+<?php
+if (!$docker) {
+?>
+		<legend><i class="fas fa-toolbox"></i>{{Broker MQTT en local (Service Mosquitto)}}</legend>
 		<div class="form-group">
 			<label class="col-sm-4 control-label">{{Etat d'installation}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Mosquitto est installé en local, jMQTT essaye de détecter par quel plugin.}}"></i></sup></label>
@@ -67,17 +72,16 @@ sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('
 			</div>
 		</div>
 <?php
-$docker = false;
-if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1') {
-	$docker = true;
+} /* !$docker */
+
+if ($docker) {
 	// To fix issue: https://community.jeedom.com/t/87727/39
 	$regularVal = jMQTT::get_callback_url();
 	$overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
 	$overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
 	$curVal = ($overrideEn) ? $overrideVal : $regularVal;
 ?>
-		<div class="form-group"><br /></div>
-		<legend><i class="fab fa-docker "></i>{{Paramètres Docker}}</legend>
+		<legend><i class="fab fa-docker "></i>{{Paramètres spécifiques Docker}}</legend>
 		<div class="form-group">
 			<label class="col-sm-4 control-label">{{URL de Callback du Démon}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br />
@@ -99,22 +103,23 @@ if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == 
 					</div>
 				</div>
 			</div>
-			<div class="col-sm-1">
-			</div>
+			<div class="col-sm-1"></div>
 		</div>
-<?php } ?>
+<?php } /* $docker */ ?>
 		<div class="form-group"><br /></div>
 	</div>
 	<div class="col-sm-6">
-<!-- TODO (important) Backup/restore completely jMQTT
-		<legend><i class="fas fa-exchange-alt"></i>{{Sauvegarde et Restauration}}</legend>
+<!-- TODO NEW Uncomment when Backup/Restore jMQTT is OK
+		<legend><i class="fas fa-exchange-alt"></i>{{Sauvegarde et Restauration de jMQTT en l'état}}</legend>
 		<div class="form-group ">
-			<div class="col-sm-6 col-xs-6">
-				<a class="btn btn-success bt_backupJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Sauvegarder en l'état jMQTT}}</a>
+			<label class="col-sm-2 control-label"> </label>
+			<div class="col-sm-3">
+				<a class="btn btn-success" id="bt_backupJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Sauvegarder}}</a>
 			</div>
-			<div class="col-sm-6 col-xs-12">
-				<a class="btn btn-warning" id="bt_restoreJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer une sauvegarde de jMQTT}}</a>
+			<div class="col-sm-3">
+				<a class="btn btn-danger" id="bt_restoreJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer}}</a>
 			</div>
+			<div class="col-sm-2"> </div>
 		</div>
 -->
 		<div class="form-group"><br /></div>
@@ -122,10 +127,8 @@ if (file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == 
 	</div>
 </form>
 <script>
-<?php if (!$docker) { ?>
 // Remove unneeded Save button
 $('#bt_savePluginConfig').remove();
-<?php } ?>
 
 // Copy of jmqtt.callPluginAjax() to handle "My plugins" page when jMQTT.functions.js is not included
 function jmqttAjax(_params) {
@@ -149,14 +152,8 @@ function jmqttAjax(_params) {
 	});
 }
 
-// Toggle spinner icon on button click
-function toggleIco(_this) {
-	var h = _this.find('i.fas:hidden');
-	var v = _this.find('i.fas:visible');
-	v.hide();
-	h.show();
-}
 
+<?php if (!$docker) { ?>
 // Helper to set buttons and texts
 function mosquittoStatus(_result) {
 	if (_result.installed) {
@@ -170,6 +167,19 @@ function mosquittoStatus(_result) {
 	}
 	$('#mosquittoStatus').empty().html(_result.message);
 	$('#mosquittoService').empty().html(_result.service);
+}
+
+// Set Mosquitto status
+$(document).ready(function() {
+	mosquittoStatus(mStatus);
+});
+
+// Toggle spinner icon on button click
+function toggleIco(_this) {
+	var h = _this.find('i.fas:hidden');
+	var v = _this.find('i.fas:visible');
+	v.hide();
+	h.show();
 }
 
 // Launch Mosquitto installation and wait for it to end
@@ -255,6 +265,19 @@ $('#bt_mosquittoRemove').on('click', function () {
 		});
 	}
 });
+<?php } /* !$docker */ ?>
+
+/* TODO NEW Uncomment when Backup/Restore jMQTT is OK
+// Launch jMQTT backup and wait for it to end
+$('#bt_backupJMQTT').on('click', function () {
+	console.log('bt_backupJMQTT');
+});
+
+// Launch jMQTT restoration and wait for it to end
+$('#bt_restoreJMQTT').on('click', function () {
+	console.log('bt_restoreJMQTT');
+});
+*/
 
 <?php if ($docker) { ?>
 $('#bt_jmqttUrlOverride').on('click', function () {
@@ -286,8 +309,9 @@ $('#jmqttUrlOverrideEnable').change(function() {
 		$oVal.addClass('disabled');
 	}
 });
-<?php } ?>
+<?php } /* $docker */ ?>
 
+// Send log level to daemon dynamically
 $btSave = $('#bt_savePluginLogConfig');
 if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event on the button
 	$btSave.addClass('jmqttLog');
@@ -307,9 +331,4 @@ if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event 
 		}
 	});
 };
-
-// Set Mosquitto status
-$(document).ready(function() {
-	mosquittoStatus(mStatus);
-});
 </script>
