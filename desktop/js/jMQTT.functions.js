@@ -310,7 +310,7 @@ jmqtt.refreshEqLogicPage = function() {
 			$('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
 		}
 	}
-	if (modifyWithoutSave) {
+	if (jeeFrontEnd.modifyWithoutSave) {
 		bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
 			if (result)
 				refreshPage();

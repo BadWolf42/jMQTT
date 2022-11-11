@@ -136,7 +136,6 @@ $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
 								if (i != 'id' && i != 'removeSuccessFull' && i != 'saveSuccessFull')
 									url += i + '=' + vars[i].replace('#', '') + '&';
 							}
-							modifyWithoutSave = false;
 							url += 'removeSuccessFull=1';
 							jeedomUtils.loadPage(url);
 						}

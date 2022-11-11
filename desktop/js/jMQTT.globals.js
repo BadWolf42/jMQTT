@@ -14,6 +14,12 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle retrocompatibility of jeeFrontEnd namespace in Jeedom 4.2
+if (typeof jeeFrontEnd === 'undefined') {
+	jeeFrontEnd = window;
+}
+
 // New namespace
 function jmqtt() {}
 jmqtt.globals = {};
