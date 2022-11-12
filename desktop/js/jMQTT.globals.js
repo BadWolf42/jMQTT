@@ -20,6 +20,14 @@ if (typeof jeeFrontEnd === 'undefined') {
 	jeeFrontEnd = window;
 }
 
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle retrocompatibility of addUpdateFunction function in Jeedom 4.2
+if (typeof jeedom.cmd.addUpdateFunction !== 'function') {
+	jeedom.cmd.addUpdateFunction = function(id, func) {
+		jeedom.cmd.update[id] = func;
+	}
+}
+
 // New namespace
 function jmqtt() {}
 jmqtt.globals = {};

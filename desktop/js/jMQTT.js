@@ -1001,10 +1001,10 @@ function addCmdToTable(_cmd) {
 			}
 
 			// Set the update value callback
-			jeedom.cmd.update[_cmd.id] = function(_options) {
+			jeedom.cmd.addUpdateFunction(_cmd.id, function(_options) {
 				$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').addClass('modifiedVal').value(_options.display_value);
-				setTimeout(function() { $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').removeClass('modifiedVal'); }, 1500 );
-			}
+				setTimeout(function() { $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').removeClass('modifiedVal'); }, 1500);
+			});
 		}
 
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"]').show(); // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
