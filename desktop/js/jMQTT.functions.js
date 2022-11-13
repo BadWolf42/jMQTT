@@ -82,7 +82,6 @@ jmqtt.logoHelper = function(_id) {
 	// Broker logo is always the same
 	if (_id == 'broker')
 		return 'plugins/jMQTT/core/img/node_broker.svg';
-
 	// Search for an logo with this id
 	var tmp = jmqtt.globals.logos.find(function (item) { return item.id == _id; });
 	// Return path to an image according to id
@@ -124,10 +123,10 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 		_card.addClass('disableCard');
 
 	// Set logo
-	if (_eq.configuration.type == 'broker')
-		_card.find('img').attr('src', jmqtt.logoHelper('broker'));
-	else
-		_card.find('img').attr('src', jmqtt.logoHelper(_eq.configuration.icone));
+	var logo = (_eq.configuration.type == 'broker') ? jmqtt.logoHelper('broker') : jmqtt.logoHelper(_eq.configuration.icone);
+	if (_card.find('img').attr('src') != logo) {
+		_card.find('img').attr('src', logo);
+	}
 
 	// Set hiddenAsTable span
 	var asCard = jmqtt.asCardHelper(_eq, 'visible', 'eyed');
@@ -372,6 +371,30 @@ jmqtt.updateEqptTabs = function(_eq) {
 	});
 	bat.val(_eq.configuration.battery_cmd);
 	avl.val(_eq.configuration.availability_cmd);
+
+	var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
+	// Build icon list on eqLogic
+	if (icos.attr('ready') != 'true') {
+		icos.attr('ready', 'true');
+		icos.html('');
+		$.each(jmqtt.globals.logos, function(key) {
+			opt = new Option(jmqtt.globals.logos[key]['name'], jmqtt.globals.logos[key]['id']);
+			icos.append(opt);
+		});
+		// Set handler on eqLogic logo field set (initial set and finish typing)
+		icos.off('change').on('change', function(e) {
+			// Initialize once the Logo dropbox from logos global table
+			// Get icon name
+			var elt = ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') ? 'broker' : icos.select().val();
+			// Get icon file
+			var logo = jmqtt.logoHelper(elt);
+			if ($("#logo_visu").attr("src") != logo) {
+				$("#logo_visu").attr("src", logo);
+			}
+		});
+	}
+	// Set value
+	icos.val(_eq.configuration.icone);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

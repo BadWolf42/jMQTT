@@ -55,7 +55,11 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace
  */
 function displayEqLogicCard($eqL) {
 	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
-	echo '<span class="hiddenAsTable"></span><img class="lazy" /><br>';
+	echo '<span class="hiddenAsTable"></span>';
+	if ($eqL->getType() == 'brk')
+		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_broker.svg" /><br>';
+	else
+		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_.svg" /><br>';
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
 	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }

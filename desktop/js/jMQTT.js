@@ -424,16 +424,6 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 	}
 });
 
-// On eqLogic logo field set (initial set and finish typing)
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
-	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') {
-		$("#logo_visu").attr("src", jmqtt.logoHelper('broker'));
-	} else {
-		var elt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone] option:selected');
-		$("#logo_visu").attr("src", jmqtt.logoHelper(elt.val()));
-	}
-});
-
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
@@ -1183,14 +1173,6 @@ $(document).ready(function() {
 	$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
 		event.stopPropagation();
 		jmqtt.refreshEqLogicPage();
-	});
-
-	// Initialize Logo dropbox from logos global table
-	var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
-	icos.html('');
-	$.each(jmqtt.globals.logos, function(key) {
-		opt = new Option(jmqtt.globals.logos[key]['name'], jmqtt.globals.logos[key]['id']);
-		icos.append(opt);
 	});
 
 	//

@@ -129,7 +129,7 @@
 		<div class="form-group toDisable">
 			<label class="col-sm-3 control-label"></label>
 			<div class="col-sm-3" style="text-align: center">
-				<br /><img id="logo_visu" src="" height="200" />
+				<br /><img id="logo_visu" src="plugins/jMQTT/core/img/node_.svg" height="200" />
 			</div>
 		</div>
 
