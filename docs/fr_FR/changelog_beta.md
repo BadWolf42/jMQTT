@@ -1,5 +1,8 @@
 # Registre des évolutions BETA
 
+## 2022-11-14
+- Correction textes à traduire en vue d'une traduction globale en anglais
+
 ## 2022-11-10
 - Passage de la Beta en stable
 

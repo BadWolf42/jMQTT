@@ -110,7 +110,7 @@ $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
 		id: eqId,
 		error: function(error) { $.fn.showAlert({ message: error.message, level: 'danger' }); },
 		success: function(data) {
-			var text = '{{Êtes-vous sûr de vouloir supprimer l\'équipement}} ' + eqType + ' <b>' + eqName + '</b> ?';
+			var text = `{{Êtes-vous sûr de vouloir supprimer l'équipement ${eqType} <b>${eqName}</b> ?}}`;
 			if (Object.keys(data).length > 0) {
 				text += ' </br> {{Il est utilisé par ou utilise :}}</br>';
 				var complement = null;

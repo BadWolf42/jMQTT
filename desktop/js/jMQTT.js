@@ -53,11 +53,11 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 });
 
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
-	var dialog_message = '<label class="control-label">{{Choisissez un broker : }}</label> ';
+	var dialog_message = '<label class="control-label">{{Choisissez un broker :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
 	$.each(jmqtt.globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br>';
-	dialog_message += '<label class="control-label">{{Nom du nouvel équipement : }}</label> ';
+	dialog_message += '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>'
 	bootbox.confirm({
 		title: "{{Ajouter un nouvel équipement}}",
@@ -258,7 +258,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
 	var broker   = jmqtt.getEqId();
 
-	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement : }}</label> ';
+	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>';
 	dialog_message += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> '
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName"><br><br>'
@@ -270,7 +270,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 		callback: function (result){ if (result) {
 			var eqName = $('#addJmqttEqName').value();
 			if (eqName === undefined || eqName == null || eqName === '' || eqName == false) {
-				$.fn.showAlert({message: "{{Le nom de l\'équipement ne peut pas être vide !}}", level: 'warning'});
+				$.fn.showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
 				return false;
 			}
 			var cmdName = $('#addJmqttCmdName').value();
@@ -454,25 +454,21 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 			action: "getTemplateList",
 		},
 		success: function (dataresult) {
-			var dialog_message = '<label class="control-label">{{Choisissez un template : }}</label> ';
+			var dialog_message = '<label class="control-label">{{Choisissez un template :}}</label> ';
 			dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="applyTemplateSelector">';
 			for(var i in dataresult){ dialog_message += '<option value="'+dataresult[i][0]+'">'+dataresult[i][0]+'</option>'; }
 			dialog_message += '</select><br>';
 
-			dialog_message += '<label class="control-label">{{Saisissez le Topic de base : }}</label> ';
+			dialog_message += '<label class="control-label">{{Saisissez le Topic de base :}}</label> ';
 			var currentTopic = jmqtt.globals.mainTopic;
 			if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			if (currentTopic.endsWith("/"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'
-
-			dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ' +
-			'<div class="radio">' +
-			'<label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label>' +
-			'</div><div class="radio">' +
-			'<label><input type="radio" name="applyTemplateCommand" value="0">{{Les supprimer d\'abord}}</label> ' +
-			'</div>';
+			dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ';
+			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label></div>';
+			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="0">' + "{{Les supprimer d'abord}}" + '</label></div>';
 
 			bootbox.confirm({
 				title: '{{Appliquer un Template}}',
@@ -528,7 +524,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
 	dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="newTopic"><br><br>';
-	dialog_message += '<label class="control-label">({{Pensez à sauvegarder l\'équipement pour appliquer les modifications}})</label>';
+	dialog_message += '<label class="control-label">(' + "{{Pensez à sauvegarder l'équipement pour appliquer les modifications}}" + ')</label>';
 	bootbox.confirm({
 		title: "{{Modifier en masse les Topics de tout l'équipement}}",
 		message: dialog_message,
@@ -1047,7 +1043,8 @@ function addCmdToTable(_cmd) {
 		tr += '</td><td>';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;<sup><i class="fas fa-question-circle tooltips" title="{{Publication automatique en MQTT lors d\'un changement <br>(Utiliser avec au moins une commande info dans Valeur).}}"></i></sup></label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;';
+		tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br>(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br> ';
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td align="right">';
@@ -1123,19 +1120,19 @@ function addCmdToTable(_cmd) {
 /*
 // TODO (low) replace jMQTT::EventState, and change visual on dashboard
 $('body').off('jMQTT::brkEvent').on('jMQTT::brkEvent', function (_event,_options) {
-	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
+	var msg = `{{La commande <b>${_options.name}</b> vient d'être ${_options.action}.}}`;
 	console.log(msg, _options);
 });
 
 // TODO (low) replace eqptAdded and handle modified + removed, and change visual on dashboard
 $('body').off('jMQTT::eqptEvent').on('jMQTT::eqptEvent', function (_event,_options) {
-	var msg = '{{L\'équipement}} <b>' + _options['name'] + '</b> {{vient d\'être}}' + _options['action'];
+	var msg = `{{La commande <b>${_options.name}</b> vient d'être ${_options.action}.}}`;
 	console.log(msg, _options);
 });
 
 // TODO (low) replace cmdAdded and handle modified + removed
 $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options) {
-	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
+	var msg = `{{La commande <b>${_options.name}</b> vient d'être ${_options.action}.}}`;
 	console.log(msg, _options);
 });
 */
@@ -1152,7 +1149,7 @@ $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
  */
 $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _options) {
-	var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être ajouté}}';
+	var msg = `{{L'équipement}} <b>${_options.eqlogic_name}</b> vient d'être ajouté}}`;
 
 	// If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
 	// Otherwise: display an alert message and reload the page
@@ -1184,7 +1181,7 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
  * @param _options['reload'] bool whether or not a reload of the page is requested
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
-	var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{est ajoutée à l\'équipement}}' + ' <b>' + _options['eqlogic_name'] + '</b>.';
+	var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;
 
 	// If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
 	if (jeeFrontEnd.modifyWithoutSave || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||

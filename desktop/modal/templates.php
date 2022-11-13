@@ -33,7 +33,6 @@ if (!isConnect('admin')) {
 </div>
 <div class="col-lg-9 col-md-9 col-sm-9" id="div_listJmqttTemplate" style="display:none;">
 	<form class="form-horizontal">
-		<!--<legend><i class="fas fa-home"></i> {{Général}}</legend>-->
 		<a class="btn btn-sm btn-primary" id="bt_jmqttTemplateDownload"><i class="fas fa-cloud-download-alt"></i> {{Télécharger}}</a>
 		<!--<a class='btn btn-sm btn-success pull-right' id='bt_jmqttTemplateApply'><i class="far fa-check-circle"></i> {{Appliquer}}</a>-->
 		<a class="btn btn-sm btn-danger" id="bt_jmqttTemplateDelete"><i class="fas fa-times"></i> {{Supprimer}}</a>
@@ -116,7 +115,7 @@ $('#ul_jmqttTemplateList').on({
 				$('#div_listJmqttTemplate').show()
 				var eq =  '';
 				// Nom
-				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">Nom de l\'équipement</label><div class="col-sm-3"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
+				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">'."{{Nom de l'équipement}}".'</label><div class="col-sm-3"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
 				// Category
 				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
 				eq += '<?php
@@ -137,7 +136,7 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<option value="'+init(data.configuration.auto_add_topic)+'" selected>'+init(data.configuration.Qos)+'</option></select>';
 				eq += '</div></div>';
 				// Alimentation
-				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Type d\'alimentation}}</label><div class="col-sm-3">';
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'."{{Type d'alimentation}}".'</label><div class="col-sm-3">';
 				eq += '<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" value="'+init(data.configuration.battery_type)+'" disabled />';
 				eq += '</div></div>';
 				// Comment

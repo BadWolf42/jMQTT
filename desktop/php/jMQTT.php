@@ -93,8 +93,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		foreach ($eqNonBrokers as $id => $nonBrokers) {
 			if (! array_key_exists($id, $eqBrokers)) {
 				if (!$has_orphans) {
-					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup><i class="fas fa-exclamation-triangle tooltips" title="{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.<br>Il ne devrait pas y avoir d\'équipement orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					echo '<div class="eqLogicThumbnailContainer">';
+					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup>';
+					echo '<i class="fas fa-exclamation-triangle tooltips" title="';
+					echo '{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.}}<br>';
+					echo '{{Il ne devrait pas y avoir un seul orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					$has_orphans = true;
 				}
 				foreach ($nonBrokers as $eqL) {
@@ -106,7 +109,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 			echo '</div>';
 
 		foreach ($eqBrokers as $eqB) {
-			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker }} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
+			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayEqLogicCard($eqB);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {

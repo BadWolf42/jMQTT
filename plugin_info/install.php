@@ -39,7 +39,7 @@ function migrateToJsonVersion() {
 
 	/** @var cmd $cmd */
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
-		jMQTT::logger('debug', __("Migration de la commande info: ", __FILE__) . $cmd->getHumanName());
+		jMQTT::logger('debug', __('Migration de la commande info:', __FILE__) . ' ' . $cmd->getHumanName());
 		$cmd->setConfiguration('parseJson', null);
 		$cmd->setConfiguration('prevParseJson', null);
 		$cmd->setConfiguration('jParent', null);
