@@ -785,11 +785,6 @@ function printEqLogic(_eqLogic) {
 
 		// Udpate panel on eqBroker
 		jmqtt.updateBrokerTabs(_eqLogic);
-
-		// Display only relevant Real Time data
-		jmqtt.getRealTimeData();
-		$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eqLogic.id + '"]').hide();
-		$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eqLogic.id + '"]').show();
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
@@ -797,48 +792,9 @@ function printEqLogic(_eqLogic) {
 		$('.typ-std').show();
 		$('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
 
-		// Stop Real Time data refresh
-		clearInterval(jmqtt.globals.refreshRealTime);
-
-		jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
-		// Initialise battery and availability dropboxes
-		var eqId = jmqtt.getEqId();
-		var bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
-		var avl = $('.eqLogicAttr[data-l1key=configuration][data-l2key=availability_cmd]');
-		bat.empty().append('<option value="">{{Aucune}}</option>');
-		avl.empty().append('<option value="">{{Aucune}}</option>');
-		jeedom.eqLogic.buildSelectCmd({
-			id: eqId,
-			filter: {type: 'info', subType: 'numeric'},
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'danger'});
-			},
-			success: function (result) {
-				bat.append(result);
-			}
-		});
-		jeedom.eqLogic.buildSelectCmd({
-			id: eqId,
-			filter: {type: 'info', subType: 'binary'},
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'danger'});
-			},
-			success: function (result) {
-				avl.append(result);
-				bat.append(result); // Also append binary cmd to battery dropbox
-			}
-		});
-		bat.val(_eqLogic.configuration.battery_cmd);
-		avl.val(_eqLogic.configuration.availability_cmd);
+		// Udpate panel on eqLogic
+		jmqtt.updateEqptTabs(_eqLogic);
 	}
-
-	// Initialize the broker dropbox
-	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
-	brokers.empty();
-	$.each(jmqtt.globals.eqBrokers, function(key, name) {
-		brokers.append(new Option(name, key));
-	});
-	brokers.val(_eqLogic.configuration.eqLogic);
 }
 
 /**

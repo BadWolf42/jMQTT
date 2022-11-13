@@ -208,6 +208,11 @@ jmqtt.updateBrokerTabs = function(_eq) {
 
 	// Update Real Time mode buttons
 	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
+
+	// Display only relevant Real Time data
+	jmqtt.getRealTimeData();
+	$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eq.id + '"]').hide();
+	$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eq.id + '"]').show();
 }
 
 // Override changeObjectEqLogic function of jeedom.eqLogic.getSelectModal to take configuration (type, eqLogic) in account
@@ -322,6 +327,52 @@ jmqtt.refreshEqLogicPage = function() {
 		refreshPage();
 }
 
+// On eqLogic, on Eqpt tab, setup Broker list, mainTopic, battery, availability, icon list
+jmqtt.updateEqptTabs = function(_eq) {
+	// Stop Real Time data refresh
+	clearInterval(jmqtt.globals.refreshRealTime);
+
+	// Initialize the broker dropbox
+	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
+	brokers.empty();
+	$.each(jmqtt.globals.eqBrokers, function(key, name) {
+		brokers.append(new Option(name, key));
+	});
+	brokers.val(_eq.configuration.eqLogic);
+
+	// Set mainTopic global
+	jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
+
+	// Initialise battery and availability dropboxes
+	var eqId = jmqtt.getEqId();
+	var bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
+	var avl = $('.eqLogicAttr[data-l1key=configuration][data-l2key=availability_cmd]');
+	bat.empty().append('<option value="">{{Aucune}}</option>');
+	avl.empty().append('<option value="">{{Aucune}}</option>');
+	jeedom.eqLogic.buildSelectCmd({
+		id: eqId,
+		filter: {type: 'info', subType: 'numeric'},
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'danger'});
+		},
+		success: function (result) {
+			bat.append(result);
+		}
+	});
+	jeedom.eqLogic.buildSelectCmd({
+		id: eqId,
+		filter: {type: 'info', subType: 'binary'},
+		error: function (error) {
+			$.fn.showAlert({message: error.message, level: 'danger'});
+		},
+		success: function (result) {
+			avl.append(result);
+			bat.append(result); // Also append binary cmd to battery dropbox
+		}
+	});
+	bat.val(_eq.configuration.battery_cmd);
+	avl.val(_eq.configuration.availability_cmd);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used by Real Time
