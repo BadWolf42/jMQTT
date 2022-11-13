@@ -253,7 +253,7 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 
 ### Onglet Equipement
 
-![Onglet principal d'un Equipement](../images/2022-10-26_eqpt_equipement.png)
+![Onglet principal d'un Equipement](../images/2022-11-13_eqpt_equipement.png)
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
@@ -264,7 +264,7 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
   - _Commande d'état de la batterie_ : commande de l'équipement qui sera utilisée comme niveau de batterie. Si la commande info est de type binaire, alors la valeur de la batterie sera 10% (0) ou 100% (1). Si la commande info est de type numérique, alors la valeur sera utilisée comme pourcentage de batterie (non disponible pour un équipement Broker) ;
   - _Commande de disponibilité_ : commande de l'équipement (info binaire) qui sera utilisée comme état de disponibilité de l'équipement. Si cette commande est à 0, alors l'équipement sera remonté en erreur "Danger" (non disponible pour un équipement Broker) ;
   - _Dernière communication_ : date de dernière communication avec le Broker MQTT, que ce soit en réception (commande information) ou publication (commande action) ;
-  - _Catégorie du topic_ : sélection d’une image spécifique à l’équipement. Pour un équipement Broker, ce paramètre n'est pas disponible car l'image est imposée.
+  - _Icone de l'équipement_ : sélection d’une image spécifique à l’équipement. Pour un équipement Broker, ce paramètre n'est pas disponible car l'image est imposée.
 
 
 > **Important**

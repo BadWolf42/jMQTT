@@ -1,6 +1,7 @@
 # Registre des évolutions BETA
 
 ## 2022-11-14
+- Renommage du champ "Catégorie du topic" en "Icone de l'équipement"
 - Correction textes à traduire en vue d'une traduction globale en anglais
 
 ## 2022-11-10
