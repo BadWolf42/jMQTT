@@ -1,6 +1,7 @@
 # Registre des évolutions BETA
 
 ## 2022-11-14
+- Correction d'un bug d'affichage des états des équipements Broker lorsque le démon est arrêté
 - Renommage du champ "Catégorie du topic" en "Icone de l'équipement"
 - Correction textes à traduire en vue d'une traduction globale en anglais
 

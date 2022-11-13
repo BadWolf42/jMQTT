@@ -103,8 +103,10 @@ jmqtt.asCardHelper = function(_eq, _item, iClass) {
 jmqtt.asTableHelper = function(_eq, _item, aClass) {
 	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
 	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
-	var icon = (_eq.isEnable == '1' || _item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
-	var msg  = (_eq.isEnable == '1' || _item == 'status') ? (i.msg) : '';
+	// var colored = _eq.configuration.type == 'broker' && (jmqtt.globals.daemonState && _eq.isEnable == '1') && _item == 'status';
+	var colored = _item == 'status' || (_eq.isEnable == '1' && (_eq.configuration.type != 'broker' || jmqtt.globals.daemonState));
+	var icon = colored ? (i.icon + ' ' + i.color) : i.icon;
+	var msg  = colored ? (i.msg) : '';
 	aClass   = aClass != '' ? ' ' + aClass : '';
 
 	if (msg == '')
@@ -158,7 +160,7 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 jmqtt.getMqttClientInfo = function(_eq) {
 	// Daemon is down
 	if (!jmqtt.globals.daemonState)
-		return {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{Démon non démarré}}",                                      color:'danger'};
+		return {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{Le Démon n'est pas démarré}}",                             color:'danger'};
 	// Client is connected to the Broker
 	if (_eq.cache.mqttClientConnected)
 		return {la: 'ok',  lacolor: 'success', state: 'ok',  message: "{{Le Démon jMQTT est correctement connecté à ce Broker}}",   color:'success'};
