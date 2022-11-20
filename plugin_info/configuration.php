@@ -45,14 +45,14 @@ if (!$docker) {
 		</div>
 		<div class="form-group">
 			<label class="col-sm-4 control-label">{{Etat du service}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-				title="{{Si Mosquitto est installé en local, jMQTT remonte ici l'éta deu service (systemd).}}"></i></sup></label>
+				title="{{Si Mosquitto est installé en local, jMQTT remonte ici l'état du service (systemd).}}"></i></sup></label>
 			<div class="col-sm-8">
 				<span id="mosquittoService"></span>
 			</div>
 		</div>
 		<div class="form-group">
 			<label class="col-sm-4 control-label">{{Installation locale}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-				title="{{Ces boutons permettent de gérer l'installation de Mosquitto entant que service local sur ce système Jeedom.}}"></i></sup></label>
+				title="{{Ces boutons permettent de gérer l'installation de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="Lance l'installation de Mosquitto en local.">
 				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Installer}}</a>
@@ -85,7 +85,7 @@ if ($docker) {
 		<div class="form-group">
 			<label class="col-sm-4 control-label">{{URL de Callback du Démon}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br />
-				Dans ce cas uniquement, il peut être nécessaire de personaliser cette url, car elle est mal détectée par jMQTT.<br />
+				Dans ce cas uniquement, il peut être nécessaire de personnaliser cette url, car elle est mal détectée par jMQTT.<br />
 				<b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>
 			<div class="col-sm-7">
 				<div class="row">

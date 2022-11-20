@@ -627,7 +627,7 @@ class jMQTT extends eqLogic {
 		$broker = $this->getBroker();
 		// If broker eqpt is disabled, don't need to send subscribe
 		if(!$broker->getIsEnable()) {
-			$this->log('debug', sprintf(__("Le Broker %1\$s n'est pas actif, impossible de s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
+			$this->log('debug', sprintf(__("Le Broker %1\$s n'est pas actif, impossible de s'inscrire au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
 			return;
 		}
 		if ($this->getType() == self::TYP_EQPT)
@@ -1109,7 +1109,7 @@ class jMQTT extends eqLogic {
 			return false;
 		}
 		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 135) {
-			self::logger('debug', __('Pas message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
+			self::logger('debug', __('Pas de message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
@@ -1516,7 +1516,7 @@ class jMQTT extends eqLogic {
 
 		// Not installed return default values
 		if ($retval != 0) {
-			$res['message'] = __("Mosquitto n'est pas installé entant que service.", __FILE__);
+			$res['message'] = __("Mosquitto n'est pas installé en tant que service.", __FILE__);
 			try {
 				// Checking for Mosquitto installed in Docker by MQTT Manager
 				if (is_object(update::byLogicalId('mqtt2')) && plugin::byId('mqtt2')->isActive() && config::byKey('mode', 'mqtt2', 'NotThere') == 'docker') {

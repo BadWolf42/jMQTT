@@ -175,14 +175,14 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 							<td colspan="5" data-sorter="false" data-filter="false">
 								<label class="col-lg-1 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
-								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
+								<br />Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
 								<br />Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttIncTopic">
 								</div>
 								<label class="col-lg-1 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
-								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
+								<br />Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
 								<br />Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttExcTopic">
