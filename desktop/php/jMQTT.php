@@ -64,8 +64,8 @@ function displayEqLogicCard($eqL) {
 	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }
 
-function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
-	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
+function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
+	echo '<div class="eqLogicAction cursor ' . $class . '" data-action="' . $action . '">';
 	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>'."\n";
 }
 ?>
@@ -74,14 +74,14 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 		<div class="eqLogicThumbnailContainer">
 		<?php
-		displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
-		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'data-action="addJmqttBrk"', 'logoSecondary');
-		displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
+		displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf', 'logoSecondary');
+		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'addJmqttBrk', 'logoSecondary');
+		displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT', 'logoSecondary');
 		if (isset($_GET['debug']))
 		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
-			displayActionCard('{{Debug}}', 'fa-bug', 'data-action="debugJMQTT"', 'logoSecondary');
-		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
-		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="addJmqttEq"', 'logoSecondary');
+			displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT', 'logoSecondary');
+		displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT', 'logoSecondary');
+		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'addJmqttEq', 'logoSecondary');
 		?>
 		</div>
 		<div class="input-group" style="margin:5px;">
@@ -168,9 +168,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
 			<div role="tabpanel" class="tab-pane toDisable" id="realtimetab">
-<!--
-				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped tablesorter stickyHead">
--->
+<!--				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped tablesorter stickyHead">	-->
 				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped">
 					<thead style="position:sticky;top:0;z-index:5;">
 						<tr>
