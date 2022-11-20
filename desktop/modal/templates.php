@@ -93,8 +93,7 @@ function refreshJmqttTemplateList() {
 }
 refreshJmqttTemplateList()
 
-$('#ul_jmqttTemplateList').on({
-	'click': function(event) {
+$('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 		$('#div_listJmqttTemplate').hide()
 		$('#ul_jmqttTemplateList .li_jmqttTemplate').removeClass('active')
 		$('#table_jmqttTemplateCmds tbody').empty()
@@ -115,7 +114,7 @@ $('#ul_jmqttTemplateList').on({
 				$('#div_listJmqttTemplate').show()
 				var eq =  '';
 				// Nom
-				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">'."{{Nom de l'équipement}}".'</label><div class="col-sm-3"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
+				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">'+"{{Nom de l'équipement}}"+'</label><div class="col-sm-3"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
 				// Category
 				eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
 				eq += '<?php
@@ -136,7 +135,7 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<option value="'+init(data.configuration.auto_add_topic)+'" selected>'+init(data.configuration.Qos)+'</option></select>';
 				eq += '</div></div>';
 				// Alimentation
-				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'."{{Type d'alimentation}}".'</label><div class="col-sm-3">';
+				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Type d'alimentation}}"+'</label><div class="col-sm-3">';
 				eq += '<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" value="'+init(data.configuration.battery_type)+'" disabled />';
 				eq += '</div></div>';
 				// Comment
@@ -147,15 +146,8 @@ $('#ul_jmqttTemplateList').on({
 				eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label"></label><div class="col-sm-3" style="text-align: center"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 				// Display equipements
 				$('#div_jmqttTemplateEqlogic').empty().html(eq);
-				// TODO (medium) rework with jmqtt.logoHelper() function
-				// Handle error with logo
-				$("#logo_visu_tpl").on("error", function () {
-					if ($(this).attr("src") != '') {
-						$(this).attr("src", $(this).attr("src").slice(0, -4) + '.png');
-					}
-				});
 				// Load logo
-				$("#logo_visu_tpl").attr("src", 'plugins/jMQTT/core/img/node_' + init(data.configuration.icone) + '.svg');
+				$("#logo_visu_tpl").attr("src", jmqtt.logoHelper(init(data.configuration.icone)));
 
 				// Load commands
 				for (var i in data['commands']) {
@@ -253,8 +245,7 @@ $('#ul_jmqttTemplateList').on({
 				}
 			}
 		});
-	}
-}, '.li_jmqttTemplate')
+});
 
 $('#bt_jmqttTemplateDelete').on('click', function() {
 	if ($('#ul_jmqttTemplateList li.active').attr('data-file') == undefined) {
