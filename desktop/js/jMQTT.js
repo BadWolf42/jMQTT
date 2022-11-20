@@ -313,100 +313,11 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 })
 */
 
+// Button to add a cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addCmd]', function() {
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
-
-	// Build Object list for new cmd creation modal
-	jeedom.object.getUISelectList({
-		none: 0,
-		error: function(error) {
-			$.fn.showAlert({message: error.message, level: 'danger'})
-		},
-		success: function(_objectsList) {
-			var msg = '<table class="table table-condensed table-bordered" id="md_addJmqttCmdTable">';
-			msg += '<thead><tr><th style="width: 150px;">{{Objet}}</th><th style="width: 150px;">{{Equipement}}</th></tr></thead>';
-			msg += '<tbody><tr><td class="md_addJmqttCmdValObj">';
-			msg += '<select class="form-control">' + _objectsList + '</select>';
-			msg += '</td><td class="md_addJmqttCmdValeqL"></td></tr></tbody></table><br>';
-			msg += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> ';
-			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName"><br><br>';
-			// Display new cmd creation modal with Eq selector
-			bootbox.confirm({
-				title: '{{Ajouter cette commande à un equipement existant}}',
-				message: msg,
-				callback: function (result){ if (result) {
-					// Fetch selected destination equipment
-					var eqptId = $('.md_addJmqttCmdValeqL select').value()
-					// Check if destination equipment is usable
-					if (eqptId == 0 || eqptId == undefined) {
-						$.fn.showAlert({message: "{{Merci de sélectionner un équipement sur lequel créer cette commande !}}", level: 'warning'});
-						return false;
-					}
-					// Check if cmd Name is OK
-					var cmdName = $('#addJmqttCmdName').value();
-					if (cmdName === undefined || cmdName == null || cmdName === '' || cmdName == false) {
-						$.fn.showAlert({message: "{{Le nom de la commande ne peut pas être vide !}}", level: 'warning'});
-						return false;
-					}
-					// Create a new jMQTTCmd
-					jmqtt.callPluginAjax({
-						data: {
-							action: "newCmd",
-							id: eqptId,
-							name: cmdName,
-							topic: topic,
-							jsonPath: jsonPath
-						},
-						error: function (error) {
-							$.fn.showAlert({message: error.message, level: 'danger'});
-						},
-						success: function (data) {
-							$.fn.showAlert({message: `{{La commande <b>${data.human}</b> a bien été ajoutée.}}`, level: 'success'});
-						}
-					});
-
-				}}
-			});
-			// Function do populate eq list with eqLogics that belongs to the selected Object
-			var objSelect = $('#md_addJmqttCmdTable td.md_addJmqttCmdValObj select');
-			var eqTr = $('#md_addJmqttCmdTable td.md_addJmqttCmdValeqL');
-			function changeObjectEqLogic() {
-				jeedom.object.getEqLogic({
-					id: (objSelect.value() == '' ? -1 : objSelect.value()),
-					orderByName : true,
-					error: function(error) {
-						$.fn.showAlert({message: error.message, level: 'danger'});
-					},
-					success: function(eqLogics) {
-						eqTr.empty();
-						var selectEqLogic = '<select class="form-control">';
-						var curBrk = jmqtt.getBrkId();
-						var curId = jmqtt.getEqId()
-						for (var i in eqLogics) {
-							if (eqLogics[i].eqType_name                  == 'jMQTT'
-									&& eqLogics[i].configuration.type    == 'eqpt'
-									&& eqLogics[i].configuration.eqLogic == curBrk) {
-								if (eqLogics[i].id == curId) // Pre-select current eqLogic on load if present in the list
-									selectEqLogic += '<option value="' + eqLogics[i].id + '" selected>' + eqLogics[i].name + '</option>';
-								else
-									selectEqLogic += '<option value="' + eqLogics[i].id + '">' + eqLogics[i].name + '</option>';
-							}
-						}
-						selectEqLogic += '</select>';
-						eqTr.append(selectEqLogic);
-					}
-				});
-			}
-			// Just afer modal creation, add a callback on object select change
-			objSelect.off('change').on('change', function(event) {
-				changeObjectEqLogic();
-			});
-			// Pre select current object in the object select
-			objSelect.value($('.eqLogicAttr[data-l1key=object_id]').value());
-			changeObjectEqLogic();
-		}
-	});
+	jmqtt.addCmdFromRealTime(topic, jsonPath);
 })
 
 $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function() {
