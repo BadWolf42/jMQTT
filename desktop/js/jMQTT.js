@@ -216,12 +216,12 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 //
 $('#table_realtime').on('click', '.eqLogicAction[data-action=startRealTimeMode]', function() {
 	// Enable Real Time mode for a Broker
-	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 1);
+	jmqtt.changeRealTimeMode(jmqtt.getBrkId(), 1);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]', function() {
 	// Disable Real Time mode for a Broker
-	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 0);
+	jmqtt.changeRealTimeMode(jmqtt.getBrkId(), 0);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=playRealTime]', function() {
@@ -240,7 +240,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 	jmqtt.callPluginAjax({
 		data: {
 			action: "realTimeClear",
-			id: jmqtt.getEqId()
+			id: jmqtt.getBrkId()
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
@@ -256,7 +256,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 /* TODO (nice to have) Implement Adding a new cmd on a new Eq
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
-	var broker   = jmqtt.getEqId();
+	var broker   = jmqtt.getBrkId();
 
 	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>';
@@ -316,7 +316,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 $('#table_realtime').on('click', '.cmdAction[data-action=addCmd]', function() {
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
-	var broker   = jmqtt.getEqId();
+	var broker   = jmqtt.getBrkId();
 
 	// Display EqLogic selector modal
 	jeedom.eqLogic.getSelectModal({}, function(eq) {
@@ -1158,7 +1158,7 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 	// Display an alert if real time mode has changed on this Broker
 	jmqtt.displayRealTimeEvent(_eq);
 	// Update Panel and menu only when on the right Broker
-	if (jmqtt.getEqId() == _eq.id)
+	if (jmqtt.getBrkId() == _eq.id)
 		jmqtt.updateBrokerTabs(_eq);
 	// Update card on main page
 	jmqtt.updateDisplayCard(card, _eq);

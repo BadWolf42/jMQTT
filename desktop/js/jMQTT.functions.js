@@ -50,6 +50,14 @@ jmqtt.getEqId = function() {
 	return $('.eqLogicAttr[data-l1key=id]').value();
 }
 
+// Get broker Id of the currently displayed eq
+jmqtt.getBrkId = function() {
+	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker')
+		return $('.eqLogicAttr[data-l1key=id]').value();
+	else
+		return $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]').value();
+}
+
 // Check if a string is a valid Json, returns json object if true, undefined otherwise
 jmqtt.toJson = function(_string) {
 	try {
@@ -403,7 +411,7 @@ jmqtt.updateEqptTabs = function(_eq) {
 // Display an Alert if Real time mode has changed for this eqBroker
 jmqtt.displayRealTimeEvent = function(_eq) {
 	// Fetch current Real Time mode for this Broker
-	var realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.rt-status');
+	var realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + jmqtt.getBrkId() + ']').find('span.hiddenAsTable i.rt-status');
 	if (_eq.cache.realtime_mode == '1') {
 		if (realtime.hasClass('fa-square')) {
 			// Show an alert only if Real time mode was disabled
@@ -478,7 +486,7 @@ jmqtt.changeRealTimeMode = function(_id, _mode) {
 
 // Build a new line in Real Time tab of a eqBroker
 jmqtt.newRealTimeCmd = function(_data) {
-	var tr = '<tr class="rtCmd" data-brkId="' + _data.id + '"' + ((_data.id == jmqtt.getEqId()) ? '' : ' style="display: none;"') + '>';
+	var tr = '<tr class="rtCmd" data-brkId="' + _data.id + '"' + ((_data.id == jmqtt.getBrkId()) ? '' : ' style="display: none;"') + '>';
 	tr += '<td class="fitwidth"><span class="cmdAttr">' + (_data.date ? _data.date : '') + '</span></td>';
 	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic + '" disabled>';
 	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
@@ -513,7 +521,7 @@ jmqtt.getRealTimeData = function() {
 	jmqtt.callPluginAjax({
 		data: {
 			action: "realTimeGet",
-			id: jmqtt.getEqId(),
+			id: jmqtt.getBrkId(),
 			since: _since
 		},
 		error: function (error) {
