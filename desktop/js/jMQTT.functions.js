@@ -495,12 +495,13 @@ jmqtt.getRealTimeData = function() {
 	if (jmqtt.globals.lockRealTime)
 		return;
 	jmqtt.globals.lockRealTime = true;
-	var _since = $('#table_realtime').attr('since');
+	var broker = jmqtt.getBrkId()
+	var _since = $('#table_realtime').attr('brk' + broker + 'since');
 	_since = ((_since == undefined) ? '' : _since);
 	jmqtt.callPluginAjax({
 		data: {
 			action: "realTimeGet",
-			id: jmqtt.getBrkId(),
+			id: broker,
 			since: _since
 		},
 		error: function (error) {
@@ -514,7 +515,7 @@ jmqtt.getRealTimeData = function() {
 					realtime.prepend(jmqtt.newRealTimeCmd(data[i]));
 					_since = data[i].date;
 				}
-				$('#table_realtime').attr('since', _since);
+				$('#table_realtime').attr('brk' + broker + 'since', _since);
 				// $('#table_realtime').trigger("update");
 			}
 			jmqtt.globals.lockRealTime = false;

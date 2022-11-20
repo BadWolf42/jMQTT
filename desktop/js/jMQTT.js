@@ -237,16 +237,17 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=pauseRealTime]', fu
 // Button to empty RealTime view
 $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', function() {
 	// Ask Daemon to cleanup its Real Time database
+	var broker = jmqtt.getBrkId();
 	jmqtt.callPluginAjax({
 		data: {
 			action: "realTimeClear",
-			id: jmqtt.getBrkId()
+			id: broker
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
 		},
 		success: function (data) {
-			$('#table_realtime tbody').empty();
+			$('#table_realtime tbody .rtCmd[data-brkid=' + broker + ']').remove();
 			// $('#table_realtime').trigger("update");
 		}
 	});
