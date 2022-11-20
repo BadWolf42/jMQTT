@@ -143,8 +143,8 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
 					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
-					<li role="presentation" class="typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
 					<li role="presentation" class="typ-std" style="display: none;"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
+					<li role="presentation" class="typ-brk typ-std" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>

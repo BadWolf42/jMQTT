@@ -222,32 +222,6 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eq.id + '"]').show();
 }
 
-// Override changeObjectEqLogic function of jeedom.eqLogic.getSelectModal to take configuration (type, eqLogic) in account
-jmqtt.overrideChangeObjectEqLogic = function(_eqBrokerId) {
-	mod_insertEqLogic.changeObjectEqLogic = function(_select) {
-		jeedom.object.getEqLogic({
-			id: (_select.value() == '' ? -1 : _select.value()),
-			orderByName : true,
-			error: function(error) {
-				$.fn.showAlert({message: error.message, level: 'danger'})
-			},
-			success: function(eqLogics) {
-				_select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').empty()
-				var selectEqLogic = '<select class="form-control">'
-				for (var i in eqLogics) {
-					if (eqLogics[i].eqType_name                  == 'jMQTT'
-							&& eqLogics[i].configuration.type    == 'eqpt'
-							&& eqLogics[i].configuration.eqLogic == _eqBrokerId)
-						selectEqLogic += '<option value="' + eqLogics[i].id + '">' + eqLogics[i].name + '</option>'
-				}
-				selectEqLogic += '</select>'
-				_select.closest('tr').find('.mod_insertEqLogicValue_eqLogic').append(selectEqLogic)
-			}
-		})
-	}
-	mod_insertEqLogic.changeObjectEqLogic($('#table_mod_insertEqLogicValue_valueEqLogicToMessage td.mod_insertEqLogicValue_object select'), mod_insertEqLogic.options);
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used on Equipment pages
@@ -336,9 +310,6 @@ jmqtt.refreshEqLogicPage = function() {
 
 // On eqLogic, on Eqpt tab, setup Broker list, mainTopic, battery, availability, icon list
 jmqtt.updateEqptTabs = function(_eq) {
-	// Stop Real Time data refresh
-	clearInterval(jmqtt.globals.refreshRealTime);
-
 	// Initialize the broker dropbox
 	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
 	brokers.empty();
@@ -403,6 +374,14 @@ jmqtt.updateEqptTabs = function(_eq) {
 	}
 	// Set value
 	icos.val(_eq.configuration.icone);
+
+	// Update Real Time mode buttons
+	jmqtt.updateRealTimeButtons(false, false, false);
+
+	// Display only relevant Real Time data
+	jmqtt.getRealTimeData();
+	$('#table_realtime').find('tr.rtCmd[data-brkId!="' + jmqtt.getBrkId() + '"]').hide();
+	$('#table_realtime').find('tr.rtCmd[data-brkId="' + jmqtt.getBrkId() + '"]').show();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -536,7 +515,7 @@ jmqtt.getRealTimeData = function() {
 					_since = data[i].date;
 				}
 				$('#table_realtime').attr('since', _since);
-				$('#table_realtime').trigger("update");
+				// $('#table_realtime').trigger("update");
 			}
 			jmqtt.globals.lockRealTime = false;
 		}
