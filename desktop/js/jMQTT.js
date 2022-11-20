@@ -247,7 +247,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 		},
 		success: function (data) {
 			$('#table_realtime tbody').empty();
-			$('#table_realtime').trigger("update");
+			// $('#table_realtime').trigger("update");
 		}
 	});
 })
@@ -341,12 +341,12 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 		tr.after(new_tr);
 		tr = tr.next();
 	}
-	$('#table_realtime').trigger("update");
+	// $('#table_realtime').trigger("update");
 })
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
-	$('#table_realtime').trigger("update");
+	// $('#table_realtime').trigger("update");
 })
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

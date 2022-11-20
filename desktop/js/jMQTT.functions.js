@@ -524,7 +524,6 @@ jmqtt.getRealTimeData = function() {
 
 // Function to populate eq list with eqLogics that belongs to the selected Object
 jmqtt.addCmdOnObjChange = function(_objId) {
-	console.log(_objId);
 	jeedom.object.getEqLogic({
 		id: (_objId == '' ? -1 : _objId),
 		orderByName : true,
