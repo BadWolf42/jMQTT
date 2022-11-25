@@ -44,7 +44,8 @@ foreach ($eqBrokers as $eqB) { // List all Brokers on top
 	echo '<td>' . $eqB->getMqttClientInfo()['message'] . '</td>';
 	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getStatus('lastCommunication') . ' </span></td>';
 	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getConfiguration('createtime') . ' </span></td>';
-	echo '<td class="center"><i class="fas fa-cogs eqLogicAction" data-action="configureEq"></i> <i class="fas fa-minus-circle eqLogicAction" data-action="removeEq"></i></td></tr>';
+	echo '<td class="center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
+	echo '<a class="eqLogicAction" data-action="removeEq"><i class="fas fa-minus-circle"></i></a></td></tr>';
 }
 ?>
 	</tbody>
@@ -82,7 +83,8 @@ foreach ($eqBrokers as $eqB) { // For each Broker
 			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . count($eqL->getCmd()) . '</span></td>';
 			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getStatus('lastCommunication') . ' </span></td>';
 			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getConfiguration('createtime') . ' </span></td>';
-			echo '<td class="center"><i class="fas fa-cogs eqLogicAction" data-action="configureEq"></i> <i class="fas fa-minus-circle eqLogicAction" data-action="removeEq"></i></td></tr>';
+			echo '<td class="center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
+			echo '<a class="eqLogicAction" data-action="removeEq"><i class="fas fa-minus-circle"></i></a></td></tr>';
 		}
 ?>
 	</tbody>
