@@ -1,10 +1,14 @@
 # Registre des évolutions BETA
 
-## 2022-11-14
-- Correction d'un bug d'affichage des icones sur la page d'un équipement
-- Correction d'un bug d'affichage des états des équipements Broker lorsque le démon est arrêté
+## 2022-11-26
 - Renommage du champ "Catégorie du topic" en "Icone de l'équipement"
+- Correction d'un bug d'affichage des états des équipements Broker lorsque le démon est arrêté
+- Correction d'un bug d'affichage des icones sur la page d'un équipement
+- Correction d'un bug d'affichage des icones sur la page d'un template
+- Correction d'un bug d'affichage des liens Configuration avancée et Supprimer sur la page de santé
 - Correction textes à traduire en vue d'une traduction globale en anglais
+- Correction de plusieurs typo (merci noodom, https://community.jeedom.com/t/remontee-typo/95269)
+- Modification de la page Temps Réel pour pouvoir apparaitre sur tous les équipements (fonctionalité caché à date)
 
 ## 2022-11-10
 - Passage de la Beta en stable
