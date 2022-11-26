@@ -1,6 +1,7 @@
 # Registre des évolutions BETA
 
 ## 2022-11-26
+- Suggestion d'un nom pour la nouvelle commande ajoutée depuis la page Temps Réel
 - Renommage du champ "Catégorie du topic" en "Icone de l'équipement"
 - Correction d'un bug d'affichage des états des équipements Broker lorsque le démon est arrêté
 - Correction d'un bug d'affichage des icones sur la page d'un équipement

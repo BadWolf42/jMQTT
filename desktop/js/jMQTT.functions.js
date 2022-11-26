@@ -554,6 +554,10 @@ jmqtt.addCmdOnObjChange = function(_objId) {
 
 // Open modal to add a cmd from Real Time tab
 jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
+	var topicTab  = topic.split('/').filter(t => t.trim().length > 0);
+	topicTab.shift();
+	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('[', ':');
+
 	// Build Object list for new cmd creation modal
 	jeedom.object.getUISelectList({
 		none: 0,
@@ -567,7 +571,7 @@ jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
 			msg += '<select class="form-control">' + _objectsList + '</select>';
 			msg += '</td><td class="md_addJmqttCmdValeqL"></td></tr></tbody></table><br>';
 			msg += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> ';
-			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName"><br><br>';
+			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>';
 			// Display new cmd creation modal with Eq selector
 			bootbox.confirm({
 				title: '{{Ajouter cette commande à un equipement existant}}',
@@ -581,7 +585,7 @@ jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
 						return false;
 					}
 					// Check if cmd Name is OK
-					var cmdName = $('#addJmqttCmdName').value();
+					cmdName = $('#addJmqttCmdName').value();
 					if (cmdName === undefined || cmdName == null || cmdName === '' || cmdName == false) {
 						$.fn.showAlert({message: "{{Le nom de la commande ne peut pas être vide !}}", level: 'warning'});
 						return false;
