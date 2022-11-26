@@ -478,8 +478,8 @@ jmqtt.newRealTimeCmd = function(_data) {
 	if (_data.existing)
 		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est compatible avec le(s) équipement(s) :}}' + _data.existing + '"></i>';
 	tr += '</td><td align="right"><div class="input-group pull-right" style="display:inline-flex">';
-	// tr += '<a class="btn btn-primary btn-sm roundedLeft cmdAction tooltips" data-action="addEq" title="{{TODO (nice to have)<br/>Ajouter un nouvel équipement souscrivant à ce topic}}"><i class="fas fa-plus-circle"></i></a>';
-	tr += '<a class="btn btn-success btn-sm roundedLeft cmdAction tooltips" data-action="addCmd" title="{{Ajouter à un équipement existant}}"><i class="far fa-plus-square"></i></a>';
+	tr += '<a class="btn btn-primary btn-sm roundedLeft cmdAction tooltips" data-action="addEq" title="{{Ajouter un nouvel équipement souscrivant à ce topic}}"><i class="fas fa-plus-circle"></i></a>';
+	tr += '<a class="btn btn-success btn-sm cmdAction tooltips" data-action="addCmd" title="{{Ajouter à un équipement existant}}"><i class="far fa-plus-square"></i></a>';
 	if (typeof(jmqtt.toJson(_data.payload)) === 'object')
 		tr += '<a class="btn btn-warning btn-sm cmdAction tooltips" title="{{Découper ce json en commandes}}" data-action="splitJson"><i class="fas fa-expand-alt"></i></a>';
 	else
@@ -551,6 +551,122 @@ jmqtt.addCmdOnObjChange = function(_objId) {
 		}
 	});
 }
+
+// Open modal to add an eq from Real Time tab
+jmqtt.addEqFromRealTime = function(topic, jsonPath) {
+	var broker    = jmqtt.getBrkId();
+	var topicTab  = topic.split('/').filter(t => t.trim().length > 0);
+	var eqName    = topicTab.shift();
+	var mainTopic = (topic[0] == '/' ? '/' : '') + eqName + '/#';
+
+	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
+	dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> ';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>';
+	dialog_message += '<label class="control-label checkbox-inline"><input type="checkbox" class="bootbox-input bootbox-checkbox-inline" id="addJmqttAuto"  checked/> ';
+	dialog_message += '{{Ajout automatique des nouvelles commandes sur cet équipement}}</label><br><br>';
+
+	// Display new EqLogic modal
+	bootbox.confirm({
+		title: '{{Ajouter une nouvelle commande sur un nouvel équipement}}',
+		message: dialog_message,
+		callback: function (result){ if (result) {
+			eqName = $('#addJmqttEqName').value();
+			if (eqName === undefined || eqName == null || eqName === '' || eqName == false) {
+				$.fn.showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
+				return false;
+			}
+			mainTopic = $('#addJmqttEqTopic').value();
+			if (mainTopic === undefined || mainTopic == null || mainTopic === '' || mainTopic == false) {
+				$.fn.showAlert({message: "{{Le topic de souscription du nouvel équipement ne peut pas être vide !}}", level: 'warning'});
+				return false;
+			}
+			var autoAdd = $('#addJmqttAuto').value();
+
+			// Create a new eqLogic
+			jeedom.eqLogic.save({
+				type: eqType,
+				eqLogics: [ {name: eqName, isEnable: '1', autoAddCmd: autoAdd, type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
+				error: function (error) {
+					$.fn.showAlert({message: error.message, level: 'danger'});
+				},
+				success: function (dataEq) {
+					$.fn.showAlert({message: `{{Le nouvel équipement <b>${dataEq.name}</b> a bien été ajoutée.}}`, level: 'success'});
+				}
+			});
+
+		}}
+	});
+}
+
+// Open modal to add an eq + cmd from Real Time tab !!! UNUSED !!!
+/* jmqtt.addEqCmdFromRealTime = function(topic, jsonPath) {
+	var broker    = jmqtt.getBrkId();
+	var topicTab  = topic.split('/').filter(t => t.trim().length > 0);
+	var eqName    = topicTab.shift();
+	var mainTopic = (topic[0] == '/' ? '/' : '') + eqName + '/#';
+	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('[', ':');
+
+	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
+	dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> '
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>'
+	dialog_message += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> '
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>'
+
+	// Display new EqLogic modal
+	bootbox.confirm({
+		title: '{{Ajouter une nouvelle commande sur un nouvel équipement}}',
+		message: dialog_message,
+		callback: function (result){ if (result) {
+			eqName = $('#addJmqttEqName').value();
+			if (eqName === undefined || eqName == null || eqName === '' || eqName == false) {
+				$.fn.showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
+				return false;
+			}
+			mainTopic = $('#addJmqttEqTopic').value();
+			if (mainTopic === undefined || mainTopic == null || mainTopic === '' || mainTopic == false) {
+				$.fn.showAlert({message: "{{Le topic de souscription du nouvel équipement ne peut pas être vide !}}", level: 'warning'});
+				return false;
+			}
+			cmdName = $('#addJmqttCmdName').value();
+			if (cmdName === undefined || cmdName == null || cmdName === '' || cmdName == false) {
+				$.fn.showAlert({message: "{{Le nom de la commande ne peut pas être vide !}}", level: 'warning'});
+				return false;
+			}
+
+			// Create a new eqLogic
+			jeedom.eqLogic.save({
+				type: eqType,
+				eqLogics: [ {name: eqName, isEnable: '1', type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
+				error: function (error) {
+					$.fn.showAlert({message: error.message, level: 'danger'});
+				},
+				success: function (dataEq) {
+
+					// Create a new jMQTTCmd
+					jmqtt.callPluginAjax({
+						data: {
+							action: "newCmd",
+							id: dataEq.id,
+							name: cmdName,
+							topic: topic,
+							jsonPath: jsonPath
+						},
+						error: function (error) {
+							$.fn.showAlert({message: error.message, level: 'danger'});
+						},
+						success: function (data) {
+							$.fn.showAlert({message: `{{La commande <b>${cmdName}</b> a bien été ajoutée sur le nouvel équipement <b>${dataEq.name}</b>.}}`, level: 'success'});
+						}
+					});
+				}
+			});
+
+		}}
+	});
+}
+*/
 
 // Open modal to add a cmd from Real Time tab
 jmqtt.addCmdFromRealTime = function(topic, jsonPath) {

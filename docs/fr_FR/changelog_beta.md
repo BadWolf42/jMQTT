@@ -1,6 +1,7 @@
 # Registre des évolutions BETA
 
-## 2022-11-26
+## 2022-11-27
+- Nouveau bouton pour ajouter un nouvel équipement depuis la page Temps Réel
 - Suggestion d'un nom pour la nouvelle commande ajoutée depuis la page Temps Réel
 - Renommage du champ "Catégorie du topic" en "Icone de l'équipement"
 - Correction d'un bug d'affichage des états des équipements Broker lorsque le démon est arrêté
@@ -9,7 +10,7 @@
 - Correction d'un bug d'affichage des liens Configuration avancée et Supprimer sur la page de santé
 - Correction textes à traduire en vue d'une traduction globale en anglais
 - Correction de plusieurs typo (merci noodom, https://community.jeedom.com/t/remontee-typo/95269)
-- Modification de la page Temps Réel pour pouvoir apparaitre sur tous les équipements (fonctionalité caché à date)
+- Modification de la page Temps Réel pour pouvoir apparaitre sur tous les équipements (fonctionnalité cachée pour le moment)
 
 ## 2022-11-10
 - Passage de la Beta en stable

@@ -201,7 +201,7 @@ Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des mess
 
 La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2022-11-05_broker_realtime.png)
+![Mode Temps Réel](../images/2022-11-26_broker_realtime.png)
 
 Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel et si les messages retenus par le Broker doivent être inclus dans le Temps Réel (encadré 1).
 
@@ -216,9 +216,10 @@ Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option
 
 Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 4) pour les utiliser.
 
-  - La première icône permet d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
-  - La seconde de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,
-  - La troisième icône sert à supprimer la ligne de la vue Temps Réel.
+  - La première icône permet d'ajouter un équipement à partir de ce topic,
+  - La seconde d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
+  - La troisième de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,
+  - La quatrième icône sert à supprimer la ligne de la vue Temps Réel.
 
 #### Gestion des Interactions
 
