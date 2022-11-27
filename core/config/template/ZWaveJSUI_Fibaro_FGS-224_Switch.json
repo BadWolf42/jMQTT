@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Coolcam Light Switch 2CH": {
-        "name": "Zwavejs2mqtt Coolcam Light Switch 2CH",
+    "ZWaveJSUI Fibaro FGS-224 Switch": {
+        "name": "ZWaveJSUI Fibaro FGS-224 Switch",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
@@ -8,32 +8,28 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "ON1 : contact sec 2 vantails\nON2 : contact sec 1 vantail",
+            "commentaire": "FGS-224 Double charge relais\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "icone": "relay",
-            "updatetime": "2021-12-11 15:35:24",
+            "mqttPubStatus": "1",
+            "mqttTls": "0",
+            "mqttTlsCheck": "public",
+            "api": "disable",
+            "updatetime": "2022-01-13 22:23:28",
             "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
             "security": "0",
             "energy": "0",
-            "light": "0",
-            "opening": "1",
+            "light": "1",
+            "opening": "0",
             "automatism": "0",
             "multimedia": "0",
             "default": "0"
         },
-        "display": {
-            "width": "152px",
-            "height": "112px"
-        },
-        "status": {
-            "lastCommunication": "2021-12-08 12:21:08"
-        },
         "logicalId": "",
         "commands": [
             {
-                "generic_type": "ENERGY_STATE",
                 "eqType": "jMQTT",
                 "name": "Etat 1",
                 "type": "info",
@@ -45,6 +41,7 @@
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
+                    "invertBinary": "0",
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
@@ -52,13 +49,13 @@
                     "jsonPath": "[value]"
                 },
                 "template": {
-                    "dashboard": "core::prise",
-                    "mobile": "core::prise"
+                    "dashboard": "default",
+                    "mobile": "default"
                 },
                 "display": {
                     "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -69,7 +66,6 @@
                 "alert": []
             },
             {
-                "generic_type": "ENERGY_ON",
                 "eqType": "jMQTT",
                 "name": "On 1",
                 "type": "action",
@@ -89,12 +85,12 @@
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::prise",
-                    "mobile": "core::prise"
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -106,7 +102,6 @@
                 "alert": []
             },
             {
-                "generic_type": "ENERGY_OFF",
                 "eqType": "jMQTT",
                 "name": "Off 1",
                 "type": "action",
@@ -126,12 +121,12 @@
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::prise",
-                    "mobile": "core::prise"
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -143,7 +138,6 @@
                 "alert": []
             },
             {
-                "generic_type": "LIGHT_STATE",
                 "eqType": "jMQTT",
                 "name": "Etat 2",
                 "type": "info",
@@ -155,6 +149,7 @@
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
+                    "invertBinary": "0",
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
@@ -167,8 +162,8 @@
                 },
                 "display": {
                     "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -179,7 +174,6 @@
                 "alert": []
             },
             {
-                "generic_type": "LIGHT_ON",
                 "eqType": "jMQTT",
                 "name": "On 2",
                 "type": "action",
@@ -199,12 +193,12 @@
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::light",
-                    "mobile": "core::light"
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -216,7 +210,6 @@
                 "alert": []
             },
             {
-                "generic_type": "LIGHT_OFF",
                 "eqType": "jMQTT",
                 "name": "Off 2",
                 "type": "action",
@@ -236,8 +229,45 @@
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::light",
-                    "mobile": "core::light"
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
+                },
+                "display": {
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 2",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "logicalId": "refresh",
+                "name": "Rafraichir",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "request": "{\"args\": []}",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
                 },
                 "display": {
                     "showNameOndashboard": "1",
@@ -248,8 +278,47 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
-                "value": "Etat 2",
                 "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "nodeId",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[nodeId]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Status",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
                 "alert": []
             }
         ]

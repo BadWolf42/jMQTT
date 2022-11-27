@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Qubino ZMNHJD1 Fil Pilote": {
-        "name": "Zwavejs2mqtt Qubino ZMNHJD1 Fil Pilote",
+    "ZWaveJSUI Qubino ZMNHJD1 Fil Pilote": {
+        "name": "ZWaveJSUI Qubino ZMNHJD1 Fil Pilote",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

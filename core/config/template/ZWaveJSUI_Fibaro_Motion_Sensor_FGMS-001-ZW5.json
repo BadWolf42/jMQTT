@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro Motion Sensor FGMS-001-ZW5": {
-        "name": "Zwavejs2mqtt Fibaro Motion Sensor FGMS-001-ZW5",
+    "ZWaveJSUI Fibaro Motion Sensor FGMS-001-ZW5": {
+        "name": "ZWaveJSUI Fibaro Motion Sensor FGMS-001-ZW5",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGS-212 Light": {
-        "name": "Zwavejs2mqtt Fibaro FGS-212 Light",
+    "ZWaveJSUI Fibaro FGS-212 Light": {
+        "name": "ZWaveJSUI Fibaro FGS-212 Light",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

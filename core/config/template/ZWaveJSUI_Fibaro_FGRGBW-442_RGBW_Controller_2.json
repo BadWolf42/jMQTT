@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGRGBW-442 RGBW Controller 2": {
-        "name": "Zwavejs2mqtt Fibaro FGRGBW-442 RGBW Controller 2",
+    "ZWaveJSUI Fibaro FGRGBW-442 RGBW Controller 2": {
+        "name": "ZWaveJSUI Fibaro FGRGBW-442 RGBW Controller 2",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

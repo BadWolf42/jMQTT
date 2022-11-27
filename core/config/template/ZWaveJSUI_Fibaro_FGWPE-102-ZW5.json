@@ -1,27 +1,25 @@
 {
-    "Zwavejs2mqtt Aeotec ZW100 MultiSensor6": {
-        "name": "Zwavejs2mqtt Aeotec ZW100 MultiSensor6",
+    "ZWaveJSUI Fibaro FGWPE-102-ZW5 Wall Plug": {
+        "name": "ZWaveJSUI Fibaro FGWPE-102-ZW5 Wall Plug",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
-            "createtime": "2021-06-02 20:57:16",
+            "createtime": "2021-06-03 16:19:06",
             "auto_add_cmd": "0",
             "Qos": "1",
-            "battery_type": "Secteur",
-            "icone": "multisensor",
-            "updatetime": "2021-06-22 20:12:50",
-            "batterytime": "2021-06-02 21:08:24",
+            "icone": "prise",
+            "updatetime": "2021-09-21 17:34:45",
             "auto_add_topic": "%s\/#"
         },
         "category": {
             "heating": "0",
             "security": "0",
-            "energy": "0",
+            "energy": "1",
             "light": "0",
             "opening": "0",
             "automatism": "0",
             "multimedia": "0",
-            "default": "1"
+            "default": "0"
         },
         "display": {
             "width": "232px",
@@ -33,57 +31,14 @@
         "logicalId": "",
         "commands": [
             {
+                "generic_type": "ENERGY_STATE",
                 "eqType": "jMQTT",
-                "name": "Batterie",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "%",
-                "configuration": {
-                    "topic": "%s\/128\/0\/level",
-                    "minValue": "0",
-                    "maxValue": "100",
-                    "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Présence",
+                "name": "Etat",
                 "type": "info",
                 "subType": "binary",
-                "isHistorized": "1",
+                "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/113\/0\/Home_Security\/Motion_sensor_status",
-                    "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "1"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Température",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "1",
-                "unite": "°C",
-                "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature",
+                    "topic": "%s\/37\/0\/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -97,59 +52,57 @@
                 "alert": []
             },
             {
+                "generic_type": "ENERGY_ON",
                 "eqType": "jMQTT",
-                "name": "Luminosité",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "1",
-                "unite": "Lux",
+                "name": "On",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Illuminance",
-                    "minValue": "0",
-                    "maxValue": "40000",
-                    "jsonPath": "[value]"
+                    "topic": "%s\/37\/0\/targetValue\/set",
+                    "request": "true",
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
                     "mobile": "core::default"
                 },
-                "display": {
-                    "invertBinary": "0"
-                },
+                "value": "Etat",
                 "isVisible": "1",
                 "alert": []
             },
             {
+                "generic_type": "ENERGY_OFF",
                 "eqType": "jMQTT",
-                "name": "Humidité",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "1",
-                "unite": "%",
+                "name": "Off",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Humidity",
-                    "minValue": "0",
-                    "maxValue": "100",
-                    "jsonPath": "[value]"
+                    "topic": "%s\/37\/0\/targetValue\/set",
+                    "request": "false",
+                    "retain": "0",
+                    "jsonPath": ""
                 },
                 "template": {
                     "dashboard": "core::default",
                     "mobile": "core::default"
                 },
-                "display": {
-                    "invertBinary": "0"
-                },
+                "value": "Etat",
                 "isVisible": "1",
                 "alert": []
             },
             {
+                "generic_type": "POWER",
                 "eqType": "jMQTT",
-                "name": "Ultraviolet",
+                "name": "Puissance",
                 "type": "info",
                 "subType": "numeric",
                 "isHistorized": "0",
+                "unite": "W",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Ultraviolet",
+                    "topic": "%s\/49\/0\/Power",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -159,7 +112,29 @@
                 "display": {
                     "invertBinary": "0"
                 },
-                "isVisible": "0",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "CONSUMPTION",
+                "eqType": "jMQTT",
+                "name": "Consommation",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "kWh",
+                "configuration": {
+                    "topic": "%s\/50\/0\/value\/65537",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
                 "alert": []
             }
         ]

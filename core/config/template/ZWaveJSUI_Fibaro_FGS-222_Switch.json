@@ -1,15 +1,20 @@
 {
-    "Zwavejs2mqtt NeoCoolcam NAS-WR01ZE Smart Plug": {
-        "name": "Zwavejs2mqtt NeoCoolcam NAS-WR01ZE Smart Plug",
+    "ZWaveJSUI Fibaro FGS-222 Switch": {
+        "name": "ZWaveJSUI Fibaro FGS-222 Switch",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
-            "createtime": "2021-12-06 12:28:45",
+            "createtime": "2021-06-02 21:33:50",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "icone": "power-plug",
-            "updatetime": "2021-12-06 21:07:09",
+            "commentaire": "FGS-222 Double charge\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
+            "icone": "relay",
+            "mqttPubStatus": "1",
+            "mqttTls": "0",
+            "mqttTlsCheck": "public",
+            "api": "disable",
+            "updatetime": "2022-01-13 22:23:28",
             "auto_add_topic": "%s\/#"
         },
         "category": {
@@ -22,55 +27,21 @@
             "multimedia": "0",
             "default": "0"
         },
-        "display": {
-            "width": "192px",
-            "height": "152px",
-            "layout::dashboard": "table",
-            "layout::dashboard::table::nbLine": "2",
-            "layout::dashboard::table::nbColumn": "1",
-            "layout::dashboard::table::parameters": {
-                "center": "1",
-                "styletd": "",
-                "styletable": "",
-                "text::td::1::1": "",
-                "style::td::1::1": "",
-                "text::td::2::1": "",
-                "style::td::2::1": ""
-            },
-            "parameters": [],
-            "layout::dashboard::table::cmd::1742::line": 1,
-            "layout::dashboard::table::cmd::1742::column": 1,
-            "layout::dashboard::table::cmd::1743::line": 1,
-            "layout::dashboard::table::cmd::1743::column": 1,
-            "layout::dashboard::table::cmd::1744::line": 1,
-            "layout::dashboard::table::cmd::1744::column": 1,
-            "layout::dashboard::table::cmd::1748::line": "2",
-            "layout::dashboard::table::cmd::1748::column": "1",
-            "layout::dashboard::table::cmd::1750::line": 1,
-            "layout::dashboard::table::cmd::1750::column": 1,
-            "layout::dashboard::table::cmd::1751::line": 1,
-            "layout::dashboard::table::cmd::1751::column": 1,
-            "layout::dashboard::table::cmd::1749::line": 1,
-            "layout::dashboard::table::cmd::1749::column": 1
-        },
-        "status": {
-            "lastCommunication": "2021-12-03 21:23:58"
-        },
         "logicalId": "",
         "commands": [
             {
-                "generic_type": "ENERGY_STATE",
                 "eqType": "jMQTT",
-                "name": "État",
+                "name": "Etat 1",
                 "type": "info",
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/0\/currentValue",
+                    "topic": "%s\/37\/1\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
+                    "invertBinary": "0",
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
@@ -78,13 +49,13 @@
                     "jsonPath": "[value]"
                 },
                 "template": {
-                    "dashboard": "core::prise",
-                    "mobile": "core::prise"
+                    "dashboard": "default",
+                    "mobile": "default"
                 },
                 "display": {
                     "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -95,14 +66,13 @@
                 "alert": []
             },
             {
-                "generic_type": "ENERGY_ON",
                 "eqType": "jMQTT",
-                "name": "On",
+                "name": "On 1",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/0\/targetValue\/set",
+                    "topic": "%s\/37\/1\/targetValue\/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -115,31 +85,30 @@
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::prise",
-                    "mobile": "core::prise"
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
-                "value": "État",
+                "value": "Etat 1",
                 "isVisible": "1",
                 "alert": []
             },
             {
-                "generic_type": "ENERGY_OFF",
                 "eqType": "jMQTT",
-                "name": "Off",
+                "name": "Off 1",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/0\/targetValue\/set",
+                    "topic": "%s\/37\/1\/targetValue\/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -152,39 +121,35 @@
                     "jsonPath": ""
                 },
                 "template": {
-                    "dashboard": "core::prise",
-                    "mobile": "core::prise"
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
-                "value": "État",
+                "value": "Etat 1",
                 "isVisible": "1",
                 "alert": []
             },
             {
-                "generic_type": "POWER",
                 "eqType": "jMQTT",
-                "name": "Puissance",
+                "name": "Etat 2",
                 "type": "info",
-                "subType": "numeric",
+                "subType": "binary",
                 "isHistorized": "0",
-                "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66049",
-                    "minValue": "0",
-                    "maxValue": "2500",
+                    "topic": "%s\/37\/2\/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
                     "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
+                    "invertBinary": "0",
                     "repeatEventManagement": "never",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
@@ -197,47 +162,8 @@
                 },
                 "display": {
                     "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Intensité",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "A",
-                "configuration": {
-                    "topic": "%s\/50\/0\/value\/66817",
-                    "minValue": "0",
-                    "maxValue": "13",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": [],
-                    "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
                     "forceReturnLineBefore": "0",
@@ -248,26 +174,141 @@
                 "alert": []
             },
             {
-                "generic_type": "VOLTAGE",
                 "eqType": "jMQTT",
-                "name": "Tension",
-                "type": "info",
-                "subType": "numeric",
+                "name": "On 2",
+                "type": "action",
+                "subType": "other",
                 "isHistorized": "0",
-                "unite": "V",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66561",
-                    "minValue": "110",
-                    "maxValue": "250",
+                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "request": "true",
+                    "retain": "0",
+                    "autoPub": "0",
                     "timeline::enable": "0",
-                    "influx::enable": "0",
                     "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "never",
+                    "actionConfirm": "0",
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
                     "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
+                },
+                "display": {
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 2",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Off 2",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "request": "false",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::binaryDefault",
+                    "mobile": "core::binaryDefault"
+                },
+                "display": {
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 2",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "logicalId": "refresh",
+                "name": "Rafraichir",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "request": "{\"args\": []}",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "nodeId",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[nodeId]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Status",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -275,52 +316,7 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "generic_type": "CONSUMPTION",
-                "eqType": "jMQTT",
-                "name": "Consommation",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "kWh",
-                "configuration": {
-                    "topic": "%s\/50\/0\/value\/65537",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "never",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": [],
-                    "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "core::tile",
-                    "mobile": "core::tile"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "invertBinary": "0"
                 },
                 "isVisible": "0",
                 "alert": []

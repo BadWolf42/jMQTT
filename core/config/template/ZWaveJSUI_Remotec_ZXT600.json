@@ -1,16 +1,15 @@
 {
-    "Zwavejs2mqtt Fibaro FGR-223 Roller Shutter 3": {
-        "name": "Zwavejs2mqtt Fibaro FGR-223 Roller Shutter 3",
+    "ZWaveJSUI Remotec ZXT-600": {
+        "name": "ZWaveJSUI Remotec ZXT-600",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
-            "createtime": "2021-06-02 18:48:43",
+            "createtime": "2021-06-06 16:55:54",
             "auto_add_cmd": "0",
             "Qos": "1",
-            "battery_type": "Secteur",
-            "commentaire": "FGR-223 Volet roulant\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
-            "icone": "volet",
-            "updatetime": "2021-09-19 13:01:19",
+            "battery_type": "3x1.5V AAA",
+            "icone": "ir2",
+            "updatetime": "2021-10-14 21:47:26",
             "auto_add_topic": "%s\/#"
         },
         "category": {
@@ -18,14 +17,14 @@
             "security": "0",
             "energy": "0",
             "light": "0",
-            "opening": "1",
+            "opening": "0",
             "automatism": "0",
             "multimedia": "0",
             "default": "0"
         },
         "display": {
-            "width": "272px",
-            "height": "492px"
+            "width": "312px",
+            "height": "412px"
         },
         "status": {
             "lastCommunication": "2021-09-10 15:19:35"
@@ -34,12 +33,12 @@
         "commands": [
             {
                 "eqType": "jMQTT",
-                "name": "Etat",
+                "name": "Mode",
                 "type": "info",
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/currentValue",
+                    "topic": "%s\/64\/0\/mode",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -54,51 +53,54 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Positionnement",
-                "type": "action",
-                "subType": "slider",
+                "name": "Vitesse ventilation",
+                "type": "info",
+                "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "#slider#",
-                    "minValue": "0",
-                    "maxValue": "99",
-                    "retain": "0",
-                    "lastCmdValue": "64",
-                    "timeline::enable": "0",
-                    "interact::auto::disable": "0",
-                    "actionConfirm": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": [],
-                    "jsonPath": ""
+                    "topic": "%s\/68\/0\/mode",
+                    "jsonPath": "[value]"
                 },
                 "template": {
                     "dashboard": "core::default",
                     "mobile": "core::default"
                 },
                 "display": {
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
+                    "invertBinary": "0"
                 },
-                "value": "Etat",
                 "isVisible": "1",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "Position 75",
+                "name": "Température",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Air_temperature",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "On",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "85",
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "5",
                     "retain": "0",
                     "jsonPath": ""
                 },
@@ -111,107 +113,12 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Position 50",
+                "name": "Off",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "69",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Position 25",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "48",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Position Ajouré",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "25",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "UP",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
-                    "request": "99",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "STOP",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/Down\/set",
-                    "request": "false",
-                    "retain": "0",
-                    "jsonPath": ""
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "DOWN",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s\/64\/0\/mode\/set",
                     "request": "0",
                     "retain": "0",
                     "jsonPath": ""
@@ -225,74 +132,12 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Puissance",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "W",
-                "configuration": {
-                    "topic": "%s\/50\/1\/value\/66049",
-                    "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Consommation",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "unite": "kWh",
-                "configuration": {
-                    "topic": "%s\/50\/1\/value\/65537",
-                    "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Protection_local",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/117\/0\/local",
-                    "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Protection_local_enable",
+                "name": "Froid",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/local\/set",
+                    "topic": "%s\/64\/0\/mode\/set",
                     "request": "2",
                     "retain": "0",
                     "jsonPath": ""
@@ -306,13 +151,13 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Protection_local_disable",
+                "name": "Chaud",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/local\/set",
-                    "request": "0",
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "1",
                     "retain": "0",
                     "jsonPath": ""
                 },
@@ -325,12 +170,32 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Protection_rf",
+                "name": "Ventilation",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "6",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Température consigne chaud",
                 "type": "info",
                 "subType": "numeric",
                 "isHistorized": "0",
+                "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/117\/0\/rf",
+                    "topic": "%s\/67\/0\/setpoint\/1",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -345,13 +210,15 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Protection_rf_enable",
+                "name": "Consigne chaud",
                 "type": "action",
-                "subType": "other",
+                "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/rf\/set",
-                    "request": "1",
+                    "topic": "%s\/67\/0\/setpoint\/1\/set",
+                    "request": "#slider#",
+                    "minValue": "19",
+                    "maxValue": "30",
                     "retain": "0",
                     "jsonPath": ""
                 },
@@ -359,17 +226,83 @@
                     "dashboard": "core::default",
                     "mobile": "core::default"
                 },
+                "value": "Température consigne chaud",
                 "isVisible": "1",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "Protection_rf_disable",
+                "name": "Température consigne froid",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/67\/0\/setpoint\/2",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Consigne froid",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/67\/0\/setpoint\/2\/set",
+                    "request": "#slider#",
+                    "minValue": "18",
+                    "maxValue": "28",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Température consigne froid",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s\/128\/0\/level",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Vitesse ventilation auto bas",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/rf\/set",
+                    "topic": "%s\/68\/0\/mode\/set",
                     "request": "0",
                     "retain": "0",
                     "jsonPath": ""
@@ -383,12 +316,51 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Refresh",
+                "name": "Vitesse ventilation bas",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-zwavejs2mqtt\/api\/RefreshValues(46)",
+                    "topic": "%s\/68\/0\/mode\/set",
+                    "request": "1",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Vitesse ventilation moyen",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/68\/0\/mode\/set",
+                    "request": "5",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Vitesse ventilation haut",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/68\/0\/mode\/set",
+                    "request": "3",
                     "retain": "0",
                     "jsonPath": ""
                 },

@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGK-101 (Light)": {
-        "name": "Zwavejs2mqtt Fibaro FGK-101 (Light)",
+    "ZWaveJSUI Fibaro FGK-101 (Extra Light)": {
+        "name": "ZWaveJSUI Fibaro FGK-101 (Extra Light)",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",
@@ -10,7 +10,7 @@
             "Qos": "1",
             "icone": "door",
             "commentaire": "Fibaro FGK-101\nJeedom Community: https://community.jeedom.com/u/mikael/",
-            "updatetime": "2022-04-13 20:13:27"
+            "updatetime": "2022-04-13 20:14:32"
         },
         "category": {
             "heating": "0",
@@ -62,46 +62,6 @@
                 "configuration": {
                     "topic": "%s\/48\/0\/Any",
                     "jsonPath": "[value]"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Sommeil",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/status",
-                    "jsonPath": "[status]"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Node ID",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/status",
-                    "jsonPath": "[nodeId]"
                 },
                 "template": {
                     "dashboard": "default",

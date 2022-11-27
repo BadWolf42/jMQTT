@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt NodOn Wall Switch CWS-3-1-01": {
-        "name": "Zwavejs2mqtt NodOn Wall Switch CWS-3-1-01",
+    "ZWaveJSUI NodOn Wall Switch CWS-3-1-01": {
+        "name": "ZWaveJSUI NodOn Wall Switch CWS-3-1-01",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

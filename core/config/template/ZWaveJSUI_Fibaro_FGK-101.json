@@ -1,6 +1,6 @@
 {
-    "Zwavejs2mqtt Fibaro FGK-101": {
-        "name": "Zwavejs2mqtt Fibaro FGK-101",
+    "ZWaveJSUI Fibaro FGK-101": {
+        "name": "ZWaveJSUI Fibaro FGK-101",
         "eqType_name": "jMQTT",
         "configuration": {
             "type": "eqpt",

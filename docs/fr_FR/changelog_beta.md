@@ -11,6 +11,7 @@
 - Correction textes à traduire en vue d'une traduction globale en anglais
 - Correction de plusieurs typo (merci noodom)
 - Modification de la page Temps Réel pour pouvoir apparaitre sur tous les équipements (fonctionnalité cachée pour le moment)
+- Renommage des templates Zwavejs2mqtt en ZWaveJSUI
 
 ## 2022-11-10
 - Passage de la Beta en stable
