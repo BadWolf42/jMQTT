@@ -1,0 +1,157 @@
+{
+    "ZWaveJSUI Fibaro FGS-222 Switch 2x1": {
+        "name": "ZWaveJSUI Fibaro FGS-222 Switch 2x1",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2021-06-02 21:33:50",
+            "auto_add_cmd": "0",
+            "Qos": "1",
+            "battery_type": "Secteur",
+            "icone": "relay",
+            "updatetime": "2021-06-05 12:12:36",
+            "commentaire": "ON1 : contact sec 2 vantails\nON2 : contact sec 1 vantail",
+            "auto_add_topic": "%s\/#"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "1",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "232px",
+            "height": "212px"
+        },
+        "status": {
+            "lastCommunication": "2021-09-10 15:19:35"
+        },
+        "logicalId": "",
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "Etat 1",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/1\/currentValue",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "On 1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "request": "true",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat 1",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Off 1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "request": "false",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat 1",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Etat 2",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/2\/currentValue",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "On 2",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "request": "true",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat 2",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Off 2",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "request": "false",
+                    "retain": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat 2",
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}

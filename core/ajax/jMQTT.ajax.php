@@ -44,7 +44,7 @@ try {
 			mkdir($uploaddir);
 		}
 		if (!file_exists($uploaddir)) {
-			throw new Exception(__('Répertoire de téléversement non trouvé : ', __FILE__) . $uploaddir);
+			throw new Exception(__('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . $uploaddir);
 		}
 		$fname = $_FILES['file']['name'];
 		if (file_exists($uploaddir . '/' . $fname)) {
@@ -188,7 +188,7 @@ try {
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 
-	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

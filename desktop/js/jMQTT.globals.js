@@ -14,6 +14,20 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle retrocompatibility of jeeFrontEnd namespace in Jeedom 4.2
+if (typeof jeeFrontEnd === 'undefined') {
+	jeeFrontEnd = window;
+}
+
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle retrocompatibility of addUpdateFunction function in Jeedom 4.2
+if (typeof jeedom.cmd.addUpdateFunction !== 'function') {
+	jeedom.cmd.addUpdateFunction = function(id, func) {
+		jeedom.cmd.update[id] = func;
+	}
+}
+
 // New namespace
 function jmqtt() {}
 jmqtt.globals = {};
@@ -76,11 +90,11 @@ jmqtt.globals.logos.sort(function(a, b) { return a.name.localeCompare(b.name); }
 jmqtt.globals.icons = {
 	broker: {
 		status: {
-			selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (info.la == 'nok') ? false : info.state; },
-			ok:       { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connection au Broker active}}' },
+			selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt.globals.daemonState) ? false : info.state; },
+			ok:       { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connexion au Broker active}}' },
 			pok:      { icon: 'fas fa-minus-circle', color: 'warning', msg: '{{Connexion au Broker en échec}}' },
-			nok:      { icon: 'fas fa-times-circle', color: 'danger',  msg: "{{Le Démon n'est pas démarré}}" },
-			false:    { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker désactivée}}' }
+			nok:      { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker désactivée}}' },
+			false:    { icon: 'fas fa-times-circle', color: 'danger',  msg: "{{Démon non démarré}}" }
 		},
 		visible: {
 			selector: function(_eq) { return _eq.isVisible == '1'; },

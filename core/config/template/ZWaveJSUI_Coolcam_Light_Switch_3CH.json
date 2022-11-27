@@ -1,0 +1,367 @@
+{
+    "ZWaveJSUI Coolcam Light Switch 3 CH": {
+        "name": "ZWaveJSUI Coolcam Light Switch 3 CH",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2021-06-02 21:33:50",
+            "auto_add_cmd": "0",
+            "Qos": "1",
+            "battery_type": "Secteur",
+            "commentaire": "Interrupteur mural 3 channels",
+            "icone": "relay",
+            "updatetime": "2021-12-09 22:42:42",
+            "auto_add_topic": "%s\/#"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "1",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "312px",
+            "height": "152px"
+        },
+        "status": {
+            "lastCommunication": "2021-12-08 12:21:08"
+        },
+        "logicalId": "",
+        "commands": [
+            {
+                "generic_type": "LIGHT_STATE",
+                "eqType": "jMQTT",
+                "name": "Etat 1",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/1\/currentValue",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_ON",
+                "eqType": "jMQTT",
+                "name": "On 1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "request": "true",
+                    "retain": "0",
+                    "autoPub": "1",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 1",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_OFF",
+                "eqType": "jMQTT",
+                "name": "Off 1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "request": "false",
+                    "retain": "0",
+                    "autoPub": "1",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 1",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_STATE",
+                "eqType": "jMQTT",
+                "name": "Etat 2",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/2\/currentValue",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_ON",
+                "eqType": "jMQTT",
+                "name": "On 2",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "request": "true",
+                    "retain": "0",
+                    "autoPub": "1",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 2",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_OFF",
+                "eqType": "jMQTT",
+                "name": "Off 2",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "request": "false",
+                    "retain": "0",
+                    "autoPub": "1",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 2",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_STATE",
+                "eqType": "jMQTT",
+                "name": "Etat 3",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/3\/currentValue",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::tile",
+                    "mobile": "core::tile"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_ON",
+                "eqType": "jMQTT",
+                "name": "On 3",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/3\/targetValue\/set",
+                    "request": "true",
+                    "retain": "0",
+                    "autoPub": "1",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 3",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_OFF",
+                "eqType": "jMQTT",
+                "name": "Off 3",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/37\/3\/targetValue\/set",
+                    "request": "false",
+                    "retain": "0",
+                    "autoPub": "1",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::light"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat 3",
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}

@@ -1,0 +1,692 @@
+{
+    "ZWaveJSUI Eurotronic Spirit": {
+        "name": "ZWaveJSUI Eurotronic Spirit",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2022-01-13 03:14:37",
+            "auto_add_cmd": "0",
+            "Qos": "1",
+            "battery_type": "2xAA",
+            "commentaire": "Eurotronic Spirit\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
+            "icone": "chauffage",
+            "mqttPubStatus": "1",
+            "mqttTls": "0",
+            "mqttTlsCheck": "public",
+            "api": "disable",
+            "updatetime": "2022-01-13 05:10:39",
+            "auto_add_topic": "%s\/#"
+        },
+        "category": {
+            "heating": "1",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "logicalId": "",
+        "commands": [
+            {
+                "generic_type": "THERMOSTAT_SET_SETPOINT",
+                "eqType": "jMQTT",
+                "name": "Commande Consigne Eco",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/67\/0\/setpoint\/11\/set",
+                    "request": "#slider#",
+                    "minValue": "4",
+                    "maxValue": "28",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::button",
+                    "mobile": "core::button"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Consigne Eco",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SETPOINT",
+                "eqType": "jMQTT",
+                "name": "Consigne Eco",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s\/67\/0\/setpoint\/11",
+                    "minValue": "4",
+                    "maxValue": "28",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SET_SETPOINT",
+                "eqType": "jMQTT",
+                "name": "Commande Consigne Chauffe",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/67\/0\/setpoint\/1\/set",
+                    "request": "#slider#",
+                    "minValue": "4",
+                    "maxValue": "28",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::button",
+                    "mobile": "core::button"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Consigne Chauffe",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SETPOINT",
+                "eqType": "jMQTT",
+                "name": "Consigne Chauffe",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s\/67\/0\/setpoint\/1",
+                    "minValue": "4",
+                    "maxValue": "28",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Position valve",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "request": "#slider#",
+                    "minValue": "0",
+                    "maxValue": "99",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat valve (en manuel)",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_TEMPERATURE",
+                "eqType": "jMQTT",
+                "name": "Température",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Air_temperature",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::badge",
+                    "mobile": "core::badge"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Etat valve (en manuel)",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s\/38\/0\/currentValue",
+                    "minValue": "0",
+                    "maxValue": "99",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_MODE",
+                "eqType": "jMQTT",
+                "name": "Mode Actuel",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/64\/0\/mode",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SET_MODE",
+                "eqType": "jMQTT",
+                "name": "Eteindre",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "0",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Mode Actuel",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SET_MODE",
+                "eqType": "jMQTT",
+                "name": "Manuel",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "31",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Mode Actuel",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SET_MODE",
+                "eqType": "jMQTT",
+                "name": "Chauffage",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "1",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Mode Actuel",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SET_MODE",
+                "eqType": "jMQTT",
+                "name": "Pleine Chauffe",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "15",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Mode Actuel",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "THERMOSTAT_SET_MODE",
+                "eqType": "jMQTT",
+                "name": "Eco",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/64\/0\/mode\/set",
+                    "request": "11",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Mode Actuel",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Offset",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/112\/0\/8\/set",
+                    "request": "#slider#",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "core::button",
+                    "mobile": "core::button"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": {
+                        "step": "1"
+                    }
+                },
+                "value": "Etat Offset",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "BATTERY",
+                "eqType": "jMQTT",
+                "name": "Batterie",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s\/128\/0\/level",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie Faible",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/128\/0\/isLow",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Etat Offset",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/112\/0\/8",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "logicalId": "refresh",
+                "name": "Rafraichir",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "request": "{\"args\": []}",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "nodeId",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[nodeId]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Status",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            }
+        ]
+    }
+}

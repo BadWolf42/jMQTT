@@ -1,0 +1,313 @@
+{
+    "ZWaveJSUI Philips HUE White": {
+        "name": "ZWaveJSUI Philips HUE White",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2021-05-17 12:11:10",
+            "auto_add_cmd": "0",
+            "Qos": "2",
+            "commentaire": "ZWaveJSUI Philips HUE White\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/65",
+            "icone": "lightbulb",
+            "updatetime": "2022-11-16 22:35:15",
+            "previousIsEnable": "1",
+            "previousIsVisible": "1",
+            "auto_add_topic": "%s\/#"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "0",
+            "light": "1",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "154px",
+            "height": "394px"
+        },
+        "status": {
+            "lastCommunication": "2022-11-14 22:49:40",
+            "enableDatime": "2022-11-14 22:49:40"
+        },
+        "cache": {
+            "z2m_eq_name": "_CasaIA",
+            "mqtt_client_eqId": "2286"
+        },
+        "commands": [
+            {
+                "generic_type": "LIGHT_STATE_BOOL",
+                "eqType": "jMQTT",
+                "name": "Etat",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "none",
+                    "historyPurge": "-7 days",
+                    "repeatEventManagement": "never",
+                    "jsonPath": "[state]"
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showStatsOnmobile": "0",
+                    "showStatsOndashboard": "0",
+                    "invertBinary": "0",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_ON",
+                "eqType": "jMQTT",
+                "name": "On",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/set\/",
+                    "request": "{\"state\":\"ON\"}",
+                    "retain": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::timeLight",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "value": "Etat",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_ON",
+                "eqType": "jMQTT",
+                "name": "Off",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/set\/",
+                    "request": "{\"state\":\"OFF\"}",
+                    "retain": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::timeLight",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "value": "Etat",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_STATE",
+                "eqType": "jMQTT",
+                "name": "Etat_Intensité",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historyPurge": "-7 days",
+                    "repeatEventManagement": "auto",
+                    "minValue": "0",
+                    "maxValue": "254",
+                    "historizeMode": "none",
+                    "jsonPath": "[brightness]"
+                },
+                "template": {
+                    "dashboard": "core::light",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showStatsOnmobile": "0",
+                    "showStatsOndashboard": "0",
+                    "invertBinary": "0",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "generic_type": "LIGHT_SLIDER",
+                "eqType": "jMQTT",
+                "name": "Slider Intensité",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/set\/",
+                    "request": "{\"brightness\":\"#slider#\"}",
+                    "minValue": "0",
+                    "maxValue": "254",
+                    "retain": "0",
+                    "lastCmdValue": "104",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "1",
+                    "forceReturnLineAfter": "0"
+                },
+                "value": "Etat_Intensité",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Consommation",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "KW\/h",
+                "configuration": {
+                    "topic": "%s\/conso_virtual",
+                    "minValue": "123.14022016825001",
+                    "maxValue": "134.5472311766625",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "max",
+                    "repeatEventManagement": "auto"
+                },
+                "template": {
+                    "dashboard": "customtemp::MG_Info_Numerique",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showStatsOnmobile": "1",
+                    "showStatsOndashboard": "1",
+                    "invertBinary": "0",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": {
+                        "type": "Compteurs",
+                        "titre": "Consommation"
+                    }
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s\/puissance_virtual",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "none",
+                    "historyPurge": "-1 month",
+                    "repeatEventManagement": "auto"
+                },
+                "template": {
+                    "dashboard": "customtemp::MG_Info_Numerique",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showStatsOnmobile": "1",
+                    "showStatsOndashboard": "1",
+                    "invertBinary": "0",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": {
+                        "type": "highchart",
+                        "imgName": "Vumetre"
+                    }
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "_etat_demarrage_on",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/set\/",
+                    "request": "{\"hue_power_on_behavior\":\"on\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "0",
+                "alert": []
+            }
+        ]
+    }
+}

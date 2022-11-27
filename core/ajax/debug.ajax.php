@@ -278,7 +278,7 @@ try {
 		ajax::success($response);
 	}
 
-	throw new Exception(__('Aucune méthode Ajax ne correspond à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

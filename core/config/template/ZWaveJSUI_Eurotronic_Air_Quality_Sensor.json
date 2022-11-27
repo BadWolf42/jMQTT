@@ -1,0 +1,320 @@
+{
+    "ZWaveJSUI Eurotronic Air Quality Sensor": {
+        "name": "ZWaveJSUI Eurotronic Air Quality Sensor",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2022-01-14 09:03:07",
+            "auto_add_cmd": "0",
+            "Qos": "1",
+            "battery_type": "Secteur",
+            "commentaire": "Eurotronic Air Quality Sensor\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
+            "icone": "humiditytemp",
+            "mqttPubStatus": "1",
+            "mqttTls": "0",
+            "mqttTlsCheck": "public",
+            "api": "disable",
+            "updatetime": "2022-01-14 10:36:31",
+            "auto_add_topic": "%s\/#"
+        },
+        "category": {
+            "heating": "1",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "232px",
+            "height": "250px"
+        },
+        "status": {
+            "lastCommunication": "2022-01-13 06:38:43",
+            "enableDatime": "2022-01-13 06:38:43"
+        },
+        "cache": {
+            "z2m_eq_name": "Lustre Table",
+            "mqtt_client_eqId": "962"
+        },
+        "logicalId": "",
+        "commands": [
+            {
+                "generic_type": "TEMPERATURE",
+                "eqType": "jMQTT",
+                "name": "T°",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Air_temperature",
+                    "minValue": "-40",
+                    "maxValue": "125",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::tile",
+                    "mobile": "core::tile"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "HUMIDITY",
+                "eqType": "jMQTT",
+                "name": "Humidité",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Humidity",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::tile",
+                    "mobile": "core::tile"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Point de rosée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Dew_point",
+                    "minValue": "-40",
+                    "maxValue": "125",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::tile",
+                    "mobile": "core::tile"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "CO2",
+                "eqType": "jMQTT",
+                "name": "CO2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "ppm",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Carbon_dioxide_CO_level",
+                    "minValue": "0",
+                    "maxValue": "3000",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::tile",
+                    "mobile": "core::tile"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "VOC",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "ppm",
+                "configuration": {
+                    "topic": "%s\/49\/0\/Volatile_Organic_Compound_level",
+                    "minValue": "0",
+                    "maxValue": "1",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "core::tile",
+                    "mobile": "core::tile"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "logicalId": "refresh",
+                "name": "Rafraichir",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "request": "{\"args\": []}",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "jsonPath": ""
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "nodeId",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[nodeId]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Status",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/status",
+                    "jsonPath": "[value]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            }
+        ]
+    }
+}

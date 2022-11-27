@@ -45,7 +45,7 @@ class mqttApiRequest {
 	 */
 	function __construct($request, $broker) {
 		$this->broker = $broker;
-		$broker->log('info', __("API: Traitement de la requête : ", __FILE__) . $request);
+		$broker->log('info', __('API: Traitement de la requête :', __FILE__) . ' ' . $request);
 
 		$this->apiAddr = network::getNetworkAccess('internal', 'http:127.0.0.1:port:comp') . '/core/api/jeeApi.php';
 

@@ -28,7 +28,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 				},
 				success: function (data) {
 					var url = jmqtt.initPluginUrl();
-					modifyWithoutSave = false;
+					jeeFrontEnd.modifyWithoutSave = false;
 					url += '&id=' + data.id + '&saveSuccessFull=1';
 					loadPage(url);
 				}
@@ -53,11 +53,11 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 });
 
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
-	var dialog_message = '<label class="control-label">{{Choisissez un broker : }}</label> ';
+	var dialog_message = '<label class="control-label">{{Choisissez un broker :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
 	$.each(jmqtt.globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br>';
-	dialog_message += '<label class="control-label">{{Nom du nouvel équipement : }}</label> ';
+	dialog_message += '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>'
 	bootbox.confirm({
 		title: "{{Ajouter un nouvel équipement}}",
@@ -81,7 +81,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 				},
 				success: function (data) {
 					var url = jmqtt.initPluginUrl();
-					modifyWithoutSave = false;
+					jeeFrontEnd.modifyWithoutSave = false;
 					url += '&id=' + data.id + '&saveSuccessFull=1';
 					loadPage(url);
 				}
@@ -107,7 +107,7 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 	jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
 		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
 		calcul.atCaret('insert', result.human);
-		modifyWithoutSave = true
+		jeeFrontEnd.modifyWithoutSave = true
 	});
 });
 
@@ -216,12 +216,12 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(
 //
 $('#table_realtime').on('click', '.eqLogicAction[data-action=startRealTimeMode]', function() {
 	// Enable Real Time mode for a Broker
-	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 1);
+	jmqtt.changeRealTimeMode(jmqtt.getBrkId(), 1);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]', function() {
 	// Disable Real Time mode for a Broker
-	jmqtt.changeRealTimeMode(jmqtt.getEqId(), 0);
+	jmqtt.changeRealTimeMode(jmqtt.getBrkId(), 0);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=playRealTime]', function() {
@@ -237,120 +237,34 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=pauseRealTime]', fu
 // Button to empty RealTime view
 $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', function() {
 	// Ask Daemon to cleanup its Real Time database
+	var broker = jmqtt.getBrkId();
 	jmqtt.callPluginAjax({
 		data: {
 			action: "realTimeClear",
-			id: jmqtt.getEqId()
+			id: broker
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
 		},
 		success: function (data) {
-			$('#table_realtime tbody').empty();
-			$('#table_realtime').trigger("update");
+			$('#table_realtime tbody .rtCmd[data-brkid=' + broker + ']').remove();
+			// $('#table_realtime').trigger("update");
 		}
 	});
 })
 
-//$('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
-/* TODO (nice to have) Implement Adding a new cmd on a new Eq
+// Button to add a new eq and cmd from Real Time tab
+$('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
-	var broker   = jmqtt.getEqId();
-
-	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement : }}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>';
-	dialog_message += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> '
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName"><br><br>'
-
-	// Display new EqLogic modal
-	bootbox.confirm({
-		title: '{{Ajouter une nouvelle commande sur un nouvel équipement}}',
-		message: dialog_message,
-		callback: function (result){ if (result) {
-			var eqName = $('#addJmqttEqName').value();
-			if (eqName === undefined || eqName == null || eqName === '' || eqName == false) {
-				$.fn.showAlert({message: "{{Le nom de l\'équipement ne peut pas être vide !}}", level: 'warning'});
-				return false;
-			}
-			var cmdName = $('#addJmqttCmdName').value();
-			if (cmdName === undefined || cmdName == null || cmdName === '' || cmdName == false) {
-				$.fn.showAlert({message: "{{Le nom de la commande ne peut pas être vide !}}", level: 'warning'});
-				return false;
-			}
-
-			// Create a new eqLogic
-			jeedom.eqLogic.save({
-				type: eqType,
-				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker, }) ], // TODO (nice to have) Missing enabled & mainTopic
-				error: function (error) {
-					$.fn.showAlert({message: error.message, level: 'danger'});
-				},
-				success: function (dataEq) {
-
-					// Create a new jMQTTCmd
-					jmqtt.callPluginAjax({
-						data: {
-							action: "newCmd",
-							id: dataEq.id,
-							name: cmdName,
-							topic: topic,
-							jsonPath: jsonPath
-						},
-						error: function (error) {
-							$.fn.showAlert({message: error.message, level: 'danger'});
-						},
-						success: function (data) {
-							// console.log('res: ', broker, topic, jsonPath, eq.id, eq.human, data);
-							$.fn.showAlert({message: `{{La commande <b>${data.human}</b> a bien été ajoutée sur <b>${dataEq.humain}</b>.}}`, level: 'success'});
-						}
-					});
-				}
-			});
-
-		}}
-	});
+	jmqtt.addEqFromRealTime(topic, jsonPath);
 })
-*/
 
+// Button to add a cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addCmd]', function() {
 	var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
 	var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
-	var broker   = jmqtt.getEqId();
-
-	// Display EqLogic selector modal
-	jeedom.eqLogic.getSelectModal({}, function(eq) {
-		bootbox.confirm({
-			title: `{{Ajouter une nouvelle commande sur <b>${eq.human}</b>}}`,
-			message: '<label class="control-label">{{Nom de la nouvelle commande :}}</label> '+
-			'<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName"><br><br>',
-			callback: function (result){ if (result) {
-				var cmdName = $('#addJmqttCmdName').value();
-				if (cmdName === undefined || cmdName == null || cmdName === '' || cmdName == false) {
-					$.fn.showAlert({message: "{{Le nom de la commande ne peut pas être vide !}}", level: 'warning'});
-					return false;
-				}
-				// Create a new jMQTTCmd
-				jmqtt.callPluginAjax({
-					data: {
-						action: "newCmd",
-						id: eq.id,
-						name: cmdName,
-						topic: topic,
-						jsonPath: jsonPath
-					},
-					error: function (error) {
-						$.fn.showAlert({message: error.message, level: 'danger'});
-					},
-					success: function (data) {
-						$.fn.showAlert({message: `{{La commande <b>${data.human}</b> a bien été ajoutée.}}`, level: 'success'});
-					}
-				});
-			}}
-		});
-	});
-	// Override jeedom.eqLogic.getSelectModal internals to take select only jMQTT eqpt on this Broker
-	jmqtt.overrideChangeObjectEqLogic(broker);
+	jmqtt.addCmdFromRealTime(topic, jsonPath);
 })
 
 $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function() {
@@ -374,12 +288,12 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 		tr.after(new_tr);
 		tr = tr.next();
 	}
-	$('#table_realtime').trigger("update");
+	// $('#table_realtime').trigger("update");
 })
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
-	$('#table_realtime').trigger("update");
+	// $('#table_realtime').trigger("update");
 })
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -424,16 +338,6 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 	}
 });
 
-// On eqLogic logo field set (initial set and finish typing)
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').change(function() {
-	if ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') {
-		$("#logo_visu").attr("src", jmqtt.logoHelper('broker'));
-	} else {
-		var elt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone] option:selected');
-		$("#logo_visu").attr("src", jmqtt.logoHelper(elt.val()));
-	}
-});
-
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
@@ -454,25 +358,21 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 			action: "getTemplateList",
 		},
 		success: function (dataresult) {
-			var dialog_message = '<label class="control-label">{{Choisissez un template : }}</label> ';
+			var dialog_message = '<label class="control-label">{{Choisissez un template :}}</label> ';
 			dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="applyTemplateSelector">';
 			for(var i in dataresult){ dialog_message += '<option value="'+dataresult[i][0]+'">'+dataresult[i][0]+'</option>'; }
 			dialog_message += '</select><br>';
 
-			dialog_message += '<label class="control-label">{{Saisissez le Topic de base : }}</label> ';
+			dialog_message += '<label class="control-label">{{Saisissez le Topic de base :}}</label> ';
 			var currentTopic = jmqtt.globals.mainTopic;
 			if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			if (currentTopic.endsWith("/"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'
-
-			dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ' +
-			'<div class="radio">' +
-			'<label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label>' +
-			'</div><div class="radio">' +
-			'<label><input type="radio" name="applyTemplateCommand" value="0">{{Les supprimer d\'abord}}</label> ' +
-			'</div>';
+			dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ';
+			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label></div>';
+			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="0">' + "{{Les supprimer d'abord}}" + '</label></div>';
 
 			bootbox.confirm({
 				title: '{{Appliquer un Template}}',
@@ -528,7 +428,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
 	dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="newTopic"><br><br>';
-	dialog_message += '<label class="control-label">({{Pensez à sauvegarder l\'équipement pour appliquer les modifications}})</label>';
+	dialog_message += '<label class="control-label">(' + "{{Pensez à sauvegarder l'équipement pour appliquer les modifications}}" + ')</label>';
 	bootbox.confirm({
 		title: "{{Modifier en masse les Topics de tout l'équipement}}",
 		message: dialog_message,
@@ -542,7 +442,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 				if ($(this).val().startsWith(oldTopic))
 					$(this).val($(this).val().replace(oldTopic, newTopic));
 			});
-			modifyWithoutSave = true;
+			jeeFrontEnd.modifyWithoutSave = true;
 		}}
 	});
 });
@@ -551,14 +451,14 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
 	var _cmd = {type: 'info'};
 	addCmdToTable(_cmd);
-	modifyWithoutSave = true;
+	jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On addMQTTAction click
 $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
 	var _cmd = {type: 'action'};
 	addCmdToTable(_cmd);
-	modifyWithoutSave = true;
+	jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On classicView click
@@ -789,11 +689,6 @@ function printEqLogic(_eqLogic) {
 
 		// Udpate panel on eqBroker
 		jmqtt.updateBrokerTabs(_eqLogic);
-
-		// Display only relevant Real Time data
-		jmqtt.getRealTimeData();
-		$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eqLogic.id + '"]').hide();
-		$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eqLogic.id + '"]').show();
 	}
 	else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
 		$('.toDisable').removeClass('disabled');
@@ -801,48 +696,9 @@ function printEqLogic(_eqLogic) {
 		$('.typ-std').show();
 		$('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
 
-		// Stop Real Time data refresh
-		clearInterval(jmqtt.globals.refreshRealTime);
-
-		jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
-		// Initialise battery and availability dropboxes
-		var eqId = jmqtt.getEqId();
-		var bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
-		var avl = $('.eqLogicAttr[data-l1key=configuration][data-l2key=availability_cmd]');
-		bat.empty().append('<option value="">{{Aucune}}</option>');
-		avl.empty().append('<option value="">{{Aucune}}</option>');
-		jeedom.eqLogic.buildSelectCmd({
-			id: eqId,
-			filter: {type: 'info', subType: 'numeric'},
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'danger'});
-			},
-			success: function (result) {
-				bat.append(result);
-			}
-		});
-		jeedom.eqLogic.buildSelectCmd({
-			id: eqId,
-			filter: {type: 'info', subType: 'binary'},
-			error: function (error) {
-				$.fn.showAlert({message: error.message, level: 'danger'});
-			},
-			success: function (result) {
-				avl.append(result);
-				bat.append(result); // Also append binary cmd to battery dropbox
-			}
-		});
-		bat.val(_eqLogic.configuration.battery_cmd);
-		avl.val(_eqLogic.configuration.availability_cmd);
+		// Udpate panel on eqLogic
+		jmqtt.updateEqptTabs(_eqLogic);
 	}
-
-	// Initialize the broker dropbox
-	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
-	brokers.empty();
-	$.each(jmqtt.globals.eqBrokers, function(key, name) {
-		brokers.append(new Option(name, key));
-	});
-	brokers.val(_eqLogic.configuration.eqLogic);
 }
 
 /**
@@ -1001,10 +857,10 @@ function addCmdToTable(_cmd) {
 			}
 
 			// Set the update value callback
-			jeedom.cmd.update[_cmd.id] = function(_options) {
+			jeedom.cmd.addUpdateFunction(_cmd.id, function(_options) {
 				$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').addClass('modifiedVal').value(_options.display_value);
-				setTimeout(function() { $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').removeClass('modifiedVal'); }, 1500 );
-			}
+				setTimeout(function() { $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').removeClass('modifiedVal'); }, 1500);
+			});
 		}
 
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"]').show(); // SPEED Improvement : Create TR hiden then show it at the end after setValues, etc.
@@ -1047,7 +903,8 @@ function addCmdToTable(_cmd) {
 		tr += '</td><td>';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;<sup><i class="fas fa-question-circle tooltips" title="{{Publication automatique en MQTT lors d\'un changement <br>(Utiliser avec au moins une commande info dans Valeur).}}"></i></sup></label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;';
+		tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br>(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br> ';
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td align="right">';
@@ -1123,19 +980,19 @@ function addCmdToTable(_cmd) {
 /*
 // TODO (low) replace jMQTT::EventState, and change visual on dashboard
 $('body').off('jMQTT::brkEvent').on('jMQTT::brkEvent', function (_event,_options) {
-	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
+	var msg = `{{La commande <b>${_options.name}</b> vient d'être ${_options.action}.}}`;
 	console.log(msg, _options);
 });
 
 // TODO (low) replace eqptAdded and handle modified + removed, and change visual on dashboard
 $('body').off('jMQTT::eqptEvent').on('jMQTT::eqptEvent', function (_event,_options) {
-	var msg = '{{L\'équipement}} <b>' + _options['name'] + '</b> {{vient d\'être}}' + _options['action'];
+	var msg = `{{La commande <b>${_options.name}</b> vient d'être ${_options.action}.}}`;
 	console.log(msg, _options);
 });
 
 // TODO (low) replace cmdAdded and handle modified + removed
 $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options) {
-	var msg = '{{La commande}} <b>' + _options['name'] + '</b> {{vient d\'être }}' + _options['action'];
+	var msg = `{{La commande <b>${_options.name}</b> vient d'être ${_options.action}.}}`;
 	console.log(msg, _options);
 });
 */
@@ -1152,11 +1009,11 @@ $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
  */
 $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _options) {
-	var msg = '{{L\'équipement}} <b>' + _options['eqlogic_name'] + '</b> {{vient d\'être ajouté}}';
+	var msg = `{{L'équipement}} <b>${_options.eqlogic_name}</b> vient d'être ajouté}}`;
 
 	// If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
 	// Otherwise: display an alert message and reload the page
-	if (modifyWithoutSave || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
+	if (jeeFrontEnd.modifyWithoutSave || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
 		$.fn.showAlert({message: msg + '.', level: 'warning'});
 	}
 	else {
@@ -1184,10 +1041,10 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
  * @param _options['reload'] bool whether or not a reload of the page is requested
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
-	var msg = '{{La commande}} <b>' + _options['cmd_name'] + '</b> {{est ajoutée à l\'équipement}}' + ' <b>' + _options['eqlogic_name'] + '</b>.';
+	var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;
 
 	// If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
-	if (modifyWithoutSave || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||
+	if (jeeFrontEnd.modifyWithoutSave || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||
 			$('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
 		$.fn.showAlert({message: msg, level: 'warning'});
 	}
@@ -1217,6 +1074,8 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 	// Update Panel and menu only when on the right Broker
 	if (jmqtt.getEqId() == _eq.id)
 		jmqtt.updateBrokerTabs(_eq);
+	else if (jmqtt.getBrkId() == _eq.id)
+		jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
 	// Update card on main page
 	jmqtt.updateDisplayCard(card, _eq);
 });
@@ -1230,14 +1089,6 @@ $(document).ready(function() {
 	$('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
 		event.stopPropagation();
 		jmqtt.refreshEqLogicPage();
-	});
-
-	// Initialize Logo dropbox from logos global table
-	var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
-	icos.html('');
-	$.each(jmqtt.globals.logos, function(key) {
-		opt = new Option(jmqtt.globals.logos[key]['name'], jmqtt.globals.logos[key]['id']);
-		icos.append(opt);
 	});
 
 	//

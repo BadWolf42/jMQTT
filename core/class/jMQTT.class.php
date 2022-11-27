@@ -627,7 +627,7 @@ class jMQTT extends eqLogic {
 		$broker = $this->getBroker();
 		// If broker eqpt is disabled, don't need to send subscribe
 		if(!$broker->getIsEnable()) {
-			$this->log('debug', sprintf(__("Le Broker %1\$s n'est pas actif, impossible de s'inscrit au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
+			$this->log('debug', sprintf(__("Le Broker %1\$s n'est pas actif, impossible de s'inscrire au topic '%2\$s' avec une Qos de %3\$s", __FILE__), $this->getName(), $topic, $qos));
 			return;
 		}
 		if ($this->getType() == self::TYP_EQPT)
@@ -1109,7 +1109,7 @@ class jMQTT extends eqLogic {
 			return false;
 		}
 		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 135) {
-			self::logger('debug', __('Pas message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
+			self::logger('debug', __('Pas de message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
@@ -1183,16 +1183,17 @@ class jMQTT extends eqLogic {
 		// To fix issue: https://community.jeedom.com/t/87727/39
 		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', __CLASS__, '0')) && config::byKey('urlOverrideEnable', __CLASS__, '0') == '1')
 			$callbackURL = config::byKey('urlOverrideValue', __CLASS__, $callbackURL);
-		$cmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(__CLASS__));
-		$cmd .= ' CALLBACK="'.$callbackURL.'"';
-		$cmd .= ' APIKEY=' . jeedom::getApiKey(__CLASS__);
-		$cmd .= ' PIDFILE=' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid ';
-		$cmd .= $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
+		$shellCmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(__CLASS__));
+		$shellCmd .= ' CALLBACK="'.$callbackURL.'"';
+		$shellCmd .= ' APIKEY=' . jeedom::getApiKey(__CLASS__);
+		$shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(__CLASS__) . '/jmqttd.py.pid ';
+		$shellCmd .= $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
+		$shellCmd .= ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &';
 		if (log::getLogLevel(__CLASS__) > 100)
 			self::logger('info', __('Lancement du démon jMQTT', __FILE__));
 		else
-			self::logger('info', __('Lancement du démon jMQTT', __FILE__) . ': ' . $cmd);
-		exec($cmd . ' >> ' . log::getPathToLog(__CLASS__.'d') . ' 2>&1 &');
+			self::logger('info', sprintf(__("Lancement du démon jMQTT, commande shell: '%s'", __FILE__), $shellCmd));
+		exec($shellCmd);
 		// Wait up to 10 seconds for daemon to start
 		for ($i = 1; $i <= 40; $i++) {
 			if (self::daemon_state()) {
@@ -1204,7 +1205,7 @@ class jMQTT extends eqLogic {
 		// If daemon has not correctly started
 		if (!self::daemon_state()) {
 			self::deamon_stop();
-			self::logger('error', __('Impossible de lancer le démon jMQTT, vérifiez le log',__FILE__), 'unableStartDaemon');
+			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez les logs de jMQTT', __FILE__), 'unableStartDaemon'); // Use log::add() to set 'unableStartDaemon' as logicalId
 			return;
 		}
 		// Else all good
@@ -1249,7 +1250,7 @@ class jMQTT extends eqLogic {
 		//self::logger('debug', 'fromDaemon_daemonUp(ruid='.$ruid.')');
 		// Verify that daemon RemoteUID contains ':' or die
 		if (is_null($ruid) || !is_string($ruid) || (strpos($ruid, ':') === false)) {
-			self::logger('warning', sprintf(__("Démon [%s] : Inconsistent", __FILE__), $ruid));
+			self::logger('warning', sprintf(__("Démon [%s] : Inconsistant", __FILE__), $ruid));
 			return '';
 		}
 		// Verify that this daemon is not already initialized
@@ -1280,7 +1281,7 @@ class jMQTT extends eqLogic {
 			exec("lsof -nP -iTCP -sTCP:LISTEN | grep -E 'python3[ \t]+" . $rpid . "[ \t]+.+[:]" . $rport ."[ \t]+' 2> /dev/null", $output, $retval);
 		}
 		if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
-			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être authentifié", __FILE__), $ruid));
+			self::logger('warning', sprintf(__("Démon [%s] : N'a pas pu être authentifié", __FILE__), $ruid));
 			return '';
 		}
 		// Verify if another daemon is not running
@@ -1293,7 +1294,7 @@ class jMQTT extends eqLogic {
 				self::logger('warning', sprintf(__("Démon [%1\$s] essaye de remplacer le Démon [%2\$s] !", __FILE__), $ruid, $cuid));
 				exec(system::getCmdSudo() . 'fuser ' . $cport . '/tcp 2> /dev/null', $output, $retval);
 				if ($retval != 0 || count($output) == 0) { // Execution issue, could not get a match
-					self::logger('warning', sprintf(__("Démon [%s] : N'a pas pû être identifié", __FILE__), $cuid));
+					self::logger('warning', sprintf(__("Démon [%s] : N'a pas pu être identifié", __FILE__), $cuid));
 					self::deamon_stop(); // Must NOT `return ''` here, new daemon still needs to be accepted
 				} elseif (intval(trim($output[0])) != $cpid) { // No match for old daemon
 					self::logger('warning', sprintf(__("Démon [%s] : Reprend la main", __FILE__), $ruid));
@@ -1470,7 +1471,7 @@ class jMQTT extends eqLogic {
 		}
 
 		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
-			self::logger('debug', __("Relancez les dépendances, le package PHP JsonPath est manquant", __FILE__));
+			self::logger('debug', __('Relancez les dépendances, le package PHP JsonPath est manquant', __FILE__));
 			$return['state'] = self::MQTTCLIENT_NOK;
 		}
 
@@ -1480,7 +1481,7 @@ class jMQTT extends eqLogic {
 		} else {
 			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
 			if (count($output) > 0) {
-				self::logger('error', __("Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv : ", __FILE__).'<br />'.implode('<br />', $output));
+				self::logger('error', __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).' <br />'.implode('<br />', $output));
 				$return['state'] = self::MQTTCLIENT_NOK;
 			}
 		}
@@ -1515,12 +1516,13 @@ class jMQTT extends eqLogic {
 
 		// Not installed return default values
 		if ($retval != 0) {
-			$res['message'] = __("Mosquitto n'est pas installé entant que service.", __FILE__);
+			$res['message'] = __("Mosquitto n'est pas installé en tant que service.", __FILE__);
 			try {
 				// Checking for Mosquitto installed in Docker by MQTT Manager
 				if (is_object(update::byLogicalId('mqtt2')) && plugin::byId('mqtt2')->isActive() && config::byKey('mode', 'mqtt2', 'NotThere') == 'docker') {
 					// Plugin Active and mqtt2 mode is docker
-					$res['message'] = __('Mosquitto est installé <b>en docker</b> par le plugin <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">MQTT Manager</a> (mqtt2).', __FILE__);
+					$res['message'] = __('Mosquitto est installé <b>en docker</b> par', __FILE__);
+					$res['message'] .= ' <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">' . __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
 					$res['by'] = __('MQTT Manager (en docker)', __FILE__);
 				}
 			} catch (Throwable $e) {}
@@ -1542,17 +1544,20 @@ class jMQTT extends eqLogic {
 		if (file_exists('/lib/systemd/system/mosquitto.service')
 				&& strpos(file_get_contents('/lib/systemd/system/mosquitto.service'), 'mqtt2') !== false) {
 			$res['by'] = __('MQTT Manager (en local)', __FILE__);
-			$res['message'] = __('Mosquitto est installé par <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">MQTT Manager</a> (mqtt2).', __FILE__);
+			$res['message'] = __('Mosquitto est installé par', __FILE__);
+			$res['message'] .= ' <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">';
+			$res['message'] .= __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
 		}
 		// Check if jMQTT config file is in place
 		elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
 			$res['by'] = 'jMQTT';
-			$res['message'] = __('Mosquitto est installé par <a class="control-label success">jMQTT</a>.', __FILE__);
+			$res['message'] = __('Mosquitto est installé par', __FILE__);
+			$res['message'] .= ' <a class="control-label success">' . __('jMQTT', __FILE__) . '</a>.';
 		}
 		// Otherwise its considered to be a custom install
 		else {
 			$res['by'] = __("Inconnu", __FILE__);
-			$res['message'] = __("Mosquitto n'a pas est installé par un plugin connu.", __FILE__);
+			$res['message'] = __("Mosquitto n'a pas été installé par un plugin connu.", __FILE__);
 		}
 		return $res;
 	}
@@ -1810,7 +1815,7 @@ class jMQTT extends eqLogic {
 		//If MqttClient is not launchable (daemon is running), throw exception to get message
 		$mqttclient_info = $this->getMqttClientInfo();
 		if ($mqttclient_info['launchable'] != self::MQTTCLIENT_OK)
-			throw new Exception(__('Le client MQTT n\'est pas démarrable : ', __FILE__) . $mqttclient_info['message']);
+			throw new Exception(__("Le client MQTT n'est pas démarrable :", __FILE__) . ' ' . $mqttclient_info['message']);
 		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
 		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
 		$this->sendMqttClientStateEvent(); // Need to send current state before brkUp give OK

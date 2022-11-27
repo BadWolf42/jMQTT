@@ -55,13 +55,17 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace
  */
 function displayEqLogicCard($eqL) {
 	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
-	echo '<span class="hiddenAsTable"></span><img class="lazy" /><br>';
+	echo '<span class="hiddenAsTable"></span>';
+	if ($eqL->getType() == 'brk')
+		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_broker.svg" /><br>';
+	else
+		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_.svg" /><br>';
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
 	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }
 
-function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
-	echo '<div class="eqLogicAction cursor ' . $class . '" ' . $attr . '>';
+function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
+	echo '<div class="eqLogicAction cursor ' . $class . '" data-action="' . $action . '">';
 	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>'."\n";
 }
 ?>
@@ -70,14 +74,14 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
 		<div class="eqLogicThumbnailContainer">
 		<?php
-		displayActionCard('{{Configuration}}', 'fa-wrench', 'data-action="gotoPluginConf"', 'logoSecondary');
-		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'data-action="addJmqttBrk"', 'logoSecondary');
-		displayActionCard('{{Santé}}', 'fa-medkit', 'data-action="healthMQTT"', 'logoSecondary');
+		displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf', 'logoSecondary');
+		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'addJmqttBrk', 'logoSecondary');
+		displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT', 'logoSecondary');
 		if (isset($_GET['debug']))
 		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
-			displayActionCard('{{Debug}}', 'fa-bug', 'data-action="debugJMQTT"', 'logoSecondary');
-		displayActionCard('{{Templates}}', 'fa-cubes', 'data-action="templatesMQTT"', 'logoSecondary');
-		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'data-action="addJmqttEq"', 'logoSecondary');
+			displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT', 'logoSecondary');
+		displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT', 'logoSecondary');
+		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'addJmqttEq', 'logoSecondary');
 		?>
 		</div>
 		<div class="input-group" style="margin:5px;">
@@ -93,8 +97,11 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 		foreach ($eqNonBrokers as $id => $nonBrokers) {
 			if (! array_key_exists($id, $eqBrokers)) {
 				if (!$has_orphans) {
-					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup><i class="fas fa-exclamation-triangle tooltips" title="{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.<br>Il ne devrait pas y avoir d\'équipement orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					echo '<div class="eqLogicThumbnailContainer">';
+					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup>';
+					echo '<i class="fas fa-exclamation-triangle tooltips" title="';
+					echo '{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.}}<br>';
+					echo '{{Il ne devrait pas y avoir un seul orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					$has_orphans = true;
 				}
 				foreach ($nonBrokers as $eqL) {
@@ -106,7 +113,7 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 			echo '</div>';
 
 		foreach ($eqBrokers as $eqB) {
-			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker }} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
+			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayEqLogicCard($eqB);
 			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
@@ -136,8 +143,8 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
 					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
-					<li role="presentation" class="typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
 					<li role="presentation" class="typ-std" style="display: none;"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
+					<li role="presentation" class="typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>
@@ -161,23 +168,21 @@ function displayActionCard($action_name, $fa_icon, $attr = '', $class = '') {
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
 			<div role="tabpanel" class="tab-pane toDisable" id="realtimetab">
-<!--
-				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped tablesorter stickyHead">
--->
+<!--				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped tablesorter stickyHead">	-->
 				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped">
 					<thead style="position:sticky;top:0;z-index:5;">
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
 								<label class="col-lg-1 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
-								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
+								<br />Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
 								<br />Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttIncTopic">
 								</div>
 								<label class="col-lg-1 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
-								<br />Plusieurs topics peuvent être fourni en les séparant par des '|' (pipe).
+								<br />Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
 								<br />Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
 									<input class="form-control" id="mqttExcTopic">

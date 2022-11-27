@@ -116,7 +116,7 @@
 							<label class="col-lg-4 control-label">{{Client-Id}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 							title="{{Identifiant avec lequel l’équipement Broker s’inscrit auprès du Broker MQTT.
 							<br/>Il est important que cet identifiant ne soit utilisé QUE par jMQTT sur ce Broker.
-							<br/>Uéfinissez le Client-Id UNIQUEMENT si c'est réellement nécessaire pour vous.}}"></i></sup></label>
+							<br/>Définissez le Client-Id UNIQUEMENT si c'est réellement nécessaire pour vous.}}"></i></sup></label>
 							<div class="col-lg-1">
 								<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId">
 							</div>
