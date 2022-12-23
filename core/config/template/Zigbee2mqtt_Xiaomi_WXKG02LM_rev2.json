@@ -5,7 +5,7 @@
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-01-25 14:20:07",
-            "auto_add_cmd": "1",
+            "auto_add_cmd": "0",
             "auto_add_topic": "%s\/#",
             "Qos": "1",
             "commentaire": "WXKG02LM_rev2\nlumi.remote.b286acn01\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-wxkg02lm-rev2/81900",
