@@ -1114,6 +1114,13 @@ $(document).ready(function() {
 		event.stopPropagation()
 	});
 
+	// Handle certificate file drap & drop
+	if (window.FileReader) {
+		$('html').on('dragenter dragover dragleave', jmqtt.certDrag).on('drop', jmqtt.certDrop);
+		$('.dropzone').on('drop', jmqtt.certDrop);
+		$('.uploadzone').on('click', jmqtt.certUpload);
+	}
+
 	// Wrap plugin.template save action handler
 	var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
 	$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
