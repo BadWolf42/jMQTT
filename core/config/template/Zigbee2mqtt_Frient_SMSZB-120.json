@@ -5,7 +5,7 @@
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-04-04 17:54:03",
-            "auto_add_cmd": "1",
+            "auto_add_cmd": "0",
             "auto_add_topic": "%s\/#",
             "Qos": "1",
             "battery_type": "1xCR123",

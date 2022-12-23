@@ -144,7 +144,7 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../images/2022-11-06_eqpt_broker.png)
+![Configuration du Broker](../images/2022-12-23_eqpt_broker.png)
 
 Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
 
@@ -171,7 +171,7 @@ Pour modifier les informations de connexion au Broker, les paramètres sont :
     - _Topic de l'API de Jeedom_ : (obsolète) topic présentant l'API JSON RPC de Jeedom (par défaut, 'jeedom/api' est utilisé).
 
   - Section _Paramètres de Sécurité_ (encadré 2), bien lire le chapitre sur l'utilisation du [Chiffrement TLS](#chiffrement-tls) :
-    - Cette section apparait uniquement si le protocole mqtts est sélectionné
+    - Cette section apparait uniquement si le protocole mqtts ou le protocole wss est sélectionné
     - _Vérifier le certificat_ : vérifie que le certificat du Broker est valide et correspond bien à ce Broker (IP/FQDN & CA).
        Trois options sont offertes : Désactivé, Activé en utilisant les Autorités Publiques et Activé en utilisant un Autorité Personnalisée.
     - _Autorité Personnalisée_ : visible si utilise un Autorité Personnalisée, sélectionne l'autorité de certification attendue pour le Broker.
@@ -182,6 +182,7 @@ Pour modifier les informations de connexion au Broker, les paramètres sont :
 > **Attention**: _L'identifiant de connexion_ doit être unique par client par Broker. Sinon les clients portant le même identifiant vont se déconnecter mutuellement.
 
 Une aide contextuelle est également disponible pour chaque champ.
+Il est possible d'importer les certificats en déposant les fichiers sur les champs ou avec les boutons à leur droite.
 La sauvegarde de la configuration relance le client MQTT et la souscription au Broker MQTT avec les nouveaux paramètres.
 Il est aussi possible de relancer volontairement le client MQTT avec le bouton _(Re)Démarrer_ (encadré 3) en haut de la page.
 
@@ -201,7 +202,7 @@ Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des mess
 
 La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2022-11-05_broker_realtime.png)
+![Mode Temps Réel](../images/2022-11-26_broker_realtime.png)
 
 Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel et si les messages retenus par le Broker doivent être inclus dans le Temps Réel (encadré 1).
 
@@ -216,9 +217,10 @@ Selon les messages reçus, des icônes peuvent apparaitre dans la colonne Option
 
 Une fois des messages identifiés, des outils sont disponibles en fin de ligne (encadré 4) pour les utiliser.
 
-  - La première icône permet d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
-  - La seconde de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,
-  - La troisième icône sert à supprimer la ligne de la vue Temps Réel.
+  - La première icône permet d'ajouter un équipement à partir de ce topic,
+  - La seconde d'ajouter une commande avec ce topic et jsonPath à un équipement existant,
+  - La troisième de découper un payload et de créer de nouvelle lignes dans la page Temps Réel,
+  - La quatrième icône sert à supprimer la ligne de la vue Temps Réel.
 
 #### Gestion des Interactions
 
@@ -253,7 +255,7 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 
 ### Onglet Equipement
 
-![Onglet principal d'un Equipement](../images/2022-10-26_eqpt_equipement.png)
+![Onglet principal d'un Equipement](../images/2022-11-13_eqpt_equipement.png)
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
@@ -264,7 +266,7 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
   - _Commande d'état de la batterie_ : commande de l'équipement qui sera utilisée comme niveau de batterie. Si la commande info est de type binaire, alors la valeur de la batterie sera 10% (0) ou 100% (1). Si la commande info est de type numérique, alors la valeur sera utilisée comme pourcentage de batterie (non disponible pour un équipement Broker) ;
   - _Commande de disponibilité_ : commande de l'équipement (info binaire) qui sera utilisée comme état de disponibilité de l'équipement. Si cette commande est à 0, alors l'équipement sera remonté en erreur "Danger" (non disponible pour un équipement Broker) ;
   - _Dernière communication_ : date de dernière communication avec le Broker MQTT, que ce soit en réception (commande information) ou publication (commande action) ;
-  - _Catégorie du topic_ : sélection d’une image spécifique à l’équipement. Pour un équipement Broker, ce paramètre n'est pas disponible car l'image est imposée.
+  - _Icone de l'équipement_ : sélection d’une image spécifique à l’équipement. Pour un équipement Broker, ce paramètre n'est pas disponible car l'image est imposée.
 
 
 > **Important**
@@ -561,11 +563,36 @@ Il existe de nombreux Broker MQTT gratuits ou payants disponibles en ligne pour 
 La grande majorité de ces Broker ne supportent pas de communication "en clair" sur Internet, et demandent la connexion via MQTT over TLS ou MQTTS.
 Cela est tout à fait compréhensible, car "en clair" n'importe qui peut en lire le contenu des messages, ou pire, envoyer des messages/ordres à votre place.
 
-Il est aussi possible de configurer son propre Broker pour supporter le MQTTS.
-A ce sujet, je vous renvoie vers l'excellent article [MQTTS : Comment utiliser MQTT avec TLS ?](https://openest.io/2019/02/06/chiffrement-communication-mqtt-tls-ssl-mosquitto-et-paho/) [[Version en cache](MQTTS_Openest.pdf)], l'auteur, Julien Grossholtz, n'est nullement associé au plugin jMQTT ou à Jeedom.
-**Il s'agit d'une opération complexe, réservé à ceux qui en comprennent les implications et savent utiliser les Certificats.**
-
 Depuis mai 2021, jMQTT supporte la connexion aux Broker publique ou privé en MQTTS. Est aussi implémenté un mecanisme de validation du Certificat du Serveur et l'emploi une paire de clés cryptographique personnalisée (Certificat & Clé Privée Client) pour un chiffrement asymétrique de bout en bout.
+
+Il est aussi possible de configurer son propre Broker pour supporter le MQTTS.
+Je vous renvoie vers l'excellent article [MQTTS : Comment utiliser MQTT avec TLS ?](https://openest.io/2019/02/06/chiffrement-communication-mqtt-tls-ssl-mosquitto-et-paho/) [[Version en cache](MQTTS_Openest.pdf)], l'auteur, Julien Grossholtz, n'est nullement associé au plugin jMQTT ou à Jeedom.
+
+Voici un exemple de commandes pour générer les certificats CA, de Mosquitto et d'un client MQTT avec des "Subject Alternative Name" (SAN) :
+
+    # Génération de la paire de certificat de la CA
+    openssl genrsa -out ca.key 2048
+    openssl req -new -x509 -days 9999 -subj "/C=FR/CN=MQTT-CA" -key ca.key -out ca.crt
+
+    # Génération de la paire de certificats pour le Broker (avec les SAN suitants : mon.domaine.net, localhost, 127.0.0.1 et ::1)
+    openssl genrsa -out mosquitto.key 2048
+    openssl req -new -subj "/C=FR/CN=MQTT-mosquitto" -key mosquitto.key -out mosquitto.csr
+    openssl x509 -req -extfile <(printf "subjectAltName = DNS:mon.domaine.net,DNS:localhost,IP:127.0.0.1,IP:::1") -in mosquitto.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out mosquitto.crt -days 9999 -sha256
+
+    # Génération d'une paire de certificats pour un client MQTT
+    openssl genrsa -out client.key 2048
+    openssl req -new -subj "/C=FR/CN=MQTT-client001" -key client.key -out client.csr
+    openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 9999 -sha256
+
+Il faudra alors modifier la configuration du service mosquitto et ajouter (à minima) les lignes suivantes, pour que mosquitto écoute sur le port 8883 :
+
+    listener 8883
+    protocol mqtt
+    cafile /etc/mosquitto/certs/ca.crt
+    certfile /etc/mosquitto/certs/mosquitto.crt
+    keyfile /etc/mosquitto/certs/mosquitto.key
+
+**Il s'agit d'une opération complexe, réservé à ceux qui en comprennent les implications et savent utiliser les certificats.**
 
 
 # FAQ

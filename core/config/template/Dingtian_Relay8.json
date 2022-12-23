@@ -5,7 +5,7 @@
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-09-27 22:03:15",
-            "auto_add_cmd": "1",
+            "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "relay",

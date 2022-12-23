@@ -222,6 +222,64 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eq.id + '"]').show();
 }
 
+// On drag of a certificate file in a Broker tab
+jmqtt.certDrag = function(ev) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	if (ev.type == 'dragenter') {
+		jmqtt.dropzoneCpt++;
+		$('.dropzone').show().css('background-color', '');
+		if ($(ev.target).hasClass('dropzone'))
+			$(ev.target).css('background-color', 'lightyellow');
+	} else if (ev.type == 'dragleave') {
+		if ($(ev.target).hasClass('dropzone'))
+			$(ev.target).css('background-color', '');
+		jmqtt.dropzoneCpt--;
+		if (jmqtt.dropzoneCpt <= 0) {
+			$('.dropzone').hide();
+			jmqtt.dropzoneCpt = 0;
+		}
+	}
+}
+
+// On drop of a certificate file in a Broker dropzone
+jmqtt.certDrop = function(ev) {
+	ev.preventDefault();
+	ev.stopPropagation();
+	$('.dropzone').hide();
+	var dropzone = $(this);
+	if (dropzone.hasClass('dropzone')) {
+		var reader = new FileReader();
+		reader.onloadend = function(ev) {
+			if (this.result.includes('-----BEGIN')) {
+				dropzone.next().val(this.result);
+				dropzone.css('background-color', 'palegreen').show().fadeOut(600);
+			} else
+				dropzone.css('background-color', 'orangered').show().fadeOut(800);
+		};
+		reader.readAsText(ev.originalEvent.dataTransfer.files[0], "UTF-8");
+	}
+	jmqtt.dropzoneCpt = 0;
+}
+
+// On click on upload certificate file in a Broker uploadzone
+jmqtt.certUpload = function(ev1) {
+	var uploadzone = $(this);
+	var fileDialog = $('<input type="file" accept=".crt,.pem,.key">');
+	fileDialog.click();
+	fileDialog.on("change",function(ev2) {
+		var reader = new FileReader();
+		reader.onloadend = function(ev3) {
+			if (this.result.includes('-----BEGIN')) {
+				uploadzone.prev().val(this.result);
+				uploadzone.removeClass('btn-default btn-danger').addClass('btn-success');
+			} else
+				uploadzone.removeClass('btn-default btn-success').addClass('btn-danger');
+			setTimeout(function() { uploadzone.removeClass('btn-success btn-danger').addClass('btn-default'); }, 1500);
+		};
+		reader.readAsText($(this)[0].files[0], "UTF-8");
+	});
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used on Equipment pages

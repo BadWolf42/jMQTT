@@ -5,7 +5,7 @@
         "configuration": {
             "createtime": "2021-05-16 20:31:14",
             "type": "eqpt",
-            "auto_add_cmd": "1",
+            "auto_add_cmd": "0",
             "Qos": "1",
             "icone": "remote",
             "updatetime": "2021-05-16 23:31:46",

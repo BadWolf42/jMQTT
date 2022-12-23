@@ -1850,7 +1850,7 @@ class jMQTT extends eqLogic {
 		if ($params['tlscli']) {
 			$params['tlsclicert']    = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_CERT);
 			$params['tlsclikey']     = $this->getConf(self::CONF_KEY_MQTT_TLS_CLI_KEY);
-			if ($params['tlsclicert'] == '' || $params['tlsclikey'] = '') {
+			if ($params['tlsclicert'] == '' || $params['tlsclikey'] == '') {
 				$params['tlscli']    = false;
 				unset($params['tlsclicert']);
 				unset($params['tlsclikey']);

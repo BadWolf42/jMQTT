@@ -197,8 +197,10 @@
 								<label class="col-lg-3 control-label">{{Autorité Personnalisée}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Autorité de certification attendue pour le Broker.}}"></i></sup></label>
 								<div class="col-lg-1"></div>
-								<div class="col-lg-8">
-									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsCa"></textarea>
+								<div class="col-lg-8 input-group">
+									<div class="dropzone rounded" style="display:none">{{Déposez ici le certificat CA du Broker}}</div>
+									<textarea class="eqLogicAttr form-control cert blured roundedLeft" data-l1key="configuration" data-l2key="mqttTlsCa"></textarea>
+									<span class="btn btn-default btn-file input-group-addon uploadzone roundedRight"><i class="fas fa-upload"></i></span>
 								</div>
 							</div>
 							<div class="form-group">
@@ -207,16 +209,20 @@
 								<div class="col-lg-1">
 									<input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClient">
 								</div>
-								<div class="col-lg-8 jmqttTlsClient" style="display:none">
-									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientCert"></textarea>
+								<div class="col-lg-8 input-group jmqttTlsClient" style="display:none">
+									<div class="dropzone rounded" style="display:none;">{{Déposez ici le certificat publique du client MQTT}}</div>
+									<textarea class="eqLogicAttr form-control cert blured roundedLeft" data-l1key="configuration" data-l2key="mqttTlsClientCert"></textarea>
+									<span class="btn btn-default btn-file input-group-addon uploadzone roundedRight"><i class="fas fa-upload"></i></span>
 								</div>
 							</div>
 							<div class="form-group jmqttTlsClient" style="display:none">
 								<label class="col-lg-3 control-label">{{Clé Privée Client}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 								title="{{Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
 								<div class="col-lg-1"></div>
-								<div class="col-lg-8">
-									<textarea class="eqLogicAttr form-control cert blured" data-l1key="configuration" data-l2key="mqttTlsClientKey"></textarea>
+								<div class="col-lg-8 input-group">
+									<div class="dropzone rounded" style="display:none">{{Déposez ici la clé privée du client MQTT}}</div>
+									<textarea class="eqLogicAttr form-control cert blured roundedLeft" data-l1key="configuration" data-l2key="mqttTlsClientKey"></textarea>
+									<span class="btn btn-default btn-file input-group-addon uploadzone roundedRight"><i class="fas fa-upload"></i></span>
 								</div>
 							</div>
 						</div>

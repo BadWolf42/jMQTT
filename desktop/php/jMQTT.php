@@ -39,11 +39,12 @@ textarea.form-control.input-sm.modifiedVal			{ color: darkorange!important; font
 input:not(.btn):not(.dial):not([type=image]):not(.expressionAttr):not(.knob):not([type=checkbox]).topicMismatch
 													{ background: rgba(248, 216, 0, 0.25)!important; font-weight: bold!important; }
 div.eqLogicDisplayCard[jmqtt_type="broker"]			{ background: rgba(248, 216, 0, 0.25)!important; }
+div.dropzone										{ z-index:6;width:100%;max-width:98%;height:100%;position:absolute;background-color:lightgray;display:flex;justify-content:center;align-items:center;border:2px dashed green;font-weight:bold; }
 textarea.eqLogicAttr.form-control.blured			{ filter: blur(4px); }
 textarea.eqLogicAttr.form-control.blured:hover		{ filter: none; }
 textarea.eqLogicAttr.form-control.blured:focus		{ filter: none; }
 i.fas.fa-minus-circle.cmdAction						{ margin-top: 5px; }
-textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace; font-size:small!important; line-height:normal; height:90px; }
+textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace; font-size:small!important; line-height:normal; height:62px; }
 .w30												{ width: 30px; }
 .w18												{ width: 18px; text-align: center; font-size: 0.9em; }
 </style>

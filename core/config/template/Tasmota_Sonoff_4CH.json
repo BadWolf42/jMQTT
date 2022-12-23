@@ -8,7 +8,7 @@
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Tasmota Sonoff 4CH",
+            "commentaire": "Tasmota Sonoff 4CH\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/15",
             "icone": "lightbulb",
             "updatetime": "2021-11-19 14:57:50",
             "auto_add_topic": "%s\/#"
