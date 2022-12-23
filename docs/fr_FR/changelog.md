@@ -1,5 +1,21 @@
 # Registre des évolutions
 
+## 2022-12-24
+- Nouveau bouton pour ajouter un nouvel équipement depuis la page Temps Réel
+- Ajout de boutons et du darg & drop, pour importer les certificats sur les équipements Brokers
+- Suggestion d'un nom pour la nouvelle commande ajoutée depuis la page Temps Réel
+- Renommage du champ "Catégorie du topic" en "Icone de l'équipement"
+- Correction d'un bug lors de l'utilisation de certificats clients en MQTTS et WSS (merci oracle7)
+- Correction d'un bug d'affichage des états des équipements Broker lorsque le démon est arrêté
+- Correction d'un bug d'affichage des icones sur la page d'un équipement (merci Jeandhom)
+- Correction d'un bug d'affichage des icones sur la page d'un template
+- Correction d'un bug d'affichage des liens Configuration avancée et Supprimer sur la page de santé (merci Bison)
+- Corrections en vue d'une traduction globale en anglais
+- Corrections de plusieurs typo (merci noodom)
+- Défilement indépendant dans la modale de gestion des templates entre la liste des templates et l'aperçu
+- Renommage des templates "Zwavejs2mqtt" en "ZWaveJSUI"
+- Ajout de 15 templates : Shelly_Plus_2pm (merci Manumdk), OpenMQTTGateway_Xiaomi_Mija_HT, ZWaveJSUI_AEOTEC_ZW116_Nano_Switch, ZWaveJSUI_Fibaro_FGBS-222_Smart_Implant, ZWaveJSUI_Hank_DWS01_Door_Window_Sensor, ZWaveJSUI_Hank_HKZW-SO05_Smart_Plug, ZWaveJSUI_Philio_PST02-1A_Multi_Sensor_4_in_1, ZWaveJSUI_Philio_PST02A_Multi_Sensor_4_in_1 (merci loutre38), ZWaveJSUI_Philips_HUE_White, ZWaveJSUI_Philips_HUE_White_and_Color (merci m.georgein), Dingtian_2R (merci Philippe1155), Shelly_Button_1, Shelly_EM, Shelly_Plus_HT (merci Furaxworld), Tasmota_Teleinfo (merci Manumdk)
+
 ## 2022-11-10 Mode Temps Réel
  - **Suppression du mode "Inclusion" au profit du mode "Temps Réel" dans l'onglet Temps Réel du Broker**
  - **Ajout d'une case à cocher pour changer le Client-Id (afin d'essayer d'éviter tous les problèmes utilisateur avec le Client-Id)**
