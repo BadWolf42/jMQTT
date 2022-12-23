@@ -20,8 +20,8 @@ if (!isConnect('admin')) {
 }
 ?>
 
-<div class="col-lg-3 col-md-3 col-sm-3" id="div_listJmqtt" style="z-index:999">
-	<div class="bs-sidebar nav nav-list bs-sidenav">
+<div class="col-lg-3 col-md-3 col-sm-3" id="div_listJmqtt" style="height:100%">
+	<div class="bs-sidebar nav nav-list bs-sidenav" style="height:calc(100%);overflow:auto;overflow-x:hidden;">
 		<div class="form-group">
 			<span class="btn btn-default btn-file" style="width:100%;">
 				<i class="fas fa-upload"></i> {{Importer un template depuis un fichier}}<input id="bt_jmqttTemplateUp" type="file" name="file" accept=".json" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&amp;dir=template" style="display : inline-block;width:100%;">
@@ -31,8 +31,8 @@ if (!isConnect('admin')) {
 		<ul id="ul_jmqttTemplateList" class="nav nav-list bs-sidenav"></ul>
 	</div>
 </div>
-<div class="col-lg-9 col-md-9 col-sm-9" id="div_listJmqttTemplate" style="display:none;">
-	<form class="form-horizontal">
+<div class="col-lg-9 col-md-9 col-sm-9" id="div_listJmqttTemplate" style="display:none;height:100%">
+	<form class="form-horizontal" style="height:calc(100%);overflow:auto;overflow-x:hidden;">
 		<a class="btn btn-sm btn-primary" id="bt_jmqttTemplateDownload"><i class="fas fa-cloud-download-alt"></i> {{Télécharger}}</a>
 		<!--<a class='btn btn-sm btn-success pull-right' id='bt_jmqttTemplateApply'><i class="far fa-check-circle"></i> {{Appliquer}}</a>-->
 		<a class="btn btn-sm btn-danger" id="bt_jmqttTemplateDelete"><i class="fas fa-times"></i> {{Supprimer}}</a>
@@ -114,7 +114,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 			$('#div_listJmqttTemplate').show()
 			var eq =  '';
 			// Nom
-			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">'+"{{Nom de l'équipement}}"+'</label><div class="col-sm-3"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
+			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">'+"{{Nom de l'équipement}}"+'</label><div class="col-sm-4"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
 			// Category
 			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
 			eq += '<?php
@@ -126,7 +126,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 			eq += '<input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" '+((init(data.configuration.auto_add_cmd)=="1")?'checked ':'')+'disabled />';
 			eq += '</div></div>';
 			// Topic
-			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-3">';
+			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-4">';
 			eq += '<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
 			eq += '</div></div>';
 			// Qos
@@ -135,15 +135,15 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 			eq += '<option value="'+init(data.configuration.auto_add_topic)+'" selected>'+init(data.configuration.Qos)+'</option></select>';
 			eq += '</div></div>';
 			// Alimentation
-			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Type d'alimentation}}"+'</label><div class="col-sm-3">';
+			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Type d'alimentation}}"+'</label><div class="col-sm-4">';
 			eq += '<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" value="'+init(data.configuration.battery_type)+'" disabled />';
 			eq += '</div></div>';
 			// Comment
-			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-3">';
-			eq += '<textarea class="eqLogicAttr form-control" style="resize:none!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
+			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-8">';
+			eq += '<textarea class="eqLogicAttr form-control" style="resize:vertical!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
 			eq += '</div></div>';
 			// Logo
-			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label"></label><div class="col-sm-3" style="text-align: center"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
+			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label"></label><div class="col-sm-4"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 			// Display equipements
 			$('#div_jmqttTemplateEqlogic').empty().html(eq);
 			// Load logo
@@ -242,6 +242,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 					$('#table_jmqttTemplateCmds [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
 				}
 			}
+			$('#div_listJmqttTemplate').children(0).scrollTop(0);
 		}
 	});
 });
