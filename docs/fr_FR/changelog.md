@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## 2022-12-27
+- Nouvelle correction pour le bug d'affichage de l'icône sur la page d'un équipement
+
 ## 2022-12-24
 - Nouveau bouton pour ajouter un nouvel équipement depuis la page Temps Réel
 - Ajout de boutons et du darg & drop, pour importer les certificats sur les équipements Brokers
