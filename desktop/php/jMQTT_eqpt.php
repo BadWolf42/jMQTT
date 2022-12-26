@@ -120,7 +120,7 @@
 		</div>
 
 		<div class="form-group toDisable typ-std">
-			<label class="col-sm-3 control-label">{{Icone de l'équipement}}</label>
+			<label class="col-sm-3 control-label">{{Icône de l'équipement}}</label>
 			<div class="col-sm-3">
 				<select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone"></select>
 			</div>

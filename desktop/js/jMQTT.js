@@ -565,11 +565,11 @@ function printEqLogic(_eqLogic) {
 					isVisible: "1",
 					type: 'info',
 					subType: 'string',
-					value: val
+					state: val
 				}, parent_id);
 			}
 			else {
-				c.value = val;
+				c.state = val;
 				return addCmd(c, parent_id);
 			}
 		}
@@ -619,13 +619,16 @@ function printEqLogic(_eqLogic) {
 				c = existingCmd(_eqLogic.cmd, topic, jsonPath);
 				if (c !== undefined) {
 					// Get the payload associated to the command
-					jeedom.cmd.execute({
-						async: false, id: c.id, cache: 0, notify: false,
-						success: function(result) {
-							c.value = result;
-						}});
+					if (c.state == undefined) {
+						console.log('missed c', c.id);
+						jeedom.cmd.execute({
+							async: false, id: c.id, cache: 0, notify: false,
+							success: function(result) {
+								c.state = result;
+							}});
+					}
 					try {
-						var parsed_json_value = JSON.parse(c.value);
+						var parsed_json_value = JSON.parse(c.state);
 					}
 					catch (e) {}
 
@@ -839,21 +842,26 @@ function addCmdToTable(_cmd) {
 			$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]').value(init(_cmd.type));
 		jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
-		// Fill in value of current cmd. Efficient in JSON view only as _cmd.value was set in JSON view only in printEqLogic.
+		// Fill in value of current cmd. Efficient in JSON view only as _cmd.state was set in JSON view only in printEqLogic.
 		if (is_json_view) {
-			$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.value);
+			$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.state);
 		}
 
 		// Get and display the value in CLASSIC view (for JSON view, see few lines above)
 		if (_cmd.id != undefined) {
 			if (! is_json_view) {
-				jeedom.cmd.execute({
-					id: _cmd.id,
-					cache: 0,
-					notify: false,
-					success: function(result) {
-						$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(result);
-				}});
+				if (_cmd.state != undefined) {
+					$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(_cmd.state);
+				} else {
+					console.log('missed _cmd', _cmd.id);
+					jeedom.cmd.execute({
+						id: _cmd.id,
+						cache: 0,
+						notify: false,
+						success: function(result) {
+							$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(result);
+					}});
+				}
 			}
 
 			// Set the update value callback

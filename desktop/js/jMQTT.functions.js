@@ -431,7 +431,7 @@ jmqtt.updateEqptTabs = function(_eq) {
 		});
 	}
 	// Set value
-	icos.val(_eq.configuration.icone);
+	icos.value(_eq.configuration.icone); // Use .value(), instead of .val(), to trigger change event
 
 	// Update Real Time mode buttons
 	jmqtt.updateRealTimeButtons(false, false, false);

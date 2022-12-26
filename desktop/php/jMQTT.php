@@ -55,7 +55,7 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace
  * @param jMQTT $eqL
  */
 function displayEqLogicCard($eqL) {
-	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
+	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">'; // TODO (low) Add data-eqLogic_type="jMQTT" when working
 	echo '<span class="hiddenAsTable"></span>';
 	if ($eqL->getType() == 'brk')
 		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_broker.svg" /><br>';

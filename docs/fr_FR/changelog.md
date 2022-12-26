@@ -1,14 +1,19 @@
 # Registre des évolutions
 
+## 2022-12-27
+- Nouvelle correction pour le bug d'affichage de l'icône sur la page d'un équipement
+- Corrections icone -> icône
+- Chargement plus rapide des valeurs des commandes
+
 ## 2022-12-24
 - Nouveau bouton pour ajouter un nouvel équipement depuis la page Temps Réel
 - Ajout de boutons et du darg & drop, pour importer les certificats sur les équipements Brokers
 - Suggestion d'un nom pour la nouvelle commande ajoutée depuis la page Temps Réel
-- Renommage du champ "Catégorie du topic" en "Icone de l'équipement"
+- Renommage du champ "Catégorie du topic" en "Icône de l'équipement"
 - Correction d'un bug lors de l'utilisation de certificats clients en MQTTS et WSS (merci oracle7)
 - Correction d'un bug d'affichage des états des équipements Broker lorsque le démon est arrêté
-- Correction d'un bug d'affichage des icones sur la page d'un équipement (merci Jeandhom)
-- Correction d'un bug d'affichage des icones sur la page d'un template
+- Correction d'un bug d'affichage des icônes sur la page d'un équipement (merci Jeandhom)
+- Correction d'un bug d'affichage des icônes sur la page d'un template
 - Correction d'un bug d'affichage des liens Configuration avancée et Supprimer sur la page de santé (merci Bison)
 - Corrections en vue d'une traduction globale en anglais
 - Corrections de plusieurs typo (merci noodom)
@@ -164,7 +169,7 @@
 ## 2022-02-28
  - Correction d'un bug en cas de tentative de suppression d'une commande orpheline (sans EqLogic)
  - Correction du nettoyage des info broker des equipements (les champs ayant '' pour valeur étaient supprimés avant envoi)
- - Nouvel affichage du selecteur d'icones sur les commandes
+ - Nouvel affichage du selecteur d'icônes sur les commandes
  - Mise en place d'une alerte sur les dépendances Composer
  - Ajout de la dépendance galbar/jsonpath
  - **Suppression de la classe intermédiaire jMQTTBase**
@@ -222,7 +227,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
   - TLS : Ajout de boutons pour l'upload/suppression de fichiers de CA/Cert/Key
   - Correction de Bug sur l'application des Template : La souscription au topic ne se faisait pas après l'application d'un template + des messages de topics mismatch apparaissaient
   - Augmentation du timeout WebSocket et kill -9 des démon si pas arrêté au bout de 10 secondes
-  - Ajout de l'icone Nabaztag
+  - Ajout de l'icône Nabaztag
   - Ajout de template de volet roulant
   - Stockage des template dans le dossier data permettant de les conserver durant les MAJ du plugin
   - IMAGES : Changement du logo du plugin, reprise des captures d'écran de la documentation, optimisation des tailles
@@ -277,12 +282,12 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
   - Correction [PR#11](https://github.com/Domochip/jMQTT/pull/11): Typo dans le code d'application de template
 
 ## 2021-03-23
-  - Amélioration [PR#7](https://github.com/Domochip/jMQTT/pull/7): Ajout de nouvelles icones d'équipement (de mika41)
+  - Amélioration [PR#7](https://github.com/Domochip/jMQTT/pull/7): Ajout de nouvelles icônes d'équipement (de mika41)
   - Correction [PR#10](https://github.com/Domochip/jMQTT/pull/10): Désactivation de l'utilisation du js minifié
   - Correction [PR#9](https://github.com/Domochip/jMQTT/pull/9): Correction problème d'affichage pour Jeedom 4.2 (de mika41)
   - Amélioration [PR#8](https://github.com/Domochip/jMQTT/pull/8): Ajout de Secteur dans le placeholder de Type d'alimentation
   - Amélioration [PR#6](https://github.com/Domochip/jMQTT/pull/6): Conversion des couleurs en HTML sur les commandes nommées "color","colour","couleur" ou "rgb"
-  - Amélioration [PR#5](https://github.com/Domochip/jMQTT/pull/5): Mise en place de petites icones de visibilité et mode incluson sur les équipement + lazy image
+  - Amélioration [PR#5](https://github.com/Domochip/jMQTT/pull/5): Mise en place de petites icônes de visibilité et mode incluson sur les équipement + lazy image
   - Amélioration [PR#4](https://github.com/Domochip/jMQTT/pull/4): Utilisation d'une liste ordonnée et indentée pour le choix de l'Objet parent
   - Amélioration [PR#3](https://github.com/Domochip/jMQTT/pull/3): Ajout du remplacement de #select#
   - Amélioration [PR#2](https://github.com/Domochip/jMQTT/pull/2): Remplissage du topic de l'équipement sur double-click + ajout des champs min, max et listValue
