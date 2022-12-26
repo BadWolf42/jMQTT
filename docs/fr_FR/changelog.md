@@ -3,6 +3,7 @@
 ## 2022-12-27
 - Nouvelle correction pour le bug d'affichage de l'icône sur la page d'un équipement
 - Corrections icone -> icône
+- Chargement plus rapide des valeurs des commandes
 
 ## 2022-12-24
 - Nouveau bouton pour ajouter un nouvel équipement depuis la page Temps Réel
