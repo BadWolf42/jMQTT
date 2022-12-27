@@ -271,11 +271,10 @@ class jMQTTCmd extends cmd {
 			}
 		}
 
+		$this->_preSaveInformations = null;
+		$cmd = self::byId($this->getId());
 		// It's time to gather informations that will be used in postSave
-		if ($this->getId() == '')
-			$this->_preSaveInformations = null;
-		else {
-			$cmd = self::byId($this->getId());
+		if (is_object($cmd)){
 			$this->_preSaveInformations = array(
 				self::CONF_KEY_RETAIN => $cmd->getConfiguration(self::CONF_KEY_RETAIN, 0),
 				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
