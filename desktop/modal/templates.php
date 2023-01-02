@@ -119,7 +119,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
 			eq += '<?php
 			foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
-						echo '<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="'.$key.'" \'+((init(data.category.'.$key.')=="1")?\'checked \':\'\')+\'disabled />'.$value['name'].'</label>'; ?>';
+				echo '<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="'.$key.'" \'+((init(data.category.'.$key.')=="1")?\'checked \':\'\')+\'disabled />'.$value['name'].'</label>'; ?>';
 			eq += '</div></div>';
 			// Auto add cmd
 			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label><div class="col-sm-3">';
@@ -132,11 +132,27 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 			// Qos
 			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Qos}}</label><div id="mqttqos" class="col-sm-1">';
 			eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="Qos" disabled>';
-			eq += '<option value="'+init(data.configuration.auto_add_topic)+'" selected>'+init(data.configuration.Qos)+'</option></select>';
+			eq += '<option selected>'+init(data.configuration.Qos)+'</option></select>';
 			eq += '</div></div>';
 			// Alimentation
 			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Type d'alimentation}}"+'</label><div class="col-sm-4">';
 			eq += '<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" value="'+init(data.configuration.battery_type)+'" disabled />';
+			eq += '</div></div>';
+			// Battery
+			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Commande d\'état de la batterie}}</label><div class="col-sm-3">';
+			eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_cmd" disabled>';
+			eq += '<option value="">{{Aucune}}</option>';
+			if (init(data.configuration.battery_cmd))
+				eq += '<option selected>'+init(data.configuration.battery_cmd)+'</option></select>';
+			eq += '</select>';
+			eq += '</div></div>';
+			// Availability
+			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Commande de disponibilité}}</label><div class="col-sm-3">';
+			eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="availability_cmd" disabled>';
+			eq += '<option value="">{{Aucune}}</option>';
+			if (init(data.configuration.availability_cmd))
+				eq += '<option selected>'+init(data.configuration.availability_cmd)+'</option></select>';
+			eq += '</select>';
 			eq += '</div></div>';
 			// Comment
 			eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-8">';
