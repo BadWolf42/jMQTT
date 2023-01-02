@@ -536,7 +536,7 @@ class jMQTT extends eqLogic {
 	 */
 	public function copy($_name) {
 
-		$this->log('info', sprintf(__("Copie de l'équipement %1\$s depuis l'équipement #%2\$s#", __FILE__), $name, $this->getHumanName()));
+		$this->log('info', sprintf(__("Copie de l'équipement %1\$s depuis l'équipement #%2\$s#", __FILE__), $_name, $this->getHumanName()));
 
 		// Clone the equipment and change properties that shall be changed
 		// . new id will be given at saving
@@ -548,9 +548,8 @@ class jMQTT extends eqLogic {
 		$eqLogicCopy->setName($_name);
 		$eqLogicCopy->setIsEnable(0);
 		$eqLogicCopy->setTopic('');
-		foreach ($eqLogicCopy->getCmd() as $cmd) {
+		foreach ($eqLogicCopy->getCmd() as $cmd)
 			$cmd->remove();
-		}
 		$eqLogicCopy->save();
 
 		// Clone commands

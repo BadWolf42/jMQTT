@@ -417,7 +417,7 @@ class jMQTTCmd extends cmd {
 	public function preRemove() {
 		$eqLogic = $this->getEqLogic();
 		if ($eqLogic) {
-			$eqLogic->log('info', sprintf(__("Suppression de la commande #%s#", __FILE__), $eqLogic->getHumanName()));
+			$eqLogic->log('info', sprintf(__("Suppression de la commande #%s#", __FILE__), $this->getHumanName()));
 			// Remove battery status from eqLogic on delete
 			if ($this->isBattery()) {
 				$eqLogic->log('debug', sprintf(__("Suppression de la commande de Batterie de l'équipement #%s#", __FILE__), $eqLogic->getHumanName()));
@@ -431,7 +431,7 @@ class jMQTTCmd extends cmd {
 				$eqLogic->save();
 			}
 		} else {
-			jMQTT::logger('info', sprintf(__("Suppression de la commande orpheline #%s#", __FILE__), $this->getId()));
+			jMQTT::logger('info', sprintf(__("Suppression de la commande orpheline #%s# (%s)", __FILE__), $this->getId(), $this->getName()));
 		}
 		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
 		foreach ($listener as $l) {
