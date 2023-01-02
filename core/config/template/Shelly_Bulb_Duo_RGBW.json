@@ -1003,7 +1003,7 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/hexColor",
-                    "request": "sprintf(\"#%02x%02x%02x\", #11711#, #11712#, #11713#)",
+                    "request": "sprintf(\"#%02x%02x%02x\", #[red]#, #[green]#, #[blue]#)",
                     "retain": "0",
                     "autoPub": "1"
                 },

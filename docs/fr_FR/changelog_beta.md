@@ -1,9 +1,14 @@
 # Registre des évolutions BETA
 
+## 2023-01-03
+- Correction d'un bug lors de la duplication d'un équipement : des commandes de l'équipement source étaient encore utilisées
+- Correction d'un bug lors de la création ou de l'import d'un template : des id des commandes d'origine étaient encore conservées
+
 ## 2022-12-28
 - Correction d'un bug lorsqu'une commande n'existe pas/plus (merci Loïc)
-- Arrêt du support de Python 2.7 et 3.6 (changement sur le package requests en 2.28.1)
+- Arrêt du support de Python 2.7 et 3.6 (changement sur le package Python "requests" en 2.28.1)
 - Suppression du test GitHub CI sur Python 3.6
+
 
 ## 2022-12-27
 - Passage de la Beta en stable

@@ -360,9 +360,27 @@ class jMQTT extends eqLogic {
 		$this->setTopic(sprintf($_template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
 		$this->save();
 
+		// Create a replacement array with cmd names & id for further use
+		$cmdsId = array();
+		$cmdsName = array();
+		foreach ($this->getCmd() as $cmd) {
+			$cmdsId[] = '#' . $cmd->getId() . '#';
+			$cmdsName[] = '#[' . $cmd->getName() . ']#';
+			// Update battery linked info command
+			if ($this->getConf(self::CONF_KEY_BATTERY_CMD) == $cmd->getName())
+				$this->setConfiguration(self::CONF_KEY_BATTERY_CMD, $cmd->getId());
+			// Update availability linked info command
+			if ($this->getConf(self::CONF_KEY_AVAILABILITY_CMD) == $cmd->getName())
+				$this->setConfiguration(self::CONF_KEY_AVAILABILITY_CMD, $cmd->getId());
+		}
+		if ($this->getConf(self::CONF_KEY_BATTERY_CMD) != "" || $this->getConf(self::CONF_KEY_AVAILABILITY_CMD) != "")
+			$this->save();
+
 		// complete cmd topics
 		foreach ($this->getCmd() as $cmd) {
 			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
+			$request = $cmd->getConfiguration(jMQTTCmd::CONF_KEY_REQUEST, "");
+			$cmd->setConfiguration(jMQTTCmd::CONF_KEY_REQUEST, str_replace($cmdsName, $cmdsId, $request));
 			$cmd->save();
 		}
 
@@ -394,22 +412,35 @@ class jMQTT extends eqLogic {
 		// TODO (nice to have) Remove me when 4.4 is out
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
-		if (array_key_exists('cmd', $exportedTemplate[$_template]))
-		{
+		if (array_key_exists('cmd', $exportedTemplate[$_template])) {
 			// Rename 'cmd' to 'commands' for Jeedom import ...
 			$exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
 			unset($exportedTemplate[$_template]['cmd']);
 		}
 
-		// convert topic to string format
+		// Create a replacement array with cmd names & id for further use
+		$cmdsId = array();
+		$cmdsName = array();
+		foreach ($this->getCmd() as $cmd) {
+			$cmdsId[] = '#' . $cmd->getId() . '#';
+			$cmdsName[] = '#[' . $cmd->getName() . ']#';
+			if ($cmd->isBattery()) // Update battery linked info command
+				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_BATTERY_CMD] = $cmd->getName();
+			if ($cmd->isAvailability()) // Update availability linked info command
+				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AVAILABILITY_CMD] = $cmd->getName();
+		}
+		// $this->log('debug', sprintf(__("TEMPLATE : Commandes de l'équipement %1\$s = %2\$s", __FILE__), $this->getHumanName(), json_encode(array($cmdsId, $cmdsName))));
+
 		foreach ($exportedTemplate[$_template]['commands'] as $key => $command) {
-			if(isset($command['configuration']['topic'])) {
+			// Convert topic to string format
+			if (isset($command['configuration']['topic'])) {
 				$exportedTemplate[$_template]['commands'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $command['configuration']['topic']);
 			}
+			// Convert relative cmd id to '#[Name]#' format in request
+			if (isset($command['configuration']['request'])) {
+				$exportedTemplate[$_template]['commands'][$key]['configuration']['request'] = str_replace($cmdsId, $cmdsName, $command['configuration']['request']);
+			}
 		}
-
-		// TODO (critical bug fix) FIX ME: Commands used in templates are not converted on template import/export:
-		// cf: https://community.jeedom.com/t/evolution-modele-template-dequipement/52701/24
 
 		// Remove brkId from eqpt configuration
 		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
@@ -489,8 +520,8 @@ class jMQTT extends eqLogic {
 		// Try to locate the Eq is uuid is provided
 		if (!is_null($uuid)) {
 			// Search for a jMQTT Eq with $uuid, if found apply template to it
-			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
-			$eqpts = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+			$type = json_encode(array(self::CONF_KEY_TEMPLATE_UUID => $uuid));
+			$eqpts = self::byTypeAndSearchConfiguration(__CLASS__, substr($type, 1, -1));
 			foreach ($eqpts as $eqpt) {
 				// If it's attached to correct broker
 				if ($eqpt->getBrkId() == $broker->getId()) {
@@ -509,7 +540,7 @@ class jMQTT extends eqLogic {
 			$eq = self::createEquipment($broker, $name, $topic);
 			self::logger('debug', sprintf(__("createEqWithTemplate %s: Nouvel équipement créé", __FILE__), $name));
 			if (!is_null($uuid)) {
-				$eq->setConfiguration(jMQTT::CONF_KEY_TEMPLATE_UUID, $uuid);
+				$eq->setConfiguration(self::CONF_KEY_TEMPLATE_UUID, $uuid);
 				$eq->save();
 			}
 		}
@@ -536,7 +567,7 @@ class jMQTT extends eqLogic {
 	 */
 	public function copy($_name) {
 
-		$this->log('info', sprintf(__("Copie de l'équipement %1\$s depuis l'équipement #%2\$s#", __FILE__), $name, $this->getHumanName()));
+		$this->log('info', sprintf(__("Copie de l'équipement %1\$s depuis l'équipement #%2\$s#", __FILE__), $_name, $this->getHumanName()));
 
 		// Clone the equipment and change properties that shall be changed
 		// . new id will be given at saving
@@ -546,25 +577,55 @@ class jMQTT extends eqLogic {
 		$eqLogicCopy = clone $this;
 		$eqLogicCopy->setId('');
 		$eqLogicCopy->setName($_name);
-		$eqLogicCopy->setIsEnable(0);
-		$eqLogicCopy->setTopic('');
-		foreach ($eqLogicCopy->getCmd() as $cmd) {
-			$cmd->remove();
-		}
-		$eqLogicCopy->save();
+		if ($eqLogicCopy->getIsEnable())
+			$eqLogicCopy->setIsEnable(0);
+		foreach ($eqLogicCopy->getCmd() as $cmdCopy)
+			$cmdCopy->remove();
+		$eqLogicCopy->save(); // Needed here to get an Id
 
+		$cmdsNameList = array();
+		$cmdsOldId = array();
+		$cmdsNewId = array();
 		// Clone commands
-		/** @var jMQTTCmd $cmd */
 		foreach ($this->getCmd() as $cmd) {
-			/** @var jMQTTCmd $cmdCopy */
 			$cmdCopy = clone $cmd;
 			$cmdCopy->setId('');
 			$cmdCopy->setEqLogic_id($eqLogicCopy->getId());
 			$cmdCopy->setEqLogic($eqLogicCopy);
-			$cmdCopy->save();
+			if ($cmd->getType() == 'action') { // Replace linked info cmd Id by its Name
+				$cmdValue = $cmd->getCmdValue();
+				$cmdCopy->setValue(is_object($cmdValue) ? $cmdValue->getName() : '');
+			}
+			$cmdCopy->save(); // Needed here to get an Id
+
+			// Gather mapping data
+			$cmdsNameList[$cmdCopy->getName()] = $cmdCopy->getId(); // Store all cmd names -> id for further usage
+			$cmdsOldId[] = '#' . $cmd->getId() . '#';
+			$cmdsNewId[] = '#' . $cmdCopy->getId() . '#';
+
+			// Update battery linked info command
+			if ($cmd->isBattery())
+				$eqLogicCopy->setConfiguration(self::CONF_KEY_BATTERY_CMD, $cmdCopy->getId());
+
+			// Update availability linked info command
+			if ($cmd->isAvailability())
+				$eqLogicCopy->setConfiguration(self::CONF_KEY_AVAILABILITY_CMD, $cmdCopy->getId());
 			$this->log('info', sprintf(__("Copie de la commande %1\$s #%2\$s# vers la commande #%3\$s#", __FILE__), $cmd->getType(), $cmd->getHumanName(), $cmdCopy->getHumanName()));
 		}
+		if ($eqLogicCopy->getConf(self::CONF_KEY_BATTERY_CMD) != "" || $eqLogicCopy->getConf(self::CONF_KEY_AVAILABILITY_CMD) != "")
+			$eqLogicCopy->save();
 
+		foreach ($eqLogicCopy->getCmd() as $cmdCopy) {
+			if ($cmdCopy->getType() != 'action') // Only on action cmds
+				continue;
+			// Update linked info cmd
+			if ($cmdCopy->getValue() != '')
+				$cmdCopy->setValue($cmdsNameList[$cmdCopy->getValue()]);
+			// Update relative (to eqLogic) info cmd in action cmd payload
+			$request = $cmdCopy->getConfiguration(jMQTTCmd::CONF_KEY_REQUEST, "");
+			$cmdCopy->setConfiguration(jMQTTCmd::CONF_KEY_REQUEST, str_replace($cmdsOldId, $cmdsNewId, $request));
+			$cmdCopy->save();
+		}
 		return $eqLogicCopy;
 	}
 
@@ -588,7 +649,7 @@ class jMQTT extends eqLogic {
 	public static function getBrokers() {
 		$type = json_encode(array('type' => self::TYP_BRK));
 		/** @var jMQTT[] $brokers */
-		$brokers = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+		$brokers = self::byTypeAndSearchConfiguration(__CLASS__, substr($type, 1, -1));
 		$returns = array();
 		foreach ($brokers as $broker) {
 			$returns[$broker->getId()] = $broker;
@@ -602,7 +663,7 @@ class jMQTT extends eqLogic {
 	 */
 	public static function getNonBrokers() {
 		/** @var jMQTT[] $eqls */
-		$eqls = self::byType(jMQTT::class);
+		$eqls = self::byType(__CLASS__);
 		$returns = array();
 		foreach ($eqls as $eql) {
 			if ($eql->getType() != self::TYP_BRK) {
@@ -655,7 +716,7 @@ class jMQTT extends eqLogic {
 			return;
 		// Find eqLogic using the same topic AND the same Broker
 		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
-		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
+		$eqLogics = self::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
 		foreach ($eqLogics as $eqLogic) {
 			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
 				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
@@ -2588,7 +2649,7 @@ class jMQTT extends eqLogic {
 	public static function byBrkId($id) {
 		$brkId = json_encode(array('eqLogic' => $id));
 		/** @var jMQTT[] $eqpts */
-		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
+		$returns = self::byTypeAndSearchConfiguration(__CLASS__, substr($brkId, 1, -1));
 		return $returns;
 	}
 

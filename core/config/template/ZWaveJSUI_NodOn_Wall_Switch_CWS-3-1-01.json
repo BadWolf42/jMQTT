@@ -69,7 +69,7 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
-                    "request": "{\"args\": [#35942#]}",
+                    "request": "{\"args\": [#[nodeId]#]}",
                     "retain": "0",
                     "autoPub": "0"
                 },

@@ -8,7 +8,7 @@
             "auto_add_cmd": "0",
             "auto_add_topic": "%s\/#",
             "Qos": "1",
-            "battery_cmd": [],
+            "battery_cmd": "Pile",
             "icone": "door",
             "commentaire": "ZWaveJSUI Philio PST02A Detecteur 4 en 1 (Ouverture, Luminosité, Mouvement, Temprature)\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/61",
             "updatetime": "2022-09-23 14:49:16",
