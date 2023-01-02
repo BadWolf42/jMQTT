@@ -12,7 +12,7 @@
             "icone": "relay",
             "battery_type": "Secteur",
             "updatetime": "2022-10-15 16:41:13",
-            "availability_cmd": "8848"
+            "availability_cmd": "Online"
         },
         "category": {
             "heating": "0",
