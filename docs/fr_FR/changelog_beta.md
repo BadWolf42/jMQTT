@@ -2,6 +2,8 @@
 
 ## 2022-12-28
 - Correction d'un bug lorsqu'une commande n'existe pas/plus (merci Loïc)
+- Correction d'un bug lors de la duplication : les commandes de l'équipement source étaient utilisées
+- Correction d'un bug lors de la création ou de l'import d'un template : les id des commandes d'origine étaient conservées
 - Arrêt du support de Python 2.7 et 3.6 (changement sur le package requests en 2.28.1)
 - Suppression du test GitHub CI sur Python 3.6
 
