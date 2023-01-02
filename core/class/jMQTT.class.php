@@ -394,8 +394,7 @@ class jMQTT extends eqLogic {
 		// TODO (nice to have) Remove me when 4.4 is out
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
-		if (array_key_exists('cmd', $exportedTemplate[$_template]))
-		{
+		if (array_key_exists('cmd', $exportedTemplate[$_template])) {
 			// Rename 'cmd' to 'commands' for Jeedom import ...
 			$exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
 			unset($exportedTemplate[$_template]['cmd']);
@@ -548,22 +547,53 @@ class jMQTT extends eqLogic {
 		$eqLogicCopy->setName($_name);
 		if ($eqLogicCopy->getIsEnable())
 			$eqLogicCopy->setIsEnable(0);
-		foreach ($eqLogicCopy->getCmd() as $cmd)
-			$cmd->remove();
-		$eqLogicCopy->save();
+		foreach ($eqLogicCopy->getCmd() as $cmdCopy)
+			$cmdCopy->remove();
+		$eqLogicCopy->save(); // Needed here to get an Id
 
+		$cmdsNameList = array();
+		$cmdsOldId = array();
+		$cmdsNewId = array();
 		// Clone commands
-		/** @var jMQTTCmd $cmd */
 		foreach ($this->getCmd() as $cmd) {
-			/** @var jMQTTCmd $cmdCopy */
 			$cmdCopy = clone $cmd;
 			$cmdCopy->setId('');
 			$cmdCopy->setEqLogic_id($eqLogicCopy->getId());
 			$cmdCopy->setEqLogic($eqLogicCopy);
-			$cmdCopy->save();
+			if ($cmd->getType() == 'action') { // Replace linked info cmd Id by its Name
+				$cmdValue = $cmd->getCmdValue();
+				$cmdCopy->setValue(is_object($cmdValue) ? $cmdValue->getName() : '');
+			}
+			$cmdCopy->save(); // Needed here to get an Id
+
+			// Gather mapping data
+			$cmdsNameList[$cmdCopy->getName()] = $cmdCopy->getId(); // Store all cmd names -> id for further usage
+			$cmdsOldId[] = '#' . $cmd->getId() . '#';
+			$cmdsNewId[] = '#' . $cmdCopy->getId() . '#';
+
+			// Update battery linked info command
+			if ($cmd->isBattery())
+				$eqLogicCopy->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, $cmdCopy->getId());
+
+			// Update availability linked info command
+			if ($cmd->isAvailability())
+				$eqLogicCopy->setConfiguration(jMQTT::CONF_KEY_AVAILABILITY_CMD, $cmdCopy->getId());
 			$this->log('info', sprintf(__("Copie de la commande %1\$s #%2\$s# vers la commande #%3\$s#", __FILE__), $cmd->getType(), $cmd->getHumanName(), $cmdCopy->getHumanName()));
 		}
+		if ($eqLogicCopy->getConf(self::CONF_KEY_BATTERY_CMD) != "" || $eqLogicCopy->getConf(self::CONF_KEY_AVAILABILITY_CMD) != "")
+			$eqLogicCopy->save();
 
+		foreach ($eqLogicCopy->getCmd() as $cmdCopy) {
+			if ($cmdCopy->getType() != 'action') // Only on action cmds
+				continue;
+			// Update linked info cmd
+			if ($cmdCopy->getValue() != '')
+				$cmdCopy->setValue($cmdsNameList[$cmdCopy->getValue()]);
+			// Update relative (to eqLogic) info cmd in action cmd payload
+			$request = $cmdCopy->getConfiguration(jMQTTCmd::CONF_KEY_REQUEST, "");
+			$cmdCopy->setConfiguration(jMQTTCmd::CONF_KEY_REQUEST, str_replace($cmdsOldId, $cmdsNewId, $request));
+			$cmdCopy->save();
+		}
 		return $eqLogicCopy;
 	}
 
