@@ -546,8 +546,8 @@ class jMQTT extends eqLogic {
 		$eqLogicCopy = clone $this;
 		$eqLogicCopy->setId('');
 		$eqLogicCopy->setName($_name);
-		$eqLogicCopy->setIsEnable(0);
-		$eqLogicCopy->setTopic('');
+		if ($eqLogicCopy->getIsEnable())
+			$eqLogicCopy->setIsEnable(0);
 		foreach ($eqLogicCopy->getCmd() as $cmd)
 			$cmd->remove();
 		$eqLogicCopy->save();
