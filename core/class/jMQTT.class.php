@@ -400,15 +400,29 @@ class jMQTT extends eqLogic {
 			unset($exportedTemplate[$_template]['cmd']);
 		}
 
-		// convert topic to string format
+		// Create a replacement array with cmd names & id for further use
+		$cmdsId = array();
+		$cmdsName = array();
+		foreach ($this->getCmd() as $cmd) {
+			$cmdsId[] = '#' . $cmd->getId() . '#';
+			$cmdsName[] = '#[' . $cmd->getName() . ']#';
+			if ($cmd->isBattery()) // Update battery linked info command
+				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_BATTERY_CMD] = $cmd->getName();
+			if ($cmd->isAvailability()) // Update availability linked info command
+				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AVAILABILITY_CMD] = $cmd->getName();
+		}
+		// $this->log('debug', sprintf(__("TEMPLATE : Commandes de l'équipement %1\$s = %2\$s", __FILE__), $this->getHumanName(), json_encode(array($cmdsId, $cmdsName))));
+
 		foreach ($exportedTemplate[$_template]['commands'] as $key => $command) {
-			if(isset($command['configuration']['topic'])) {
+			// Convert topic to string format
+			if (isset($command['configuration']['topic'])) {
 				$exportedTemplate[$_template]['commands'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $command['configuration']['topic']);
 			}
+			// Convert relative cmd id in payload to '#[Name]#' format
+			if (isset($command['configuration']['request'])) {
+				$exportedTemplate[$_template]['commands'][$key]['configuration']['request'] = str_replace($cmdsId, $cmdsName, $command['configuration']['request']);
+			}
 		}
-
-		// TODO (critical bug fix) FIX ME: Commands used in templates are not converted on template import/export:
-		// cf: https://community.jeedom.com/t/evolution-modele-template-dequipement/52701/24
 
 		// Remove brkId from eqpt configuration
 		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
