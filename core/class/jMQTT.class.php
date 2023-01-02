@@ -436,7 +436,7 @@ class jMQTT extends eqLogic {
 			if (isset($command['configuration']['topic'])) {
 				$exportedTemplate[$_template]['commands'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $command['configuration']['topic']);
 			}
-			// Convert relative cmd id in payload to '#[Name]#' format
+			// Convert relative cmd id to '#[Name]#' format in request
 			if (isset($command['configuration']['request'])) {
 				$exportedTemplate[$_template]['commands'][$key]['configuration']['request'] = str_replace($cmdsId, $cmdsName, $command['configuration']['request']);
 			}
@@ -520,8 +520,8 @@ class jMQTT extends eqLogic {
 		// Try to locate the Eq is uuid is provided
 		if (!is_null($uuid)) {
 			// Search for a jMQTT Eq with $uuid, if found apply template to it
-			$type = json_encode(array(jMQTT::CONF_KEY_TEMPLATE_UUID => $uuid));
-			$eqpts = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+			$type = json_encode(array(self::CONF_KEY_TEMPLATE_UUID => $uuid));
+			$eqpts = self::byTypeAndSearchConfiguration(__CLASS__, substr($type, 1, -1));
 			foreach ($eqpts as $eqpt) {
 				// If it's attached to correct broker
 				if ($eqpt->getBrkId() == $broker->getId()) {
@@ -540,7 +540,7 @@ class jMQTT extends eqLogic {
 			$eq = self::createEquipment($broker, $name, $topic);
 			self::logger('debug', sprintf(__("createEqWithTemplate %s: Nouvel équipement créé", __FILE__), $name));
 			if (!is_null($uuid)) {
-				$eq->setConfiguration(jMQTT::CONF_KEY_TEMPLATE_UUID, $uuid);
+				$eq->setConfiguration(self::CONF_KEY_TEMPLATE_UUID, $uuid);
 				$eq->save();
 			}
 		}
@@ -605,11 +605,11 @@ class jMQTT extends eqLogic {
 
 			// Update battery linked info command
 			if ($cmd->isBattery())
-				$eqLogicCopy->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, $cmdCopy->getId());
+				$eqLogicCopy->setConfiguration(self::CONF_KEY_BATTERY_CMD, $cmdCopy->getId());
 
 			// Update availability linked info command
 			if ($cmd->isAvailability())
-				$eqLogicCopy->setConfiguration(jMQTT::CONF_KEY_AVAILABILITY_CMD, $cmdCopy->getId());
+				$eqLogicCopy->setConfiguration(self::CONF_KEY_AVAILABILITY_CMD, $cmdCopy->getId());
 			$this->log('info', sprintf(__("Copie de la commande %1\$s #%2\$s# vers la commande #%3\$s#", __FILE__), $cmd->getType(), $cmd->getHumanName(), $cmdCopy->getHumanName()));
 		}
 		if ($eqLogicCopy->getConf(self::CONF_KEY_BATTERY_CMD) != "" || $eqLogicCopy->getConf(self::CONF_KEY_AVAILABILITY_CMD) != "")
@@ -649,7 +649,7 @@ class jMQTT extends eqLogic {
 	public static function getBrokers() {
 		$type = json_encode(array('type' => self::TYP_BRK));
 		/** @var jMQTT[] $brokers */
-		$brokers = self::byTypeAndSearchConfiguration(jMQTT::class, substr($type, 1, -1));
+		$brokers = self::byTypeAndSearchConfiguration(__CLASS__, substr($type, 1, -1));
 		$returns = array();
 		foreach ($brokers as $broker) {
 			$returns[$broker->getId()] = $broker;
@@ -663,7 +663,7 @@ class jMQTT extends eqLogic {
 	 */
 	public static function getNonBrokers() {
 		/** @var jMQTT[] $eqls */
-		$eqls = self::byType(jMQTT::class);
+		$eqls = self::byType(__CLASS__);
 		$returns = array();
 		foreach ($eqls as $eql) {
 			if ($eql->getType() != self::TYP_BRK) {
@@ -716,7 +716,7 @@ class jMQTT extends eqLogic {
 			return;
 		// Find eqLogic using the same topic AND the same Broker
 		$topicConfiguration = array(self::CONF_KEY_AUTO_ADD_TOPIC => $topic, self::CONF_KEY_BRK_ID => $broker->getBrkId());
-		$eqLogics = jMQTT::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
+		$eqLogics = self::byTypeAndSearchConfiguration(__CLASS__, $topicConfiguration);
 		foreach ($eqLogics as $eqLogic) {
 			if ($eqLogic->getIsEnable() && $eqLogic->getId() != $this->getId()) { // If it's enabled AND it's not "me"
 				$this->log('info', sprintf(__("Un autre équipement a encore besoin du topic '%s'", __FILE__), $topic));
@@ -2649,7 +2649,7 @@ class jMQTT extends eqLogic {
 	public static function byBrkId($id) {
 		$brkId = json_encode(array('eqLogic' => $id));
 		/** @var jMQTT[] $eqpts */
-		$returns = self::byTypeAndSearchConfiguration(jMQTT::class, substr($brkId, 1, -1));
+		$returns = self::byTypeAndSearchConfiguration(__CLASS__, substr($brkId, 1, -1));
 		return $returns;
 	}
 
