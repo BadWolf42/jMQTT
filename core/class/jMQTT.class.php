@@ -360,9 +360,27 @@ class jMQTT extends eqLogic {
 		$this->setTopic(sprintf($_template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
 		$this->save();
 
+		// Create a replacement array with cmd names & id for further use
+		$cmdsId = array();
+		$cmdsName = array();
+		foreach ($this->getCmd() as $cmd) {
+			$cmdsId[] = '#' . $cmd->getId() . '#';
+			$cmdsName[] = '#[' . $cmd->getName() . ']#';
+			// Update battery linked info command
+			if ($this->getConf(self::CONF_KEY_BATTERY_CMD) == $cmd->getName())
+				$this->setConfiguration(self::CONF_KEY_BATTERY_CMD, $cmd->getId());
+			// Update availability linked info command
+			if ($this->getConf(self::CONF_KEY_AVAILABILITY_CMD) == $cmd->getName())
+				$this->setConfiguration(self::CONF_KEY_AVAILABILITY_CMD, $cmd->getId());
+		}
+		if ($this->getConf(self::CONF_KEY_BATTERY_CMD) != "" || $this->getConf(self::CONF_KEY_AVAILABILITY_CMD) != "")
+			$this->save();
+
 		// complete cmd topics
 		foreach ($this->getCmd() as $cmd) {
 			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
+			$request = $cmd->getConfiguration(jMQTTCmd::CONF_KEY_REQUEST, "");
+			$cmd->setConfiguration(jMQTTCmd::CONF_KEY_REQUEST, str_replace($cmdsName, $cmdsId, $request));
 			$cmd->save();
 		}
 
