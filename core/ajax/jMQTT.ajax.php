@@ -197,6 +197,18 @@ try {
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 
+	if (init('action') == 'mosquittoConf') {
+		$cfg = file_get_contents('/etc/mosquitto/conf.d/jMQTT.conf');
+		ajax::success($cfg);
+	}
+
+	if (init('action') == 'mosquittoEdit') {
+		if (init('config') == '')
+			throw new Exception(__('Configuration manquante', __FILE__));
+		shell_exec(system::getCmdSudo() . ' tee /etc/mosquitto/conf.d/jMQTT.conf > /dev/null <<jmqttEOF' . "\n" . init('config') . 'jmqttEOF');
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
 	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

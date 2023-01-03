@@ -78,9 +78,13 @@ if (!$docker) {
 				<a id="bt_mosquittoReStart" class="btn btn-success" style="width:100%;" title="Démarrer (ou redémarre) le service Mosquitto local.">
 				<i class="fas fa-play"></i> {{(Re)Démarrer}}</a>
 			</div>
-			<div class="col-sm-3">
+			<div class="col-sm-2">
 				<a id="bt_mosquittoStop" class="btn btn-danger disabled" style="width:100%;" title="Arrête le service Mosquitto local.">
 				<i class="fas fa-stop"></i> {{Arrêter}}</a>
+			</div>
+			<div class="col-sm-1">
+				<a id="bt_mosquittoEdit" class="btn btn-warning" style="width:100%;" title="Modifier le fichier de configuration jMQTT.conf du service Mosquitto local.">
+				<i class="fas fa-pen"></i></a>
 			</div>
 		</div>
 <?php
@@ -321,6 +325,44 @@ $('#bt_mosquittoStop').on('click', function () {
 			}
 		});
 	}
+});
+
+// Modify jMQTT.conf in Mosquitto service system folder
+$('#bt_mosquittoEdit').on('click', function () {
+	jmqttAjax({
+		data: { action: "mosquittoConf" },
+		error: function (request, status, error) {
+			handleAjaxError(request, status, error);
+		},
+		success: function(result1) {
+			if (result1.state == 'ok') {
+				bootbox.confirm({
+					title: '{{Modifier le fichier jMQTT.conf du service Mosquitto}}',
+					message: '<textarea class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" style="height: 50vh;font-family:CamingoCode,monospace; font-size:small!important; line-height:normal;" id="mosquittoConf">' + result1.result + '</textarea>',
+					callback: function (result2) {
+						if (result2) {
+							jmqttAjax({
+								data: { action: "mosquittoEdit", config: $('#mosquittoConf').value() },
+								error: function (request, status, error) {
+									handleAjaxError(request, status, error);
+								},
+								success: function(result3) {
+									if (result3.state == 'ok') {
+										$.fn.showAlert({message: '{{Le fichier jMQTT.conf a bien été modifiée.<br />Redémarrez le service Mosquitto pour le prendre en compte.}}', level: 'success'});
+									} else {
+										$.fn.showAlert({message: result3.result, level: 'danger'});
+									}
+								}
+							});
+						}
+					}
+				});
+			} else {
+				$.fn.showAlert({message: result1.result, level: 'danger'});
+			}
+		}
+	});
+
 });
 
 <?php } /* !$docker */ ?>
