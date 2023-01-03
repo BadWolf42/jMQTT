@@ -78,12 +78,12 @@ if (!$docker) {
 				<a id="bt_mosquittoReStart" class="btn btn-success" style="width:100%;" title="Démarrer (ou redémarre) le service Mosquitto local.">
 				<i class="fas fa-play"></i> {{(Re)Démarrer}}</a>
 			</div>
-			<div class="col-sm-2">
+			<div class="col-sm-3">
 				<a id="bt_mosquittoStop" class="btn btn-danger disabled" style="width:100%;" title="Arrête le service Mosquitto local.">
 				<i class="fas fa-stop"></i> {{Arrêter}}</a>
 			</div>
 			<div class="col-sm-1">
-				<a id="bt_mosquittoEdit" class="btn btn-warning" style="width:100%;" title="Modifier le fichier de configuration jMQTT.conf du service Mosquitto local.">
+				<a id="bt_mosquittoEdit" class="btn btn-warning" style="width:100%;display:none;" title="Edition du fichier de configuration jMQTT.conf du service Mosquitto local.">
 				<i class="fas fa-pen"></i></a>
 			</div>
 		</div>
@@ -178,11 +178,14 @@ function mosquittoStatus(_result) {
 		$('#bt_mosquittoRemove').removeClass('disabled');
 		$('#mosquittoService').empty().html(_result.service);
 		$('.local-install').show();
-		if (_result.service.includes('running')) {
+		if (_result.service.includes('running'))
 			$('#bt_mosquittoStop').removeClass('disabled');
-		} else {
+		else
 			$('#bt_mosquittoStop').addClass('disabled');
-		}
+		if (_result.message.includes('jMQTT'))
+			$('#bt_mosquittoEdit').show();
+		else
+			$('#bt_mosquittoEdit').hide();
 	} else {
 		$('#bt_mosquittoInstall').removeClass('disabled');
 		$('#bt_mosquittoRepare').addClass('disabled');
