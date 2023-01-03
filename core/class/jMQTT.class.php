@@ -398,16 +398,17 @@ class jMQTT extends eqLogic {
 			return true;
 		}
 
+		// Cleanup template name
+		$_template = ucfirst(str_replace(' ', '_', $_template));
+		$_template = preg_replace('/[^a-zA-Z0-9()_-]+/', '', $_template);
+		$_template = str_replace('__', '_', $_template);
+
 		// Export
 		$exportedTemplate[$_template] = $this->export();
+		$exportedTemplate[$_template]['name'] = str_replace('_', ' ', $_template);
 
-		// Looking for baseTopic from equipement
-		$baseTopic = $this->getTopic();
-		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
-		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
-
-		// Add string format to eqLogic configuration
-		$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = str_replace($baseTopic, '%s', $this->getTopic());
+		// Remove brkId from eqpt configuration
+		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
 
 		// TODO (nice to have) Remove me when 4.4 is out
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
@@ -424,32 +425,34 @@ class jMQTT extends eqLogic {
 		foreach ($this->getCmd() as $cmd) {
 			$cmdsId[] = '#' . $cmd->getId() . '#';
 			$cmdsName[] = '#[' . $cmd->getName() . ']#';
-			if ($cmd->isBattery()) // Update battery linked info command
+			// Update battery linked info command
+			if ($cmd->isBattery())
 				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_BATTERY_CMD] = $cmd->getName();
-			if ($cmd->isAvailability()) // Update availability linked info command
+			// Update availability linked info command
+			if ($cmd->isAvailability())
 				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AVAILABILITY_CMD] = $cmd->getName();
 		}
-		// $this->log('debug', sprintf(__("TEMPLATE : Commandes de l'équipement %1\$s = %2\$s", __FILE__), $this->getHumanName(), json_encode(array($cmdsId, $cmdsName))));
-
-		foreach ($exportedTemplate[$_template]['commands'] as $key => $command) {
-			// Convert topic to string format
-			if (isset($command['configuration']['topic'])) {
-				$exportedTemplate[$_template]['commands'][$key]['configuration']['topic'] = str_replace($baseTopic, '%s', $command['configuration']['topic']);
-			}
-			// Convert relative cmd id to '#[Name]#' format in request
-			if (isset($command['configuration']['request'])) {
-				$exportedTemplate[$_template]['commands'][$key]['configuration']['request'] = str_replace($cmdsId, $cmdsName, $command['configuration']['request']);
-			}
-		}
-
-		// Remove brkId from eqpt configuration
-		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
 
 		// Convert and save to file
 		$jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-		$formatedTemplateName = str_replace(' ', '_', $_template);
-		$formatedTemplateName = preg_replace('/[^a-zA-Z0-9_]+/', '', $formatedTemplateName);
-		file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $formatedTemplateName . '.json', $jsonExport);
+
+		// Convert relative cmd id to '#[Name]#' format in request
+		$jsonExport = str_replace($cmdsId, $cmdsName, $jsonExport);
+
+		// Looking for baseTopic from equipement
+		$baseTopic = $this->getTopic();
+		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
+		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
+
+		// Convert topic to string format
+		if ($baseTopic != '') {
+			$toReplace = array('"'.self::CONF_KEY_AUTO_ADD_TOPIC.'": "'.$baseTopic, '"topic": "'.$baseTopic);
+			$replaceBy = array('"'.self::CONF_KEY_AUTO_ADD_TOPIC.'": "%s',          '"topic": "%s');
+			$jsonExport = str_replace($toReplace, $replaceBy, $jsonExport);
+		}
+
+		// Write template file
+		file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_template . '.json', $jsonExport);
 	}
 
 	/**
