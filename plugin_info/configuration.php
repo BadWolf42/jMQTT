@@ -47,20 +47,17 @@ if (!$docker) {
 			<label class="col-sm-4 control-label">{{Installation locale}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Ces boutons permettent de gérer l'installation de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
 			<div class="col-sm-2">
-				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="Lance l'installation de Mosquitto en local.">
+				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="{{Lance l'installation de Mosquitto en local.}}">
 				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Installer}}</a>
 			</div>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoRepare" class="btn btn-warning disabled" style="width:100%;"
-					title="Supprime la configuration actuelle de Mosquitto et remet la configuration par<br />
-					défaut de jMQTT. Cette option est particulièrement intéressante dans le cas où un<br />
-					autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.">
+					title="{{Supprime la configuration actuelle de Mosquitto et remet la configuration par défaut de jMQTT. Cette option est particulièrement intéressante dans le cas où un autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.}}">
 				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-magic"></i> {{Réparer}}</a>
 			</div>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoRemove" class="btn btn-danger disabled" style="width:100%;"
-					title="Supprime complètement Mosquitto du système, par exemple dans le cas où vous<br />
-					voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.">
+					title="{{Supprime complètement Mosquitto du système, par exemple dans le cas où vous voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.}}">
 				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-trash"></i> {{Supprimer}}</a>
 			</div>
 		</div>
@@ -75,15 +72,15 @@ if (!$docker) {
 			<label class="col-sm-4 control-label">{{Service Mosquitto}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Ces boutons permettent de gérer l'état de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
 			<div class="col-sm-3">
-				<a id="bt_mosquittoReStart" class="btn btn-success" style="width:100%;" title="Démarrer (ou redémarre) le service Mosquitto local.">
+				<a id="bt_mosquittoReStart" class="btn btn-success" style="width:100%;" title="{{Démarre (ou redémarre) le service Mosquitto local.}}">
 				<i class="fas fa-play"></i> {{(Re)Démarrer}}</a>
 			</div>
 			<div class="col-sm-3">
-				<a id="bt_mosquittoStop" class="btn btn-danger disabled" style="width:100%;" title="Arrête le service Mosquitto local.">
+				<a id="bt_mosquittoStop" class="btn btn-danger disabled" style="width:100%;" title="{{Arrête le service Mosquitto local.}}">
 				<i class="fas fa-stop"></i> {{Arrêter}}</a>
 			</div>
 			<div class="col-sm-1">
-				<a id="bt_mosquittoEdit" class="btn btn-warning" style="width:100%;display:none;" title="Edition du fichier de configuration jMQTT.conf du service Mosquitto local.">
+				<a id="bt_mosquittoEdit" class="btn btn-warning" style="width:100%;display:none;" title="{{Edition du fichier de configuration jMQTT.conf du service Mosquitto local.}}">
 				<i class="fas fa-pen"></i></a>
 			</div>
 		</div>

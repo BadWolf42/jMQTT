@@ -1606,14 +1606,14 @@ class jMQTT extends eqLogic {
 				&& strpos(file_get_contents('/lib/systemd/system/mosquitto.service'), 'mqtt2') !== false) {
 			$res['by'] = __('MQTT Manager (en local)', __FILE__);
 			$res['message'] = __('Mosquitto est installé par', __FILE__);
-			$res['message'] .= ' <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">';
+			$res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=mqtt2">';
 			$res['message'] .= __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
 		}
 		// Check if jMQTT config file is in place
 		elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
 			$res['by'] = 'jMQTT';
 			$res['message'] = __('Mosquitto est installé par', __FILE__);
-			$res['message'] .= ' <a class="control-label success">' . __('jMQTT', __FILE__) . '</a>.';
+			$res['message'] .= ' <a class="control-label success disabled">' . __('jMQTT', __FILE__) . '</a>.';
 		}
 		// Otherwise its considered to be a custom install
 		else {

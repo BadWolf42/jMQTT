@@ -853,7 +853,6 @@ function addCmdToTable(_cmd) {
 				if (_cmd.state != undefined) {
 					$('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(_cmd.state);
 				} else {
-					console.log('missed _cmd', _cmd.id);
 					jeedom.cmd.execute({
 						id: _cmd.id,
 						cache: 0,
