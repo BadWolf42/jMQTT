@@ -2055,19 +2055,6 @@ class jMQTT extends eqLogic {
 		$brk->sendMqttClientStateEvent();
 	}
 
-	// TODO (important) Remove in beta, after being put in stable
-	// Functions to cleanup existing crons on functions disableIncludeMode & disableRealTimeMode
-	public static function disableIncludeMode($option) {
-		$cron = cron::byClassAndFunction(__CLASS__, 'disableIncludeMode', array('id' => $option['id']));
-		if (is_object($cron))
-			$cron->remove(false);
-	}
-	public static function disableRealTimeMode($option) {
-		$cron = cron::byClassAndFunction(__CLASS__, 'disableRealTimeMode', array('id' => $option['id']));
-		if (is_object($cron))
-			$cron->remove(false);
-	}
-
 	public function toDaemon_realTimeStart($subscribe, $exclude, $retained, $duration = 180) {
 		$params['cmd']='realTimeStart';
 		$params['id']=$this->getId();
