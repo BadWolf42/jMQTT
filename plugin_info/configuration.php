@@ -64,7 +64,7 @@ if (!$docker) {
 				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-trash"></i> {{Supprimer}}</a>
 			</div>
 		</div>
-		<div class="form-group">
+		<div class="form-group local-install" style="display:none;">
 			<label class="col-sm-4 control-label">{{Etat du service}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Mosquitto est installé en local, jMQTT remonte ici l'état du service (systemd).}}"></i></sup></label>
 			<div class="col-sm-8">
@@ -160,13 +160,15 @@ function mosquittoStatus(_result) {
 		$('#bt_mosquittoInstall').addClass('disabled');
 		$('#bt_mosquittoRepare').removeClass('disabled');
 		$('#bt_mosquittoRemove').removeClass('disabled');
+		$('#mosquittoService').empty().html(_result.service);
+		$('.local-install').show();
 	} else {
 		$('#bt_mosquittoInstall').removeClass('disabled');
 		$('#bt_mosquittoRepare').addClass('disabled');
 		$('#bt_mosquittoRemove').addClass('disabled');
+		$('.local-install').hide();
 	}
 	$('#mosquittoStatus').empty().html(_result.message);
-	$('#mosquittoService').empty().html(_result.service);
 }
 
 // Set Mosquitto status
