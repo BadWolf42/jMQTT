@@ -183,8 +183,17 @@ try {
 	}
 
 	if (init('action') == 'mosquittoRemove') {
-		sleep(3);
 		jMQTT::mosquittoRemove();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoReStart') {
+		shell_exec(system::getCmdSudo() . ' systemctl restart mosquitto');
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoStop') {
+		shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 

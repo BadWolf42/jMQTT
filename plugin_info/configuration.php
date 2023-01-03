@@ -71,6 +71,18 @@ if (!$docker) {
 				<span id="mosquittoService"></span>
 			</div>
 		</div>
+		<div class="form-group local-install" style="display:none;">
+			<label class="col-sm-4 control-label">{{Service Mosquitto}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+				title="{{Ces boutons permettent de gérer l'état de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
+			<div class="col-sm-3">
+				<a id="bt_mosquittoReStart" class="btn btn-success" style="width:100%;" title="Démarrer (ou redémarre) le service Mosquitto local.">
+				<i class="fas fa-play"></i> {{(Re)Démarrer}}</a>
+			</div>
+			<div class="col-sm-3">
+				<a id="bt_mosquittoStop" class="btn btn-danger disabled" style="width:100%;" title="Arrête le service Mosquitto local.">
+				<i class="fas fa-stop"></i> {{Arrêter}}</a>
+			</div>
+		</div>
 <?php
 } /* !$docker */
 
@@ -162,6 +174,11 @@ function mosquittoStatus(_result) {
 		$('#bt_mosquittoRemove').removeClass('disabled');
 		$('#mosquittoService').empty().html(_result.service);
 		$('.local-install').show();
+		if (_result.service.includes('running')) {
+			$('#bt_mosquittoStop').removeClass('disabled');
+		} else {
+			$('#bt_mosquittoStop').addClass('disabled');
+		}
 	} else {
 		$('#bt_mosquittoInstall').removeClass('disabled');
 		$('#bt_mosquittoRepare').addClass('disabled');
@@ -267,6 +284,45 @@ $('#bt_mosquittoRemove').on('click', function () {
 		});
 	}
 });
+
+// Start/restart Mosquitto service
+$('#bt_mosquittoReStart').on('click', function () {
+	jmqttAjax({
+		data: { action: "mosquittoReStart" },
+		error: function (request, status, error) {
+			handleAjaxError(request, status, error);
+		},
+		success: function(data) {
+			if (data.state == 'ok') {
+				mosquittoStatus(data.result);
+				$.fn.showAlert({message: '{{Le service Mosquitto a bien été (re)démarré.}}', level: 'success'});
+			} else {
+				$.fn.showAlert({message: data.result, level: 'danger'});
+			}
+		}
+	});
+});
+
+// Stop Mosquitto service
+$('#bt_mosquittoStop').on('click', function () {
+	if (!$(this).hasClass('disabled')) {
+		jmqttAjax({
+			data: { action: "mosquittoStop" },
+			error: function (request, status, error) {
+				handleAjaxError(request, status, error);
+			},
+			success: function(data) {
+				if (data.state == 'ok') {
+					mosquittoStatus(data.result);
+					$.fn.showAlert({message: '{{Le service Mosquitto a bien été arrêté.}}', level: 'success'});
+				} else {
+					$.fn.showAlert({message: data.result, level: 'danger'});
+				}
+			}
+		});
+	}
+});
+
 <?php } /* !$docker */ ?>
 
 /* TODO NEW Uncomment when Backup/Restore jMQTT is OK
