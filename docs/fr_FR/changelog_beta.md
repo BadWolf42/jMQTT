@@ -1,5 +1,9 @@
 # Registre des évolutions BETA
 
+## 2023-01-07
+- Ajout de boutons pour (re)démarrer ou arrêter le service Mosquitto local
+- Ajout d'un bouton pour éditer le fichier de configuration jMQTT.conf du service Mosquitto
+
 ## 2023-01-03
 - Correction d'un bug lors de la duplication d'un équipement : des commandes de l'équipement source étaient encore utilisées
 - Correction d'un bug lors de la création ou de l'import d'un template : des id des commandes d'origine étaient encore conservées
