@@ -227,17 +227,17 @@ jmqtt.certDrag = function(ev) {
 	ev.preventDefault();
 	ev.stopPropagation();
 	if (ev.type == 'dragenter') {
-		jmqtt.dropzoneCpt++;
+		jmqtt.globals.dropzoneCpt++;
 		$('.dropzone').show().css('background-color', '');
 		if ($(ev.target).hasClass('dropzone'))
 			$(ev.target).css('background-color', 'lightyellow');
 	} else if (ev.type == 'dragleave') {
 		if ($(ev.target).hasClass('dropzone'))
 			$(ev.target).css('background-color', '');
-		jmqtt.dropzoneCpt--;
-		if (jmqtt.dropzoneCpt <= 0) {
+		jmqtt.globals.dropzoneCpt--;
+		if (jmqtt.globals.dropzoneCpt <= 0) {
 			$('.dropzone').hide();
-			jmqtt.dropzoneCpt = 0;
+			jmqtt.globals.dropzoneCpt = 0;
 		}
 	}
 }
@@ -259,7 +259,7 @@ jmqtt.certDrop = function(ev) {
 		};
 		reader.readAsText(ev.originalEvent.dataTransfer.files[0], "UTF-8");
 	}
-	jmqtt.dropzoneCpt = 0;
+	jmqtt.globals.dropzoneCpt = 0;
 }
 
 // On click on upload certificate file in a Broker uploadzone
