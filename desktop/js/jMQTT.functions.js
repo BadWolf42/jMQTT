@@ -16,6 +16,29 @@
 
 // Functions used by jMQTT.js
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Backward compatibility functions
+
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle get modifyWithoutSave flag in jeeFrontEnd or window
+jmqtt.isPageModified = function() {
+	return jeeFrontEnd.modifyWithoutSave || window.modifyWithoutSave;
+}
+
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle set modifyWithoutSave flag in jeeFrontEnd and window
+jmqtt.setPageModified = function() {
+	jeeFrontEnd.modifyWithoutSave = true;
+	window.modifyWithoutSave = true;
+}
+
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle clear modifyWithoutSave flag in jeeFrontEnd and window
+jmqtt.unsetPageModified = function() {
+	jeeFrontEnd.modifyWithoutSave = false;
+	window.modifyWithoutSave = false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // General utility functions
@@ -356,7 +379,7 @@ jmqtt.refreshEqLogicPage = function() {
 			$('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
 		}
 	}
-	if (jeeFrontEnd.modifyWithoutSave) {
+	if (jmqtt.isPageModified()) {
 		bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
 			if (result)
 				refreshPage();
