@@ -30,8 +30,8 @@ class jMQTT extends eqLogic {
 	const FORCE_DEPENDANCY_INSTALL      = 'forceDepInstall';
 
 	const CLIENT_STATUS                 = 'status';
-	const OFFLINE                       = 'offline';
-	const ONLINE                        = 'online';
+	const CLIENT_STATUS_ONLINE          = 'online';
+	const CLIENT_STATUS_OFFLINE         = 'offline';
 
 	const MQTTCLIENT_OK                 = 'ok';
 	const MQTTCLIENT_POK                = 'pok';
@@ -841,7 +841,7 @@ class jMQTT extends eqLogic {
 				// isEnable changed
 				if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
 					if ($this->getIsEnable()) {
-						$this->getMqttClientStatusCmd(true)->event(self::OFFLINE); // Force current status to offline
+						$this->getMqttClientStatusCmd(true)->event(self::CLIENT_STATUS_OFFLINE); // Force current status to offline
 						$this->setStatus('warning', 1); // And a warning
 						$startRequested = true; //If nothing happens in between, it will be restarted
 					} else {
@@ -1940,7 +1940,7 @@ class jMQTT extends eqLogic {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
-			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(true), self::ONLINE); // If not existing at brkUp, create it
+			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(true), self::CLIENT_STATUS_ONLINE); // If not existing at brkUp, create it
 			$broker->setStatus('warning', null);
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
@@ -1994,7 +1994,7 @@ class jMQTT extends eqLogic {
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, false);
 
 			// If command exists update the status (used to get broker connection status inside Jeedom)
-			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(), self::OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(), self::CLIENT_STATUS_OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			$broker->setStatus('warning', $broker->getIsEnable() ? 1 : null); // Also set a warning if eq is enabled (should be always true)
 
 			// Clear Real Time mode
