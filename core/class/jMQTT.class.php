@@ -32,6 +32,7 @@ class jMQTT extends eqLogic {
 	const CLIENT_STATUS                 = 'status';
 	const CLIENT_STATUS_ONLINE          = 'online';
 	const CLIENT_STATUS_OFFLINE         = 'offline';
+	const CLIENT_CONNECTED              = 'connected';
 
 	const CLIENT_OK                     = 'ok';
 	const CLIENT_POK                    = 'pok';
@@ -121,6 +122,12 @@ class jMQTT extends eqLogic {
 	 * @var jMQTTCmd
 	 */
 	private $_statusCmd;
+
+	/**
+	 * Connected command of the broker related to this object
+	 * @var jMQTTCmd
+	 */
+	private $_connectedCmd;
 
 	/**
 	 * Log file related to this broker.
@@ -820,8 +827,9 @@ class jMQTT extends eqLogic {
 		// ------------------------ Broker eqpt ------------------------
 		if ($this->getType() == self::TYP_BRK) {
 
-			// Create Status cmd
+			// Create status and connected cmds
 			$this->getMqttClientStatusCmd(true);
+			$this->getMqttClientConnectedCmd(true);
 
 			// --- New broker ---
 			if (is_null($this->_preSaveInformations)) {
@@ -842,6 +850,7 @@ class jMQTT extends eqLogic {
 				if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
 					if ($this->getIsEnable()) {
 						$this->getMqttClientStatusCmd(true)->event(self::CLIENT_STATUS_OFFLINE); // Force current status to offline
+						$this->getMqttClientConnectedCmd(true)->event(0); // Force current connected to 0
 						$this->setStatus('warning', 1); // And a warning
 						$startRequested = true; //If nothing happens in between, it will be restarted
 					} else {
@@ -1941,6 +1950,7 @@ class jMQTT extends eqLogic {
 			$broker = self::getBrokerFromId(intval($id));
 			$broker->setCache(self::CACHE_MQTTCLIENT_CONNECTED, true); // Save in cache that Mqtt Client is connected
 			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(true), self::CLIENT_STATUS_ONLINE); // If not existing at brkUp, create it
+			$broker->checkAndUpdateCmd($broker->getMqttClientConnectedCmd(true), 1); // If not existing at brkUp, create it
 			$broker->setStatus('warning', null);
 			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
 			$broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
@@ -1995,6 +2005,7 @@ class jMQTT extends eqLogic {
 
 			// If command exists update the status (used to get broker connection status inside Jeedom)
 			$broker->checkAndUpdateCmd($broker->getMqttClientStatusCmd(), self::CLIENT_STATUS_OFFLINE); // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+			$broker->checkAndUpdateCmd($broker->getMqttClientConnectedCmd(), 0); // Need to check if connectedCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
 			$broker->setStatus('warning', $broker->getIsEnable() ? 1 : null); // Also set a warning if eq is enabled (should be always true)
 
 			// Clear Real Time mode
@@ -2367,16 +2378,15 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * Return the MQTT status information command of this broker
-	 * It is the responsability of the caller to check that this object is a broker before
-	 * calling the method.
-	 * If $creat, then create and save the MQTT status information command of this broker if not already existing
+	 * It is the responsability of the caller to check that this object is a broker before calling the method.
+	 * If $create, then create and save the MQTT status information command of this broker if not already existing
 	 * @param $create bool create the command if it does not exist
 	 * @return cmd status information command.
 	 */
 	public function getMqttClientStatusCmd($create = false) {
 		if (!is_object($this->_statusCmd)) // Get cmd if it exists
 			$this->_statusCmd = cmd::byEqLogicIdAndLogicalId($this->getId(), self::CLIENT_STATUS);
-		if ($create && !is_object($this->_statusCmd)) { // status cmd does not exist
+		if ($create && !is_object($this->_statusCmd)) { // cmd does not exist
 			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_STATUS, '', ''); // Topic and jsonPath are irrelevant here
 			$cmd->setLogicalId(self::CLIENT_STATUS);
 			$cmd->setConfiguration('irremovable', 1);
@@ -2384,6 +2394,27 @@ class jMQTT extends eqLogic {
 			$this->_statusCmd = $cmd;
 		}
 		return $this->_statusCmd;
+	}
+
+	/**
+	 * Return the MQTT connected binary information command of this broker
+	 * It is the responsability of the caller to check that this object is a broker before calling the method.
+	 * If $create, then create and save the MQTT connected information command of this broker if not already existing
+	 * @param $create bool create the command if it does not exist
+	 * @return cmd connected information command.
+	 */
+	public function getMqttClientConnectedCmd($create = false) {
+		if (!is_object($this->_connectedCmd)) // Get cmd if it exists
+			$this->_connectedCmd = cmd::byEqLogicIdAndLogicalId($this->getId(), self::CLIENT_CONNECTED);
+		if ($create && !is_object($this->_connectedCmd)) { // cmd does not exist
+			$cmd = jMQTTCmd::newCmd($this, self::CLIENT_CONNECTED, '', ''); // Topic and jsonPath are irrelevant here
+			$cmd->setLogicalId(self::CLIENT_CONNECTED);
+			$cmd->setSubType('binary');
+			$cmd->setConfiguration('irremovable', 1);
+			$cmd->save();
+			$this->_connectedCmd = $cmd;
+		}
+		return $this->_connectedCmd;
 	}
 
 	###################################################################################################################
