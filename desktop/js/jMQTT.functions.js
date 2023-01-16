@@ -16,6 +16,29 @@
 
 // Functions used by jMQTT.js
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Backward compatibility functions
+
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle get modifyWithoutSave flag in jeeFrontEnd or window
+jmqtt.isPageModified = function() {
+	return jeeFrontEnd.modifyWithoutSave || window.modifyWithoutSave;
+}
+
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle set modifyWithoutSave flag in jeeFrontEnd and window
+jmqtt.setPageModified = function() {
+	jeeFrontEnd.modifyWithoutSave = true;
+	window.modifyWithoutSave = true;
+}
+
+// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+// Handle clear modifyWithoutSave flag in jeeFrontEnd and window
+jmqtt.unsetPageModified = function() {
+	jeeFrontEnd.modifyWithoutSave = false;
+	window.modifyWithoutSave = false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // General utility functions
@@ -227,17 +250,17 @@ jmqtt.certDrag = function(ev) {
 	ev.preventDefault();
 	ev.stopPropagation();
 	if (ev.type == 'dragenter') {
-		jmqtt.dropzoneCpt++;
+		jmqtt.globals.dropzoneCpt++;
 		$('.dropzone').show().css('background-color', '');
 		if ($(ev.target).hasClass('dropzone'))
 			$(ev.target).css('background-color', 'lightyellow');
 	} else if (ev.type == 'dragleave') {
 		if ($(ev.target).hasClass('dropzone'))
 			$(ev.target).css('background-color', '');
-		jmqtt.dropzoneCpt--;
-		if (jmqtt.dropzoneCpt <= 0) {
+		jmqtt.globals.dropzoneCpt--;
+		if (jmqtt.globals.dropzoneCpt <= 0) {
 			$('.dropzone').hide();
-			jmqtt.dropzoneCpt = 0;
+			jmqtt.globals.dropzoneCpt = 0;
 		}
 	}
 }
@@ -259,7 +282,7 @@ jmqtt.certDrop = function(ev) {
 		};
 		reader.readAsText(ev.originalEvent.dataTransfer.files[0], "UTF-8");
 	}
-	jmqtt.dropzoneCpt = 0;
+	jmqtt.globals.dropzoneCpt = 0;
 }
 
 // On click on upload certificate file in a Broker uploadzone
@@ -356,7 +379,7 @@ jmqtt.refreshEqLogicPage = function() {
 			$('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
 		}
 	}
-	if (jeeFrontEnd.modifyWithoutSave) {
+	if (jmqtt.isPageModified()) {
 		bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
 			if (result)
 				refreshPage();

@@ -158,7 +158,7 @@ jmqtt.globals.lockRealTime = false;
 jmqtt.globals.mainTopic = '';
 
 // Drop zone counter
-jmqtt.dropzoneCpt = 0;
+jmqtt.globals.dropzoneCpt = 0;
 
 // Update daemon state global variable on reception of a new event (jmqtt.globals.daemonState is initialized by sendVarToJS() in jMQTT.php)
 $('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function (_event, _options) {

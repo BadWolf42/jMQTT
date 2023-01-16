@@ -183,8 +183,29 @@ try {
 	}
 
 	if (init('action') == 'mosquittoRemove') {
-		sleep(3);
 		jMQTT::mosquittoRemove();
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoReStart') {
+		shell_exec(system::getCmdSudo() . ' systemctl restart mosquitto');
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoStop') {
+		shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
+		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'mosquittoConf') {
+		$cfg = file_get_contents('/etc/mosquitto/conf.d/jMQTT.conf');
+		ajax::success($cfg);
+	}
+
+	if (init('action') == 'mosquittoEdit') {
+		if (init('config') == '')
+			throw new Exception(__('Configuration manquante', __FILE__));
+		shell_exec(system::getCmdSudo() . ' tee /etc/mosquitto/conf.d/jMQTT.conf > /dev/null <<jmqttEOF' . "\n" . init('config') . 'jmqttEOF');
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 

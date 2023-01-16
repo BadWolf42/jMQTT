@@ -230,15 +230,16 @@ class jMQTTCmd extends cmd {
 
 		// --- New cmd or Existing cmd ---
 		// Saving a new command on a Broker must fail, except for the status command
-		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getLogicalId() != jMQTT::CLIENT_STATUS && $this->getId() == '') {
+		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getLogicalId() != jMQTT::CLIENT_STATUS && $this->getLogicalId() != jMQTT::CLIENT_CONNECTED && $this->getId() == '') {
 			$err  = __("Impossible de créer la commande <b>#%1\$s#</b>, seule la commande status est autorisée sur un équipement Broker (%2\$s)", __FILE__);
 			throw new Exception(sprintf($err, $this->getHumanName(), $this->getEqLogic()->getName()));
 		}
 
 		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
 		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
-		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
+		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) !== FALSE)) {
 			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
+		}
 
 		// Reset autoPub if info cmd (should not happen or be possible)
 		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
@@ -292,8 +293,8 @@ class jMQTTCmd extends cmd {
 		// Nothing must be done in postSave on Broker command
 		if ($eqLogic->getType() == jMQTT::TYP_BRK) {
 			// Remove all cmd other than the status cmd
-			if ($this->getLogicalId() != jMQTT::CLIENT_STATUS) {
-				$eqLogic->log('warning', sprintf(__("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule la commande status est autorisée sur un équipement Broker.", __FILE__),
+			if ($this->getLogicalId() != jMQTT::CLIENT_STATUS && $this->getLogicalId() != jMQTT::CLIENT_CONNECTED) {
+				$eqLogic->log('warning', sprintf(__("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule les commandes status et connected sont autorisées sur un équipement Broker.", __FILE__),
 												 $this->getHumanName(), $eqLogic->getName()));
 				$this->remove();
 			}

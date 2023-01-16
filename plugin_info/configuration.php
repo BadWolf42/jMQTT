@@ -44,31 +44,44 @@ if (!$docker) {
 			</div>
 		</div>
 		<div class="form-group">
+			<label class="col-sm-4 control-label">{{Installation locale}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+				title="{{Ces boutons permettent de gérer l'installation de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
+			<div class="col-sm-2">
+				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="{{Lance l'installation de Mosquitto en local.}}">
+				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Installer}}</a>
+			</div>
+			<div class="col-sm-2">
+				<a id="bt_mosquittoRepare" class="btn btn-warning disabled" style="width:100%;"
+					title="{{Supprime la configuration actuelle de Mosquitto et remet la configuration par défaut de jMQTT. Cette option est particulièrement intéressante dans le cas où un autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.}}">
+				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-magic"></i> {{Réparer}}</a>
+			</div>
+			<div class="col-sm-2">
+				<a id="bt_mosquittoRemove" class="btn btn-danger disabled" style="width:100%;"
+					title="{{Supprime complètement Mosquitto du système, par exemple dans le cas où vous voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.}}">
+				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-trash"></i> {{Supprimer}}</a>
+			</div>
+		</div>
+		<div class="form-group local-install" style="display:none;">
 			<label class="col-sm-4 control-label">{{Etat du service}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 				title="{{Si Mosquitto est installé en local, jMQTT remonte ici l'état du service (systemd).}}"></i></sup></label>
 			<div class="col-sm-8">
 				<span id="mosquittoService"></span>
 			</div>
 		</div>
-		<div class="form-group">
-			<label class="col-sm-4 control-label">{{Installation locale}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-				title="{{Ces boutons permettent de gérer l'installation de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
-			<div class="col-sm-2">
-				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="Lance l'installation de Mosquitto en local.">
-				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Installer}}</a>
+		<div class="form-group local-install" style="display:none;">
+			<label class="col-sm-4 control-label">{{Service Mosquitto}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+				title="{{Ces boutons permettent de gérer l'état de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
+			<div class="col-sm-3">
+				<a id="bt_mosquittoReStart" class="btn btn-success" style="width:100%;" title="{{Démarre (ou redémarre) le service Mosquitto local.}}">
+				<i class="fas fa-play"></i> {{(Re)Démarrer}}</a>
 			</div>
-			<div class="col-sm-2">
-				<a id="bt_mosquittoRepare" class="btn btn-warning disabled" style="width:100%;"
-					title="Supprime la configuration actuelle de Mosquitto et remet la configuration par<br />
-					défaut de jMQTT. Cette option est particulièrement intéressante dans le cas où un<br />
-					autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.">
-				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-magic"></i> {{Réparer}}</a>
+			<div class="col-sm-3">
+				<a id="bt_mosquittoStop" class="btn btn-danger disabled" style="width:100%;" title="{{Arrête le service Mosquitto local.}}">
+				<i class="fas fa-stop"></i> {{Arrêter}}</a>
 			</div>
-			<div class="col-sm-2">
-				<a id="bt_mosquittoRemove" class="btn btn-danger disabled" style="width:100%;"
-					title="Supprime complètement Mosquitto du système, par exemple dans le cas où vous<br />
-					voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.">
-				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-trash"></i> {{Supprimer}}</a>
+			<div class="col-sm-1">
+				<a id="bt_mosquittoEdit" class="btn btn-warning" style="width:100%;display:none;" title="{{Edition du fichier de configuration jMQTT.conf du service Mosquitto local.}}">
+				<i class="fas fa-pen"></i></a>
 			</div>
 		</div>
 <?php
@@ -160,13 +173,23 @@ function mosquittoStatus(_result) {
 		$('#bt_mosquittoInstall').addClass('disabled');
 		$('#bt_mosquittoRepare').removeClass('disabled');
 		$('#bt_mosquittoRemove').removeClass('disabled');
+		$('#mosquittoService').empty().html(_result.service);
+		$('.local-install').show();
+		if (_result.service.includes('running'))
+			$('#bt_mosquittoStop').removeClass('disabled');
+		else
+			$('#bt_mosquittoStop').addClass('disabled');
+		if (_result.message.includes('jMQTT'))
+			$('#bt_mosquittoEdit').show();
+		else
+			$('#bt_mosquittoEdit').hide();
 	} else {
 		$('#bt_mosquittoInstall').removeClass('disabled');
 		$('#bt_mosquittoRepare').addClass('disabled');
 		$('#bt_mosquittoRemove').addClass('disabled');
+		$('.local-install').hide();
 	}
 	$('#mosquittoStatus').empty().html(_result.message);
-	$('#mosquittoService').empty().html(_result.service);
 }
 
 // Set Mosquitto status
@@ -199,9 +222,9 @@ $('#bt_mosquittoInstall').on('click', function () {
 						toggleIco(btn);
 						if (data.state == 'ok') {
 							mosquittoStatus(data.result);
-							$.fn.showAlert({message: '{{Le service Mosquitto a bien été installé et configuré.}}' ,level: 'success'});
+							$.fn.showAlert({message: '{{Le service Mosquitto a bien été installé et configuré.}}', level: 'success'});
 						} else {
-							$.fn.showAlert({message: data.result ,level: 'danger'});
+							$.fn.showAlert({message: data.result, level: 'danger'});
 						}
 					}
 				});
@@ -227,9 +250,9 @@ $('#bt_mosquittoRepare').on('click', function () {
 						toggleIco(btn);
 						if (data.state == 'ok') {
 							mosquittoStatus(data.result);
-							$.fn.showAlert({message: '{{Le service Mosquitto a bien été réparé.}}' ,level: 'success'});
+							$.fn.showAlert({message: '{{Le service Mosquitto a bien été réparé.}}', level: 'success'});
 						} else {
-							$.fn.showAlert({message: data.result ,level: 'danger'});
+							$.fn.showAlert({message: data.result, level: 'danger'});
 						}
 					}
 				});
@@ -255,9 +278,9 @@ $('#bt_mosquittoRemove').on('click', function () {
 						toggleIco(btn);
 						if (data.state == 'ok') {
 							mosquittoStatus(data.result);
-							$.fn.showAlert({message: '{{Le service Mosquitto a bien été désinstallé du système.}}' ,level: 'success'});
+							$.fn.showAlert({message: '{{Le service Mosquitto a bien été désinstallé du système.}}', level: 'success'});
 						} else {
-							$.fn.showAlert({message: data.result ,level: 'danger'});
+							$.fn.showAlert({message: data.result, level: 'danger'});
 						}
 					}
 				});
@@ -265,6 +288,83 @@ $('#bt_mosquittoRemove').on('click', function () {
 		});
 	}
 });
+
+// Start/restart Mosquitto service
+$('#bt_mosquittoReStart').on('click', function () {
+	jmqttAjax({
+		data: { action: "mosquittoReStart" },
+		error: function (request, status, error) {
+			handleAjaxError(request, status, error);
+		},
+		success: function(data) {
+			if (data.state == 'ok') {
+				mosquittoStatus(data.result);
+				$.fn.showAlert({message: '{{Le service Mosquitto a bien été (re)démarré.}}', level: 'success'});
+			} else {
+				$.fn.showAlert({message: data.result, level: 'danger'});
+			}
+		}
+	});
+});
+
+// Stop Mosquitto service
+$('#bt_mosquittoStop').on('click', function () {
+	if (!$(this).hasClass('disabled')) {
+		jmqttAjax({
+			data: { action: "mosquittoStop" },
+			error: function (request, status, error) {
+				handleAjaxError(request, status, error);
+			},
+			success: function(data) {
+				if (data.state == 'ok') {
+					mosquittoStatus(data.result);
+					$.fn.showAlert({message: '{{Le service Mosquitto a bien été arrêté.}}', level: 'success'});
+				} else {
+					$.fn.showAlert({message: data.result, level: 'danger'});
+				}
+			}
+		});
+	}
+});
+
+// Modify jMQTT.conf in Mosquitto service system folder
+$('#bt_mosquittoEdit').on('click', function () {
+	jmqttAjax({
+		data: { action: "mosquittoConf" },
+		error: function (request, status, error) {
+			handleAjaxError(request, status, error);
+		},
+		success: function(result1) {
+			if (result1.state == 'ok') {
+				bootbox.confirm({
+					title: '{{Modifier le fichier jMQTT.conf du service Mosquitto}}',
+					message: '<textarea class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" style="height: 50vh;font-family:CamingoCode,monospace; font-size:small!important; line-height:normal;" id="mosquittoConf">' + result1.result + '</textarea>',
+					callback: function (result2) {
+						if (result2) {
+							jmqttAjax({
+								data: { action: "mosquittoEdit", config: $('#mosquittoConf').value() },
+								error: function (request, status, error) {
+									handleAjaxError(request, status, error);
+								},
+								success: function(result3) {
+									if (result3.state == 'ok') {
+										$.fn.showAlert({message: '{{Le fichier jMQTT.conf a bien été modifiée.<br />Redémarrez le service Mosquitto pour le prendre en compte.}}', level: 'success'});
+									} else {
+										$.fn.showAlert({message: result3.result, level: 'danger'});
+									}
+								}
+							});
+						}
+					}
+				});
+			} else {
+				$.fn.showAlert({message: result1.result, level: 'danger'});
+			}
+		}
+	});
+
+});
+
 <?php } /* !$docker */ ?>
 
 /* TODO NEW Uncomment when Backup/Restore jMQTT is OK
@@ -292,7 +392,7 @@ $('#bt_jmqttUrlOverride').on('click', function () {
 			if (data.state != 'ok')
 				$.fn.showAlert({message: data.result,level: 'danger'});
 			else
-				$.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}' ,level: 'success'});
+				$.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}', level: 'success'});
 		}
 	});
 });
@@ -325,7 +425,7 @@ if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event 
 				},
 				success: function(data) {
 					if (data.state == 'ok')
-						$.fn.showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}" ,level: 'success'});
+						$.fn.showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}", level: 'success'});
 				}
 			});
 		}
