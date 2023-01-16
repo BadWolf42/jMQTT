@@ -33,9 +33,9 @@ class jMQTT extends eqLogic {
 	const CLIENT_STATUS_ONLINE          = 'online';
 	const CLIENT_STATUS_OFFLINE         = 'offline';
 
-	const MQTTCLIENT_OK                 = 'ok';
-	const MQTTCLIENT_POK                = 'pok';
-	const MQTTCLIENT_NOK                = 'nok';
+	const CLIENT_OK                     = 'ok';
+	const CLIENT_POK                    = 'pok';
+	const CLIENT_NOK                    = 'nok';
 
 	const CONF_KEY_TYPE                 = 'type';
 	const CONF_KEY_BRK_ID               = 'eqLogic';
@@ -835,7 +835,7 @@ class jMQTT extends eqLogic {
 			// --- Existing broker ---
 			else {
 
-				$stopped = ($this->getMqttClientState() == self::MQTTCLIENT_NOK);
+				$stopped = ($this->getMqttClientState() == self::CLIENT_NOK);
 				$startRequested = false;
 
 				// isEnable changed
@@ -1014,7 +1014,7 @@ class jMQTT extends eqLogic {
 
 				// Wait up to 10s for MqttClient stopped
 				for ($i=0; $i < 40; $i++) {
-					if ($this->getMqttClientState() != self::MQTTCLIENT_OK) break;
+					if ($this->getMqttClientState() != self::CLIENT_OK) break;
 					usleep(250000);
 				}
 			}
@@ -1099,15 +1099,15 @@ class jMQTT extends eqLogic {
 				$return[] = array(
 					'test' => __('Configuration du broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
 					'result' => strtoupper($info['launchable']),
-					'advice' => ($info['launchable'] != self::MQTTCLIENT_OK ? $info['message'] : ''),
-					'state' => ($info['launchable'] == self::MQTTCLIENT_OK)
+					'advice' => ($info['launchable'] != self::CLIENT_OK ? $info['message'] : ''),
+					'state' => ($info['launchable'] == self::CLIENT_OK)
 				);
 				if (end($return)['state']) {
 					$return[] = array(
 						'test' => __('Connexion au broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
 						'result' => strtoupper($info['state']),
-						'advice' => ($info['state'] != self::MQTTCLIENT_OK ? $info['message'] : ''),
-						'state' => ($info['state'] == self::MQTTCLIENT_OK)
+						'advice' => ($info['state'] != self::CLIENT_OK ? $info['message'] : ''),
+						'state' => ($info['state'] == self::CLIENT_OK)
 					);
 				}
 			}
@@ -1197,8 +1197,8 @@ class jMQTT extends eqLogic {
 	 * Jeedom callback to get information on the daemon
 	 */
 	public static function deamon_info() {
-		$return = array('launchable' => self::MQTTCLIENT_OK, 'log' => __CLASS__);
-		$return['state'] = (self::daemon_check()) ? self::MQTTCLIENT_OK : self::MQTTCLIENT_NOK;
+		$return = array('launchable' => self::CLIENT_OK, 'log' => __CLASS__);
+		$return['state'] = (self::daemon_check()) ? self::CLIENT_OK : self::CLIENT_NOK;
 		return $return;
 	}
 
@@ -1235,7 +1235,7 @@ class jMQTT extends eqLogic {
 		self::deamon_stop();
 		// Check if daemon is launchable
 		$dep_info = self::dependancy_info();
-		if ($dep_info['state'] != self::MQTTCLIENT_OK) {
+		if ($dep_info['state'] != self::CLIENT_OK) {
 			throw new Exception(__('Veuillez vérifier la configuration et les dépendances', __FILE__));
 		}
 		// Reset timers to let Daemon start
@@ -1526,31 +1526,31 @@ class jMQTT extends eqLogic {
 		$return = array();
 		$return['log'] = log::getPathToLog($depLogFile);
 		$return['progress_file'] = $depProgressFile;
-		$return['state'] = self::MQTTCLIENT_OK;
+		$return['state'] = self::CLIENT_OK;
 
 		if (file_exists($depProgressFile)) {
 			self::logger('debug', sprintf(__("Dépendances en cours d'installation... (%s%%)", __FILE__), trim(file_get_contents($depProgressFile))));
-			$return['state'] = self::MQTTCLIENT_NOK;
+			$return['state'] = self::CLIENT_NOK;
 			return $return;
 		}
 
 		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
 			self::logger('debug', __('Relancez les dépendances, le package PHP JsonPath est manquant', __FILE__));
-			$return['state'] = self::MQTTCLIENT_NOK;
+			$return['state'] = self::CLIENT_NOK;
 		}
 
 		if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
 			self::logger('debug', __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__));
-			$return['state'] = self::MQTTCLIENT_NOK;
+			$return['state'] = self::CLIENT_NOK;
 		} else {
 			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
 			if (count($output) > 0) {
 				self::logger('error', __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).' <br />'.implode('<br />', $output));
-				$return['state'] = self::MQTTCLIENT_NOK;
+				$return['state'] = self::CLIENT_NOK;
 			}
 		}
 
-		if ($return['state'] == self::MQTTCLIENT_OK)
+		if ($return['state'] == self::CLIENT_OK)
 			self::logger('debug', sprintf(__('Dépendances installées.', __FILE__)));
 		return $return;
 	}
@@ -1807,10 +1807,10 @@ class jMQTT extends eqLogic {
 	 * Check all MQTT Clients (start them if needed)
 	 */
 	public static function checkAllMqttClients() {
-		if (self::daemon_check() != self::MQTTCLIENT_OK)
+		if (self::daemon_check() != self::CLIENT_OK)
 			return;
 		foreach(self::getBrokers() as $broker) {
-			if (!$broker->getIsEnable() || $broker->getMqttClientState() == self::MQTTCLIENT_OK)
+			if (!$broker->getIsEnable() || $broker->getMqttClientState() == self::CLIENT_OK)
 				continue;
 			try {
 				$broker->startMqttClient();
@@ -1833,39 +1833,39 @@ class jMQTT extends eqLogic {
 	public function getMqttClientInfo() {
 		// Not a Broker
 		if ($this->getType() != self::TYP_BRK)
-			return array('message' => '', 'launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK);
+			return array('message' => '', 'launchable' => self::CLIENT_NOK, 'state' => self::CLIENT_NOK);
 
 		// Daemon is down
 		if (!self::daemon_state())
-			return array('launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK, 'message' => __("Démon non démarré", __FILE__));
+			return array('launchable' => self::CLIENT_NOK, 'state' => self::CLIENT_NOK, 'message' => __("Démon non démarré", __FILE__));
 
 		// Client is connected to the Broker
 		if ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false))
-			return array('launchable' => self::MQTTCLIENT_OK, 'state' => self::MQTTCLIENT_OK, 'message' => __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__));
+			return array('launchable' => self::CLIENT_OK, 'state' => self::CLIENT_OK, 'message' => __("Le Démon jMQTT est correctement connecté à ce Broker", __FILE__));
 
 		// Client is disconnected from the Broker
 		if ($this->getIsEnable())
-			return array('launchable' => self::MQTTCLIENT_OK, 'state' => self::MQTTCLIENT_POK, 'message' => __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__));
+			return array('launchable' => self::CLIENT_OK, 'state' => self::CLIENT_POK, 'message' => __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__));
 
 		// Client is disabled
-		return array('launchable' => self::MQTTCLIENT_NOK, 'state' => self::MQTTCLIENT_NOK, 'message' => __("La connexion à ce Broker est désactivée", __FILE__));
+		return array('launchable' => self::CLIENT_NOK, 'state' => self::CLIENT_NOK, 'message' => __("La connexion à ce Broker est désactivée", __FILE__));
 	}
 
 	/**
 	 * Return MQTT Client state
-	 *   - self::MQTTCLIENT_OK: MQTT Client is running and mqtt broker is online
-	 *   - self::MQTTCLIENT_POK: MQTT Client is running but mqtt broker is offline
-	 *   - self::MQTTCLIENT_NOK: daemon is not running or Eq is disabled
+	 *   - self::CLIENT_OK: MQTT Client is running and mqtt broker is online
+	 *   - self::CLIENT_POK: MQTT Client is running but mqtt broker is offline
+	 *   - self::CLIENT_NOK: daemon is not running or Eq is disabled
 	 * @return string ok or nok
 	 */
 	public function getMqttClientState() {
 		if (!self::daemon_state() || $this->getType() != self::TYP_BRK)
-			return self::MQTTCLIENT_NOK;
+			return self::CLIENT_NOK;
 		if ($this->getCache(self::CACHE_MQTTCLIENT_CONNECTED, false))
-			return self::MQTTCLIENT_OK;
+			return self::CLIENT_OK;
 		if ($this->getIsEnable())
-			return self::MQTTCLIENT_POK;
-		return self::MQTTCLIENT_NOK;
+			return self::CLIENT_POK;
+		return self::CLIENT_NOK;
 	}
 
 	/**
@@ -1875,10 +1875,10 @@ class jMQTT extends eqLogic {
 	public function startMqttClient() {
 		// if daemon is not ok, do Nothing
 		$daemon_info = self::deamon_info();
-		if ($daemon_info['state'] != self::MQTTCLIENT_OK) return;
+		if ($daemon_info['state'] != self::CLIENT_OK) return;
 		//If MqttClient is not launchable (daemon is running), throw exception to get message
 		$mqttclient_info = $this->getMqttClientInfo();
-		if ($mqttclient_info['launchable'] != self::MQTTCLIENT_OK)
+		if ($mqttclient_info['launchable'] != self::CLIENT_OK)
 			throw new Exception(__("Le client MQTT n'est pas démarrable :", __FILE__) . ' ' . $mqttclient_info['message']);
 		$this->log('info', __('Démarrage du Client MQTT', __FILE__));
 		$this->setCache(self::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
@@ -1928,7 +1928,7 @@ class jMQTT extends eqLogic {
 	 */
 	public function stopMqttClient() {
 		$daemon_info = self::deamon_info();
-		if ($daemon_info['state'] == self::MQTTCLIENT_NOK)
+		if ($daemon_info['state'] == self::CLIENT_NOK)
 			return; // Return if client is not running
 		$this->log('info', __('Arrêt du Client MQTT', __FILE__));
 		self::toDaemon_removeClient($this->getId());
@@ -2349,7 +2349,7 @@ class jMQTT extends eqLogic {
 			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas activé", __FILE__), $cmdName, $payloadLogMsg, $broker->getName()));
 			return;
 		}
-		if ($broker->getMqttClientState() != self::MQTTCLIENT_OK) {
+		if ($broker->getMqttClientState() != self::CLIENT_OK) {
 			$this->log('warning', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas connecté au Broker MQTT", __FILE__), $cmdName, $payloadLogMsg, $broker->getName()));
 			return;
 		}
