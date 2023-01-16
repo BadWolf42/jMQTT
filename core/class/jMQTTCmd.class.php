@@ -237,8 +237,9 @@ class jMQTTCmd extends cmd {
 
 		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
 		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
-		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_UNICODE)) !== FALSE))
+		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) !== FALSE)) {
 			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
+		}
 
 		// Reset autoPub if info cmd (should not happen or be possible)
 		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
