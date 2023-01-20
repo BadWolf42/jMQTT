@@ -1784,10 +1784,10 @@ class jMQTT extends eqLogic {
 	 * Callback on daemon auto mode change
 	 */
 	public static function deamon_changeAutoMode($_mode) {
-	if ($_mode)
-		self::logger('info', __("Le démarrage automatique du Démon est maintenant Activé", __FILE__));
-	else
-		self::logger('warning', __("Le démarrage automatique du Démon est maintenant Désactivé", __FILE__));
+		if ($_mode)
+			self::logger('info', __("Le démarrage automatique du Démon est maintenant Activé", __FILE__));
+		else
+			self::logger('warning', __("Le démarrage automatique du Démon est maintenant Désactivé", __FILE__));
 	}
 
 	/**
@@ -2067,54 +2067,54 @@ class jMQTT extends eqLogic {
 	}
 
 	public function toDaemon_realTimeStart($subscribe, $exclude, $retained, $duration = 180) {
-		$params['cmd']='realTimeStart';
-		$params['id']=$this->getId();
-		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
-		$params['subscribe']=$subscribe;
-		$params['exclude']=$exclude;
-		$params['retained']=$retained;
-		$params['duration']=$duration;
+		$params['cmd']       = 'realTimeStart';
+		$params['id']        = $this->getId();
+		$params['file']      = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['subscribe'] = $subscribe;
+		$params['exclude']   = $exclude;
+		$params['retained']  = $retained;
+		$params['duration']  = $duration;
 		self::sendToDaemon($params);
 	}
 
 	public function toDaemon_realTimeStop() {
-		$params['cmd']='realTimeStop';
-		$params['id']=$this->getId();
+		$params['cmd'] = 'realTimeStop';
+		$params['id']  = $this->getId();
 		self::sendToDaemon($params);
 	}
 
 	public function toDaemon_realTimeClear() {
-		$params['cmd']='realTimeClear';
-		$params['id']=$this->getId();
-		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['cmd']  = 'realTimeClear';
+		$params['id']   = $this->getId();
+		$params['file'] = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
 		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_subscribe($id, $topic, $qos = 1) {
 		if (empty($topic)) return;
-		$params['cmd']='subscribeTopic';
-		$params['id']=$id;
-		$params['topic']=$topic;
-		$params['qos']=$qos;
+		$params['cmd']   = 'subscribeTopic';
+		$params['id']    = $id;
+		$params['topic'] = $topic;
+		$params['qos']   = $qos;
 		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_unsubscribe($id, $topic) {
 		if (empty($topic)) return;
-		$params['cmd']='unsubscribeTopic';
-		$params['id']=$id;
-		$params['topic']=$topic;
+		$params['cmd']   = 'unsubscribeTopic';
+		$params['id']    = $id;
+		$params['topic'] = $topic;
 		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_publish($id, $topic, $payload, $qos = 1, $retain = false) {
 		if (empty($topic)) return;
-		$params['cmd']='messageOut';
-		$params['id']=$id;
-		$params['topic']=$topic;
-		$params['payload']=$payload;
-		$params['qos']=$qos;
-		$params['retain']=$retain;
+		$params['cmd']     = 'messageOut';
+		$params['id']      = $id;
+		$params['topic']   = $topic;
+		$params['payload'] = $payload;
+		$params['qos']     = $qos;
+		$params['retain']  = $retain;
 		self::sendToDaemon($params);
 	}
 
