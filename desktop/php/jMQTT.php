@@ -155,8 +155,8 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 				<a class="btn btn-info btn-xs eqLogicAction toDisable" data-action="addMQTTAction"><i class="fas fa-plus-circle"></i> {{Ajouter une commande action}}</a>
 				<a class="btn btn-warning btn-xs eqLogicAction toDisable" data-action="addMQTTInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une commande info}}</a>
 				<div class="btn-group pull-right" data-toggle="buttons">
-					<a class="btn btn-primary btn-xs roundedLeft eqLogicAction active" data-action="classicView"><input type="radio" autocomplete="off" checked><i class="fas fa-list-alt"></i> Classic </a>
-					<a class="btn btn-default btn-xs roundedRight eqLogicAction" data-action="jsonView"><input type="radio" autocomplete="off"><i class="fas fa-sitemap"></i> JSON </a>
+					<a class="btn btn-primary btn-xs roundedLeft eqLogicAction active" data-action="classicView"><input type="radio" checked><i class="fas fa-list-alt"></i> Classic </a>
+					<a class="btn btn-default btn-xs roundedRight eqLogicAction" data-action="jsonView"><input type="radio"><i class="fas fa-sitemap"></i> JSON </a>
 				</div>
 			</div>
 			<hr style="margin-top: 5px; margin-bottom: 5px;">
