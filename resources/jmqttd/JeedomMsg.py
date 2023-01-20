@@ -55,6 +55,11 @@ class JeedomMsg():
 			return False
 		return True
 
+	def set_apikey(self, apikey):
+		self._apikey = apikey
+		self._url = self._callback+'?apikey='+self._apikey+'&uid='+str(os.getpid())+':'+str(self._socket_port)
+		self.send_test()
+
 	def get_status(self):
 		return self._statusToName.get(self._status, self._statusToName[self.KO])
 

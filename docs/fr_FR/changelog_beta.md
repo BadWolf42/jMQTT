@@ -1,5 +1,8 @@
 # Registre des évolutions BETA
 
+## 2023-01-21
+- Ajout de la prise en compte du changement de la clé API dans le Core
+
 ## 2023-01-17
 - Correction d'un bug lors de l'utilisation de '/' dans un payload (merci Jeandhom)
 - Correction d'un bug lors du changement de page ou du rafraichissement, les modifications n'étaient pas signalées

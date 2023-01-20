@@ -1475,6 +1475,13 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params);
 	}
 
+	public static function toDaemon_changeApiKey($newApiKey) {
+		$params['cmd']       = 'changeApiKey';
+		$params['id']        = 0;
+		$params['newApiKey'] = $newApiKey;
+		self::sendToDaemon($params);
+	}
+
 /* TODO (medium) Implemented for later
 	public static function toDaemon_brkRestart($brkId) {
 		$params['cmd']      = 'brkRestart';
@@ -1803,6 +1810,21 @@ class jMQTT extends eqLogic {
 	 */
 	private static function sendMqttDaemonStateEvent($_state) {
 		event::add('jMQTT::EventDaemonState', $_state);
+	}
+
+	/**
+	 * Core callback on API key change
+	 * @param $_value string New API key
+	 */
+	public static function preConfig_api($_apikey) {
+		if (log::getLogLevel(__CLASS__) > 100) {
+			self::logger('info', __("Changement de la clé API de jMQTT", __FILE__));
+		} else {
+			self::logger('info', __("Changement de la clé API de jMQTT : %1\$.8s... est remplacé par %2\$.8s...", __FILE__), jeedom::getApiKey(__CLASS__), $_apikey);
+		}
+		// Inform Daemon that API key changed
+		self::toDaemon_changeApiKey($_apikey);
+		return $_apikey;
 	}
 
 

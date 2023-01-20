@@ -87,6 +87,7 @@ class Main():
 							'realTimeStop':     self.h_realTimeStop,
 							'realTimeClear':    self.h_realTimeClear,
 							'hb':               self.h_hb,
+							'changeApiKey':     self.h_changeApiKey,
 							'loglevel':         self.h_logLevel}
 		self.jmqttclients = {}
 		self.jcom         = None
@@ -341,6 +342,14 @@ class Main():
 	def h_hb(self, message):
 		self.log.debug('Jeedom sent a Heartbeat.')
 		pass
+
+	def h_changeApiKey(self, message):
+		# Check for                   key, mandatory, default_val, expected_type
+		if not validate_params(message, [['newApiKey',  True,        None, str]]):
+			return
+		self.log.debug('Change APIKEY from %s to %s', self._apikey, message['newApiKey'])
+		self._apikey = message['newApiKey']
+		self.jcom.set_apikey(self._apikey)
 
 	def h_logLevel(self, message):
 		self.set_log_level(message['level'])
