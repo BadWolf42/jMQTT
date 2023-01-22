@@ -129,14 +129,6 @@ class jMQTT extends eqLogic {
 	 */
 	private $_connectedCmd;
 
-	/**
-	 * Log file related to this broker.
-	 * Set in the daemon method; it is only visible from functions
-	 * that are executed on the same thread as the daemon method.
-	 * @var Mosquitto\Client $_client
-	 */
-	private $_log;
-
 	private static function templateRead($_file) {
 		// read content from file without error handeling!
 		$content = file_get_contents($_file);

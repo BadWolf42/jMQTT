@@ -675,14 +675,15 @@ panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-boo
 
 <!--
 TODO (low) for Debug modal
-- Kill all daemons
-- Remove PID file
+- Clean directories / deps / venv / dynamic content
+- Force deps recheck
 - Relaunch plugin install
+- List active Python daemon(s) PID (and allow to kill some/all of them)
+- Remove PID file
 - Stop heatbeat
 - Request Thread Dump
 - Send loglevel (including verbose)
 - Enable/disable listeners
-- Clean directories deps / dynamic content
 -->
 
 	<script>
