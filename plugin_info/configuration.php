@@ -27,6 +27,7 @@ if (!isConnect()) {
 sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
 $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
+sendVarToJS('dStatus', $docker);
 
 ?>
 <form class="form-horizontal">
@@ -165,8 +166,8 @@ function jmqttAjax(_params) {
 	});
 }
 
+if (!dStatus) {
 
-<?php if (!$docker) { ?>
 // Helper to set buttons and texts
 function mosquittoStatus(_result) {
 	if (_result.installed) {
@@ -365,21 +366,8 @@ $('#bt_mosquittoEdit').on('click', function () {
 
 });
 
-<?php } /* !$docker */ ?>
+} else {
 
-/* TODO NEW Uncomment when Backup/Restore jMQTT is OK
-// Launch jMQTT backup and wait for it to end
-$('#bt_backupJMQTT').on('click', function () {
-	console.log('bt_backupJMQTT');
-});
-
-// Launch jMQTT restoration and wait for it to end
-$('#bt_restoreJMQTT').on('click', function () {
-	console.log('bt_restoreJMQTT');
-});
-*/
-
-<?php if ($docker) { ?>
 $('#bt_jmqttUrlOverride').on('click', function () {
 	var $valEn = $('#jmqttUrlOverrideEnable').value()
 	jmqttAjax({
@@ -409,7 +397,21 @@ $('#jmqttUrlOverrideEnable').change(function() {
 		$oVal.addClass('disabled');
 	}
 });
-<?php } /* $docker */ ?>
+
+}
+
+/* TODO NEW Uncomment when Backup/Restore jMQTT is OK
+// Launch jMQTT backup and wait for it to end
+$('#bt_backupJMQTT').on('click', function () {
+	console.log('bt_backupJMQTT');
+});
+
+// Launch jMQTT restoration and wait for it to end
+$('#bt_restoreJMQTT').on('click', function () {
+	console.log('bt_restoreJMQTT');
+});
+*/
+
 
 // Send log level to daemon dynamically
 $btSave = $('#bt_savePluginLogConfig');
