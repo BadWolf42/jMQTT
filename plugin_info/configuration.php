@@ -124,16 +124,51 @@ if ($docker) {
 	</div>
 	<div class="col-sm-6">
 <!-- TODO NEW Uncomment when Backup/Restore jMQTT is OK
-		<legend><i class="fas fa-exchange-alt"></i>{{Sauvegarde et Restauration de jMQTT en l'état}}</legend>
-		<div class="form-group ">
-			<label class="col-sm-2 control-label"> </label>
-			<div class="col-sm-3">
-				<a class="btn btn-success" id="bt_backupJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Sauvegarder}}</a>
+		<legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuation de jMQTT}}</legend>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-5">
+				<a class="btn btn-success" id="bt_backupJMqttStart" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Lancer une sauvegarde}}</a>
 			</div>
-			<div class="col-sm-3">
-				<a class="btn btn-danger" id="bt_restoreJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer}}</a>
+			<div class="col-sm-6"></div>
+		</div>
+		<legend><i class="fas fa-tape"></i>{{Sauvegardes disponibles}}</legend>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-10">
+				<select class="form-control" id="sel_backupJMqtt">
+<?php
+// List all jMQTT backup files
+$backup_dir = realpath(__DIR__ . '/../data/backups');
+$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
+foreach ($backups as $backup)
+	echo '<option value="'.$backup.'">'.$backup.' ('.sizeFormat(filesize($backup_dir.'/'.$backup)).")</option>\n";
+?>
+				</select>
 			</div>
-			<div class="col-sm-2"> </div>
+			<div class="col-sm-1"></div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-5">
+				<a class="btn btn-danger" id="bt_backupJMqttRemove" style="width:100%;"><i class="fas fa-trash"></i> {{Supprimer la sauvegarde}}</a>
+			</div>
+			<div class="col-sm-5">
+				<a class="btn btn-warning" id="bt_backupJMqttRestore" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer la sauvegarde}}</a>
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-5">
+					<a class="btn btn-success" id="bt_backupJMqttDownload" style="width:100%;"><i class="fas fa-cloud-download-alt"></i> {{Télécharger la sauvegarde}}</a>
+			</div>
+			<div class="col-sm-5">
+				<span class="btn btn-default btn-file" style="width:100%;">
+					<i class="fas fa-cloud-upload-alt"></i> {{Ajouter une sauvegarde}}<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=uploadBackup">
+				</span>
+			</div>
+			<div class="col-sm-1"></div>
 		</div>
 -->
 		<div class="form-group"><br /></div>
@@ -164,6 +199,14 @@ function jmqttAjax(_params) {
 				_params.success(data);
 		}
 	});
+}
+
+// Toggle spinner icon on button click
+function toggleIco(_this) {
+	var h = _this.find('i.fas:hidden');
+	var v = _this.find('i.fas:visible');
+	v.hide();
+	h.show();
 }
 
 if (!dStatus) {
@@ -197,14 +240,6 @@ if (!dStatus) {
 	$(document).ready(function() {
 		mosquittoStatus(mStatus);
 	});
-
-	// Toggle spinner icon on button click
-	function toggleIco(_this) {
-		var h = _this.find('i.fas:hidden');
-		var v = _this.find('i.fas:visible');
-		v.hide();
-		h.show();
-	}
 
 	// Launch Mosquitto installation and wait for it to end
 	$('#bt_mosquittoInstall').on('click', function () {
@@ -399,19 +434,76 @@ if (!dStatus) {
 	});
 
 }
-
-/* TODO NEW Uncomment when Backup/Restore jMQTT is OK
 // Launch jMQTT backup and wait for it to end
-$('#bt_backupJMQTT').on('click', function () {
-	console.log('bt_backupJMQTT');
+$('#bt_backupJMqttStart').on('click', function () {
+	console.log('bt_backupJMqttStart');
+});
+
+// Remove selected jMQTT backup
+$('#bt_backupJMqttRemove').on('click', function () {
+	if (!$('#sel_backupJMqtt option:selected').length)
+		return;
+	var btn = $(this)
+	bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer}} <b>' + $('#sel_backupJMqtt option:selected').text() + '</b> ?', function(result) {
+		if (!result)
+			return;
+		jmqttAjax({
+			data: {
+				action: "removeBackup",
+				file: $('#sel_backupJMqtt').value()
+			},
+			error: function (request, status, error) {
+				handleAjaxError(request, status, error);
+			},
+			success: function(data) {
+				if (data.state == 'ok') {
+					$.fn.showAlert({message: '{{Sauvegarde supprimée.}}', level: 'success'});
+					$('#sel_backupJMqtt option:selected').remove();
+				} else {
+					$.fn.showAlert({message: data.result, level: 'danger'});
+				}
+			}
+		});
+	});
 });
 
 // Launch jMQTT restoration and wait for it to end
-$('#bt_restoreJMQTT').on('click', function () {
-	console.log('bt_restoreJMQTT');
+$('#bt_backupJMqttRestore').on('click', function () {
+	if (!$('#sel_backupJMqtt option:selected').length)
+		return;
+	var btn = $(this)
+	bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + '</b> ?', function(result) {
+		if (!result)
+			return;
+		toggleIco(btn);
+		// TODO
+		console.log('bt_backupJMqttRestore:', $('#sel_backupJMqtt').value());
+		toggleIco(btn);
+	});
 });
-*/
 
+// Download the selected jMQTT backup
+$('#bt_backupJMqttDownload').on('click', function () {
+	if (!$('#sel_backupJMqtt option:selected').length)
+		return;
+	window.open('core/php/downloadFile.php?pathfile=' + $('#sel_backupJMqtt').value(), "_blank", null);
+});
+
+// Add a new jMQTT backup file by upload to the list
+$('#bt_backupJMqttUpload').fileupload({
+	dataType: 'json',
+	replaceFileInput: false,
+	done: function(e, data) {
+		if (data.result.state != 'ok') {
+			$.fn.showAlert({message: data.result.result, level: 'danger'});
+			return;
+		}
+		var oVal = data.result.result.name;
+		var oText = data.result.result.name + ' (' + data.result.result.size +')';
+		$('#sel_backupJMqtt').append('<option selected value="' + oVal + '">' + oText + '</option>');
+		$.fn.showAlert({message: '{{Fichier(s) ajouté(s) avec succès}}', level: 'success'})
+	}
+});
 
 // Send log level to daemon dynamically
 $btSave = $('#bt_savePluginLogConfig');
