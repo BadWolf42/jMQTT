@@ -28,9 +28,13 @@ if (typeof jeedom.cmd.addUpdateFunction !== 'function') {
 	}
 }
 
-// New namespace
-function jmqtt() {}
-jmqtt.globals = {};
+// Namespaces
+if (typeof jmqtt !== 'function') {
+	function jmqtt() {}
+}
+if (typeof jmqtt.globals !== 'function') {
+	jmqtt.globals = function () {}
+}
 
 // Array of Equipment logo descriptors
 jmqtt.globals.logos = [
