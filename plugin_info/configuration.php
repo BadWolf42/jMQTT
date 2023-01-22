@@ -53,7 +53,7 @@ if (!$docker) {
 			</div>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoRepare" class="btn btn-warning disabled" style="width:100%;"
-					title="{{Supprime la configuration actuelle de Mosquitto et remet la configuration par défaut de jMQTT. Cette option est particulièrement intéressante dans le cas où un autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.}}">
+					title="{{Supprime la configuration actuelle de Mosquitto et remet la configuration par défaut de jMQTT.<br/>Cette option est particulièrement intéressante dans le cas où un autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.}}">
 				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-magic"></i> {{Réparer}}</a>
 			</div>
 			<div class="col-sm-2">

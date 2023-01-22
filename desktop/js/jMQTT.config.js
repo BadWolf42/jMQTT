@@ -393,4 +393,6 @@ $(document).ready(function() {
 	// Wrap Log Save button
 	jmqtt.config.logSaveWrapper
 
+	// Fix tooltips loading // TODO workarround => bug fix to find
+	jeedomUtils.initTooltips();
 });
