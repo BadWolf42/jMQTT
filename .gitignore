@@ -3,7 +3,7 @@ __pycache__/
 docs/_site/
 docs/Gemfile.lock
 docs/.sass-cache/
-data/template/
+data/
 resources/jmqttd/venv/
 resources/JsonPath-PHP/composer.lock
 resources/JsonPath-PHP/vendor/
