@@ -165,7 +165,7 @@ foreach ($backups as $backup)
 			</div>
 			<div class="col-sm-5">
 				<span class="btn btn-default btn-file" style="width:100%;">
-					<i class="fas fa-cloud-upload-alt"></i> {{Ajouter une sauvegarde}}<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=uploadBackup">
+					<i class="fas fa-cloud-upload-alt"></i> {{Ajouter une sauvegarde}}<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&amp;dir=backup">
 				</span>
 			</div>
 			<div class="col-sm-1"></div>

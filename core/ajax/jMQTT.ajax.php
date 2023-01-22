@@ -24,22 +24,30 @@ try {
 		throw new Exception(__('401 - Accès non autorisé', __FILE__));
 	}
 
-	if (init('action') == 'fileupload') { // Does NOT work if placed after "ajax::init()", because using some parameters in GET
+
+	ajax::init(array('fileupload'));
+
+	if (init('action') == 'fileupload') {
 		if (!isset($_FILES['file'])) {
 			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
-		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
-		if (!in_array($extension, array('.crt', '.key', '.json', '.pem'))) {
-			throw new Exception(sprintf(__("L'extension de fichier '%s' n'est pas autorisée", __FILE__), $extension));
-		}
-		if (filesize($_FILES['file']['tmp_name']) > 500000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 500Ko)', __FILE__));
-		}
 		if (init('dir') == 'template') {
 			$uploaddir = realpath(__DIR__ . '/../../' . jMQTT::PATH_TEMPLATES_PERSO);
+			$allowed_ext = '.json';
+			$max_size = 500*1024; // 500KB
+		} elseif (init('dir') == 'backup') {
+			$uploaddir = realpath(__DIR__ . '/../../data/backups'); // TODO
+			$allowed_ext = '.tgz';
+			$max_size = 100*1024*1024; // 100MB
 		} else {
 			throw new Exception(__('Téléversement invalide', __FILE__));
 		}
+		if (filesize($_FILES['file']['tmp_name']) > $max_size) {
+			throw new Exception(sprintf(__('Le fichier est trop gros (maximum %s)', __FILE__), sizeFormat($max_size)));
+		}
+		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
+		if ($extension != $allowed_ext)
+			throw new Exception(sprintf(__("L'extension de fichier '%s' n'est pas autorisée", __FILE__), $extension));
 		if (!file_exists($uploaddir)) {
 			mkdir($uploaddir);
 		}
@@ -62,12 +70,14 @@ try {
 			jMQTT::templateSplitJsonPathByFile($fname);
 			// Adapt template for the topic in configuration
 			jMQTT::moveTopicToConfigurationByFile($fname);
+			jMQTT::logger('info', sprintf(__("Template %s correctement téléversée", __FILE__), $fname));
+			ajax::success($fname);
 		}
-		jMQTT::logger('info', sprintf(__("Template %s correctement téléversée", __FILE__), $fname));
-		ajax::success($fname);
+		elseif (init('dir') == 'backup') {
+			jMQTT::logger('info', sprintf(__("Sauvegarde %s correctement téléversée", __FILE__), $fname));
+			ajax::success(array('name' => $_FILES['file']['name'], 'size' => sizeFormat(filesize($uploaddir.'/'.$_FILES['file']['name']))));
+		}
 	}
-
-	ajax::init();
 
 	if (init('action') == 'getTemplateList') {
 		ajax::success(jMQTT::templateList());
@@ -207,6 +217,23 @@ try {
 			throw new Exception(__('Configuration manquante', __FILE__));
 		shell_exec(system::getCmdSudo() . ' tee /etc/mosquitto/conf.d/jMQTT.conf > /dev/null <<jmqttEOF' . "\n" . init('config') . 'jmqttEOF');
 		ajax::success(jMQTT::mosquittoCheck());
+	}
+
+	if (init('action') == 'removeBackup') {
+		jMQTT::logger('info', sprintf(__("removeBackup: %s", __FILE__), init('file')));
+
+		$_backup = init('file');
+		if (!isset($_backup) || is_null($_backup) || $_backup == '')
+			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
+
+		$backup_dir = realpath(__DIR__ . '/../../data/backups');
+		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
+
+		if (in_array($_backup, $backups) && file_exists($backup_dir.'/'.$_backup))
+			unlink($backup_dir.'/'.$_backup);
+		else
+			throw new Exception(__('Impossible de supprimer le fichier', __FILE__));
+		ajax::success();
 	}
 
 	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
