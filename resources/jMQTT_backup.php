@@ -212,7 +212,6 @@ function backup_main() {
 
 	if (isset($options['h']) || isset($options['help']) || count($options) == 0) {
 		export_help();
-		var_dump($options);
 		exit(0);
 	}
 
