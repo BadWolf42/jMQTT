@@ -11,7 +11,7 @@ include_file('desktop', 'jMQTT.globals', 'js', 'jMQTT');
 include_file('desktop', 'jMQTT.functions', 'js', 'jMQTT');
 
 // Send daemon current state
-sendVarToJS('jmqtt.globals.daemonState', jMQTT::daemon_state());
+sendVarToJS('jmqtt_globals.daemonState', jMQTT::daemon_state());
 
 /** @var jMQTT[][] $eqNonBrokers */
 $eqNonBrokers = jMQTT::getNonBrokers();
@@ -22,7 +22,7 @@ $eqBrokersName = array();
 foreach ($eqBrokers as $id => $eqL) {
 	$eqBrokersName[$id] = $eqL->getName();
 }
-sendVarToJS('jmqtt.globals.eqBrokers', $eqBrokersName);
+sendVarToJS('jmqtt_globals.eqBrokers', $eqBrokersName);
 
 ?>
 

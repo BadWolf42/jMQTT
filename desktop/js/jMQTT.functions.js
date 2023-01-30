@@ -14,10 +14,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Namespaces
-if (typeof jmqtt !== 'function') {
-	function jmqtt() {}
-}
+// Namespace
+jmqtt = {}
 
 // Functions used by jMQTT.js
 
@@ -119,15 +117,15 @@ jmqtt.logoHelper = function(_id) {
 	if (_id == 'broker')
 		return 'plugins/jMQTT/core/img/node_broker.svg';
 	// Search for an logo with this id
-	var tmp = jmqtt.globals.logos.find(function (item) { return item.id == _id; });
+	var tmp = jmqtt_globals.logos.find(function (item) { return item.id == _id; });
 	// Return path to an image according to id
 	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
 }
 
 // Build an icon in hiddenAsTable card span
 jmqtt.asCardHelper = function(_eq, _item, iClass) {
-	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
-	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
+	var v    = jmqtt_globals.icons[_eq.configuration.type][_item].selector(_eq);
+	var i    = jmqtt_globals.icons[_eq.configuration.type][_item][v];
 	var icon = (_item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
 	iClass   = iClass != '' ? ' ' + iClass : '';
 
@@ -136,10 +134,10 @@ jmqtt.asCardHelper = function(_eq, _item, iClass) {
 
 // Build an icon in hiddenAsCard card span
 jmqtt.asTableHelper = function(_eq, _item, aClass) {
-	var v    = jmqtt.globals.icons[_eq.configuration.type][_item].selector(_eq);
-	var i    = jmqtt.globals.icons[_eq.configuration.type][_item][v];
-	// var colored = _eq.configuration.type == 'broker' && (jmqtt.globals.daemonState && _eq.isEnable == '1') && _item == 'status';
-	var colored = _item == 'status' || (_eq.isEnable == '1' && (_eq.configuration.type != 'broker' || jmqtt.globals.daemonState));
+	var v    = jmqtt_globals.icons[_eq.configuration.type][_item].selector(_eq);
+	var i    = jmqtt_globals.icons[_eq.configuration.type][_item][v];
+	// var colored = _eq.configuration.type == 'broker' && (jmqtt_globals.daemonState && _eq.isEnable == '1') && _item == 'status';
+	var colored = _item == 'status' || (_eq.isEnable == '1' && (_eq.configuration.type != 'broker' || jmqtt_globals.daemonState));
 	var icon = colored ? (i.icon + ' ' + i.color) : i.icon;
 	var msg  = colored ? (i.msg) : '';
 	aClass   = aClass != '' ? ' ' + aClass : '';
@@ -194,7 +192,7 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 // Get information about Broker state (launchable, launchable color, state, message, message color)
 jmqtt.getMqttClientInfo = function(_eq) {
 	// Daemon is down
-	if (!jmqtt.globals.daemonState)
+	if (!jmqtt_globals.daemonState)
 		return {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{Le Démon n'est pas démarré}}",                             color:'danger'};
 	// Client is connected to the Broker
 	if (_eq.cache.mqttClientConnected)
@@ -255,17 +253,17 @@ jmqtt.certDrag = function(ev) {
 	ev.preventDefault();
 	ev.stopPropagation();
 	if (ev.type == 'dragenter') {
-		jmqtt.globals.dropzoneCpt++;
+		jmqtt_globals.dropzoneCpt++;
 		$('.dropzone').show().css('background-color', '');
 		if ($(ev.target).hasClass('dropzone'))
 			$(ev.target).css('background-color', 'lightyellow');
 	} else if (ev.type == 'dragleave') {
 		if ($(ev.target).hasClass('dropzone'))
 			$(ev.target).css('background-color', '');
-		jmqtt.globals.dropzoneCpt--;
-		if (jmqtt.globals.dropzoneCpt <= 0) {
+		jmqtt_globals.dropzoneCpt--;
+		if (jmqtt_globals.dropzoneCpt <= 0) {
 			$('.dropzone').hide();
-			jmqtt.globals.dropzoneCpt = 0;
+			jmqtt_globals.dropzoneCpt = 0;
 		}
 	}
 }
@@ -287,7 +285,7 @@ jmqtt.certDrop = function(ev) {
 		};
 		reader.readAsText(ev.originalEvent.dataTransfer.files[0], "UTF-8");
 	}
-	jmqtt.globals.dropzoneCpt = 0;
+	jmqtt_globals.dropzoneCpt = 0;
 }
 
 // On click on upload certificate file in a Broker uploadzone
@@ -326,8 +324,8 @@ jmqtt.checkTopicMatch = function (subscription, topic) {
 // Action on eqLogic subscription topic field update
 jmqtt.updateGlobalMainTopic = function () {
 	var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
-	jmqtt.globals.mainTopic = mt.val();
-	if (jmqtt.globals.mainTopic == '')
+	jmqtt_globals.mainTopic = mt.val();
+	if (jmqtt_globals.mainTopic == '')
 		mt.addClass('topicMismatch');
 	else
 		mt.removeClass('topicMismatch');
@@ -399,13 +397,13 @@ jmqtt.updateEqptTabs = function(_eq) {
 	// Initialize the broker dropbox
 	var brokers = $('.eqLogicAttr[data-l1key=configuration][data-l2key=eqLogic]');
 	brokers.empty();
-	$.each(jmqtt.globals.eqBrokers, function(key, name) {
+	$.each(jmqtt_globals.eqBrokers, function(key, name) {
 		brokers.append(new Option(name, key));
 	});
 	brokers.val(_eq.configuration.eqLogic);
 
 	// Set mainTopic global
-	jmqtt.globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
+	jmqtt_globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
 
 	// Initialise battery and availability dropboxes
 	var eqId = jmqtt.getEqId();
@@ -442,8 +440,8 @@ jmqtt.updateEqptTabs = function(_eq) {
 	if (icos.attr('ready') != 'true') {
 		icos.attr('ready', 'true');
 		icos.html('');
-		$.each(jmqtt.globals.logos, function(key) {
-			opt = new Option(jmqtt.globals.logos[key]['name'], jmqtt.globals.logos[key]['id']);
+		$.each(jmqtt_globals.logos, function(key) {
+			opt = new Option(jmqtt_globals.logos[key]['name'], jmqtt_globals.logos[key]['id']);
 			icos.append(opt);
 		});
 		// Set handler on eqLogic logo field set (initial set and finish typing)
@@ -498,7 +496,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
 		$('#mqttRetTopic').attr('disabled', '');
-		clearInterval(jmqtt.globals.refreshRealTime);
+		clearInterval(jmqtt_globals.refreshRealTime);
 	} else if (!active) { // Show only startRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
@@ -507,7 +505,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttIncTopic').removeAttr('disabled');
 		$('#mqttExcTopic').removeAttr('disabled');
 		$('#mqttRetTopic').removeAttr('disabled');
-		clearInterval(jmqtt.globals.refreshRealTime);
+		clearInterval(jmqtt_globals.refreshRealTime);
 	} else if (paused) { // Show only stopRealTimeMode & playRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
@@ -516,7 +514,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
 		$('#mqttRetTopic').attr('disabled', '');
-		clearInterval(jmqtt.globals.refreshRealTime);
+		clearInterval(jmqtt_globals.refreshRealTime);
 	} else {              // Show stopRealTimeMode & pauseRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
@@ -526,7 +524,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttExcTopic').attr('disabled', '');
 		$('#mqttRetTopic').attr('disabled', '');
 		// Load Real Time Data every 3s if stopRealTimeMode button is visible
-		jmqtt.globals.refreshRealTime = setInterval(function() {
+		jmqtt_globals.refreshRealTime = setInterval(function() {
 				if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length == 0)
 					return;
 				jmqtt.getRealTimeData();
@@ -578,9 +576,9 @@ jmqtt.newRealTimeCmd = function(_data) {
 // Get new Real Time data from Daemon
 jmqtt.getRealTimeData = function() {
 	// Avoid simultaneous collection
-	if (jmqtt.globals.lockRealTime)
+	if (jmqtt_globals.lockRealTime)
 		return;
-	jmqtt.globals.lockRealTime = true;
+	jmqtt_globals.lockRealTime = true;
 	var broker = jmqtt.getBrkId()
 	var _since = $('#table_realtime').attr('brk' + broker + 'since');
 	_since = ((_since == undefined) ? '' : _since);
@@ -592,7 +590,7 @@ jmqtt.getRealTimeData = function() {
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
-			jmqtt.globals.lockRealTime = false;
+			jmqtt_globals.lockRealTime = false;
 		},
 		success: function (data) {
 			if (data.length > 0) {
@@ -604,7 +602,7 @@ jmqtt.getRealTimeData = function() {
 				$('#table_realtime').attr('brk' + broker + 'since', _since);
 				// $('#table_realtime').trigger("update");
 			}
-			jmqtt.globals.lockRealTime = false;
+			jmqtt_globals.lockRealTime = false;
 		}
 	});
 }

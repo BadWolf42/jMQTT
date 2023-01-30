@@ -55,7 +55,7 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Choisissez un broker :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
-	$.each(jmqtt.globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
+	$.each(jmqtt_globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br>';
 	dialog_message += '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
 	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>'
@@ -320,7 +320,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('chang
 	jmqtt.updateGlobalMainTopic();
 	// Update mismatch status of all cmd
 	$('input.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
-		if (jmqtt.checkTopicMatch(jmqtt.globals.mainTopic, $(this).value()))
+		if (jmqtt.checkTopicMatch(jmqtt_globals.mainTopic, $(this).value()))
 			$(this).removeClass('topicMismatch');
 		else
 			$(this).addClass('topicMismatch');
@@ -364,7 +364,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 			dialog_message += '</select><br>';
 
 			dialog_message += '<label class="control-label">{{Saisissez le Topic de base :}}</label> ';
-			var currentTopic = jmqtt.globals.mainTopic;
+			var currentTopic = jmqtt_globals.mainTopic;
 			if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			if (currentTopic.endsWith("/"))
@@ -420,7 +420,7 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 // On updateTopics click
 $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
 	var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
-	var currentTopic = jmqtt.globals.mainTopic;
+	var currentTopic = jmqtt_globals.mainTopic;
 	if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
 		currentTopic = currentTopic.substr(0,currentTopic.length-1);
 	if (currentTopic.endsWith("/"))
@@ -682,7 +682,7 @@ function printEqLogic(_eqLogic) {
 		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
 		// Stop Real Time data refresh
-		clearInterval(jmqtt.globals.refreshRealTime);
+		clearInterval(jmqtt_globals.refreshRealTime);
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
@@ -830,7 +830,7 @@ function addCmdToTable(_cmd) {
 
 		// Update mismatch status of this cmd on change and input
 		$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
-			if (jmqtt.checkTopicMatch(jmqtt.globals.mainTopic, $(this).value()))
+			if (jmqtt.checkTopicMatch(jmqtt_globals.mainTopic, $(this).value()))
 				$(this).removeClass('topicMismatch');
 			else
 				$(this).addClass('topicMismatch');
@@ -1029,9 +1029,9 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 			level: 'warning'
 		});
 		// Reload the page after a delay to let the user read the message
-		if (jmqtt.globals.refreshTimeout === undefined) {
-			jmqtt.globals.refreshTimeout = setTimeout(function() {
-				jmqtt.globals.refreshTimeout = undefined;
+		if (jmqtt_globals.refreshTimeout === undefined) {
+			jmqtt_globals.refreshTimeout = setTimeout(function() {
+				jmqtt_globals.refreshTimeout = undefined;
 				window.location.reload();
 			}, 3000);
 		}
@@ -1062,9 +1062,9 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options
 			level: 'warning'
 		});
 		// Reload the page after a delay to let the user read the message
-		if (jmqtt.globals.refreshTimeout === undefined) {
-			jmqtt.globals.refreshTimeout = setTimeout(function() {
-				jmqtt.globals.refreshTimeout = undefined;
+		if (jmqtt_globals.refreshTimeout === undefined) {
+			jmqtt_globals.refreshTimeout = setTimeout(function() {
+				jmqtt_globals.refreshTimeout = undefined;
 				$('.eqLogicAction[data-action=refreshPage]').click();
 			}, 3000);
 		}
@@ -1135,10 +1135,10 @@ $(document).ready(function() {
 		if ($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker' && $('.topicMismatch').length > 0) {
 			var dialog_message = '';
 			var no_name = false;
-			if (jmqtt.globals.mainTopic == '')
+			if (jmqtt_globals.mainTopic == '')
 				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br>";
 			else {
-				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>" + jmqtt.globals.mainTopic + '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
+				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>" + jmqtt_globals.mainTopic + '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
 				$('.topicMismatch').each(function (_, item) {
 					if (!$(item).hasClass('eqLogicAttr')) {
 						var cmd = $(item).closest('tr.cmd').find('.cmdAttr[data-l1key=name]').value();
