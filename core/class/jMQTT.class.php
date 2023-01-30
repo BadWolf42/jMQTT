@@ -375,11 +375,10 @@ class jMQTT extends eqLogic {
 		if ($this->getConf(self::CONF_KEY_BATTERY_CMD) != "" || $this->getConf(self::CONF_KEY_AVAILABILITY_CMD) != "")
 			$this->save();
 
-		// complete cmd topics
+		// complete cmd topics and replace template cmd names by cmd ids
 		foreach ($this->getCmd() as $cmd) {
 			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
-			$request = $cmd->getConfiguration(jMQTTCmd::CONF_KEY_REQUEST, "");
-			$cmd->setConfiguration(jMQTTCmd::CONF_KEY_REQUEST, str_replace($cmdsName, $cmdsId, $request));
+			$cmd->replaceCmdIds($cmdsName, $cmdsId);
 			$cmd->save();
 		}
 
