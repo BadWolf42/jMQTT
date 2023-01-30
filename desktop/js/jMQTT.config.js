@@ -241,7 +241,7 @@ $('#bt_mosquittoEdit').on('click', function () {
 			if (result1.state == 'ok') {
 				bootbox.confirm({
 					title: '{{Modifier le fichier jMQTT.conf du service Mosquitto}}',
-					message: '<textarea class="bootbox-input bootbox-input-text form-control" type="text" style="height: 50vh;font-family:CamingoCode,monospace; font-size:small!important; line-height:normal;" id="mosquittoConf">' + result1.result + '</textarea>',
+					message: '<textarea class="bootbox-input bootbox-input-text form-control" type="text" style="height: 50vh;font-family:CamingoCode,monospace; font-size:small!important; line-height:normal;" spellcheck="false" id="mosquittoConf">' + result1.result + '</textarea>',
 					callback: function (result2) {
 						if (result2) {
 							jmqtt.config.jmqttAjax({
