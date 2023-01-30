@@ -28,16 +28,12 @@ if (typeof jeedom.cmd.addUpdateFunction !== 'function') {
 	}
 }
 
-// Namespaces
-if (typeof jmqtt !== 'function') {
-	function jmqtt() {}
-}
-if (typeof jmqtt.globals !== 'function') {
-	jmqtt.globals = function () {}
-}
+
+// Namespace
+jmqtt_globals = {};
 
 // Array of Equipment logo descriptors
-jmqtt.globals.logos = [
+jmqtt_globals.logos = [
 	{id: '', name: "{{Aucun}}", file: 'node_.svg'},
 	{id: 'barometre', name: "{{Baromètre}}", file: 'node_barometre.svg'},
 	{id: 'bell', name: "{{Sonnerie}}", file: 'node_bell.svg'},
@@ -88,13 +84,13 @@ jmqtt.globals.logos = [
 	{id: 'zigbee', name: "{{Zigbee}}", file: 'node_zigbee.svg'},
 	{id: 'zwave', name: "{{ZWave}}", file: 'node_zwave.svg'}
 ]
-jmqtt.globals.logos.sort(function(a, b) { return a.name.localeCompare(b.name); });
+jmqtt_globals.logos.sort(function(a, b) { return a.name.localeCompare(b.name); });
 
 // Array of Status Icons descriptors and selectors
-jmqtt.globals.icons = {
+jmqtt_globals.icons = {
 	broker: {
 		status: {
-			selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt.globals.daemonState) ? false : info.state; },
+			selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt_globals.daemonState) ? false : info.state; },
 			ok:       { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connexion au Broker active}}' },
 			pok:      { icon: 'fas fa-minus-circle', color: 'warning', msg: '{{Connexion au Broker en échec}}' },
 			nok:      { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker désactivée}}' },
@@ -152,20 +148,20 @@ jmqtt.globals.icons = {
 };
 
 // To memorise page refresh timeout when set
-jmqtt.globals.refreshTimeout = null;
+jmqtt_globals.refreshTimeout = null;
 
 // To reload Real Time view
-jmqtt.globals.refreshRealTime = null;
-jmqtt.globals.lockRealTime = false;
+jmqtt_globals.refreshRealTime = null;
+jmqtt_globals.lockRealTime = false;
 
 // To memorise current eqLogic main subscription topic
-jmqtt.globals.mainTopic = '';
+jmqtt_globals.mainTopic = '';
 
 // Drop zone counter
-jmqtt.globals.dropzoneCpt = 0;
+jmqtt_globals.dropzoneCpt = 0;
 
-// Update daemon state global variable on reception of a new event (jmqtt.globals.daemonState is initialized by sendVarToJS() in jMQTT.php)
+// Update daemon state global variable on reception of a new event (jmqtt_globals.daemonState is initialized by sendVarToJS() in jMQTT.php)
 $('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function (_event, _options) {
-	jmqtt.globals.daemonState = _options;
+	jmqtt_globals.daemonState = _options;
 });
 
