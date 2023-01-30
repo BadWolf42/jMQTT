@@ -232,7 +232,7 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
   - Stockage des template dans le dossier data permettant de les conserver durant les MAJ du plugin
   - IMAGES : Changement du logo du plugin, reprise des captures d'écran de la documentation, optimisation des tailles
   - Correction de l'Ajout automatique des commandes qui pouvait générer des erreurs MySQL de type "Duplicate entry", voir [Issue#89](https://github.com/Domochip/jMQTT/issues/89).
-  - le passage au nouveau démon déclenche correctement l'installation des nouvelles dépendances
+  - Le passage au nouveau démon déclenche correctement l'installation des nouvelles dépendances
 
 ## 2021-06-02
   - Correction [PR#86](https://github.com/Domochip/jMQTT/pull/86) : mosquitto_pub ne prend plus en charge les '/' dans le clientId. Ils ont donc été remplacé par des '-'
@@ -251,9 +251,9 @@ En cas de problème, merci d'ouvrir un thread sur [community ici](https://commun
 ## 2021-04-13
   - Correction de la conversion de texte transformé en entier dans les payload (Ex : {"bidule":"007"} -> {"bidule":7})
   - Les équipements de type broker ne sont plus en mode ajout automatique à la création
-  - on ne peux plus ajouter/supprimer de commandes sur les équipements de type Broker
+  - On ne peux plus ajouter/supprimer de commandes sur les équipements de type Broker
   - Ajout dans la santé du plugin du champ "Inscrit au Topic" sur chaque équipement
-  - l'API JSON RPC over MQTT est maintenant désactivée par défaut
+  - L'API JSON RPC over MQTT est maintenant désactivée par défaut
   - Création d'un broker par défaut suite à l'installation de mosquitto
 
 ## 2021-04-07

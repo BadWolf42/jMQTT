@@ -1,7 +1,12 @@
 # Registre des évolutions BETA
 
-## 2023-01-21
+## 2023-01-31
 - Ajout de la prise en compte du changement de la clé API dans le Core
+- Ajout du remplacement des références aux commandes dans un même équipement, lors du chargement d'un template (incluant des références internes), selon la (demande #129)[https://github.com/Domochip/jMQTT/issues/129]
+- Correction du remplissage automatique de certains champs
+- Implémentation définitive du système de sauvegarde de jMQTT (la restauration reste à faire), indépendamment du Core (fonctionnalité cachée pour le moment)
+- Nettoyage du code de la page de configuration
+- Nettoyage du code php/python en général
 
 ## 2023-01-17
 - Correction d'un bug lors de l'utilisation de '/' dans un payload (merci Jeandhom)
