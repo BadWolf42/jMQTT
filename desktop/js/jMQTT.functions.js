@@ -14,6 +14,11 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Namespaces
+if (typeof jmqtt !== 'function') {
+	function jmqtt() {}
+}
+
 // Functions used by jMQTT.js
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////

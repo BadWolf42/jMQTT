@@ -55,6 +55,11 @@ class JeedomMsg():
 			return False
 		return True
 
+	def set_apikey(self, apikey):
+		self._apikey = apikey
+		self._url = self._callback+'?apikey='+self._apikey+'&uid='+str(os.getpid())+':'+str(self._socket_port)
+		self.send_test()
+
 	def get_status(self):
 		return self._statusToName.get(self._status, self._statusToName[self.KO])
 
@@ -190,9 +195,8 @@ class JeedomMsg():
 		if self._socketIn:
 			self._socketIn.jmsg = self
 			threading.Thread(target=self._loopRcv, args=(), name="SockIn", daemon=True).start()
-			port = self._socketIn.socket.getsockname()[1]
-			self._socket_port = port
-			self._url = self._callback+'?apikey='+self._apikey+'&uid='+str(os.getpid())+':'+str(port)
+			self._socket_port = self._socketIn.socket.getsockname()[1]
+			self._url = self._callback+'?apikey='+self._apikey+'&uid='+str(os.getpid())+':'+str(self._socket_port)
 			self._log_rcv.info("Started, listening on [%s:%d]", *(self._socketIn.socket.getsockname()))
 			self._status |= self.CAN_RCV
 		else:

@@ -129,14 +129,6 @@ class jMQTT extends eqLogic {
 	 */
 	private $_connectedCmd;
 
-	/**
-	 * Log file related to this broker.
-	 * Set in the daemon method; it is only visible from functions
-	 * that are executed on the same thread as the daemon method.
-	 * @var Mosquitto\Client $_client
-	 */
-	private $_log;
-
 	private static function templateRead($_file) {
 		// read content from file without error handeling!
 		$content = file_get_contents($_file);
@@ -383,11 +375,10 @@ class jMQTT extends eqLogic {
 		if ($this->getConf(self::CONF_KEY_BATTERY_CMD) != "" || $this->getConf(self::CONF_KEY_AVAILABILITY_CMD) != "")
 			$this->save();
 
-		// complete cmd topics
+		// complete cmd topics and replace template cmd names by cmd ids
 		foreach ($this->getCmd() as $cmd) {
 			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
-			$request = $cmd->getConfiguration(jMQTTCmd::CONF_KEY_REQUEST, "");
-			$cmd->setConfiguration(jMQTTCmd::CONF_KEY_REQUEST, str_replace($cmdsName, $cmdsId, $request));
+			$cmd->replaceCmdIds($cmdsName, $cmdsId);
 			$cmd->save();
 		}
 
@@ -1475,6 +1466,13 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params);
 	}
 
+	public static function toDaemon_changeApiKey($newApiKey) {
+		$params['cmd']       = 'changeApiKey';
+		$params['id']        = 0;
+		$params['newApiKey'] = $newApiKey;
+		self::sendToDaemon($params);
+	}
+
 /* TODO (medium) Implemented for later
 	public static function toDaemon_brkRestart($brkId) {
 		$params['cmd']      = 'brkRestart';
@@ -1784,10 +1782,10 @@ class jMQTT extends eqLogic {
 	 * Callback on daemon auto mode change
 	 */
 	public static function deamon_changeAutoMode($_mode) {
-	if ($_mode)
-		self::logger('info', __("Le démarrage automatique du Démon est maintenant Activé", __FILE__));
-	else
-		self::logger('warning', __("Le démarrage automatique du Démon est maintenant Désactivé", __FILE__));
+		if ($_mode)
+			self::logger('info', __("Le démarrage automatique du Démon est maintenant Activé", __FILE__));
+		else
+			self::logger('warning', __("Le démarrage automatique du Démon est maintenant Désactivé", __FILE__));
 	}
 
 	/**
@@ -1803,6 +1801,21 @@ class jMQTT extends eqLogic {
 	 */
 	private static function sendMqttDaemonStateEvent($_state) {
 		event::add('jMQTT::EventDaemonState', $_state);
+	}
+
+	/**
+	 * Core callback on API key change
+	 * @param $_value string New API key
+	 */
+	public static function preConfig_api($_apikey) {
+		if (log::getLogLevel(__CLASS__) > 100) {
+			self::logger('info', __("Changement de la clé API de jMQTT", __FILE__));
+		} else {
+			self::logger('info', __("Changement de la clé API de jMQTT : %1\$.8s... est remplacé par %2\$.8s...", __FILE__), jeedom::getApiKey(__CLASS__), $_apikey);
+		}
+		// Inform Daemon that API key changed
+		self::toDaemon_changeApiKey($_apikey);
+		return $_apikey;
 	}
 
 
@@ -2067,54 +2080,54 @@ class jMQTT extends eqLogic {
 	}
 
 	public function toDaemon_realTimeStart($subscribe, $exclude, $retained, $duration = 180) {
-		$params['cmd']='realTimeStart';
-		$params['id']=$this->getId();
-		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
-		$params['subscribe']=$subscribe;
-		$params['exclude']=$exclude;
-		$params['retained']=$retained;
-		$params['duration']=$duration;
+		$params['cmd']       = 'realTimeStart';
+		$params['id']        = $this->getId();
+		$params['file']      = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['subscribe'] = $subscribe;
+		$params['exclude']   = $exclude;
+		$params['retained']  = $retained;
+		$params['duration']  = $duration;
 		self::sendToDaemon($params);
 	}
 
 	public function toDaemon_realTimeStop() {
-		$params['cmd']='realTimeStop';
-		$params['id']=$this->getId();
+		$params['cmd'] = 'realTimeStop';
+		$params['id']  = $this->getId();
 		self::sendToDaemon($params);
 	}
 
 	public function toDaemon_realTimeClear() {
-		$params['cmd']='realTimeClear';
-		$params['id']=$this->getId();
-		$params['file']=jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['cmd']  = 'realTimeClear';
+		$params['id']   = $this->getId();
+		$params['file'] = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
 		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_subscribe($id, $topic, $qos = 1) {
 		if (empty($topic)) return;
-		$params['cmd']='subscribeTopic';
-		$params['id']=$id;
-		$params['topic']=$topic;
-		$params['qos']=$qos;
+		$params['cmd']   = 'subscribeTopic';
+		$params['id']    = $id;
+		$params['topic'] = $topic;
+		$params['qos']   = $qos;
 		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_unsubscribe($id, $topic) {
 		if (empty($topic)) return;
-		$params['cmd']='unsubscribeTopic';
-		$params['id']=$id;
-		$params['topic']=$topic;
+		$params['cmd']   = 'unsubscribeTopic';
+		$params['id']    = $id;
+		$params['topic'] = $topic;
 		self::sendToDaemon($params);
 	}
 
 	public static function toDaemon_publish($id, $topic, $payload, $qos = 1, $retain = false) {
 		if (empty($topic)) return;
-		$params['cmd']='messageOut';
-		$params['id']=$id;
-		$params['topic']=$topic;
-		$params['payload']=$payload;
-		$params['qos']=$qos;
-		$params['retain']=$retain;
+		$params['cmd']     = 'messageOut';
+		$params['id']      = $id;
+		$params['topic']   = $topic;
+		$params['payload'] = $payload;
+		$params['qos']     = $qos;
+		$params['retain']  = $retain;
 		self::sendToDaemon($params);
 	}
 

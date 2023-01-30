@@ -27,6 +27,7 @@ if (!isConnect()) {
 sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
 $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
+sendVarToJS('dStatus', $docker);
 
 ?>
 <form class="form-horizontal">
@@ -52,7 +53,7 @@ if (!$docker) {
 			</div>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoRepare" class="btn btn-warning disabled" style="width:100%;"
-					title="{{Supprime la configuration actuelle de Mosquitto et remet la configuration par défaut de jMQTT. Cette option est particulièrement intéressante dans le cas où un autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.}}">
+					title="{{Supprime la configuration actuelle de Mosquitto et remet la configuration par défaut de jMQTT.<br/>Cette option est particulièrement intéressante dans le cas où un autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.}}">
 				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-magic"></i> {{Réparer}}</a>
 			</div>
 			<div class="col-sm-2">
@@ -123,312 +124,55 @@ if ($docker) {
 	</div>
 	<div class="col-sm-6">
 <!-- TODO NEW Uncomment when Backup/Restore jMQTT is OK
-		<legend><i class="fas fa-exchange-alt"></i>{{Sauvegarde et Restauration de jMQTT en l'état}}</legend>
-		<div class="form-group ">
-			<label class="col-sm-2 control-label"> </label>
-			<div class="col-sm-3">
-				<a class="btn btn-success" id="bt_backupJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Sauvegarder}}</a>
+		<legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuation de jMQTT}}</legend>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-5">
+				<a class="btn btn-success" id="bt_backupJMqttStart" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Lancer une sauvegarde}}</a>
 			</div>
-			<div class="col-sm-3">
-				<a class="btn btn-danger" id="bt_restoreJMQTT" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer}}</a>
+			<div class="col-sm-6"></div>
+		</div>
+		<legend><i class="fas fa-tape"></i>{{Sauvegardes disponibles}}</legend>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-10">
+				<select class="form-control" id="sel_backupJMqtt">
+<?php
+// List all jMQTT backup files
+$backup_dir = realpath(__DIR__ . '/../data/backup');
+$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
+foreach ($backups as $backup)
+	echo '<option value="'.$backup.'">'.$backup.' ('.sizeFormat(filesize($backup_dir.'/'.$backup)).")</option>\n";
+?>
+				</select>
 			</div>
-			<div class="col-sm-2"> </div>
+			<div class="col-sm-1"></div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-5">
+				<a class="btn btn-danger" id="bt_backupJMqttRemove" style="width:100%;"><i class="fas fa-trash"></i> {{Supprimer la sauvegarde}}</a>
+			</div>
+			<div class="col-sm-5">
+				<a class="btn btn-warning" id="bt_backupJMqttRestore" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer la sauvegarde}}</a>
+			</div>
+			<div class="col-sm-1"></div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-1 control-label"> </label>
+			<div class="col-sm-5">
+					<a class="btn btn-success" id="bt_backupJMqttDownload" style="width:100%;"><i class="fas fa-cloud-download-alt"></i> {{Télécharger la sauvegarde}}</a>
+			</div>
+			<div class="col-sm-5">
+				<span class="btn btn-default btn-file" style="width:100%;">
+					<i class="fas fa-cloud-upload-alt"></i> {{Ajouter une sauvegarde}}<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&amp;dir=backup">
+				</span>
+			</div>
+			<div class="col-sm-1"></div>
 		</div>
 -->
 		<div class="form-group"><br /></div>
 	</div>
 	</div>
 </form>
-<script>
-// Remove unneeded Save button
-$('#bt_savePluginConfig').remove();
-
-// Copy of jmqtt.callPluginAjax() to handle "My plugins" page when jMQTT.functions.js is not included
-function jmqttAjax(_params) {
-	$.ajax({
-		async: _params.async == undefined ? true : _params.async,
-		global: false,
-		type: "POST",
-		url: "plugins/jMQTT/core/ajax/jMQTT.ajax.php",
-		data: _params.data,
-		dataType: 'json',
-		error: function (request, status, error) {
-				if (typeof _params.error === 'function')
-					_params.error(request, status, error);
-				else
-					handleAjaxError(request, status, error);
-		},
-		success: function (data) {
-			if (typeof _params.success === 'function')
-				_params.success(data);
-		}
-	});
-}
-
-
-<?php if (!$docker) { ?>
-// Helper to set buttons and texts
-function mosquittoStatus(_result) {
-	if (_result.installed) {
-		$('#bt_mosquittoInstall').addClass('disabled');
-		$('#bt_mosquittoRepare').removeClass('disabled');
-		$('#bt_mosquittoRemove').removeClass('disabled');
-		$('#mosquittoService').empty().html(_result.service);
-		$('.local-install').show();
-		if (_result.service.includes('running'))
-			$('#bt_mosquittoStop').removeClass('disabled');
-		else
-			$('#bt_mosquittoStop').addClass('disabled');
-		if (_result.message.includes('jMQTT'))
-			$('#bt_mosquittoEdit').show();
-		else
-			$('#bt_mosquittoEdit').hide();
-	} else {
-		$('#bt_mosquittoInstall').removeClass('disabled');
-		$('#bt_mosquittoRepare').addClass('disabled');
-		$('#bt_mosquittoRemove').addClass('disabled');
-		$('.local-install').hide();
-	}
-	$('#mosquittoStatus').empty().html(_result.message);
-}
-
-// Set Mosquitto status
-$(document).ready(function() {
-	mosquittoStatus(mStatus);
-});
-
-// Toggle spinner icon on button click
-function toggleIco(_this) {
-	var h = _this.find('i.fas:hidden');
-	var v = _this.find('i.fas:visible');
-	v.hide();
-	h.show();
-}
-
-// Launch Mosquitto installation and wait for it to end
-$('#bt_mosquittoInstall').on('click', function () {
-	if (!$(this).hasClass('disabled')) {
-		var btn = $(this);
-		bootbox.confirm('{{Etes-vous sûr de vouloir installer le service Mosquitto en local ?}}', function (result) {
-			if (result) {
-				toggleIco(btn);
-				jmqttAjax({
-					data: { action: "mosquittoInstall" },
-					error: function (request, status, error) {
-						toggleIco(btn);
-						handleAjaxError(request, status, error);
-					},
-					success: function(data) {
-						toggleIco(btn);
-						if (data.state == 'ok') {
-							mosquittoStatus(data.result);
-							$.fn.showAlert({message: '{{Le service Mosquitto a bien été installé et configuré.}}', level: 'success'});
-						} else {
-							$.fn.showAlert({message: data.result, level: 'danger'});
-						}
-					}
-				});
-			}
-		});
-	}
-});
-
-// Launch Mosquitto reparation and wait for it to end
-$('#bt_mosquittoRepare').on('click', function () {
-	if (!$(this).hasClass('disabled')) {
-		var btn = $(this);
-		bootbox.confirm('{{Etes-vous sûr de vouloir réparer le service Mosquitto local ?}}', function (result) {
-			if (result) {
-				toggleIco(btn);
-				jmqttAjax({
-					data: { action: "mosquittoRepare" },
-					error: function (request, status, error) {
-						toggleIco(btn);
-						handleAjaxError(request, status, error);
-					},
-					success: function(data) {
-						toggleIco(btn);
-						if (data.state == 'ok') {
-							mosquittoStatus(data.result);
-							$.fn.showAlert({message: '{{Le service Mosquitto a bien été réparé.}}', level: 'success'});
-						} else {
-							$.fn.showAlert({message: data.result, level: 'danger'});
-						}
-					}
-				});
-			}
-		});
-	}
-});
-
-// Launch Mosquitto uninstall and wait for it to end
-$('#bt_mosquittoRemove').on('click', function () {
-	if (!$(this).hasClass('disabled')) {
-		var btn = $(this);
-		bootbox.confirm('{{Etes-vous sûr de vouloir supprimer le service Mosquitto local ?}}', function (result) {
-			if (result) {
-				toggleIco(btn);
-				jmqttAjax({
-					data: { action: "mosquittoRemove" },
-					error: function (request, status, error) {
-						toggleIco(btn);
-						handleAjaxError(request, status, error);
-					},
-					success: function(data) {
-						toggleIco(btn);
-						if (data.state == 'ok') {
-							mosquittoStatus(data.result);
-							$.fn.showAlert({message: '{{Le service Mosquitto a bien été désinstallé du système.}}', level: 'success'});
-						} else {
-							$.fn.showAlert({message: data.result, level: 'danger'});
-						}
-					}
-				});
-			}
-		});
-	}
-});
-
-// Start/restart Mosquitto service
-$('#bt_mosquittoReStart').on('click', function () {
-	jmqttAjax({
-		data: { action: "mosquittoReStart" },
-		error: function (request, status, error) {
-			handleAjaxError(request, status, error);
-		},
-		success: function(data) {
-			if (data.state == 'ok') {
-				mosquittoStatus(data.result);
-				$.fn.showAlert({message: '{{Le service Mosquitto a bien été (re)démarré.}}', level: 'success'});
-			} else {
-				$.fn.showAlert({message: data.result, level: 'danger'});
-			}
-		}
-	});
-});
-
-// Stop Mosquitto service
-$('#bt_mosquittoStop').on('click', function () {
-	if (!$(this).hasClass('disabled')) {
-		jmqttAjax({
-			data: { action: "mosquittoStop" },
-			error: function (request, status, error) {
-				handleAjaxError(request, status, error);
-			},
-			success: function(data) {
-				if (data.state == 'ok') {
-					mosquittoStatus(data.result);
-					$.fn.showAlert({message: '{{Le service Mosquitto a bien été arrêté.}}', level: 'success'});
-				} else {
-					$.fn.showAlert({message: data.result, level: 'danger'});
-				}
-			}
-		});
-	}
-});
-
-// Modify jMQTT.conf in Mosquitto service system folder
-$('#bt_mosquittoEdit').on('click', function () {
-	jmqttAjax({
-		data: { action: "mosquittoConf" },
-		error: function (request, status, error) {
-			handleAjaxError(request, status, error);
-		},
-		success: function(result1) {
-			if (result1.state == 'ok') {
-				bootbox.confirm({
-					title: '{{Modifier le fichier jMQTT.conf du service Mosquitto}}',
-					message: '<textarea class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" style="height: 50vh;font-family:CamingoCode,monospace; font-size:small!important; line-height:normal;" id="mosquittoConf">' + result1.result + '</textarea>',
-					callback: function (result2) {
-						if (result2) {
-							jmqttAjax({
-								data: { action: "mosquittoEdit", config: $('#mosquittoConf').value() },
-								error: function (request, status, error) {
-									handleAjaxError(request, status, error);
-								},
-								success: function(result3) {
-									if (result3.state == 'ok') {
-										$.fn.showAlert({message: '{{Le fichier jMQTT.conf a bien été modifiée.<br />Redémarrez le service Mosquitto pour le prendre en compte.}}', level: 'success'});
-									} else {
-										$.fn.showAlert({message: result3.result, level: 'danger'});
-									}
-								}
-							});
-						}
-					}
-				});
-			} else {
-				$.fn.showAlert({message: result1.result, level: 'danger'});
-			}
-		}
-	});
-
-});
-
-<?php } /* !$docker */ ?>
-
-/* TODO NEW Uncomment when Backup/Restore jMQTT is OK
-// Launch jMQTT backup and wait for it to end
-$('#bt_backupJMQTT').on('click', function () {
-	console.log('bt_backupJMQTT');
-});
-
-// Launch jMQTT restoration and wait for it to end
-$('#bt_restoreJMQTT').on('click', function () {
-	console.log('bt_restoreJMQTT');
-});
-*/
-
-<?php if ($docker) { ?>
-$('#bt_jmqttUrlOverride').on('click', function () {
-	var $valEn = $('#jmqttUrlOverrideEnable').value()
-	jmqttAjax({
-		data: {
-			action: "updateUrlOverride",
-			valEn: $valEn,
-			valUrl: (($valEn == '1') ? $('#jmqttUrlOverrideValue').value() : $('#jmqttUrlOverrideValue').attr('valOver'))
-		},
-		success: function(data) {
-			if (data.state != 'ok')
-				$.fn.showAlert({message: data.result,level: 'danger'});
-			else
-				$.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}', level: 'success'});
-		}
-	});
-});
-
-$('#jmqttUrlOverrideEnable').change(function() {
-	$oVal = $('#jmqttUrlOverrideValue');
-	if ($(this).value() == '1') {
-		if ($oVal.attr('valOver') != "")
-			$oVal.value($oVal.attr('valOver'));
-		$oVal.removeClass('disabled');
-	} else {
-		$oVal.attr('valOver', $oVal.value());
-		$oVal.value($oVal.attr('valStd'));
-		$oVal.addClass('disabled');
-	}
-});
-<?php } /* $docker */ ?>
-
-// Send log level to daemon dynamically
-$btSave = $('#bt_savePluginLogConfig');
-if (!$btSave.hasClass('jmqttLog')) { // Avoid multiple declaration of the event on the button
-	$btSave.addClass('jmqttLog');
-	$btSave.on('click', function() {
-		var level = $('input.configKey[data-l1key="log::level::jMQTT"]:checked')
-		if (level.length == 1) { // Found 1 checked log::level::jMQTT input
-			jmqttAjax({
-				data: {
-					action: "sendLoglevel",
-					level: level.attr('data-l2key')
-				},
-				success: function(data) {
-					if (data.state == 'ok')
-						$.fn.showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}", level: 'success'});
-				}
-			});
-		}
-	});
-};
-</script>
+<?php include_file('desktop', 'jMQTT.config', 'js', 'jMQTT'); ?>

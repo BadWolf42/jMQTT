@@ -220,6 +220,26 @@ class jMQTTCmd extends cmd {
 	}
 
 	/**
+	 * Used by jMQTT::applyATemplate() to updates referenced cmd
+	 * Replace all template names from $cmdsName by ids in $cmdsId
+	 * @param array(string) $cmdsName list of names (to be replaced by ids)
+	 * @param array(string) $cmdsId list of ids (to be replace names)
+	 */
+	public function replaceCmdIds(&$cmdsName, &$cmdsId) {
+		array_walk_recursive(
+			$this->configuration,
+			function(&$item, $key, &$nameToIds) {
+				if (is_string($item)) {
+					// jMQTT::logger('info', 'Replacing in '.$key.': '.$item);
+					$item = str_replace($nameToIds[0], $nameToIds[1], $item);
+					// jMQTT::logger('info', 'By: '.$item);
+				}
+			},
+			array(&$cmdsName, &$cmdsId)
+		);
+	}
+
+	/**
 	 * preSave callback called by the core before saving this command in the DB
 	 */
 	public function preSave() {

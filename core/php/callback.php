@@ -85,11 +85,11 @@ foreach($messages as $message) {					// Iterate through the messages
 			jMQTT::fromDaemon_hb($ruid);
 			continue 2;								// Next foreach iteration
 
-		case 'daemonUp':							// {"cmd":"daemonUp"}
+		case 'daemonUp':							// {"cmd":"daemonUp"} // TODO Should be alone in a request
 			jMQTT::fromDaemon_daemonUp($ruid);
 			continue 2;								// Next foreach iteration
 
-		case 'daemonDown':							// {"cmd":"daemonDown"}
+		case 'daemonDown':							// {"cmd":"daemonDown"} // TODO Should be alone in a request
 			jMQTT::fromDaemon_daemonDown($ruid);
 			continue 2;								// Next foreach iteration
 
