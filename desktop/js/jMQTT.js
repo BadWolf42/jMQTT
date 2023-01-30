@@ -1129,9 +1129,14 @@ $(document).ready(function() {
 	}
 
 	// Wrap plugin.template save action handler
-	var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
+	if (typeof jeeFrontEnd.pluginTemplate === 'undefined') {
+		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+		var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
+	} else {
+		var core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
+	}
 	$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
-		// Alert user that there is N mismatch before saveEqLogic (on eqLogic, not on eqBroker)
+		// Alert user that there is a mismatch before saveEqLogic (on eqLogic, not on eqBroker)
 		if ($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker' && $('.topicMismatch').length > 0) {
 			var dialog_message = '';
 			var no_name = false;
