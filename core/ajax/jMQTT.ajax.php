@@ -36,7 +36,7 @@ try {
 			$allowed_ext = '.json';
 			$max_size = 500*1024; // 500KB
 		} elseif (init('dir') == 'backup') {
-			$uploaddir = realpath(__DIR__ . '/../../data/backups'); // TODO
+			$uploaddir = realpath(__DIR__ . '/../../data/backup'); // TODO
 			$allowed_ext = '.tgz';
 			$max_size = 100*1024*1024; // 100MB
 		} else {
@@ -226,7 +226,7 @@ try {
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
 			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
 
-		$backup_dir = realpath(__DIR__ . '/../../data/backups');
+		$backup_dir = realpath(__DIR__ . '/../../data/backup');
 		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
 
 		if (in_array($_backup, $backups) && file_exists($backup_dir.'/'.$_backup))

@@ -139,7 +139,7 @@ if ($docker) {
 				<select class="form-control" id="sel_backupJMqtt">
 <?php
 // List all jMQTT backup files
-$backup_dir = realpath(__DIR__ . '/../data/backups');
+$backup_dir = realpath(__DIR__ . '/../data/backup');
 $backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
 foreach ($backups as $backup)
 	echo '<option value="'.$backup.'">'.$backup.' ('.sizeFormat(filesize($backup_dir.'/'.$backup)).")</option>\n";
