@@ -408,7 +408,7 @@ class jMQTT extends eqLogic {
 		// Remove brkId from eqpt configuration
 		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
 
-		// TODO (nice to have) Remove me when 4.4 is out
+		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
 		if (array_key_exists('cmd', $exportedTemplate[$_template])) {
