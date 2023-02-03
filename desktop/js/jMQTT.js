@@ -662,7 +662,8 @@ function printEqLogic(_eqLogic) {
 		_eqLogic.cmd = new_cmds;
 
 		// JSON view: disable the sortable functionality
-		$("#table_cmd").sortable('disable');
+		if ($("#table_cmd").sortable("instance"))
+			$("#table_cmd").sortable('disable');
 	} else {
 		// CLASSIC view button is active
 		for (var c of _eqLogic.cmd) {
@@ -670,7 +671,8 @@ function printEqLogic(_eqLogic) {
 		}
 
 		// Classical view: enable the sortable functionality
-		$("#table_cmd").sortable('enable');
+		if ($("#table_cmd").sortable("instance"))
+			$("#table_cmd").sortable('enable');
 	}
 
 	// Show UI elements depending on the type
