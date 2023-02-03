@@ -1,5 +1,23 @@
 # Registre des évolutions
 
+## 2023-02-04
+- Arrêt du support de Python 2.7 et 3.6 (changement sur le package Python "requests" en 2.28.1)
+- Ajout de la commande info binaire "connected" aux équipements Broker
+- Ajout de boutons pour (re)démarrer ou arrêter le service Mosquitto local
+- Ajout d'un bouton pour éditer le fichier de configuration jMQTT.conf du service Mosquitto
+- Ajout du remplacement des références aux commandes dans un même équipement, lors du chargement d'un template (incluant des références internes), selon la [demande #129](https://github.com/Domochip/jMQTT/issues/129)
+- Ajout de la prise en compte du changement de la clé API dans le Core
+- Correction d'un bug lors de l'utilisation de '/' dans un payload (merci Jeandhom)
+- Correction d'un bug lors du changement de page ou du rafraichissement, les modifications n'étaient pas signalées
+- Correction d'un bug lors de la duplication d'un équipement : des commandes de l'équipement source étaient encore utilisées
+- Correction d'un bug lors de la création ou de l'import d'un template : des id des commandes d'origine étaient encore conservées
+- Correction d'un bug lorsqu'une commande n'existe pas/plus (merci Loïc)
+- Correction d'un bug lors de la sauvegarde d'un équipement sur Jeedom 4.4 Alpha (merci Phpvarious and jerryzz)
+- Correction d'un bug lors du changement entre la vue normale et la vue json sur Jeedom 4.4 Alpha (merci Phpvarious)
+- Correction de bug d'affichage sur Jeedom 4.4 Alpha
+- Correction du remplissage automatique de certains champs
+- Passage à la version 2.28.2 du package Python "requests"
+
 ## 2022-12-27
 - Nouvelle correction pour le bug d'affichage de l'icône sur la page d'un équipement
 - Corrections icone -> icône
