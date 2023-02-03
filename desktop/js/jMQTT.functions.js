@@ -307,6 +307,7 @@ jmqtt.certUpload = function(ev1) {
 	});
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used on Equipment pages
 
@@ -467,6 +468,57 @@ jmqtt.updateEqptTabs = function(_eq) {
 	$('#table_realtime').find('tr.rtCmd[data-brkId!="' + jmqtt.getBrkId() + '"]').hide();
 	$('#table_realtime').find('tr.rtCmd[data-brkId="' + jmqtt.getBrkId() + '"]').show();
 }
+
+// Decorator for Core plugin template on save callback
+jmqtt.decorateSaveEqLogic = function (_realSave) {
+	function wrapSaveEqLogic() {
+		// No mismatch or broker
+		if ($('.topicMismatch').length == 0 || $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() == 'broker') {
+			_realSave();
+			return;
+		}
+		// Alert user that there is a mismatch before saveEqLogic (on eqLogic, not on eqBroker)
+		var dialog_message = '';
+		var no_name = false;
+		if (jmqtt_globals.mainTopic == '') {
+			dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br>";
+		} else {
+			dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>";
+			dialog_message += jmqtt_globals.mainTopic;
+			dialog_message += '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
+			$('.topicMismatch').each(function (_, item) {
+				if (!$(item).hasClass('eqLogicAttr')) {
+					var cmd = $(item).closest('tr.cmd').find('.cmdAttr[data-l1key=name]').value();
+					// Command has no name
+					if (cmd == '')
+						no_name = true;
+					var topic = $(item).value();
+					// Command with a name and no topic
+					if (cmd != '' && topic == '')
+						dialog_message += '<li>{{Le topic est <b>vide</b> sur la commande}} "<b>' + cmd + '</b>"</li>';
+					// Command with no name and a topic
+					else if (cmd == '' && topic != '')
+						dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur une <b>commande sans nom</b>}}</li>';
+					// Command with a mismatch
+					else
+						dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur la commande}} "<b>' + cmd + '</b>"</li>';
+				}
+			});
+		}
+		if (no_name)
+			dialog_message += "<br>{{(Notez que les commandes sans nom seront supprimées lors de la sauvegarde)}}";
+		dialog_message += "<br>{{Souhaitez-vous tout de même sauvegarder l'équipement ?}}";
+		bootbox.confirm({
+			title: "<b>{{Des problèmes ont été identifiés dans la configuration}}</b>",
+			message: dialog_message,
+			callback: function (result) { if (result) { // Do save
+				_realSave();
+			}}
+		});
+	}
+	return wrapSaveEqLogic;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used by Real Time

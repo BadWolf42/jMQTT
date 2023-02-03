@@ -1132,45 +1132,13 @@ $(document).ready(function() {
 	if (typeof jeeFrontEnd.pluginTemplate === 'undefined') {
 		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
 		var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
+		$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
+			jmqtt.decorateSaveEqLogic(core_save)();
+		});
 	} else {
 		var core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
+		jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
 	}
-	$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
-		// Alert user that there is a mismatch before saveEqLogic (on eqLogic, not on eqBroker)
-		if ($('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() != 'broker' && $('.topicMismatch').length > 0) {
-			var dialog_message = '';
-			var no_name = false;
-			if (jmqtt_globals.mainTopic == '')
-				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br>";
-			else {
-				dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>" + jmqtt_globals.mainTopic + '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
-				$('.topicMismatch').each(function (_, item) {
-					if (!$(item).hasClass('eqLogicAttr')) {
-						var cmd = $(item).closest('tr.cmd').find('.cmdAttr[data-l1key=name]').value();
-						if (cmd == '') no_name = true;
-						var topic = $(item).value();
-						if (cmd != '' && topic == '')
-							dialog_message += '<li>{{Le topic est <b>vide</b> sur la commande}} "<b>' + cmd + '</b>"</li>';
-						else if (cmd == '' && topic != '')
-							dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur une <b>commande sans nom</b>}}</li>';
-						else
-							dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur la commande}} "<b>' + cmd + '</b>"</li>';
-					}
-				});
-			}
-			if (no_name) dialog_message += "<br>{{(Notez que les commandes sans nom seront supprimées lors de la sauvegarde)}}";
-			dialog_message += "<br>{{Souhaitez-vous tout de même sauvegarder l'équipement ?}}";
-			bootbox.confirm({
-				title: "<b>{{Des problèmes ont été identifiés dans la configuration}}</b>",
-				message: dialog_message,
-				callback: function (result) { if (result) { // Do save
-					core_save();
-				}}
-			});
-		} else {
-			core_save();
-		}
-	});
 
 /* TODO (important) Check if filter is required
 	// Add table sorted on Real Time tab
