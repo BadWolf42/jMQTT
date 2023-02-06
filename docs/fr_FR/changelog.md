@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## 2023-02-07
+- Correction d'un bug avec la clé API lors du premier lancement du plugin (merci PhilippeJ et Apose)
+
 ## 2023-02-04
 - Arrêt du support de Python 2.7 et 3.6 (changement sur le package Python "requests" en 2.28.1)
 - Ajout de la commande info binaire "connected" aux équipements Broker
