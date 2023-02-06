@@ -1470,7 +1470,8 @@ class jMQTT extends eqLogic {
 		$params['cmd']       = 'changeApiKey';
 		$params['id']        = 0;
 		$params['newApiKey'] = $newApiKey;
-		self::sendToDaemon($params);
+		// Inform Daemon without generating exception if not running
+		self::sendToDaemon($params, false);
 	}
 
 /* TODO (medium) Implemented for later
@@ -1808,13 +1809,23 @@ class jMQTT extends eqLogic {
 	 * @param $_value string New API key
 	 */
 	public static function preConfig_api($_apikey) {
-		if (log::getLogLevel(__CLASS__) > 100) {
-			self::logger('info', __("Changement de la clé API de jMQTT", __FILE__));
+		// Different message when API key is not set
+		$oldApiKey = config::byKey('api', __CLASS__);
+		if ($oldApiKey == '') {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('info', __('Définition de la clé API de jMQTT', __FILE__));
+			else // Append more info in debug
+				self::logger('info', sprintf(__('Définition de la clé API de jMQTT : %1$.8s...', __FILE__), $_apikey));
 		} else {
-			self::logger('info', __("Changement de la clé API de jMQTT : %1\$.8s... est remplacé par %2\$.8s...", __FILE__), jeedom::getApiKey(__CLASS__), $_apikey);
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('info', __('Changement de la clé API de jMQTT', __FILE__));
+			else // Append more info in debug
+				self::logger('info', sprintf(__('Changement de la clé API de jMQTT : %1$.8s... est remplacé par %2$.8s...', __FILE__), $oldApiKey, $_apikey));
 		}
-		// Inform Daemon that API key changed
-		self::toDaemon_changeApiKey($_apikey);
+		// Inform Daemon only if API key changed (to prevent a recursion loop)
+		if ($oldApiKey != '')
+			self::toDaemon_changeApiKey($_apikey);
+		// Always return new API key
 		return $_apikey;
 	}
 
