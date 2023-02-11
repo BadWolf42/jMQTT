@@ -110,7 +110,7 @@ jmqtt.substractKeys = function(a, b) {
 		if (typeof(a[key]) == 'object') {
 			if (b[key] === undefined)
 				b[key] = {};
-			result[key] = jmqtt.substractKeys(a[key], b[key]);
+			result[key] = (key == 'cmd') ? a[key] : jmqtt.substractKeys(a[key], b[key]);
 		} else if (a[key] !== undefined && b[key] === undefined)
 			result[key] = a[key];
 	}

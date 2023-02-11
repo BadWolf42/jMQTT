@@ -719,7 +719,7 @@ function saveEqLogic(_eqLogic) {
 
 	// remove non existing commands added for the JSON view and add new commands at the end
 	for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
-		if (_eqLogic.cmd[i].id == "" && _eqLogic.cmd[i].name == "") {
+		if ((_eqLogic.cmd[i].id == "" || _eqLogic.cmd[i].id === null) && _eqLogic.cmd[i].name == "") {
 			_eqLogic.cmd.splice(i, 1);
 		}
 	}
