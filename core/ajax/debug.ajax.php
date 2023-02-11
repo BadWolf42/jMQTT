@@ -129,6 +129,7 @@ try {
 		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_SND;
 		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_PORT;
 		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_UID;
+		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_JMQTT_NEXT_STATS;
 		// $cacheKeys[] = 'jMQTT::dummy';
 		// $cacheKeys[] = ;
 		$data = array();

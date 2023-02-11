@@ -74,6 +74,7 @@ class jMQTT extends eqLogic {
 	const CACHE_DAEMON_PORT             = 'daemonPort';
 	const CACHE_DAEMON_UID              = 'daemonUid';
 	const CACHE_IGNORE_TOPIC_MISMATCH   = 'ignore_topic_mismatch';
+	const CACHE_JMQTT_NEXT_STATS        = 'nextStats';
 	const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
 	const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
 	const CACHE_REALTIME_MODE           = 'realtime_mode';
@@ -1128,6 +1129,61 @@ class jMQTT extends eqLogic {
 	 */
 	public static function cron() {
 		self::checkAllMqttClients();
+		self::pluginStats();
+	}
+
+	public static function pluginStats($_reason = 'cron') {
+		// Check last reporting (or if forced)
+		$nextStats = @cache::byKey('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS)->getValue(0);
+		if ($_reason === 'cron' && (time() < $nextStats)) { // No reason to force send stats
+			// self::logger('debug', sprintf(__("Aucune raison d'envoyer des données statistiques avant le %s", __FILE__), date('Y-m-d H:i:s', $nextStats)));
+			return;
+		}
+
+		$url = 'https://stats.bad.wf/jmqtt.php';
+		$data = array();
+		$data['version'] = 1;
+		$data['hardwareId'] = trim(file_get_contents('/etc/machine-id'));
+		$data['hardwareKey'] = jeedom::getHardwareKey();
+		$data['hardwareName'] = jeedom::getHardwareName();
+		$data['distrib'] = system::getDistrib();
+		$data['phpVersion'] = phpversion();
+		$data['jeedom'] = jeedom::version();
+		$data['lang'] = translate::getLanguage();
+		$jplugin = update::byLogicalId('jMQTT');
+		$data['source'] = $jplugin->getSource();
+		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
+		$data['localVersion'] = $jplugin->getLocalVersion();
+		$data['remoteVersion'] = $jplugin->getRemoteVersion();
+		$data['configVersion'] = config::byKey('version', 'jMQTT', -1);
+		$data['reason'] = $_reason;
+		if ($_reason == 'uninstall' || $_reason == 'noStats')
+			$data['removeMe'] = true;
+		$options = array('http' => array(
+			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
+			'method'  => 'POST', 'content' => http_build_query($data)
+		));
+		self::logger('debug', sprintf(__('Transmission des données statistiques suivantes : %s', __FILE__), json_encode($data)));
+		$context = stream_context_create($options);
+		$result = @file_get_contents($url, false, $context);
+
+		if ($result === false) {
+			// Could not send or invalid data
+			self::logger('debug', __('Impossible de communiquer avec le serveur de statistiques (Réponse : false)', __FILE__));
+			return;
+		}
+		$response = @json_decode($result, true);
+		if (!isset($response['status']) || $response['status'] != 'success') {
+			// Could not send or invalid data
+			self::logger('debug', sprintf(__('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__), $result));
+		} else {
+			// Set last sent datetime
+			cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 432000 + rand(0, 172800)); ; // in 5-7 days
+			if ($_reason == 'uninstall' || $_reason == 'noStats')
+				self::logger('info', sprintf(__('Données statistiques supprimées', __FILE__), $result));
+			else
+				self::logger('debug', sprintf(__('Données statistiques envoyées (Réponse : %s)', __FILE__), $result));
+		}
 	}
 
 	private static function clean_cache() {
