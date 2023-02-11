@@ -42,6 +42,16 @@ jmqtt.unsetPageModified = function() {
 	window.modifyWithoutSave = false;
 }
 
+// TODO (deprecation) Remove when Jeedom 4.3 is no longer supported
+// Handle sortability of table "table_cmd"
+jmqtt.setCmdsSortable = function(_status) {
+	if ($('#table_cmd').sortable('instance')) {
+		$('#table_cmd').sortable(_status ? 'enable' : 'disable');
+	} else if (document.getElementById('table_cmd')._sortable) {
+		jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = (_status ? false : true);
+	}
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // General utility functions

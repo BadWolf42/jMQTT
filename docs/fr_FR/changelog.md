@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## 2023-02-12
+- Correction d'un bug lors du changement entre la vue normale et la vue json sur Jeedom 4.4 Alpha (merci jerryzz, Phpvarious & kiboost)
+
 ## 2023-02-07
 - Correction d'un bug avec la clé API lors du premier lancement du plugin (merci PhilippeJ et Apose)
 
