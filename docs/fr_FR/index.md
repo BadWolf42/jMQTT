@@ -615,6 +615,12 @@ Pour cela, il fallait désactiver puis réactiver l'équipement Broker concerné
 
 Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Identifiant de connexion* dans l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
 
+## J'ai des messages `Message refusé (démon invalide)` dans le log jMQTT
+
+Rien de grave, le démon a été lancé 2x. Cela peut arriver exceptionnellement, par exemple quand Jeedom démarre le démon et vous aussi.
+Pour corriger, il suffit de relancer le démon, jMQTT se chargera de faire le ménage pour vous. Dans de rares cas, il est nécessaire de tuer tous les démon jMQTT lancés (commande `sudo pkill -f jmqttd.py`) ou simplement de redémarrer Jeedom.
+
+
 # Problèmes inconnus
 
 Les problèmes en cours d’investigation sont sur GitHub : [Issues jMQTT](https://github.com/domochip/jMQTT/issues).

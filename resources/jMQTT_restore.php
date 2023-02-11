@@ -92,7 +92,7 @@ function restore_options() {
 	$options = getopt("h", array('apply', 'file:', 'do-cleanup', 'do-history', 'do-logs', 'do-mosquitto', 'force', 'verbose', 'help'), $rest);
 
 	$param = array();
-	$param['file'] = (isset($options['file']) && $options['file'] != False) ? $options['file'] : __DIR__ . '/../backup.tgz';
+	$param['file'] = (isset($options['file']) && $options['file'] != false) ? $options['file'] : __DIR__ . '/../backup.tgz';
 	$param['help'] = isset($options['h']) || isset($options['help']);
 	$param['apply']     = isset($options['apply']);
 	// $param['clean']     = isset($options['do-cleanup']);
