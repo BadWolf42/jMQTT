@@ -248,7 +248,6 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 		},
 		success: function (data) {
 			$('#table_realtime tbody .rtCmd[data-brkid=' + broker + ']').remove();
-			// $('#table_realtime').trigger("update");
 		}
 	});
 })
@@ -288,12 +287,10 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
 		tr.after(new_tr);
 		tr = tr.next();
 	}
-	// $('#table_realtime').trigger("update");
 })
 
 $('#table_realtime').on('click', '.cmdAction[data-action=remove]', function() {
 	$(this).closest('tr').remove();
-	// $('#table_realtime').trigger("update");
 })
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1130,7 +1127,7 @@ $(document).ready(function() {
 
 	// Wrap plugin.template save action handler
 	if (typeof jeeFrontEnd.pluginTemplate === 'undefined') {
-		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
+		// TODO (deprecation) Remove when Jeedom 4.3 is no longer supported
 		var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
 		$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
 			jmqtt.decorateSaveEqLogic(core_save)();
@@ -1139,50 +1136,4 @@ $(document).ready(function() {
 		var core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
 		jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
 	}
-
-/* TODO (important) Check if filter is required
-	// Add table sorted on Real Time tab
-	jeedomUtils.initTableSorter(true);
-	$("#table_realtime")[0].config.widgetOptions.resizable_widths = ['180px', '', '', '80px', '130px'];
-	$("#table_realtime").trigger('applyWidgets').trigger('resizableReset').width('100%');
-*/
-
-/* TODO (important) Check impact of parsers on WebUI
-	// Handle topic + jsonPath normalization
-	$.tablesorter.addParser({
-		id: 'topics',
-		is: function() {
-			return false
-		},
-		format: function(s, table, cell, cellIndex) {
-			if (s != '')
-				return s;
-			val = $(cell).find('.cmdAttr[data-l1key=topic]').val() + ' ' + $(cell).find('.cmdAttr[data-l1key=jsonPath]').val();
-			return val;
-		},
-		type: 'text'
-	})
-
-	// Handle options normalization
-	$.tablesorter.addParser({
-		id: 'options',
-		is: function() {
-			return false
-		},
-		format: function(s, table, cell, cellIndex) {
-			if (s != '')
-				return s;
-			var val = '';
-			if ($(cell).find('i.fas.fa-sign-in-alt').length) {
-				if ($(cell).find('i.fas.fa-database').length)
-					return '{{Les deux}}';
-				return '{{Présent}}';
-			}
-			if ($(cell).find('i.fas.fa-database').length)
-				return '{{Retain}}';
-			return '{{Aucun}}';
-		},
-		type: 'text'
-	})
-*/
 });

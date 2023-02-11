@@ -169,7 +169,6 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 				<?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
 			</div>
 			<div role="tabpanel" class="tab-pane toDisable" id="realtimetab">
-<!--				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped tablesorter stickyHead">	-->
 				<table id="table_realtime" class="table tree table-bordered table-condensed table-striped">
 					<thead style="position:sticky;top:0;z-index:5;">
 						<tr>

@@ -662,7 +662,6 @@ jmqtt.getRealTimeData = function() {
 					_since = data[i].date;
 				}
 				$('#table_realtime').attr('brk' + broker + 'since', _since);
-				// $('#table_realtime').trigger("update");
 			}
 			jmqtt_globals.lockRealTime = false;
 		}
