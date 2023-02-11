@@ -1798,7 +1798,7 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
-	 * @param $_state bool True if Daemon is running and connected
+	 * @param $_state bool true if Daemon is running and connected
 	 */
 	private static function sendMqttDaemonStateEvent($_state) {
 		event::add('jMQTT::EventDaemonState', $_state);
