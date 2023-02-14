@@ -389,33 +389,31 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * create a template from the current equipement (to json).
-	 * @param string $_template name of the template to create
+	 * @param string $_tName name of the template to create
 	 */
-	public function createTemplate($_template){
+	public function createTemplate($_tName) {
 
-		if ($this->getType() != self::TYP_EQPT) {
+		if ($this->getType() != self::TYP_EQPT)
 			return true;
-		}
 
 		// Cleanup template name
-		$_template = ucfirst(str_replace(' ', '_', $_template));
-		$_template = preg_replace('/[^a-zA-Z0-9()_-]+/', '', $_template);
-		$_template = str_replace('__', '_', $_template);
+		$_tName = ucfirst(str_replace('  ', ' ', trim($_tName)));
+		$_tName = preg_replace('/[^a-zA-Z0-9 ()_-]+/', '', $_tName);
 
 		// Export
-		$exportedTemplate[$_template] = $this->export();
-		$exportedTemplate[$_template]['name'] = str_replace('_', ' ', $_template);
+		$exportedTemplate[$_tName] = $this->export();
+		$exportedTemplate[$_tName]['name'] = $_tName;
 
 		// Remove brkId from eqpt configuration
-		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
+		unset($exportedTemplate[$_tName]['configuration'][self::CONF_KEY_BRK_ID]);
 
 		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
-		if (array_key_exists('cmd', $exportedTemplate[$_template])) {
+		if (array_key_exists('cmd', $exportedTemplate[$_tName])) {
 			// Rename 'cmd' to 'commands' for Jeedom import ...
-			$exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
-			unset($exportedTemplate[$_template]['cmd']);
+			$exportedTemplate[$_tName]['commands'] = $exportedTemplate[$_tName]['cmd'];
+			unset($exportedTemplate[$_tName]['cmd']);
 		}
 
 		// Create a replacement array with cmd names & id for further use
@@ -426,14 +424,14 @@ class jMQTT extends eqLogic {
 			$cmdsName[] = '#[' . $cmd->getName() . ']#';
 			// Update battery linked info command
 			if ($cmd->isBattery())
-				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_BATTERY_CMD] = $cmd->getName();
+				$exportedTemplate[$_tName]['configuration'][self::CONF_KEY_BATTERY_CMD] = $cmd->getName();
 			// Update availability linked info command
 			if ($cmd->isAvailability())
-				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AVAILABILITY_CMD] = $cmd->getName();
+				$exportedTemplate[$_tName]['configuration'][self::CONF_KEY_AVAILABILITY_CMD] = $cmd->getName();
 		}
 
 		// Convert and save to file
-		$jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+		$jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 		// Convert relative cmd id to '#[Name]#' format in request
 		$jsonExport = str_replace($cmdsId, $cmdsName, $jsonExport);
@@ -451,7 +449,7 @@ class jMQTT extends eqLogic {
 		}
 
 		// Write template file
-		file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_template . '.json', $jsonExport);
+		file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . str_replace(' ', '_', $_tName) . '.json', $jsonExport);
 	}
 
 	/**
