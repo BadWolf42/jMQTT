@@ -1270,7 +1270,7 @@ class jMQTT extends eqLogic {
 		$port = config::byKey('internalPort', 'core', 80);					// To fix port issue like: https://community.jeedom.com/t/87060/30
 		$comp = trim(config::byKey('internalComplement', 'core', ''), '/');	// To fix path issue like: https://community.jeedom.com/t/87872/15
 		if ($comp !== '') $comp .= '/';
-		return $prot.'localhost:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
+		return $prot.'127.0.0.1:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
 	}
 
 	/**
