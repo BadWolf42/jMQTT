@@ -1137,6 +1137,8 @@ class jMQTT extends eqLogic {
 			// self::logger('debug', sprintf(__("Aucune raison d'envoyer des données statistiques avant le %s", __FILE__), date('Y-m-d H:i:s', $nextStats)));
 			return;
 		}
+		// Ensure next attempt will be in at least 5 minutes
+		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300)); ; // in 5-10 mins
 
 		$url = 'https://stats.bad.wf/jmqtt.php';
 		$data = array();
@@ -1147,7 +1149,7 @@ class jMQTT extends eqLogic {
 		$data['distrib'] = system::getDistrib();
 		$data['phpVersion'] = phpversion();
 		$data['jeedom'] = jeedom::version();
-		$data['lang'] = translate::getLanguage();
+		$data['lang'] = config::byKey('language', 'core', 'fr_FR');
 		$jplugin = update::byLogicalId('jMQTT');
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
@@ -1157,6 +1159,8 @@ class jMQTT extends eqLogic {
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
 			$data['removeMe'] = true;
+		else
+			$data['next'] = time() + 432000 + rand(0, 172800); // Next stats in 5-7 days
 		$options = array('http' => array(
 			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
 			'method'  => 'POST', 'content' => http_build_query($data)
@@ -1175,12 +1179,14 @@ class jMQTT extends eqLogic {
 			// Could not send or invalid data
 			self::logger('debug', sprintf(__('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__), $result));
 		} else {
-			// Set last sent datetime
-			cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 432000 + rand(0, 172800)); ; // in 5-7 days
-			if ($_reason == 'uninstall' || $_reason == 'noStats')
-				self::logger('info', sprintf(__('Données statistiques supprimées', __FILE__), $result));
-			else
+			if ($data['removeMe']) {
+				self::logger('info', __('Données statistiques supprimées', __FILE__));
+				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
+			} else {
 				self::logger('debug', sprintf(__('Données statistiques envoyées (Réponse : %s)', __FILE__), $result));
+				// Set last sent datetime
+				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, $data['next']);
+			}
 		}
 	}
 
