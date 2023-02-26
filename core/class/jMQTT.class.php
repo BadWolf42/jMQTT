@@ -389,33 +389,31 @@ class jMQTT extends eqLogic {
 
 	/**
 	 * create a template from the current equipement (to json).
-	 * @param string $_template name of the template to create
+	 * @param string $_tName name of the template to create
 	 */
-	public function createTemplate($_template){
+	public function createTemplate($_tName) {
 
-		if ($this->getType() != self::TYP_EQPT) {
+		if ($this->getType() != self::TYP_EQPT)
 			return true;
-		}
 
 		// Cleanup template name
-		$_template = ucfirst(str_replace(' ', '_', $_template));
-		$_template = preg_replace('/[^a-zA-Z0-9()_-]+/', '', $_template);
-		$_template = str_replace('__', '_', $_template);
+		$_tName = ucfirst(str_replace('  ', ' ', trim($_tName)));
+		$_tName = preg_replace('/[^a-zA-Z0-9 ()_-]+/', '', $_tName);
 
 		// Export
-		$exportedTemplate[$_template] = $this->export();
-		$exportedTemplate[$_template]['name'] = str_replace('_', ' ', $_template);
+		$exportedTemplate[$_tName] = $this->export();
+		$exportedTemplate[$_tName]['name'] = $_tName;
 
 		// Remove brkId from eqpt configuration
-		unset($exportedTemplate[$_template]['configuration'][self::CONF_KEY_BRK_ID]);
+		unset($exportedTemplate[$_tName]['configuration'][self::CONF_KEY_BRK_ID]);
 
 		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
-		if (array_key_exists('cmd', $exportedTemplate[$_template])) {
+		if (array_key_exists('cmd', $exportedTemplate[$_tName])) {
 			// Rename 'cmd' to 'commands' for Jeedom import ...
-			$exportedTemplate[$_template]['commands'] = $exportedTemplate[$_template]['cmd'];
-			unset($exportedTemplate[$_template]['cmd']);
+			$exportedTemplate[$_tName]['commands'] = $exportedTemplate[$_tName]['cmd'];
+			unset($exportedTemplate[$_tName]['cmd']);
 		}
 
 		// Create a replacement array with cmd names & id for further use
@@ -426,14 +424,14 @@ class jMQTT extends eqLogic {
 			$cmdsName[] = '#[' . $cmd->getName() . ']#';
 			// Update battery linked info command
 			if ($cmd->isBattery())
-				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_BATTERY_CMD] = $cmd->getName();
+				$exportedTemplate[$_tName]['configuration'][self::CONF_KEY_BATTERY_CMD] = $cmd->getName();
 			// Update availability linked info command
 			if ($cmd->isAvailability())
-				$exportedTemplate[$_template]['configuration'][self::CONF_KEY_AVAILABILITY_CMD] = $cmd->getName();
+				$exportedTemplate[$_tName]['configuration'][self::CONF_KEY_AVAILABILITY_CMD] = $cmd->getName();
 		}
 
 		// Convert and save to file
-		$jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+		$jsonExport = json_encode($exportedTemplate, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
 		// Convert relative cmd id to '#[Name]#' format in request
 		$jsonExport = str_replace($cmdsId, $cmdsName, $jsonExport);
@@ -451,7 +449,7 @@ class jMQTT extends eqLogic {
 		}
 
 		// Write template file
-		file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_template . '.json', $jsonExport);
+		file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . str_replace(' ', '_', $_tName) . '.json', $jsonExport);
 	}
 
 	/**
@@ -1139,6 +1137,8 @@ class jMQTT extends eqLogic {
 			// self::logger('debug', sprintf(__("Aucune raison d'envoyer des données statistiques avant le %s", __FILE__), date('Y-m-d H:i:s', $nextStats)));
 			return;
 		}
+		// Ensure next attempt will be in at least 5 minutes
+		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300)); ; // in 5-10 mins
 
 		$url = 'https://stats.bad.wf/jmqtt.php';
 		$data = array();
@@ -1149,7 +1149,7 @@ class jMQTT extends eqLogic {
 		$data['distrib'] = system::getDistrib();
 		$data['phpVersion'] = phpversion();
 		$data['jeedom'] = jeedom::version();
-		$data['lang'] = translate::getLanguage();
+		$data['lang'] = config::byKey('language', 'core', 'fr_FR');
 		$jplugin = update::byLogicalId('jMQTT');
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
@@ -1159,6 +1159,8 @@ class jMQTT extends eqLogic {
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
 			$data['removeMe'] = true;
+		else
+			$data['next'] = time() + 432000 + rand(0, 172800); // Next stats in 5-7 days
 		$options = array('http' => array(
 			'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
 			'method'  => 'POST', 'content' => http_build_query($data)
@@ -1177,12 +1179,14 @@ class jMQTT extends eqLogic {
 			// Could not send or invalid data
 			self::logger('debug', sprintf(__('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__), $result));
 		} else {
-			// Set last sent datetime
-			cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 432000 + rand(0, 172800)); ; // in 5-7 days
-			if ($_reason == 'uninstall' || $_reason == 'noStats')
-				self::logger('info', sprintf(__('Données statistiques supprimées', __FILE__), $result));
-			else
+			if ($data['removeMe']) {
+				self::logger('info', __('Données statistiques supprimées', __FILE__));
+				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
+			} else {
 				self::logger('debug', sprintf(__('Données statistiques envoyées (Réponse : %s)', __FILE__), $result));
+				// Set last sent datetime
+				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, $data['next']);
+			}
 		}
 	}
 
@@ -1266,7 +1270,7 @@ class jMQTT extends eqLogic {
 		$port = config::byKey('internalPort', 'core', 80);					// To fix port issue like: https://community.jeedom.com/t/87060/30
 		$comp = trim(config::byKey('internalComplement', 'core', ''), '/');	// To fix path issue like: https://community.jeedom.com/t/87872/15
 		if ($comp !== '') $comp .= '/';
-		return $prot.'localhost:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
+		return $prot.'127.0.0.1:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
 	}
 
 	/**
