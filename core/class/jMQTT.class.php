@@ -350,6 +350,15 @@ class jMQTT extends eqLogic {
 		if ($this->getType() != self::TYP_EQPT || is_null($_template))
 			return;
 
+		// Cleanup base topic (remove '/', '#' and '+' at the end)
+		$baseTopic = $_topic;
+		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
+		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
+
+		// Ensure topic has a wildcard at the end
+		if (substr($_topic, -1) != '/' && substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '/'; }
+		if (substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '#'; }
+
 		// Raise up the flag that cmd topic mismatch must be ignored
 		$this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
 
@@ -378,7 +387,7 @@ class jMQTT extends eqLogic {
 
 		// complete cmd topics and replace template cmd names by cmd ids
 		foreach ($this->getCmd() as $cmd) {
-			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
+			$cmd->setTopic(sprintf($cmd->getTopic(), $baseTopic));
 			$cmd->replaceCmdIds($cmdsName, $cmdsId);
 			$cmd->save();
 		}
