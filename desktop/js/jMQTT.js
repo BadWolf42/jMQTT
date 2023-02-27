@@ -58,7 +58,12 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 	$.each(jmqtt_globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br>';
 	dialog_message += '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>'
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>';
+	dialog_message += '<label class="control-label">{{Utiliser un template :}}</label> ';
+	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttTplSelector">';
+	dialog_message += '</select><br>';
+	dialog_message += '<label class="control-label" style="display:none;" id="addJmqttTplText">{{Saisissez le Topic de base :}}</label> ';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" style="display:none;" autocomplete="off" type="text" id="addJmqttTplTopic"><br>';
 	bootbox.confirm({
 		title: "{{Ajouter un nouvel équipement}}",
 		message: dialog_message,
@@ -73,20 +78,65 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 				$.fn.showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
 				return false;
 			}
+			var eqTemplate = $('#addJmqttTplSelector').val();
+			var eqTopic = $('#addJmqttTplTopic').val();
+			if (eqTemplate != '' && eqTopic == '') {
+				$.fn.showAlert({message: "{{Si vous souhaitez appliquer un template, le Topic de base ne peut pas être vide !}}", level: 'warning'});
+				return false;
+			}
 			jeedom.eqLogic.save({
 				type: eqType,
 				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
-				success: function (data) {
-					var url = jmqtt.initPluginUrl();
-					jmqtt.unsetPageModified();
-					url += '&id=' + data.id + '&saveSuccessFull=1';
-					loadPage(url);
+				success: function (savedEq) {
+					if (eqTemplate != '') {
+						jmqtt.callPluginAjax({
+							data: {
+								action: "applyTemplate",
+								id: savedEq.id,
+								name : eqTemplate,
+								topic: eqTopic,
+								keepCmd: false
+							},
+							success: function (dataresult) {
+								var url = jmqtt.initPluginUrl();
+								jmqtt.unsetPageModified();
+								url += '&id=' + savedEq.id + '&saveSuccessFull=1';
+								loadPage(url);
+							}
+						});
+					} else {
+						var url = jmqtt.initPluginUrl();
+						jmqtt.unsetPageModified();
+						url += '&id=' + savedEq.id + '&saveSuccessFull=1';
+						loadPage(url);
+					}
 				}
 			});
 		}}
+	});
+	$('#addJmqttTplSelector').on('change', function() {
+		if ($(this).val() == '') {
+			$('#addJmqttTplText').hide();
+			$('#addJmqttTplTopic').hide();
+		} else {
+			$('#addJmqttTplText').show();
+			$('#addJmqttTplTopic').show();
+		}
+	});
+	jmqtt.callPluginAjax({
+		data: {
+			action: "getTemplateList",
+		},
+		error: function(error) {},
+		success: function (dataresult) {
+			opts = '<option value="">{{Aucun}}</option>';
+			for (var i in dataresult)
+				opts += '<option value="' + dataresult[i][0] + '">' + dataresult[i][0] + '</option>';
+			$('#addJmqttTplSelector').html(opts);
+		}
 	});
 });
 
