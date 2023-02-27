@@ -2764,7 +2764,7 @@ class jMQTT extends eqLogic {
 	 * @param int $mode 0 or 1
 	 */
 	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#', $retained=false) {
-		$this->log('info', $mode ? __("Lancement du Mode Temps...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
+		$this->log('info', $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
 		// $this->log('debug', sprintf(__("changeRealTimeMode(mode=%1\$s, subscribe=%2\$s, exclude=%3\$s, retained=%4\$s)", __FILE__), $mode, $subscribe, $exclude, $retained));
 		if($mode) { // If Real Time mode needs to be enabled
 			// Check if a subscription topic is provided
