@@ -705,9 +705,9 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 	var mainTopic = (topic[0] == '/' ? '/' : '') + eqName + '/#';
 
 	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
 	dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>';
 	dialog_message += '<label class="control-label checkbox-inline"><input type="checkbox" class="bootbox-input bootbox-checkbox-inline" id="addJmqttAuto"  checked/> ';
 	dialog_message += '{{Ajout automatique des nouvelles commandes sur cet équipement}}</label><br><br>';
 
@@ -753,11 +753,11 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('[', ':');
 
 	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
 	dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> '
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>'
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>'
 	dialog_message += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> '
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>'
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>'
 
 	// Display new EqLogic modal
 	bootbox.confirm({
@@ -832,7 +832,7 @@ jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
 			msg += '<select class="form-control">' + _objectsList + '</select>';
 			msg += '</td><td class="md_addJmqttCmdValeqL"></td></tr></tbody></table><br>';
 			msg += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> ';
-			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>';
+			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>';
 			// Display new cmd creation modal with Eq selector
 			bootbox.confirm({
 				title: '{{Ajouter cette commande à un equipement existant}}',

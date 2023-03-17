@@ -58,12 +58,12 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 	$.each(jmqtt_globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br>';
 	dialog_message += '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="addJmqttEqName"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName"><br><br>';
 	dialog_message += '<label class="control-label">{{Utiliser un template :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttTplSelector">';
 	dialog_message += '</select><br>';
 	dialog_message += '<label class="control-label" style="display:none;" id="addJmqttTplText">{{Saisissez le Topic de base :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" style="display:none;" autocomplete="off" type="text" id="addJmqttTplTopic"><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" style="display:none;" autocomplete="nope" type="text" id="addJmqttTplTopic"><br>';
 	bootbox.confirm({
 		title: "{{Ajouter un nouvel équipement}}",
 		message: dialog_message,
@@ -416,7 +416,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			if (currentTopic.endsWith("/"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
-			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'
+			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'
 			dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ';
 			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label></div>';
 			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="0">' + "{{Les supprimer d'abord}}" + '</label></div>';
@@ -472,9 +472,9 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 		currentTopic = currentTopic.substr(0,currentTopic.length-1);
 	if (currentTopic.endsWith("/"))
 		currentTopic = currentTopic.substr(0,currentTopic.length-1);
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
 	dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" type="text" id="newTopic"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="newTopic"><br><br>';
 	dialog_message += '<label class="control-label">(' + "{{Pensez à sauvegarder l'équipement pour appliquer les modifications}}" + ')</label>';
 	bootbox.confirm({
 		title: "{{Modifier en masse les Topics de tout l'équipement}}",
