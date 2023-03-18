@@ -243,6 +243,23 @@ try {
 		ajax::success();
 	}
 
+	if (init('action') == 'backupRestore') {
+		$_backup = init('file');
+		if (!isset($_backup) || is_null($_backup) || $_backup == '')
+			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
+
+		$backup_dir = realpath(__DIR__ . '/../../data/backup');
+		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
+
+		if (in_array($_backup, $backups) && file_exists($backup_dir.'/'.$_backup))
+
+		jMQTT::logger('info', sprintf(__("Restauration de la sauvegarde '%s' lancée...", __FILE__), $_backup));
+		sleep(10);
+		// exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php --all ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('jMQTT') . ' 2>&1 &');
+		jMQTT::logger('info', sprintf(__("Restauration de la sauvegarde effectuée", __FILE__)));
+		ajax::success();
+	}
+
 	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

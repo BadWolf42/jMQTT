@@ -367,9 +367,24 @@ $('#bt_backupJMqttRestore').on('click', function () {
 		if (!result)
 			return;
 		jmqtt_config.toggleIco(btn);
-		// TODO
-		console.log('bt_backupJMqttRestore:', $('#sel_backupJMqtt').value());
-		jmqtt_config.toggleIco(btn);
+		jmqtt_config.jmqttAjax({
+			data: {
+				action: "backupRestore",
+				file: $('#sel_backupJMqtt').value()
+			},
+			error: function (request, status, error) {
+				handleAjaxError(request, status, error);
+				jmqtt_config.toggleIco(btn);
+			},
+			success: function(data) {
+				if (data.state == 'ok') {
+					$.fn.showAlert({message: '{{Sauvegarde restaurée.}}', level: 'success'});
+				} else {
+					$.fn.showAlert({message: data.result, level: 'danger'});
+				}
+				jmqtt_config.toggleIco(btn);
+			}
+		});
 	});
 });
 

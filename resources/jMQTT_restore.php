@@ -2,6 +2,197 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // jMQTT_restore.php
 
+// Old export functions
+function full_export() {
+		$returns = array();
+		foreach (eqLogic::byType('jMQTT') as $eq) {
+			$exp = $eq->toArray();
+			$exp['commands'] = array();
+			foreach ($eq->getCmd() as $cmd)
+				$exp['commands'][] = $cmd->full_export();
+			$returns[] = $exp;
+		}
+		function fsort($a, $b) {
+			$x = ((array_key_exists('configuration', $a) && array_key_exists('type', $a['configuration'])) ?
+					$a['configuration']['type'] : "z").$a['id'];
+			$y = ((array_key_exists('configuration', $b) && array_key_exists('type', $b['configuration'])) ?
+					$b['configuration']['type'] : "z").$b['id'];
+			return strcmp($x, $y);
+		}
+		usort($returns, 'fsort'); // Put the Broker first (needed)
+		return $returns;
+	}
+
+// Old import function 1
+function full_import($data) {
+	$eq_names = array();
+	foreach (eqLogic::byType('jMQTT') as $eq) {
+		$eq_names[] = $eq->getName();
+	}
+	$old_eqs  = array();
+	$old_cmds = array();
+	$link_actions = array();
+	foreach ($data as $data_eq) {
+		// Handle eqLogic
+		$link_infos = array();
+		$link_names = array();
+		$eq = new jMQTT();
+		utils::a2o($eq, $data_eq);
+		$eq->setId('');
+		if ($eq->getType() == jMQTT::TYP_BRK) {
+			$eq->setIsEnable('0');
+		} else {
+			$eq->setBrkId($old_eqs[$eq->getBrkId()]->getId());
+		}
+		$eq->setObject_id('');
+		if (in_array($eq->getName(), $eq_names)) {
+			$i = 2;
+			while (in_array($data_eq['name'].'_'.$i, $eq_names))
+				$i++;
+			$eq->setName($data_eq['name'].'_'.$i);
+		}
+		$old_eqs[$data_eq['id']] = $eq;
+		$eq->save();
+
+		// Handle cmd
+		if (isset($data_eq['commands'])) {
+			$cmd_order = 0;
+			foreach ($data_eq['commands'] as $data_cmd) {
+				try {
+					$cmd = new jMQTTCmd();
+					utils::a2o($cmd, $data_cmd);
+					$cmd->setId('');
+					$cmd->setOrder($cmd_order);
+					$cmd->setEqLogic_id($eq->getId());
+					//$cmd->setConfiguration('logicalId', $cmd->getLogicalId());
+					$cmd->setConfiguration('autoPub', 0);
+					$cmd->save();
+					$old_cmds[$data_cmd['id']] = $cmd;
+					$link_names[$cmd->getName()] = $cmd->getId();
+					if (isset($data_cmd['value']) && $data_cmd['value'] != '')
+						$link_infos[] = $cmd;
+					if (isset($data_cmd['configuration']['request']) && $data_cmd['configuration']['request'] != '')
+						$link_actions[] = $cmd;
+					$cmd_order++;
+				} catch (Exception $exc) {
+					// TODO
+				}
+			}
+		}
+		foreach($link_infos as $cmd) {
+			if (!isset($link_names[$cmd->getValue()]))
+				continue;
+			$id = $link_names[$cmd->getValue()];
+			$eq->log('debug', 'full_import: Replacing in cmd='.$cmd->getId().' value='.$cmd->getValue().' by '.$id);
+			$cmd->setValue($id);
+			$cmd->save();
+		}
+	}
+	foreach($link_actions as $cmd) {
+		$req = $cmd->getConfiguration('request', '');
+		preg_match_all("/#([0-9]*)#/", $req, $matches);
+		$req_cmds = array_unique($matches[1]);
+		if (count($req_cmds) == 0)
+			continue;
+		foreach ($req_cmds as $req_cmd) {
+			if (isset($old_cmds[$req_cmd]))
+				$req = str_replace('#'.$req_cmd.'#', '#'.(($old_cmds[$req_cmd])->getId()).'#', $req);
+		}
+		$cmd->getEqLogic()->log('debug', 'full_import: Replacing in cmd='.$cmd->getId().' request='.$cmd->getConfiguration('request', '').' by '.$req);
+		$cmd->setConfiguration('request', $req);
+		$cmd->save();
+	}
+}
+
+// Old import function 2
+function full_import($data) {
+	global $scenario;
+
+	$eq_names = array();
+	foreach (eqLogic::byType('jMQTT') as $eq) {
+		$eq_names[] = $eq->getName();
+	}
+	$old_eqs  = array();
+	$old_cmds = array();
+	$link_actions = array();
+	foreach ($data as $data_eq) {
+		// Handle eqLogic
+		$link_infos = array();
+		$link_names = array();
+		$eq = new jMQTT();
+		utils::a2o($eq, $data_eq);
+		$eq->setId('');
+		if ($eq->getType() == jMQTT::TYP_BRK) {
+			$eq->setIsEnable('0');
+		} else {
+			$eq->setBrkId($old_eqs[$eq->getBrkId()]->getId());
+		}
+		$eq->setObject_id('');
+		if (in_array($eq->getName(), $eq_names)) {
+			$i = 2;
+			while (in_array($data_eq['name'].'_'.$i, $eq_names)) {
+				$i++;
+			}
+			$eq->setName($data_eq['name'].'_'.$i);
+		}
+		$old_eqs[$data_eq['id']] = $eq;
+		$eq->save();
+
+		// Handle cmd
+		if (isset($data_eq['commands'])) {
+			$cmd_order = 0;
+			foreach ($data_eq['commands'] as $data_cmd) {
+				try {
+					$cmd = new jMQTTCmd();
+					utils::a2o($cmd, $data_cmd);
+					$cmd->setId('');
+					$cmd->setOrder($cmd_order);
+					$cmd->setEqLogic_id($eq->getId());
+					//$cmd->setConfiguration('logicalId', $cmd->getLogicalId());
+					$cmd->setConfiguration('autoPub', 0);
+					$cmd->save();
+					$old_cmds[$data_cmd['id']] = $cmd;
+
+					$link_names[$cmd->getName()] = $cmd->getId();
+					if (isset($data_cmd['value']) && $data_cmd['value'] != '') {
+						$link_infos[] = $cmd;
+					}
+					if (isset($data_cmd['configuration']['request']) && $data_cmd['configuration']['request'] != '') {
+						$link_actions[] = $cmd;
+					}
+					$cmd_order++;
+				} catch (Exception $exc) {
+					// TODO
+				}
+			}
+		}
+
+		foreach($link_infos as $cmd) {
+			if (!isset($link_names[$cmd->getValue()]))
+				continue;
+			$id = $link_names[$cmd->getValue()];
+			$scenario->setLog('Replacing in cmd='.$cmd->getId().' value='.$cmd->getValue().' by '.$id);
+			$cmd->setValue($id);
+			$cmd->save();
+		}
+	}
+	foreach($link_actions as $cmd) {
+		$req = $cmd->getConfiguration('request', '');
+		preg_match_all("/#([0-9]*)#/", $req, $matches);
+		$req_cmds = array_unique($matches[1]);
+		if (count($req_cmds) == 0)
+			continue;
+		foreach ($req_cmds as $req_cmd) {
+			if (isset($old_cmds[$req_cmd])) {
+				$req = str_replace('#'.$req_cmd.'#', '#'.(($old_cmds[$req_cmd])->getId()).'#', $req);
+			}
+		}
+		$scenario->setLog('Replacing in cmd='.$cmd->getId().' request='.$cmd->getConfiguration('request', '').' by '.$req);
+		$cmd->setConfiguration('request', $req);
+		$cmd->save();
+	}
+}
+
 //
 //
 // TODO (important) Still work in progress
@@ -87,7 +278,7 @@ function restore_help() {
 
 function restore_options() {
 	global $argv;
-	
+
 	$rest = null;
 	$options = getopt("h", array('apply', 'file:', 'do-cleanup', 'do-history', 'do-logs', 'do-mosquitto', 'force', 'verbose', 'help'), $rest);
 
@@ -250,7 +441,7 @@ function full_import($data) {
 				}
 			}
 		}
-		
+
 		foreach($link_infos as $cmd) {
 			if (!isset($link_names[$cmd->getValue()]))
 				continue;
