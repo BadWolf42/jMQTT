@@ -493,7 +493,8 @@ function jMQTT_update($_direct=true) {
 	}
 	else
 		config::save(VERSION, 13, 'jMQTT');
-		jMQTT::pluginStats($_direct ? 'update' : 'install');
+
+	jMQTT::pluginStats($_direct ? 'update' : 'install');
 }
 
 function jMQTT_remove() {
