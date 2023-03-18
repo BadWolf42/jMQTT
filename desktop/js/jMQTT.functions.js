@@ -484,6 +484,7 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
 	function wrapSaveEqLogic() {
 		// No mismatch or broker
 		if ($('.topicMismatch').length == 0 || $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() == 'broker') {
+			jmqtt.unsetPageModified();
 			_realSave();
 			return;
 		}
@@ -522,6 +523,7 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
 			title: "<b>{{Des problèmes ont été identifiés dans la configuration}}</b>",
 			message: dialog_message,
 			callback: function (result) { if (result) { // Do save
+				jmqtt.unsetPageModified();
 				_realSave();
 			}}
 		});
