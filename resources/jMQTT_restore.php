@@ -3,28 +3,28 @@
 // jMQTT_restore.php
 
 // Old export functions
-function full_export() {
-		$returns = array();
-		foreach (eqLogic::byType('jMQTT') as $eq) {
-			$exp = $eq->toArray();
-			$exp['commands'] = array();
-			foreach ($eq->getCmd() as $cmd)
-				$exp['commands'][] = $cmd->full_export();
-			$returns[] = $exp;
-		}
-		function fsort($a, $b) {
-			$x = ((array_key_exists('configuration', $a) && array_key_exists('type', $a['configuration'])) ?
-					$a['configuration']['type'] : "z").$a['id'];
-			$y = ((array_key_exists('configuration', $b) && array_key_exists('type', $b['configuration'])) ?
-					$b['configuration']['type'] : "z").$b['id'];
-			return strcmp($x, $y);
-		}
-		usort($returns, 'fsort'); // Put the Broker first (needed)
-		return $returns;
+function full_export_old() {
+	$returns = array();
+	foreach (eqLogic::byType('jMQTT') as $eq) {
+		$exp = $eq->toArray();
+		$exp['commands'] = array();
+		foreach ($eq->getCmd() as $cmd)
+			$exp['commands'][] = $cmd->full_export();
+		$returns[] = $exp;
 	}
+	function fsort($a, $b) {
+		$x = ((array_key_exists('configuration', $a) && array_key_exists('type', $a['configuration'])) ?
+				$a['configuration']['type'] : "z").$a['id'];
+		$y = ((array_key_exists('configuration', $b) && array_key_exists('type', $b['configuration'])) ?
+				$b['configuration']['type'] : "z").$b['id'];
+		return strcmp($x, $y);
+	}
+	usort($returns, 'fsort'); // Put the Broker first (needed)
+	return $returns;
+}
 
 // Old import function 1
-function full_import($data) {
+function full_import_old1($data) {
 	$eq_names = array();
 	foreach (eqLogic::byType('jMQTT') as $eq) {
 		$eq_names[] = $eq->getName();
@@ -105,7 +105,7 @@ function full_import($data) {
 }
 
 // Old import function 2
-function full_import($data) {
+function full_import_old2($data) {
 	global $scenario;
 
 	$eq_names = array();
