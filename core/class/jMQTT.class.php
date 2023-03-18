@@ -2284,9 +2284,8 @@ class jMQTT extends eqLogic {
 	 */
 	public function brokerMessageCallback($msgTopic, $msgValue, $msgQos, $msgRetain) {
 
+		$start_t = microtime(true);
 		$this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
-
-		$this->log('debug', sprintf(__("Payload '%1\$s' reçu sur le Topic '%2\$s'", __FILE__), $msgValue, $msgTopic));
 
 		// Is Interact topic enabled ?
 		if ($this->getConf(self::CONF_KEY_MQTT_INT)) {
@@ -2295,7 +2294,6 @@ class jMQTT extends eqLogic {
 				// Request Payload: string
 				$this->interactMessage($msgValue);
 				// Reply Payload on /reply: {"query": string, "reply": string}
-				return;
 			}
 			// If "advanced" Interact topic, process the request
 			if ($msgTopic == $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/advanced') {
@@ -2303,14 +2301,12 @@ class jMQTT extends eqLogic {
 				$param = json_decode($msgValue, true);
 				$this->interactMessage($param['query'], $param);
 				// Reply Payload on /reply: $param + {"reply": string}
-				return;
 			}
 		}
 
 		// If this is the API topic, process the request
 		if ($this->getConf(self::CONF_KEY_MQTT_API) && $msgTopic == $this->getConf(self::CONF_KEY_MQTT_API_TOPIC)) {
 			$this->processApiRequest($msgValue);
-			return;
 		}
 
 		// Loop on jMQTT equipments and get ones that subscribed to the current message
@@ -2322,6 +2318,7 @@ class jMQTT extends eqLogic {
 		//
 		// Loop on enabled equipments listening to the current message
 		//
+		$related_cmd = '';
 		foreach ($elogics as $eqpt) {
 			if ($eqpt->getIsEnable()) {
 				// Looking for all cmds matching Eq and Topic in the DB
@@ -2379,13 +2376,13 @@ class jMQTT extends eqLogic {
 							$this->log('debug', sprintf(__("Cmd #%1\$s# créée automatiquement pour le topic '%2\$s'", __FILE__), $newCmd->getHumanName(), $msgTopic));
 						} catch (Throwable $e) {
 							if (log::getLogLevel(__CLASS__) > 100)
-								self::logger('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
+								$this->log('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
 							else // More info in debug mode, no big log otherwise
-								self::logger('error', str_replace("\n",' </br> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
+								$this->log('error', str_replace("\n",' </br> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
 											",</br>@Stack: %3\$s,</br>@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
 						}
 					} else
-						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement  #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
+						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
 				}
 
 				// If there is some cmd matching exactly with the topic
@@ -2393,6 +2390,7 @@ class jMQTT extends eqLogic {
 					foreach ($cmds as $cmd) {
 						// Update the command value
 						$cmd->updateCmdValue($msgValue);
+						$related_cmd .= ', #' . $cmd->getHumanName() . '#';
 					}
 				}
 
@@ -2406,10 +2404,25 @@ class jMQTT extends eqLogic {
 						foreach ($jsonCmds as $cmd) {
 							// Update JSON derived commands
 							$cmd->updateJsonCmdValue($jsonArray);
+							$related_cmd .= ', #' . $cmd->getHumanName() . '#';
 						}
 					}
 				}
 			}
+		}
+
+		if (strlen($related_cmd) == 0) {
+			$related_cmd = __(": Aucune", __FILE__);
+		} else {
+			$related_cmd[0] = ':';
+		}
+		$duration_ms = round((microtime(true) - $start_t)*1000);
+		if ($duration_ms > 300) {
+			$this->log('warning', sprintf(__("Attention, ", __FILE__) .
+										__("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
+										__(" (très long), vérifiez les commandes affiliées %4\$s", __FILE__), $msgValue, $msgTopic, $duration_ms, $related_cmd));
+		} elseif (log::getLogLevel(__CLASS__) <= 100) {
+			$this->log('debug', sprintf(__("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms, commandes affiliées %4\$s", __FILE__), $msgValue, $msgTopic, $duration_ms, $related_cmd));
 		}
 	}
 
