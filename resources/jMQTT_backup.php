@@ -44,7 +44,7 @@ function export_isRunning() {
 }
 
 // [-cC] clean old backups and leftovers
-function export_cleanup($limit = 4) { // 4 backups max
+function export_cleanup($limit = 5) { // 5 backups max
 	echo "Cleaning up... ";
 	// Remove leftovers of a previously running backup
 	shell_exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../data/backup/jMQTT_backingup.tgz '.__DIR__.'/../data/backup/backup 2>&1 > /dev/null');
@@ -224,6 +224,9 @@ function backup_main() {
 		print("Backup is already running, please wait until it ends, aborting!\n");
 		exit(1);
 	}
+	print("###########################################################\n");
+	print("Starting jMQTT backup...\n");
+
 	export_writePidFile();
 
 	if (isset($options['all']) || isset($options['c']))
@@ -270,7 +273,10 @@ function backup_main() {
 	if (isset($options['all']) || isset($options['C']))
 		export_cleanup();
 
-export_deletePidFile();
+	export_deletePidFile();
+
+	print("End of jMQTT backup.\n");
+	print("###########################################################\n");
 
 	exit(0);
 }

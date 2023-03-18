@@ -114,14 +114,14 @@ $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
 		success: function(data) {
 			var text = `{{Êtes-vous sûr de vouloir supprimer l'équipement ${eqType} <b>${eqName}</b> ?}}`;
 			if (Object.keys(data).length > 0) {
-				text += ' </br> {{Il est utilisé par ou utilise :}}</br>';
+				text += ' <br /> {{Il est utilisé par ou utilise :}}<br />';
 				var complement = null;
 				for (var i in data) {
 					complement = '';
 					if ('sourceName' in data[i])
 						complement = ' (' + data[i].sourceName + ')';
 					text += '- ' + '<a href="' + data[i].url + '" target="_blank">' + data[i].type + '</a> : <b>' + data[i].name + '</b>' + complement;
-					text += ' <sup><a href="' + data[i].url + '" target="_blank"><i class="fas fa-external-link-alt"></i></a></sup></br>';
+					text += ' <sup><a href="' + data[i].url + '" target="_blank"><i class="fas fa-external-link-alt"></i></a></sup><br />';
 				}
 			}
 			text = text.substring(0, text.length - 2);

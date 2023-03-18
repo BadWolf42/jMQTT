@@ -19,8 +19,11 @@
 	"changelog_beta": "https://domochip.github.io/jMQTT/fr_FR/changelog_beta",
 	"documentation_beta": "https://domochip.github.io/jMQTT/fr_FR/index_beta",
 	"link": {
-		"forum": "https://community.jeedom.com/tag/plugin-jmqtt"
+		"community": "https://community.jeedom.com/tag/plugin-jmqtt",
+		"forum": "https://community.jeedom.com/tag/plugin-jmqtt",
+		"github": "https://github.com/Domochip/jMQTT"
 	},
 	"languages": ["fr_FR","en_US"],
-	"compatibility": ["miniplus","smart","atlas","rpi","docker","diy","v4"]
+	"compatibility": ["atlas","diy","docker","luna","miniplus","rpi","smart","v4"],
+	"pluginVersion" : 14
 }

@@ -106,9 +106,9 @@
 							<label class="col-lg-4 control-label">{{Authentification}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
 							title="{{Nom d'utilisateur et Mot de passe permettant de se connecter au Broker.<br/>Remplir ces champs n'est obligatoire que si le Broker est configuré pour.}}"></i></sup></label>
 							<div class="col-lg-7 input-group">
-								<input class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="mqttUser" autocomplete="off" autofill="off" placeholder="{{Nom d'utilisateur}}" />
+								<input class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="mqttUser" autocomplete="nope" autofill="off" placeholder="{{Nom d'utilisateur}}" />
 								<span class="input-group-addon">:</span>
-								<input class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="mqttPass" type="password" autocomplete="off" autofill="off" placeholder="{{Mot de passe}}" />
+								<input class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="mqttPass" type="password" autocomplete="nope" autofill="off" placeholder="{{Mot de passe}}" />
 							</div>
 						</div>
 

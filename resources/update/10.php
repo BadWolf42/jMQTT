@@ -1,0 +1,25 @@
+<?php
+
+
+foreach (jMQTT::byType('jMQTT') as $eqLogic) {
+	// Protect already modified Eq
+	$batId = $eqLogic->getBatteryCmd();
+	if ($batId != false && $batId != '') {
+		$cmd = jMQTTCmd::byId($batId);
+		jMQTT::logger('info', sprintf(__("#%1\$s# définit DÉJÀ la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
+		continue;
+	}
+	// get info cmds of current eqLogic
+	foreach (jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info') as $cmd) {
+		// Old isBattery()
+		if ($cmd->getType() == 'info' && ($cmd->getGeneric_type() == 'BATTERY' || preg_match('/(battery|batterie)$/i', $cmd->getName()))) {
+			$eqLogic->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, $cmd->getId());
+			jMQTT::logger('info', sprintf(__("#%1\$s# définit la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
+			$eqLogic->save();
+		}
+	}
+}
+
+jMQTT::logger('info', __("Commandes batterie définies directement sur les équipements jMQTT", __FILE__));
+
+?>

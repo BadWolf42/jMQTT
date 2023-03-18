@@ -160,8 +160,8 @@ class jMQTTCmd extends cmd {
 				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
 															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				$this->getEqLogic()->log('warning', str_replace("\n",' </br> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
-							",</br>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
+				$this->getEqLogic()->log('warning', str_replace("\n",' <br /> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",<br />@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
 		}
 	}
 
@@ -528,28 +528,25 @@ class jMQTTCmd extends cmd {
 	 * @return NULL|jMQTTCmd|array(jMQTTCmd)
 	 */
 	public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
-// TODO (nice to have) Replace by jMQTTCmd::searchConfigurationEqLogic() ?
-
-		// JSON_UNESCAPED_UNICODE used to correct #92
+		// JSON_UNESCAPED_UNICODE used to fix #92
 		$confTopic = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -1);
 		$confTopic = str_replace('\\', '\\\\', $confTopic);
 
 		$values = array(
-			'topic' => '%' . $confTopic . '%',
-			'emptyJsonPath' => '%"jsonPath":""%',
 			'eqLogic_id' => $eqLogic_id,
+			'topic' => '%' . $confTopic . '%',
 		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic AND ';
+		$sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic';
 
-		if ($multiple) {
-			$values['AllJsonPath'] = '%"jsonPath":"%';
-			// Union is used to have the mother command returned first
-			$sql .= 'configuration LIKE :emptyJsonPath UNION ' . $sql . 'configuration LIKE :AllJsonPath';
-		} else {
-			$sql .= 'configuration LIKE :emptyJsonPath';
+		// Searching for only one topic
+		if (!$multiple) {
+			$values['emptyJsonPath'] = '%"jsonPath":""%';
+			$values['allJsonPath'] = '%"jsonPath":"%';
+			// Empty jsonPath or no jsonPath in config
+			$sql .= ' AND (configuration LIKE :emptyJsonPath OR configuration NOT LIKE :allJsonPath)';
 		}
-		$cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 
+		$cmds = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
 		if (count($cmds) == 0)
 			return null;
 		else

@@ -350,6 +350,15 @@ class jMQTT extends eqLogic {
 		if ($this->getType() != self::TYP_EQPT || is_null($_template))
 			return;
 
+		// Cleanup base topic (remove '/', '#' and '+' at the end)
+		$baseTopic = $_topic;
+		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
+		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
+
+		// Ensure topic has a wildcard at the end
+		if (substr($_topic, -1) != '/' && substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '/'; }
+		if (substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '#'; }
+
 		// Raise up the flag that cmd topic mismatch must be ignored
 		$this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
 
@@ -378,7 +387,7 @@ class jMQTT extends eqLogic {
 
 		// complete cmd topics and replace template cmd names by cmd ids
 		foreach ($this->getCmd() as $cmd) {
-			$cmd->setTopic(sprintf($cmd->getTopic(), $_topic));
+			$cmd->setTopic(sprintf($cmd->getTopic(), $baseTopic));
 			$cmd->replaceCmdIds($cmdsName, $cmdsId);
 			$cmd->save();
 		}
@@ -1478,8 +1487,8 @@ class jMQTT extends eqLogic {
 				if (log::getLogLevel(__CLASS__) > 100)
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
-					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"</br>@Stack: %3\$s,</br>@BrkId: %4\$s.",
+					self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"<br />@Stack: %3\$s,<br />@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -1911,8 +1920,8 @@ class jMQTT extends eqLogic {
 				if (log::getLogLevel(__CLASS__) > 100)
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
-					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+					self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"@Stack: %3\$s,<br />@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -2067,8 +2076,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -2102,8 +2111,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -2117,8 +2126,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s,</br>@Qos: %7\$s,</br>@Retain: %8\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s,<br />@Topic: %5\$s,<br />@Payload: %6\$s,<br />@Qos: %7\$s,<br />@Retain: %8\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload, $qos, $retain)));
 		}
 	}
@@ -2257,8 +2266,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('warning', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__), $query, $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				self::logger('warning', str_replace("\n",' </br> ', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
-							",</br>@Stack: %3\$s.", $query, $e->getMessage(), $e->getTraceAsString())));
+				self::logger('warning', str_replace("\n",' <br /> ', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
+							",<br />@Stack: %3\$s.", $query, $e->getMessage(), $e->getTraceAsString())));
 			// Send reply on a /reply subtopic
 			$reply = array_merge(array('status' => ''), $param, array('reply' => '', 'status' => 'nok', 'error' => $e->getMessage()));
 			$this->publish($this->getName(), $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/reply', json_encode($reply, true), 1, 0);
@@ -2275,9 +2284,8 @@ class jMQTT extends eqLogic {
 	 */
 	public function brokerMessageCallback($msgTopic, $msgValue, $msgQos, $msgRetain) {
 
+		$start_t = microtime(true);
 		$this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
-
-		$this->log('debug', sprintf(__("Payload '%1\$s' reçu sur le Topic '%2\$s'", __FILE__), $msgValue, $msgTopic));
 
 		// Is Interact topic enabled ?
 		if ($this->getConf(self::CONF_KEY_MQTT_INT)) {
@@ -2286,7 +2294,6 @@ class jMQTT extends eqLogic {
 				// Request Payload: string
 				$this->interactMessage($msgValue);
 				// Reply Payload on /reply: {"query": string, "reply": string}
-				return;
 			}
 			// If "advanced" Interact topic, process the request
 			if ($msgTopic == $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/advanced') {
@@ -2294,14 +2301,12 @@ class jMQTT extends eqLogic {
 				$param = json_decode($msgValue, true);
 				$this->interactMessage($param['query'], $param);
 				// Reply Payload on /reply: $param + {"reply": string}
-				return;
 			}
 		}
 
 		// If this is the API topic, process the request
 		if ($this->getConf(self::CONF_KEY_MQTT_API) && $msgTopic == $this->getConf(self::CONF_KEY_MQTT_API_TOPIC)) {
 			$this->processApiRequest($msgValue);
-			return;
 		}
 
 		// Loop on jMQTT equipments and get ones that subscribed to the current message
@@ -2313,6 +2318,7 @@ class jMQTT extends eqLogic {
 		//
 		// Loop on enabled equipments listening to the current message
 		//
+		$related_cmd = '';
 		foreach ($elogics as $eqpt) {
 			if ($eqpt->getIsEnable()) {
 				// Looking for all cmds matching Eq and Topic in the DB
@@ -2370,13 +2376,13 @@ class jMQTT extends eqLogic {
 							$this->log('debug', sprintf(__("Cmd #%1\$s# créée automatiquement pour le topic '%2\$s'", __FILE__), $newCmd->getHumanName(), $msgTopic));
 						} catch (Throwable $e) {
 							if (log::getLogLevel(__CLASS__) > 100)
-								self::logger('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
+								$this->log('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
 							else // More info in debug mode, no big log otherwise
-								self::logger('error', str_replace("\n",' </br> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
-											",</br>@Stack: %3\$s,</br>@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
+								$this->log('error', str_replace("\n",' <br /> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
+											",<br />@Stack: %3\$s,<br />@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
 						}
 					} else
-						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement  #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
+						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
 				}
 
 				// If there is some cmd matching exactly with the topic
@@ -2384,6 +2390,7 @@ class jMQTT extends eqLogic {
 					foreach ($cmds as $cmd) {
 						// Update the command value
 						$cmd->updateCmdValue($msgValue);
+						$related_cmd .= ', #' . $cmd->getHumanName() . '#';
 					}
 				}
 
@@ -2397,10 +2404,25 @@ class jMQTT extends eqLogic {
 						foreach ($jsonCmds as $cmd) {
 							// Update JSON derived commands
 							$cmd->updateJsonCmdValue($jsonArray);
+							$related_cmd .= ', #' . $cmd->getHumanName() . '#';
 						}
 					}
 				}
 			}
+		}
+
+		if (strlen($related_cmd) == 0) {
+			$related_cmd = __(": Aucune", __FILE__);
+		} else {
+			$related_cmd[0] = ':';
+		}
+		$duration_ms = round((microtime(true) - $start_t)*1000);
+		if ($duration_ms > 300) {
+			$this->log('warning', sprintf(__("Attention, ", __FILE__) .
+										__("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
+										__(" (très long), vérifiez les commandes affiliées %4\$s", __FILE__), $msgValue, $msgTopic, $duration_ms, $related_cmd));
+		} elseif (log::getLogLevel(__CLASS__) <= 100) {
+			$this->log('debug', sprintf(__("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms, commandes affiliées %4\$s", __FILE__), $msgValue, $msgTopic, $duration_ms, $related_cmd));
 		}
 	}
 
@@ -2514,8 +2536,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s,<br />@Topic: %5\$s,<br />@Payload: %6\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}
@@ -2764,7 +2786,7 @@ class jMQTT extends eqLogic {
 	 * @param int $mode 0 or 1
 	 */
 	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#', $retained=false) {
-		$this->log('info', $mode ? __("Lancement du Mode Temps...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
+		$this->log('info', $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
 		// $this->log('debug', sprintf(__("changeRealTimeMode(mode=%1\$s, subscribe=%2\$s, exclude=%3\$s, retained=%4\$s)", __FILE__), $mode, $subscribe, $exclude, $retained));
 		if($mode) { // If Real Time mode needs to be enabled
 			// Check if a subscription topic is provided
