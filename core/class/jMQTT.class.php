@@ -1487,8 +1487,8 @@ class jMQTT extends eqLogic {
 				if (log::getLogLevel(__CLASS__) > 100)
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
-					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"</br>@Stack: %3\$s,</br>@BrkId: %4\$s.",
+					self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"<br />@Stack: %3\$s,<br />@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -1920,8 +1920,8 @@ class jMQTT extends eqLogic {
 				if (log::getLogLevel(__CLASS__) > 100)
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
-					self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+					self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"@Stack: %3\$s,<br />@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -2076,8 +2076,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -2111,8 +2111,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -2126,8 +2126,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s,</br>@Qos: %7\$s,</br>@Retain: %8\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s,<br />@Topic: %5\$s,<br />@Payload: %6\$s,<br />@Qos: %7\$s,<br />@Retain: %8\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload, $qos, $retain)));
 		}
 	}
@@ -2266,8 +2266,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('warning', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__), $query, $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				self::logger('warning', str_replace("\n",' </br> ', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
-							",</br>@Stack: %3\$s.", $query, $e->getMessage(), $e->getTraceAsString())));
+				self::logger('warning', str_replace("\n",' <br /> ', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
+							",<br />@Stack: %3\$s.", $query, $e->getMessage(), $e->getTraceAsString())));
 			// Send reply on a /reply subtopic
 			$reply = array_merge(array('status' => ''), $param, array('reply' => '', 'status' => 'nok', 'error' => $e->getMessage()));
 			$this->publish($this->getName(), $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/reply', json_encode($reply, true), 1, 0);
@@ -2378,8 +2378,8 @@ class jMQTT extends eqLogic {
 							if (log::getLogLevel(__CLASS__) > 100)
 								$this->log('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
 							else // More info in debug mode, no big log otherwise
-								$this->log('error', str_replace("\n",' </br> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
-											",</br>@Stack: %3\$s,</br>@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
+								$this->log('error', str_replace("\n",' <br /> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
+											",<br />@Stack: %3\$s,<br />@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
 						}
 					} else
 						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
@@ -2536,8 +2536,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' </br> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,</br>@BrkId: %4\$s,</br>@Topic: %5\$s,</br>@Payload: %6\$s.",
+				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br />@BrkId: %4\$s,<br />@Topic: %5\$s,<br />@Payload: %6\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}

@@ -57,9 +57,9 @@ function jMQTT_update($_direct=true) {
 			if (file_exists($file))
 				include $file;
 		} catch (Throwable $e) {
-			log::add('jMQTT', 'error', str_replace("\n",' </br> ',
+			log::add('jMQTT', 'error', str_replace("\n",' <br /> ',
 				sprintf(__("Exception lors de l'application des modifications de la version %1\$d : %2\$s", __FILE__).
-					"</br>@Stack: %3\$s,</br>@BrkId: %4\$s.",
+					"<br />@Stack: %3\$s,<br />@BrkId: %4\$s.",
 					$versionFromDB, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 		}
 	}
