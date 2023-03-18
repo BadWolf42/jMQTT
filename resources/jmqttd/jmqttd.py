@@ -194,7 +194,7 @@ class Main():
 		# Wait for instructions
 		while not self.should_stop.is_set():
 # TODO (important) FIX ME: Internal health-check
-#			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedon
+#			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedom
 #				self.should_stop.set()
 # /TODO FIXME
 			if self.jcom.qFromJ.empty(): # empty() method is faster that Exception handling
