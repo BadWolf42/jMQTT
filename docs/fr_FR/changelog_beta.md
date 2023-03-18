@@ -1,15 +1,17 @@
 # Registre des évolutions BETA
 
-## 2023-03-19
+## 2023-03-19 (v14)
 - Ajout de la possibilité d'utiliser un template lors de la création d'un équipement (merci ngrataloup)
 - Ajout d'un alerte lorsqu'un message mets trop de temps à être traité par Jeedom (merci rennais35000)
 - Ajout du template Shelly 4 Pro PM (merci Furaxworld)
 - Ajout du numéro de version et de la compatibilité avec la Luna dans le fichier info.json
+- Correction lors de la modification du niveau de log, le démon n'était pas averti immédiatement
 - Correction d'un bug lorsque le jsonPath n'est pas présent en base de données (merci xavax59)
 - Correction des champs sur lesquels l'autocomplete était encore actif dans Chrome (merci ngrataloup)
 - Suppression de messages intempestifs lors de la sauvegarde d'un équipement
 - Nettoyage supplémentaire lors de la création ou de l'import d'un template
-- Nouveau système de mise à jour des objets entre versions
+- Intégration progressive du système de sauvegarde de jMQTT
+- Nouveau système de mise à jour des objets entre les versions
 - Corrections syntaxiques et orthographiques
 
 ## 2023-02-27
