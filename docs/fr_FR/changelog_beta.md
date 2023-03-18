@@ -9,6 +9,7 @@
 - Correction des champs sur lesquels l'autocomplete était encore actif dans Chrome (merci ngrataloup)
 - Suppression de messages intempestifs lors de la sauvegarde d'un équipement
 - Nettoyage supplémentaire lors de la création ou de l'import d'un template
+- Nouveau système de mise à jour des objets entre versions
 - Corrections syntaxiques et orthographiques
 
 ## 2023-02-27
