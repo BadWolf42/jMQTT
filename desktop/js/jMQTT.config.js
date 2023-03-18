@@ -305,20 +305,42 @@ $('#bt_jmqttUrlOverride').on('click', function () {
 
 // Launch jMQTT backup and wait for it to end
 $('#bt_backupJMqttStart').on('click', function () {
-	console.log('bt_backupJMqttStart');
+	var btn = $(this)
+	bootbox.confirm("{{Êtes-vous sûr de vouloir lancer une sauvegarde de jMQTT ?}}<br />({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})", function(result) {
+		if (!result)
+			return;
+		// $('a.bt_plugin_conf_view_log[data-log=jMQTT]').click();
+		jmqtt_config.toggleIco(btn);
+		jmqtt_config.jmqttAjax({
+			data: {
+				action: "backupCreate"
+			},
+			error: function (request, status, error) {
+				handleAjaxError(request, status, error);
+				jmqtt_config.toggleIco(btn);
+			},
+			success: function(data) {
+				if (data.state == 'ok') {
+					$.fn.showAlert({message: '{{Sauvegarde effectuée.}}', level: 'success'});
+				} else {
+					$.fn.showAlert({message: data.result, level: 'danger'});
+				}
+				jmqtt_config.toggleIco(btn);
+			}
+		});
+	});
 });
 
 // Remove selected jMQTT backup
 $('#bt_backupJMqttRemove').on('click', function () {
 	if (!$('#sel_backupJMqtt option:selected').length)
 		return;
-	var btn = $(this)
-	bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer}} <b>' + $('#sel_backupJMqtt option:selected').text() + '</b> ?', function(result) {
+	bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer}} <b>' + $('#sel_backupJMqtt option:selected').text() + '</b>{{ ?}}', function(result) {
 		if (!result)
 			return;
 		jmqtt_config.jmqttAjax({
 			data: {
-				action: "removeBackup",
+				action: "backupRemove",
 				file: $('#sel_backupJMqtt').value()
 			},
 			error: function (request, status, error) {
