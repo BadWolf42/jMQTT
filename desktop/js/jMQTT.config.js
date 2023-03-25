@@ -322,6 +322,9 @@ $('#bt_backupJMqttStart').on('click', function () {
 			success: function(data) {
 				if (data.state == 'ok') {
 					$.fn.showAlert({message: '{{Sauvegarde effectuée.}}', level: 'success'});
+					var oVal = data.result.name;
+					var oSize = ' (' + data.result.size +')';
+					$('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
 				} else {
 					$.fn.showAlert({message: data.result, level: 'danger'});
 				}

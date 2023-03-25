@@ -220,10 +220,23 @@ try {
 	}
 
 	if (init('action') == 'backupCreate') {
+		$backup_dir = realpath(__DIR__ . '/../../data/backup');
+		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
+
 		jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT lancée...", __FILE__)));
 		exec('php ' . __DIR__ . '/../../resources/jMQTT_backup.php --all >> ' . log::getPathToLog('jMQTT') . ' 2>&1');
-		jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT effectuée", __FILE__)));
-		ajax::success();
+
+		$backup = null;
+		foreach (ls($backup_dir, '*.tgz', false, array('files', 'quiet')) as $b) {
+			if (!in_array($b, $backups)) {
+				$backup = $b;
+				break;
+			}
+		}
+		if (is_null($backup))
+			throw new Exception(__("Échec de la sauvegarde de jMQTT, consultez le log jMQTT", __FILE__));
+		jMQTT::logger('info', __("Sauvegarde de jMQTT effectuée", __FILE__));
+		ajax::success(array('name' => $backup, 'size' => sizeFormat(filesize($backup_dir.'/'.$backup))));
 	}
 
 	if (init('action') == 'backupRemove') {
