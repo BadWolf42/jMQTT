@@ -185,7 +185,7 @@ function export_metadata($packages = []) {
 		print("\n" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Warning: Could not get version number from info.json, this should not be possible!\n");
 		$res['pluginVersion'] = -1;
 	}
-	$res['configVersion'] = config::byKey('version', 'jMQTT', -1);
+	$res['configVersion'] = intval(config::byKey('version', 'jMQTT', -1));
 	$res['packages'] = $packages;
 	print("                          [ OK ]\n");
 	return $res;
@@ -320,7 +320,7 @@ function backup_main() {
 	utils::o2a($eqBroker)['configuration']
 	utils::o2a($eqLogic)['configuration']
 	utils::o2a($cmd)['configuration']
-	
+
 	$eqLogics = array();
 	foreach (eqLogic::byType('jMQTT') as $eq) {
 		$exp = $eq->toArray();
@@ -337,6 +337,7 @@ function backup_main() {
 	return $returns;
 */
 
-if (php_sapi_name() == 'cli')
+if ((php_sapi_name() == 'cli') && (basename(__FILE__) == basename($_SERVER["SCRIPT_FILENAME"]))) {
 	backup_main();
+}
 ?>
