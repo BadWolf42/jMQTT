@@ -306,7 +306,7 @@ $('#bt_jmqttUrlOverride').on('click', function () {
 // Launch jMQTT backup and wait for it to end
 $('#bt_backupJMqttStart').on('click', function () {
 	var btn = $(this)
-	bootbox.confirm("{{Êtes-vous sûr de vouloir lancer une sauvegarde de jMQTT ?}}<br />({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})", function(result) {
+	bootbox.confirm("{{Êtes-vous sûr de vouloir lancer une sauvegarde de jMQTT ?}}<br />({{Il ne sera pas possible d'annuler une fois l'opération lancée}})", function(result) {
 		if (!result)
 			return;
 		// $('a.bt_plugin_conf_view_log[data-log=jMQTT]').click();
@@ -366,7 +366,8 @@ $('#bt_backupJMqttRestore').on('click', function () {
 	if (!$('#sel_backupJMqtt option:selected').length)
 		return;
 	var btn = $(this)
-	bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + '</b> ?', function(result) {
+	bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + "</b> ?<br />"
+					+ "({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})", function(result) {
 		if (!result)
 			return;
 		jmqtt_config.toggleIco(btn);
@@ -407,8 +408,8 @@ $('#bt_backupJMqttUpload').fileupload({
 			$.fn.showAlert({message: data.result.result, level: 'danger'});
 		} else {
 			var oVal = data.result.result.name;
-			var oText = data.result.result.name + ' (' + data.result.result.size +')';
-			$('#sel_backupJMqtt').append('<option selected value="' + oVal + '">' + oText + '</option>');
+			var oSize = ' (' + data.result.result.size +')';
+			$('#sel_backupJMqtt').append('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
 			$.fn.showAlert({message: '{{Fichier(s) ajouté(s) avec succès}}', level: 'success'})
 		}
 		$('#bt_backupJMqttUpload').val(null);
