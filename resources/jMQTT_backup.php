@@ -139,7 +139,7 @@ function export_history() {
 function export_plugin() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up jMQTT files...");
 	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup/jMQTT 2>&1 > /dev/null');
-	shell_exec("tar -cf - -C ".__DIR__."/.. --exclude './data/backup/*' . | tar -xC ".__DIR__."/../data/backup/backup/jMQTT 2>&1 > /dev/null");
+	shell_exec("tar -cf - -C ".__DIR__."/.. --exclude './data/backup/*' --exclude './.git' . | tar -xC ".__DIR__."/../data/backup/backup/jMQTT 2>&1 > /dev/null");
 	print("                            [ OK ]\n");
 }
 
@@ -268,8 +268,12 @@ function backup_main() {
 	}
 
 	if (isset($options['all']) || isset($options['Q'])) {
-		export_mosquitto();
-		$packages[] = 'mosquitto';
+		if (file_exists('/etc/mosquitto')) {
+			export_mosquitto();
+			$packages[] = 'mosquitto';
+		} else {
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Mosquitto folder in /etc is missing             [ SKIPPED ]\n");
+		}
 	}
 
 	file_put_contents(__DIR__.'/../data/backup/backup/metadata.json', json_encode(export_metadata($packages), JSON_UNESCAPED_UNICODE));
