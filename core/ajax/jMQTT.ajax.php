@@ -260,15 +260,38 @@ try {
 			throw new Exception(__('Merci de fournir le fichier à restorer', __FILE__));
 
 		$backup_dir = realpath(__DIR__ . '/../../data/backup');
-		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
+		if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))
+			throw new Exception(__('Impossible de restorer le fichier fourni', __FILE__));
 
-		if (in_array($_backup, $backups) && file_exists($backup_dir.'/'.$_backup))
+		$msg = sprintf(__("Restauration de la sauvegarde %s...", __FILE__), $_backup);
+		@message::removeAll('jMQTT', 'backupRestoreEnded');
+		@message::add('jMQTT', $msg, '', 'backupRestoreStarted');
+		jMQTT::logger('warning', $msg);
+		// Use a temporary log file for restoration
+		file_put_contents(log::getPathToLog('tmp_jMQTT'), date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "\n");
+		// exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . );
 
-		jMQTT::logger('info', sprintf(__("Restauration de la sauvegarde '%s' lancée...", __FILE__), $_backup));
-		sleep(10);
-		// exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php --all ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('jMQTT') . ' 2>&1 &');
-		jMQTT::logger('info', sprintf(__("Restauration de la sauvegarde effectuée", __FILE__)));
-		ajax::success();
+		// Launch restoration
+		exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php --all ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
+
+		// Append temporary log to jMQTT log
+		file_put_contents(log::getPathToLog('jMQTT'), file_get_contents(log::getPathToLog('tmp_jMQTT')), FILE_APPEND);
+		// exec('cat ' . log::getPathToLog('tmp_jMQTT') . ' >> ' . log::getPathToLog('jMQTT'));
+		unlink(log::getPathToLog('tmp_jMQTT'));
+		// exec('rm ' . log::getPathToLog('tmp_jMQTT'));
+		@message::removeAll('jMQTT', 'backupRestoreStarted');
+		if (!$res) {
+			$msg = sprintf(__("Restauration de la sauvegarde %s effectuée avec succès", __FILE__), $_backup);
+			file_put_contents(log::getPathToLog('jMQTT'), date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "\n", FILE_APPEND);
+			// exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . log::getPathToLog('jMQTT'));
+			ajax::success();
+		} else {
+			$msg = sprintf(__("Échec de la restauration de %s, consultez le log jMQTT", __FILE__), $_backup);
+			file_put_contents(log::getPathToLog('jMQTT'), date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $msg . "\n", FILE_APPEND);
+			// exec("echo '" . date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $msg . "' >> " . log::getPathToLog('jMQTT'));
+			@message::add('jMQTT', $msg, '', 'backupRestoreEnded');
+			throw new Exception($msg);
+		}
 	}
 
 	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
