@@ -4,12 +4,12 @@
 /*
 Backup tar.gz structure:
  - backup/metadata.json     <- backup descriptor json file
- - backup/index.json          <- id to name of eqLogic and cmd index json file
+ - backup/index.json        <- id to name of eqLogic and cmd index json file
  - backup/data.json         <- eqLogic and cmd backup json file
  - backup/history.json      <- cmd history backup json file
  - backup/jMQTT/            <- jMQTT files full backup folder
  - backup/logs/             <- jMQTT logs full backup folder
- - backup/mosquitto/        <- mosquitto config full backup folder
+ - backup/mosquitto/        <- mosquitto config full folder backup
 */
 
 require_once __DIR__ . '/../../../core/php/core.inc.php';
@@ -21,15 +21,15 @@ if ($user != 'www-data' || !jeedom::isCapable('sudo')) {
 }
 
 function export_writePidFile() {
-	echo "Writing PID file...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Writing PID file...");
 	file_put_contents(__DIR__.'/../data/backup/backup.pid', posix_getpid());
-	echo "                                  [ OK ]\n";
+	print("                                  [ OK ]\n");
 }
 
 function export_deletePidFile() {
-	echo "Removing PID file...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing PID file...");
 	shell_exec(system::getCmdSudo().'rm -rf '.__DIR__.'/../data/backup/backup.pid 2>&1 > /dev/null');
-	echo "                                 [ OK ]\n";
+	print("                                 [ OK ]\n");
 }
 
 // Check if another backup is already running
@@ -45,36 +45,36 @@ function export_isRunning() {
 
 // [-cC] clean old backups and leftovers
 function export_cleanup($limit = 5) { // 5 backups max
-	echo "Cleaning up... ";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Cleaning up... ");
 	// Remove leftovers of a previously running backup
 	shell_exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../data/backup/jMQTT_backingup.tgz '.__DIR__.'/../data/backup/backup 2>&1 > /dev/null');
 	// Search for existing backups
 	$backup_files = glob(__DIR__.'/../data/backup/jMQTT_*_*.tgz');
 	// Only if more backups than the limit
 	if (count($backup_files) <= $limit) {
-		echo "                                      [ OK ]\n";
+		print("                                      [ OK ]\n");
 		return;
 	}
-	echo (count($backup_files) - $limit) . " backup(s) to remove:\n";
+	print((count($backup_files) - $limit) . " backup(s) to remove:\n");
 	// Reverse sort the backup files by name
-	rsort($backup_files, SORT_NUMERIC);
+	rsort($backup_files);
 	// Remove oldest backups until limit is OK
 	while (count($backup_files) > $limit) {
 		$del = array_pop($backup_files);
 		unlink($del);
-		echo "        -> ".basename($del)." removed         [ OK ]\n";
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "               -> ".basename($del)." removed  [ OK ]\n");
 	}
 }
 
 function export_prepare() {
-	echo "Preparing to backup...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to backup...");
 	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup 2>&1 > /dev/null');
-	echo "                               [ OK ]\n";
+	print("                               [ OK ]\n");
 }
 
 // [-I] all used id for eqBroker, eqLogic, cmd
 function export_index() {
-	echo "Generating index file...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating index file...");
 	$res = array('eqLogic' => array(), 'cmd' => array());
 	foreach (eqLogic::byType('jMQTT') as $o)
 		$res['eqLogic'][$o->getId()] = $o->getHumanName();
@@ -82,13 +82,13 @@ function export_index() {
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $o)
 		$res['cmd'][$o->getId()] = $o->getHumanName();
 	// sort($res['cmd']);
-	echo "                             [ OK ]\n";
+	print("                             [ OK ]\n");
 	return $res;
 }
 
 // [-D] backup eqLogic, cmd, cache, plugin config
 function export_data() {
-	echo "Generating Data file...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating Data file...");
 	$res = array();
 
 	$conf = array();
@@ -113,13 +113,13 @@ function export_data() {
 	}
 	$res['cmd']     = $cmds;
 
-	echo "                              [ OK ]\n";
+	print("                              [ OK ]\n");
 	return $res;
 }
 
 // [-H] backup history, historyArch (directly from SQL ?)
 function export_history() {
-	echo "Generating History file...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating History file...");
 	$res = array();
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
 		if ($o->getIsHistorized()) {
@@ -131,84 +131,91 @@ function export_history() {
 			$res[$o->getId()] = $histo;
 		}
 	}
-	echo "                           [ OK ]\n";
+	print("                           [ OK ]\n");
 	return $res;
 }
 
 // [-P] backup jMQTT plugin dir
 function export_plugin() {
-	echo "Backing up jMQTT files...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up jMQTT files...");
 	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup/jMQTT 2>&1 > /dev/null');
 	shell_exec("tar -cf - -C ".__DIR__."/.. --exclude './data/backup/*' . | tar -xC ".__DIR__."/../data/backup/backup/jMQTT 2>&1 > /dev/null");
-	echo "                            [ OK ]\n";
+	print("                            [ OK ]\n");
 }
 
 // [-L] backup jMQTT logs
 function export_logs() {
-	echo "Backing up jMQTT log files...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up jMQTT log files...");
 	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup/logs 2>&1 > /dev/null');
 	shell_exec('cp -a '.__DIR__.'/../../../log/jMQTT* '.__DIR__.'/../data/backup/backup/logs 2>&1 > /dev/null');
-	echo "                        [ OK ]\n";
+	print("                        [ OK ]\n");
 }
 
 // [-Q] backup Mosquitto config
 function export_mosquitto() {
-	echo "Backing up Mosquitto config...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up Mosquitto config...");
 	// do not put trailing '/' after mosquitto
 	shell_exec(system::getCmdSudo().'cp -a /etc/mosquitto '.__DIR__.'/../data/backup/backup 2>&1 > /dev/null');
 	shell_exec(system::getCmdSudo().'chown -R www-data:www-data '.__DIR__.'/../data/backup/backup/mosquitto');
-	echo "                       [ OK ]\n";
+	print("                       [ OK ]\n");
 }
 
 // system metadata (jeedom id, date, ...)
-function export_metadata($packages) {
-	echo "Generating Metadata file...";
+function export_metadata($packages = []) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating Metadata file...");
 	$res = array();
-	$res['version'] = 1;
 	$res['date'] = date("Y-m-d H:i:s");
 	$res['hardwareKey'] = jeedom::getHardwareKey();
 	$res['hardwareId'] = trim(file_get_contents('/etc/machine-id'));
 	$res['hardwareName'] = jeedom::getHardwareName();
 	$res['distrib'] = system::getDistrib();
-	$data['phpVersion'] = phpversion();
+	$res['phpVersion'] = phpversion();
 	$res['jeedom'] = jeedom::version();
-	$res['lang'] = translate::getLanguage();
+	$res['lang'] = config::byKey('language', 'core', 'fr_FR');
 	$jplugin = update::byLogicalId("jMQTT");
 	$res['source'] = $jplugin->getSource();
 	$res['branch'] = $jplugin->getConfiguration('version', 'unknown');
 	$res['localVersion'] = $jplugin->getLocalVersion();
 	$res['remoteVersion'] = $jplugin->getRemoteVersion();
+	try {
+		$info = file_get_contents(__DIR__ . '/../plugin_info/info.json');
+		$info_json = json_decode($info, true);
+		$res['pluginVersion'] = $info_json['pluginVersion'];
+	} catch (Throwable $e) {
+		print("\n" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Warning: Could not get version number from info.json, this should not be possible!\n");
+		$res['pluginVersion'] = -1;
+	}
 	$res['configVersion'] = config::byKey('version', 'jMQTT', -1);
 	$res['packages'] = $packages;
-	echo "                          [ OK ]\n";
+	print("                          [ OK ]\n");
 	return $res;
 }
 
 // [-A] make an archive of the backed up data
 function export_archive() {
 	$date = date("Ymd_His");
-	echo "Creating archive jMQTT_".$date.".tgz...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating archive jMQTT_".$date.".tgz...");
 	shell_exec(system::getCmdSudo().'tar -zcf '.__DIR__.'/../data/backup/jMQTT_backingup.tgz -C '.__DIR__.'/../data/backup backup/');
 	shell_exec(system::getCmdSudo().'chown www-data:www-data '.__DIR__.'/../data/backup/jMQTT_backingup.tgz');
 	shell_exec('mv '.__DIR__.'/../data/backup/jMQTT_backingup.tgz '.__DIR__.'/../data/backup/jMQTT_'.$date.'.tgz');
-	echo "        [ OK ]\n";
+	print("        [ OK ]\n");
 }
 
 // [-h --help] display help
 function export_help() {
-	echo "Usage: php " . basename(__FILE__) . " <OPTION>\n";
-	echo "Backup various data of jMQTT, sequentially, in this order\n\n";
-	echo "  --all       equivalent to -cIDHLQAC\n";
-	echo "  -c          clean backup up leftovers before\n";
-	echo "  -I          backup all used id for eqBroker, eqLogic, cmd\n";
-	echo "  -D          backup all eqLogic, cmd, cache, plugin config\n";
-	echo "  -H          backup all cmd history, historyArch\n";
-	echo "  -P          backup jMQTT plugin files\n";
-	echo "  -L          backup jMQTT logs\n";
-	echo "  -Q          backup Mosquitto config\n";
-	echo "  -A          make an archive of the backed up data\n";
-	echo "  -C          clean backup up leftovers after\n";
-	echo "  -h, --help  display this help message\n";
+	print("Usage: php " . basename(__FILE__) . " <OPTION>\n");
+	print("Backup various data of jMQTT, sequentially, in this order\n\n");
+	print("  --all       equivalent to -cIDHLQAC\n");
+	print("  -c          clean backup up leftovers before\n");
+	print("  -I          backup all used id for eqBroker, eqLogic, cmd\n");
+	print("  -D          backup all eqLogic, cmd, cache, plugin config\n");
+	print("  -H          backup all cmd history, historyArch\n");
+	print("  -P          backup jMQTT plugin files\n");
+	print("  -L          backup jMQTT logs\n");
+	print("  -Q          backup Mosquitto config\n");
+	print("  -A          make an archive of the backed up data\n");
+	print("  -C          clean backup up leftovers after\n");
+	print("  -h, --help  display this help message\n");
 }
 
 
@@ -224,8 +231,8 @@ function backup_main() {
 		print("Backup is already running, please wait until it ends, aborting!\n");
 		exit(1);
 	}
-	print("###########################################################\n");
-	print("Starting jMQTT backup...\n");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "###########################################################\n");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT backup...\n");
 
 	export_writePidFile();
 
@@ -275,8 +282,8 @@ function backup_main() {
 
 	export_deletePidFile();
 
-	print("End of jMQTT backup.\n");
-	print("###########################################################\n");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "End of jMQTT backup.\n");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "###########################################################\n");
 
 	exit(0);
 }
