@@ -1,211 +1,29 @@
 <?php
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // jMQTT_restore.php
-
-// Old export functions
-function full_export_old() {
-	$returns = array();
-	foreach (eqLogic::byType('jMQTT') as $eq) {
-		$exp = $eq->toArray();
-		$exp['commands'] = array();
-		foreach ($eq->getCmd() as $cmd)
-			$exp['commands'][] = $cmd->full_export();
-		$returns[] = $exp;
-	}
-	function fsort($a, $b) {
-		$x = ((array_key_exists('configuration', $a) && array_key_exists('type', $a['configuration'])) ?
-				$a['configuration']['type'] : "z").$a['id'];
-		$y = ((array_key_exists('configuration', $b) && array_key_exists('type', $b['configuration'])) ?
-				$b['configuration']['type'] : "z").$b['id'];
-		return strcmp($x, $y);
-	}
-	usort($returns, 'fsort'); // Put the Broker first (needed)
-	return $returns;
-}
-
-// Old import function 1
-function full_import_old1($data) {
-	$eq_names = array();
-	foreach (eqLogic::byType('jMQTT') as $eq) {
-		$eq_names[] = $eq->getName();
-	}
-	$old_eqs  = array();
-	$old_cmds = array();
-	$link_actions = array();
-	foreach ($data as $data_eq) {
-		// Handle eqLogic
-		$link_infos = array();
-		$link_names = array();
-		$eq = new jMQTT();
-		utils::a2o($eq, $data_eq);
-		$eq->setId('');
-		if ($eq->getType() == jMQTT::TYP_BRK) {
-			$eq->setIsEnable('0');
-		} else {
-			$eq->setBrkId($old_eqs[$eq->getBrkId()]->getId());
-		}
-		$eq->setObject_id('');
-		if (in_array($eq->getName(), $eq_names)) {
-			$i = 2;
-			while (in_array($data_eq['name'].'_'.$i, $eq_names))
-				$i++;
-			$eq->setName($data_eq['name'].'_'.$i);
-		}
-		$old_eqs[$data_eq['id']] = $eq;
-		$eq->save();
-
-		// Handle cmd
-		if (isset($data_eq['commands'])) {
-			$cmd_order = 0;
-			foreach ($data_eq['commands'] as $data_cmd) {
-				try {
-					$cmd = new jMQTTCmd();
-					utils::a2o($cmd, $data_cmd);
-					$cmd->setId('');
-					$cmd->setOrder($cmd_order);
-					$cmd->setEqLogic_id($eq->getId());
-					//$cmd->setConfiguration('logicalId', $cmd->getLogicalId());
-					$cmd->setConfiguration('autoPub', 0);
-					$cmd->save();
-					$old_cmds[$data_cmd['id']] = $cmd;
-					$link_names[$cmd->getName()] = $cmd->getId();
-					if (isset($data_cmd['value']) && $data_cmd['value'] != '')
-						$link_infos[] = $cmd;
-					if (isset($data_cmd['configuration']['request']) && $data_cmd['configuration']['request'] != '')
-						$link_actions[] = $cmd;
-					$cmd_order++;
-				} catch (Exception $exc) {
-					// TODO
-				}
-			}
-		}
-		foreach($link_infos as $cmd) {
-			if (!isset($link_names[$cmd->getValue()]))
-				continue;
-			$id = $link_names[$cmd->getValue()];
-			$eq->log('debug', 'full_import: Replacing in cmd='.$cmd->getId().' value='.$cmd->getValue().' by '.$id);
-			$cmd->setValue($id);
-			$cmd->save();
-		}
-	}
-	foreach($link_actions as $cmd) {
-		$req = $cmd->getConfiguration('request', '');
-		preg_match_all("/#([0-9]*)#/", $req, $matches);
-		$req_cmds = array_unique($matches[1]);
-		if (count($req_cmds) == 0)
-			continue;
-		foreach ($req_cmds as $req_cmd) {
-			if (isset($old_cmds[$req_cmd]))
-				$req = str_replace('#'.$req_cmd.'#', '#'.(($old_cmds[$req_cmd])->getId()).'#', $req);
-		}
-		$cmd->getEqLogic()->log('debug', 'full_import: Replacing in cmd='.$cmd->getId().' request='.$cmd->getConfiguration('request', '').' by '.$req);
-		$cmd->setConfiguration('request', $req);
-		$cmd->save();
-	}
-}
-
-// Old import function 2
-function full_import_old2($data) {
-	global $scenario;
-
-	$eq_names = array();
-	foreach (eqLogic::byType('jMQTT') as $eq) {
-		$eq_names[] = $eq->getName();
-	}
-	$old_eqs  = array();
-	$old_cmds = array();
-	$link_actions = array();
-	foreach ($data as $data_eq) {
-		// Handle eqLogic
-		$link_infos = array();
-		$link_names = array();
-		$eq = new jMQTT();
-		utils::a2o($eq, $data_eq);
-		$eq->setId('');
-		if ($eq->getType() == jMQTT::TYP_BRK) {
-			$eq->setIsEnable('0');
-		} else {
-			$eq->setBrkId($old_eqs[$eq->getBrkId()]->getId());
-		}
-		$eq->setObject_id('');
-		if (in_array($eq->getName(), $eq_names)) {
-			$i = 2;
-			while (in_array($data_eq['name'].'_'.$i, $eq_names)) {
-				$i++;
-			}
-			$eq->setName($data_eq['name'].'_'.$i);
-		}
-		$old_eqs[$data_eq['id']] = $eq;
-		$eq->save();
-
-		// Handle cmd
-		if (isset($data_eq['commands'])) {
-			$cmd_order = 0;
-			foreach ($data_eq['commands'] as $data_cmd) {
-				try {
-					$cmd = new jMQTTCmd();
-					utils::a2o($cmd, $data_cmd);
-					$cmd->setId('');
-					$cmd->setOrder($cmd_order);
-					$cmd->setEqLogic_id($eq->getId());
-					//$cmd->setConfiguration('logicalId', $cmd->getLogicalId());
-					$cmd->setConfiguration('autoPub', 0);
-					$cmd->save();
-					$old_cmds[$data_cmd['id']] = $cmd;
-
-					$link_names[$cmd->getName()] = $cmd->getId();
-					if (isset($data_cmd['value']) && $data_cmd['value'] != '') {
-						$link_infos[] = $cmd;
-					}
-					if (isset($data_cmd['configuration']['request']) && $data_cmd['configuration']['request'] != '') {
-						$link_actions[] = $cmd;
-					}
-					$cmd_order++;
-				} catch (Exception $exc) {
-					// TODO
-				}
-			}
-		}
-
-		foreach($link_infos as $cmd) {
-			if (!isset($link_names[$cmd->getValue()]))
-				continue;
-			$id = $link_names[$cmd->getValue()];
-			$scenario->setLog('Replacing in cmd='.$cmd->getId().' value='.$cmd->getValue().' by '.$id);
-			$cmd->setValue($id);
-			$cmd->save();
-		}
-	}
-	foreach($link_actions as $cmd) {
-		$req = $cmd->getConfiguration('request', '');
-		preg_match_all("/#([0-9]*)#/", $req, $matches);
-		$req_cmds = array_unique($matches[1]);
-		if (count($req_cmds) == 0)
-			continue;
-		foreach ($req_cmds as $req_cmd) {
-			if (isset($old_cmds[$req_cmd])) {
-				$req = str_replace('#'.$req_cmd.'#', '#'.(($old_cmds[$req_cmd])->getId()).'#', $req);
-			}
-		}
-		$scenario->setLog('Replacing in cmd='.$cmd->getId().' request='.$cmd->getConfiguration('request', '').' by '.$req);
-		$cmd->setConfiguration('request', $req);
-		$cmd->save();
-	}
-}
+/*
+Backup tar.gz structure:
+ - backup/metadata.json     <- backup descriptor json file
+ - backup/index.json        <- id to name of eqLogic and cmd index json file
+ - backup/data.json         <- eqLogic and cmd backup json file
+ - backup/history.json      <- cmd history backup json file
+ - backup/jMQTT/            <- jMQTT files full backup folder
+ - backup/logs/             <- jMQTT logs full backup folder
+ - backup/mosquitto/        <- mosquitto config full folder backup
+*/
 
 //
 //
 // TODO (important) Still work in progress
-// - All functions bellow are fonctional
-// - Mutate into a class?
 // - Warning: Shouldn't we call jMQTT_restore.php from the backup?
 // - Rename --force -> --reconciliate?
 // - Documentation
 //
 // Algorithm:
+/*
 // - Extract archive
 //
-// - Check this hardwareId against the backup hardwareId
+// - Check this hardwareKey against the backup hardwareKey
 //   - If no match stop (FAIL)
 //   - If --force then use old import_all method? -> TODO
 //
@@ -249,31 +67,30 @@ function full_import_old2($data) {
 // - Move jMQTT_restore log file in log folder
 // - Delete temp folder
 //
-//
-//
+*/
 
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 require_once __DIR__ . '/jMQTT_backup.php';
 
 function restore_help() {
-	echo "Usage: php " . basename(__FILE__) . " [OPTIONS]\n";
-	echo "Restore a backup of jMQTT inside Jeedom.\n";
-	echo "Defaults: `jMQTT/backup.tgz` file will be used ;\n";
-	echo "          Newer jMQTT eqLogic or cmd than the backup, it will be keept ;\n";
-	echo "          Newer cmd history than the backup, it will be keept ;\n";
-	echo "          jMQTT log files will remain the same (untouched) ;\n";
-	echo "          Mosquitto configuration will remain the same (untouched) ;\n\n";
-	echo "  --apply         apply the backup, this flag is REQUIRED to acctually\n";
-	echo "                  change any data on this Jeedom/jMQTT system\n";
-	echo "  --file=<FILE>   restore a specific backup file\n";
-	// echo "  --do-cleanup    delete all jMQTT eqLogic and cmd created since backup\n";
-	// echo "  --do-history    restore previous history (do not preserve newer history)\n";
-	// echo "  --do-logs       restore previous log files (do not preserve newer ones)\n";
-	// echo "  --do-mosquitto  restore Mosquitto config folders/files\n";
-	// echo "  --force         (not recommended) uses names to to map eqLogic and cmd,\n";
-	// echo "                  DOES NOT CHECK if system hardwareKey match with backup\n";
-	// echo "  --verbose       display more information about the restore process\n";
-	echo "  -h, --help      display this help message\n";
+	print("Usage: php " . basename(__FILE__) . " [OPTIONS]\n");
+	print("Restore a backup of jMQTT inside Jeedom.\n");
+	print("Defaults: `jMQTT/backup.tgz` file will be used ;\n");
+	print("          Newer jMQTT eqLogic or cmd than the backup, it will be keept ;\n");
+	print("          Newer cmd history than the backup, it will be keept ;\n");
+	print("          jMQTT log files will remain the same (untouched) ;\n");
+	print("          Mosquitto configuration will remain the same (untouched) ;\n\n");
+	print("  --apply         apply the backup, this flag is REQUIRED to acctually\n");
+	print("                  change any data on this Jeedom/jMQTT system\n");
+	print("  --file=<FILE>   restore a specific backup file\n");
+	// print("  --do-cleanup    delete all jMQTT eqLogic and cmd created since backup\n");
+	// print("  --do-history    restore previous history (do not preserve newer history)\n");
+	// print("  --do-logs       restore previous log files (do not preserve newer ones)\n");
+	// print("  --do-mosquitto  restore Mosquitto config folders/files\n");
+	// print("  --force         (not recommended) uses names to to map eqLogic and cmd,\n");
+	// print("                  DOES NOT CHECK if system hardwareKey match with backup\n");
+	// print("  --verbose       display more information about the restore process\n");
+	print("  -h, --help      display this help message\n");
 }
 
 function restore_options() {
@@ -296,91 +113,151 @@ function restore_options() {
 	return $param;
 }
 
-function restore_getCurrentMI() {
-	echo "Getting current install info...";
-	$meta = export_metadata();
-	$ids  = export_ids();
-	echo "  [ OK ]\n";
-	return array('meta' => $meta, 'ids' => $ids);
-}
-
-function restore_extactBackup($file) {
-	echo "Extracting backup file...";
+// Pass by value current metadata, ids and a new temporary folder to extact the backup
+function restore_prepare(&$initial_metadata, &$initial_indexes, &$tmp_dir) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to restore...");
+	$initial_metadata = export_metadata();
+	$initial_indexes  = export_index();
 	$tmp_dir = shell_exec('mktemp -d');
+	print("                               [ OK ]\n");
+}
+
+// Extract the backup file (with root privileges) into temporary folder
+function restore_extactBackup($file, $tmp_dir) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Extracting archive ".$file."...");
 	shell_exec('tar -zxpf ' . $file . ' --directory ' . $tmp_dir);
-	echo "        [ OK ]\n";
-	return $tmp_dir;
+	print("      [ OK ]\n");
 }
 
-function restore_installBackupFolder($plugin_dir, $tmp_dir) {
-	// Cleanup
-	echo "Cleaning up backup folder...";
-	shell_exec('rm -rf '.$tmp_dir.'/jMQTT/backup.*.json '.$tmp_dir.'/jMQTT/mosquitto '.$tmp_dir.'/jMQTT/logs');
-	shell_exec('rm -rf '.$tmp_dir.'/jMQTT/jMQTT_backup_running.tgz '.$tmp_dir.'/jMQTT/backup.tgz');
-	echo "     [ OK ]\n";
-
-	echo "Installing backup folder...";
-	$cwd = __DIR__; // We are working in a folder that is going to be removed
-	chdir($tmp_dir); // Go to an existing folder
-	// shell_exec('mv '.$plugin_dir.'/jMQTT '.$tmp_dir.'/jMQTT_old');
-	shell_exec('rm -rf '.$plugin_dir.'/jMQTT');
-	shell_exec('mv '.$tmp_dir.'/jMQTT '.$plugin_dir.'');
-	chdir($cwd); // Switch back to jMQTT/resources/ folder
-	echo "      [ OK ]\n";
-}
-
-function restore_removeTmpDir($tmp_dir) {
-	echo "Removing backup directory...";
-	if ($tmp_dir != '' && $tmp_dir != '/')
-		shell_exec('rm -rf ' . $tmp_dir);
-	echo "     [ OK ]\n";
-}
-
-
+// Return Metadata from the extacted backup temporary folder
 function restore_getBackupM($tmp_dir) {
-	echo "Getting backup jMQTT Metadata...";
-	$meta = json_decode(file_get_contents($tmp_dir . '/jMQTT/backup.meta.json'), JSON_UNESCAPED_UNICODE);
-	echo " [ OK ]\n";
-	return $meta;
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Metadata...");
+	$metadata = json_decode(file_get_contents($tmp_dir . '/backup/metadata.json'), JSON_UNESCAPED_UNICODE);
+	print(" [ OK ]\n");
+	return $metadata;
 }
 
+// Return Indexes from the extacted backup temporary folder
 function restore_getBackupI($tmp_dir) {
-	echo "Getting backup jMQTT Ids...";
-	$ids  = json_decode(file_get_contents($tmp_dir . '/jMQTT/backup.ids.json'), JSON_UNESCAPED_UNICODE);
-	echo "      [ OK ]\n";
-	return $ids;
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Index...");
+	$index  = json_decode(file_get_contents($tmp_dir . '/backup/index.json'), JSON_UNESCAPED_UNICODE);
+	print("    [ OK ]\n");
+	return $index;
 }
 
+// Return Data from the extacted backup temporary folder
 function restore_getBackupD($tmp_dir) {
-	echo "Getting backup jMQTT Data...";
-	$data = json_decode(file_get_contents($tmp_dir . '/jMQTT/backup.data.json'), JSON_UNESCAPED_UNICODE);
-	echo "     [ OK ]\n";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Data...");
+	$data = json_decode(file_get_contents($tmp_dir . '/backup/data.json'), JSON_UNESCAPED_UNICODE);
+	print("     [ OK ]\n");
 	return $data;
 }
 
+// Return History from the extacted backup temporary folder
 function restore_getBackupH($tmp_dir) {
-	echo "Getting backup jMQTT History...";
-	$hist = json_decode(file_get_contents($tmp_dir . '/jMQTT/backup.hist.json'), JSON_UNESCAPED_UNICODE);
-	echo "  [ OK ]\n";
-	return $hist;
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT History...");
+	$history = json_decode(file_get_contents($tmp_dir . '/backup/history.json'), JSON_UNESCAPED_UNICODE);
+	print("  [ OK ]\n");
+	return $history;
 }
 
+// Restore jMQTT plugin files, keeping existing jMQTT backups and .git folder
+function restore_plugin($tmp_dir) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Saving existing jMQTT backups...");
+	exec('cp -a '.__DIR__.'/../data/backup/* '.$tmp_dir.'/backup/jMQTT/data/backup 2>&1 > /dev/null');
+	if (file_exists(__DIR__.'/../.git'))
+		exec('cp -a '.__DIR__.'/../.git '.$tmp_dir.'/backup/jMQTT 2>&1 > /dev/null');
+	print("                     [ OK ]\n");
 
-function restore_checkHwId($current, $old, $force) {
-	echo "Verifing hardware keys...";
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring jMQTT plugin files...");
+	$plugins_dir = realpath(__DIR__.'/../..');
+	$cwd = getcwd(); // We may be working in a folder that is going to be removed
+	chdir($tmp_dir); // Go to an existing folder
+
+	// exec('mv '.$plugins_dir.'/jMQTT '.$tmp_dir.'/jMQTT_old');
+	exec('rm -rf '.$plugins_dir.'/jMQTT 2>&1 > /dev/null');
+	exec('mv '.$tmp_dir.'/backup/jMQTT '.$plugins_dir.' 2>&1 > /dev/null');
+
+	chdir($cwd); // Switch back to previous cwd folder
+	print("                       [ OK ]\n");
+}
+
+// Restore jMQTT log files
+function restore_logs($tmp_dir) {
+	$logs_dir = dirname(realpath(log::getPathToLog('jMQTT')));
+
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Deleting jMQTT log files...");
+	exec('rm -rf '.$logs_dir.'/jMQTT* 2>&1 > /dev/null');
+	print("                                   [ OK ]\n");
+
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring jMQTT log files...");
+	exec('cp -a '.$tmp_dir.'/backup/logs/jMQTT* '.$logs_dir.' 2>&1 > /dev/null');
+	print("                         [ OK ]\n");
+}
+
+// Restore Mosquitto service files
+function restore_mosquitto($tmp_dir) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping Mosquitto Service...");
+	exec(system::getCmdSudo() . ' systemctl stop mosquitto');
+	print("                        [ OK ]\n");
+
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring Mosquitto config...");
+	// do not put trailing '/' after mosquitto
+	exec(system::getCmdSudo().'rm -rf /etc/mosquitto 2>&1 > /dev/null');
+	exec(system::getCmdSudo().'cp -a '.$tmp_dir.'/backup/mosquitto /etc/mosquitto 2>&1 > /dev/null');
+	exec(system::getCmdSudo().'chown -R root:root /etc/mosquitto 2>&1 > /dev/null');
+	print("                        [ OK ]\n");
+
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting Mosquitto Service...");
+	exec(system::getCmdSudo() . ' systemctl start mosquitto');
+	print("                        [ OK ]\n");
+}
+
+// Remove the temporary folder where backup has been extracted
+function restore_removeTmpDir($tmp_dir) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing backup directory...");
+	if ($tmp_dir != '' && $tmp_dir != '/')
+		shell_exec('rm -rf ' . $tmp_dir);
+	print("     [ OK ]\n");
+}
+
+// Compare hardware keys
+function restore_checkHwKey($current, $old, $force) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Verifing hardware keys...");
 	if ($current['hardwareKey'] == $old['hardwareKey']) {
-		echo "        [ OK ]\n";
+		print("        [ OK ]\n");
 	} elseif ($force) {
-		echo "        [ FORCED ]\n";
-		echo "FAILURE: Cannot restore a backup on a system with a different hardwareKey yet!\n"; // TODO
+		print("    [ FORCED ]\n");
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') .print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Cannot restore a backup on a system with a different hardwareKey yet!\n"); // TODO
 		exit(3);
 	} else {
-		echo "        [ FAIL ]\n";
-		echo "FAILURE: Cannot restore this backup on a system with a different hardwareKey!\n";
+		print("      [ FAIL ]\n");
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Cannot restore this backup on a system with a different hardwareKey!\n");
 		exit(3);
 	}
 }
 
+
+// Old export functions
+function full_export_old() {
+	$returns = array();
+	foreach (eqLogic::byType('jMQTT') as $eq) {
+		$exp = $eq->toArray();
+		$exp['commands'] = array();
+		foreach ($eq->getCmd() as $cmd)
+			$exp['commands'][] = $cmd->full_export();
+		$returns[] = $exp;
+	}
+	function fsort($a, $b) {
+		$x = ((array_key_exists('configuration', $a) && array_key_exists('type', $a['configuration'])) ?
+				$a['configuration']['type'] : "z").$a['id'];
+		$y = ((array_key_exists('configuration', $b) && array_key_exists('type', $b['configuration'])) ?
+				$b['configuration']['type'] : "z").$b['id'];
+		return strcmp($x, $y);
+	}
+	usort($returns, 'fsort'); // Put the Broker first (needed)
+	return $returns;
+}
 
 // TODO (important) Rework : old function that imports as new all eq/cmd (unwanted in the restore version)
 function full_import($data) {
@@ -438,6 +315,7 @@ function full_import($data) {
 					}
 					$cmd_order++;
 				} catch (Exception $exc) {
+					// TODO
 				}
 			}
 		}
@@ -446,7 +324,7 @@ function full_import($data) {
 			if (!isset($link_names[$cmd->getValue()]))
 				continue;
 			$id = $link_names[$cmd->getValue()];
-	 		echo 'Replacing in cmd='.$cmd->getId().' value='.$cmd->getValue().' by '.$id."\n";
+	 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . 'Replacing in cmd='.$cmd->getId().' value='.$cmd->getValue().' by '.$id."\n");
 			$cmd->setValue($id);
 			$cmd->save();
 		}
@@ -462,7 +340,7 @@ function full_import($data) {
 				$req = str_replace('#'.$req_cmd.'#', '#'.(($old_cmds[$req_cmd])->getId()).'#', $req);
 			 }
 		}
-		echo 'Replacing in cmd='.$cmd->getId().' request='.$cmd->getConfiguration('request', '').' by '.$req."\n";
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . 'Replacing in cmd='.$cmd->getId().' request='.$cmd->getConfiguration('request', '').' by '.$req."\n");
 		$cmd->setConfiguration('request', $req);
 		$cmd->save();
 	}
@@ -472,20 +350,31 @@ function full_import($data) {
 function restore_main() {
 	global $argv;
 	$param = restore_options();
-	echo json_encode($param);
-	echo"\n";
-
-	if (!is_readable($param['file'])) {
-		echo "Could not open ".$param['file']." file for reading.\n";
-		restore_help();
-		exit(1);
-	}
+	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Options: " . json_encode($param) . "\n"); // TODO Remove debug
 
 	if (count($argv) == 1 || $param['help']) {
 		restore_help();
 		exit(0);
 	}
 
+	if (!is_readable($param['file'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Could not open ".$param['file']." file for reading.\n");
+		restore_help();
+		exit(1);
+	}
+
+	if (export_isRunning()) {
+		print(date('[Y-m-d H:i:s][[\E\R\R\O\R] : ') ."Backup is already running, please wait until it ends, aborting!\n");
+		exit(1);
+	}
+
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') ."###########################################################\n");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') ."Starting to restore jMQTT...\n");
+
+	export_writePidFile();
+
+	// TODO DEBUG remove when restore ready
+	sleep(3);
 
 	// if (isset($options['all']))
 
@@ -498,9 +387,12 @@ function restore_main() {
 	// if (isset($options['all']) || isset($options['H']))
 
 
+	export_deletePidFile();
 
-	// Failsafe while devlopping
-	// exit(128);
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "End of jMQTT restore.\n");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "###########################################################\n");
+
+	exit(0);
 }
 
 if (php_sapi_name() == 'cli')
