@@ -198,12 +198,12 @@ try {
 	}
 
 	if (init('action') == 'mosquittoReStart') {
-		shell_exec(system::getCmdSudo() . ' systemctl restart mosquitto');
+		exec(system::getCmdSudo() . ' systemctl restart mosquitto');
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoStop') {
-		shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
+		exec(system::getCmdSudo() . ' systemctl stop mosquitto');
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 
@@ -247,9 +247,7 @@ try {
 			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
 
 		$backup_dir = realpath(__DIR__ . '/../../data/backup');
-		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
-
-		if (in_array($_backup, $backups) && file_exists($backup_dir.'/'.$_backup))
+		if (in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))) && file_exists($backup_dir.'/'.$_backup))
 			unlink($backup_dir.'/'.$_backup);
 		else
 			throw new Exception(__('Impossible de supprimer le fichier', __FILE__));
@@ -259,7 +257,7 @@ try {
 	if (init('action') == 'backupRestore') {
 		$_backup = init('file');
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
-			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
+			throw new Exception(__('Merci de fournir le fichier à restorer', __FILE__));
 
 		$backup_dir = realpath(__DIR__ . '/../../data/backup');
 		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
