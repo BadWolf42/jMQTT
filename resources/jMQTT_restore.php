@@ -12,119 +12,27 @@ Backup tar.gz structure:
  - backup/mosquitto/        <- mosquitto config full folder backup
 */
 
-//
-//
-// TODO (important) Still work in progress
-// - Warning: Shouldn't we call jMQTT_restore.php from the backup?
-// - Rename --force -> --reconciliate?
-// - Documentation
-//
-// Algorithm:
-/*
-// - Extract archive
-//
-// - Check this hardwareKey against the backup hardwareKey
-//   - If no match stop (FAIL)
-//   - If --force then use old import_all method? -> TODO
-//
-// - Stop and Disabled Daemon
-//
-// - Check which eqLogic/cmd has been added/removed
-//   -> Confirm all Id from backup ARE NOT used in Jeedom outside of jMQTT
-//      If --force, then try to reconciliate, otherwise FAIL after having listed all issues
-//   -> Match all eqLogic by Id first, continue to match with humainName if --force,
-//   -> Match all cmd by Id first, continue to match with humainName if --force,
-//   -> Display matching result if --verbose
-//
-// - If --apply & --do-cleanup, then simply remove newly added eqLogic/cmd (add to missing)
-//   -> Display removed result if --verbose
-// - Else If only --apply, then Forget about those eqLogic/cmd, they are OK now (considered new)
-//   -> Display all new untouched if --verbose
-//
-// - If --apply, then add missing eqLogic/cmd + chache + their history from backup
-//   -> Use $cmd->addHistoryValue($_value, $_datetime) for history
-//      See if MySQL direct call could be more efficient? needed?
-//   -> Forget about those eqLogic/cmd, they are OK now
-//   -> Display all missing recreated if --verbose
-//
-// - If --apply, then overwrite all matched eqLogic/cmd with their backup + chache
-//   -> Display all overwrote matched eqLogic/cmd if --verbose
-//
-// - If --apply & --do-history, then remove all matched cmd history and import it from the backup
-//   -> Display all overwrote history cmd if --verbose
-//
-// - If --apply & --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
-//
-// - If --apply & --do-mosquitto, then Remove folder /etc/mosquitto and move mosquitto folder from backup
-//
-// - If --apply, then Restore plugin config (no backup of global cache for now. usefull/TODO?)
-//
-// - If --apply, then Delete jMQTT plugin folder
-//     Move backup folder at its place
-//     Delete backup.tgz backup.*.json mosquitto/ logs/ from jMQTT folder
-//
-// - Enable and Start Daemon
-// - Move jMQTT_restore log file in log folder
-// - Delete temp folder
-//
-*/
-
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 require_once __DIR__ . '/jMQTT_backup.php';
 
-function restore_help() {
-	print("Usage: php " . basename(__FILE__) . " [OPTIONS]\n");
-	print("Restore a backup of jMQTT inside Jeedom.\n");
-	print("Defaults: `jMQTT/backup.tgz` file will be used ;\n");
-	print("          Newer jMQTT eqLogic or cmd than the backup, it will be keept ;\n");
-	print("          Newer cmd history than the backup, it will be keept ;\n");
-	print("          jMQTT log files will remain the same (untouched) ;\n");
-	print("          Mosquitto configuration will remain the same (untouched) ;\n\n");
-	print("  --apply         apply the backup, this flag is REQUIRED to acctually\n");
-	print("                  change any data on this Jeedom/jMQTT system\n");
-	print("  --file=<FILE>   restore a specific backup file\n");
-	// print("  --do-cleanup    delete all jMQTT eqLogic and cmd created since backup\n");
-	// print("  --do-history    restore previous history (do not preserve newer history)\n");
-	// print("  --do-logs       restore previous log files (do not preserve newer ones)\n");
-	// print("  --do-mosquitto  restore Mosquitto config folders/files\n");
-	// print("  --force         (not recommended) uses names to to map eqLogic and cmd,\n");
-	// print("                  DOES NOT CHECK if system hardwareKey match with backup\n");
-	// print("  --verbose       display more information about the restore process\n");
-	print("  -h, --help      display this help message\n");
-}
-
-function restore_options() {
-	global $argv;
-
-	$rest = null;
-	$options = getopt("h", array('apply', 'file:', 'do-cleanup', 'do-history', 'do-logs', 'do-mosquitto', 'force', 'verbose', 'help'), $rest);
-
-	$param = array();
-	$param['file'] = (isset($options['file']) && $options['file'] != false) ? $options['file'] : __DIR__ . '/../backup.tgz';
-	$param['help'] = isset($options['h']) || isset($options['help']);
-	$param['apply']     = isset($options['apply']);
-	// $param['clean']     = isset($options['do-cleanup']);
-	// $param['hist']      = isset($options['do-history']);
-	// $param['logs']      = isset($options['do-logs']);
-	// $param['mosquitto'] = isset($options['do-mosquitto']);
-	// $param['force ']    = isset($options['force']);
-	// $param['verbose']   = isset($options['verbose']);
-	$param['other'] = array_slice($argv, $rest);
-	return $param;
-}
+//
+// TODO (important) Still work in progress
+// - Warning: Shouldn't we call jMQTT_restore.php from the backup?
+// - Documentation
+//
 
 // Pass by value current metadata, ids and a new temporary folder to extact the backup
 function restore_prepare(&$initial_metadata, &$initial_indexes, &$tmp_dir) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to restore...");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to restore...\n");
 	$initial_metadata = export_metadata();
 	$initial_indexes  = export_index();
-	$tmp_dir = shell_exec('mktemp -d');
-	print("                               [ OK ]\n");
+	$tmp_dir = trim(shell_exec('mktemp -dt jMQTT.XXXXXX'));
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to restore...                              [ OK ]\n");
 }
 
 // Extract the backup file (with root privileges) into temporary folder
 function restore_extactBackup($file, $tmp_dir) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Extracting archive ".$file."...");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Extracting archive ".basename($file)."...");
 	shell_exec('tar -zxpf ' . $file . ' --directory ' . $tmp_dir);
 	print("      [ OK ]\n");
 }
@@ -133,15 +41,32 @@ function restore_extactBackup($file, $tmp_dir) {
 function restore_getBackupM($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Metadata...");
 	$metadata = json_decode(file_get_contents($tmp_dir . '/backup/metadata.json'), JSON_UNESCAPED_UNICODE);
-	print(" [ OK ]\n");
+	print("                     [ OK ]\n");
 	return $metadata;
+}
+
+// Compare hardware keys
+function restore_checkHwKey($current, $old, $no_hw_check) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Verifing hardware keys...");
+	if ($current['hardwareKey'] == $old['hardwareKey']) {
+		print("                            [ OK ]\n");
+		return true;
+	} elseif ($no_hw_check) {
+		print("                   [ NO HW CHECK ]\n");
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Cannot restore a backup on a system with a different hardwareKey yet!\n"); // TODO
+		return false;
+	} else {
+		print("                        [ FAILED ]\n");
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Cannot restore this backup on a system with a different hardwareKey!\n");
+		return false;
+	}
 }
 
 // Return Indexes from the extacted backup temporary folder
 function restore_getBackupI($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Index...");
 	$index  = json_decode(file_get_contents($tmp_dir . '/backup/index.json'), JSON_UNESCAPED_UNICODE);
-	print("    [ OK ]\n");
+	print("                        [ OK ]\n");
 	return $index;
 }
 
@@ -149,7 +74,7 @@ function restore_getBackupI($tmp_dir) {
 function restore_getBackupD($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Data...");
 	$data = json_decode(file_get_contents($tmp_dir . '/backup/data.json'), JSON_UNESCAPED_UNICODE);
-	print("     [ OK ]\n");
+	print("                         [ OK ]\n");
 	return $data;
 }
 
@@ -157,9 +82,33 @@ function restore_getBackupD($tmp_dir) {
 function restore_getBackupH($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT History...");
 	$history = json_decode(file_get_contents($tmp_dir . '/backup/history.json'), JSON_UNESCAPED_UNICODE);
-	print("  [ OK ]\n");
+	print("                      [ OK ]\n");
 	return $history;
 }
+
+
+// Create a new jMQTT cmd with a specific id
+function createCmdWithId($_id) {
+	try {
+		$sql = 'INSERT INTO `cmd` (`id`,`eqLogic_id`,`eqType`,`isHistorized`,`isVisible`) VALUES (' . $_id . ',0,"jMQTT",0,0)';
+		$res = DB::Prepare($sql, array(), DB::FETCH_TYPE_ROW);
+		return true;
+	} catch (Exception $exc) {
+		return false;
+	}
+}
+
+// Create a new jMQTT eqLogic with a specific id
+function createEqWithId($_id) {
+	try {
+		$sql = 'INSERT INTO `eqLogic` (`id`,`name`,`eqType_name`,`isVisible`,`isEnable`) VALUES (' . $_id . ',"","jMQTT",0,0)';
+		$res = DB::Prepare($sql, array(), DB::FETCH_TYPE_ROW);
+		return true;
+	} catch (Exception $exc) {
+		return false;
+	}
+}
+
 
 // Restore jMQTT plugin files, keeping existing jMQTT backups and .git folder
 function restore_plugin($tmp_dir) {
@@ -218,23 +167,7 @@ function restore_removeTmpDir($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing backup directory...");
 	if ($tmp_dir != '' && $tmp_dir != '/')
 		shell_exec('rm -rf ' . $tmp_dir);
-	print("     [ OK ]\n");
-}
-
-// Compare hardware keys
-function restore_checkHwKey($current, $old, $force) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Verifing hardware keys...");
-	if ($current['hardwareKey'] == $old['hardwareKey']) {
-		print("        [ OK ]\n");
-	} elseif ($force) {
-		print("    [ FORCED ]\n");
-		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') .print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Cannot restore a backup on a system with a different hardwareKey yet!\n"); // TODO
-		exit(3);
-	} else {
-		print("      [ FAIL ]\n");
-		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Cannot restore this backup on a system with a different hardwareKey!\n");
-		exit(3);
-	}
+	print("                         [ OK ]\n");
 }
 
 
@@ -347,54 +280,286 @@ function full_import($data) {
 }
 
 
+function restore_mainlogic(&$options, &$tmp_dir) {
+	$error_code = 0;
+
+	// Get info on current install
+	$initial_metadata = null;
+	$initial_indexes = null;
+	restore_prepare($initial_metadata, $initial_indexes, $tmp_dir);
+	// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Meta: \n" . json_encode($initial_metadata, JSON_PRETTY_PRINT) . "\n"); // TODO Remove debug
+	// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Indexes: \n" . json_encode($initial_indexes, JSON_PRETTY_PRINT) . "\n"); // TODO Remove debug
+	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Temp dir: '" . $tmp_dir . "'\n"); // TODO Remove debug
+
+	// Extact the archive
+	restore_extactBackup($options['file'], $tmp_dir);
+	$backup_dir = $tmp_dir . '/backup';
+	$metadata = restore_getBackupM($tmp_dir);
+	// TODO FAIL if no metadata
+
+	//
+	// Check what packages are included in archive
+	//
+	// if (in_array('plugin', $metadata['packages'])
+
+	// Check this Jeedom hardwareKey against the backup hardwareKey
+	// - If no match stop (FAIL)
+	// - If --no-hw-check then use old full_import method? -> TODO
+	if (!restore_checkHwKey($initial_metadata, $metadata, $options['no-hw-check']))
+		return 3;
+
+
+	// Get indexes from backup
+	$indexes = restore_getBackupI($tmp_dir);
+	// $indexes = array('eqLogic' => array(), 'cmd' => array());
+	// foreach (eqLogic::byType('jMQTT') as $o)
+		// $indexes['eqLogic'][$o->getId()] = $o->getHumanName();
+	// foreach (cmd::searchConfiguration('', 'jMQTT') as $o)
+		// $indexes['cmd'][$o->getId()] = $o->getHumanName();
+
+
+	//
+	// - Check which eqLogic/cmd has been added/removed
+	//   -> Confirm all Id from backup ARE NOT used in Jeedom outside of jMQTT
+	//      If --by-name, then try to reconciliate, otherwise FAIL after having listed all issues
+	//   -> Match all eqLogic by Id first, continue to match with humainName if --by-name,
+	//   -> Match all cmd by Id first, continue to match with humainName if --by-name,
+	//   -> Display matching result if --verbose
+	//
+	// if ($options['by-name'])
+	// if ($options['verbose'])
+	// ---> Can exit with error
+
+
+	//
+	// Stop and Disabled Daemon
+	//
+
+
+	//
+	// - If --apply & --do-plugin, then Restore jMQTT plugin folder
+	//
+	// if ($options['apply'] && ($options['do-plugin'] || $options['all']))
+	// if (in_array('plugin', $metadata['packages'])
+	// if ($options['verbose'])
+
+
+	//
+	// - If --apply & --do-cleanup, then simply remove newly added eqLogic/cmd (add to missing)
+	//   -> Display removed result if --verbose
+	// - Else If only --apply, then Forget about those eqLogic/cmd, they are OK now (considered new)
+	//   -> Display all new untouched if --verbose
+	//
+	// if ($options['apply'] && ($options['do-cleanup'] || $options['all']))
+	// elseif ($options['apply'])
+	// if ($options['verbose'])
+
+
+	// Get data from backup
+	$data = restore_getBackupD($tmp_dir);
+	// $conf = array();
+	// foreach (config::searchKey('', "jMQTT") as $o)
+		// $conf[$o['key']] = $o['value'];
+	// $data['conf']    = $conf;
+	// $eqLogics = array();
+	// foreach (eqLogic::byType('jMQTT') as $o) {
+		// $eq = utils::o2a($o);
+		// $eq['cache'] = $o->getCache();
+		// $eqLogics[] = $eq;
+	// }
+	// $data['eqLogic'] = $eqLogics;
+	// $cmds = array();
+	// foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
+		// $cmd = utils::o2a($o);
+		// $cmd['cache'] = $o->getCache();
+		// $cmds[] = $cmd;
+	// }
+	// $data['cmd']     = $cmds;
+
+
+	//
+	// - If --apply, then add missing eqLogic/cmd + chache + their history from backup
+	//   -> Use $cmd->addHistoryValue($_value, $_datetime) for history
+	//      See if MySQL direct call could be more efficient? needed?
+	//   -> Forget about those eqLogic/cmd, they are OK now
+	//   -> Display all missing recreated if --verbose
+	//
+	// if ($options['apply'])
+	// if ($options['verbose'])
+
+
+	//
+	// - If --apply, then overwrite all matched eqLogic/cmd with their backup + chache
+	//   -> Display all overwrote matched eqLogic/cmd if --verbose
+	//
+	// if ($options['apply'])
+	// if ($options['verbose'])
+
+
+	// Get history from backup
+	$history = restore_getBackupH($tmp_dir);
+	// $history = array();
+	// foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
+		// if ($o->getIsHistorized()) {
+			// $histo = array();
+			// foreach (utils::o2a($o->getHistory()) as $h) {
+				// unset($h['cmd_id']);
+				// $histo[] = $h;
+			// }
+			// $history[$o->getId()] = $histo;
+		// }
+	// }
+
+
+	//
+	// - If --apply & --do-history, then remove all matched cmd history and import it from the backup
+	//   -> Display all overwrote history cmd if --verbose
+	//
+	// if ($options['apply'] && ($options['do-history'] || $options['all']))
+	// if (in_array('hist', $metadata['packages'])
+	// if ($options['verbose'])
+
+
+	//
+	// - If --apply & --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
+	//
+	// if ($options['apply'] && ($options['do-logs'] || $options['all']))
+	// if (in_array('logs', $metadata['packages'])
+
+
+	//
+	// - If --apply & --do-mosquitto, then Remove folder /etc/mosquitto and move mosquitto folder from backup
+	//
+	// if ($options['apply'] && ($options['do-mosquitto'] || $options['all']))
+	// if (in_array('mosquitto', $metadata['packages'])
+
+
+	//
+	// - If --apply, then Restore plugin config (no backup of global cache for now. usefull/TODO?)
+	//
+	// if ($options['apply'])
+
+
+	//
+	// TODO here
+	//
+	// Enable and Start Daemon
+	//
+
+
+
+	return $error_code;
+}
+
+function restore_help() {
+	print("Usage: php " . basename(__FILE__) . " [OPTIONS]\n");
+	print("Restore a backup of jMQTT inside Jeedom.\n");
+	print("  --apply             apply the backup, this flag is REQUIRED to acctually\n");
+	print("                      change any data on this Jeedom/jMQTT system\n");
+	print("  --file=<FILE>       backup file to restore\n");
+	print("  -P, --do-plugin     restore previous jMQTT folder (keeping existing backups)\n");
+	print("  -C, --do-cleanup    delete all jMQTT eqLogic and cmd created since backup\n");
+	print("  -H, --do-history    restore previous history (do not preserve newer history)\n");
+	print("  -L, --do-logs       restore previous log files (do not preserve newer ones)\n");
+	print("  -M, --do-mosquitto  restore Mosquitto config folders/files\n");
+	print("  --all               equivalent to -PCHLM\n");
+	print("  --by-name           (not recommended) match eqLogic and cmd by name,\n");
+	print("  --no-hw-check       DOES NOT CHECK if system hardwareKey match with backup\n");
+	print("  -v, --verbose       display more information about the restore process\n");
+	print("  -h, --help          display this help message\n");
+	print("Defaults:  eqLogic and cmd are matched by id ;\n");
+	print("           a backup can only be restored on the same system ;\n");
+	print("           eqLogic or cmd newer than the backup will be keept ;\n");
+	print("           cmd history newer than the backup will be keept ;\n");
+	print("           log files will NOT be restored ;\n");
+	print("           Mosquitto configuration will NOT be restored (untouched) ;\n");
+}
+
 function restore_main() {
 	global $argv;
-	$param = restore_options();
-	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Options: " . json_encode($param) . "\n"); // TODO Remove debug
 
-	if (count($argv) == 1 || $param['help']) {
+	$rest = null;
+	$getopt_res = getopt(
+		"hPCHLMv",
+		array(
+			'apply',
+			'file:',
+			'do-plugin',
+			'do-cleanup',
+			'do-history',
+			'do-logs',
+			'do-mosquitto',
+			'by-name',
+			'no-hw-check',
+			'verbose',
+			'help'
+		),
+		$rest
+	);
+
+	$options = array();
+	$options['file'] = (isset($getopt_res['file']) && $getopt_res['file'] != false) ? $getopt_res['file'] : null;
+	$options['help'] = isset($getopt_res['h']) || isset($getopt_res['help']);
+	$options['apply'] = isset($getopt_res['apply']);
+	$options['do-plugin'] = isset($getopt_res['P']) || isset($getopt_res['do-plugin']);
+	$options['do-cleanup'] = isset($getopt_res['C']) || isset($getopt_res['do-cleanup']);
+	$options['do-history'] = isset($getopt_res['H']) || isset($getopt_res['do-history']);
+	$options['do-logs'] = isset($getopt_res['L']) || isset($getopt_res['do-logs']);
+	$options['do-mosquitto'] = isset($getopt_res['M']) || isset($getopt_res['do-mosquitto']);
+	$options['by-name'] = isset($getopt_res['by-name']);
+	$options['no-hw-check'] = isset($getopt_res['no-hw-check']);
+	$options['verbose'] = isset($getopt_res['v']) || isset($getopt_res['verbose']);
+	$options['other'] = array_slice($argv, $rest);
+
+	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Getopt:  " . json_encode($getopt_res) . "\n"); // TODO Remove debug
+	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Options: " . json_encode($options) . "\n"); // TODO Remove debug
+
+	if (count($argv) == 1 || $options['help']) {
 		restore_help();
 		exit(0);
 	}
 
-	if (!is_readable($param['file'])) {
-		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Could not open ".$param['file']." file for reading.\n");
+	if (is_null($options['file'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Please provide a file to restore using --file option.\n");
 		restore_help();
 		exit(1);
 	}
 
-	if (export_isRunning()) {
-		print(date('[Y-m-d H:i:s][[\E\R\R\O\R] : ') ."Backup is already running, please wait until it ends, aborting!\n");
+	if (!is_readable($options['file'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Could not open ".$options['file']." file for reading.\n");
+		restore_help();
 		exit(1);
 	}
 
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') ."###########################################################\n");
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') ."Starting to restore jMQTT...\n");
 
-	export_writePidFile();
+	$error_code = 0;
+	if (export_isRunning()) {
+		print(date('[Y-m-d H:i:s][[\E\R\R\O\R] : ') ."Backup is already running, please wait until it ends, aborting!\n");
+		$error_code = 1;
+	} else {
+		export_writePidFile();
 
-	// TODO DEBUG remove when restore ready
-	sleep(3);
+		$tmp_dir = null;
+		$error_code = restore_mainlogic($options, $tmp_dir);
 
-	// if (isset($options['all']))
+		// Delete temp folder
+		restore_removeTmpDir($tmp_dir);
 
-
-	// if (isset($options['all']) || isset($options['I']))
-
-
-	// if (isset($options['all']) || isset($options['D']))
-
-	// if (isset($options['all']) || isset($options['H']))
-
-
-	export_deletePidFile();
+		// Remove PID file
+		export_deletePidFile();
+	}
 
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "End of jMQTT restore.\n");
+	if ($error_code)
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Error code: ".$error_code."\n");
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "###########################################################\n");
 
-	exit(0);
+	exit($error_code);
 }
 
-if (php_sapi_name() == 'cli')
+if ((php_sapi_name() == 'cli') && (basename(__FILE__) == basename($_SERVER["SCRIPT_FILENAME"]))) {
 	restore_main();
+}
 ?>
