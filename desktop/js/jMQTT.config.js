@@ -321,10 +321,13 @@ $('#bt_backupJMqttStart').on('click', function () {
 			},
 			success: function(data) {
 				if (data.state == 'ok') {
+					$('#sel_backupJMqtt').empty();
+					for (var i in data.result) {
+						var oVal = data.result[i].name;
+						var oSize = ' (' + data.result[i].size +')';
+						$('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+					}
 					$.fn.showAlert({message: '{{Sauvegarde effectuée.}}', level: 'success'});
-					var oVal = data.result.name;
-					var oSize = ' (' + data.result.size +')';
-					$('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
 				} else {
 					$.fn.showAlert({message: data.result, level: 'danger'});
 				}
@@ -407,9 +410,12 @@ $('#bt_backupJMqttUpload').fileupload({
 		if (data.result.state != 'ok') {
 			$.fn.showAlert({message: data.result.result, level: 'danger'});
 		} else {
-			var oVal = data.result.result.name;
-			var oSize = ' (' + data.result.result.size +')';
-			$('#sel_backupJMqtt').append('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+			$('#sel_backupJMqtt').empty();
+			for (var i in data.result.result) {
+				var oVal = data.result.result[i].name;
+				var oSize = ' (' + data.result.result[i].size +')';
+				$('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+			}
 			$.fn.showAlert({message: '{{Fichier(s) ajouté(s) avec succès}}', level: 'success'})
 		}
 		$('#bt_backupJMqttUpload').val(null);

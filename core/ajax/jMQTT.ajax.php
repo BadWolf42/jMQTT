@@ -56,7 +56,7 @@ try {
 		}
 		$fname = $_FILES['file']['name'];
 		if (file_exists($uploaddir . '/' . $fname)) {
-			throw new Exception(__('Impossible de téléverser le fichier car il existe déjà, par sécurité il faut supprimer le fichier existant avant de le remplacer.', __FILE__));
+			throw new Exception(__('Impossible de téléverser le fichier car il existe déjà. Par sécurité, il faut supprimer le fichier existant avant de le remplacer.', __FILE__));
 		}
 		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
@@ -74,8 +74,14 @@ try {
 			ajax::success($fname);
 		}
 		elseif (init('dir') == 'backup') {
+			$backup_dir = realpath(__DIR__ . '/../../data/backup');
+			$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
+			sort($files);
+			$backups = array();
+			foreach ($files as $backup)
+				$backups[] = array('name' => $backup, 'size' => sizeFormat(filesize($backup_dir.'/'.$backup)));
 			jMQTT::logger('info', sprintf(__("Sauvegarde %s correctement téléversée", __FILE__), $fname));
-			ajax::success(array('name' => $_FILES['file']['name'], 'size' => sizeFormat(filesize($uploaddir.'/'.$_FILES['file']['name']))));
+			ajax::success($backups);
 		}
 	}
 
@@ -220,23 +226,21 @@ try {
 	}
 
 	if (init('action') == 'backupCreate') {
-		$backup_dir = realpath(__DIR__ . '/../../data/backup');
-		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
-
 		jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT lancée...", __FILE__)));
-		exec('php ' . __DIR__ . '/../../resources/jMQTT_backup.php --all >> ' . log::getPathToLog('jMQTT') . ' 2>&1');
-
-		$backup = null;
-		foreach (ls($backup_dir, '*.tgz', false, array('files', 'quiet')) as $b) {
-			if (!in_array($b, $backups)) {
-				$backup = $b;
-				break;
-			}
-		}
-		if (is_null($backup))
+		$out = null;
+		$code = null;
+		exec('php ' . __DIR__ . '/../../resources/jMQTT_backup.php --all >> ' . log::getPathToLog('jMQTT') . ' 2>&1', $out, $code);
+		if ($code)
 			throw new Exception(__("Échec de la sauvegarde de jMQTT, consultez le log jMQTT", __FILE__));
+
+		$backup_dir = realpath(__DIR__ . '/../../data/backup');
+		$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
+		sort($files);
+		$backups = array();
+		foreach ($files as $backup)
+			$backups[] = array('name' => $backup, 'size' => sizeFormat(filesize($backup_dir.'/'.$backup)));
 		jMQTT::logger('info', __("Sauvegarde de jMQTT effectuée", __FILE__));
-		ajax::success(array('name' => $backup, 'size' => sizeFormat(filesize($backup_dir.'/'.$backup))));
+		ajax::success($backups);
 	}
 
 	if (init('action') == 'backupRemove') {
