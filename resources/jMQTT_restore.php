@@ -287,18 +287,20 @@ function restore_mosquitto($tmp_dir) {
 }
 
 // Restore jMQTT configuration and cache
-function restore_confAndCache(&$data) {
+function restore_confAndCache(&$data, $cache = true) {
 	// Restore plugin config
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring plugin config...");
 	foreach ($data['conf'] as $k=>$value)
 		config::save($k, $value, 'jMQTT');
 	print("                           [ OK ]\n");
 
-	// Restore plugin cache
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring plugin cache...");
-	foreach ($data['cache'] as $k=>$value)
-		cache::set($k, $value);
-	print("                            [ OK ]\n");
+	if ($cache) {
+		// Restore plugin cache
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring plugin cache...");
+		foreach ($data['cache'] as $k=>$value)
+			cache::set($k, $value);
+		print("                            [ OK ]\n");
+	}
 }
 
 // Remove the temporary folder where backup has been extracted
@@ -475,8 +477,8 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		print("                             [ OK ]\n");
 	}
 
-	// If --do-folder, then Restore jMQTT plugin folder
-	if ($options['do-folder']) {
+	// If --not-folder, then do not restore jMQTT plugin folder
+	if (!$options['not-folder']) {
 		if (!in_array('folder', $metadata['packages'])) {
 			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT plugin folder... (not in backup) [ FAILED ]\n");
 			$error_code = 6;
@@ -596,7 +598,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring plugin conf & cache... (not in backup) [ FAILED ]\n");
 		$error_code = 32;
 	} elseif ($options['apply']) {
-		restore_confAndCache($data);
+		restore_confAndCache($data, !$options['not-cache']);
 	}
 
 	// If --apply & Daemon was running before, then start it
@@ -613,26 +615,27 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 function restore_help() {
 	print("Usage: php " . basename(__FILE__) . " [OPTIONS]\n");
 	print("Restore a backup of jMQTT inside Jeedom.\n");
-	print("  --apply             apply the backup, this flag is REQUIRED to acctually\n");
-	print("                      change any data on this Jeedom/jMQTT system\n");
-	print("  --file=<FILE>       backup file to restore\n");
-	print("  -F, --do-folder     restore previous jMQTT folder (keeping existing backups)\n");
-	print("  -D, --do-delete     delete all jMQTT eqLogic and cmd created since backup\n");
-	print("  -C, --do-cache      restore previous cached values\n");
-	print("  -H, --do-history    restore previous history (do not preserve newer history)\n");
-	print("  -L, --do-logs       restore previous log files (do not preserve newer ones)\n");
-	print("  -M, --do-mosquitto  restore Mosquitto config folders/files\n");
-	print("  --all               equivalent to -FCH\n");
-	print("  --by-name           (not recommended) match eqLogic and cmd by name,\n");
-	print("  --no-hw-check       DOES NOT CHECK if system hardwareKey match with backup\n");
-	print("  -v, --verbose       display more information about the restore process\n");
-	print("  -h, --help          display this help message\n");
-	print("Defaults:  eqLogic and cmd are matched by id ;\n");
-	print("           a backup can only be restored on the same system ;\n");
-	print("           eqLogic or cmd newer than the backup will be keept ;\n");
-	print("           cmd history newer than the backup will be keept ;\n");
-	print("           log files will NOT be restored ;\n");
-	print("           Mosquitto configuration will NOT be restored (untouched) ;\n");
+	print("  --apply           apply the backup, this flag is REQUIRED to acctually\n");
+	print("                    change any data on this Jeedom/jMQTT system\n");
+	print("  --file=<FILE>     backup file to restore\n");
+	print("  --no-hw-check     DOES NOT CHECK if system hardwareKey match with backup\n");
+	print("  --not-folder      do NOT restore previous jMQTT folder\n");
+	print("  --by-name         match eqLogic and cmd by name (NOT recommended)\n");
+	print("  --do-delete       remove jMQTT eqLogic and cmd created since backup\n");
+	print("  --not-cache       do NOT restore previous cached values (preserve cache)\n");
+	print("  --not-history     do NOT restore previous history (preserve history)\n");
+	print("  --do-logs         restore previous logs (do NOT preserve newer logs)\n");
+	print("  --do-mosquitto    restore Mosquitto config folders/files\n");
+	print("  -v, --verbose     display more information about the restore process\n");
+	print("  -h, --help        display this help message\n");
+	print("Defaults:   a backup can only be restored on the same system ;\n");
+	print("            jMQTT folder will be restored from backup ;\n");
+	print("            eqLogic and cmd are matched by id (not by name) ;\n");
+	print("            eqLogic or cmd newer than the backup will be keept ;\n");
+	print("            plugin, eqLogic and cmd cache will be restored ;\n");
+	print("            cmd history newer than the backup will be keept ;\n");
+	print("            log files will NOT be restored ;\n");
+	print("            Mosquitto configuration will NOT be restored (untouched) ;\n");
 }
 
 function restore_main() {
@@ -644,15 +647,14 @@ function restore_main() {
 		array(
 			'apply',
 			'file:',
-			'do-folder',
+			'no-hw-check',
+			'not-folder',
+			'by-name',
 			'do-delete',
-			'do-cache',
-			'do-history',
+			'not-cache',
+			'not-history',
 			'do-logs',
 			'do-mosquitto',
-			'all',
-			'by-name',
-			'no-hw-check',
 			'verbose',
 			'help'
 		),
@@ -660,18 +662,18 @@ function restore_main() {
 	);
 
 	$options = array();
-	$options['file'] = (isset($getopt_res['file']) && $getopt_res['file'] != false) ? $getopt_res['file'] : null;
-	$options['help'] = isset($getopt_res['h']) || isset($getopt_res['help']);
 	$options['apply'] = isset($getopt_res['apply']);
-	$options['do-folder'] = isset($getopt_res['F']) || isset($getopt_res['do-folder']) || isset($getopt_res['all']);
-	$options['do-delete'] = isset($getopt_res['D']) || isset($getopt_res['do-delete']);
-	$options['do-cache'] = isset($getopt_res['C']) || isset($getopt_res['do-cache']) || isset($getopt_res['all']);
-	$options['do-history'] = isset($getopt_res['H']) || isset($getopt_res['do-history']) || isset($getopt_res['all']);
-	$options['do-logs'] = isset($getopt_res['L']) || isset($getopt_res['do-logs']);
-	$options['do-mosquitto'] = isset($getopt_res['M']) || isset($getopt_res['do-mosquitto']);
-	$options['by-name'] = isset($getopt_res['by-name']);
+	$options['file'] = (isset($getopt_res['file']) && $getopt_res['file'] != false) ? $getopt_res['file'] : null;
 	$options['no-hw-check'] = isset($getopt_res['no-hw-check']);
+	$options['not-folder'] = isset($getopt_res['not-folder']);
+	$options['by-name'] = isset($getopt_res['by-name']);
+	$options['do-delete'] = isset($getopt_res['do-delete']);
+	$options['not-cache'] = isset($getopt_res['not-cache']);
+	$options['not-history'] = isset($getopt_res['not-history']);
+	$options['do-logs'] = isset($getopt_res['do-logs']);
+	$options['do-mosquitto'] = isset($getopt_res['do-mosquitto']);
 	$options['verbose'] = isset($getopt_res['v']) || isset($getopt_res['verbose']);
+	$options['help'] = isset($getopt_res['h']) || isset($getopt_res['help']);
 	$options['other'] = array_slice($argv, $rest);
 
 	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Getopt:  " . json_encode($getopt_res) . "\n"); // TODO Remove debug
