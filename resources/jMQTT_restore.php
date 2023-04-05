@@ -77,6 +77,85 @@ function restore_getBackupI($tmp_dir) {
 	return $index;
 }
 
+
+function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$diff_indexes) {
+	//   -> Confirm all Id from backup ARE NOT used in Jeedom outside of jMQTT
+	//      If --by-name, then try to reconciliate, otherwise FAIL after having listed all issues // TODO ?
+	//   -> Match all eqLogic by Id first, continue to match with humainName if --by-name,
+	//   -> Match all cmd by Id first, continue to match with humainName if --by-name,
+	//   -> Display matching result if --verbose
+	//
+	// if ($options['by-name']) // TODO
+
+	$sucess = true;
+	$current_indexes = array('eqLogic' => array(), 'cmd' => array());
+	$diff_indexes = array('eqLogic' => array(), 'cmd' => array());
+
+	function abstract_diffIndexes($type, &$options, &$backup_indexes, &$current_indexes, &$diff_indexes, &$sucess) {
+		// For all existing jMQTT eqLogic/cmd
+		$all = ($type == 'eqLogic') ? eqLogic::byType('jMQTT') : cmd::searchConfiguration('', 'jMQTT');
+		foreach ($all as $o) {
+			$current_indexes[$type][$o->getId()] = $o->getHumanName();
+			if (array_key_exists($o->getId(), $backup_indexes[$type])) {
+				if ($current_indexes[$type][$o->getId()] == $backup_indexes[$type][$o->getId()]) {
+					$diff_indexes[$type][$o->getId()] = 'exists same name';
+					if ($options['verbose'])
+						print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $current_indexes[$type][$o->getId()] . ") still exists with the same name\n");
+				} else {
+					$diff_indexes[$type][$o->getId()] = 'exists other name';
+					if ($options['verbose'])
+						print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $backup_indexes[$type][$o->getId()] . ' -> ' . $current_indexes[$type][$o->getId()] . ") still exists with a different name\n");
+				}
+			} else {
+				$diff_indexes[$type][$o->getId()] = 'created';
+				if ($options['verbose'])
+					print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $current_indexes[$type][$o->getId()] . ") is new\n");
+			}
+		}
+		// For all old jMQTT eqLogic/cmd id
+		foreach ($backup_indexes[$type] as $id=>$name) {
+			if ($type == 'eqLogic')
+				$res = preg_match("/\[(.+)\]\[(.+)\]/", $name, $match);
+			else
+				$res = preg_match("/\[(.+)\]\[(.+)\]\[(.+)\]/", $name, $match);
+			if (!$res) {
+				print(date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . $type . ':' . $id . " has an incorrect humainName (" . $name . "), it won't be restored\n");
+				$diff_indexes[$type][$id] = 'incorrect';
+				continue;
+			}
+			if ($type == 'eqLogic')
+				$o = eqLogic::byObjectNameEqLogicName($match[1], $match[2]);
+			else
+				$o = cmd::byObjectNameEqLogicNameCmdName($match[1], $match[2], $match[3]);
+			if (is_object($o) && $o->getEqType_name() != 'jMQTT') {
+				$diff_indexes[$type][$id] = 'name collision';
+				print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $type . ':' . $o->getHumanName() . ' (' . $id . ") already exists for plugin " . $o->getEqType_name() . ", aborting!\n");
+				$sucess = false;
+			}
+
+			// Found previously
+			if (array_key_exists($id, $diff_indexes[$type]))
+				continue;
+
+			// Check if another eqLogic/cmd with the same id exists outside of jMQTT
+			$o = $type::byId($id);
+			if (is_object($o)) {
+				$diff_indexes[$type][$id] = 'id collision';
+				print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $type . ':' . $id . ' (' . $o->getHumanName() . ") already exists for plugin " . $o->getEqType_name() . ", aborting!\n");
+				$sucess = false;
+			} else {
+				$diff_indexes[$type][$id] = 'deleted';
+				if ($options['verbose'])
+					print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $id . " no longer exists\n");
+			}
+		}
+	}
+	abstract_diffIndexes('eqLogic', $options, $backup_indexes, $current_indexes, $diff_indexes, $sucess);
+	abstract_diffIndexes('cmd',     $options, $backup_indexes, $current_indexes, $diff_indexes, $sucess);
+
+	return $sucess;
+}
+
 // Return Data from the extacted backup temporary folder
 function restore_getBackupD($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Data...");
@@ -325,26 +404,13 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		return 5;
 
 	// Get indexes from backup
-	$indexes = restore_getBackupI($tmp_dir);
-	// $indexes = array('eqLogic' => array(), 'cmd' => array());
-	// foreach (eqLogic::byType('jMQTT') as $o)
-		// $indexes['eqLogic'][$o->getId()] = $o->getHumanName();
-	// foreach (cmd::searchConfiguration('', 'jMQTT') as $o)
-		// $indexes['cmd'][$o->getId()] = $o->getHumanName();
+	$backup_indexes = restore_getBackupI($tmp_dir);
+	$current_indexes = array();
+	$diff_indexes = array();
 
-
-	//
-	// - Check which eqLogic/cmd has been added/removed
-	//   -> Confirm all Id from backup ARE NOT used in Jeedom outside of jMQTT
-	//      If --by-name, then try to reconciliate, otherwise FAIL after having listed all issues
-	//   -> Match all eqLogic by Id first, continue to match with humainName if --by-name,
-	//   -> Match all cmd by Id first, continue to match with humainName if --by-name,
-	//   -> Display matching result if --verbose
-	//
-	// if ($options['by-name'])
-	// if ($options['verbose'])
-	// ---> Can exit with error
-
+	// Check which eqLogic/cmd has been added/removed
+	if (!restore_diffIndexes($options, $backup_indexes, $current_indexes, $diff_indexes))
+		return 5;
 
 	//
 	// - If --apply, then stop and disabled Daemon
