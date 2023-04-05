@@ -15,6 +15,17 @@ Backup tar.gz structure:
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 require_once __DIR__ . '/jMQTT_backup.php';
 
+class DiffType {
+	const Created = 'Created';
+	const Unchanged = 'Unchanged';
+	const Exists = 'Exists';
+	const Deleted = 'Deleted';
+	const Invalid = 'Invalid';
+	const CollisionOnName = 'CollisionOnName';
+	const CollisionOnId = 'CollisionOnId';
+}
+
+
 //
 // TODO (important) Still work in progress
 // - Warning: Shouldn't we call jMQTT_restore.php from the backup?
@@ -98,16 +109,16 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 			$current_indexes[$type][$o->getId()] = $o->getHumanName();
 			if (array_key_exists($o->getId(), $backup_indexes[$type])) {
 				if ($current_indexes[$type][$o->getId()] == $backup_indexes[$type][$o->getId()]) {
-					$diff_indexes[$type][$o->getId()] = 'exists same name';
+					$diff_indexes[$type][$o->getId()] = DiffType::Unchanged;
 					if ($options['verbose'])
 						print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $current_indexes[$type][$o->getId()] . ") still exists with the same name\n");
 				} else {
-					$diff_indexes[$type][$o->getId()] = 'exists other name';
+					$diff_indexes[$type][$o->getId()] = DiffType::Exists;
 					if ($options['verbose'])
 						print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $backup_indexes[$type][$o->getId()] . ' -> ' . $current_indexes[$type][$o->getId()] . ") still exists with a different name\n");
 				}
 			} else {
-				$diff_indexes[$type][$o->getId()] = 'created';
+				$diff_indexes[$type][$o->getId()] = DiffType::Created;
 				if ($options['verbose'])
 					print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $current_indexes[$type][$o->getId()] . ") is new\n");
 			}
@@ -119,8 +130,8 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 			else
 				$res = preg_match("/\[(.+)\]\[(.+)\]\[(.+)\]/", $name, $match);
 			if (!$res) {
-				print(date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . $type . ':' . $id . " has an incorrect humainName (" . $name . "), it won't be restored\n");
-				$diff_indexes[$type][$id] = 'incorrect';
+				print(date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . $type . ':' . $id . " has an invalid humainName (" . $name . "), it won't be restored\n");
+				$diff_indexes[$type][$id] = DiffType::Invalid;
 				continue;
 			}
 			if ($type == 'eqLogic')
@@ -128,7 +139,7 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 			else
 				$o = cmd::byObjectNameEqLogicNameCmdName($match[1], $match[2], $match[3]);
 			if (is_object($o) && $o->getEqType_name() != 'jMQTT') {
-				$diff_indexes[$type][$id] = 'name collision';
+				$diff_indexes[$type][$id] = DiffType::CollisionOnName;
 				print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $type . ':' . $o->getHumanName() . ' (' . $id . ") already exists for plugin " . $o->getEqType_name() . ", aborting!\n");
 				$sucess = false;
 			}
@@ -140,11 +151,11 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 			// Check if another eqLogic/cmd with the same id exists outside of jMQTT
 			$o = $type::byId($id);
 			if (is_object($o)) {
-				$diff_indexes[$type][$id] = 'id collision';
+				$diff_indexes[$type][$id] = DiffType::CollisionOnId;
 				print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $type . ':' . $id . ' (' . $o->getHumanName() . ") already exists for plugin " . $o->getEqType_name() . ", aborting!\n");
 				$sucess = false;
 			} else {
-				$diff_indexes[$type][$id] = 'deleted';
+				$diff_indexes[$type][$id] = DiffType::Deleted;
 				if ($options['verbose'])
 					print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $id . " no longer exists\n");
 			}
@@ -392,8 +403,8 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		return 3;
 
 	// TODO Remove debug
-	if ($options['verbose'])
-		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of the backup: \n" . json_encode($metadata, JSON_PRETTY_PRINT) . "\n");
+	// if ($options['verbose'])
+		// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of the backup: \n" . json_encode($metadata, JSON_PRETTY_PRINT) . "\n");
 
 	// Check if indexes are included in archive
 	if (!in_array('index', $metadata['packages']))
