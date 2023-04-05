@@ -182,10 +182,10 @@ function restore_getBackupH($tmp_dir) {
 }
 
 
-// Create a new jMQTT cmd with a specific id
-function createCmdWithId($_id) {
+// Create a new jMQTT eqLogic with a specific id
+function createEqWithId($_id) {
 	try {
-		$sql = 'INSERT INTO `cmd` (`id`,`eqLogic_id`,`eqType`,`isHistorized`,`isVisible`) VALUES (' . $_id . ',0,"jMQTT",0,0)';
+		$sql = 'INSERT INTO `eqLogic` (`id`,`name`,`eqType_name`,`isVisible`,`isEnable`) VALUES (' . $_id . ',"","jMQTT",0,0)';
 		$res = DB::Prepare($sql, array(), DB::FETCH_TYPE_ROW);
 		return true;
 	} catch (Exception $exc) {
@@ -193,10 +193,10 @@ function createCmdWithId($_id) {
 	}
 }
 
-// Create a new jMQTT eqLogic with a specific id
-function createEqWithId($_id) {
+// Create a new jMQTT cmd with a specific id
+function createCmdWithId($_id) {
 	try {
-		$sql = 'INSERT INTO `eqLogic` (`id`,`name`,`eqType_name`,`isVisible`,`isEnable`) VALUES (' . $_id . ',"","jMQTT",0,0)';
+		$sql = 'INSERT INTO `cmd` (`id`,`eqLogic_id`,`eqType`,`isHistorized`,`isVisible`) VALUES (' . $_id . ',0,"jMQTT",0,0)';
 		$res = DB::Prepare($sql, array(), DB::FETCH_TYPE_ROW);
 		return true;
 	} catch (Exception $exc) {
