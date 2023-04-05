@@ -47,13 +47,15 @@ function restore_getBackupM($tmp_dir) {
 
 // Compare hardware keys
 function restore_checkHwKey($current, $old, $no_hw_check) {
+	// - If no match stop (FAIL)
+	// - If --no-hw-check then use old full_import method? -> TODO
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Verifing hardware keys...");
 	if ($current['hardwareKey'] == $old['hardwareKey']) {
 		print("                            [ OK ]\n");
 		return true;
 	} elseif ($no_hw_check) {
 		print("                   [ NO HW CHECK ]\n");
-		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Cannot restore a backup on a system with a different hardwareKey yet!\n"); // TODO
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Cannot restore a backup on a system with a different hardwareKey yet!\n"); // TODO
 		return false;
 	} else {
 		print("                        [ FAILED ]\n");
@@ -302,12 +304,13 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	//
 	// if (in_array('plugin', $metadata['packages'])
 
-	// Check this Jeedom hardwareKey against the backup hardwareKey
-	// - If no match stop (FAIL)
-	// - If --no-hw-check then use old full_import method? -> TODO
-	if (!restore_checkHwKey($initial_metadata, $metadata, $options['no-hw-check']))
-		return 3;
+	// Check if indexes are included in archive
+	if (!in_array('index', $metadata['packages']))
+		return 4;
 
+	// Check this Jeedom hardwareKey against the backup hardwareKey
+	if (!restore_checkHwKey($initial_metadata, $metadata, $options['no-hw-check']))
+		return 5;
 
 	// Get indexes from backup
 	$indexes = restore_getBackupI($tmp_dir);
@@ -332,25 +335,25 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 
 
 	//
-	// Stop and Disabled Daemon
+	// - If --apply, then stop and disabled Daemon
 	//
 
 
 	//
 	// - If --apply & --do-plugin, then Restore jMQTT plugin folder
 	//
-	// if ($options['apply'] && ($options['do-plugin'] || $options['all']))
-	// if (in_array('plugin', $metadata['packages'])
+	// if ($options['apply'] && $options['do-plugin'])
+	// if (in_array('plugin', $metadata['packages']))
 	// if ($options['verbose'])
 
 
 	//
-	// - If --apply & --do-cleanup, then simply remove newly added eqLogic/cmd (add to missing)
+	// - If --apply & --do-delete, then simply remove newly added eqLogic/cmd (add to missing)
 	//   -> Display removed result if --verbose
 	// - Else If only --apply, then Forget about those eqLogic/cmd, they are OK now (considered new)
 	//   -> Display all new untouched if --verbose
 	//
-	// if ($options['apply'] && ($options['do-cleanup'] || $options['all']))
+	// if ($options['apply'] && $options['do-delete'])
 	// elseif ($options['apply'])
 	// if ($options['verbose'])
 
@@ -415,23 +418,23 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	// - If --apply & --do-history, then remove all matched cmd history and import it from the backup
 	//   -> Display all overwrote history cmd if --verbose
 	//
-	// if ($options['apply'] && ($options['do-history'] || $options['all']))
-	// if (in_array('hist', $metadata['packages'])
+	// if ($options['apply'] && $options['do-history'])
+	// if (in_array('hist', $metadata['packages']))
 	// if ($options['verbose'])
 
 
 	//
 	// - If --apply & --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
 	//
-	// if ($options['apply'] && ($options['do-logs'] || $options['all']))
-	// if (in_array('logs', $metadata['packages'])
+	// if ($options['apply'] && $options['do-logs'])
+	// if (in_array('logs', $metadata['packages']))
 
 
 	//
 	// - If --apply & --do-mosquitto, then Remove folder /etc/mosquitto and move mosquitto folder from backup
 	//
-	// if ($options['apply'] && ($options['do-mosquitto'] || $options['all']))
-	// if (in_array('mosquitto', $metadata['packages'])
+	// if ($options['apply'] && $options['do-mosquitto'])
+	// if (in_array('mosquitto', $metadata['packages']))
 
 
 	//
@@ -458,11 +461,12 @@ function restore_help() {
 	print("                      change any data on this Jeedom/jMQTT system\n");
 	print("  --file=<FILE>       backup file to restore\n");
 	print("  -P, --do-plugin     restore previous jMQTT folder (keeping existing backups)\n");
-	print("  -C, --do-cleanup    delete all jMQTT eqLogic and cmd created since backup\n");
+	print("  -D, --do-delete     delete all jMQTT eqLogic and cmd created since backup\n");
+	print("  -C, --do-cache      restore previous cached values\n");
 	print("  -H, --do-history    restore previous history (do not preserve newer history)\n");
 	print("  -L, --do-logs       restore previous log files (do not preserve newer ones)\n");
 	print("  -M, --do-mosquitto  restore Mosquitto config folders/files\n");
-	print("  --all               equivalent to -PCHLM\n");
+	print("  --all               equivalent to -PCH\n");
 	print("  --by-name           (not recommended) match eqLogic and cmd by name,\n");
 	print("  --no-hw-check       DOES NOT CHECK if system hardwareKey match with backup\n");
 	print("  -v, --verbose       display more information about the restore process\n");
@@ -480,15 +484,17 @@ function restore_main() {
 
 	$rest = null;
 	$getopt_res = getopt(
-		"hPCHLMv",
+		"hPDCHLMv",
 		array(
 			'apply',
 			'file:',
 			'do-plugin',
-			'do-cleanup',
+			'do-delete',
+			'do-cache',
 			'do-history',
 			'do-logs',
 			'do-mosquitto',
+			'all',
 			'by-name',
 			'no-hw-check',
 			'verbose',
@@ -501,9 +507,10 @@ function restore_main() {
 	$options['file'] = (isset($getopt_res['file']) && $getopt_res['file'] != false) ? $getopt_res['file'] : null;
 	$options['help'] = isset($getopt_res['h']) || isset($getopt_res['help']);
 	$options['apply'] = isset($getopt_res['apply']);
-	$options['do-plugin'] = isset($getopt_res['P']) || isset($getopt_res['do-plugin']);
-	$options['do-cleanup'] = isset($getopt_res['C']) || isset($getopt_res['do-cleanup']);
-	$options['do-history'] = isset($getopt_res['H']) || isset($getopt_res['do-history']);
+	$options['do-plugin'] = isset($getopt_res['P']) || isset($getopt_res['do-plugin']) || isset($getopt_res['all']);
+	$options['do-delete'] = isset($getopt_res['D']) || isset($getopt_res['do-delete']);
+	$options['do-cache'] = isset($getopt_res['C']) || isset($getopt_res['do-cache']) || isset($getopt_res['all']);
+	$options['do-history'] = isset($getopt_res['H']) || isset($getopt_res['do-history']) || isset($getopt_res['all']);
 	$options['do-logs'] = isset($getopt_res['L']) || isset($getopt_res['do-logs']);
 	$options['do-mosquitto'] = isset($getopt_res['M']) || isset($getopt_res['do-mosquitto']);
 	$options['by-name'] = isset($getopt_res['by-name']);
