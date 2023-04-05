@@ -62,7 +62,7 @@ function export_cleanup($limit = 5) { // 5 backups max
 	while (count($backup_files) > $limit) {
 		$del = array_pop($backup_files);
 		unlink($del);
-		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "               -> ".basename($del)." removed  [ OK ]\n");
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "    -> ".basename($del)." removed  [ OK ]\n");
 	}
 }
 
@@ -74,15 +74,39 @@ function export_prepare() {
 
 // [-I] all used id for eqBroker, eqLogic, cmd
 function export_index() {
+	$error = array();
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating index file...");
 	$res = array('eqLogic' => array(), 'cmd' => array());
-	foreach (eqLogic::byType('jMQTT') as $o)
-		$res['eqLogic'][$o->getId()] = $o->getHumanName();
-	// sort($res['eqLogic']);
-	foreach (cmd::searchConfiguration('', 'jMQTT') as $o)
+
+	$allEqLogics = eqLogic::byType('jMQTT');
+	// Preprend brokers
+	foreach ($allEqLogics as $o) {
+		if ($o->getType() == jMQTT::TYP_BRK)
+			$res['eqLogic'][$o->getId()] = $o->getHumanName();
+	}
+
+	foreach ($allEqLogics as $o) {
+		if ($o->getType() != jMQTT::TYP_BRK) {
+			if (!array_key_exists($o->getBrkId(), $res['eqLogic']))
+				$error[] = date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . '    -> eqLogic:' . $o->getId() . ' (' . $o->getHumanName() . ") is orphan.\n";
+			$res['eqLogic'][$o->getId()] = $o->getHumanName();
+		}
+	}
+
+	foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
+		if (!array_key_exists($o->getEqLogic_id(), $res['eqLogic']))
+			$error[] = date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . '    -> cmd:' . $o->getId() . ' (' . $o->getHumanName() . ") is orphan.\n";
 		$res['cmd'][$o->getId()] = $o->getHumanName();
+	}
 	// sort($res['cmd']);
-	print("                             [ OK ]\n");
+
+	if($error) {
+		print("                        [ WARNING ]\n");
+		foreach($error as $e)
+			print($e);
+	} else {
+		print("                             [ OK ]\n");
+	}
 	return $res;
 }
 
@@ -91,12 +115,29 @@ function export_data() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating Data file...");
 	$res = array();
 
+	// Plugin config
 	$conf = array();
 	foreach (config::searchKey('', "jMQTT") as $o) {
 		$conf[$o['key']] = $o['value'];
 	}
-	$res['conf']    = $conf;
+	$cacheKeys = array(
+		'dependancyjMQTT',
+		'jMQTT::daemonLastRcv',
+		'jMQTT::daemonLastSnd',
+		'jMQTT::daemonPort',
+		'jMQTT::daemonUid',
+		'jMQTT::nextStats'
+	);
+	$res['conf'] = $conf;
 
+	// Plugin cache
+	$cache = array();
+	foreach ($cacheKeys as $k) {
+		$cache[$k] = cache::byKey($k)->getValue(null);
+	}
+	$res['cache'] = $cache;
+
+	// EqLogics
 	$eqLogics = array();
 	foreach (eqLogic::byType('jMQTT') as $o) {
 		$eq = utils::o2a($o);
@@ -105,13 +146,14 @@ function export_data() {
 	}
 	$res['eqLogic'] = $eqLogics;
 
+	// Cmds
 	$cmds = array();
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
 		$cmd = utils::o2a($o);
 		$cmd['cache'] = $o->getCache();
 		$cmds[] = $cmd;
 	}
-	$res['cmd']     = $cmds;
+	$res['cmd'] = $cmds;
 
 	print("                              [ OK ]\n");
 	return $res;
@@ -166,7 +208,6 @@ function export_metadata($packages = []) {
 	$res = array();
 	$res['date'] = date("Y-m-d H:i:s");
 	$res['hardwareKey'] = jeedom::getHardwareKey();
-	$res['hardwareId'] = trim(file_get_contents('/etc/machine-id'));
 	$res['hardwareName'] = jeedom::getHardwareName();
 	$res['distrib'] = system::getDistrib();
 	$res['phpVersion'] = phpversion();
