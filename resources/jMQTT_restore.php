@@ -412,10 +412,16 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if (!restore_diffIndexes($options, $backup_indexes, $current_indexes, $diff_indexes))
 		return 5;
 
-	//
-	// - If --apply, then stop and disabled Daemon
-	//
 
+	// If --apply, then stop and disabled Daemon
+	if ($options['apply']) {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...");
+		$old_autoMode = config::byKey('deamonAutoMode', 'jMQTT', 1);
+		config::save('deamonAutoMode', 0, 'jMQTT');
+		$old_daemonState = jMQTT::daemon_state();
+		jMQTT::deamon_stop();
+		print("                             [ OK ]\n");
+	}
 
 	//
 	// - If --apply & --do-plugin, then Restore jMQTT plugin folder
@@ -521,13 +527,15 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	// if ($options['apply'])
 
 
-	//
-	// TODO here
-	//
-	// Enable and Start Daemon
-	//
 
-
+	// If --apply, then retore Daemon previous state
+	if ($options['apply']) {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...");
+		config::save('deamonAutoMode', $old_autoMode, 'jMQTT');
+		if ($old_daemonState)
+			jMQTT::deamon_start();
+		print("                             [ OK ]\n");
+	}
 
 	return $error_code;
 }
