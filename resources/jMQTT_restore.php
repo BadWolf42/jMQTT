@@ -226,6 +226,35 @@ function restore_folder($tmp_dir) {
 	print("                       [ OK ]\n");
 }
 
+// Remove newly created eqLogic and cmd
+function restore_purgeNewEqAndCmd(&$diff_indexes, $verbose = false) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing new eqLogics and cmds...");
+	$logs = array();
+	// Remove newly created eqLogics
+	foreach ($diff_indexes['eqLogic'] as $id=>$state) {
+		if ($state != DiffType::Created)
+			continue;
+		$o = eqLogic::byId($id);
+		if (is_object($o))
+			$o->remove();
+		if ($verbose)
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . " removed\n";
+	}
+	// Remove newly created cmds
+	foreach ($diff_indexes['cmd'] as $id=>$state) {
+		if ($state != DiffType::Created)
+			continue;
+		$o = cmd::byId($id);
+		if (is_object($o))
+			$o->remove();
+		if ($verbose)
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " removed\n";
+	}
+	print("                    [ OK ]\n");
+	foreach($logs as $l)
+		print($l);
+}
+
 // Restore jMQTT log files
 function restore_logs($tmp_dir) {
 	$logs_dir = dirname(realpath(log::getPathToLog('jMQTT')));
@@ -456,39 +485,42 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		}
 	}
 
+	// If --do-delete, then simply remove newly added eqLogic/cmd (change $diff_indexes to DiffType::Deleted)
+	if ($options['do-delete']) {
+		if (!in_array('data', $metadata['packages'])) {
+			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Deleting new eq/cmd...       (no data in backup) [ FAILED ]\n");
+			$error_code = 7;
+		} elseif ($options['apply']) {
+			restore_purgeNewEqAndCmd($diff_indexes, $options['verbose']);
+		}
+	}
+	// Otherwise Forget about those new eqLogic/cmd, they are OK now
 
 
-	//
-	// - If --apply & --do-delete, then simply remove newly added eqLogic/cmd (add to missing)
-	//   -> Display removed result if --verbose
-	// - Else If only --apply, then Forget about those eqLogic/cmd, they are OK now (considered new)
-	//   -> Display all new untouched if --verbose
-	//
-	// if ($options['apply'] && $options['do-delete'])
-	// elseif ($options['apply'])
-	// if ($options['verbose'])
 
+/*
+		$conf = array();
+		foreach (config::searchKey('', "jMQTT") as $o)
+			$conf[$o['key']] = $o['value'];
+		$data['conf']    = $conf;
+		$eqLogics = array();
+		foreach (eqLogic::byType('jMQTT') as $o) {
+			$eq = utils::o2a($o);
+			$eq['cache'] = $o->getCache();
+			$eqLogics[] = $eq;
+		}
+		$data['eqLogic'] = $eqLogics;
+		$cmds = array();
+		foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
+			$cmd = utils::o2a($o);
+			$cmd['cache'] = $o->getCache();
+			$cmds[] = $cmd;
+		}
+		$data['cmd']     = $cmds;
+*/
 
 	// Get data from backup
 	$data = restore_getBackupD($tmp_dir);
-	// $conf = array();
-	// foreach (config::searchKey('', "jMQTT") as $o)
-		// $conf[$o['key']] = $o['value'];
-	// $data['conf']    = $conf;
-	// $eqLogics = array();
-	// foreach (eqLogic::byType('jMQTT') as $o) {
-		// $eq = utils::o2a($o);
-		// $eq['cache'] = $o->getCache();
-		// $eqLogics[] = $eq;
-	// }
-	// $data['eqLogic'] = $eqLogics;
-	// $cmds = array();
-	// foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
-		// $cmd = utils::o2a($o);
-		// $cmd['cache'] = $o->getCache();
-		// $cmds[] = $cmd;
-	// }
-	// $data['cmd']     = $cmds;
 
 
 	//
