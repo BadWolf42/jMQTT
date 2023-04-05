@@ -521,18 +521,25 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	// if ($options['verbose'])
 
 
-	//
-	// - If --apply & --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
-	//
-	// if ($options['apply'] && $options['do-logs'])
-	// if (in_array('logs', $metadata['packages']))
+	// If --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
+	if ($options['do-logs']) {
+		if (!in_array('logs', $metadata['packages'])) {
+			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT logs...          (not in backup) [ FAILED ]\n");
+			return 30;
+		} elseif ($options['apply']) {
+			restore_logs($tmp_dir);
+		}
+	}
 
-
-	//
-	// - If --apply & --do-mosquitto, then Remove folder /etc/mosquitto and move mosquitto folder from backup
-	//
-	// if ($options['apply'] && $options['do-mosquitto'])
-	// if (in_array('mosquitto', $metadata['packages']))
+	// If --do-mosquitto, then Remove folder /etc/mosquitto and move mosquitto folder from backup
+	if ($options['do-mosquitto']) {
+		if (!in_array('mosquitto', $metadata['packages'])) {
+			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring Mosquitto config...    (not in backup) [ FAILED ]\n");
+			return 31;
+		} elseif ($options['apply']) {
+			restore_mosquitto($tmp_dir);
+		}
+	}
 
 
 	//
