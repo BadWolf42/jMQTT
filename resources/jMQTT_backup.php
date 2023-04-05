@@ -120,6 +120,10 @@ function export_data() {
 	foreach (config::searchKey('', "jMQTT") as $o) {
 		$conf[$o['key']] = $o['value'];
 	}
+	$res['conf'] = $conf;
+
+	// Plugin cache
+	$cache = array();
 	$cacheKeys = array(
 		'dependancyjMQTT',
 		'jMQTT::daemonLastRcv',
@@ -128,10 +132,6 @@ function export_data() {
 		'jMQTT::daemonUid',
 		'jMQTT::nextStats'
 	);
-	$res['conf'] = $conf;
-
-	// Plugin cache
-	$cache = array();
 	foreach ($cacheKeys as $k) {
 		$cache[$k] = cache::byKey($k)->getValue(null);
 	}
