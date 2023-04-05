@@ -255,6 +255,67 @@ function restore_purgeNewEqAndCmd(&$diff_indexes, $verbose = false) {
 		print($l);
 }
 
+// Remove newly created eqLogic and cmd
+function restore_createMissingNewEqAndCmd(&$diff_indexes, $verbose = false) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating missing eqLogics and cmds...");
+	$logs = array();
+	// Create missing eqLogics
+	foreach ($diff_indexes['eqLogic'] as $id=>&$state) {
+		if ($state != DiffType::Deleted)
+			continue;
+		if(!createEqWithId($id)) {
+			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be created!\n";
+		} elseif ($verbose) {
+			$state = DiffType::Exists;
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . " created\n";
+		}
+	}
+	// Create missing cmds
+	foreach ($diff_indexes['cmd'] as $id=>&$state) {
+		if ($state != DiffType::Deleted)
+			continue;
+		if(!createCmdWithId($id)) {
+			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> cmd:' . $id . " could NOT be created!\n";
+		} elseif ($verbose) {
+			$state = DiffType::Exists;
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " created\n";
+		}
+	}
+	print("                [ OK ]\n");
+	foreach($logs as $l)
+		print($l);
+}
+
+// Replace existing eqLogics and cmds with their backups
+function restore_replaceEqAndCmd(&$diff_indexes, &$data, $verbose = false, $cache = true) {
+}
+
+// Purge existing cmds histories
+function restore_purgeHistories(&$diff_indexes, $verbose) {
+
+	// history::emptyHistory($_cmd_id, $_date = '')
+}
+
+// Replace existing cmds histories with their backups
+function restore_restoreHistories(&$diff_indexes, &$history, $verbose) {
+
+// (new history())->setCmd_id($cmd->getId())->setValue($_value)->setDatetime($_datetime)->save($cmd, true);
+
+//      See if MySQL direct call could be more efficient? needed?
+
+// $history = array();
+// foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
+	// if ($o->getIsHistorized()) {
+		// $histo = array();
+		// foreach (utils::o2a($o->getHistory()) as $h) {
+			// unset($h['cmd_id']);
+			// $histo[] = $h;
+		// }
+		// $history[$o->getId()] = $histo;
+	// }
+// }
+}
+
 // Restore jMQTT log files
 function restore_logs($tmp_dir) {
 	$logs_dir = dirname(realpath(log::getPathToLog('jMQTT')));
@@ -521,52 +582,35 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		$data['cmd']     = $cmds;
 */
 
-	// Get data from backup
-	$data = restore_getBackupD($tmp_dir);
+	// If --apply, then add missing eqLogic/cmd and restore all eqLogic/cmd from backup
+	if ($options['apply']) {
 
+		// Create missing eqLogics and cmds
+		restore_createMissingNewEqAndCmd($diff_indexes, $options['verbose']);
 
-	//
-	// - If --apply, then add missing eqLogic/cmd + chache + their history from backup
-	//   -> Use $cmd->addHistoryValue($_value, $_datetime) for history
-	//      See if MySQL direct call could be more efficient? needed?
-	//   -> Forget about those eqLogic/cmd, they are OK now
-	//   -> Display all missing recreated if --verbose
-	//
-	// if ($options['apply'])
-	// if ($options['verbose'])
+		// Get data from backup
+		$data = restore_getBackupD($tmp_dir);
 
+		// Replace eqLogics and cmds
+		restore_replaceEqAndCmd($diff_indexes, $data, $options['verbose'], !$options['not-cache']);
+	}
 
-	//
-	// - If --apply, then overwrite all matched eqLogic/cmd with their backup + chache
-	//   -> Display all overwrote matched eqLogic/cmd if --verbose
-	//
-	// if ($options['apply'])
-	// if ($options['verbose'])
+	// If --not-history, then do not remove all matched cmd history and import it from the backup
+	if (!$options['not-history']) {
+		if (!in_array('history', $metadata['packages'])) {
+			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT histories...     (not in backup) [ FAILED ]\n");
+			$error_code = 30;
+		} elseif ($options['apply']) {
+			// Get history from backup
+			$history = restore_getBackupH($tmp_dir);
 
+			// Purge all cmds histories
+			restore_purgeHistories($diff_indexes, $options['verbose']);
 
-	// Get history from backup
-	$history = restore_getBackupH($tmp_dir);
-	// $history = array();
-	// foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
-		// if ($o->getIsHistorized()) {
-			// $histo = array();
-			// foreach (utils::o2a($o->getHistory()) as $h) {
-				// unset($h['cmd_id']);
-				// $histo[] = $h;
-			// }
-			// $history[$o->getId()] = $histo;
-		// }
-	// }
-
-
-	//
-	// - If --apply & --do-history, then remove all matched cmd history and import it from the backup
-	//   -> Display all overwrote history cmd if --verbose
-	//
-	// if ($options['apply'] && $options['do-history'])
-	// if (in_array('hist', $metadata['packages']))
-	// if ($options['verbose'])
-
+			// Restore all cmds histories
+			restore_restoreHistories($diff_indexes, $history, $options['verbose']);
+		}
+	}
 
 	// If --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
 	if ($options['do-logs']) {
