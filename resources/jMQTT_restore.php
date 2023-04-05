@@ -210,19 +210,19 @@ function createEqWithId($_id) {
 // Restore jMQTT plugin files, keeping existing jMQTT backups and .git folder
 function restore_folder($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Saving existing jMQTT backups...");
-	exec('cp -a '.__DIR__.'/../data/backup/* '.$tmp_dir.'/backup/jMQTT/data/backup 2>&1 > /dev/null');
-	if (file_exists(__DIR__.'/../.git'))
-		exec('cp -a '.__DIR__.'/../.git '.$tmp_dir.'/backup/jMQTT 2>&1 > /dev/null');
+	exec('cp -a ' . __DIR__ . '/../data/backup/* ' . $tmp_dir . '/backup/jMQTT/data/backup 2>&1 > /dev/null');
+	if (file_exists(__DIR__ . '/../.git'))
+		exec('cp -a ' . __DIR__ . '/../.git ' . $tmp_dir . '/backup/jMQTT 2>&1 > /dev/null');
 	print("                     [ OK ]\n");
 
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring jMQTT plugin files...");
-	$plugins_dir = realpath(__DIR__.'/../..');
+	$plugins_dir = realpath(__DIR__ . '/../..');
 	$cwd = getcwd(); // We may be working in a folder that is going to be removed
 	chdir($tmp_dir); // Go to an existing folder
 
 	// exec('mv '.$plugins_dir.'/jMQTT '.$tmp_dir.'/jMQTT_old');
-	exec('rm -rf '.$plugins_dir.'/jMQTT 2>&1 > /dev/null');
-	exec('mv '.$tmp_dir.'/backup/jMQTT '.$plugins_dir.' 2>&1 > /dev/null');
+	exec('rm -rf ' . $plugins_dir . '/jMQTT 2>&1 > /dev/null');
+	exec('mv ' . $tmp_dir . '/backup/jMQTT ' . $plugins_dir . ' 2>&1 > /dev/null');
 
 	chdir($cwd); // Switch back to previous cwd folder
 	print("                       [ OK ]\n");
@@ -433,12 +433,16 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		print("                             [ OK ]\n");
 	}
 
-	//
-	// - If --apply & --do-plugin, then Restore jMQTT plugin folder
-	//
-	// if ($options['apply'] && $options['do-plugin'])
-	// if (in_array('plugin', $metadata['packages']))
-	// if ($options['verbose'])
+	// If --do-folder, then Restore jMQTT plugin folder
+	if ($options['do-folder']) {
+		if (!in_array('folder', $metadata['packages'])) {
+			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT plugin folder... (not in backup) [ FAILED ]\n");
+			return 6;
+		} elseif ($options['apply']) {
+			restore_folder($tmp_dir);
+		}
+	}
+
 
 
 	//
