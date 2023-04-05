@@ -276,7 +276,7 @@ try {
 		// exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . );
 
 		// Launch restoration
-		exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php --all --file ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
+		exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php --file ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
 
 		// Append temporary log to jMQTT log
 		file_put_contents(log::getPathToLog('jMQTT'), file_get_contents(log::getPathToLog('tmp_jMQTT')), FILE_APPEND);

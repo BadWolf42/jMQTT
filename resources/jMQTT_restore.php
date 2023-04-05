@@ -15,6 +15,11 @@ Backup tar.gz structure:
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 require_once __DIR__ . '/jMQTT_backup.php';
 
+//
+// TODO (important) Documentation
+//
+
+
 class DiffType {
 	const Created = 'Created';
 	const Exists = 'Exists';
@@ -25,19 +30,13 @@ class DiffType {
 }
 
 
-//
-// TODO (important) Still work in progress
-// - Warning: Shouldn't we call jMQTT_restore.php from the backup?
-// - Documentation
-//
-
 // Pass by value current metadata, ids and a new temporary folder to extact the backup
 function restore_prepare(&$initial_metadata, &$initial_indexes, &$tmp_dir) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to restore...\n");
 	$initial_metadata = export_metadata();
 	$initial_indexes  = export_index();
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating temporary directory...");
 	$tmp_dir = trim(shell_exec('mktemp -dt jMQTT.XXXXXX'));
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to restore...                              [ OK ]\n");
+	print("                      [ OK ]\n");
 }
 
 // Extract the backup file (with root privileges) into temporary folder
@@ -63,7 +62,7 @@ function restore_getBackupM($tmp_dir) {
 // Compare hardware keys
 function restore_checkHwKey($current, $old, $no_hw_check) {
 	// - If no match stop (FAIL)
-	// - If --no-hw-check then use old full_import method? -> TODO
+	// - If --no-hw-check then use old full_import method?
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Verifing hardware keys...");
 	if ($current['hardwareKey'] == $old['hardwareKey']) {
 		print("                            [ OK ]\n");
@@ -90,7 +89,7 @@ function restore_getBackupI($tmp_dir) {
 
 function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$diff_indexes) {
 	//   -> Confirm all Id from backup ARE NOT used in Jeedom outside of jMQTT
-	//      If --by-name, then try to reconciliate, otherwise FAIL after having listed all issues // TODO ?
+	//      If --by-name, then try to reconciliate, otherwise FAIL after having listed all issues
 	//   -> Match all eqLogic by Id first, continue to match with humainName if --by-name,
 	//   -> Match all cmd by Id first, continue to match with humainName if --by-name,
 	//   -> Display matching result if --verbose
@@ -155,7 +154,7 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 			} else {
 				$diff_indexes[$type][$id] = DiffType::Deleted;
 				if ($options['verbose'])
-					print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $id . " no longer exists\n");
+					print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $id . ' (' . $name . ") no longer exists\n");
 			}
 		}
 	}
@@ -347,19 +346,6 @@ function restore_restoreHistories(&$diff_indexes, &$history, $verbose) {
 
 // (new history())->setCmd_id($cmd->getId())->setValue($_value)->setDatetime($_datetime)->save($cmd, true);
 
-//      See if MySQL direct call could be more efficient? needed?
-
-// $history = array();
-// foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
-	// if ($o->getIsHistorized()) {
-		// $histo = array();
-		// foreach (utils::o2a($o->getHistory()) as $h) {
-			// unset($h['cmd_id']);
-			// $histo[] = $h;
-		// }
-		// $history[$o->getId()] = $histo;
-	// }
-// }
 }
 
 // Restore jMQTT log files
@@ -536,14 +522,6 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	$initial_indexes = null;
 	restore_prepare($initial_metadata, $initial_indexes, $tmp_dir);
 
-/*
-	// TODO Remove debug
-	if ($options['verbose'])
-		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of jMQTT: \n" . json_encode($initial_metadata, JSON_PRETTY_PRINT) . "\n");
-	if ($options['verbose'])
-		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Indexes of jMQTT: \n" . json_encode($initial_indexes, JSON_PRETTY_PRINT) . "\n");
-*/
-
 	// Extact the archive
 	restore_extactBackup($options['file'], $tmp_dir);
 	$backup_dir = $tmp_dir . '/backup';
@@ -690,7 +668,7 @@ function restore_help() {
 	print("  --by-name         match eqLogic and cmd by name (NOT recommended)\n");
 	print("  --do-delete       remove jMQTT eqLogic and cmd created since backup\n");
 	print("  --not-cache       do NOT restore previous cached values (preserve cache)\n");
-	print("  --not-history     do NOT restore previous history (preserve history)\n");
+	print("  --not-history     remove recent history (keep only history from backup)\n");
 	print("  --do-logs         restore previous logs (do NOT preserve newer logs)\n");
 	print("  --do-mosquitto    restore Mosquitto config folders/files\n");
 	print("  -v, --verbose     display more information about the restore process\n");
@@ -743,9 +721,6 @@ function restore_main() {
 	$options['help'] = isset($getopt_res['h']) || isset($getopt_res['help']);
 	$options['other'] = array_slice($argv, $rest);
 
-	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Getopt:  " . json_encode($getopt_res) . "\n"); // TODO Remove debug
-	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Options: " . json_encode($options) . "\n"); // TODO Remove debug
-
 	if (count($argv) == 1 || $options['help']) {
 		restore_help();
 		exit(0);
@@ -771,6 +746,14 @@ function restore_main() {
 		print(date('[Y-m-d H:i:s][[\E\R\R\O\R] : ') ."Backup is already running, please wait until it ends, aborting!\n");
 		$error_code = 1;
 	} else {
+		// If not --apply, then explain it is a dry run
+		if (!$options['apply']) {
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\\n");
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\                    DRY RUN MODE                     /!\\\n");
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\     Use --apply to acctually make some changes!     /!\\\n");
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\\n");
+		}
+
 		export_writePidFile();
 
 		$tmp_dir = null;
