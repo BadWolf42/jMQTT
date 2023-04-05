@@ -336,16 +336,46 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 }
 
 // Purge existing cmds histories
-function restore_purgeHistories(&$diff_indexes, $verbose) {
-
-	// history::emptyHistory($_cmd_id, $_date = '')
+function restore_purgeHistories(&$diff_indexes, $type, $_date = '', $verbose) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Purge some cmds history...");
+	$logs = array();
+	foreach ($diff_indexes['cmd'] as $id=>&$state) {
+		if ($state != $type)
+			continue;
+		history::emptyHistory($id, $_date);
+		if ($verbose)
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' history' . (($_date == '') ? '' : (' <= ' . $_date)) . " purged\n";
+	}
+	print("                           [ OK ]");
+	foreach($logs as $l)
+		print($l);
 }
 
 // Replace existing cmds histories with their backups
-function restore_restoreHistories(&$diff_indexes, &$history, $verbose) {
-
+function restore_restoreHistories(&$diff_indexes, &$history, $type, $verbose) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restore some cmds history...\n");
+	foreach ($diff_indexes['cmd'] as $id=>&$state) {
+		if ($state != $type)
+			continue;
+		if (array_key_exists($id, $history)) {
+			$cpt = 0;
+			foreach ($history[$id] as $h) {
+				$h['cmd_id'] = $id;
 // (new history())->setCmd_id($cmd->getId())->setValue($_value)->setDatetime($_datetime)->save($cmd, true);
+// See if MySQL direct call could be more efficient? needed?
+				$sql = 'REPLACE INTO history SET cmd_id=:cmd_id, `datetime`=:datetime, value=:value';
+				DB::Prepare($sql, $h, DB::FETCH_TYPE_ROW);
+				if ($cpt++ % 10 == 0) print('.'); // 1 dot every 10 history point
+			}
+			print("\n");
 
+			if ($verbose)
+				print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " history restored\n");
+		} elseif ($verbose) {
+			print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " no history\n");
+		}
+	}
+	print("                                                     [ OK ]\n");
 }
 
 // Restore jMQTT log files
@@ -596,21 +626,22 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Deleted, $options['verbose'], !$options['not-cache']);
 	}
 
-	// If --not-history, then do not remove all matched cmd history and import it from the backup
-	if (!$options['not-history']) {
-		if (!in_array('history', $metadata['packages'])) {
-			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT histories...     (not in backup) [ FAILED ]\n");
-			$error_code = 30;
-		} elseif ($options['apply']) {
-			// Get history from backup
-			$history = restore_getBackupH($tmp_dir);
+	if (!in_array('history', $metadata['packages'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT histories...     (not in backup) [ FAILED ]\n");
+		$error_code = 30;
+	} elseif ($options['apply']) {
+		// Get history from backup
+		$history = restore_getBackupH($tmp_dir);
 
-			// Purge all cmds histories
-			restore_purgeHistories($diff_indexes, $options['verbose']);
+		// If --not-history, then remove all history (including recent) and import it all from the backup
+		$date = ($options['not-history'] ? '' : $metadata['packages']['date']);
 
-			// Restore all cmds histories
-			restore_restoreHistories($diff_indexes, $history, $options['verbose']);
-		}
+		// Purge all cmds histories
+		restore_purgeHistories($diff_indexes, DiffType::Exists, $date, $options['verbose']);
+
+		// Restore all cmds histories
+		restore_restoreHistories($diff_indexes, $history, DiffType::Exists, $options['verbose']);
+		restore_restoreHistories($diff_indexes, $history, DiffType::Deleted, $options['verbose']);
 	}
 
 	// If --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
