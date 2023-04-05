@@ -259,6 +259,21 @@ function restore_mosquitto($tmp_dir) {
 	print("                        [ OK ]\n");
 }
 
+// Restore jMQTT configuration and cache
+function restore_confAndCache(&$data) {
+	// Restore plugin config
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring plugin config...");
+	foreach ($data['conf'] as $k=>$value)
+		config::save($k, $value, 'jMQTT');
+	print("                           [ OK ]\n");
+
+	// Restore plugin cache
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring plugin cache...");
+	foreach ($data['cache'] as $k=>$value)
+		cache::set($k, $value);
+	print("                            [ OK ]\n");
+}
+
 // Remove the temporary folder where backup has been extracted
 function restore_removeTmpDir($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing backup directory...");
@@ -437,7 +452,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if ($options['do-folder']) {
 		if (!in_array('folder', $metadata['packages'])) {
 			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT plugin folder... (not in backup) [ FAILED ]\n");
-			return 6;
+			$error_code = 6;
 		} elseif ($options['apply']) {
 			restore_folder($tmp_dir);
 		}
@@ -525,7 +540,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if ($options['do-logs']) {
 		if (!in_array('logs', $metadata['packages'])) {
 			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT logs...          (not in backup) [ FAILED ]\n");
-			return 30;
+			$error_code = 30;
 		} elseif ($options['apply']) {
 			restore_logs($tmp_dir);
 		}
@@ -535,24 +550,28 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if ($options['do-mosquitto']) {
 		if (!in_array('mosquitto', $metadata['packages'])) {
 			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring Mosquitto config...    (not in backup) [ FAILED ]\n");
-			return 31;
+			$error_code = 31;
 		} elseif ($options['apply']) {
 			restore_mosquitto($tmp_dir);
 		}
 	}
 
+	// If --apply, then Restore old previous deamonAutoMode (before restoring config from backup)
+	if ($options['apply']) {
+		config::save('deamonAutoMode', $old_autoMode, 'jMQTT');
+	}
 
-	//
-	// - If --apply, then Restore plugin config (no backup of global cache for now. usefull/TODO?)
-	//
-	// if ($options['apply'])
+	// If --apply & data in packages, then Restore plugin config and cache
+	if (!in_array('data', $metadata['packages'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring plugin conf & cache... (not in backup) [ FAILED ]\n");
+		$error_code = 32;
+	} elseif ($options['apply']) {
+		restore_confAndCache($data);
+	}
 
-
-
-	// If --apply, then retore Daemon previous state
+	// If --apply & Daemon was running before, then start it
 	if ($options['apply']) {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...");
-		config::save('deamonAutoMode', $old_autoMode, 'jMQTT');
 		if ($old_daemonState)
 			jMQTT::deamon_start();
 		print("                             [ OK ]\n");
