@@ -226,31 +226,31 @@ function restore_folder($tmp_dir) {
 	print("                       [ OK ]\n");
 }
 
-// Remove newly created eqLogic and cmd
-function restore_purgeNewEqAndCmd(&$diff_indexes, $verbose = false) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing new eqLogics and cmds...");
+// Remove some eqLogic and cmd
+function restore_purgeEqAndCmd(&$diff_indexes, $type, $verbose = false) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing some eqLogics and cmds...");
 	$logs = array();
 	// Remove newly created eqLogics
 	foreach ($diff_indexes['eqLogic'] as $id=>$state) {
-		if ($state != DiffType::Created)
+		if ($state != $type)
 			continue;
 		$o = eqLogic::byId($id);
 		if (is_object($o))
 			$o->remove();
 		if ($verbose)
-			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . " removed\n";
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . ' (type: ' . $state . ") removed\n";
 	}
 	// Remove newly created cmds
 	foreach ($diff_indexes['cmd'] as $id=>$state) {
-		if ($state != DiffType::Created)
+		if ($state != $type)
 			continue;
 		$o = cmd::byId($id);
 		if (is_object($o))
 			$o->remove();
 		if ($verbose)
-			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " removed\n";
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' (type: ' . $state . ") removed\n";
 	}
-	print("                    [ OK ]\n");
+	print("                   [ OK ]\n");
 	foreach($logs as $l)
 		print($l);
 }
@@ -594,39 +594,17 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		}
 	}
 
-	// If --do-delete, then simply remove newly added eqLogic/cmd (change $diff_indexes to DiffType::Deleted)
+	// If --do-delete, then simply remove newly added eqLogic/cmd
 	if ($options['do-delete']) {
 		if (!in_array('data', $metadata['packages'])) {
 			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Deleting new eq/cmd...       (no data in backup) [ FAILED ]\n");
 			$error_code = 7;
 		} elseif ($options['apply']) {
-			restore_purgeNewEqAndCmd($diff_indexes, $options['verbose']);
+			restore_purgeEqAndCmd($diff_indexes, DiffType::Created, $options['verbose']);
+			restore_purgeEqAndCmd($diff_indexes, DiffType::Invalid, $options['verbose']);
 		}
 	}
 	// Otherwise Forget about those new eqLogic/cmd, they are OK now
-
-
-
-/*
-		$conf = array();
-		foreach (config::searchKey('', "jMQTT") as $o)
-			$conf[$o['key']] = $o['value'];
-		$data['conf']    = $conf;
-		$eqLogics = array();
-		foreach (eqLogic::byType('jMQTT') as $o) {
-			$eq = utils::o2a($o);
-			$eq['cache'] = $o->getCache();
-			$eqLogics[] = $eq;
-		}
-		$data['eqLogic'] = $eqLogics;
-		$cmds = array();
-		foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
-			$cmd = utils::o2a($o);
-			$cmd['cache'] = $o->getCache();
-			$cmds[] = $cmd;
-		}
-		$data['cmd']     = $cmds;
-*/
 
 	// If --apply, then add missing eqLogic/cmd and restore all eqLogic/cmd from backup
 	if ($options['apply']) {
