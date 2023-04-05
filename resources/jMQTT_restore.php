@@ -288,6 +288,52 @@ function restore_createMissingNewEqAndCmd(&$diff_indexes, $verbose = false) {
 
 // Replace existing eqLogics and cmds with their backups
 function restore_replaceEqAndCmd(&$diff_indexes, &$data, $verbose = false, $cache = true) {
+	$logs = array();
+
+	// Retore eqLogics
+	$errorE = false;
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring eqLogics...                                 ");
+	foreach ($data['eqLogic'] as $eq) {
+		$id = $eq['id'];
+		if(!in_array($id, $diff_indexes['eqLogic'])) {
+			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be found in diff!\n";
+			$errorE = true;
+			continue;
+		}
+		if ($diff_indexes['eqLogic'][$id] != DiffType::Exists)
+			continue;
+		$o = jMQTT::byId($id);
+		utils::a2o($o, $eq);
+		$eq->save();
+		if ($verbose)
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . " updated\n";
+	}
+	print($errorE ? "[ ERROR ]\n" : "   [ OK ]\n");
+
+	// Retore eqLogics
+	$errorC = false;
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring cmds...                                     ");
+	foreach ($data['cmd'] as $eq) {
+		$id = $eq['id'];
+		if(!in_array($id, $diff_indexes['cmd'])) {
+			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> cmd:' . $id . " could NOT be found in diff!\n";
+			$errorC = true;
+			continue;
+		}
+		if ($diff_indexes['cmd'][$id] != DiffType::Exists)
+			continue;
+		$o = jMQTTCmd::byId($id);
+		utils::a2o($o, $eq);
+		$eq->save();
+		if ($verbose)
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " updated\n";
+	}
+	print($errorC ? "[ ERROR ]\n" : "   [ OK ]\n");
+
+	foreach($logs as $l)
+		print($l);
+
+	return !$errorE && !$errorC;
 }
 
 // Purge existing cmds histories
