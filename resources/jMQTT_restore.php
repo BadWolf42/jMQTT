@@ -40,8 +40,13 @@ function restore_extactBackup($file, $tmp_dir) {
 // Return Metadata from the extacted backup temporary folder
 function restore_getBackupM($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Metadata...");
-	$metadata = json_decode(file_get_contents($tmp_dir . '/backup/metadata.json'), JSON_UNESCAPED_UNICODE);
-	print("                     [ OK ]\n");
+	if (file_exists($tmp_dir . '/backup/metadata.json')) {
+		$metadata = json_decode(file_get_contents($tmp_dir . '/backup/metadata.json'), JSON_UNESCAPED_UNICODE);
+		print("                     [ OK ]\n");
+	} else {
+		print("                  [ ERROR ]\n");
+		$metadata = null;
+	}
 	return $metadata;
 }
 
@@ -289,20 +294,27 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	$initial_metadata = null;
 	$initial_indexes = null;
 	restore_prepare($initial_metadata, $initial_indexes, $tmp_dir);
-	// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Meta: \n" . json_encode($initial_metadata, JSON_PRETTY_PRINT) . "\n"); // TODO Remove debug
-	// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Indexes: \n" . json_encode($initial_indexes, JSON_PRETTY_PRINT) . "\n"); // TODO Remove debug
-	print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Temp dir: '" . $tmp_dir . "'\n"); // TODO Remove debug
+
+	// TODO Remove debug
+/*
+	if ($options['verbose'])
+		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of jMQTT: \n" . json_encode($initial_metadata, JSON_PRETTY_PRINT) . "\n");
+	if ($options['verbose'])
+		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Indexes of jMQTT: \n" . json_encode($initial_indexes, JSON_PRETTY_PRINT) . "\n");
+	if ($options['verbose'])
+		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Temp dir: '" . $tmp_dir . "'\n");
+*/
 
 	// Extact the archive
 	restore_extactBackup($options['file'], $tmp_dir);
 	$backup_dir = $tmp_dir . '/backup';
 	$metadata = restore_getBackupM($tmp_dir);
-	// TODO FAIL if no metadata
+	if (is_null($metadata))
+		return 3;
 
-	//
-	// Check what packages are included in archive
-	//
-	// if (in_array('plugin', $metadata['packages'])
+	// TODO Remove debug
+	if ($options['verbose'])
+		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of the backup: \n" . json_encode($metadata, JSON_PRETTY_PRINT) . "\n");
 
 	// Check if indexes are included in archive
 	if (!in_array('index', $metadata['packages']))
