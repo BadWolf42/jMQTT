@@ -255,18 +255,18 @@ function restore_purgeEqAndCmd(&$diff_indexes, $type, $verbose = false) {
 		print($l);
 }
 
-// Remove newly created eqLogic and cmd
-function restore_createMissingNewEqAndCmd(&$diff_indexes, $verbose = false) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating missing eqLogics and cmds...");
+// Created missing eqLogic and cmd
+function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating eqLogics and cmds...");
 	$logs = array();
 	// Create missing eqLogics
 	foreach ($diff_indexes['eqLogic'] as $id=>&$state) {
 		if ($state != DiffType::Deleted)
 			continue;
 		if(!createEqWithId($id)) {
+			$state = DiffType::Invalid;
 			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be created!\n";
 		} elseif ($verbose) {
-			$state = DiffType::Exists;
 			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . " created\n";
 		}
 	}
@@ -275,13 +275,13 @@ function restore_createMissingNewEqAndCmd(&$diff_indexes, $verbose = false) {
 		if ($state != DiffType::Deleted)
 			continue;
 		if(!createCmdWithId($id)) {
+			$state = DiffType::Invalid;
 			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> cmd:' . $id . " could NOT be created!\n";
 		} elseif ($verbose) {
-			$state = DiffType::Exists;
 			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " created\n";
 		}
 	}
-	print("                [ OK ]\n");
+	print("                        [ OK ]");
 	foreach($logs as $l)
 		print($l);
 }
@@ -610,7 +610,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if ($options['apply']) {
 
 		// Create missing eqLogics and cmds
-		restore_createMissingNewEqAndCmd($diff_indexes, $options['verbose']);
+		restore_createMissingEqAndCmd($diff_indexes, $options['verbose']);
 
 		// Get data from backup
 		$data = restore_getBackupD($tmp_dir);
