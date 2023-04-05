@@ -286,8 +286,8 @@ function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
 		print($l);
 }
 
-// Replace existing eqLogics and cmds with their backups
-function restore_replaceEqAndCmd(&$diff_indexes, &$data, $verbose = false, $cache = true) {
+// Replace eqLogics and cmds of type $type with their backups
+function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false, $cache = true) {
 	$logs = array();
 
 	// Retore eqLogics
@@ -300,13 +300,13 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $verbose = false, $cach
 			$errorE = true;
 			continue;
 		}
-		if ($diff_indexes['eqLogic'][$id] != DiffType::Exists)
+		if ($diff_indexes['eqLogic'][$id] != $type)
 			continue;
 		$o = jMQTT::byId($id);
 		utils::a2o($o, $eq);
 		$eq->save();
 		if ($verbose)
-			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . " updated\n";
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . ' (type: ' . $type . ") updated\n";
 	}
 	print($errorE ? "[ ERROR ]\n" : "   [ OK ]\n");
 
@@ -320,13 +320,13 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $verbose = false, $cach
 			$errorC = true;
 			continue;
 		}
-		if ($diff_indexes['cmd'][$id] != DiffType::Exists)
+		if ($diff_indexes['cmd'][$id] != $type)
 			continue;
 		$o = jMQTTCmd::byId($id);
 		utils::a2o($o, $eq);
 		$eq->save();
 		if ($verbose)
-			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " updated\n";
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' (type: ' . $type . ") updated\n";
 	}
 	print($errorC ? "[ ERROR ]\n" : "   [ OK ]\n");
 
@@ -536,14 +536,12 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	$initial_indexes = null;
 	restore_prepare($initial_metadata, $initial_indexes, $tmp_dir);
 
-	// TODO Remove debug
 /*
+	// TODO Remove debug
 	if ($options['verbose'])
 		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of jMQTT: \n" . json_encode($initial_metadata, JSON_PRETTY_PRINT) . "\n");
 	if ($options['verbose'])
 		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Indexes of jMQTT: \n" . json_encode($initial_indexes, JSON_PRETTY_PRINT) . "\n");
-	if ($options['verbose'])
-		print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Temp dir: '" . $tmp_dir . "'\n");
 */
 
 	// Extact the archive
@@ -616,7 +614,8 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		$data = restore_getBackupD($tmp_dir);
 
 		// Replace eqLogics and cmds
-		restore_replaceEqAndCmd($diff_indexes, $data, $options['verbose'], !$options['not-cache']);
+		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Exists, $options['verbose'], !$options['not-cache']);
+		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Deleted, $options['verbose'], !$options['not-cache']);
 	}
 
 	// If --not-history, then do not remove all matched cmd history and import it from the backup
