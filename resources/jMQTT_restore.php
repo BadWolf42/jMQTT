@@ -17,7 +17,6 @@ require_once __DIR__ . '/jMQTT_backup.php';
 
 class DiffType {
 	const Created = 'Created';
-	const Unchanged = 'Unchanged';
 	const Exists = 'Exists';
 	const Deleted = 'Deleted';
 	const Invalid = 'Invalid';
@@ -108,12 +107,11 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 		foreach ($all as $o) {
 			$current_indexes[$type][$o->getId()] = $o->getHumanName();
 			if (array_key_exists($o->getId(), $backup_indexes[$type])) {
+				$diff_indexes[$type][$o->getId()] = DiffType::Exists;
 				if ($current_indexes[$type][$o->getId()] == $backup_indexes[$type][$o->getId()]) {
-					$diff_indexes[$type][$o->getId()] = DiffType::Unchanged;
 					if ($options['verbose'])
 						print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $current_indexes[$type][$o->getId()] . ") still exists with the same name\n");
 				} else {
-					$diff_indexes[$type][$o->getId()] = DiffType::Exists;
 					if ($options['verbose'])
 						print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $backup_indexes[$type][$o->getId()] . ' -> ' . $current_indexes[$type][$o->getId()] . ") still exists with a different name\n");
 				}
