@@ -1147,12 +1147,11 @@ class jMQTT extends eqLogic {
 			return;
 		}
 		// Ensure next attempt will be in at least 5 minutes
-		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300)); ; // in 5-10 mins
+		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300)); // in 5-10 mins
 
 		$url = 'https://stats.bad.wf/jmqtt.php';
 		$data = array();
 		$data['version'] = 1;
-		$data['hardwareId'] = trim(file_get_contents('/etc/machine-id'));
 		$data['hardwareKey'] = jeedom::getHardwareKey();
 		$data['hardwareName'] = jeedom::getHardwareName();
 		$data['distrib'] = system::getDistrib();
@@ -1162,8 +1161,6 @@ class jMQTT extends eqLogic {
 		$jplugin = update::byLogicalId('jMQTT');
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
-		$data['localVersion'] = $jplugin->getLocalVersion();
-		$data['remoteVersion'] = $jplugin->getRemoteVersion();
 		$data['configVersion'] = config::byKey('version', 'jMQTT', -1);
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
