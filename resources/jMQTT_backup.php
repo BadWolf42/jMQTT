@@ -246,12 +246,12 @@ function export_archive() {
 function export_help() {
 	print("Usage: php " . basename(__FILE__) . " <OPTION>\n");
 	print("Backup various data of jMQTT, sequentially, in this order\n\n");
-	print("  --all       equivalent to -cIDHLQAC\n");
+	print("  --all       equivalent to -cIDHFLQAC\n");
 	print("  -c          clean backup up leftovers before\n");
 	print("  -I          backup all used id for eqBroker, eqLogic, cmd\n");
 	print("  -D          backup all eqLogic, cmd, cache, plugin config\n");
 	print("  -H          backup all cmd history, historyArch\n");
-	print("  -P          backup jMQTT plugin files\n");
+	print("  -F          backup jMQTT plugin folder\n");
 	print("  -L          backup jMQTT logs\n");
 	print("  -Q          backup Mosquitto config\n");
 	print("  -A          make an archive of the backed up data\n");
@@ -261,7 +261,7 @@ function export_help() {
 
 
 function backup_main() {
-	$options = getopt("cIDHPLQACh", array('all', 'help'));
+	$options = getopt("cIDHFLQACh", array('all', 'help'));
 
 	if (isset($options['h']) || isset($options['help']) || count($options) == 0) {
 		export_help();
@@ -298,9 +298,9 @@ function backup_main() {
 		$packages[] = 'hist';
 	}
 
-	if (isset($options['all']) || isset($options['P'])) {
+	if (isset($options['all']) || isset($options['F'])) {
 		export_plugin();
-		$packages[] = 'plugin';
+		$packages[] = 'folder';
 	}
 
 	if (isset($options['all']) || isset($options['L'])) {

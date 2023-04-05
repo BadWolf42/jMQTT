@@ -208,7 +208,7 @@ function createEqWithId($_id) {
 
 
 // Restore jMQTT plugin files, keeping existing jMQTT backups and .git folder
-function restore_plugin($tmp_dir) {
+function restore_folder($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Saving existing jMQTT backups...");
 	exec('cp -a '.__DIR__.'/../data/backup/* '.$tmp_dir.'/backup/jMQTT/data/backup 2>&1 > /dev/null');
 	if (file_exists(__DIR__.'/../.git'))
@@ -423,7 +423,6 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if (!restore_diffIndexes($options, $backup_indexes, $current_indexes, $diff_indexes))
 		return 5;
 
-
 	// If --apply, then stop and disabled Daemon
 	if ($options['apply']) {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...");
@@ -557,13 +556,13 @@ function restore_help() {
 	print("  --apply             apply the backup, this flag is REQUIRED to acctually\n");
 	print("                      change any data on this Jeedom/jMQTT system\n");
 	print("  --file=<FILE>       backup file to restore\n");
-	print("  -P, --do-plugin     restore previous jMQTT folder (keeping existing backups)\n");
+	print("  -F, --do-folder     restore previous jMQTT folder (keeping existing backups)\n");
 	print("  -D, --do-delete     delete all jMQTT eqLogic and cmd created since backup\n");
 	print("  -C, --do-cache      restore previous cached values\n");
 	print("  -H, --do-history    restore previous history (do not preserve newer history)\n");
 	print("  -L, --do-logs       restore previous log files (do not preserve newer ones)\n");
 	print("  -M, --do-mosquitto  restore Mosquitto config folders/files\n");
-	print("  --all               equivalent to -PCH\n");
+	print("  --all               equivalent to -FCH\n");
 	print("  --by-name           (not recommended) match eqLogic and cmd by name,\n");
 	print("  --no-hw-check       DOES NOT CHECK if system hardwareKey match with backup\n");
 	print("  -v, --verbose       display more information about the restore process\n");
@@ -585,7 +584,7 @@ function restore_main() {
 		array(
 			'apply',
 			'file:',
-			'do-plugin',
+			'do-folder',
 			'do-delete',
 			'do-cache',
 			'do-history',
@@ -604,7 +603,7 @@ function restore_main() {
 	$options['file'] = (isset($getopt_res['file']) && $getopt_res['file'] != false) ? $getopt_res['file'] : null;
 	$options['help'] = isset($getopt_res['h']) || isset($getopt_res['help']);
 	$options['apply'] = isset($getopt_res['apply']);
-	$options['do-plugin'] = isset($getopt_res['P']) || isset($getopt_res['do-plugin']) || isset($getopt_res['all']);
+	$options['do-folder'] = isset($getopt_res['F']) || isset($getopt_res['do-folder']) || isset($getopt_res['all']);
 	$options['do-delete'] = isset($getopt_res['D']) || isset($getopt_res['do-delete']);
 	$options['do-cache'] = isset($getopt_res['C']) || isset($getopt_res['do-cache']) || isset($getopt_res['all']);
 	$options['do-history'] = isset($getopt_res['H']) || isset($getopt_res['do-history']) || isset($getopt_res['all']);
