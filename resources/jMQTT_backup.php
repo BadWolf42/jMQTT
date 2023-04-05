@@ -178,11 +178,11 @@ function export_history() {
 }
 
 // [-P] backup jMQTT plugin dir
-function export_plugin() {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up jMQTT files...");
+function export_folder() {
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up jMQTT folder...");
 	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup/jMQTT 2>&1 > /dev/null');
 	shell_exec("tar -cf - -C ".__DIR__."/.. --exclude './data/backup/*' --exclude './.git' . | tar -xC ".__DIR__."/../data/backup/backup/jMQTT 2>&1 > /dev/null");
-	print("                            [ OK ]\n");
+	print("                           [ OK ]\n");
 }
 
 // [-L] backup jMQTT logs
@@ -295,11 +295,11 @@ function backup_main() {
 
 	if (isset($options['all']) || isset($options['H'])) {
 		file_put_contents(__DIR__.'/../data/backup/backup/history.json', json_encode(export_history(), JSON_UNESCAPED_UNICODE));
-		$packages[] = 'hist';
+		$packages[] = 'history';
 	}
 
 	if (isset($options['all']) || isset($options['F'])) {
-		export_plugin();
+		export_folder();
 		$packages[] = 'folder';
 	}
 
