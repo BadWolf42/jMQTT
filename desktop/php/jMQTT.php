@@ -96,7 +96,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 		// Check there are orphans first
 		$has_orphans = false;
 		foreach ($eqNonBrokers as $id => $nonBrokers) {
-			if (! array_key_exists($id, $eqBrokers)) {
+			if (!isset($eqBrokers[$id])) {
 				if (!$has_orphans) {
 					echo '<div class="eqLogicThumbnailContainer">';
 					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup>';
@@ -117,7 +117,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayEqLogicCard($eqB);
-			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
+			if (isset($eqNonBrokers[$eqB->getId()])) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 					displayEqLogicCard($eqL);
 				}

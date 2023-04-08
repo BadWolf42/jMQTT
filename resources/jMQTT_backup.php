@@ -87,14 +87,14 @@ function export_index() {
 
 	foreach ($allEqLogics as $o) {
 		if ($o->getType() != jMQTT::TYP_BRK) {
-			if (!array_key_exists($o->getBrkId(), $res['eqLogic']))
+			if (!isset($res['eqLogic'][$o->getBrkId()]))
 				$error[] = date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . '    -> eqLogic:' . $o->getId() . ' (' . $o->getHumanName() . ") is orphan.\n";
 			$res['eqLogic'][$o->getId()] = $o->getHumanName();
 		}
 	}
 
 	foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
-		if (!array_key_exists($o->getEqLogic_id(), $res['eqLogic']))
+		if (!isset($res['eqLogic'][$o->getEqLogic_id()]))
 			$error[] = date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . '    -> cmd:' . $o->getId() . ' (' . $o->getHumanName() . ") is orphan.\n";
 		$res['cmd'][$o->getId()] = $o->getHumanName();
 	}
@@ -368,9 +368,9 @@ function backup_main() {
 		$eqLogics[] = $exp;
 	}
 	function fsort($a, $b) {
-		$x = ((array_key_exists('configuration', $a) && array_key_exists('type', $a['configuration'])) ?
+		$x = ((isset($a['configuration']) && isset($a['configuration']['type'])) ?
 				$a['configuration']['type'] : "z").$a['id'];
-		$y = ((array_key_exists('configuration', $b) && array_key_exists('type', $b['configuration'])) ?
+		$y = ((isset($b['configuration']) && isset($b['configuration']['type'])) ?
 				$b['configuration']['type'] : "z").$b['id'];
 		return strcmp($x, $y);
 	}

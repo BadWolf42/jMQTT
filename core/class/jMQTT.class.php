@@ -236,21 +236,21 @@ class jMQTT extends eqLogic {
 			$changed = false;
 
 			// if 'commands' key exists in this template
-			if (array_key_exists('commands', $templateValue)) {
+			if (isset($templateValue['commands'])) {
 
 				// for each keys under 'commands'
 				foreach ($templateValue['commands'] as &$cmd) {
 
 					// if 'configuration' key exists in this command
-					if (array_key_exists('configuration', $cmd)) {
+					if (isset($cmd['configuration'])) {
 
 						// get the topic if it exists
-						$topic = (array_key_exists('topic', $cmd['configuration'])) ? $cmd['configuration']['topic'] : '';
+						$topic = (isset($cmd['configuration']['topic'])) ? $cmd['configuration']['topic'] : '';
 
 						$i = strpos($topic, '{');
 						if ($i === false) {
 							// Just set empty jsonPath if it doesn't exists
-							if (!array_key_exists(jMQTTCmd::CONF_KEY_JSON_PATH, $cmd['configuration'])) {
+							if (!isset($cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH])) {
 								$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = '';
 								$changed = true;
 							}
@@ -301,10 +301,10 @@ class jMQTT extends eqLogic {
 			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename);
 
 			// if 'configuration' key exists in this template
-			if (array_key_exists('configuration', $templateValue)) {
+			if (isset($templateValue['configuration'])) {
 
 				// if auto_add_cmd doesn't exists in configuration, we need to move topic from logicalId to configuration
-				if (!array_key_exists(self::CONF_KEY_AUTO_ADD_TOPIC, $templateValue['configuration'])) {
+				if (!isset($templateValue['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC])) {
 					$topic = $templateValue['logicalId'];
 					$templateValue['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = $topic;
 					$templateValue['logicalId'] = '';
@@ -419,7 +419,7 @@ class jMQTT extends eqLogic {
 		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
-		if (array_key_exists('cmd', $exportedTemplate[$_tName])) {
+		if (isset($exportedTemplate[$_tName]['cmd'])) {
 			// Rename 'cmd' to 'commands' for Jeedom import ...
 			$exportedTemplate[$_tName]['commands'] = $exportedTemplate[$_tName]['cmd'];
 			unset($exportedTemplate[$_tName]['cmd']);
@@ -2613,7 +2613,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_BRK_ID => -1
 		);
 		// If not in list, default value is ''
-		return array_key_exists($_key, $defValues) ? $defValues[$_key] : '';
+		return isset($defValues[$_key]) ? $defValues[$_key] : '';
 	}
 
 	/**

@@ -105,7 +105,7 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 		$all = ($type == 'eqLogic') ? eqLogic::byType('jMQTT') : cmd::searchConfiguration('', 'jMQTT');
 		foreach ($all as $o) {
 			$current_indexes[$type][$o->getId()] = $o->getHumanName();
-			if (array_key_exists($o->getId(), $backup_indexes[$type])) {
+			if (isset($backup_indexes[$type][$o->getId()])) {
 				$diff_indexes[$type][$o->getId()] = DiffType::Exists;
 				if ($current_indexes[$type][$o->getId()] == $backup_indexes[$type][$o->getId()]) {
 					if ($options['verbose'])
@@ -142,7 +142,7 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 			}
 
 			// Found previously
-			if (array_key_exists($id, $diff_indexes[$type]))
+			if (isset($diff_indexes[$type][$id]))
 				continue;
 
 			// Check if another eqLogic/cmd with the same id exists outside of jMQTT
@@ -294,7 +294,7 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring eqLogics...                                 ");
 	foreach ($data['eqLogic'] as $eq) {
 		$id = $eq['id'];
-		if(!in_array($id, $diff_indexes['eqLogic'])) {
+		if(!isset($diff_indexes['eqLogic'][$id])) {
 			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be found in diff!\n";
 			$errorE = true;
 			continue;
@@ -314,7 +314,7 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring cmds...                                     ");
 	foreach ($data['cmd'] as $eq) {
 		$id = $eq['id'];
-		if(!in_array($id, $diff_indexes['cmd'])) {
+		if(!isset($diff_indexes['cmd'][$id])) {
 			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> cmd:' . $id . " could NOT be found in diff!\n";
 			$errorC = true;
 			continue;
@@ -357,7 +357,7 @@ function restore_restoreHistories(&$diff_indexes, &$history, $type, $verbose) {
 	foreach ($diff_indexes['cmd'] as $id=>&$state) {
 		if ($state != $type)
 			continue;
-		if (array_key_exists($id, $history)) {
+		if (isset($history[$id])) {
 			$cpt = 0;
 			foreach ($history[$id] as $h) {
 				$h['cmd_id'] = $id;
@@ -446,9 +446,9 @@ function full_export_old() {
 		$returns[] = $exp;
 	}
 	function fsort($a, $b) {
-		$x = ((array_key_exists('configuration', $a) && array_key_exists('type', $a['configuration'])) ?
+		$x = ((isset($a['configuration']) && isset($a['configuration']['type'])) ?
 				$a['configuration']['type'] : "z").$a['id'];
-		$y = ((array_key_exists('configuration', $b) && array_key_exists('type', $b['configuration'])) ?
+		$y = ((isset($b['configuration']) && isset($b['configuration']['type'])) ?
 				$b['configuration']['type'] : "z").$b['id'];
 		return strcmp($x, $y);
 	}
