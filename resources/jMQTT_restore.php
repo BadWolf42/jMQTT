@@ -21,10 +21,10 @@ require_once __DIR__ . '/jMQTT_backup.php';
 
 
 class DiffType {
-	const Created = 'Created';
-	const Exists = 'Exists';
-	const Deleted = 'Deleted';
-	const Invalid = 'Invalid';
+	const Created = 'created';
+	const Existing = 'existing';
+	const Deleted = 'deleted';
+	const Invalid = 'invalid';
 	const CollisionOnName = 'CollisionOnName';
 	const CollisionOnId = 'CollisionOnId';
 }
@@ -106,7 +106,7 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 		foreach ($all as $o) {
 			$current_indexes[$type][$o->getId()] = $o->getHumanName();
 			if (isset($backup_indexes[$type][$o->getId()])) {
-				$diff_indexes[$type][$o->getId()] = DiffType::Exists;
+				$diff_indexes[$type][$o->getId()] = DiffType::Existing;
 				if ($current_indexes[$type][$o->getId()] == $backup_indexes[$type][$o->getId()]) {
 					if ($options['verbose'])
 						print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . $type . ':' . $o->getId() . " (" . $current_indexes[$type][$o->getId()] . ") still exists with the same name\n");
@@ -222,7 +222,7 @@ function restore_folder($tmp_dir) {
 	exec('mv ' . $tmp_dir . '/backup/jMQTT ' . $plugins_dir . ' 2>&1 > /dev/null');
 
 	chdir($cwd); // Switch back to previous cwd folder
-	print("                       [ OK ]\n");
+	print("                      [ OK ]\n");
 }
 
 // Remove some eqLogic and cmd
@@ -280,7 +280,7 @@ function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
 			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " created\n";
 		}
 	}
-	print("                        [ OK ]");
+	print("                        [ OK ]\n");
 	foreach($logs as $l)
 		print($l);
 }
@@ -291,11 +291,12 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 
 	// Retore eqLogics
 	$errorE = false;
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring eqLogics...                                 ");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring the previously " . $type . " eqLogics...     ");
+	if ($type == DiffType::Deleted) print(' ');
 	foreach ($data['eqLogic'] as $eq) {
 		$id = $eq['id'];
 		if(!isset($diff_indexes['eqLogic'][$id])) {
-			$logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be found in diff!\n";
+			$logs[] = "\n" . date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be found in diff!\n";
 			$errorE = true;
 			continue;
 		}
@@ -303,15 +304,16 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 			continue;
 		$o = jMQTT::byId($id);
 		utils::a2o($o, $eq);
-		$eq->save();
+		$o->save(true);
 		if ($verbose)
-			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . ' (type: ' . $type . ") updated\n";
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> eqLogic:' . $id . ' (type: ' . $type . ") restored\n";
 	}
 	print($errorE ? "[ ERROR ]\n" : "   [ OK ]\n");
 
 	// Retore eqLogics
 	$errorC = false;
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring cmds...                                     ");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring the previously " . $type . " cmds...         ");
+	if ($type == DiffType::Deleted) print(' ');
 	foreach ($data['cmd'] as $eq) {
 		$id = $eq['id'];
 		if(!isset($diff_indexes['cmd'][$id])) {
@@ -323,9 +325,9 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 			continue;
 		$o = jMQTTCmd::byId($id);
 		utils::a2o($o, $eq);
-		$eq->save();
+		$o->save(true);
 		if ($verbose)
-			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' (type: ' . $type . ") updated\n";
+			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' (type: ' . $type . ") restored\n";
 	}
 	print($errorC ? "[ ERROR ]\n" : "   [ OK ]\n");
 
@@ -337,7 +339,7 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 
 // Purge existing cmds histories
 function restore_purgeHistories(&$diff_indexes, $type, $_date = '', $verbose) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Purge some cmds history...");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Purging the previously " . $type . " cmds history...");
 	$logs = array();
 	foreach ($diff_indexes['cmd'] as $id=>&$state) {
 		if ($state != $type)
@@ -346,18 +348,20 @@ function restore_purgeHistories(&$diff_indexes, $type, $_date = '', $verbose) {
 		if ($verbose)
 			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' history' . (($_date == '') ? '' : (' <= ' . $_date)) . " purged\n";
 	}
-	print("                           [ OK ]");
+	print("      [ OK ]\n");
 	foreach($logs as $l)
 		print($l);
 }
 
 // Replace existing cmds histories with their backups
 function restore_restoreHistories(&$diff_indexes, &$history, $type, $verbose) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restore some cmds history...\n");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring the previously " . $type . " cmds history...");
 	foreach ($diff_indexes['cmd'] as $id=>&$state) {
 		if ($state != $type)
 			continue;
 		if (isset($history[$id])) {
+			if ($verbose)
+				print("\n" . date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " history ");
 			$cpt = 0;
 			foreach ($history[$id] as $h) {
 				$h['cmd_id'] = $id;
@@ -367,15 +371,14 @@ function restore_restoreHistories(&$diff_indexes, &$history, $type, $verbose) {
 				DB::Prepare($sql, $h, DB::FETCH_TYPE_ROW);
 				if ($cpt++ % 10 == 0) print('.'); // 1 dot every 10 history point
 			}
-			print("\n");
-
 			if ($verbose)
-				print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " history restored\n");
+				print(" restored");
+
 		} elseif ($verbose) {
-			print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " no history\n");
+			print("\n" . date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " no history");
 		}
 	}
-	print("                                                     [ OK ]\n");
+	print("\n                                                                                   [ OK ]\n");
 }
 
 // Restore jMQTT log files
@@ -622,7 +625,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		$data = restore_getBackupD($tmp_dir);
 
 		// Replace eqLogics and cmds
-		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Exists, $options['verbose'], !$options['not-cache']);
+		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Existing, $options['verbose'], !$options['not-cache']);
 		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Deleted, $options['verbose'], !$options['not-cache']);
 	}
 
@@ -634,13 +637,13 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		$history = restore_getBackupH($tmp_dir);
 
 		// If --not-history, then remove all history (including recent) and import it all from the backup
-		$date = ($options['not-history'] ? '' : $metadata['packages']['date']);
+		$date = ($options['not-history'] ? '' : $metadata['date']);
 
 		// Purge all cmds histories
-		restore_purgeHistories($diff_indexes, DiffType::Exists, $date, $options['verbose']);
+		restore_purgeHistories($diff_indexes, DiffType::Existing, $date, $options['verbose']);
 
 		// Restore all cmds histories
-		restore_restoreHistories($diff_indexes, $history, DiffType::Exists, $options['verbose']);
+		restore_restoreHistories($diff_indexes, $history, DiffType::Existing, $options['verbose']);
 		restore_restoreHistories($diff_indexes, $history, DiffType::Deleted, $options['verbose']);
 	}
 
