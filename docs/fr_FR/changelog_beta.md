@@ -3,7 +3,7 @@
 ## 2023-04-06 (v15)
 - Amélioration de l'affichage des commandes Action List
 - Première implémentation du système de sauvegarde de restauration de jMQTT indépendamment du Core.
-- Ajout de 9 nouvelles icones : location, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer & theengs
+- Ajout de 14 nouvelles icones : espeasy, intex, location, mcz-remote, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer, stove, tasmota & theengs
 - Optimisations du code, Corrections syntaxiques et orthographiques
 
 ## 2023-03-19 (v14)
