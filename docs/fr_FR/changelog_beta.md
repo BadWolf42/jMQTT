@@ -1,5 +1,8 @@
 # Registre des évolutions BETA
 
+## 2023-04-06 (v15)
+- Amélioration de l'affichage des commandes Action List
+
 ## 2023-03-19 (v14)
 - Ajout de la possibilité d'utiliser un template lors de la création d'un équipement (merci ngrataloup)
 - Ajout d'un alerte lorsqu'un message mets trop de temps à être traité par Jeedom (merci rennais35000)

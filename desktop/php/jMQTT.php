@@ -225,7 +225,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 							<th style="width:130px;">{{Type}}</th>
 							<th style="min-width:180px;">{{Topic}}</th>
 							<th style="min-width:180px;">{{Valeur}}</th>
-							<th style="width:1px;">{{Unité}}</th>
+							<th style="min-width:100px;width:120px;">{{Paramètres}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
 							<th style="min-width:135px;width:135px;"></th>
 <!-- TODO (medium) Change when adding Advanced parameters
