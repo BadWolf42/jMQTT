@@ -76,17 +76,30 @@ class jMQTTCmd extends cmd {
 
 	/**
 	 * Return a full export of this command as an array.
-	 * @return array
+	 * @param boolean $clean irrelevant values to Daemon must be removed from the return
+	 * @return array representing the cmd
 	 */
-	public function full_export() {
+	public function full_export($clean=false) {
 		$cmd = clone $this;
 		$cmdValue = $cmd->getCmdValue();
-		if (is_object($cmdValue)) {
-			$cmd->setValue($cmdValue->getName());
-		} else {
-			$cmd->setValue('');
-		}
+		$cmd->setValue(is_object($cmdValue) ? $cmdValue->getName() : '');
 		$return = utils::o2a($cmd);
+		if ($clean) { // Remove unneeded informations
+			unset($return['alert']);
+			unset($return['configuration']['request']);
+			unset($return['configuration']['minValue']);
+			unset($return['configuration']['maxValue']);
+			unset($return['configuration']['listValue']);
+			unset($return['configuration']['prev_retain']);
+			unset($return['configuration']['commentaire']);
+			unset($return['isHistorized']);
+			unset($return['isVisible']);
+			unset($return['display']);
+			unset($return['order']);
+			unset($return['template']);
+			unset($return['unite']);
+			unset($return['value']);
+		}
 		return $return;
 	}
 
