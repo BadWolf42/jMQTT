@@ -275,8 +275,21 @@ try {
 		file_put_contents(log::getPathToLog('tmp_jMQTT'), date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "\n");
 		// exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . );
 
+		// Flags
+		$flags = ' ';
+		if (init('nohwcheck') == '1') $flags .= '--no-hw-check ';
+		if (init('notfolder') == '1') $flags .= '--not-folder ';
+		if (init('byname') == '1') $flags .= '--by-name ';
+		if (init('dodelete') == '1') $flags .= '--do-delete ';
+		if (init('notcache') == '1') $flags .= '--not-cache ';
+		if (init('nothistory') == '1') $flags .= '--not-history ';
+		if (init('dologs') == '1') $flags .= '--do-logs ';
+		if (init('domosquitto') == '1') $flags .= '--do-mosquitto ';
+		if (init('verbose') == '1') $flags .= '--verbose ';
+		if (init('apply') == '1') $flags .= '--apply ';
+
 		// Launch restoration
-		exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php --file ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
+		exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php ' . $flags . '--file ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
 
 		// Append temporary log to jMQTT log
 		file_put_contents(log::getPathToLog('jMQTT'), file_get_contents(log::getPathToLog('tmp_jMQTT')), FILE_APPEND);

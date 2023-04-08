@@ -783,8 +783,10 @@ function restore_main() {
 		// If not --apply, then explain it is a dry run
 		if (!$options['apply']) {
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\\n");
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\                                                     /!\\\n");
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\                    DRY RUN MODE                     /!\\\n");
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\     Use --apply to acctually make some changes!     /!\\\n");
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\                                                     /!\\\n");
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\\n");
 		}
 

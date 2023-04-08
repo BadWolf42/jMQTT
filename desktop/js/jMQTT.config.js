@@ -369,29 +369,58 @@ $('#bt_backupJMqttRestore').on('click', function () {
 	if (!$('#sel_backupJMqtt option:selected').length)
 		return;
 	var btn = $(this)
-	bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + "</b> ?<br />"
-					+ "({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})", function(result) {
-		if (!result)
-			return;
-		jmqtt_config.toggleIco(btn);
-		jmqtt_config.jmqttAjax({
-			data: {
+	// TODO (critical) Translate
+	// TODO (high) Allow click on title/line to select checkbox
+	var dialog_message = '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnohwcheck"><b>no-hw-check</b> : DOES NOT CHECK if system hardwareKey match with backup<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotfolder"><b>not-folder</b> : do NOT restore previous jMQTT folder<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdodelete"><b>do-delete</b> : remove jMQTT eqLogic and cmd created since backup<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotcache"><b>not-cache</b> : do NOT restore previous cached values (preserve cache)<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnothistory"><b>not-history</b> : remove recent history (keep only history from backup)<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdologs"><b>do-logs</b> : restore previous logs (do NOT preserve newer logs)<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdomosquitto"><b>do-mosquitto</b> : restore Mosquitto config folders/files<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttverbose"><b>verbose</b> : display more information about the restore process<br /><br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttapply"><b>apply</b> : this is REQUIRED to acctually change any data on this Jeedom/jMQTT system<br />';
+	bootbox.confirm({
+		title: '<b>{{Paramètres de restauration de la sauvegarde de jMQTT :}}</b>',
+		message: dialog_message,
+		callback: function (result){ if (result) {
+			// Var recuperation MUST be done here, they don't exist after this point
+			var data_to_send = {
 				action: "backupRestore",
-				file: $('#sel_backupJMqtt').value()
-			},
-			error: function (request, status, error) {
-				handleAjaxError(request, status, error);
+				file: $('#sel_backupJMqtt').value(),
+				nohwcheck: $('#restoreJMqttnohwcheck').value(),
+				notfolder: $('#restoreJMqttnotfolder').value(),
+				byname: $('#restoreJMqttbyname').value(),
+				dodelete: $('#restoreJMqttdodelete').value(),
+				notcache: $('#restoreJMqttnotcache').value(),
+				nothistory: $('#restoreJMqttnothistory').value(),
+				dologs: $('#restoreJMqttdologs').value(),
+				domosquitto: $('#restoreJMqttdomosquitto').value(),
+				verbose: $('#restoreJMqttverbose').value(),
+				apply: $('#restoreJMqttapplyapply').value()
+			};
+			bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + "</b> ?<br />"
+							+ "({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})", function(result) {
+				if (!result)
+					return;
 				jmqtt_config.toggleIco(btn);
-			},
-			success: function(data) {
-				if (data.state == 'ok') {
-					$.fn.showAlert({message: '{{Sauvegarde restaurée.}}', level: 'success'});
-				} else {
-					$.fn.showAlert({message: data.result, level: 'danger'});
-				}
-				jmqtt_config.toggleIco(btn);
-			}
-		});
+				jmqtt_config.jmqttAjax({
+					data: data_to_send,
+					error: function (request, status, error) {
+						handleAjaxError(request, status, error);
+						jmqtt_config.toggleIco(btn);
+					},
+					success: function(data) {
+						if (data.state == 'ok') {
+							$.fn.showAlert({message: '{{Sauvegarde restaurée.}}', level: 'success'});
+						} else {
+							$.fn.showAlert({message: data.result, level: 'danger'});
+						}
+						jmqtt_config.toggleIco(btn);
+					}
+				});
+			});
+		}}
 	});
 });
 

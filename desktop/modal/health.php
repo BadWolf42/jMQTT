@@ -23,6 +23,8 @@ $eqNonBrokers = jMQTT::getNonBrokers();
 /** @var jMQTT[] $eqBrokers */
 $eqBrokers = jMQTT::getBrokers();
 
+// TODO (high) Move eqLogic & cmd orphan search and rescue here in health modal
+
 ?>
 <legend><i class="fas fa-table"></i> {{Brokers}}</legend>
 <table class="table table-condensed tablesorter" id="table_healthMQTT_brk">
