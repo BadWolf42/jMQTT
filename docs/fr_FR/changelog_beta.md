@@ -3,6 +3,7 @@
 ## 2023-04-06 (v15)
 - Amélioration de l'affichage des commandes Action List
 - Ajout de 2 nouvelles icones : OpenMQTTGateway & Theengs
+- Première implémentation du système de sauvegarde de restauration de jMQTT indépendamment du Core.
 - Optimisations du code
 
 ## 2023-03-19 (v14)

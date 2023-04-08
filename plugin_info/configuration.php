@@ -123,7 +123,6 @@ if ($docker) {
 		<div class="form-group"><br /></div>
 	</div>
 	<div class="col-sm-6">
-<!-- TODO NEW Uncomment when Backup/Restore jMQTT is OK
 		<legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuation de jMQTT}}</legend>
 		<div class="form-group">
 			<label class="col-sm-1 control-label"> </label>
@@ -165,13 +164,12 @@ foreach ($backups as $backup)
 					<a class="btn btn-success" id="bt_backupJMqttDownload" style="width:100%;"><i class="fas fa-cloud-download-alt"></i> {{Télécharger la sauvegarde}}</a>
 			</div>
 			<div class="col-sm-5">
-				<span class="btn btn-default btn-file" style="width:100%;">
+				<span class="btn btn-info btn-file" style="width:100%;">
 					<i class="fas fa-cloud-upload-alt"></i> {{Ajouter une sauvegarde}}<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&amp;dir=backup">
 				</span>
 			</div>
 			<div class="col-sm-1"></div>
 		</div>
--->
 		<div class="form-group"><br /></div>
 	</div>
 	</div>

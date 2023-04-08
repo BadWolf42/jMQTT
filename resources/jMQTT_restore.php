@@ -627,7 +627,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	}
 
 	if (!in_array('history', $metadata['packages'])) {
-		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT histories...     (not in backup) [ FAILED ]\n");
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT cmds history...  (not in backup) [ FAILED ]\n");
 		$error_code = 30;
 	} elseif ($options['apply']) {
 		// Get history from backup
