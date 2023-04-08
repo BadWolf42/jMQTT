@@ -399,7 +399,7 @@ $('#bt_backupJMqttRestore').on('click', function () {
 $('#bt_backupJMqttDownload').on('click', function () {
 	if (!$('#sel_backupJMqtt option:selected').length)
 		return;
-	window.open('core/php/downloadFile.php?pathfile=/var/www/html/plugins/jMQTT/data/backup/' + $('#sel_backupJMqtt').value(), "_blank", null);
+	window.open('core/php/downloadFile.php?pathfile=plugins/jMQTT/data/backup/' + $('#sel_backupJMqtt').value(), "_blank", null);
 });
 
 // Add a new jMQTT backup file by upload to the list
