@@ -32,7 +32,7 @@ if (typeof jeedom.cmd.addUpdateFunction !== 'function') {
 // Namespace
 jmqtt_globals = {};
 
-// Array of Equipment logo descriptors
+// Array of Equipment logo descriptors [color f8d800ff]
 jmqtt_globals.logos = [
 	{id: '', name: "{{Aucun}}", file: 'node_.svg'},
 	{id: 'barometre', name: "{{Baromètre}}", file: 'node_barometre.svg'},
@@ -59,6 +59,7 @@ jmqtt_globals.logos = [
 	{id: 'jauge', name: "{{Jauge}}", file: 'node_jauge.svg'},
 	{id: 'light', name: "{{Luminosité}}", file: 'node_light.png'},
 	{id: 'lightbulb', name: "{{Lumière}}", file: 'node_lightbulb.svg'},
+	{id: 'location', name: "{{Localisation}}", file: 'node_location.svg'},
 	{id: 'meteo', name: "{{Météo}}", file: 'node_meteo.png'},
 	{id: 'molecule-co', name: "{{CO}}", file: 'node_molecule-co.svg'},
 	{id: 'motion', name: "{{Mouvement}}", file: 'node_motion.png'},
@@ -66,16 +67,22 @@ jmqtt_globals.logos = [
 	{id: 'multisensor', name: "{{Multisensor}}", file: 'node_multisensor.png'},
 	{id: 'nab', name: "{{Nabaztag}}", file: 'node_nab.png'},
 	{id: 'omg', name: "{{OpenMQTTGateway}}", file: 'node_openmqttgateway.svg'},
+	{id: 'old-phone', name: "{{Téléphone fixe}}", file: 'node_old-phone.svg'},
+	{id: 'phone', name: "{{Téléphone}}", file: 'node_phone.svg'},
 	{id: 'power-plug', name: "{{Prise de courant}}", file: 'node_power-plug.svg'},
 	{id: 'prise', name: "{{Prise}}", file: 'node_prise.png'},
 	{id: 'radiator', name: "{{Radiateur}}", file: 'node_radiator.svg'},
 	{id: 'relay', name: "{{Relais}}", file: 'node_relay.png'},
+	{id: 'repeater', name: "{{Répéteur}}", file: 'node_repeater.svg'},
 	{id: 'remote', name: "{{Télécommande}}", file: 'node_remote.svg'},
 	{id: 'rf433', name: "{{RF433}}", file: 'node_rf433.svg'},
 	{id: 'rfid', name: "{{RFID}}", file: 'node_rfid.png'},
 	{id: 'sms', name: "{{SMS}}", file: 'node_sms.png'},
 	{id: 'teleinfo', name: "{{Téléinfo}}", file: 'node_teleinfo.png'},
 	{id: 'temp', name: "{{Température}}", file: 'node_temp.png'},
+	{id: 'smartphone', name: "{{Téléphone portable}}", file: 'node_smartphone.svg'},
+	{id: 'smoke-detector', name: "{{Décteur de fumée}}", file: 'node_smoke-detector.svg'},
+	{id: 'sonometer', name: "{{Sonomètre}}", file: 'node_sonometer.svg'},
 	{id: 'theengs', name: "{{Theengs}}", file: 'node_theengs.svg'},
 	{id: 'thermostat', name: "{{Thermostat}}", file: 'node_thermostat.png'},
 	{id: 'tv', name: "{{Télévison}}", file: 'node_tv.svg'},
