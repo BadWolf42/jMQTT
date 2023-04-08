@@ -2,9 +2,9 @@
 
 ## 2023-04-06 (v15)
 - Amélioration de l'affichage des commandes Action List
-- Ajout de 2 nouvelles icones : OpenMQTTGateway & Theengs
 - Première implémentation du système de sauvegarde de restauration de jMQTT indépendamment du Core.
-- Optimisations du code
+- Ajout de 9 nouvelles icones : location, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer & theengs
+- Optimisations du code, Corrections syntaxiques et orthographiques
 
 ## 2023-03-19 (v14)
 - Ajout de la possibilité d'utiliser un template lors de la création d'un équipement (merci ngrataloup)
