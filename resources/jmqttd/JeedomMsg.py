@@ -1,4 +1,5 @@
-import logging, os, queue, requests, socketserver, threading, time
+import logging, os, requests, socketserver, threading, time
+from collections import deque
 # import AddLogging
 # from LogicRegister import *
 
@@ -38,8 +39,8 @@ class JeedomMsg():
 		self._hb_delay    = 45					# seconds between 2 heartbeat emission
 		self._hb_retry    = self._hb_delay / 2	# seconds before retrying
 		self._hb_timeout  = self._hb_delay * 3	# seconds before timeout
-		self.qFromJ       = queue.Queue()
-		self.qToJ         = queue.Queue()
+		self.qFromJ       = deque()
+		self.qToJ         = deque()
 		# self._lock        = threading.Lock()
 		socketserver.TCPServer.allow_reuse_address = True
 
@@ -96,16 +97,21 @@ class JeedomMsg():
 		return True
 
 	def send_async(self, msg):
-		self._log_snd.debug('Enqued message: %s', msg)
-		self.qToJ.put(msg)
+		try:
+			t = time.time()
+			self.qToJ.appendleft(msg)
+			self._log_snd.debug('Enqued the message in %fms (qToJ size %d): %s', (time.time() - t)*1000, len(self.qToJ), msg)
+		except Exception as e:
+			self._log_snd.exception('Exception while enquing in qToJ')
 
 	def send(self, msgs):
 		i = 1
 		while i <= self._retry:
 			try:
+				t = time.time()
 				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False) # TODO (low) Check 120s timeout ?!
 				if r.status_code == requests.codes.ok:
-					self._log_snd.debug('Sent TO Jeedom: %s', msgs)
+					self._log_snd.debug('Sent TO Jeedom %d messages handled in %fms (qToJ size %d): %s', len(msgs), (time.time() - t)*1000, len(self.qToJ), msgs)
 					self._log_snd.verbose('Received back FROM Jeedom: %s', r.text)
 					self._status |= self.CAN_SND
 					self._last_snd = time.time()
@@ -126,22 +132,23 @@ class JeedomMsg():
 		max_msg_per_send = 40
 		last_hb = 0
 		while not self._stopworker:
-			if self.qToJ.empty():
+			if len(self.qToJ) == 0:
 				if time.time() - self._last_snd > self._hb_delay:
 					if time.time() - last_hb > self._hb_retry: # Avoid sending continuously hb
-						self.qToJ.put({"cmd":"hb"}) # Add a heartbeat if it has been too long
+						self.qToJ.appendleft({"cmd":"hb"}) # Add a heartbeat if it has been too long
 						last_hb = time.time()
 				else:
 					time.sleep(0.1)
 				continue # Check if stopworker changed
 			msgs = []
-			while not self._stopworker and not self.qToJ.empty() and (len(msgs) < max_msg_per_send):
-				msg = self.qToJ.get()
+			while not self._stopworker and not len(self.qToJ) == 0 and (len(msgs) < max_msg_per_send):
+				msg = self.qToJ.pop()
 				msgs.append(msg)
-			self._log_snd.debug("Sending %d msgs", len(msgs))
+			self._log_snd.debug("Sending %d messages (%d left in queue)", len(msgs), len(self.qToJ))
 			self.send(msgs)
 			# TODO (important) Put back messages in qToJ if send failed !
-		self.qToJ.queue.clear()
+			# self.qToJ.extend(msgs)
+		self.qToJ.clear()
 		self._log_snd.info("Stopped")
 
 	def sender_start(self):
@@ -182,10 +189,14 @@ class JeedomMsg():
 				self._log = logging.getLogger("JMsg.Rcv.Sock")
 			def handle(self):
 				self._log.verbose("Client [%s:%d] connected", *(self.client_address))
-				raw = self.rfile.read().strip()
-				self._log.verbose("Raw data: %s", raw)
-				self.server.jmsg.qFromJ.put(raw)
-				self.server.jmsg._last_rcv = time.time()
+				try:
+					raw = self.rfile.read().strip()
+					self._log.verbose("Raw data: %s", raw)
+					self.server.jmsg.qFromJ.appendleft(raw)
+					self.server.jmsg._last_rcv = time.time()
+				except Exception as e:
+					self._log.exception('Exception while enquing in qFromJ')
+#				self._log.debug('qFromJ size: %d', len(self.server.jmsg.qFromJ))
 				self._log.verbose("Client [%s:%d] disconnected", *(self.client_address))
 		# TODO (low): Implement IPv6 listening, examples:
 		#           https://www.bortzmeyer.org/files/echoserver.py
@@ -212,7 +223,6 @@ class JeedomMsg():
 		if self._socketIn is None:
 			return
 		self._socketIn.shutdown()
-		# self._url = self._callback+'?apikey='+self._apikey     # TODO (low) Check how to send brkDown+daemonDown without uid in url
 		self._status &= ~self.CAN_RCV
 		self._socketIn = None
 		self._log_rcv.debug("Stopped")

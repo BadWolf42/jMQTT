@@ -16,7 +16,6 @@
 import json
 import logging
 import os
-import queue
 import signal
 import sys
 import threading
@@ -195,17 +194,17 @@ class Main():
 #			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedom
 #				self.should_stop.set()
 # /TODO FIXME
-			if self.jcom.qFromJ.empty(): # empty() method is faster that Exception handling
+			if len(self.jcom.qFromJ) == 0: # faster that Exception handling
 				time.sleep(0.1)
 				continue # Check if should_stop changed
 
 			# Get some new raw data and cook it
 			try:
-				jeedom_raw = self.jcom.qFromJ.get(block=False)
+				jeedom_raw = self.jcom.qFromJ.pop()
 				jeedom_msg = jeedom_raw.decode('utf-8')
 				#self.log.debug('Received from Jeedom: %s', jeedom_msg)
 				message = json.loads(jeedom_msg)
-			except queue.Empty:
+			except IndexError:
 				continue # More chance next time
 			except:
 				if self.log.isEnabledFor(logging.DEBUG):
