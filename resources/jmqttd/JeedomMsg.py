@@ -1,7 +1,6 @@
 import logging, os, requests, socketserver, threading, time
 from collections import deque
-# import AddLogging
-# from LogicRegister import *
+
 
 class JeedomMsg():
 	# Bit values of JeedomMsg._status
@@ -35,6 +34,7 @@ class JeedomMsg():
 		self._last_snd    = time.time()
 		self._retry_snd   = 0
 		self._retry_max   = 5
+		self._snd_timeout = 135					# seconds before send timeout
 		self._last_rcv    = time.time()
 		self._hb_delay    = 45					# seconds between 2 heartbeat emission
 		self._hb_retry    = self._hb_delay / 2	# seconds before retrying
@@ -46,12 +46,12 @@ class JeedomMsg():
 
 	def is_working(self):
 		# TODO (important) Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
-		if self._retry_snd > self._retry_max:
-			self._log_snd.error("Nothing has been sent since %ds and after send %d attempts, Jeedom/Apache is probably dead.",
-								time.time() - self._last_snd, self._retry_snd)
+		if time.time() - self._last_snd > self._snd_timeout and self._retry_snd > self._retry_max:
+			self._log_snd.error("Nothing could sent for %ds (max %ds) AND after %d attempts (max %d), Jeedom/Apache is probably dead.",
+								time.time() - self._last_snd, self._snd_timeout, self._retry_snd, self._retry_max)
 			return False
 		if time.time() - self._last_rcv > self._hb_timeout:
-			self._log_rcv.error("Nothing has been received since %ds (max %d), Jeedom is probably dead.",
+			self._log_rcv.error("Nothing has been received for %ds (max %ds), Jeedom does not want me any longer.",
 								time.time() - self._last_rcv, self._hb_timeout)
 			return False
 		return True
@@ -104,9 +104,9 @@ class JeedomMsg():
 		except Exception as e:
 			self._log_snd.exception('Exception while enquing in qToJ')
 
-	def send(self, msgs):
+	def send(self, msgs, retry=True):
 		i = 1
-		while i <= self._retry:
+		while i <= self._retry or (not retry and i == 1):
 			try:
 				t = time.time()
 				r = requests.post(self._url, json=msgs, timeout=(0.5, 120), verify=False) # TODO (low) Check 120s timeout ?!
@@ -118,11 +118,13 @@ class JeedomMsg():
 					self._retry_snd = 0
 					return r.text
 			except Exception as e:
-				self._log_snd.info('Communication issue TO Jeedom (try %d/%d)', i, self._retry)
+				if retry:
+					self._log_snd.info('Communication issue TO Jeedom (try %d/%d)', i, self._retry)
 			i += 1
 		self._log_snd.error('COULD NOT send TO Jeedom: %s', msgs)
 		self._status &= ~self.CAN_SND
 		self._retry_snd += 1
+		return None
 
 	# def send_non_blocking(self, msg):
 		# threading.Thread(target=self.send, args=(msg,), name="SndNoBlk").start()
@@ -136,6 +138,9 @@ class JeedomMsg():
 				if time.time() - self._last_snd > self._hb_delay:
 					if time.time() - last_hb > self._hb_retry: # Avoid sending continuously hb
 						self.qToJ.appendleft({"cmd":"hb"}) # Add a heartbeat if it has been too long
+						# Send the heartbeat asynchronously to avoid congestion (lots of messages in qToJ)
+						threading.Thread(target=self.send, args=([{"cmd":"hb"}],False), name="SndNoBlkHb", daemon=True).start()
+						self._log_snd.debug("Sending a heartbeat to Jeedom, nothing sent since %ds (max %ds)", time.time() - self._last_snd, self._hb_delay)
 						last_hb = time.time()
 				else:
 					time.sleep(0.1)
@@ -145,9 +150,9 @@ class JeedomMsg():
 				msg = self.qToJ.pop()
 				msgs.append(msg)
 			self._log_snd.debug("Sending %d messages (%d left in queue)", len(msgs), len(self.qToJ))
-			self.send(msgs)
-			# TODO (important) Put back messages in qToJ if send failed !
-			# self.qToJ.extend(msgs)
+			if self.send(msgs) is None:
+				pass
+				# self.qToJ.extend(msgs) # Put back messages in qToJ if send failed !
 		self.qToJ.clear()
 		self._log_snd.info("Stopped")
 
