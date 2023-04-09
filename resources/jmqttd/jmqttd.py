@@ -38,7 +38,6 @@ from jMqttClient import *
 #   The return value is False if an error occurs, True otherwise
 def validate_params(msg, constraints):
 	res = True
-	cmd = str(msg['cmd']) if 'cmd' in msg else "?"
 	for (key, mandatory, default_val, expected_type) in constraints:
 		if key not in msg or msg[key] == '':
 			if mandatory:
@@ -86,7 +85,6 @@ class Main():
 							'realTimeStart':    self.h_realTimeStart,
 							'realTimeStop':     self.h_realTimeStop,
 							'realTimeClear':    self.h_realTimeClear,
-							'hb':               self.h_hb,
 							'changeApiKey':     self.h_changeApiKey,
 							'loglevel':         self.h_logLevel}
 		self.jmqttclients = {}
@@ -218,10 +216,18 @@ class Main():
 				self.log.error('Invalid apikey from socket : %s', message)
 				continue # Ignore unauthorized messages
 
+			# Check for there is a cmd in message
+			if 'cmd' not in message or not isinstance(message['cmd'], str) or message['cmd'] == '':
+				logging.error('Bad cmd parameter in message dump=%s', json.dumps(message))
+				continue
+
+			if message['cmd'] == 'hb':
+				self.log.debug('Heartbeat received from Jeedom')
+				continue
+
 			# Check for mandatory parameters before handling the message
 			if not validate_params(message,  # key, mandatory, default_val, expected_type
-											[['id',      True,        None, str],
-											 ['cmd',     True,        None, str]]):
+											[['id',      True,        None, str]]):
 				continue
 
 			# Register the call
@@ -338,10 +344,6 @@ class Main():
 			self.jmqttclients[message['id']].publish(message['topic'], message['payload'], message['qos'], message['retain'])
 		else:
 			self.log.debug('No client found for Broker %s', message['id'])
-
-	def h_hb(self, message):
-		self.log.debug('Jeedom sent a Heartbeat.')
-		pass
 
 	def h_changeApiKey(self, message):
 		# Check for                   key, mandatory, default_val, expected_type

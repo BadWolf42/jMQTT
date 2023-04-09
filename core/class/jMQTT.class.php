@@ -1546,7 +1546,6 @@ class jMQTT extends eqLogic {
 
 	public static function toDaemon_hb() {
 		$params['cmd']      = 'hb';
-		$params['id']       = '0'; // TODO (low) tmp fix?
 		self::sendToDaemon($params, false);
 	}
 
