@@ -256,7 +256,7 @@ function restore_purgeEqAndCmd(&$diff_indexes, $type, $verbose = false) {
 
 // Created missing eqLogic and cmd
 function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
-	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating eqLogics and cmds...");
+	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating missing eqLogics and cmds...");
 	$logs = array();
 	// Create missing eqLogics
 	foreach ($diff_indexes['eqLogic'] as $id=>&$state) {
@@ -280,7 +280,7 @@ function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
 			$logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . " created\n";
 		}
 	}
-	print("                        [ OK ]\n");
+	print("                [ OK ]\n");
 	foreach($logs as $l)
 		print($l);
 }
@@ -709,7 +709,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 function restore_help() {
 	print("Usage: php " . basename(__FILE__) . " [OPTIONS]\n");
 	print("Restore a backup of jMQTT inside Jeedom.\n");
-	print("  --apply           apply the backup, this flag is REQUIRED to acctually\n");
+	print("  --apply           apply the backup, this flag is REQUIRED to actually\n");
 	print("                    change any data on this Jeedom/jMQTT system\n");
 	print("  --file=<FILE>     backup file to restore\n");
 	print("  --no-hw-check     DOES NOT CHECK if system hardwareKey match with backup\n");
@@ -803,7 +803,7 @@ function restore_main() {
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\\n");
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\                                                     /!\\\n");
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\                    DRY RUN MODE                     /!\\\n");
-			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\     Use --apply to acctually make some changes!     /!\\\n");
+			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\     Use --apply to actually make some changes!      /!\\\n");
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\                                                     /!\\\n");
 			print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "/!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\ /!\\\n");
 		}
