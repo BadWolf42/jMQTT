@@ -279,6 +279,7 @@ try {
 		$flags = ' ';
 		if (init('nohwcheck') == '1') $flags .= '--no-hw-check ';
 		if (init('notfolder') == '1') $flags .= '--not-folder ';
+		if (init('noteqcmd') == '1') $flags .= '--not-eq-cmd ';
 		if (init('byname') == '1') $flags .= '--by-name ';
 		if (init('dodelete') == '1') $flags .= '--do-delete ';
 		if (init('notcache') == '1') $flags .= '--not-cache ';
@@ -289,6 +290,8 @@ try {
 		if (init('apply') == '1') $flags .= '--apply ';
 
 		// Launch restoration
+		$out = null;
+		$res = null;
 		exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php ' . $flags . '--file ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
 
 		// Append temporary log to jMQTT log

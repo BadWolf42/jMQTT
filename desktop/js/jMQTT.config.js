@@ -373,6 +373,7 @@ $('#bt_backupJMqttRestore').on('click', function () {
 	// TODO (high) Allow click on title/line to select checkbox
 	var dialog_message = '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnohwcheck"><b>no-hw-check</b> : DOES NOT CHECK if system hardwareKey match with backup<br />';
 	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotfolder"><b>not-folder</b> : do NOT restore previous jMQTT folder<br />';
+	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnoteqcmd"><b>not-eq-cmd</b> : do NOT restore eqLogics or cmds<br />';
 	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdodelete"><b>do-delete</b> : remove jMQTT eqLogic and cmd created since backup<br />';
 	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotcache"><b>not-cache</b> : do NOT restore previous cached values (preserve cache)<br />';
 	dialog_message += '<input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnothistory"><b>not-history</b> : remove recent history (keep only history from backup)<br />';
@@ -390,6 +391,7 @@ $('#bt_backupJMqttRestore').on('click', function () {
 				file: $('#sel_backupJMqtt').value(),
 				nohwcheck: $('#restoreJMqttnohwcheck').value(),
 				notfolder: $('#restoreJMqttnotfolder').value(),
+				noteqcmd: $('#restoreJMqttnoteqcmd').value(),
 				byname: $('#restoreJMqttbyname').value(),
 				dodelete: $('#restoreJMqttdodelete').value(),
 				notcache: $('#restoreJMqttnotcache').value(),

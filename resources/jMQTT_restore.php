@@ -560,63 +560,65 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	$backup_dir = $tmp_dir . '/backup';
 	$metadata = restore_getBackupM($tmp_dir);
 	if (is_null($metadata))
-		return 3;
+		return 20;
 
 	// TODO Remove debug
 	// if ($options['verbose'])
 		// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of the backup: \n" . json_encode($metadata, JSON_PRETTY_PRINT) . "\n");
 
-	// Check if indexes are included in archive
-	if (!in_array('index', $metadata['packages']))
-		return 4;
+	// If not --not-eq-cmd, then Check if indexes are included in archive
+	if (!$options['not-eq-cmd'] && !in_array('index', $metadata['packages']))
+		return 21;
 
 	// Check this Jeedom hardwareKey against the backup hardwareKey
 	if (!restore_checkHwKey($initial_metadata, $metadata, $options['no-hw-check']))
-		return 5;
+		return 22;
 
 	// Get indexes from backup
 	$backup_indexes = restore_getBackupI($tmp_dir);
 	$current_indexes = array();
 	$diff_indexes = array();
 
-	// Check which eqLogic/cmd has been added/removed
-	if (!restore_diffIndexes($options, $backup_indexes, $current_indexes, $diff_indexes))
-		return 5;
+	// If not --not-eq-cmd, then Check which eqLogic/cmd has been added/removed
+	if (!$options['not-eq-cmd'] && !restore_diffIndexes($options, $backup_indexes, $current_indexes, $diff_indexes))
+		return 23;
 
-	// If --apply, then stop and disabled Daemon
-	if ($options['apply']) {
+	// If not --not-folder or not --not-eq-cmd AND --apply, then Stop and disabled Daemon
+	if ((!$options['not-folder'] || !$options['not-eq-cmd']) && $options['apply']) {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...");
 		$old_autoMode = config::byKey('deamonAutoMode', 'jMQTT', 1);
 		config::save('deamonAutoMode', 0, 'jMQTT');
 		$old_daemonState = jMQTT::daemon_state();
 		jMQTT::deamon_stop();
 		print("                             [ OK ]\n");
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...                        [ SKIPPED ]\n");
 	}
 
-	// If --not-folder, then do not restore jMQTT plugin folder
-	if (!$options['not-folder']) {
-		if (!in_array('folder', $metadata['packages'])) {
-			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT plugin folder... (not in backup) [ FAILED ]\n");
-			$error_code = 6;
-		} elseif ($options['apply']) {
-			restore_folder($tmp_dir);
-		}
+	// If --not-folder, then Do not restore jMQTT plugin folder
+	if (!$options['not-folder'] && !in_array('folder', $metadata['packages'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT plugin folder... (not in backup) [ FAILED ]\n");
+		$error_code = 24;
+	} elseif (!$options['not-folder'] && $options['apply']) {
+		restore_folder($tmp_dir);
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring jMQTT plugin folder...                [ SKIPPED ]\n");
 	}
 
-	// If --do-delete, then simply remove newly added eqLogic/cmd
-	if ($options['do-delete']) {
-		if (!in_array('data', $metadata['packages'])) {
-			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Deleting new eq/cmd...       (no data in backup) [ FAILED ]\n");
-			$error_code = 7;
-		} elseif ($options['apply']) {
-			restore_purgeEqAndCmd($diff_indexes, DiffType::Created, $options['verbose']);
-			restore_purgeEqAndCmd($diff_indexes, DiffType::Invalid, $options['verbose']);
-		}
+	// If not --not-eq-cmd and --do-delete, then Simply remove newly added eqLogic/cmd
+	if (!$options['not-eq-cmd'] && $options['do-delete'] && !in_array('data', $metadata['packages'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Deleting new eq/cmd...       (no data in backup) [ FAILED ]\n");
+		$error_code = 25;
+	} elseif (!$options['not-eq-cmd'] && $options['do-delete'] && $options['apply']) {
+		restore_purgeEqAndCmd($diff_indexes, DiffType::Created, $options['verbose']);
+		restore_purgeEqAndCmd($diff_indexes, DiffType::Invalid, $options['verbose']);
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Deleting new eq/cmd...                          [ SKIPPED ]\n");
 	}
-	// Otherwise Forget about those new eqLogic/cmd, they are OK now
+	// Forget about the Created/Invalid eqLogic/cmd, they are OK now
 
-	// If --apply, then add missing eqLogic/cmd and restore all eqLogic/cmd from backup
-	if ($options['apply']) {
+	// If not --not-eq-cmd and --apply, then Add missing eqLogic/cmd and restore all eqLogic/cmd from backup
+	if (!$options['not-eq-cmd'] && $options['apply']) {
 
 		// Create missing eqLogics and cmds
 		restore_createMissingEqAndCmd($diff_indexes, $options['verbose']);
@@ -627,65 +629,78 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		// Replace eqLogics and cmds
 		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Existing, $options['verbose'], !$options['not-cache']);
 		restore_replaceEqAndCmd($diff_indexes, $data, DiffType::Deleted, $options['verbose'], !$options['not-cache']);
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating missing eqLogics and cmds...           [ SKIPPED ]\n");
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring the previously " . DiffType::Existing . " eqLogics...   [ SKIPPED ]\n");
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring the previously " . DiffType::Deleted . " eqLogics...    [ SKIPPED ]\n");
 	}
 
-	if (!in_array('history', $metadata['packages'])) {
+	// If not --not-eq-cmd, then Restore history from backup
+	if (!$options['not-eq-cmd'] && !in_array('history', $metadata['packages'])) {
 		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT cmds history...  (not in backup) [ FAILED ]\n");
-		$error_code = 30;
-	} elseif ($options['apply']) {
+		$error_code = 26;
+	} elseif (!$options['not-eq-cmd'] && $options['apply']) {
 		// Get history from backup
 		$history = restore_getBackupH($tmp_dir);
 
-		// If --not-history, then remove all history (including recent) and import it all from the backup
+		// If --not-history, then Remove all history (including recent) and import it all from the backup
 		$date = ($options['not-history'] ? '' : $metadata['date']);
 
-		// Purge all cmds histories
+		// Purge all cmds histories before $date
 		restore_purgeHistories($diff_indexes, DiffType::Existing, $date, $options['verbose']);
 
 		// Restore all cmds histories
 		restore_restoreHistories($diff_indexes, $history, DiffType::Existing, $options['verbose']);
 		restore_restoreHistories($diff_indexes, $history, DiffType::Deleted, $options['verbose']);
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Purging the previously " . DiffType::Existing . " cmds history... [ SKIPPED ]\n");
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring the previously " . DiffType::Existing . " cmds history..[ SKIPPED ]\n");
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring the previously " . DiffType::Deleted . " cmds history...[ SKIPPED ]\n");
 	}
 
-	// If --do-logs, then Remove all jMQTT* in log folder and move logs from backup to log folder
-	if ($options['do-logs']) {
-		if (!in_array('logs', $metadata['packages'])) {
-			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT logs...          (not in backup) [ FAILED ]\n");
-			$error_code = 30;
-		} elseif ($options['apply']) {
-			restore_logs($tmp_dir);
-		}
+	// If --do-logs AND data in packages, then Remove all jMQTT* in log folder and move logs from backup to log folder
+	if ($options['do-logs'] && !in_array('logs', $metadata['packages'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring jMQTT logs...          (not in backup) [ FAILED ]\n");
+		$error_code = 27;
+	} elseif ($options['do-logs'] && $options['apply']) {
+		restore_logs($tmp_dir);
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring jMQTT logs...                         [ SKIPPED ]\n");
 	}
 
-	// If --do-mosquitto, then Remove folder /etc/mosquitto and move mosquitto folder from backup
-	if ($options['do-mosquitto']) {
-		if (!in_array('mosquitto', $metadata['packages'])) {
-			print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring Mosquitto config...    (not in backup) [ FAILED ]\n");
-			$error_code = 31;
-		} elseif ($options['apply']) {
-			restore_mosquitto($tmp_dir);
-		}
+	// If --do-mosquitto AND data in packages, then Remove folder /etc/mosquitto and move mosquitto folder from backup
+	if ($options['do-mosquitto'] && !in_array('mosquitto', $metadata['packages'])) {
+		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring Mosquitto config...    (not in backup) [ FAILED ]\n");
+		$error_code = 28;
+	} elseif ($options['do-mosquitto'] && $options['apply']) {
+		restore_mosquitto($tmp_dir);
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring Mosquitto config...                   [ SKIPPED ]\n");
 	}
 
-	// If --apply, then Restore old previous deamonAutoMode (before restoring config from backup)
-	if ($options['apply']) {
+	// If not --not-folder or not --not-eq-cmd AND --apply, then Restore old previous deamonAutoMode (before restoring config from backup)
+	if ((!$options['not-folder'] || !$options['not-eq-cmd']) && $options['apply']) {
 		config::save('deamonAutoMode', $old_autoMode, 'jMQTT');
 	}
 
-	// If --apply & data in packages, then Restore plugin config and cache
-	if (!in_array('data', $metadata['packages'])) {
+	// If not --not-folder or not --not-eq-cmd AND --apply AND data in packages, then Restore plugin config and cache
+	if ((!$options['not-folder'] || !$options['not-eq-cmd']) && !in_array('data', $metadata['packages'])) {
 		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Restoring plugin conf & cache... (not in backup) [ FAILED ]\n");
-		$error_code = 32;
-	} elseif ($options['apply']) {
+		$error_code = 29;
+	} elseif ((!$options['not-folder'] || !$options['not-eq-cmd']) && $options['apply']) {
 		restore_confAndCache($data, !$options['not-cache']);
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring plugin conf & cache...                [ SKIPPED ]\n");
 	}
 
-	// If --apply & Daemon was running before, then start it
-	if ($options['apply']) {
+	// If not --not-folder or not --not-eq-cmd AND --apply AND Daemon was running before, then Start it
+	if ((!$options['not-folder'] || !$options['not-eq-cmd']) && $options['apply']) {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...");
 		if ($old_daemonState)
 			jMQTT::deamon_start();
 		print("                             [ OK ]\n");
+	} else {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...                        [ SKIPPED ]\n");
 	}
 
 	return $error_code;
@@ -699,6 +714,7 @@ function restore_help() {
 	print("  --file=<FILE>     backup file to restore\n");
 	print("  --no-hw-check     DOES NOT CHECK if system hardwareKey match with backup\n");
 	print("  --not-folder      do NOT restore previous jMQTT folder\n");
+	print("  --not-eq-cmd      do NOT restore eqLogics or cmds\n");
 	print("  --by-name         match eqLogic and cmd by name (NOT recommended)\n");
 	print("  --do-delete       remove jMQTT eqLogic and cmd created since backup\n");
 	print("  --not-cache       do NOT restore previous cached values (preserve cache)\n");
@@ -728,6 +744,7 @@ function restore_main() {
 			'file:',
 			'no-hw-check',
 			'not-folder',
+			'not-eq-cmd',
 			'by-name',
 			'do-delete',
 			'not-cache',
@@ -745,6 +762,7 @@ function restore_main() {
 	$options['file'] = (isset($getopt_res['file']) && $getopt_res['file'] != false) ? $getopt_res['file'] : null;
 	$options['no-hw-check'] = isset($getopt_res['no-hw-check']);
 	$options['not-folder'] = isset($getopt_res['not-folder']);
+	$options['not-eq-cmd'] = isset($getopt_res['not-eq-cmd']);
 	$options['by-name'] = isset($getopt_res['by-name']);
 	$options['do-delete'] = isset($getopt_res['do-delete']);
 	$options['not-cache'] = isset($getopt_res['not-cache']);
