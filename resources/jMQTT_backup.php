@@ -128,8 +128,8 @@ function export_data() {
 		'dependancyjMQTT',
 		'jMQTT::daemonLastRcv',
 		'jMQTT::daemonLastSnd',
-		'jMQTT::daemonPort',
-		'jMQTT::daemonUid',
+		// 'jMQTT::daemonPort',
+		// 'jMQTT::daemonUid',
 		'jMQTT::nextStats'
 	);
 	foreach ($cacheKeys as $k) {
