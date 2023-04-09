@@ -599,6 +599,8 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		$error_code = 24;
 	} elseif (!$options['not-folder'] && $options['apply']) {
 		restore_folder($tmp_dir);
+		include __DIR__ . '/../core/class/jMQTT.class.php';
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Reloading jMQTT classes...                           [ OK ]\n");
 	} else {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Restoring jMQTT plugin folder...                [ SKIPPED ]\n");
 	}
@@ -693,6 +695,10 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 
 	// If not --not-folder or not --not-eq-cmd AND --apply AND Daemon was running before, then Start it
 	if ((!$options['not-folder'] || !$options['not-eq-cmd']) && $options['apply']) {
+		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Killall jMQTT daemon just in case...");
+		exec("ps -ef | grep jmqttd.py | grep -v grep | awk '{print $2}' | xargs -r kill -9");
+		print("                 [ OK ]\n");
+
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...");
 		if ($old_daemonState)
 			jMQTT::deamon_start();
