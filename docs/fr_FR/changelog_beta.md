@@ -5,6 +5,7 @@
 - Première implémentation du système de sauvegarde de restauration de jMQTT indépendamment du Core
 - Correction des problèmes e multi-lancement du démon avec des signaux de vie entre le démon et Jeedom
 - Ajout de 14 nouvelles icones : espeasy, intex, location, mcz-remote, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer, stove, tasmota & theengs
+- Ajout du template Tasmota Nous A1T (merci vberder)
 - Optimisations du code, Corrections syntaxiques et orthographiques
 
 ## 2023-03-19 (v14)
