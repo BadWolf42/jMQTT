@@ -61,16 +61,14 @@ function restore_getBackupM($tmp_dir) {
 
 // Compare hardware keys
 function restore_checkHwKey($current, $old, $no_hw_check) {
-	// - If no match stop (FAIL)
-	// - If --no-hw-check then use old full_import method?
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Verifing hardware keys...");
 	if ($current['hardwareKey'] == $old['hardwareKey']) {
 		print("                            [ OK ]\n");
 		return true;
 	} elseif ($no_hw_check) {
-		print("                   [ NO HW CHECK ]\n");
-		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Cannot restore a backup on a system with a different hardwareKey yet!\n"); // TODO
-		return false;
+		print("                       [ IGNORED ]\n");
+		print(date('[Y-m-d H:i:s][\W\A\R\N\I\N\G] : ') . "THIS IS UNSAFE AND NOT RECOMMANDED: hardwareKey are different between the system and the backup, but you decided to ignore it!\n");
+		return true;
 	} else {
 		print("                        [ FAILED ]\n");
 		print(date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . "Cannot restore this backup on a system with a different hardwareKey!\n");
