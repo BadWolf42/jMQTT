@@ -3,7 +3,8 @@
 ## 2023-04-06 (v15)
 - Amélioration de l'affichage des commandes Action List
 - Première implémentation du système de sauvegarde de restauration de jMQTT indépendamment du Core
-- Correction des problèmes e multi-lancement du démon avec des signaux de vie entre le démon et Jeedom
+- Correction d'un problème créant des commandes orphelines lors de la suppression d'un équipement Broker
+- Correction des problèmes de multi-lancement du démon avec des signaux de vie entre le démon et Jeedom
 - Ajout de 14 nouvelles icones : espeasy, intex, location, mcz-remote, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer, stove, tasmota & theengs
 - Ajout du template Tasmota Nous A1T (merci vberder)
 - Optimisations du code, Corrections syntaxiques et orthographiques

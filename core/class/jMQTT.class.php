@@ -855,15 +855,15 @@ class jMQTT extends eqLogic {
 		// ------------------------ Broker eqpt ------------------------
 		if ($this->getType() == self::TYP_BRK) {
 
-			// Create status and connected cmds
-			$this->getMqttClientStatusCmd(true);
-			$this->getMqttClientConnectedCmd(true);
-
 			// --- New broker ---
 			if (is_null($this->_preSaveInformations)) {
 
 				// Create log of this broker
 				config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
+
+				// Create status and connected cmds
+				$this->getMqttClientStatusCmd(true);
+				$this->getMqttClientConnectedCmd(true);
 
 				// Enabled => Start MqttClient
 				if ($this->getIsEnable()) $this->startMqttClient();
@@ -2111,7 +2111,7 @@ class jMQTT extends eqLogic {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::byId($id); // Don't use getBrokerFromId here!
 			if (!is_object($broker)) {
-				self::logger('warning', sprintf(__("Le Broker %s n'existe plus", __FILE__), $id));
+				self::logger('debug', sprintf(__("Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)", __FILE__), $id));
 				return;
 			}
 			if ($broker->getType() != self::TYP_BRK) {
