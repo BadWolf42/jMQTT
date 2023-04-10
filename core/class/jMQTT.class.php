@@ -345,19 +345,13 @@ class jMQTT extends eqLogic {
 	 * @param string $topic subscription topic
 	 * @param bool   $_keepCmd keep existing commands
 	 */
-	public function applyATemplate($_template, $_topic, $_keepCmd = true){
-
+	public function applyATemplate($_template, $_baseTopic, $_keepCmd = true){
 		if ($this->getType() != self::TYP_EQPT || is_null($_template))
 			return;
 
 		// Cleanup base topic (remove '/', '#' and '+' at the end)
-		$baseTopic = $_topic;
-		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
-		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
-
-		// Ensure topic has a wildcard at the end
-		if (substr($_topic, -1) != '/' && substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '/'; }
-		if (substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '#'; }
+		if (substr($_baseTopic, -1) == '#' || substr($_baseTopic, -1) == '+') { $_baseTopic = substr($_baseTopic, 0, -1); }
+		if (substr($_baseTopic, -1) == '/') { $_baseTopic = substr($_baseTopic, 0, -1); }
 
 		// Raise up the flag that cmd topic mismatch must be ignored
 		$this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
@@ -365,8 +359,11 @@ class jMQTT extends eqLogic {
 		// import template
 		$this->import($_template, $_keepCmd);
 
-		// complete eqpt topic
-		$this->setTopic(sprintf($_template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
+		// Ensure topic has a wildcard at the end
+		$mainTopic = sprintf($_template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_baseTopic);
+		if (substr($mainTopic, -1) != '/' && substr($mainTopic, -1) != '#' && substr($mainTopic, -1) != '+') { $mainTopic .= '/'; }
+		if (substr($mainTopic, -1) != '#' && substr($mainTopic, -1) != '+') { $mainTopic .= '#'; }
+		$this->setTopic($mainTopic);
 		$this->save();
 
 		// Create a replacement array with cmd names & id for further use
@@ -387,7 +384,7 @@ class jMQTT extends eqLogic {
 
 		// complete cmd topics and replace template cmd names by cmd ids
 		foreach ($this->getCmd() as $cmd) {
-			$cmd->setTopic(sprintf($cmd->getTopic(), $baseTopic));
+			$cmd->setTopic(sprintf($cmd->getTopic(), $_baseTopic));
 			$cmd->replaceCmdIds($cmdsName, $cmdsId);
 			$cmd->save();
 		}
