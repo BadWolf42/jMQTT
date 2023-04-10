@@ -1,6 +1,6 @@
 # Registre des évolutions BETA
 
-## 2023-04-06 (v15)
+## 2023-04-11 (v15)
 - Passage à la version 3.0 de galbar/jsonpath : Attention aux changement de l'oppérateur de recherche recursive ( aka `..`)
 - Correction d'un problème créant des commandes orphelines lors de la suppression d'un équipement Broker
 - Correction des problèmes de multi-lancement du démon avec des signaux de vie entre le démon et Jeedom
