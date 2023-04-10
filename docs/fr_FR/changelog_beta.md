@@ -9,6 +9,7 @@
 - Ajout de 14 nouvelles icones : espeasy, intex, location, mcz-remote, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer, stove, tasmota & theengs
 - Ajout du template Tasmota Nous A1T (merci vberder)
 - Optimisations du code, Corrections syntaxiques et orthographiques
+- Mise à jour de la documentation
 
 ## 2023-03-19 (v14)
 - Ajout de la possibilité d'utiliser un template lors de la création d'un équipement (merci ngrataloup)
