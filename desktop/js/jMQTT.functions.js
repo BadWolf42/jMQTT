@@ -134,23 +134,33 @@ jmqtt.logoHelper = function(_id) {
 
 // Build an icon in hiddenAsTable card span
 jmqtt.asCardHelper = function(_eq, _item, iClass) {
+	iClass   = iClass != '' ? ' ' + iClass : '';
+
+	// Handle bad eqLogics (orphans)
+	if (_eq.configuration == undefined || _eq.configuration.type == undefined || jmqtt_globals.icons[_eq.configuration.type][_item] == undefined)
+		return '<i class="' + iClass + '"></i>';
+
 	var v    = jmqtt_globals.icons[_eq.configuration.type][_item].selector(_eq);
 	var i    = jmqtt_globals.icons[_eq.configuration.type][_item][v];
 	var icon = (_item == 'status') ? (i.icon + ' ' + i.color) : i.icon;
-	iClass   = iClass != '' ? ' ' + iClass : '';
 
 	return '<i class="' + icon + iClass + '"></i>';
 }
 
 // Build an icon in hiddenAsCard card span
 jmqtt.asTableHelper = function(_eq, _item, aClass) {
+	aClass   = aClass != '' ? ' ' + aClass : '';
+
+	// Handle bad eqLogics (orphans)
+	if (_eq.configuration == undefined || _eq.configuration.type == undefined || jmqtt_globals.icons[_eq.configuration.type][_item] == undefined)
+		return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="w18"></i></a>';
+
 	var v    = jmqtt_globals.icons[_eq.configuration.type][_item].selector(_eq);
 	var i    = jmqtt_globals.icons[_eq.configuration.type][_item][v];
 	// var colored = _eq.configuration.type == 'broker' && (jmqtt_globals.daemonState && _eq.isEnable == '1') && _item == 'status';
 	var colored = _item == 'status' || (_eq.isEnable == '1' && (_eq.configuration.type != 'broker' || jmqtt_globals.daemonState));
 	var icon = colored ? (i.icon + ' ' + i.color) : i.icon;
 	var msg  = colored ? (i.msg) : '';
-	aClass   = aClass != '' ? ' ' + aClass : '';
 
 	if (msg == '')
 		return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="' + icon + ' w18"></i></a>';
@@ -411,7 +421,8 @@ jmqtt.updateEqptTabs = function(_eq) {
 	$.each(jmqtt_globals.eqBrokers, function(key, name) {
 		brokers.append(new Option(name, key));
 	});
-	brokers.val(_eq.configuration.eqLogic);
+	if (_eq.configuration.eqLogic != undefined && _eq.configuration.eqLogic > 0)
+		brokers.val(_eq.configuration.eqLogic);
 
 	// Set mainTopic global
 	jmqtt_globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
@@ -746,7 +757,7 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 	});
 }
 
-// Open modal to add an eq + cmd from Real Time tab !!! UNUSED !!!
+// Open modal to add an eq + cmd from Real Time tab !!! UNUSED !!! // TODO (low) Check if can be removed
 /* jmqtt.addEqCmdFromRealTime = function(topic, jsonPath) {
 	var broker    = jmqtt.getBrkId();
 	var topicTab  = topic.split('/').filter(t => t.trim().length > 0);

@@ -306,7 +306,7 @@ $('#bt_jmqttUrlOverride').on('click', function () {
 // Launch jMQTT backup and wait for it to end
 $('#bt_backupJMqttStart').on('click', function () {
 	var btn = $(this)
-	bootbox.confirm("{{Êtes-vous sûr de vouloir lancer une sauvegarde de jMQTT ?}}<br />({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})", function(result) {
+	bootbox.confirm("{{Êtes-vous sûr de vouloir lancer une sauvegarde de jMQTT ?}}<br />({{Il ne sera pas possible d'annuler une fois l'opération lancée}})", function(result) {
 		if (!result)
 			return;
 		// $('a.bt_plugin_conf_view_log[data-log=jMQTT]').click();
@@ -321,6 +321,12 @@ $('#bt_backupJMqttStart').on('click', function () {
 			},
 			success: function(data) {
 				if (data.state == 'ok') {
+					$('#sel_backupJMqtt').empty();
+					for (var i in data.result) {
+						var oVal = data.result[i].name;
+						var oSize = ' (' + data.result[i].size +')';
+						$('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+					}
 					$.fn.showAlert({message: '{{Sauvegarde effectuée.}}', level: 'success'});
 				} else {
 					$.fn.showAlert({message: data.result, level: 'danger'});
@@ -363,28 +369,84 @@ $('#bt_backupJMqttRestore').on('click', function () {
 	if (!$('#sel_backupJMqtt option:selected').length)
 		return;
 	var btn = $(this)
-	bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + '</b> ?', function(result) {
-		if (!result)
-			return;
-		jmqtt_config.toggleIco(btn);
-		jmqtt_config.jmqttAjax({
-			data: {
+	var dialog_message = '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotfolder">'
+	dialog_message += '{{Ne pas restaurer le répertoire de jMQTT depuis la sauvegarde}}</label><br />';
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnoteqcmd">'
+	dialog_message += '{{Ne pas restaurer les egLogics et les commandes}}</label><br />';
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdodelete">'
+	dialog_message += '{{Supprimer les eqLogics et cmds jMQTT créés depuis la sauvegarde}}</label><br />';
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotcache">'
+	dialog_message += '{{Ne pas restaurer le cache précédent (conserver le cache actuel)}}</label><br />';
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnothistory">'
+	dialog_message += "{{Supprimer l'historique récent (ne conserver que l'historique de la sauvegarde)}}</label><br />";
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdologs">'
+	dialog_message += '{{Restaurer les logs précédents (ne pas conserver les logs récents)}}</label><br />';
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdomosquitto">'
+	dialog_message += '{{Restaurer les fichiers de configuration de Mosquitto}}</label><br /><br />';
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnohwcheck">';
+	dialog_message += '{{Ne pas vérifier si ce système est le même que celui sauvegardé}}';
+	dialog_message += '&nbsp;<i class="fas fa-exclamation-triangle danger tooltips" title="';
+	dialog_message += '{{Uniquement si vous savez EXACTEMENT ce que vous faites et que vous avez une SAUVEGARDE EXTERNALISÉE de tout Jeedom.}}';
+	dialog_message += '"></i><sup><i class="fa fa-question-circle danger tooltips" title="';
+	dialog_message += '{{Uniquement si vous savez EXACTEMENT ce que vous faites et que vous avez une SAUVEGARDE EXTERNALISÉE de tout Jeedom.}}';
+	dialog_message += '"></i></sup></label><br />';
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttverbose">'
+	dialog_message += "{{Afficher plus d'informations lors de la restauration}}</label><br />";
+
+	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttapply">'
+	dialog_message += '<a class="success disabled">{{APPLIQUER}}</a> {{les changements sur ce système (SINON mode "Dry Run")}}</label><br />';
+
+	bootbox.confirm({
+		title: '<b>{{Paramètres de restauration de la sauvegarde de jMQTT}}</b>',
+		message: dialog_message,
+		callback: function (result){ if (result) {
+			// Var recuperation MUST be done here, they don't exist after this point
+			var data_to_send = {
 				action: "backupRestore",
-				file: $('#sel_backupJMqtt').value()
-			},
-			error: function (request, status, error) {
-				handleAjaxError(request, status, error);
+				file: $('#sel_backupJMqtt').value(),
+				nohwcheck: $('#restoreJMqttnohwcheck').value(),
+				notfolder: $('#restoreJMqttnotfolder').value(),
+				noteqcmd: $('#restoreJMqttnoteqcmd').value(),
+				byname: $('#restoreJMqttbyname').value(),
+				dodelete: $('#restoreJMqttdodelete').value(),
+				notcache: $('#restoreJMqttnotcache').value(),
+				nothistory: $('#restoreJMqttnothistory').value(),
+				dologs: $('#restoreJMqttdologs').value(),
+				domosquitto: $('#restoreJMqttdomosquitto').value(),
+				verbose: $('#restoreJMqttverbose').value(),
+				apply: $('#restoreJMqttapplyapply').value()
+			};
+			bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + "</b> ?<br />"
+							+ "({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})"
+							+ "<br /><span class=\"danger\">Attention, cette fonctionnalité est encore en BETA, c'est à vos risques et périls !</span>", function(result) {
+				if (!result)
+					return;
 				jmqtt_config.toggleIco(btn);
-			},
-			success: function(data) {
-				if (data.state == 'ok') {
-					$.fn.showAlert({message: '{{Sauvegarde restaurée.}}', level: 'success'});
-				} else {
-					$.fn.showAlert({message: data.result, level: 'danger'});
-				}
-				jmqtt_config.toggleIco(btn);
-			}
-		});
+				jmqtt_config.jmqttAjax({
+					data: data_to_send,
+					error: function (request, status, error) {
+						handleAjaxError(request, status, error);
+						jmqtt_config.toggleIco(btn);
+					},
+					success: function(data) {
+						if (data.state == 'ok') {
+							$.fn.showAlert({message: '{{Sauvegarde restaurée.}}', level: 'success'});
+						} else {
+							$.fn.showAlert({message: data.result, level: 'danger'});
+						}
+						jmqtt_config.toggleIco(btn);
+					}
+				});
+			});
+		}}
 	});
 });
 
@@ -392,7 +454,7 @@ $('#bt_backupJMqttRestore').on('click', function () {
 $('#bt_backupJMqttDownload').on('click', function () {
 	if (!$('#sel_backupJMqtt option:selected').length)
 		return;
-	window.open('core/php/downloadFile.php?pathfile=' + $('#sel_backupJMqtt').value(), "_blank", null);
+	window.open('core/php/downloadFile.php?pathfile=plugins/jMQTT/data/backup/' + $('#sel_backupJMqtt').value(), "_blank", null);
 });
 
 // Add a new jMQTT backup file by upload to the list
@@ -403,9 +465,12 @@ $('#bt_backupJMqttUpload').fileupload({
 		if (data.result.state != 'ok') {
 			$.fn.showAlert({message: data.result.result, level: 'danger'});
 		} else {
-			var oVal = data.result.result.name;
-			var oText = data.result.result.name + ' (' + data.result.result.size +')';
-			$('#sel_backupJMqtt').append('<option selected value="' + oVal + '">' + oText + '</option>');
+			$('#sel_backupJMqtt').empty();
+			for (var i in data.result.result) {
+				var oVal = data.result.result[i].name;
+				var oSize = ' (' + data.result.result[i].size +')';
+				$('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+			}
 			$.fn.showAlert({message: '{{Fichier(s) ajouté(s) avec succès}}', level: 'success'})
 		}
 		$('#bt_backupJMqttUpload').val(null);

@@ -1,0 +1,1083 @@
+{
+    "Tasmota Nous A1T": {
+        "name": "Tasmota Nous A1T",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "auto_add_cmd": "0",
+            "type": "eqpt",
+            "auto_add_topic": "%s\/#",
+            "createtime": "2021-10-21 09:18:16",
+            "commentaire": "Tasmota Nous A1T\nNeed to configure the Plug in MQTT tab with the topic : %topic%/%prefix% (inverted from default one define)",
+            "Qos": "1",
+            "battery_type": "Secteur",
+            "commentaire": "Prise ",
+            "icone": "power-plug",
+            "updatetime": "2023-04-06 00:56:40"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "1",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "ApparentPower",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "Va",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][ApparentPower]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "BootCount",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO3",
+                    "jsonPath": "[Info3][BootCount]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "cmnd:POWER1",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/cmnd\/POWER1"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Current",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Current]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Factor",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Factor]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "FallbackTopic",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO1",
+                    "jsonPath": "[Info1][FallbackTopic]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "GroupTopic",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO1",
+                    "jsonPath": "[Info1][GroupTopic]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heap",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Heap]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Hostname",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO2",
+                    "jsonPath": "[Info2][Hostname]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "IPAddress",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO2",
+                    "jsonPath": "[Info2][IPAddress]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "LoadAvg",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[LoadAvg]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Module",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO1",
+                    "jsonPath": "[Info1][Module]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "MqttCount",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[MqttCount]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Period",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Period]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Power",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Power]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "POWERRESULT",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/stat\/RESULT",
+                    "jsonPath": "[POWER]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "ReactivePower",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "Var",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][ReactivePower]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "RestartReason",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO3",
+                    "jsonPath": "[Info3][RestartReason]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Sleep",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Sleep]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "SleepMode",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[SleepMode]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Time",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Time]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Today",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Today]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Total",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Total]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "TotalStartTime",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][TotalStartTime]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Uptime",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Uptime]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "UptimeSec",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[UptimeSec]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Version",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO1",
+                    "jsonPath": "[Info1][Version]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Voltage",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Voltage]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "WebServerMode",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO2",
+                    "jsonPath": "[Info2][WebServerMode]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_AP",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][AP]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_BSSId",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][BSSId]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_Channel",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][Channel]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_Downtime",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][Downtime]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_LinkCount",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][LinkCount]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_Mode",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][Mode]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_RSSI",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][RSSI]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_Signal",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][Signal]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi_SSId",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE",
+                    "jsonPath": "[Wifi][SSId]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Yesterday",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR",
+                    "jsonPath": "[ENERGY][Yesterday]"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "stat:POWER",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/stat\/POWER"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "stat:RESULT",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/stat\/RESULT"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "tele:LWT",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/LWT"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "tele:SENSOR",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/SENSOR"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "tele:STATE",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/STATE"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "tele:INFO1",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO1"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "tele:INFO2",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO2"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "tele:INFO3",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/tele\/INFO3"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "cmnd:POWER2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/cmnd\/POWER2"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "cmnd:POWER3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/cmnd\/POWER3"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "cmnd:POWER4",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/cmnd\/POWER4"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "On1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/cmnd\/POWER1",
+                    "request": "ON",
+                    "retain": "0",
+                    "Qos": "2",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Off1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/cmnd\/POWER1",
+                    "request": "OFF",
+                    "retain": "0",
+                    "Qos": "2",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Toggle1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/cmnd\/POWER1",
+                    "request": "TOGGLE",
+                    "retain": "0",
+                    "Qos": "1",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}

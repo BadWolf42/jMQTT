@@ -23,6 +23,8 @@ $eqNonBrokers = jMQTT::getNonBrokers();
 /** @var jMQTT[] $eqBrokers */
 $eqBrokers = jMQTT::getBrokers();
 
+// TODO (high) Move eqLogic & cmd orphan search and rescue here in health modal
+
 ?>
 <legend><i class="fas fa-table"></i> {{Brokers}}</legend>
 <table class="table table-condensed tablesorter" id="table_healthMQTT_brk">
@@ -53,14 +55,14 @@ foreach ($eqBrokers as $eqB) { // List all Brokers on top
 <?php
 foreach ($eqBrokers as $eqB) { // For each Broker
 	echo '<legend><i class="fas fa-table"></i> ';
-	if (!array_key_exists($eqB->getId(), $eqNonBrokers))
+	if (!isset($eqNonBrokers[$eqB->getId()]))
 		echo '{{Aucun équipement connectés à}}';
 	elseif (count($eqNonBrokers[$eqB->getId()]) == 1)
 		echo '{{1 équipement connectés à}}';
 	else
 		echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
 	echo ' <b>' . $eqB->getName() . '</b></legend>';
-	if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
+	if (isset($eqNonBrokers[$eqB->getId()])) {
 		echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_'.$eqB->getId().'">';
 ?>
 	<thead>

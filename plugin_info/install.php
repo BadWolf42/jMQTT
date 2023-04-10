@@ -19,14 +19,11 @@
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 include_file('core', 'jMQTT', 'class', 'jMQTT');
 
-/**
- * jMQTT plugin version configuration parameter key name
- */
-define("VERSION", 'version');
 
 function raiseForceDepInstallFlag() {
 	config::save('forceDepInstall', 1, 'jMQTT');
 }
+
 
 function jMQTT_install() {
 	jMQTT::logger('debug', 'install.php: jMQTT_install()');
@@ -49,23 +46,25 @@ function jMQTT_update($_direct=true) {
 		$pluginVersion = 0;
 	}
 
-	$versionFromDB = @intval(config::byKey(VERSION, 'jMQTT', $pluginVersion));
+	$version = @intval(config::byKey('version', 'jMQTT', $pluginVersion));
 
-	while (++$versionFromDB <= $pluginVersion) {
+	while (++$version <= $pluginVersion) {
 		try {
-			$file = __DIR__ . '/../resources/update/' . $versionFromDB . '.php';
-			if (file_exists($file))
+			$file = __DIR__ . '/../resources/update/' . $version . '.php';
+			if (file_exists($file)) {
+				log::add('jMQTT', 'debug', sprintf(__("Version %d : Application des modifications", __FILE__), $version));
 				include $file;
+				log::add('jMQTT', 'debug', sprintf(__("Version %d : Modifications appliquées", __FILE__), $version));
+			}
 		} catch (Throwable $e) {
 			log::add('jMQTT', 'error', str_replace("\n",' <br /> ',
-				sprintf(__("Exception lors de l'application des modifications de la version %1\$d : %2\$s", __FILE__).
+				sprintf(__("Version %1\$d : Exception lors de l'application des modifications : %2\$s", __FILE__).
 					"<br />@Stack: %3\$s,<br />@BrkId: %4\$s.",
-					$versionFromDB, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
+					$version, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 		}
 	}
 
-	config::save(VERSION, $pluginVersion, 'jMQTT');
-	// log::add('jMQTT', 'debug', __("Fin de la montée de version.", __FILE__));
+	config::save('version', $pluginVersion, 'jMQTT');
 
 	jMQTT::pluginStats($_direct ? 'update' : 'install');
 }

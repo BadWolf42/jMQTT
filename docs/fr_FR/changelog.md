@@ -169,8 +169,8 @@
  - Correction d'un bug lors de la vérification des dépendances chez certains utilisateurs
 
 ## 2022-06-13
- - Nettoyage des nom des templates, ajout en commentaire de liens vers community ou les sources des templates
- - Ajout de 30 nouvelles templates, merci à Nicoca-ine et Mikael, Meute, Jbval, lolo_95 et iPaaad !
+ - Nettoyage des noms des templates, ajout en commentaire de liens vers community ou les sources des templates
+ - Ajout de 30 nouveaux templates, merci à Nicoca-ine et Mikael, Meute, Jbval, lolo_95 et iPaaad !
  - Ajout d'une fonction permettant à un plugin tiers d'ajouter/modifier facilement un équipement dans jMQTT avec un template
  - Modifications et réécritures mineures des certaines fonctions
  - Correction d'erreurs dans le fonction jMQTT::HTMLtoXY

@@ -76,17 +76,30 @@ class jMQTTCmd extends cmd {
 
 	/**
 	 * Return a full export of this command as an array.
-	 * @return array
+	 * @param boolean $clean irrelevant values to Daemon must be removed from the return
+	 * @return array representing the cmd
 	 */
-	public function full_export() {
+	public function full_export($clean=false) {
 		$cmd = clone $this;
 		$cmdValue = $cmd->getCmdValue();
-		if (is_object($cmdValue)) {
-			$cmd->setValue($cmdValue->getName());
-		} else {
-			$cmd->setValue('');
-		}
+		$cmd->setValue(is_object($cmdValue) ? $cmdValue->getName() : '');
 		$return = utils::o2a($cmd);
+		if ($clean) { // Remove unneeded informations
+			unset($return['alert']);
+			unset($return['configuration']['request']);
+			unset($return['configuration']['minValue']);
+			unset($return['configuration']['maxValue']);
+			unset($return['configuration']['listValue']);
+			unset($return['configuration']['prev_retain']);
+			unset($return['configuration']['commentaire']);
+			unset($return['isHistorized']);
+			unset($return['isVisible']);
+			unset($return['display']);
+			unset($return['order']);
+			unset($return['template']);
+			unset($return['unite']);
+			unset($return['value']);
+		}
 		return $return;
 	}
 
@@ -150,7 +163,7 @@ class jMQTTCmd extends cmd {
 			// Create JsonObject for JsonPath
 			$jsonobject=new JsonPath\JsonObject($jsonArray);
 			$value = $jsonobject->get($jsonPath);
-			if ($value !== false)
+			if ($value !== false && $value !== array())
 				$this->updateCmdValue(json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 			else
 				$this->getEqLogic()->log('info', sprintf(__("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__), $this->getHumanName()));
@@ -377,7 +390,7 @@ class jMQTTCmd extends cmd {
 
 		// For info commands (on Equipments), log that the topic is compatible with the subscription command
 		if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0) && !$this->topicMatchesSubscription($eqLogic->getTopic())) {
-			$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible du topic de l'équipement associé", __FILE__), $this->getHumanName()));
+			$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible avec le topic de souscription de l'équipement associé", __FILE__), $this->getHumanName()));
 		}
 	}
 

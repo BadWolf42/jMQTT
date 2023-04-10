@@ -43,12 +43,12 @@ if (!isConnect('admin')) {
 		<table id="table_jmqttTemplateCmds" class="table tree table-bordered table-condensed table-striped">
 			<thead>
 				<tr>
-					<th style="width:250px;">{{Nom}}</th>
-					<th style="width:60px;">{{Sous-Type}}</th>
-					<th style="width:300px;">{{Topic}}</th>
-					<th style="width:300px;">{{Valeur}}</th>
-					<th style="width:1px;">{{Unité}}</th>
-					<th style="width:150px;">{{Paramètres}}</th>
+					<th style="min-width:60px;">{{Nom}}</th>
+					<th style="width:60px;">{{Type}}</th>
+					<th style="min-width:60px;">{{Topic}}</th>
+					<th style="min-width:60px;">{{Valeur}}</th>
+					<th style="min-width:60px;width:70px;">{{Paramètres}}</th>
+					<th style="min-width:95px;width:95px;">{{Options}}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -247,12 +247,12 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" disabled style="width:50px;display:inline-block;">';
 					}
 					if (init(_cmd.subType) == 'select')
-						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste de valeur|texte séparé par ;}}" disabled title="{{Liste}}">';
+						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte}}" disabled title="{{Liste : valeur|texte (séparées entre elles par des points-virgules)}}" placeholder="{{Liste de valeur|texte séparé par ;}}">';
 					tr += '</td><td>';
 					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" disabled checked/>{{Afficher}}</label></span><br> ';
 					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="retain"/>{{Retain}}</label></span><br> ';
 					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="autoPub"/>{{Pub. auto}}</label></span><br> ';
-					tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" disabled data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
+					tr += '<span class="checkbox-inline"><input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" disabled data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 					tr += '</td></tr>';
 					$('#table_jmqttTemplateCmds tbody').append(tr);
 					$('#table_jmqttTemplateCmds [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');

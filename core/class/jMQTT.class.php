@@ -236,21 +236,21 @@ class jMQTT extends eqLogic {
 			$changed = false;
 
 			// if 'commands' key exists in this template
-			if (array_key_exists('commands', $templateValue)) {
+			if (isset($templateValue['commands'])) {
 
 				// for each keys under 'commands'
 				foreach ($templateValue['commands'] as &$cmd) {
 
 					// if 'configuration' key exists in this command
-					if (array_key_exists('configuration', $cmd)) {
+					if (isset($cmd['configuration'])) {
 
 						// get the topic if it exists
-						$topic = (array_key_exists('topic', $cmd['configuration'])) ? $cmd['configuration']['topic'] : '';
+						$topic = (isset($cmd['configuration']['topic'])) ? $cmd['configuration']['topic'] : '';
 
 						$i = strpos($topic, '{');
 						if ($i === false) {
 							// Just set empty jsonPath if it doesn't exists
-							if (!array_key_exists(jMQTTCmd::CONF_KEY_JSON_PATH, $cmd['configuration'])) {
+							if (!isset($cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH])) {
 								$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = '';
 								$changed = true;
 							}
@@ -301,10 +301,10 @@ class jMQTT extends eqLogic {
 			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename);
 
 			// if 'configuration' key exists in this template
-			if (array_key_exists('configuration', $templateValue)) {
+			if (isset($templateValue['configuration'])) {
 
 				// if auto_add_cmd doesn't exists in configuration, we need to move topic from logicalId to configuration
-				if (!array_key_exists(self::CONF_KEY_AUTO_ADD_TOPIC, $templateValue['configuration'])) {
+				if (!isset($templateValue['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC])) {
 					$topic = $templateValue['logicalId'];
 					$templateValue['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC] = $topic;
 					$templateValue['logicalId'] = '';
@@ -345,19 +345,13 @@ class jMQTT extends eqLogic {
 	 * @param string $topic subscription topic
 	 * @param bool   $_keepCmd keep existing commands
 	 */
-	public function applyATemplate($_template, $_topic, $_keepCmd = true){
-
+	public function applyATemplate($_template, $_baseTopic, $_keepCmd = true){
 		if ($this->getType() != self::TYP_EQPT || is_null($_template))
 			return;
 
 		// Cleanup base topic (remove '/', '#' and '+' at the end)
-		$baseTopic = $_topic;
-		if (substr($baseTopic, -1) == '#' || substr($baseTopic, -1) == '+') { $baseTopic = substr($baseTopic, 0, -1); }
-		if (substr($baseTopic, -1) == '/') { $baseTopic = substr($baseTopic, 0, -1); }
-
-		// Ensure topic has a wildcard at the end
-		if (substr($_topic, -1) != '/' && substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '/'; }
-		if (substr($_topic, -1) != '#' && substr($_topic, -1) != '+') { $_topic .= '#'; }
+		if (substr($_baseTopic, -1) == '#' || substr($_baseTopic, -1) == '+') { $_baseTopic = substr($_baseTopic, 0, -1); }
+		if (substr($_baseTopic, -1) == '/') { $_baseTopic = substr($_baseTopic, 0, -1); }
 
 		// Raise up the flag that cmd topic mismatch must be ignored
 		$this->setCache(self::CACHE_IGNORE_TOPIC_MISMATCH, 1);
@@ -365,8 +359,11 @@ class jMQTT extends eqLogic {
 		// import template
 		$this->import($_template, $_keepCmd);
 
-		// complete eqpt topic
-		$this->setTopic(sprintf($_template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_topic));
+		// Ensure topic has a wildcard at the end
+		$mainTopic = sprintf($_template['configuration'][self::CONF_KEY_AUTO_ADD_TOPIC], $_baseTopic);
+		if (substr($mainTopic, -1) != '/' && substr($mainTopic, -1) != '#' && substr($mainTopic, -1) != '+') { $mainTopic .= '/'; }
+		if (substr($mainTopic, -1) != '#' && substr($mainTopic, -1) != '+') { $mainTopic .= '#'; }
+		$this->setTopic($mainTopic);
 		$this->save();
 
 		// Create a replacement array with cmd names & id for further use
@@ -387,7 +384,7 @@ class jMQTT extends eqLogic {
 
 		// complete cmd topics and replace template cmd names by cmd ids
 		foreach ($this->getCmd() as $cmd) {
-			$cmd->setTopic(sprintf($cmd->getTopic(), $baseTopic));
+			$cmd->setTopic(sprintf($cmd->getTopic(), $_baseTopic));
 			$cmd->replaceCmdIds($cmdsName, $cmdsId);
 			$cmd->save();
 		}
@@ -419,7 +416,7 @@ class jMQTT extends eqLogic {
 		// TODO (deprecation) Remove when Jeedom 4.2 is no longer supported
 		// older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
 		// Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
-		if (array_key_exists('cmd', $exportedTemplate[$_tName])) {
+		if (isset($exportedTemplate[$_tName]['cmd'])) {
 			// Rename 'cmd' to 'commands' for Jeedom import ...
 			$exportedTemplate[$_tName]['commands'] = $exportedTemplate[$_tName]['cmd'];
 			unset($exportedTemplate[$_tName]['cmd']);
@@ -639,16 +636,45 @@ class jMQTT extends eqLogic {
 	}
 
 	/**
-	 * Return a full export (inc. commands) of this eqLogic as an array.
-	 * @return array
+	 * Return a full export (inc. commands) of all eqLogic as an array starting by Brokers.
+	 * @param boolean $clean irrelevant values to Daemon must be removed from the return
+	 * @return array representing the eqLogic and its cmd
 	 */
-	public function full_export() {
-		$return = $this->toArray();
-		$return['cmd'] = array();
-		foreach ($this->getCmd() as $cmd) {
-			$return['cmd'][] = $cmd->full_export();
+	public static function full_export($clean=false) {
+		$returns = array();
+		foreach (eqLogic::byType('jMQTT') as $eq) {
+			$exp = $eq->toArray();
+			$obj_name = (is_object($eq->getObject())) ? $eq->getObject()->getName() : __('Aucun', __FILE__);
+			$exp['name'] = $obj_name.':'.$exp['name'];
+			if ($clean) { // Remove unneeded informations
+				unset($exp['category']);
+				unset($exp['configuration']['battery_type']);
+				unset($exp['configuration']['createtime']);
+				unset($exp['configuration']['commentaire']);
+				unset($exp['configuration']['icone']);
+				unset($exp['configuration']['updatetime']);
+				unset($exp['comment']);
+				unset($exp['display']);
+				unset($exp['isVisible']);
+				unset($exp['object_id']);
+				unset($exp['status']);
+				unset($exp['tags']);
+				unset($exp['timeout']);
+			}
+			$exp['commands'] = array();
+			foreach ($eq->getCmd() as $cmd)
+				$exp['commands'][] = $cmd->full_export($clean);
+			$returns[] = $exp;
 		}
-		return $return;
+		function fsort($a, $b) {
+			$x = ((isset($a['configuration']) && isset($a['configuration']['type'])) ?
+					$a['configuration']['type'] : "z").$a['id'];
+			$y = ((isset($b['configuration']) && isset($b['configuration']['type'])) ?
+					$b['configuration']['type'] : "z").$b['id'];
+			return strcmp($x, $y);
+		}
+		usort($returns, 'fsort'); // Put the Broker first (needed)
+		return $returns;
 	}
 
 	/**
@@ -759,7 +785,7 @@ class jMQTT extends eqLogic {
 			// Check for a broker eqpt with the same name (which is not this)
 			foreach(self::getBrokers() as $broker) {
 				if ($broker->getName() == $this->getName() && $broker->getId() != $this->getId()) {
-					throw new Exception(sprintf(__("Le Broker #%s# porte déjà le même nom", __FILE__), $this->getHumanName())); // use humain name here
+					throw new Exception(sprintf(__("Le Broker #%s# porte déjà le même nom", __FILE__), $this->getHumanName()));
 				}
 			}
 
@@ -826,15 +852,15 @@ class jMQTT extends eqLogic {
 		// ------------------------ Broker eqpt ------------------------
 		if ($this->getType() == self::TYP_BRK) {
 
-			// Create status and connected cmds
-			$this->getMqttClientStatusCmd(true);
-			$this->getMqttClientConnectedCmd(true);
-
 			// --- New broker ---
 			if (is_null($this->_preSaveInformations)) {
 
 				// Create log of this broker
 				config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
+
+				// Create status and connected cmds
+				$this->getMqttClientStatusCmd(true);
+				$this->getMqttClientConnectedCmd(true);
 
 				// Enabled => Start MqttClient
 				if ($this->getIsEnable()) $this->startMqttClient();
@@ -954,14 +980,19 @@ class jMQTT extends eqLogic {
 
 				// brkId changed
 				if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] != $this->getConf(self::CONF_KEY_BRK_ID)) {
-					// Get old and new Broker
-					$old_broker = self::getBrokerFromId($this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					// Get new Broker
 					$new_broker = self::getBrokerFromId($this->getBrkId());
-					// Log on old and new Broker
-					$old_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# vers le broker %2\$s", __FILE__), $this->getHumanName(), $new_broker->getName()));
-					$new_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# depuis le broker %2\$s", __FILE__), $this->getHumanName(), $old_broker->getName()));
-					//need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
-					$this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] <= 0) { // Orphan
+						$new_broker->log('info', sprintf(__("Ajout de l'Equipement orphelin #%1\$s#", __FILE__), $this->getHumanName()));
+					} else {
+						// Get old Broker
+						$old_broker = self::getBrokerFromId($this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+						// Log on old and new Broker
+						$old_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# vers le broker %2\$s", __FILE__), $this->getHumanName(), $new_broker->getName()));
+						$new_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# depuis le broker %2\$s", __FILE__), $this->getHumanName(), $old_broker->getName()));
+						//need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
+						$this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					}
 					//force Broker change in current object
 					$this->_broker = $new_broker;
 					//and subscribe on the new broker
@@ -1147,12 +1178,11 @@ class jMQTT extends eqLogic {
 			return;
 		}
 		// Ensure next attempt will be in at least 5 minutes
-		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300)); ; // in 5-10 mins
+		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300)); // in 5-10 mins
 
 		$url = 'https://stats.bad.wf/jmqtt.php';
 		$data = array();
 		$data['version'] = 1;
-		$data['hardwareId'] = trim(file_get_contents('/etc/machine-id'));
 		$data['hardwareKey'] = jeedom::getHardwareKey();
 		$data['hardwareName'] = jeedom::getHardwareName();
 		$data['distrib'] = system::getDistrib();
@@ -1162,8 +1192,6 @@ class jMQTT extends eqLogic {
 		$jplugin = update::byLogicalId('jMQTT');
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
-		$data['localVersion'] = $jplugin->getLocalVersion();
-		$data['remoteVersion'] = $jplugin->getRemoteVersion();
 		$data['configVersion'] = config::byKey('version', 'jMQTT', -1);
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
@@ -1520,7 +1548,6 @@ class jMQTT extends eqLogic {
 
 	public static function toDaemon_hb() {
 		$params['cmd']      = 'hb';
-		$params['id']       = '0'; // TODO (low) tmp fix?
 		self::sendToDaemon($params, false);
 	}
 
@@ -2086,7 +2113,7 @@ class jMQTT extends eqLogic {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::byId($id); // Don't use getBrokerFromId here!
 			if (!is_object($broker)) {
-				self::logger('warning', sprintf(__("Le Broker %s n'existe plus", __FILE__), $id));
+				self::logger('debug', sprintf(__("Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)", __FILE__), $id));
 				return;
 			}
 			if ($broker->getType() != self::TYP_BRK) {
@@ -2616,7 +2643,7 @@ class jMQTT extends eqLogic {
 			self::CONF_KEY_BRK_ID => -1
 		);
 		// If not in list, default value is ''
-		return array_key_exists($_key, $defValues) ? $defValues[$_key] : '';
+		return isset($defValues[$_key]) ? $defValues[$_key] : '';
 	}
 
 	/**
