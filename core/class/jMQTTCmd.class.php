@@ -163,7 +163,7 @@ class jMQTTCmd extends cmd {
 			// Create JsonObject for JsonPath
 			$jsonobject=new JsonPath\JsonObject($jsonArray);
 			$value = $jsonobject->get($jsonPath);
-			if ($value !== false)
+			if ($value !== false && $value !== array())
 				$this->updateCmdValue(json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 			else
 				$this->getEqLogic()->log('info', sprintf(__("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__), $this->getHumanName()));

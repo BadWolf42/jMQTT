@@ -330,13 +330,15 @@ Voici un aperçu du langage et des possibilités qu'il renferme :
 | ---------------- | ------------------------------------------------------------------------------ |
 | $                | Objet/élément racine                                                           |
 | @                | Objet/élément courant                                                          |
-| . or []          | Operateur de sélection d'un enfant                                             |
+| .  /  []         | Operateur de sélection d'un enfant                                             |
 | ..               | Descente récursive                                                             |
 | *                | Caractère générique : tous les objets/éléments indépendamment de leurs noms    |
 | []               | Opérateur d'indice : opérateur natif d'un tableau                              |
 | [,]              | Opérateur d'union : noms alternatifs ou indices de tableau en tant qu'ensemble |
 | [start:end:step] | Opérateur de découpage de tableau                                              |
 | ?()              | Expression (script) de filtrage de données                                     |
+| in  /  not in    | Opérateurs de recherche dans un tableau ou une liste                           |
+| .length          | Taille du tableau ou de la chaine de caractères                                |
 
 Le premier caractère '$' est omis par la vue JSON de jMQTT dans un souci de lisibilité, mais le Chemin JSON reste parfaitement fonctionnel que le caractère '$' soit présent ou non.
 

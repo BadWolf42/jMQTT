@@ -7,4 +7,6 @@ DB::Prepare($sql, array(), DB::FETCH_TYPE_ROW);
 
 jMQTT::logger('info', __("Commandes orphelines supprimées", __FILE__));
 
+raiseForceDepInstallFlag();
+
 ?>
