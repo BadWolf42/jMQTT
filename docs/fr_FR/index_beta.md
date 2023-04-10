@@ -277,9 +277,10 @@ Concernant les boutons en haut à droite :
 
 ![Boutons sur un Equipement](../images/2022-10-26_eqpt_buttons.png)
 
-  - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
   - `Créer template` permet de [Créer un template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
-  - `Modifier Topics` permet de Modifier en masse tous les topics de l'équipement courant (pensez à sauvegarder l'équipement après la modification) ;
+  - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
+  - `Modifier Topics` permet de modifier en masse tous les topics de l'équipement courant (pensez à sauvegarder l'équipement après la modification) ;
+  - `Testeur Chemin JSON` permet de tester comment un payload sera traité par un certain chemin JSON ;
   - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement).
 
 ### Onglet Commandes

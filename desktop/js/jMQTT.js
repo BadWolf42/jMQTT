@@ -494,6 +494,12 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 	});
 });
 
+// On jsonPathTester click
+$('.eqLogicAction[data-action=jsonPathTester]').off('click').on('click', function () {
+	$('#md_modal').dialog({title: "{{Testeur de Chemin JSON}}"});
+	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=jsonPathTester').dialog('open');
+});
+
 // On addMQTTInfo click
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
 	var _cmd = {type: 'info'};
