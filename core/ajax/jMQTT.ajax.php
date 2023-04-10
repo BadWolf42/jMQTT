@@ -334,8 +334,8 @@ try {
 		if (!class_exists('JsonPath\JsonObject'))
 			throw new Exception(__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
 
-		$jsonPath = init('jsonPath');
-		if ($jsonPath[0] != '$')
+		$jsonPath = trim(init('jsonPath'));
+		if (strlen($jsonPath) == 0 || $jsonPath[0] != '$')
 			$jsonPath = '$' . $jsonPath;
 
 		// Create JsonObject for JsonPath
