@@ -1,7 +1,6 @@
 # Registre des évolutions BETA
 
 ## 2023-04-06 (v15)
-- Première implémentation du système de sauvegarde de restauration de jMQTT indépendamment du Core
 - Passage à la version 3.0 de galbar/jsonpath : Attention aux changement de l'oppérateur de recherche recursive ( aka `..`)
 - Correction d'un problème créant des commandes orphelines lors de la suppression d'un équipement Broker
 - Correction des problèmes de multi-lancement du démon avec des signaux de vie entre le démon et Jeedom
@@ -9,8 +8,9 @@
 - Correction d'un problème avec le topic de souscription lors de l'application d'un template
 - Ajout d'un outil de test des chemins Json (documentation à faire, mais fonctionnement simple)
 - Amélioration de l'affichage des commandes Action List
-- Ajout de 14 nouvelles icones : espeasy, intex, location, mcz-remote, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer, stove, tasmota & theengs
 - Ajout du template Tasmota Nous A1T (merci vberder)
+- Ajout de 14 nouvelles icones : espeasy, intex, location, mcz-remote, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer, stove, tasmota & theengs
+- Première implémentation fonctionnelle du système de sauvegarde et de restauration de jMQTT indépendamment du Core (en BETA pour le moment)
 - Optimisations du code, Corrections syntaxiques et orthographiques
 - Mise à jour de la documentation
 
@@ -36,7 +36,6 @@
 
 ## 2023-02-12
 - Passage de la Beta en stable
-- Implémentation définitive du système de sauvegarde de jMQTT (la restauration reste à faire), indépendamment du Core (fonctionnalité cachée pour le moment)
 - Modification de la page Temps Réel pour qu'elle puisse apparaitre sur tous les équipements (fonctionnalité cachée pour le moment)
 
 

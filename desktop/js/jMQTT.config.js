@@ -425,7 +425,8 @@ $('#bt_backupJMqttRestore').on('click', function () {
 				apply: $('#restoreJMqttapplyapply').value()
 			};
 			bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + "</b> ?<br />"
-							+ "({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})", function(result) {
+							+ "({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})"
+							+ "<br /><span class=\"danger\">Attention, cette fonctionnalité est encore en BETA, c'est à vos risques et périls !</span>", function(result) {
 				if (!result)
 					return;
 				jmqtt_config.toggleIco(btn);
