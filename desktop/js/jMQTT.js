@@ -726,10 +726,12 @@ function printEqLogic(_eqLogic) {
 		$('.toDisable').addClass('disabled');
 		$('.typ-brk').hide();
 		$('.typ-std').hide();
+		$('.typ-brk-select').show();
 		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
-		// Stop Real Time data refresh
-		clearInterval(jmqtt_globals.refreshRealTime);
+		// Udpate panel as if on an eqLogic
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val('eqpt');
+		jmqtt.updateEqptTabs(_eqLogic);
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');

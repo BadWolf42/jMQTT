@@ -788,7 +788,7 @@ class jMQTT extends eqLogic {
 			// Check for a broker eqpt with the same name (which is not this)
 			foreach(self::getBrokers() as $broker) {
 				if ($broker->getName() == $this->getName() && $broker->getId() != $this->getId()) {
-					throw new Exception(sprintf(__("Le Broker #%s# porte déjà le même nom", __FILE__), $this->getHumanName())); // use humain name here
+					throw new Exception(sprintf(__("Le Broker #%s# porte déjà le même nom", __FILE__), $this->getHumanName()));
 				}
 			}
 
@@ -983,14 +983,19 @@ class jMQTT extends eqLogic {
 
 				// brkId changed
 				if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] != $this->getConf(self::CONF_KEY_BRK_ID)) {
-					// Get old and new Broker
-					$old_broker = self::getBrokerFromId($this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					// Get new Broker
 					$new_broker = self::getBrokerFromId($this->getBrkId());
-					// Log on old and new Broker
-					$old_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# vers le broker %2\$s", __FILE__), $this->getHumanName(), $new_broker->getName()));
-					$new_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# depuis le broker %2\$s", __FILE__), $this->getHumanName(), $old_broker->getName()));
-					//need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
-					$this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					if ($this->_preSaveInformations[self::CONF_KEY_BRK_ID] <= 0) { // Orphan
+						$new_broker->log('info', sprintf(__("Ajout de l'Equipement orphelin #%1\$s#", __FILE__), $this->getHumanName()));
+					} else {
+						// Get old Broker
+						$old_broker = self::getBrokerFromId($this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+						// Log on old and new Broker
+						$old_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# vers le broker %2\$s", __FILE__), $this->getHumanName(), $new_broker->getName()));
+						$new_broker->log('info', sprintf(__("Déplacement de l'Equipement #%1\$s# depuis le broker %2\$s", __FILE__), $this->getHumanName(), $old_broker->getName()));
+						//need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
+						$this->unsubscribeTopic($this->_preSaveInformations['topic'], $this->_preSaveInformations[self::CONF_KEY_BRK_ID]);
+					}
 					//force Broker change in current object
 					$this->_broker = $new_broker;
 					//and subscribe on the new broker
