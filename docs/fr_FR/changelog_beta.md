@@ -1,5 +1,7 @@
 # Registre des évolutions BETA
 
+- Correction d'un bug sur le système de sauvegarde
+
 ## 2023-04-11 (v15)
 - Passage à la version 3.0 de galbar/jsonpath : Attention aux changement de l'oppérateur de recherche recursive ( aka `..`)
 - Correction d'un problème créant des commandes orphelines lors de la suppression d'un équipement Broker
@@ -31,7 +33,7 @@
 ## 2023-02-27
 - Correction de 2 bugs avec les templates: topic de base incorrectement identifié, underscore à la place d'espaces dans le nom
 - Les statistiques ne sont poussées que toutes les 5 à 10 minutes en cas d'échec
-- Utilisation de `127.0.0.1` au lieu de localhost pour l'url de callback (Workarround par rapport à un problème avec le fichier hosts sur la Luna)
+- Utilisation de `127.0.0.1` au lieu de localhost pour l'url de callback (Workaround par rapport à un problème avec le fichier hosts sur la Luna)
 
 
 ## 2023-02-12

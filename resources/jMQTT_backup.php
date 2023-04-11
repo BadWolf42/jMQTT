@@ -22,6 +22,7 @@ if ($user != 'www-data' || !jeedom::isCapable('sudo')) {
 
 function export_writePidFile() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Writing PID file...");
+	mkdir(__DIR__.'/../data/backup/', 0777, true);
 	file_put_contents(__DIR__.'/../data/backup/backup.pid', posix_getpid());
 	print("                                  [ OK ]\n");
 }
