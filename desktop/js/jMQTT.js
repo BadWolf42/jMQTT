@@ -494,6 +494,12 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 	});
 });
 
+// On jsonPathTester click
+$('.eqLogicAction[data-action=jsonPathTester]').off('click').on('click', function () {
+	$('#md_modal').dialog({title: "{{Testeur de Chemin JSON}}"});
+	$('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=jsonPathTester').dialog('open');
+});
+
 // On addMQTTInfo click
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
 	var _cmd = {type: 'info'};
@@ -726,10 +732,12 @@ function printEqLogic(_eqLogic) {
 		$('.toDisable').addClass('disabled');
 		$('.typ-brk').hide();
 		$('.typ-std').hide();
+		$('.typ-brk-select').show();
 		$('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
-		// Stop Real Time data refresh
-		clearInterval(jmqtt_globals.refreshRealTime);
+		// Udpate panel as if on an eqLogic
+		$('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val('eqpt');
+		jmqtt.updateEqptTabs(_eqLogic);
 	}
 	else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
 		$('.toDisable').removeClass('disabled');
@@ -813,6 +821,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'info') {
+// TODO (medium) Merge Action & Info cmd generation code and reuse it in templates
 // TODO (medium) FIXME: is this disabled variable usefull? virtualAction never exists
 		var disabled = (init(_cmd.configuration.virtualAction) == '1') ? 'disabled' : '';
 
@@ -854,11 +863,11 @@ function addCmdToTable(_cmd) {
 		tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" ' + disabled + '>';
 		tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="configuration" data-l2key="jsonPath" placeholder="{{Chemin JSON}}" '+ disabled + '>';
 		tr += '</td><td>';
-		tr += '<textarea class="form-control input-sm" data-key="value" style="min-height:65px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true></textarea>';
+		tr += '<textarea class="form-control input-sm" data-key="value" style="min-height:62px;" ' + disabled + ' placeholder="{{Valeur}}" readonly=true></textarea>';
 		tr += '</td><td>';
-		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:50px;display:inline-block;">';
-		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:50px;display:inline-block;">';
-		tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:50px;display:inline-block;margin-right:5px;">';
+		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:60px;display:inline-block;">';
+		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
+		tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:60px;display:inline-block;">';
 		tr += '</td><td>';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
@@ -921,6 +930,7 @@ function addCmdToTable(_cmd) {
 	}
 
 	if (init(_cmd.type) == 'action') {
+// TODO (medium) Merge Action & Info cmd generation code and reuse it in templates
 // TODO (medium) FIXME: is this disabled variable usefull? Re-added to avoid "undefined" error
 		var disabled = '';
 
@@ -945,20 +955,21 @@ function addCmdToTable(_cmd) {
 		tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
 		tr += '</td>';
 		tr += '<td>';
-		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="min-height:62px;margin-top:14px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';
+		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="min-height:62px;margin-top:14px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br />';
 		tr += '</td><td>';
-		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="request" style="height:18px;" ' + disabled + ' placeholder="{{Valeur}}"></textarea>';
-		tr += '<a class="btn btn-default btn-sm cursor listEquipementInfo" data-input="request" style="margin-top:5px;"><i class="fas fa-list-alt "></i> {{Rechercher équipement}}</a>';
-		tr +='</select></span>';
+		tr += '<div class="input-group">';
+		tr += '<textarea class="cmdAttr form-control input-sm roundedLeft" data-l1key="configuration" data-l2key="request" ' + disabled + ' style="min-height:62px;height:62px;" placeholder="Valeur"></textarea>';
+		tr += '<a class="btn btn-sm btn-default listEquipementInfo input-group-addon roundedRight" title="{{Rechercher un équipement}}" data-input="request"><i class="fas fa-list-alt "></i></a>';
+		tr += '</div>';
 		tr += '</td><td>';
-		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:50px;display:inline-block;">';
-		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:50px;display:inline-block;">';
-		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste de valeur|texte séparé par ;}}" title="{{Liste}}">';
+		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:60px;display:inline-block;">';
+		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
+		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte}}" title="{{Liste : valeur|texte (séparées entre elles par des points-virgules)}}">';
 		tr += '</td><td>';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br /> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br /> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;';
-		tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br>(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br> ';
+		tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br />(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br /> ';
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td align="right">';

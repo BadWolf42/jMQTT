@@ -56,7 +56,7 @@ try {
 		}
 		$fname = $_FILES['file']['name'];
 		if (file_exists($uploaddir . '/' . $fname)) {
-			throw new Exception(__('Impossible de téléverser le fichier car il existe déjà, par sécurité il faut supprimer le fichier existant avant de le remplacer.', __FILE__));
+			throw new Exception(__('Impossible de téléverser le fichier car il existe déjà. Par sécurité, il faut supprimer le fichier existant avant de le remplacer.', __FILE__));
 		}
 		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $fname)) {
 			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
@@ -74,8 +74,14 @@ try {
 			ajax::success($fname);
 		}
 		elseif (init('dir') == 'backup') {
+			$backup_dir = realpath(__DIR__ . '/../../data/backup');
+			$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
+			sort($files);
+			$backups = array();
+			foreach ($files as $backup)
+				$backups[] = array('name' => $backup, 'size' => sizeFormat(filesize($backup_dir.'/'.$backup)));
 			jMQTT::logger('info', sprintf(__("Sauvegarde %s correctement téléversée", __FILE__), $fname));
-			ajax::success(array('name' => $_FILES['file']['name'], 'size' => sizeFormat(filesize($uploaddir.'/'.$_FILES['file']['name']))));
+			ajax::success($backups);
 		}
 	}
 
@@ -198,12 +204,12 @@ try {
 	}
 
 	if (init('action') == 'mosquittoReStart') {
-		shell_exec(system::getCmdSudo() . ' systemctl restart mosquitto');
+		exec(system::getCmdSudo() . ' systemctl restart mosquitto');
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoStop') {
-		shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
+		exec(system::getCmdSudo() . ' systemctl stop mosquitto');
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 
@@ -221,9 +227,20 @@ try {
 
 	if (init('action') == 'backupCreate') {
 		jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT lancée...", __FILE__)));
-		exec('php ' . __DIR__ . '/../../resources/jMQTT_backup.php --all >> ' . log::getPathToLog('jMQTT') . ' 2>&1');
-		jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT effectuée", __FILE__)));
-		ajax::success();
+		$out = null;
+		$code = null;
+		exec('php ' . __DIR__ . '/../../resources/jMQTT_backup.php --all >> ' . log::getPathToLog('jMQTT') . ' 2>&1', $out, $code);
+		if ($code)
+			throw new Exception(__("Échec de la sauvegarde de jMQTT, consultez le log jMQTT", __FILE__));
+
+		$backup_dir = realpath(__DIR__ . '/../../data/backup');
+		$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
+		sort($files);
+		$backups = array();
+		foreach ($files as $backup)
+			$backups[] = array('name' => $backup, 'size' => sizeFormat(filesize($backup_dir.'/'.$backup)));
+		jMQTT::logger('info', __("Sauvegarde de jMQTT effectuée", __FILE__));
+		ajax::success($backups);
 	}
 
 	if (init('action') == 'backupRemove') {
@@ -234,9 +251,7 @@ try {
 			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
 
 		$backup_dir = realpath(__DIR__ . '/../../data/backup');
-		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
-
-		if (in_array($_backup, $backups) && file_exists($backup_dir.'/'.$_backup))
+		if (in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))) && file_exists($backup_dir.'/'.$_backup))
 			unlink($backup_dir.'/'.$_backup);
 		else
 			throw new Exception(__('Impossible de supprimer le fichier', __FILE__));
@@ -246,18 +261,101 @@ try {
 	if (init('action') == 'backupRestore') {
 		$_backup = init('file');
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
-			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
+			throw new Exception(__('Merci de fournir le fichier à restorer', __FILE__));
 
 		$backup_dir = realpath(__DIR__ . '/../../data/backup');
-		$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet', 'datetime_asc'));
+		if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))
+			throw new Exception(__('Impossible de restorer le fichier fourni', __FILE__));
 
-		if (in_array($_backup, $backups) && file_exists($backup_dir.'/'.$_backup))
+		$msg = sprintf(__("Restauration de la sauvegarde %s...", __FILE__), $_backup);
+		@message::removeAll('jMQTT', 'backupRestoreEnded');
+		@message::add('jMQTT', $msg, '', 'backupRestoreStarted');
+		jMQTT::logger('warning', $msg);
+		// Use a temporary log file for restoration
+		file_put_contents(log::getPathToLog('tmp_jMQTT'), date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "\n");
+		// exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . );
 
-		jMQTT::logger('info', sprintf(__("Restauration de la sauvegarde '%s' lancée...", __FILE__), $_backup));
-		sleep(10);
-		// exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php --all ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('jMQTT') . ' 2>&1 &');
-		jMQTT::logger('info', sprintf(__("Restauration de la sauvegarde effectuée", __FILE__)));
-		ajax::success();
+		// Flags
+		$flags = ' ';
+		if (init('nohwcheck') == '1') $flags .= '--no-hw-check ';
+		if (init('notfolder') == '1') $flags .= '--not-folder ';
+		if (init('noteqcmd') == '1') $flags .= '--not-eq-cmd ';
+		if (init('byname') == '1') $flags .= '--by-name ';
+		if (init('dodelete') == '1') $flags .= '--do-delete ';
+		if (init('notcache') == '1') $flags .= '--not-cache ';
+		if (init('nothistory') == '1') $flags .= '--not-history ';
+		if (init('dologs') == '1') $flags .= '--do-logs ';
+		if (init('domosquitto') == '1') $flags .= '--do-mosquitto ';
+		if (init('verbose') == '1') $flags .= '--verbose ';
+		if (init('apply') == '1') $flags .= '--apply ';
+
+		// Launch restoration
+		$out = null;
+		$res = null;
+		exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php ' . $flags . '--file ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
+
+		// Append temporary log to jMQTT log
+		file_put_contents(log::getPathToLog('jMQTT'), file_get_contents(log::getPathToLog('tmp_jMQTT')), FILE_APPEND);
+		// exec('cat ' . log::getPathToLog('tmp_jMQTT') . ' >> ' . log::getPathToLog('jMQTT'));
+		unlink(log::getPathToLog('tmp_jMQTT'));
+		// exec('rm ' . log::getPathToLog('tmp_jMQTT'));
+		@message::removeAll('jMQTT', 'backupRestoreStarted');
+		if (!$res) {
+			$msg = sprintf(__("Restauration de la sauvegarde %s effectuée avec succès", __FILE__), $_backup);
+			file_put_contents(log::getPathToLog('jMQTT'), date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "\n", FILE_APPEND);
+			// exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . log::getPathToLog('jMQTT'));
+			ajax::success();
+		} else {
+			$msg = sprintf(__("Échec de la restauration de %s, consultez le log jMQTT", __FILE__), $_backup);
+			file_put_contents(log::getPathToLog('jMQTT'), date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $msg . "\n", FILE_APPEND);
+			// exec("echo '" . date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $msg . "' >> " . log::getPathToLog('jMQTT'));
+			@message::add('jMQTT', $msg, '', 'backupRestoreEnded');
+			throw new Exception($msg);
+		}
+	}
+
+	if (init('action') == 'testJsonPath') {
+		$payload = init('payload');
+		if ($payload == '') {
+			ajax::success(array('success' => false, 'message' => __('Pas de payload', __FILE__), 'value' => ''));
+			return;
+		}
+
+		$jsonArray = json_decode($payload, true);
+		if (!is_array($jsonArray) || json_last_error() != JSON_ERROR_NONE) {
+			if (json_last_error() == JSON_ERROR_NONE)
+				ajax::success(array('success' => false, 'message' => __("Problème de format JSON: Le message reçu n'est pas au format JSON.", __FILE__), 'value' => ''));
+			else
+				ajax::success(array('success' => false, 'message' => sprintf(__("Problème de format JSON: %1\$s (%2\$d)", __FILE__), json_last_error_msg(), json_last_error()), 'value' => ''));
+		}
+
+		if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
+			require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
+		if (!class_exists('JsonPath\JsonObject'))
+			throw new Exception(__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
+
+		$jsonPath = trim(init('jsonPath'));
+		if (strlen($jsonPath) == 0 || $jsonPath[0] != '$')
+			$jsonPath = '$' . $jsonPath;
+
+		// Create JsonObject for JsonPath
+		try {
+			$jsonobject = new JsonPath\JsonObject($jsonArray);
+			$value = $jsonobject->get($jsonPath);
+		} catch (Throwable $e) {
+			ajax::success(array('success' => false, 'message' => __("Exception: ", __FILE__) . $e->getMessage(), 'stack' => $e->getTraceAsString(), 'value' => ''));
+			if (log::getLogLevel(__CLASS__) > 100)
+				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
+															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
+			else // More info in debug mode, no big log otherwise
+				$this->getEqLogic()->log('warning', str_replace("\n",' <br /> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",<br />@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
+		}
+
+		if ($value !== false && $value !== array())
+			ajax::success(array('success' => true, 'message' => 'OK', 'value' => json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)));
+		else
+			ajax::success(array('success' => false, 'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__), 'value' => ''));
 	}
 
 	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));

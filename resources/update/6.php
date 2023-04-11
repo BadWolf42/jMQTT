@@ -72,7 +72,7 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
 			// first key is the template itself
 			$templateKey = array_keys($templateContent)[0];
 			// if 'configuration' key exists in this template
-			if (array_key_exists('configuration', $templateContent[$templateKey])) {
+			if (isset($templateContent[$templateKey]['configuration'])) {
 				// for each keys under 'configuration'
 				foreach (array_keys($templateContent[$templateKey]['configuration']) as $configurationKey) {
 					// if this configurationKey is in keys to remove

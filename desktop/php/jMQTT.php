@@ -96,7 +96,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 		// Check there are orphans first
 		$has_orphans = false;
 		foreach ($eqNonBrokers as $id => $nonBrokers) {
-			if (! array_key_exists($id, $eqBrokers)) {
+			if (!isset($eqBrokers[$id])) {
 				if (!$has_orphans) {
 					echo '<div class="eqLogicThumbnailContainer">';
 					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup>';
@@ -117,7 +117,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 			echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
 			echo '<div class="eqLogicThumbnailContainer">';
 			displayEqLogicCard($eqB);
-			if (array_key_exists($eqB->getId(), $eqNonBrokers)) {
+			if (isset($eqNonBrokers[$eqB->getId()])) {
 				foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
 					displayEqLogicCard($eqL);
 				}
@@ -134,6 +134,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate" style="display: none;"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
 				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate" style="display: none;"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics" style="display: none;"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="jsonPathTester"><i class="fas fa-check"></i> {{Testeur Chemin JSON}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy" style="display: none;"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
@@ -225,7 +226,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 							<th style="width:130px;">{{Type}}</th>
 							<th style="min-width:180px;">{{Topic}}</th>
 							<th style="min-width:180px;">{{Valeur}}</th>
-							<th style="width:1px;">{{Unité}}</th>
+							<th style="min-width:100px;width:120px;">{{Paramètres}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
 							<th style="min-width:135px;width:135px;"></th>
 <!-- TODO (medium) Change when adding Advanced parameters

@@ -16,7 +16,6 @@
 import json
 import logging
 import os
-import queue
 import signal
 import sys
 import threading
@@ -38,7 +37,6 @@ from jMqttClient import *
 #   The return value is False if an error occurs, True otherwise
 def validate_params(msg, constraints):
 	res = True
-	cmd = str(msg['cmd']) if 'cmd' in msg else "?"
 	for (key, mandatory, default_val, expected_type) in constraints:
 		if key not in msg or msg[key] == '':
 			if mandatory:
@@ -86,7 +84,6 @@ class Main():
 							'realTimeStart':    self.h_realTimeStart,
 							'realTimeStop':     self.h_realTimeStop,
 							'realTimeClear':    self.h_realTimeClear,
-							'hb':               self.h_hb,
 							'changeApiKey':     self.h_changeApiKey,
 							'loglevel':         self.h_logLevel}
 		self.jmqttclients = {}
@@ -193,21 +190,19 @@ class Main():
 		self.has_stopped.clear()
 		# Wait for instructions
 		while not self.should_stop.is_set():
-# TODO (important) FIX ME: Internal health-check
-#			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedom
-#				self.should_stop.set()
-# /TODO FIXME
-			if self.jcom.qFromJ.empty(): # empty() method is faster that Exception handling
+			if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedom
+				self.should_stop.set()
+			if len(self.jcom.qFromJ) == 0: # faster that Exception handling
 				time.sleep(0.1)
 				continue # Check if should_stop changed
 
 			# Get some new raw data and cook it
 			try:
-				jeedom_raw = self.jcom.qFromJ.get(block=False)
+				jeedom_raw = self.jcom.qFromJ.pop()
 				jeedom_msg = jeedom_raw.decode('utf-8')
 				#self.log.debug('Received from Jeedom: %s', jeedom_msg)
 				message = json.loads(jeedom_msg)
-			except queue.Empty:
+			except IndexError:
 				continue # More chance next time
 			except:
 				if self.log.isEnabledFor(logging.DEBUG):
@@ -218,10 +213,18 @@ class Main():
 				self.log.error('Invalid apikey from socket : %s', message)
 				continue # Ignore unauthorized messages
 
+			# Check for there is a cmd in message
+			if 'cmd' not in message or not isinstance(message['cmd'], str) or message['cmd'] == '':
+				logging.error('Bad cmd parameter in message dump=%s', json.dumps(message))
+				continue
+
+			if message['cmd'] == 'hb':
+				self.log.debug('Heartbeat received from Jeedom')
+				continue
+
 			# Check for mandatory parameters before handling the message
 			if not validate_params(message,  # key, mandatory, default_val, expected_type
-											[['id',      True,        None, str],
-											 ['cmd',     True,        None, str]]):
+											[['id',      True,        None, str]]):
 				continue
 
 			# Register the call
@@ -338,10 +341,6 @@ class Main():
 			self.jmqttclients[message['id']].publish(message['topic'], message['payload'], message['qos'], message['retain'])
 		else:
 			self.log.debug('No client found for Broker %s', message['id'])
-
-	def h_hb(self, message):
-		self.log.debug('Jeedom sent a Heartbeat.')
-		pass
 
 	def h_changeApiKey(self, message):
 		# Check for                   key, mandatory, default_val, expected_type

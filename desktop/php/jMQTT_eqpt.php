@@ -1,7 +1,7 @@
 <br/>
 <form class="form-horizontal">
 	<fieldset>
-		<div class="form-group toDisable">
+		<div class="form-group">
 			<label class="col-sm-3 control-label">{{Nom de l'équipement}}</label>
 			<div class="col-sm-3">
 				<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display: none;" />
@@ -10,7 +10,7 @@
 			</div>
 		</div>
 
-		<div class="form-group toDisable">
+		<div class="form-group">
 			<label class="col-sm-3 control-label">{{Objet parent}}</label>
 			<div class="col-sm-3">
 				<select id="sel_object" class="eqLogicAttr form-control" data-l1key="object_id">
@@ -24,7 +24,7 @@
 			</div>
 		</div>
 
-		<div class="form-group toDisable">
+		<div class="form-group toDisable typ-std typ-brk">
 			<label class="col-sm-3 control-label">{{Catégorie}}</label>
 			<div class="col-sm-8">
 				<?php
@@ -39,7 +39,7 @@
 				</div>
 		</div>
 
-		<div class="form-group toDisable">
+		<div class="form-group toDisable typ-std typ-brk">
 			<label class="col-sm-3 control-label"></label>
 			<div class="col-sm-8">
 				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked />{{Activer}}</label>
@@ -47,7 +47,7 @@
 			</div>
 		</div>
 
-		<div class="form-group typ-std">
+		<div class="form-group typ-std typ-brk-select">
 			<label class="col-sm-3 control-label">{{Broker associé}}</label>
 			<div class="col-sm-3">
 				<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="eqLogic"></select>
@@ -68,7 +68,7 @@
 			</div>
 		</div>
 
-		<div class="form-group toDisable">
+		<div class="form-group toDisable typ-std typ-brk">
 			<label class="col-sm-3 control-label">{{Qos}}</label>
 			<div id="mqttqos" class="col-sm-1">
 				<select class="eqLogicAttr form-control" data-l1key="configuration"
@@ -105,21 +105,21 @@
 			</div>
 		</div>
 
-		<div class="form-group toDisable">
+		<div class="form-group toDisable typ-std typ-brk">
 			<label class="col-sm-3 control-label">{{Dernière communication}}</label>
 			<div class="col-sm-3">
 				<span class="eqLogicAttr" data-l1key="status" data-l2key="lastCommunication"></span>
 			</div>
 		</div>
 
-		<div class="form-group toDisable">
+		<div class="form-group toDisable typ-std typ-brk">
 			<label class="col-sm-3 control-label">{{Commentaire}}</label>
 			<div class="col-sm-3">
 				<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="commentaire"></textarea>
 			</div>
 		</div>
 
-		<div class="form-group toDisable typ-std">
+		<div class="form-group typ-std">
 			<label class="col-sm-3 control-label">{{Icône de l'équipement}}</label>
 			<div class="col-sm-3">
 				<select class="form-control eqLogicAttr" data-l1key="configuration" data-l2key="icone"></select>
