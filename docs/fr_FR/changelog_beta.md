@@ -1,6 +1,6 @@
 # Registre des évolutions BETA
 
-- Correction d'un bug sur le système de sauvegarde
+- Correction de bugs sur le système de sauvegarde
 
 ## 2023-04-11 (v15)
 - Passage à la version 3.0 de galbar/jsonpath : Attention aux changement de l'oppérateur de recherche recursive ( aka `..`)

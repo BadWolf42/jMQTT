@@ -161,21 +161,31 @@ function export_data() {
 }
 
 // [-H] backup history, historyArch (directly from SQL ?)
-function export_history() {
+function export_history($_filename) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating History file...");
-	$res = array();
-	foreach (cmd::searchConfiguration('', 'jMQTT') as $o) {
-		if ($o->getIsHistorized()) {
-			$histo = array();
-			foreach (utils::o2a($o->getHistory()) as $h) {
-				unset($h['cmd_id']);
-				$histo[] = $h;
+	$fp = fopen($_filename, 'w');
+	if ($fp === false) {
+		print("                       [ FAILED ]\n");
+		return false;
+	}
+	fwrite($fp, '{');
+	$first_cmd = true;
+	foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
+		if ($cmd->getIsHistorized()) {
+			($first_cmd) ? ($first_cmd = false) : fwrite($fp, ',');
+			fwrite($fp, '"' . $cmd->getId() . '":[');
+			$first_point = true;
+			foreach ($cmd->getHistory() as $h) {
+				($first_point) ? ($first_point = false) : fwrite($fp, ',');
+				fwrite($fp, '{"datetime":"' .$h->getDatetime(). '","value":"' . json_encode($h->getValue(), JSON_UNESCAPED_UNICODE) . '"}');
 			}
-			$res[$o->getId()] = $histo;
+			fwrite($fp, ']');
 		}
 	}
+	fwrite($fp, '}');
+	fclose($fp);
 	print("                           [ OK ]\n");
-	return $res;
+	return true;
 }
 
 // [-P] backup jMQTT plugin dir
@@ -295,7 +305,7 @@ function backup_main() {
 	}
 
 	if (isset($options['all']) || isset($options['H'])) {
-		file_put_contents(__DIR__.'/../data/backup/backup/history.json', json_encode(export_history(), JSON_UNESCAPED_UNICODE));
+		export_history(__DIR__.'/../data/backup/backup/history.json');
 		$packages[] = 'history';
 	}
 
