@@ -261,11 +261,11 @@ try {
 	if (init('action') == 'backupRestore') {
 		$_backup = init('file');
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
-			throw new Exception(__('Merci de fournir le fichier à restorer', __FILE__));
+			throw new Exception(__('Merci de fournir le fichier à restaurer', __FILE__));
 
 		$backup_dir = realpath(__DIR__ . '/../../data/backup');
 		if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))
-			throw new Exception(__('Impossible de restorer le fichier fourni', __FILE__));
+			throw new Exception(__('Impossible de restaurer le fichier fourni', __FILE__));
 
 		$msg = sprintf(__("Restauration de la sauvegarde %s...", __FILE__), $_backup);
 		@message::removeAll('jMQTT', 'backupRestoreEnded');
@@ -348,7 +348,7 @@ try {
 				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
 															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				$this->getEqLogic()->log('warning', str_replace("\n",' <br /> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+				$this->getEqLogic()->log('warning', str_replace("\n",' <br /> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'exception: %3\$s", __FILE__).
 							",<br />@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
 		}
 
