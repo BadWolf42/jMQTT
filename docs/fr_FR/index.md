@@ -65,7 +65,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation, il suffit d'activer le plugin sur la page de configuration :
 
-![Configuration du plugin](../images/2023-01-03_config.png)
+![Configuration du plugin](../images/2023-04-10_config.png)
 
 Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
@@ -96,7 +96,7 @@ Détail des différents boutons :
 
 En-dessous se trouve un champ de recherche, puis un panneau listant les équipements par Broker :
 
-![Brokers](../images/2022-10-16_gestion_brokers.png)
+![Brokers](../images/2023-04-10_gestion_brokers.png)
 
 jMQTT possède 2 types d'équipements. Il est très important de faire la distinction entre :
   - les **équipements de type Broker**, qui sont les clients MQTT qui gèrent la connexion avec les Broker MQTT.
@@ -255,7 +255,7 @@ A l’arrivée du premier message, le plugin crée automatiquement un équipemen
 
 ### Onglet Equipement
 
-![Onglet principal d'un Equipement](../images/2022-11-13_eqpt_equipement.png)
+![Onglet principal d'un Equipement](../images/2023-04-10_eqpt_equipement.png)
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
@@ -277,9 +277,10 @@ Concernant les boutons en haut à droite :
 
 ![Boutons sur un Equipement](../images/2022-10-26_eqpt_buttons.png)
 
-  - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
   - `Créer template` permet de [Créer un template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
-  - `Modifier Topics` permet de Modifier en masse tous les topics de l'équipement courant (pensez à sauvegarder l'équipement après la modification) ;
+  - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
+  - `Modifier Topics` permet de modifier en masse tous les topics de l'équipement courant (pensez à sauvegarder l'équipement après la modification) ;
+  - `Testeur Chemin JSON` permet de tester comment un payload sera traité par un certain chemin JSON ;
   - `Dupliquer` permet de [Dupliquer un équipement](#dupliquer-un-équipement).
 
 ### Onglet Commandes
@@ -315,7 +316,7 @@ Le plugin créé les informations suivantes :
 > **Note**
 >
 >   * Le nom de la commande est initialisé automatiquement par le plugin à partir du topic. Il peut ensuite être modifié comme souhaité.
->   * Jeedom limite la longueur des noms de commande à 127 caractères depuis la version 4.1.17, 45 caractères avant. Dans le cas de commandes de longueur supérieure, jMQTT remplace leurs noms par leur code de hashage md4 sur 32 caractères (par exemple 5182636929901af7fa5fd97da5e279e1). L’utilisateur devra alors remplacer ces noms par le nommage de son choix.
+>   * Jeedom limite la longueur des noms de commande à 127 caractères. Dans le cas de commandes de longueur supérieure, jMQTT remplace le noms par un code de hashage md4 sur 32 caractères (par exemple 5182636929901af7fa5fd97da5e279e1). L’utilisateur devra alors remplacer ces noms par le nommage de son choix.
 >   * Lorsqu'un Payload binaire (ne correspondant pas à du texte) est reçu, jMQTT essaye dans un premier temps de le décompresser en zlib et de le convertir en texte. S'il n'y parvient pas ou que le résultat reste binaire, alors cette valeur binaire est envoyée envoyée dans la commande information encodée en base64.
 
 **Payload JSON**
@@ -330,13 +331,15 @@ Voici un aperçu du langage et des possibilités qu'il renferme :
 | ---------------- | ------------------------------------------------------------------------------ |
 | $                | Objet/élément racine                                                           |
 | @                | Objet/élément courant                                                          |
-| . or []          | Operateur de sélection d'un enfant                                             |
+| .  /  []         | Operateur de sélection d'un enfant                                             |
 | ..               | Descente récursive                                                             |
 | *                | Caractère générique : tous les objets/éléments indépendamment de leurs noms    |
 | []               | Opérateur d'indice : opérateur natif d'un tableau                              |
 | [,]              | Opérateur d'union : noms alternatifs ou indices de tableau en tant qu'ensemble |
 | [start:end:step] | Opérateur de découpage de tableau                                              |
 | ?()              | Expression (script) de filtrage de données                                     |
+| in  /  not in    | Opérateurs de recherche dans un tableau ou une liste                           |
+| .length          | Taille du tableau ou de la chaine de caractères                                |
 
 Le premier caractère '$' est omis par la vue JSON de jMQTT dans un souci de lisibilité, mais le Chemin JSON reste parfaitement fonctionnel que le caractère '$' soit présent ou non.
 
@@ -398,7 +401,7 @@ Si nous rebasculons dans la vue JSON, nous obtenons alors :
 
 Les commandes de type action permettent au plugin jMQTT de publier des messages vers le Broker MQTT. Pour cela, créer une commande via le bouton *+ Ajouter une commande action* et remplir les champs selon le besoin :
 
-![Commande Action](../images/2022-10-16_cmd_action.png)
+![Commande Action](../images/2023-04-10_cmd_action.png)
 
   - Nom: champ libre ;
   - Valeur par défaut de la commande: pour lier la valeur de la commande affichée sur le dashboard à une commande de type Information (exemple [ici](https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740)) ;
@@ -411,50 +414,87 @@ Les commandes de type action permettent au plugin jMQTT de publier des messages 
 
 **Sous-type Défaut**
 
-Les exemples du tableau suivant :
+Les configurations suivantes :
 
-![Commande Action sous-type Defaut](../images/2022-10-16_cmd_action_default.png)
+![Commande Action sous-type Defaut](../images/2023-04-10_cmd_action_default.png)
 
 Publieront respectivement :
 
-    hw/setpoint/set 40
-    hw/set {"name": "setpoint", "value": 40}
-    hw/set {"name": "setpoint", "value": 45}
+ - `1` sur le topic `hw/enable`
+ - `{"name": "setpoint", "value": 40}` sur le topic `hw/set`
+ - `{"name": "setpoint", "value": 45}` sur le topic `hw/set` (avec `#[home][boiler][hw_setpoint]#` ayant pour valeur `45`)
 
-En supposant que `#[home][boiler][hw_setpoint]#` a pour valeur 45.
+> **Note**
+>
+> "Pub. Auto" est coché sur la commande `set_hw_setpointAuto`, donc à chaque changement de la commande `#[home][boiler][hw_setpoint]#`, jMQTT exécutera la commande `set_hw_setpointAuto` et publiera le nouveau payload.
 
 **Sous-type Curseur**
 
 Les configurations suivantes publieront la valeur saisie via un widget de type curseur :
 
-![Commande Action sous-type Curseur](../images/2022-10-16_cmd_action_slider.png)
+![Commande Action sous-type Curseur](../images/2023-04-10_cmd_action_slider.png)
 
 Soit respectivement, en supposant que la valeur du curseur est 50 :
 
-    hw/setpoint/set 50
-    hw/set {"name": "setpoint", "value": 50}
+ - `50` sur le topic `lamp/set`
+ - `50` sur le topic `lamp/set`
+ - `{"name": "setpoint", "value": 50}` sur le topic `hw/set`
 
 > **Note**
 >
-> Pour configurer les valeurs min/max de la jauge affichée pour une commande slider, éditer les paramètres avancés de la commande slider (la roue crantée à gauche du bouton **Tester**), aller dans l’onglet **Affichage** et ajouter **minValue** et **maxValue** dans la section **Paramètres optionnels widget** (cette configuration est apportée par le core de Jeedom, elle n’est pas spécifique à jMQTT).
+> Les 2 premières commandes ont le même comportement, il n'est pas nécessaire de préciser `#slider#` si c'est la seule valeur à publier.
+>
+> Les champs **Min**/**Max** permettent de configurer la plage de valeurs de la jauge affichée pour une commande Curseur.
 
 **Sous-type Message**
 
-Pour un message dont le titre est `ecs` et le contenu est `50`, la configuration ci-après publiera :
+Les configurations suivantes publieront la valeur saisie via un widget de type message :
 
-    boiler {"setpoint": "ecs", "value": 50}
+![Commande Action sous-type Message](../images/2023-04-10_cmd_action_message.png)
 
-![Commande Action sous-type Message](../images/2022-10-16_cmd_action_message.png)
+Pour un message dont le titre est `ecs` et le contenu est `50`, la première publiera :
+
+ - `{"setpoint": "ecs", "value": 50}` sur le topic `boiler/set`
+
+Pour un message dont le titre est `test` et le contenu est `Lumière entrée allumée`, la seconde publiera :
+
+ - `Lumière entrée allumée` sur le topic `sms/0600000000/send`
+
+> **Note**
+>
+> Comme pour le sous-type Curseur, il n'est pas nécessaire ici de préciser `#message#` si c'est la seule valeur à publier, on le voit dans la seconde configuration. On notera aussi que dans ce cas le titre du message n'est pas utilisable.
 
 **Sous-type Couleur**
 
 La configuration suivante publiera le code couleur sélectionnée via un widget sélecteur de couleur :
 
-![Commande Action sous-type Couleur](../images/2022-10-16_cmd_action_color.png)
+![Commande Action sous-type Couleur](../images/2023-04-10_cmd_action_color.png)
 
-Publiera pour une couleur rouge clair selectionnée :
+Pour une couleur rouge clair sélectionnée :
 
-    room/lamp/color #e63939
+ - `#e63939` sur le topic `room/lamp/color`
+ - `#e63939` sur le topic `room/lamp/color`
+
+> **Note**
+>
+> Comme pour le sous-type Curseur, il n'est pas nécessaire ici de préciser `#color#` si c'est la seule valeur à publier, on le voit dans la seconde configuration.
+
+**Sous-type Liste**
+
+La configuration suivante publiera la valeur sélectionnée grâce à la liste de choix d'un widget liste :
+
+![Commande Action sous-type Liste](../images/2023-04-10_cmd_action_select.png)
+
+Soit respectivement, en supposant que la valeur sélectionnée sur le widget est "Auto" :
+
+ - `{"name":"mode","value":"auto"}` sur le topic `hw/set`
+ - `auto` sur le topic `boiler/mode`
+
+Ici, la liste de choix est pour les 2 commandes `on|On;auto|Auto;off|Off`. Cette liste est construite de la même façon que pour toutes les autre commandes Liste dans Jeedom : une suite de `valeur|texte` séparées entre elles par des points-virgules.
+
+> **Note**
+>
+> Comme pour le sous-type Curseur, il n'est pas nécessaire ici de préciser `#select#` si c'est la seule valeur à publier, on le voit dans la seconde configuration.
 
 #### Vue Classic, vue JSON
 
@@ -466,7 +506,13 @@ Deux boutons en haut à droite de la page permettent de choisir entre 2 types du
 
 ## Ajout manuel d'un équipement
 
-Il est aussi possible de créer manuellement des équipements jMQTT. Cliquer sur le bouton **+** et saisir le nom de l’équipement. Dans la page [Onglet Equipement](#onglet-equipement), le topic de souscription définit les informations qui seront souscrites par l’équipement.
+Il est possible de créer manuellement des équipements jMQTT.
+
+Cliquer sur le bouton **+** de la page principale et saisir le nom de l’équipement à créer, ainsi que l'équipement Broker auquel il doit être attaché. Il est également possible sur cette page d'utiliser immédiatement un template au moment de la création. Dans ce cas, il est nécessaire de préciser aussi le "Topic de base" pour qu'il soit substitué dans le modèle.
+
+![Créer manuellement un équipement jMQTT](../images/2023-04-10_eqpt_new.png)
+
+Dans la page [Onglet Equipement](#onglet-equipement), le topic de souscription définit les informations qui seront souscrites par l’équipement.
 
 Pour plus d’information sur les topics MQTT, nous conseillons la lecture de [MQTT Essentials Part 5: MQTT Topics & Best Practices](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices).
 
@@ -493,7 +539,7 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués :
 
 Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher une vue de la santé des Broker et des équipements :
 
-![Modal Santé](../images/2022-10-16_health.png)
+![Modal Santé](../images/2023-04-10_health.png)
 
 Les informations présentes sont : le nom, l'ID, le Topic de souscription, la date de Dernière communication, la Date de création, l'état des Brokers, ainsi que le nombre de commande sur chaque équipement.
 
@@ -614,12 +660,6 @@ Pour cela, il fallait désactiver puis réactiver l'équipement Broker concerné
 ## Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
 
 Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Identifiant de connexion* dans l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
-
-## J'ai des messages `Message refusé (démon invalide)` dans le log jMQTT
-
-Rien de grave, le démon a été lancé 2x. Cela peut arriver exceptionnellement, par exemple quand Jeedom démarre le démon et vous aussi.
-Pour corriger, il suffit de relancer le démon, jMQTT se chargera de faire le ménage pour vous. Dans de rares cas, il est nécessaire de tuer tous les démon jMQTT lancés (commande `sudo pkill -f jmqttd.py`) ou simplement de redémarrer Jeedom.
-
 
 # Problèmes inconnus
 
