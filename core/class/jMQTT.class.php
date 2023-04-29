@@ -1274,8 +1274,8 @@ class jMQTT extends eqLogic {
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
-		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 135) {
-			self::logger('debug', __('Pas de message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 300) {
+			self::logger('debug', __('Pas de message ou de Heartbeat reçu depuis >300s, le Démon est probablement mort.', __FILE__));
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
@@ -1335,6 +1335,8 @@ class jMQTT extends eqLogic {
 		self::logger('info', __('Démarrage du démon jMQTT', __FILE__));
 		// Always stop first.
 		self::deamon_stop();
+		// Ensure cron is enabled (removing the key or setting it to 1 is equivalent to enabled)
+		config::remove('functionality::cron::enable', __CLASS__);
 		// Check if daemon is launchable
 		$dep_info = self::dependancy_info();
 		if ($dep_info['state'] != self::CLIENT_OK) {

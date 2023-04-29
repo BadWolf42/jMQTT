@@ -38,7 +38,7 @@ class JeedomMsg():
 		self._last_rcv    = time.time()
 		self._hb_delay    = 45					# seconds between 2 heartbeat emission
 		self._hb_retry    = self._hb_delay / 2	# seconds before retrying
-		self._hb_timeout  = self._hb_delay * 3	# seconds before timeout
+		self._hb_timeout  = self._hb_delay * 7	# seconds before timeout
 		self.qFromJ       = deque()
 		self.qToJ         = deque()
 		# self._lock        = threading.Lock()
@@ -137,7 +137,6 @@ class JeedomMsg():
 			if len(self.qToJ) == 0:
 				if time.time() - self._last_snd > self._hb_delay:
 					if time.time() - last_hb > self._hb_retry: # Avoid sending continuously hb
-						self.qToJ.appendleft({"cmd":"hb"}) # Add a heartbeat if it has been too long
 						# Send the heartbeat asynchronously to avoid congestion (lots of messages in qToJ)
 						threading.Thread(target=self.send, args=([{"cmd":"hb"}],False), name="SndNoBlkHb", daemon=True).start()
 						self._log_snd.debug("Sending a heartbeat to Jeedom, nothing sent since %ds (max %ds)", time.time() - self._last_snd, self._hb_delay)
