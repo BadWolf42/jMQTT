@@ -1189,11 +1189,11 @@ class jMQTT extends eqLogic {
 		$data['lastUUID'] = config::byKey(self::CONF_KEY_JMQTT_UUID, __CLASS__, $data['hardwareKey']);
 		$data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes('107'), true));
 		$data['hardwareName'] = jeedom::getHardwareName();
-		$data['distrib'] = system::getDistrib();
+		$data['distrib'] = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
 		$data['phpVersion'] = phpversion();
 		$data['jeedom'] = jeedom::version();
 		$data['lang'] = config::byKey('language', 'core', 'fr_FR');
-		$jplugin = update::byLogicalId('jMQTT');
+		$jplugin = update::byLogicalId(__CLASS__);
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
 		$data['configVersion'] = config::byKey('version', __CLASS__, -1);
