@@ -643,7 +643,7 @@ class jMQTT extends eqLogic {
 	 */
 	public static function full_export($clean=false) {
 		$returns = array();
-		foreach (eqLogic::byType('jMQTT') as $eq) {
+		foreach (eqLogic::byType(__CLASS__) as $eq) {
 			$exp = $eq->toArray();
 			$obj_name = (is_object($eq->getObject())) ? $eq->getObject()->getName() : __('Aucun', __FILE__);
 			$exp['name'] = $obj_name.':'.$exp['name'];
@@ -857,7 +857,7 @@ class jMQTT extends eqLogic {
 			if (is_null($this->_preSaveInformations)) {
 
 				// Create log of this broker
-				config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
+				config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', __CLASS__);
 
 				// Create status and connected cmds
 				$this->getMqttClientStatusCmd(true);
@@ -1091,7 +1091,7 @@ class jMQTT extends eqLogic {
 			if (file_exists(log::getPathToLog($log))) {
 				unlink(log::getPathToLog($log));
 			}
-			config::remove('log::level::' . $log, 'jMQTT');
+			config::remove('log::level::' . $log, __CLASS__);
 			@cache::delete('jMQTT::' . $this->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 
 			// Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
@@ -1196,7 +1196,7 @@ class jMQTT extends eqLogic {
 		$jplugin = update::byLogicalId('jMQTT');
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
-		$data['configVersion'] = config::byKey('version', 'jMQTT', -1);
+		$data['configVersion'] = config::byKey('version', __CLASS__, -1);
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
 			$data['removeMe'] = true;
@@ -1719,13 +1719,13 @@ class jMQTT extends eqLogic {
 			$res['by'] = __('MQTT Manager (en local)', __FILE__);
 			$res['message'] = __('Mosquitto est installé par', __FILE__);
 			$res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=mqtt2">';
-			$res['message'] .= __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
+			$res['message'] .= 'MQTT Manager</a> (mqtt2).';
 		}
 		// Check if jMQTT config file is in place
 		elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
 			$res['by'] = 'jMQTT';
 			$res['message'] = __('Mosquitto est installé par', __FILE__);
-			$res['message'] .= ' <a class="control-label success disabled">' . __('jMQTT', __FILE__) . '</a>.';
+			$res['message'] .= ' <a class="control-label success disabled">jMQTT</a>.';
 		}
 		// Otherwise its considered to be a custom install
 		else {
