@@ -30,7 +30,7 @@ $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0
 sendVarToJS('dStatus', $docker);
 
 ?>
-<form class="form-horizontal">
+<form class="form-horizontal" style="min-height: 250px;">
 	<div class="row">
 	<div class="col-sm-6">
 <?php
@@ -120,7 +120,6 @@ if ($docker) {
 			<div class="col-sm-1"></div>
 		</div>
 <?php } /* $docker */ ?>
-		<div class="form-group"><br /></div>
 	</div>
 	<div class="col-sm-6">
 		<legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuation de jMQTT}}</legend>
@@ -170,7 +169,6 @@ foreach ($backups as $backup)
 			</div>
 			<div class="col-sm-1"></div>
 		</div>
-		<div class="form-group"><br /></div>
 	</div>
 	</div>
 </form>
