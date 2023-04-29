@@ -120,8 +120,7 @@ try {
 
 	// Enable/Disable Real Time mode on this Broker
 	if (init('action') == 'changeRealTimeMode') {
-		$broker = jMQTT::getBrokerFromId(init('id'));
-		$broker->changeRealTimeMode(init('mode'), init('subscribe'), init('exclude'), init('retained'));
+		jMQTT::changeRealTimeMode(init('id'), init('mode'), init('subscribe'), init('exclude'), init('retained'));
 		ajax::success();
 	}
 
@@ -183,8 +182,7 @@ try {
 	}
 
 	if (init('action') == 'realTimeClear') {
-		$broker = jMQTT::getBrokerFromId(init('id'));
-		$broker->toDaemon_realTimeClear();
+		jMQTT::toDaemon_realTimeClear(init('id'));
 		ajax::success();
 	}
 

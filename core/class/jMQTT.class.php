@@ -2072,6 +2072,62 @@ class jMQTT extends eqLogic {
 	}
 
 
+	/**
+	 * Manage the Real Time mode of this broker object
+	 * Called by ajax when the button is pressed by the user
+	 * @param int $mode 0 or 1
+	 */
+	public static function changeRealTimeMode($id, $mode, $subscribe='#', $exclude='homeassistant/#', $retained=false) {
+		$broker = self::getBrokerFromId($id);
+		$broker->log('info', $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
+		// $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s)", __FILE__), $id, $mode, $subscribe, $exclude, $retained));
+		if($mode) { // If Real Time mode needs to be enabled
+			// Check if a subscription topic is provided
+			if (trim($subscribe) == '')
+				throw new Exception(__("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__));
+			$subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
+			// Cleanup subscriptions
+			$subscriptions = [];
+			foreach ($subscribe as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$subscriptions[] = $t;
+			}
+			if (count($subscriptions) == 0)
+				throw new Exception(__("Impossible d'activer le mode Temps Réel sans topic de souscription", __FILE__));
+			// Cleanup exclusions
+			$exclude = (trim($exclude) == '') ? [] : explode('|', $exclude);
+			$exclusions = [];
+			foreach ($exclude as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$exclusions[] = $t;
+			}
+			// Cleanup retained
+			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
+			// Start Real Time Mode (must be started before subscribe)
+			self::toDaemon_realTimeStart($id, $subscriptions, $exclusions, $retained);
+			// Update cache
+			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
+			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
+			$broker->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
+		} else { // Real Time mode needs to be disabled
+			// Stop Real Time mode
+			self::toDaemon_realTimeStop($id);
+		}
+	}
+
+	/**
+	 * Returns this broker object Real Time mode status
+	 * @return int 0 or 1
+	 */
+	public function getRealTimeMode() {
+		return $this->getCache(self::CACHE_REALTIME_MODE, 0);
+	}
+
+
 	public static function fromDaemon_brkUp($id) {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
@@ -2193,9 +2249,9 @@ class jMQTT extends eqLogic {
 		$brk->sendMqttClientStateEvent();
 	}
 
-	public function toDaemon_realTimeStart($subscribe, $exclude, $retained, $duration = 180) {
+	public static function toDaemon_realTimeStart($id, $subscribe, $exclude, $retained, $duration = 180) {
 		$params['cmd']       = 'realTimeStart';
-		$params['id']        = $this->getId();
+		$params['id']        = $id;
 		$params['file']      = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
 		$params['subscribe'] = $subscribe;
 		$params['exclude']   = $exclude;
@@ -2204,15 +2260,15 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params);
 	}
 
-	public function toDaemon_realTimeStop() {
+	public static function toDaemon_realTimeStop($id) {
 		$params['cmd'] = 'realTimeStop';
-		$params['id']  = $this->getId();
+		$params['id']  = $id;
 		self::sendToDaemon($params);
 	}
 
-	public function toDaemon_realTimeClear() {
+	public static function toDaemon_realTimeClear($id) {
 		$params['cmd']  = 'realTimeClear';
-		$params['id']   = $this->getId();
+		$params['id']   = $id;
 		$params['file'] = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
 		self::sendToDaemon($params);
 	}
@@ -2812,59 +2868,5 @@ class jMQTT extends eqLogic {
 		/** @var jMQTT[] $eqpts */
 		$returns = self::byTypeAndSearchConfiguration(__CLASS__, substr($brkId, 1, -1));
 		return $returns;
-	}
-
-	/**
-	 * Manage the Real Time mode of this broker object
-	 * Called by ajax when the button is pressed by the user
-	 * @param int $mode 0 or 1
-	 */
-	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#', $retained=false) {
-		$this->log('info', $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
-		// $this->log('debug', sprintf(__("changeRealTimeMode(mode=%1\$s, subscribe=%2\$s, exclude=%3\$s, retained=%4\$s)", __FILE__), $mode, $subscribe, $exclude, $retained));
-		if($mode) { // If Real Time mode needs to be enabled
-			// Check if a subscription topic is provided
-			if (trim($subscribe) == '')
-				throw new Exception(__("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__));
-			$subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
-			// Cleanup subscriptions
-			$subscriptions = [];
-			foreach ($subscribe as $t) {
-				$t = trim($t);
-				if ($t == '')
-					continue;
-				$subscriptions[] = $t;
-			}
-			if (count($subscriptions) == 0)
-				throw new Exception(__("Impossible d'activer le mode Temps Réel sans topic de souscription", __FILE__));
-			// Cleanup exclusions
-			$exclude = (trim($exclude) == '') ? [] : explode('|', $exclude);
-			$exclusions = [];
-			foreach ($exclude as $t) {
-				$t = trim($t);
-				if ($t == '')
-					continue;
-				$exclusions[] = $t;
-			}
-			// Cleanup retained
-			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
-			// Start Real Time Mode (must be started before subscribe)
-			$this->toDaemon_realTimeStart($subscriptions, $exclusions, $retained);
-			// Update cache
-			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
-			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
-			$this->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
-		} else { // Real Time mode needs to be disabled
-			// Stop Real Time mode
-			$this->toDaemon_realTimeStop();
-		}
-	}
-
-	/**
-	 * Returns this broker object Real Time mode status
-	 * @return int 0 or 1
-	 */
-	public function getRealTimeMode() {
-		return $this->getCache(self::CACHE_REALTIME_MODE, 0);
 	}
 }
