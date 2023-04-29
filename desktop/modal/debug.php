@@ -19,16 +19,7 @@
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-?>
-<!--
-	<div class="floatingbar">
-		<div class="input-group">
-			<span class="input-group-btn" id="span_right_button"><a class="btn btn-sm roundedLeft bt_refreshPluginInfo"><i class="fas fa-sync"></i> Rafraichir</a><a class="btn btn-primary btn-sm" target="_blank" href="https://domochip.github.io/jMQTT/fr_FR/"><i class="fas fa-book"></i> Documentation</a><a class="btn btn-primary btn-sm" target="_blank" href="https://domochip.github.io/jMQTT/fr_FR/changelog"><i class="fas fa-book"></i> Changelog</a><a class="btn btn-danger btn-sm removePlugin roundedRight" data-market_logicalid="jMQTT"><i class="fas fa-trash"></i> Supprimer</a></span>
-		</div>
-	</div>
--->
 
-<?php
 function panelCreator($title, $type, $icon, $builder) {
 	echo '			<div class="panel panel-'.$type.'">';
 	echo '				<div class="panel-heading"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
@@ -103,7 +94,7 @@ function builder_cfgCache(_div, _action, _buttons) {
 }
 
 function configIntButtons(div) {
-	div.on('click', 'a.add', function() {
+	div.off('click', 'a.add').on('click', 'a.add', function() {
 		bootbox.confirm({
 			title: '{{Ajouter un paramètre de configuration interne}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
@@ -134,7 +125,7 @@ function configIntButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.edit', function() {
+	div.off('click', 'a.edit').on('click', 'a.edit', function() {
 		var tr = $(this).closest('tr');
 		var debugKey = tr.find('.key').text();
 		bootbox.confirm({
@@ -164,7 +155,7 @@ function configIntButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.del', function() {
+	div.off('click', 'a.del').on('click', 'a.del', function() {
 		var tr = $(this).closest('tr');
 		var debugKey = tr.find('.key').text();
 		bootbox.confirm({
@@ -194,7 +185,7 @@ function configIntButtons(div) {
 	});
 }
 function configBrkEqButtons(div) {
-	div.on('click', 'a.add', function() {
+	div.off('click', 'a.add').on('click', 'a.add', function() {
 		var tr = $(this).closest('tr');
 		var debugId = tr.attr('eqId');
 		bootbox.confirm({
@@ -229,7 +220,7 @@ function configBrkEqButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.edit', function() {
+	div.off('click', 'a.edit').on('click', 'a.edit', function() {
 		var tr = $(this).closest('tr');
 		var debugId = tr.attr('eqId');
 		var debugKey = tr.find('.key').text();
@@ -261,7 +252,7 @@ function configBrkEqButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.del', function() {
+	div.off('click', 'a.del').on('click', 'a.del', function() {
 		var tr = $(this).closest('tr');
 		var debugId = tr.attr('eqId');
 		var debugKey = tr.find('.key').text();
@@ -293,7 +284,7 @@ function configBrkEqButtons(div) {
 	});
 }
 function configCmdButtons(div) {
-	div.on('click', 'a.add', function() {
+	div.off('click', 'a.add').on('click', 'a.add', function() {
 		var tr = $(this).closest('tr');
 		var debugId = tr.attr('eqId');
 		bootbox.confirm({
@@ -328,7 +319,7 @@ function configCmdButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.edit', function() {
+	div.off('click', 'a.edit').on('click', 'a.edit', function() {
 		var tr = $(this).closest('tr');
 		var debugId = tr.attr('eqId');
 		var debugKey = tr.find('.key').text();
@@ -360,7 +351,7 @@ function configCmdButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.del', function() {
+	div.off('click', 'a.del').on('click', 'a.del', function() {
 		var tr = $(this).closest('tr');
 		var debugId = tr.attr('eqId');
 		var debugKey = tr.find('.key').text();
@@ -392,7 +383,7 @@ function configCmdButtons(div) {
 	});
 }
 function cacheButtons(div) {
-	div.on('click', 'a.add', function() {
+	div.off('click', 'a.add').on('click', 'a.add', function() {
 		bootbox.confirm({
 			title: '{{Ajouter un paramètre au cache}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
@@ -423,7 +414,7 @@ function cacheButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.edit', function() {
+	div.off('click', 'a.edit').on('click', 'a.edit', function() {
 		var tr = $(this).closest('tr');
 		var debugKey = tr.find('.key').text();
 		bootbox.confirm({
@@ -453,7 +444,7 @@ function cacheButtons(div) {
 		});
 	});
 
-	div.on('click', 'a.del', function() {
+	div.off('click', 'a.del').on('click', 'a.del', function() {
 		var tr = $(this).closest('tr');
 		var debugKey = tr.find('.key').text();
 		bootbox.confirm({
@@ -517,7 +508,7 @@ function builder_daemon(div) {
 	res += '</fieldset></form>';
 	div.html(res);
 
-	div.on('click', 'a.toDaemon', function() {
+	div.off('click', 'a.toDaemon').on('click', 'a.toDaemon', function() {
 		callDebugAjax({
 			data: {
 				action: "sendToDaemon",
@@ -531,7 +522,7 @@ function builder_daemon(div) {
 			}
 		});
 	});
-	div.on('click', 'a.toJeedom', function() {
+	div.off('click', 'a.toJeedom').on('click', 'a.toJeedom', function() {
 		callDebugAjax({
 			data: {
 				action: "sendToJeedom",
@@ -560,6 +551,7 @@ function builder_cacheCmdI(div)  { builder_cfgCache(div, "cacheGetCommandsInfo",
 function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction",  cacheButtons); }
 	</script>
 	<div class="row">
+		<style>td.key { line-break: anywhere; }</style>
 		<div class="col-md-6 col-sm-12"><!-- General status of Jeedom -->
 			<div class="panel panel-primary">
 				<div class="panel-heading">
@@ -693,15 +685,17 @@ $('a.btn.btn-info.btn-show-hide').on('click', function () {
 	if ($(this).hasClass('btn-warning')) {
 		$(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-search-plus"></i> {{Afficher}}');
 		div.addClass('hidden');
+		if ($(this).hasAttr('builder'))
+			div.empty();
 	} else {
 		$(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-search-minus"></i> {{Masquer}}');
 		div.removeClass('hidden');
+		if ($(this).hasAttr('builder')) {
+			var builder = window[$(this).attr('builder')];
+			if(typeof builder === 'function')
+				builder(div);
+		}
 	}
-	if ($(this).hasAttr('builder')) {
-		var builder = window[$(this).attr('builder')];
-		$(this).removeAttr('builder');
-		if(typeof builder === 'function')
-			builder(div);
-	}
+
 });
 	</script>
