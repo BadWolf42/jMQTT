@@ -40,6 +40,7 @@ class jMQTT extends eqLogic {
 
 	const CONF_KEY_TYPE                 = 'type';
 	const CONF_KEY_BRK_ID               = 'eqLogic';
+	const CONF_KEY_JMQTT_UUID           = 'installUUID';
 	const CONF_KEY_MQTT_ADDRESS         = 'mqttAddress';
 	const CONF_KEY_MQTT_PORT            = 'mqttPort';
 	const CONF_KEY_MQTT_WS_URL          = 'mqttWsUrl';
@@ -1184,6 +1185,9 @@ class jMQTT extends eqLogic {
 		$data = array();
 		$data['version'] = 1;
 		$data['hardwareKey'] = jeedom::getHardwareKey();
+		// Ensure system unicity using a rotating UUID
+		$data['lastUUID'] = config::byKey(self::CONF_KEY_JMQTT_UUID, __CLASS__, $data['hardwareKey']);
+		$data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes('107'), true));
 		$data['hardwareName'] = jeedom::getHardwareName();
 		$data['distrib'] = system::getDistrib();
 		$data['phpVersion'] = phpversion();
@@ -1216,6 +1220,7 @@ class jMQTT extends eqLogic {
 			// Could not send or invalid data
 			self::logger('debug', sprintf(__('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__), $result));
 		} else {
+			config::save(self::CONF_KEY_JMQTT_UUID, $data['UUID'], __CLASS__);
 			if ($data['removeMe']) {
 				self::logger('info', __('Données statistiques supprimées', __FILE__));
 				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
