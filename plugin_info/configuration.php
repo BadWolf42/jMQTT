@@ -137,7 +137,7 @@ if ($docker) {
 				<select class="form-control" id="sel_backupJMqtt">
 <?php
 // List all jMQTT backup files
-$backup_dir = realpath(__DIR__ . '/../data/backup');
+$backup_dir = realpath(__DIR__ . '/../' . jMQTT::PATH_BACKUP);
 $backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
 rsort($backups);
 foreach ($backups as $backup)

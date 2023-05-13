@@ -83,6 +83,7 @@ class jMQTT extends eqLogic {
 	const CACHE_REALTIME_EXC_TOPICS     = 'mqttExcTopic';
 	const CACHE_REALTIME_RET_TOPICS     = 'mqttRetTopic';
 
+	const PATH_BACKUP                   = 'data/backup/';
 	const PATH_TEMPLATES_PERSO          = 'data/template/';
 	const PATH_TEMPLATES_JMQTT          = 'core/config/template/';
 

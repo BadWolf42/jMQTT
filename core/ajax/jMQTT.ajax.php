@@ -36,7 +36,7 @@ try {
 			$allowed_ext = '.json';
 			$max_size = 500*1024; // 500KB
 		} elseif (init('dir') == 'backup') {
-			$uploaddir = realpath(__DIR__ . '/../../data/backup'); // TODO
+			$uploaddir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
 			$allowed_ext = '.tgz';
 			$max_size = 100*1024*1024; // 100MB
 		} else {
@@ -74,7 +74,7 @@ try {
 			ajax::success($fname);
 		}
 		elseif (init('dir') == 'backup') {
-			$backup_dir = realpath(__DIR__ . '/../../data/backup');
+			$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
 			$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
 			sort($files);
 			$backups = array();
@@ -231,7 +231,7 @@ try {
 		if ($code)
 			throw new Exception(__("Échec de la sauvegarde de jMQTT, consultez le log jMQTT", __FILE__));
 
-		$backup_dir = realpath(__DIR__ . '/../../data/backup');
+		$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
 		$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
 		sort($files);
 		$backups = array();
@@ -248,7 +248,7 @@ try {
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
 			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
 
-		$backup_dir = realpath(__DIR__ . '/../../data/backup');
+		$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
 		if (in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))) && file_exists($backup_dir.'/'.$_backup))
 			unlink($backup_dir.'/'.$_backup);
 		else
@@ -261,7 +261,7 @@ try {
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
 			throw new Exception(__('Merci de fournir le fichier à restorer', __FILE__));
 
-		$backup_dir = realpath(__DIR__ . '/../../data/backup');
+		$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
 		if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))
 			throw new Exception(__('Impossible de restorer le fichier fourni', __FILE__));
 
