@@ -626,7 +626,7 @@ jmqtt.changeRealTimeMode = function(_id, _mode) {
 jmqtt.newRealTimeCmd = function(_data) {
 	var tr = '<tr class="rtCmd" data-brkId="' + _data.id + '"' + ((_data.id == jmqtt.getBrkId()) ? '' : ' style="display: none;"') + '>';
 	tr += '<td class="fitwidth"><span class="cmdAttr">' + (_data.date ? _data.date : '') + '</span></td>';
-	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic + '" disabled>';
+	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic.replace(/"/g, '&quot;') + '" disabled>';
 	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
 	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
 	tr += '<td align="center"><input class="cmdAttr form-control" data-l1key="qos" style="display:none;" value="' + _data.qos + '" disabled>';
@@ -828,9 +828,9 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 
 // Open modal to add a cmd from Real Time tab
 jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
-	var topicTab  = topic.split('/').filter(t => t.trim().length > 0);
+	var topicTab  = topic.replaceAll('"', '').split('/').filter(t => t.trim().length > 0);
 	topicTab.shift();
-	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('[', ':');
+	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('"', '').replaceAll('[', ':');
 
 	// Build Object list for new cmd creation modal
 	jeedom.object.getUISelectList({
