@@ -18,7 +18,7 @@
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
 require_once __DIR__ . '/../../resources/mosquitto_topic_matches_sub.php';
 
-//
+// Load JsonPath-PHP library
 if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
 	require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
 
@@ -26,6 +26,7 @@ include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
 class jMQTT extends eqLogic {
+	// TODO (low) use trait to simplify this class -> Need PHP 8.2.0 (consts)
 
 	const FORCE_DEPENDANCY_INSTALL      = 'forceDepInstall';
 
@@ -1190,14 +1191,17 @@ class jMQTT extends eqLogic {
 		$data['lastUUID'] = config::byKey(self::CONF_KEY_JMQTT_UUID, __CLASS__, $data['hardwareKey']);
 		$data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes('107'), true));
 		$data['hardwareName'] = jeedom::getHardwareName();
+		// TODO (low) Detect VM and docker
 		$data['distrib'] = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
 		$data['phpVersion'] = phpversion();
+		// TODO (low) Add Python version
 		$data['jeedom'] = jeedom::version();
 		$data['lang'] = config::byKey('language', 'core', 'fr_FR');
 		$jplugin = update::byLogicalId(__CLASS__);
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
 		$data['configVersion'] = config::byKey('version', __CLASS__, -1);
+		// TODO (low) Add int nb eqBroker, eqLogic & cmd
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
 			$data['removeMe'] = true;
@@ -1488,7 +1492,7 @@ class jMQTT extends eqLogic {
 		self::listenersAddAll();
 		// Prepare and send initial data
 		// TODO (high) Edit Daemon to be enable to receive this information
-		// $returns = self::full_export(true); // FIX ME there is only a jMQTT->full_export() no static one !!!
+		// $returns = self::full_export(true); // TODO (low) FIXME: there is only a jMQTT->full_export() no static one !!!
 		// TODO (code idea) use array_filter on each level of the array?
 		// return json_encode($returns, JSON_UNESCAPED_UNICODE);
 	}

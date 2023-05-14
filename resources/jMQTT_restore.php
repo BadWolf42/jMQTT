@@ -560,7 +560,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if (is_null($metadata))
 		return 20;
 
-	// TODO Remove debug
+	// TODO (low) Remove debug
 	// if ($options['verbose'])
 		// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of the backup: \n" . json_encode($metadata, JSON_PRETTY_PRINT) . "\n");
 

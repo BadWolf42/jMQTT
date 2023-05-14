@@ -490,6 +490,6 @@ $(document).ready(function() {
 	// Wrap Log Save button
 	jmqtt_config.logSaveWrapper();
 
-	// Fix tooltips loading // TODO workarround => bug fix to find
+	// TODO (low) FIXME: init tooltips as a workarround to fix tips loading
 	jeedomUtils.initTooltips();
 });
