@@ -78,8 +78,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 		displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf', 'logoSecondary');
 		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'addJmqttBrk', 'logoSecondary');
 		displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT', 'logoSecondary');
-		if (isset($_GET['debug']))
-		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
+		if (isset($_GET['debug']) || config::byKey('debugMode', 'jMQTT', "0") === "1" /* || log::getLogLevel('jMQTT') <= 100 */)
 			displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT', 'logoSecondary');
 		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'addJmqttEq', 'logoSecondary');
