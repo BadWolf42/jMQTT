@@ -842,7 +842,7 @@ jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
 			var msg = '<table class="table table-condensed table-bordered" id="md_addJmqttCmdTable">';
 			msg += '<thead><tr><th style="width: 150px;">{{Objet}}</th><th style="width: 150px;">{{Equipement}}</th></tr></thead>';
 			msg += '<tbody><tr><td class="md_addJmqttCmdValObj">';
-			msg += '<select class="form-control">' + _objectsList + '</select>';
+			msg += '<select class="form-control"><option value="">{{Aucun}}</option>' + _objectsList + '</select>';
 			msg += '</td><td class="md_addJmqttCmdValeqL"></td></tr></tbody></table><br>';
 			msg += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> ';
 			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>';
