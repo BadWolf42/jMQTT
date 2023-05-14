@@ -2253,7 +2253,7 @@ class jMQTT extends eqLogic {
 	public static function toDaemon_realTimeStart($id, $subscribe, $exclude, $retained, $duration = 180) {
 		$params['cmd']       = 'realTimeStart';
 		$params['id']        = $id;
-		$params['file']      = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['file']      = jeedom::getTmpFolder(__CLASS__).'/rt' . $id . '.json';
 		$params['subscribe'] = $subscribe;
 		$params['exclude']   = $exclude;
 		$params['retained']  = $retained;
@@ -2270,7 +2270,7 @@ class jMQTT extends eqLogic {
 	public static function toDaemon_realTimeClear($id) {
 		$params['cmd']  = 'realTimeClear';
 		$params['id']   = $id;
-		$params['file'] = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['file'] = jeedom::getTmpFolder(__CLASS__).'/rt' . $id . '.json';
 		self::sendToDaemon($params);
 	}
 

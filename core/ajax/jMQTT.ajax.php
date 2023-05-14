@@ -152,18 +152,19 @@ try {
 	}
 
 	if (init('action') == 'realTimeGet') {
-		$broker = jMQTT::getBrokerFromId(init('id'));
-		$_file = jeedom::getTmpFolder('jMQTT').'/rt' . $broker->getId() . '.json';
+		$_file = jeedom::getTmpFolder('jMQTT').'/rt' . trim(init('id')) . '.json';
 		if (!file_exists($_file))
 			ajax::success([]);
 		// Read content from file without error handeling!
 		$content = file_get_contents($_file);
 		// Decode template file content to json (or raise)
 		$json = json_decode($content, true);
+		if (is_null($json))
+			ajax::success([]);
 		// Get filtering data
 		$since = init('since', '');
 		// Search for compatible eqLogic on this Broker
-		$brk_elogics = jMQTT::byBrkId($broker->getId());
+		$brk_elogics = jMQTT::byBrkId(init('id'));
 		$res = [];
 		// Function to filter array on date
 		function since_filter($val) { global $since; return $val['date'] > $since; }
