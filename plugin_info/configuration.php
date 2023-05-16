@@ -49,17 +49,17 @@ if (!$docker) {
 				title="{{Ces boutons permettent de gérer l'installation de Mosquitto en tant que service local sur ce système Jeedom.}}"></i></sup></label>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoInstall" class="btn btn-success disabled" style="width:100%;" title="{{Lance l'installation de Mosquitto en local.}}">
-				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Installer}}</a>
+				<i class="fas fa-sync fa-spin" style="display:none;"></i>&nbsp;<i class="fas fa-save"></i> {{Installer}}</a>
 			</div>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoRepare" class="btn btn-warning disabled" style="width:100%;"
 					title="{{Supprime la configuration actuelle de Mosquitto et remet la configuration par défaut de jMQTT.<br/>Cette option est particulièrement intéressante dans le cas où un autre plugin a déjà installé Mosquitto et que vous souhaitez que jMQTT le remplace.}}">
-				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-magic"></i> {{Réparer}}</a>
+				<i class="fas fa-sync fa-spin" style="display:none;"></i>&nbsp;<i class="fas fa-magic"></i> {{Réparer}}</a>
 			</div>
 			<div class="col-sm-2">
 				<a id="bt_mosquittoRemove" class="btn btn-danger disabled" style="width:100%;"
 					title="{{Supprime complètement Mosquitto du système, par exemple dans le cas où vous voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.}}">
-				<i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-trash"></i> {{Supprimer}}</a>
+				<i class="fas fa-sync fa-spin" style="display:none;"></i>&nbsp;<i class="fas fa-trash"></i> {{Supprimer}}</a>
 			</div>
 		</div>
 		<div class="form-group local-install" style="display:none;">
@@ -124,7 +124,7 @@ if ($docker) {
 	<div class="col-sm-6">
 		<legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuation de jMQTT}}</legend>
 		<div class="form-group">
-			<label class="col-sm-1 control-label"> </label>
+			<label class="col-sm-1 control-label">&nbsp;</label>
 			<div class="col-sm-5">
 				<a class="btn btn-success" id="bt_backupJMqttStart" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Lancer une sauvegarde}}</a>
 			</div>
@@ -132,7 +132,7 @@ if ($docker) {
 		</div>
 		<legend><i class="fas fa-tape"></i>{{Sauvegardes disponibles}}</legend>
 		<div class="form-group">
-			<label class="col-sm-1 control-label"> </label>
+			<label class="col-sm-1 control-label">&nbsp;</label>
 			<div class="col-sm-10">
 				<select class="form-control" id="sel_backupJMqtt">
 <?php
@@ -148,17 +148,17 @@ foreach ($backups as $backup)
 			<div class="col-sm-1"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-1 control-label"> </label>
+			<label class="col-sm-1 control-label">&nbsp;</label>
 			<div class="col-sm-5">
 				<a class="btn btn-danger" id="bt_backupJMqttRemove" style="width:100%;"><i class="fas fa-trash"></i> {{Supprimer la sauvegarde}}</a>
 			</div>
 			<div class="col-sm-5">
-				<a class="btn btn-warning" id="bt_backupJMqttRestore" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="far fa-file"></i> {{Restaurer la sauvegarde}} <span class="danger">(BETA)</span></a>
+				<a class="btn btn-warning" id="bt_backupJMqttRestore" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i>&nbsp;<i class="far fa-file"></i> {{Restaurer la sauvegarde}} <span class="danger">(BETA)</span></a>
 			</div>
 			<div class="col-sm-1"></div>
 		</div>
 		<div class="form-group">
-			<label class="col-sm-1 control-label"> </label>
+			<label class="col-sm-1 control-label">&nbsp;</label>
 			<div class="col-sm-5">
 					<a class="btn btn-success" id="bt_backupJMqttDownload" style="width:100%;"><i class="fas fa-cloud-download-alt"></i> {{Télécharger la sauvegarde}}</a>
 			</div>

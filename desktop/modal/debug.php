@@ -82,7 +82,7 @@ function builder_cfgCache(_div, _action, _buttons) {
 					res += (group.id) ? '<tr eqId="' + group.id + '">' : '<tr>';
 					res += '<td class="key">' + d.key + '</td><td><pre class="val">' + JSON.stringify(d.value) + '</pre></td>';
 					res += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;';
-					res += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
+					res += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td></tr>';
 				}
 			}
 			res += '</tbody></table>';
@@ -117,7 +117,7 @@ function configIntButtons(div) {
 						var row = div.find('tbody').prepend('<tr />').children('tr:first');
 						row.append('<td class="key">'+$("#debugKey").val()+'</td>');
 						row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
-						row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td>');
+						row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td>');
 					}
 				});
 				}
@@ -211,7 +211,7 @@ function configBrkEqButtons(div) {
 						var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
 						row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
 						row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;';
-						row += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
+						row += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td></tr>';
 						tr.after(row);
 					}
 				});
@@ -310,7 +310,7 @@ function configCmdButtons(div) {
 						var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
 						row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
 						row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;';
-						row += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
+						row += '<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td></tr>';
 						tr.after(row);
 					}
 				});
@@ -406,7 +406,7 @@ function cacheButtons(div) {
 						var row = div.find('tbody').prepend('<tr />').children('tr:first');
 						row.append('<td class="key">'+$("#debugKey").val()+'</td>');
 						row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
-						row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td>');
+						row.append('<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;<a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td>');
 					}
 				});
 				}
@@ -595,7 +595,7 @@ function builder_actions(div) {
 			for (var d of _data) {
 				res += '<tr><td class="key">' + d.pid + '</td><td><pre class="val">' + d.port + '</pre></td>';
 				// IF d.selected THEN add a tick -> <i class="fas fa-check-circle icon-white"></i>
-				res += '<td style="text-align:center"><a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i> </a></td></tr>';
+				res += '<td style="text-align:center"><a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td></tr>';
 			}
 			res += '</tbody></table>';
 			_div.html(res);

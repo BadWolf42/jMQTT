@@ -159,7 +159,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 			eq += '<textarea class="eqLogicAttr form-control" style="resize:vertical!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
 			eq += '</div></div>';
 			// Logo
-			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label"></label><div class="col-sm-4"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
+			eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">&nbsp;</label><div class="col-sm-4"><img id="logo_visu_tpl" style="margin-top: 10px;" src="" height="100" /></div></div>';
 			// Display equipements
 			$('#div_jmqttTemplateEqlogic').empty().html(eq);
 			// Load logo

@@ -40,7 +40,7 @@
 		</div>
 
 		<div class="form-group toDisable typ-std typ-brk">
-			<label class="col-sm-3 control-label"></label>
+			<label class="col-sm-3 control-label">&nbsp;</label>
 			<div class="col-sm-8">
 				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isEnable" checked />{{Activer}}</label>
 				<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked />{{Visible}}</label>
@@ -127,7 +127,7 @@
 		</div>
 
 		<div class="form-group toDisable">
-			<label class="col-sm-3 control-label"></label>
+			<label class="col-sm-3 control-label">&nbsp;</label>
 			<div class="col-sm-3" style="text-align: center">
 				<br /><img id="logo_visu" src="plugins/jMQTT/core/img/node_.svg" height="200" />
 			</div>
