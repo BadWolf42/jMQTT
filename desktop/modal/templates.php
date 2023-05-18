@@ -36,7 +36,7 @@ if (!isConnect('admin')) {
 		<a class="btn btn-sm btn-primary" id="bt_jmqttTemplateDownload"><i class="fas fa-cloud-download-alt"></i> {{Télécharger}}</a>
 		<!--<a class='btn btn-sm btn-success pull-right' id='bt_jmqttTemplateApply'><i class="far fa-check-circle"></i> {{Appliquer}}</a>-->
 		<a class="btn btn-sm btn-danger" id="bt_jmqttTemplateDelete"><i class="fas fa-times"></i> {{Supprimer}}</a>
-		<br />
+		<br/>
 		<legend><i class="fas fa-tachometer-alt"></i> {{Aperçu de l'équipement}}</legend>
 		<div id='div_jmqttTemplateEqlogic'></div>
 		<legend><i class="fas fa-list-alt"></i> {{Aperçu des commandes}}</legend>
@@ -249,9 +249,9 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 					if (init(_cmd.subType) == 'select')
 						tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte}}" disabled title="{{Liste : valeur|texte (séparées entre elles par des points-virgules)}}" placeholder="{{Liste de valeur|texte séparé par ;}}">';
 					tr += '</td><td>';
-					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" disabled checked/>{{Afficher}}</label></span><br> ';
-					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="retain"/>{{Retain}}</label></span><br> ';
-					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="autoPub"/>{{Pub. auto}}</label></span><br> ';
+					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" disabled checked/>{{Afficher}}</label></span><br/> ';
+					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="retain"/>{{Retain}}</label></span><br/> ';
+					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" disabled data-l2key="autoPub"/>{{Pub. auto}}</label></span><br/> ';
 					tr += '<span class="checkbox-inline"><input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" disabled data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 					tr += '</td></tr>';
 					$('#table_jmqttTemplateCmds tbody').append(tr);

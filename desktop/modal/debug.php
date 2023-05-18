@@ -98,9 +98,9 @@ function configIntButtons(div) {
 		bootbox.confirm({
 			title: '{{Ajouter un paramètre de configuration interne}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -131,9 +131,9 @@ function configIntButtons(div) {
 		bootbox.confirm({
 			title: '{{Modifier le paramètre de configuration interne}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -161,9 +161,9 @@ function configIntButtons(div) {
 		bootbox.confirm({
 			title: '{{Supprimer le paramètre de configuration interne}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -191,9 +191,9 @@ function configBrkEqButtons(div) {
 		bootbox.confirm({
 			title: '{{Ajouter un paramètre de configuration}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -227,9 +227,9 @@ function configBrkEqButtons(div) {
 		bootbox.confirm({
 			title: '{{Modifier le paramètre de configuration}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -259,9 +259,9 @@ function configBrkEqButtons(div) {
 		bootbox.confirm({
 			title: '{{Supprimer le paramètre de configuration}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -290,9 +290,9 @@ function configCmdButtons(div) {
 		bootbox.confirm({
 			title: '{{Ajouter un paramètre de configuration}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -326,9 +326,9 @@ function configCmdButtons(div) {
 		bootbox.confirm({
 			title: '{{Modifier le paramètre de configuration}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -358,9 +358,9 @@ function configCmdButtons(div) {
 		bootbox.confirm({
 			title: '{{Supprimer le paramètre de configuration}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -387,9 +387,9 @@ function cacheButtons(div) {
 		bootbox.confirm({
 			title: '{{Ajouter un paramètre au cache}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result) {
 				if (result) {
 				callDebugAjax({
@@ -420,9 +420,9 @@ function cacheButtons(div) {
 		bootbox.confirm({
 			title: '{{Modifier le paramètre du cache}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result){
 				if (result) {
 				callDebugAjax({
@@ -450,9 +450,9 @@ function cacheButtons(div) {
 		bootbox.confirm({
 			title: '{{Supprimer le paramètre du cache}}',
 			message: '<label class="control-label">{{Clé :}} </label> '
-					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br><br>'
+					+ '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
 					+ '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br><br>',
+					+ '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
 			callback: function(result){
 				if (result) {
 				callDebugAjax({
@@ -503,7 +503,7 @@ function builder_daemon(div) {
 	res += '[{"cmd":"hb"}]';
 
 	res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toJeedom" style="top:0px!important;">';
-	res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div><br />';
+	res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div><br/>';
 
 	res += '</fieldset></form>';
 	div.html(res);

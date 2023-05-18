@@ -83,7 +83,7 @@
 							<div class="col-lg-7 input-group">
 								<span class="input-group-btn">
 									<select class="eqLogicAttr form-control roundedLeft tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
-										title="{{Choisir quel protocole attend le Broker pour la communication.<br />Pour plus d'information, se référer à la documentation.}}">
+										title="{{Choisir quel protocole attend le Broker pour la communication.<br/>Pour plus d'information, se référer à la documentation.}}">
 										<option>mqtt</option>
 										<option>mqtts</option>
 										<option>ws</option>
@@ -98,7 +98,7 @@
 									title="{{Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
 								<span class="input-group-addon jmqttWsUrl" style="display:none">/</span>
 								<input class="eqLogicAttr form-control tooltips roundedRight jmqttWsUrl" data-l1key="configuration" data-l2key="mqttWsUrl" style="display:none" placeholder="{{mqtt}}"
-									title="{{URL de la connexion Web Sockets du serveur distant, sans '/' initial.<br />Valeur si vide, 'mqtt'. Ne pas modifier si vous ne savez pas ce que vous faites.}}">
+									title="{{URL de la connexion Web Sockets du serveur distant, sans '/' initial.<br/>Valeur si vide, 'mqtt'. Ne pas modifier si vous ne savez pas ce que vous faites.}}">
 							</div>
 						</div>
 
@@ -174,7 +174,7 @@
 							</div>
 						</div>
 
-						<div class="form-group"><br /></div>
+						<div class="form-group"><br/></div>
 					</fieldset>
 				</div>
 
@@ -226,7 +226,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="form-group"><br /></div>
+						<div class="form-group"><br/></div>
 					</fieldset>
 				</div>
 

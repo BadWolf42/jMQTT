@@ -246,7 +246,7 @@ $('#bt_mosquittoEdit').on('click', function () {
 								},
 								success: function(result3) {
 									if (result3.state == 'ok') {
-										$.fn.showAlert({message: '{{Le fichier jMQTT.conf a bien été modifiée.<br />Redémarrez le service Mosquitto pour le prendre en compte.}}', level: 'success'});
+										$.fn.showAlert({message: '{{Le fichier jMQTT.conf a bien été modifiée.<br/>Redémarrez le service Mosquitto pour le prendre en compte.}}', level: 'success'});
 									} else {
 										$.fn.showAlert({message: result3.result, level: 'danger'});
 									}
@@ -306,7 +306,7 @@ $('#bt_jmqttUrlOverride').on('click', function () {
 // Launch jMQTT backup and wait for it to end
 $('#bt_backupJMqttStart').on('click', function () {
 	var btn = $(this)
-	bootbox.confirm("{{Êtes-vous sûr de vouloir lancer une sauvegarde de jMQTT ?}}<br />({{Il ne sera pas possible d'annuler une fois l'opération lancée}})", function(result) {
+	bootbox.confirm("{{Êtes-vous sûr de vouloir lancer une sauvegarde de jMQTT ?}}<br/>({{Il ne sera pas possible d'annuler une fois l'opération lancée}})", function(result) {
 		if (!result)
 			return;
 		// $('a.bt_plugin_conf_view_log[data-log=jMQTT]').click();
@@ -370,25 +370,25 @@ $('#bt_backupJMqttRestore').on('click', function () {
 		return;
 	var btn = $(this)
 	var dialog_message = '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotfolder">'
-	dialog_message += '{{Ne pas restaurer le répertoire de jMQTT depuis la sauvegarde}}</label><br />';
+	dialog_message += '{{Ne pas restaurer le répertoire de jMQTT depuis la sauvegarde}}</label><br/>';
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnoteqcmd">'
-	dialog_message += '{{Ne pas restaurer les egLogics et les commandes}}</label><br />';
+	dialog_message += '{{Ne pas restaurer les egLogics et les commandes}}</label><br/>';
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdodelete">'
-	dialog_message += '{{Supprimer les eqLogics et cmds jMQTT créés depuis la sauvegarde}}</label><br />';
+	dialog_message += '{{Supprimer les eqLogics et cmds jMQTT créés depuis la sauvegarde}}</label><br/>';
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotcache">'
-	dialog_message += '{{Ne pas restaurer le cache précédent (conserver le cache actuel)}}</label><br />';
+	dialog_message += '{{Ne pas restaurer le cache précédent (conserver le cache actuel)}}</label><br/>';
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnothistory">'
-	dialog_message += "{{Supprimer l'historique récent (ne conserver que l'historique de la sauvegarde)}}</label><br />";
+	dialog_message += "{{Supprimer l'historique récent (ne conserver que l'historique de la sauvegarde)}}</label><br/>";
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdologs">'
-	dialog_message += '{{Restaurer les logs précédents (ne pas conserver les logs récents)}}</label><br />';
+	dialog_message += '{{Restaurer les logs précédents (ne pas conserver les logs récents)}}</label><br/>';
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdomosquitto">'
-	dialog_message += '{{Restaurer les fichiers de configuration de Mosquitto}}</label><br /><br />';
+	dialog_message += '{{Restaurer les fichiers de configuration de Mosquitto}}</label><br/><br/>';
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnohwcheck">';
 	dialog_message += '{{Ne pas vérifier si ce système est le même que celui sauvegardé}}';
@@ -396,13 +396,13 @@ $('#bt_backupJMqttRestore').on('click', function () {
 	dialog_message += '{{Uniquement si vous savez EXACTEMENT ce que vous faites et que vous avez une SAUVEGARDE EXTERNALISÉE de tout Jeedom.}}';
 	dialog_message += '"></i><sup><i class="fa fa-question-circle danger tooltips" title="';
 	dialog_message += '{{Uniquement si vous savez EXACTEMENT ce que vous faites et que vous avez une SAUVEGARDE EXTERNALISÉE de tout Jeedom.}}';
-	dialog_message += '"></i></sup></label><br />';
+	dialog_message += '"></i></sup></label><br/>';
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttverbose">'
-	dialog_message += "{{Afficher plus d'informations lors de la restauration}}</label><br />";
+	dialog_message += "{{Afficher plus d'informations lors de la restauration}}</label><br/>";
 
 	dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttapply">'
-	dialog_message += '<a class="success disabled">{{APPLIQUER}}</a> {{les changements sur ce système (SINON mode "Dry Run")}}</label><br />';
+	dialog_message += '<a class="success disabled">{{APPLIQUER}}</a> {{les changements sur ce système (SINON mode "Dry Run")}}</label><br/>';
 
 	bootbox.confirm({
 		title: '<b>{{Paramètres de restauration de la sauvegarde de jMQTT}}</b>',
@@ -424,9 +424,9 @@ $('#bt_backupJMqttRestore').on('click', function () {
 				verbose: $('#restoreJMqttverbose').value(),
 				apply: $('#restoreJMqttapplyapply').value()
 			};
-			bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + "</b> ?<br />"
+			bootbox.confirm('{{Êtes-vous sûr de vouloir restaurer}} <b>' + $('#sel_backupJMqtt option:selected').text() + "</b> ?<br/>"
 							+ "({{Il ne sera pas possible d'annuler et le Démon sera arrêté le temps de l'opération}})"
-							+ "<br /><span class=\"danger\">Attention, cette fonctionnalité est encore en BETA, c'est à vos risques et périls !</span>", function(result) {
+							+ "<br/><span class=\"danger\">Attention, cette fonctionnalité est encore en BETA, c'est à vos risques et périls !</span>", function(result) {
 				if (!result)
 					return;
 				jmqtt_config.toggleIco(btn);

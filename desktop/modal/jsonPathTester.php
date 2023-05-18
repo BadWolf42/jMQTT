@@ -35,7 +35,7 @@ if (!isConnect('admin')) {
       <a class="btn btn-sm btn-default btn-success roundedRight" id="bt_executeTestJsonPath"><i class="fas fa-bolt"></i> {{Exécuter}}</a>
     </span>
   </div>
-</br>
+<br/>
 <legend id="out_status"><i class="fas fa-sign-in-alt"></i> {{Résultat}} <span id="out_message"></span></legend>
 <div id="div_expressionTestResult" style="width:100%"></div>
 <textarea class="form-control input-sm roundedRight" id="out_testResult" style="min-height:80px;height:80px"></textarea>

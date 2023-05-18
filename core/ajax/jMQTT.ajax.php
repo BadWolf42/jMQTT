@@ -173,7 +173,7 @@ try {
 			$eqNames = '';
 			foreach ($brk_elogics as $eqpt) {
 				if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msg['topic']))
-					$eqNames .= '<br />#'.$eqpt->getHumanName().'#';
+					$eqNames .= '<br/>#'.$eqpt->getHumanName().'#';
 			}
 			$msg['existing'] = $eqNames;
 			$res[] = $msg;
@@ -347,8 +347,8 @@ try {
 				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
 															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				$this->getEqLogic()->log('warning', str_replace("\n",' <br /> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
-							",<br />@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
+				$this->getEqLogic()->log('warning', str_replace("\n",' <br/> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",<br/>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
 		}
 
 		if ($value !== false && $value !== array())
