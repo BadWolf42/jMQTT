@@ -76,8 +76,8 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/roller\/0\/command",
-                    "request": "pos",
+                    "topic": "%s\/roller\/0\/command\/pos",
+                    "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "100",
                     "retain": "0",
