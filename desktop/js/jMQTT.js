@@ -21,7 +21,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 	bootbox.prompt("{{Nom du nouveau broker ?}}", function (result) {
 		if (result !== null) {
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
@@ -85,7 +85,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 				return false;
 			}
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
@@ -1160,7 +1160,7 @@ $(document).ready(function() {
 	// update DisplayCards on main page at load
 	//
 	jeedom.eqLogic.byType({
-		type: eqType,
+		type: 'jMQTT',
 		noCache: true,
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'warning'});

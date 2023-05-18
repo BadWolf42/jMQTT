@@ -743,7 +743,7 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 
 			// Create a new eqLogic
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ {name: eqName, isEnable: '1', autoAddCmd: autoAdd, type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
@@ -795,7 +795,7 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 
 			// Create a new eqLogic
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ {name: eqName, isEnable: '1', type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});

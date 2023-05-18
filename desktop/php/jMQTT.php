@@ -55,7 +55,7 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace
  * @param jMQTT $eqL
  */
 function displayEqLogicCard($eqL) {
-	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">'; // TODO (low) Add data-eqLogic_type="jMQTT" when working
+	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
 	echo '<span class="hiddenAsTable"></span>';
 	if ($eqL->getType() == 'brk')
 		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_broker.svg" />';
@@ -127,7 +127,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 		?>
 	</div>
 
-	<div class="col-xs-12 eqLogic" style="display: none;">
+	<div class="col-xs-12 eqLogic" data-eqLogic_type="jMQTT" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
 				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate" style="display: none;"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
