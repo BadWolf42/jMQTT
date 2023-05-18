@@ -121,17 +121,6 @@ jmqtt.substractKeys = function(a, b) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used on main page
 
-// Helper to find a logo for each Eqlogic
-jmqtt.logoHelper = function(_id) {
-	// Broker logo is always the same
-	if (_id == 'broker')
-		return 'plugins/jMQTT/core/img/node_broker.svg';
-	// Search for an logo with this id
-	var tmp = jmqtt_globals.logos.find(function (item) { return item.id == _id; });
-	// Return path to an image according to id
-	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
-}
-
 // Build an icon in hiddenAsTable card span
 jmqtt.asCardHelper = function(_eq, _item, iClass) {
 	iClass   = iClass != '' ? ' ' + iClass : '';
@@ -177,7 +166,13 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 		_card.addClass('disableCard');
 
 	// Set logo
-	var logo = (_eq.configuration.type == 'broker') ? jmqtt.logoHelper('broker') : jmqtt.logoHelper(_eq.configuration.icone);
+	if (_eq.configuration.type == 'broker') {
+		var logo = 'plugins/jMQTT/core/img/node_broker.svg';
+	} else if (_eq.configuration.icone != undefined) {
+		var logo = 'plugins/jMQTT/core/img/node_' + _eq.configuration.icone + '.svg';
+	} else {
+		var logo = 'plugins/jMQTT/core/img/node_.svg';
+	}
 	if (_card.find('img').attr('src') != logo) {
 		_card.find('img').attr('src', logo);
 	}
@@ -457,29 +452,8 @@ jmqtt.updateEqptTabs = function(_eq) {
 	bat.val(_eq.configuration.battery_cmd);
 	avl.val(_eq.configuration.availability_cmd);
 
-	var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
-	// Build icon list on eqLogic
-	if (icos.attr('ready') != 'true') {
-		icos.attr('ready', 'true');
-		icos.html('');
-		$.each(jmqtt_globals.logos, function(key) {
-			opt = new Option(jmqtt_globals.logos[key]['name'], jmqtt_globals.logos[key]['id']);
-			icos.append(opt);
-		});
-		// Set handler on eqLogic logo field set (initial set and finish typing)
-		icos.off('change').on('change', function(e) {
-			// Initialize once the Logo dropbox from logos global table
-			// Get icon name
-			var elt = ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') ? 'broker' : icos.select().val();
-			// Get icon file
-			var logo = jmqtt.logoHelper(elt);
-			if ($("#logo_visu").attr("src") != logo) {
-				$("#logo_visu").attr("src", logo);
-			}
-		});
-	}
 	// Set value
-	icos.value(_eq.configuration.icone); // Use .value(), instead of .val(), to trigger change event
+	$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').value(_eq.configuration.icone); // Use .value() here, instead of .val(), to trigger change event
 
 	// Update Real Time mode buttons
 	jmqtt.updateRealTimeButtons(false, false, false);

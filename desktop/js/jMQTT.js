@@ -385,6 +385,18 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 	}
 });
 
+// On eqLogic logo field change
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').off('change').on('change', function(e) {
+	// Initialize once the Logo dropbox from logos global table
+	// Get icon name
+	var elt = ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') ? 'broker' : $(this).select().val();
+	// Get icon file
+	var logo = (elt == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : 'plugins/jMQTT/core/img/node_' + elt + '.svg';
+	if ($("#logo_visu").attr("src") != logo) {
+		$("#logo_visu").attr("src", logo);
+	}
+});
+
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
