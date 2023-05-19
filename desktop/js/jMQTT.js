@@ -276,12 +276,12 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]',
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=playRealTime]', function() {
 	// Restarts Real Time mode view
-	jmqtt.updateRealTimeButtons(true, true, false);
+	jmqtt.updateRealTimeTab(jmqtt.getBrkId(), false);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=pauseRealTime]', function() {
 	// Pause Real Time mode view
-	jmqtt.updateRealTimeButtons(true, true, true);
+	jmqtt.updateRealTimeTab(jmqtt.getBrkId(), true);
 });
 
 // Button to empty RealTime view
@@ -1148,13 +1148,14 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 		return;
 	// Display an alert if real time mode has changed on this Broker
 	jmqtt.displayRealTimeEvent(_eq);
+	// Update card on main page
+	jmqtt.updateDisplayCard(card, _eq);
 	// Update Panel and menu only when on the right Broker
 	if (jmqtt.getEqId() == _eq.id)
 		jmqtt.updateBrokerTabs(_eq);
-	else if (jmqtt.getBrkId() == _eq.id)
-		jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
-	// Update card on main page
-	jmqtt.updateDisplayCard(card, _eq);
+	else if (jmqtt.getBrkId() == _eq.id) {
+		jmqtt.updateRealTimeTab(_eq.id, false);
+	}
 });
 
 
