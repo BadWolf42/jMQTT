@@ -120,7 +120,7 @@ try {
 
 	// Enable/Disable Real Time mode on this Broker
 	if (init('action') == 'changeRealTimeMode') {
-		jMQTT::changeRealTimeMode(init('id'), init('mode'), init('subscribe'), init('exclude'), init('retained'));
+		jMQTT::changeRealTimeMode(init('id'), init('mode'), init('subscribe'), init('exclude'), init('retained'), init('duration'));
 		ajax::success();
 	}
 

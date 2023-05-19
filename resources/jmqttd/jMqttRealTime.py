@@ -91,7 +91,7 @@ class jMqttRealTime:
 				return
 		self._log.info('Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', message.topic, usablePayload, form, message.qos, bool(message.retain))
 		d = datetime.now().strftime('%F %T.%f')[:-3]
-		self.realtimeTab.append({'date':d, 'id':self.id, 'topic':message.topic, 'jsonPath':'', 'payload':usablePayload, 'qos':message.qos, 'retain':bool(message.retain)})
+		self.realtimeTab.append({'date':d, 'topic':message.topic, 'payload':usablePayload, 'qos':message.qos, 'retain':bool(message.retain)})
 		with open(self.realtimeFile, 'w') as f:
 			json.dump(self.realtimeTab, f)
 

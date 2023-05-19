@@ -133,7 +133,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate" style="display: none;"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
 				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate" style="display: none;"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics" style="display: none;"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="jsonPathTester"><i class="fas fa-check"></i> {{Testeur Chemin JSON}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="jsonPathTester" style="display: none;"><i class="fas fa-check"></i> {{Testeur Chemin JSON}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
 				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy" style="display: none;"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
@@ -173,24 +173,29 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 					<thead style="position:sticky;top:0;z-index:5;">
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
-								<label class="col-lg-1 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
-								<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
-								<br/>Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
-									<input class="form-control" id="mqttIncTopic">
+									<label class="col-lg-4 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
+										<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
+										<br/>Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
+									<input class="col-lg-8 form-control" id="mqttIncTopic">
 								</div>
-								<label class="col-lg-1 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
-								<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
-								<br/>Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
-									<input class="form-control" id="mqttExcTopic">
+									<label class="col-lg-4 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
+										<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
+										<br/>Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
+									<input class="col-lg-8 form-control" id="mqttExcTopic">
 								</div>
-								<label class="col-lg-1 control-label" style="text-align:right;">{{Retain}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-								title="{{Remonter aussi les payload retenus par le Broker.}}"></i></sup></label>
-								<div class="col-lg-1">
+								<div class="col-lg-2">
+									<label class="col-lg-8 control-label" style="text-align:right;">{{Retained}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Remonter aussi les payload retenus par le Broker.}}"></i></sup></label>
 									<input type="checkbox" class="form-control" id="mqttRetTopic" checked="false">
+								</div>
+								<div class="col-lg-2">
+									<label class="col-lg-6 control-label" style="text-align:right;">{{Durée}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Le temps que le mode Temps Réel doit fonctionner en secondes [1-3600].}}"></i></sup></label>
+									<input class="col-lg-6 form-control" id="mqttDuration">
 								</div>
 								<div class="col-lg-2">
 									<div class="input-group pull-right">

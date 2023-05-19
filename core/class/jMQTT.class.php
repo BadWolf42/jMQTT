@@ -83,6 +83,7 @@ class jMQTT extends eqLogic {
 	const CACHE_REALTIME_INC_TOPICS     = 'mqttIncTopic';
 	const CACHE_REALTIME_EXC_TOPICS     = 'mqttExcTopic';
 	const CACHE_REALTIME_RET_TOPICS     = 'mqttRetTopic';
+	const CACHE_REALTIME_DURATION       = 'mqttDuration';
 
 	const PATH_BACKUP                   = 'data/backup/';
 	const PATH_TEMPLATES_PERSO          = 'data/template/';
@@ -2082,10 +2083,10 @@ class jMQTT extends eqLogic {
 	 * Called by ajax when the button is pressed by the user
 	 * @param int $mode 0 or 1
 	 */
-	public static function changeRealTimeMode($id, $mode, $subscribe='#', $exclude='homeassistant/#', $retained=false) {
+	public static function changeRealTimeMode($id, $mode, $subscribe='#', $exclude='homeassistant/#', $retained=false, $duration=180) {
 		$broker = self::getBrokerFromId($id);
 		$broker->log('info', $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
-		// $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s)", __FILE__), $id, $mode, $subscribe, $exclude, $retained));
+		// $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)", __FILE__), $id, $mode, $subscribe, $exclude, $retained, $duration));
 		if($mode) { // If Real Time mode needs to be enabled
 			// Check if a subscription topic is provided
 			if (trim($subscribe) == '')
@@ -2112,12 +2113,15 @@ class jMQTT extends eqLogic {
 			}
 			// Cleanup retained
 			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
+			// Cleanup duration
+			$duration = min(max(1, intval($duration)), 3600);
 			// Start Real Time Mode (must be started before subscribe)
-			self::toDaemon_realTimeStart($id, $subscriptions, $exclusions, $retained);
+			self::toDaemon_realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
 			// Update cache
 			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
 			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
 			$broker->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
+			$broker->setCache(self::CACHE_REALTIME_DURATION, $duration);
 		} else { // Real Time mode needs to be disabled
 			// Stop Real Time mode
 			self::toDaemon_realTimeStop($id);

@@ -253,6 +253,7 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	$('#mqttIncTopic').value(_eq.cache.mqttIncTopic != undefined ? _eq.cache.mqttIncTopic : '#');
 	$('#mqttExcTopic').value(_eq.cache.mqttExcTopic != undefined ? _eq.cache.mqttExcTopic : 'homeassistant/#');
 	$('#mqttRetTopic').prop('checked', _eq.cache.mqttRetTopic != undefined ? _eq.cache.mqttRetTopic : false);
+	$('#mqttDuration').value(_eq.cache.mqttDuration != undefined ? _eq.cache.mqttDuration : '180');
 
 	// Update Real Time mode buttons
 	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
@@ -527,7 +528,7 @@ jmqtt.displayRealTimeEvent = function(_eq) {
 	if (_eq.cache.realtime_mode == '1') {
 		if (realtime.hasClass('fa-square')) {
 			// Show an alert only if Real time mode was disabled
-			$.fn.showAlert({message: `{{Mode Temps Réel sur le Broker <b>${_eq.name}</b> pendant 3 minutes.}}`, level: 'warning'});
+			$.fn.showAlert({message: `{{Mode Temps Réel sur le Broker <b>${_eq.name}</b> pendant ${_eq.cache.mqttDuration} secondes.}}`, level: 'warning'});
 		}
 	} else if (realtime.hasClass('fa-sign-in-alt')) {
 		// Show an alert only if Real time mode was enabled
@@ -545,6 +546,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
 		$('#mqttRetTopic').attr('disabled', '');
+		$('#mqttDuration').attr('disabled', '');
 		clearInterval(jmqtt_globals.refreshRealTime);
 	} else if (!active) { // Show only startRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
@@ -554,6 +556,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttIncTopic').removeAttr('disabled');
 		$('#mqttExcTopic').removeAttr('disabled');
 		$('#mqttRetTopic').removeAttr('disabled');
+		$('#mqttDuration').removeAttr('disabled');
 		clearInterval(jmqtt_globals.refreshRealTime);
 	} else if (paused) { // Show only stopRealTimeMode & playRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
@@ -563,6 +566,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
 		$('#mqttRetTopic').attr('disabled', '');
+		$('#mqttDuration').attr('disabled', '');
 		clearInterval(jmqtt_globals.refreshRealTime);
 	} else {              // Show stopRealTimeMode & pauseRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
@@ -572,6 +576,7 @@ jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
 		$('#mqttIncTopic').attr('disabled', '');
 		$('#mqttExcTopic').attr('disabled', '');
 		$('#mqttRetTopic').attr('disabled', '');
+		$('#mqttDuration').attr('disabled', '');
 		// Load Real Time Data every 3s if stopRealTimeMode button is visible
 		jmqtt_globals.refreshRealTime = setInterval(function() {
 				if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length == 0)
@@ -591,7 +596,8 @@ jmqtt.changeRealTimeMode = function(_id, _mode) {
 			id: _id,
 			subscribe: $('#mqttIncTopic').val(),
 			exclude: $('#mqttExcTopic').val(),
-			retained: $('#mqttRetTopic').is(':checked')
+			retained: $('#mqttRetTopic').is(':checked'),
+			duration: $('#mqttDuration').val()
 		}
 	});
 }
@@ -601,7 +607,7 @@ jmqtt.newRealTimeCmd = function(_data) {
 	var tr = '<tr class="rtCmd" data-brkId="' + _data.id + '"' + ((_data.id == jmqtt.getBrkId()) ? '' : ' style="display: none;"') + '>';
 	tr += '<td class="fitwidth"><span class="cmdAttr">' + (_data.date ? _data.date : '') + '</span></td>';
 	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic.replace(/"/g, '&quot;') + '" disabled>';
-	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
+	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + (_data.jsonPath ? _data.jsonPath : '') + '" disabled></td>';
 	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
 	tr += '<td align="center"><input class="cmdAttr form-control" data-l1key="qos" style="display:none;" value="' + _data.qos + '" disabled>';
 	if (_data.retain)
@@ -643,11 +649,13 @@ jmqtt.getRealTimeData = function() {
 		},
 		success: function (data) {
 			if (data.length > 0) {
-				var realtime = $('#table_realtime tbody');
+				var realtime = '';
 				for (var i in data) {
-					realtime.prepend(jmqtt.newRealTimeCmd(data[i]));
+					data[i].id = broker;
+					realtime = jmqtt.newRealTimeCmd(data[i]) + realtime;
 					_since = data[i].date;
 				}
+				$('#table_realtime tbody').prepend(realtime);
 				$('#table_realtime').attr('brk' + broker + 'since', _since);
 			}
 			jmqtt_globals.lockRealTime = false;
