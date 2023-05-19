@@ -231,74 +231,6 @@ class jMQTT extends eqLogic {
 	 * Split topic and jsonPath of all commands for the template file.
 	 * @param string $_filename template name to look for.
 	 */
-	public static function templateSplitJsonPathByFile($_filename = '') {
-
-		try {
-			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename);
-
-			// Keep track of any change
-			$changed = false;
-
-			// if 'commands' key exists in this template
-			if (isset($templateValue['commands'])) {
-
-				// for each keys under 'commands'
-				foreach ($templateValue['commands'] as &$cmd) {
-
-					// if 'configuration' key exists in this command
-					if (isset($cmd['configuration'])) {
-
-						// get the topic if it exists
-						$topic = (isset($cmd['configuration']['topic'])) ? $cmd['configuration']['topic'] : '';
-
-						$i = strpos($topic, '{');
-						if ($i === false) {
-							// Just set empty jsonPath if it doesn't exists
-							if (!isset($cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH])) {
-								$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = '';
-								$changed = true;
-							}
-						} else {
-							$changed = true;
-							// Set cleaned Topic
-							$cmd['configuration']['topic'] = substr($topic, 0, $i);
-
-							// Split old json path
-							$indexes = substr($topic, $i);
-							$indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
-							$indexes = explode('|', $indexes);
-
-							$jsonPath = '';
-							// For each part of the path
-							foreach ($indexes as $index) {
-								// if this part contains a special character, escape it
-								if (preg_match('/[^\w-]/', $index) !== false)
-									$jsonPath .= '[\'' . str_replace("'", "\\'", $index) . '\']';
-								else
-									$jsonPath .= '[' . $index . ']';
-							}
-							$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = $jsonPath;
-						}
-					}
-				}
-			}
-
-			// Don't write anything if no change was made
-			if (!$changed)
-				return;
-
-			// Save back template in the file
-			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-			file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename, $jsonExport);
-		} catch (Throwable $e) {
-			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
-		}
-	}
-
-	/**
-	 * Split topic and jsonPath of all commands for the template file.
-	 * @param string $_filename template name to look for.
-	 */
 	public static function moveTopicToConfigurationByFile($_filename = '') {
 
 		try {
@@ -509,8 +441,6 @@ class jMQTT extends eqLogic {
 			throw new Exception(__("Le fichier template est en-dehors de Jeedom.", __FILE__));
 		if (!file_exists($template_path))
 			throw new Exception(__("Le fichier template n'a pas pu être trouvé.", __FILE__));
-		// Convert on the fly template to jsonPath if needed
-		self::templateSplitJsonPathByFile($template_path);
 
 		// Locate the expected broker, if not found then raise !
 		$brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);

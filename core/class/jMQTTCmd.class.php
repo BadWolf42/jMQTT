@@ -496,39 +496,6 @@ class jMQTTCmd extends cmd {
 		return $this->getConfiguration(self::CONF_KEY_JSON_PATH, '');
 	}
 
-// TODO (nice to have) Move to install.php as only used by it?
-	public function splitTopicAndJsonPath() {
-		// Try to find '{'
-		$topic = $this->getTopic();
-		$i = strpos($topic, '{');
-		// If no '{'
-		if ($i === false) {
-			// Just set empty jsonPath if it doesn't exists
-			$this->setJsonPath($this->getJsonPath());
-		} else {
-			// Set cleaned Topic
-			$this->setTopic(substr($topic, 0, $i));
-
-			// Split old json path
-			$indexes = substr($topic, $i);
-			$indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
-			$indexes = explode('|', $indexes);
-
-			$jsonPath = '';
-			// For each part of the path
-			foreach ($indexes as $index) {
-				// if this part contains a dot, a space or a slash, escape it
-				if (strpos($index, '.') !== false || strpos($index, ' ') !== false || strpos($index, '/') !== false)
-					$jsonPath .= '[\'' . $index . '\']';
-				else
-					$jsonPath .= '[' . $index . ']';
-			}
-
-			$this->setJsonPath($jsonPath);
-		}
-		$this->save(true); // Direct save to avoid pre/postSave
-	}
-
 	/**
 	 * Return the list of commands of the given equipment which topic is related to the given one
 	 * (i.e. equal to the given one if multiple is false, or having the given topic as mother JSON related

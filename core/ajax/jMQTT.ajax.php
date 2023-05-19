@@ -66,8 +66,6 @@ try {
 		}
 		// After template file imported
 		if (init('dir') == 'template') {
-			// Adapt template for the new jsonPath field
-			jMQTT::templateSplitJsonPathByFile($fname);
 			// Adapt template for the topic in configuration
 			jMQTT::moveTopicToConfigurationByFile($fname);
 			jMQTT::logger('info', sprintf(__("Template %s correctement téléversée", __FILE__), $fname));

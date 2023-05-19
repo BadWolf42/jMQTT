@@ -300,7 +300,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 			$.fn.showAlert({message: error.message, level: 'danger'});
 		},
 		success: function (data) {
-			$('#table_realtime tbody .rtCmd[data-brkid=' + broker + ']').remove();
+			$('#table_realtime tbody .rtCmd[data-brkId=' + broker + ']').remove();
 		}
 	});
 })
