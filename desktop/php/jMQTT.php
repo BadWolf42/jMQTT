@@ -130,12 +130,12 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 	<div class="col-xs-12 eqLogic" data-eqLogic_type="jMQTT" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate" style="display: none;"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
-				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate" style="display: none;"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics" style="display: none;"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="jsonPathTester" style="display: none;"><i class="fas fa-check"></i> {{Testeur Chemin JSON}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy" style="display: none;"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable tooltips" data-action="createTemplate" style="display: none;" title="{{Créer Template}}"><i class="fas fa-cubes"></i></a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable tooltips" data-action="applyTemplate" style="display: none;" title="{{Appliquer Template}}"><i class="fas fa-share"></i></a>
+				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable tooltips" data-action="updateTopics" style="display: none;" title="{{Modifier Topics}}"><i class="fas fa-pen"></i></a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std tooltips" data-action="jsonPathTester" style="display: none;" title="{{Testeur Chemin JSON}}"><i class="fas fa-check"></i></a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable tooltips" data-action="copy" style="display: none;" title="{{Dupliquer}}"><i class="fas fa-copy"></i></a>
+				<a class="btn btn-default btn-sm eqLogicAction tooltips" data-action="configure" title="{{Configuration avancée}}"><i class="fas fa-cogs"></i></a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
 				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>&nbsp;
 			</div>
@@ -145,7 +145,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
 					<li role="presentation" class="typ-std" style="display: none;"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
-					<li role="presentation" class="typ-std typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab" style="padding: 10px 14px;"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
+					<li role="presentation" class="typ-std typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab" style="padding: 10px 14px;"><i class="fas fa-align-left"></i><span class="typ-brk" style="display: none;"> {{Temps Réel}}</span></a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>
@@ -232,14 +232,10 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 							<th style="min-width:180px;">{{Valeur}}</th>
 							<th style="min-width:100px;width:120px;">{{Paramètres}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
-							<th style="min-width:135px;width:135px;"></th>
-<!-- TODO (medium) Change when adding Advanced parameters
-							<th style="min-width:90px;width:100px;">{{Options}}</th>
-							<th style="min-width:160px;width:160px;"></th>
--->
+							<th style="min-width:115px;width:120px;"></th>
 						</tr>
 					</thead>
-					<tbody><!-- TODO (low) Limit the number of displayed lines (by pages of 25? 50? 100?) how? as handled by plugin.template -->
+					<tbody>
 					</tbody>
 				</table>
 			</div>

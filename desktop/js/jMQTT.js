@@ -144,13 +144,16 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
 //
+
+/* // TODO (low) UNUSED Check if should be removed
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
 	var el = $(this);
 	jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
-		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.attr('data-input') + ']');
+		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
 		calcul.value(result.human);
 	});
 });
+*/
 
 $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 	var el = $(this);
@@ -888,10 +891,10 @@ function addCmdToTable(_cmd) {
 // TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="configure" title="{{Configurer}}"><i class="fas fa-cogs"></i></a> ';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="test" title="{{Tester}}"><i class="fas fa-rss"></i></a> ';
 		}
-		tr += '&nbsp; &nbsp; <i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+		tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
@@ -988,10 +991,10 @@ function addCmdToTable(_cmd) {
 // TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="configure" title="{{Configurer}}"><i class="fas fa-cogs"></i></a> ';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="test" title="{{Tester}}"><i class="fas fa-rss"></i></a> ';
 		}
-		tr += '&nbsp; &nbsp; <i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+		tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
