@@ -205,7 +205,7 @@ function createCmdWithId($_id) {
 // Restore jMQTT plugin files, keeping existing jMQTT backups and .git folder
 function restore_folder($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Saving existing jMQTT backups...");
-	exec('cp -a ' . __DIR__ . '/../data/backup/* ' . $tmp_dir . '/backup/jMQTT/data/backup 2>&1 > /dev/null');
+	exec('cp -a ' . __DIR__ . '/../' . jMQTT::PATH_BACKUP . '* ' . $tmp_dir . '/backup/jMQTT/' . jMQTT::PATH_BACKUP . ' 2>&1 > /dev/null');
 	if (file_exists(__DIR__ . '/../.git'))
 		exec('cp -a ' . __DIR__ . '/../.git ' . $tmp_dir . '/backup/jMQTT 2>&1 > /dev/null');
 	print("                     [ OK ]\n");
@@ -560,7 +560,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 	if (is_null($metadata))
 		return 20;
 
-	// TODO Remove debug
+	// TODO (low) Remove debug
 	// if ($options['verbose'])
 		// print(date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . "Metadata of the backup: \n" . json_encode($metadata, JSON_PRETTY_PRINT) . "\n");
 

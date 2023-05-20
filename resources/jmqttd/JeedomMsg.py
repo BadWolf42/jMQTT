@@ -38,14 +38,14 @@ class JeedomMsg():
 		self._last_rcv    = time.time()
 		self._hb_delay    = 45					# seconds between 2 heartbeat emission
 		self._hb_retry    = self._hb_delay / 2	# seconds before retrying
-		self._hb_timeout  = self._hb_delay * 3	# seconds before timeout
+		self._hb_timeout  = self._hb_delay * 7	# seconds before timeout
 		self.qFromJ       = deque()
 		self.qToJ         = deque()
 		# self._lock        = threading.Lock()
 		socketserver.TCPServer.allow_reuse_address = True
 
 	def is_working(self):
-		# TODO (important) Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
+		# Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
 		if time.time() - self._last_snd > self._snd_timeout and self._retry_snd > self._retry_max:
 			self._log_snd.error("Nothing could sent for %ds (max %ds) AND after %d attempts (max %d), Jeedom/Apache is probably dead.",
 								time.time() - self._last_snd, self._snd_timeout, self._retry_snd, self._retry_max)
@@ -137,7 +137,6 @@ class JeedomMsg():
 			if len(self.qToJ) == 0:
 				if time.time() - self._last_snd > self._hb_delay:
 					if time.time() - last_hb > self._hb_retry: # Avoid sending continuously hb
-						self.qToJ.appendleft({"cmd":"hb"}) # Add a heartbeat if it has been too long
 						# Send the heartbeat asynchronously to avoid congestion (lots of messages in qToJ)
 						threading.Thread(target=self.send, args=([{"cmd":"hb"}],False), name="SndNoBlkHb", daemon=True).start()
 						self._log_snd.debug("Sending a heartbeat to Jeedom, nothing sent since %ds (max %ds)", time.time() - self._last_snd, self._hb_delay)

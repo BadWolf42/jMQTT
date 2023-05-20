@@ -173,8 +173,8 @@ class jMQTTCmd extends cmd {
 				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
 															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				$this->getEqLogic()->log('warning', str_replace("\n",' <br /> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
-							",<br />@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
+				$this->getEqLogic()->log('warning', str_replace("\n",' <br/> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",<br/>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
 		}
 	}
 
@@ -494,39 +494,6 @@ class jMQTTCmd extends cmd {
 
 	public function getJsonPath() {
 		return $this->getConfiguration(self::CONF_KEY_JSON_PATH, '');
-	}
-
-// TODO (nice to have) Move to install.php as only used by it?
-	public function splitTopicAndJsonPath() {
-		// Try to find '{'
-		$topic = $this->getTopic();
-		$i = strpos($topic, '{');
-		// If no '{'
-		if ($i === false) {
-			// Just set empty jsonPath if it doesn't exists
-			$this->setJsonPath($this->getJsonPath());
-		} else {
-			// Set cleaned Topic
-			$this->setTopic(substr($topic, 0, $i));
-
-			// Split old json path
-			$indexes = substr($topic, $i);
-			$indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
-			$indexes = explode('|', $indexes);
-
-			$jsonPath = '';
-			// For each part of the path
-			foreach ($indexes as $index) {
-				// if this part contains a dot, a space or a slash, escape it
-				if (strpos($index, '.') !== false || strpos($index, ' ') !== false || strpos($index, '/') !== false)
-					$jsonPath .= '[\'' . $index . '\']';
-				else
-					$jsonPath .= '[' . $index . ']';
-			}
-
-			$this->setJsonPath($jsonPath);
-		}
-		$this->save(true); // Direct save to avoid pre/postSave
 	}
 
 	/**

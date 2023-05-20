@@ -81,7 +81,7 @@ pre() {
 	echo 0 > $TMPFOLDER/hasError.$$
 	touch $PROGRESS_FILE
 	STEP_IN_PROG=0
-	
+
 	# disable temporary deb-multimedia
 	if ls /etc/apt/sources.list.d/deb-multimedia.list* &>/dev/null; then
 		if [ ! -f "/etc/apt/sources.list.d/deb-multimedia.list.disabledBy${PLUGIN}" ]; then
@@ -122,7 +122,7 @@ step() {
 		echo -e "[  $STEP% ] : $STEP_NAME..."
 	else
 		echo -e "[ $STEP% ] : $STEP_NAME..."
-	fi 
+	fi
 	STEP_OK=0
 	echo $STEP_OK > $TMPFOLDER/step.$$
 }
@@ -177,7 +177,7 @@ next() {
 		echo -en "[  $STEP% ] : "
 	else
 		echo -en "[ $STEP% ] : "
-	fi 
+	fi
 	echo -n "$STEP_NAME : "
 	[[ $TIMED -eq 1 ]] && show_time $((`date +%s`-$startStep))
 	if [[ $STEP_OK -eq 0 ]]; then
@@ -266,7 +266,7 @@ post() {
 			else
 				echo "== ANALYSING ERRORS..."
 			fi
-			
+
 			#try to fix if possible
 			fix
 
@@ -279,7 +279,7 @@ post() {
 				fi
 				cat $TMPFOLDER/errorLog.$$;
 			fi
-			rm -f $TMPFOLDER/errorLog.$$; 
+			rm -f $TMPFOLDER/errorLog.$$;
 		}
 	else
 		echo "$HR"

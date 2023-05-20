@@ -121,17 +121,6 @@ jmqtt.substractKeys = function(a, b) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used on main page
 
-// Helper to find a logo for each Eqlogic
-jmqtt.logoHelper = function(_id) {
-	// Broker logo is always the same
-	if (_id == 'broker')
-		return 'plugins/jMQTT/core/img/node_broker.svg';
-	// Search for an logo with this id
-	var tmp = jmqtt_globals.logos.find(function (item) { return item.id == _id; });
-	// Return path to an image according to id
-	return (tmp == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : ('plugins/jMQTT/core/img/' + tmp.file);
-}
-
 // Build an icon in hiddenAsTable card span
 jmqtt.asCardHelper = function(_eq, _item, iClass) {
 	iClass   = iClass != '' ? ' ' + iClass : '';
@@ -177,7 +166,13 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 		_card.addClass('disableCard');
 
 	// Set logo
-	var logo = (_eq.configuration.type == 'broker') ? jmqtt.logoHelper('broker') : jmqtt.logoHelper(_eq.configuration.icone);
+	if (_eq.configuration.type == 'broker') {
+		var logo = 'plugins/jMQTT/core/img/node_broker.svg';
+	} else if (_eq.configuration.icone != undefined) {
+		var logo = 'plugins/jMQTT/core/img/node_' + _eq.configuration.icone + '.svg';
+	} else {
+		var logo = 'plugins/jMQTT/core/img/node_.svg';
+	}
 	if (_card.find('img').attr('src') != logo) {
 		_card.find('img').attr('src', logo);
 	}
@@ -187,6 +182,12 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 	if (_eq.configuration.type == 'broker') {
 		asCard += jmqtt.asCardHelper(_eq, 'status', 'status-circle');
 		asCard += jmqtt.asCardHelper(_eq, 'learning', 'rt-status');
+		// Store Real Time parameters in eqLogicDisplayCard
+		_card[0].dataset.rtRun = _eq.cache.realtime_mode == '1' ? 1 : 0;
+		_card[0].dataset.rtInc = _eq.cache.mqttIncTopic != undefined ? _eq.cache.mqttIncTopic : '#';
+		_card[0].dataset.rtExc = _eq.cache.mqttExcTopic != undefined ? _eq.cache.mqttExcTopic : 'homeassistant/#';
+		_card[0].dataset.rtRet = _eq.cache.mqttRetTopic != undefined ? _eq.cache.mqttRetTopic : '0';
+		_card[0].dataset.rtDur = _eq.cache.mqttDuration != undefined ? _eq.cache.mqttDuration : '180';
 	}
 	_card.find('span.hiddenAsTable').empty().html(asCard);
 
@@ -254,18 +255,8 @@ jmqtt.updateBrokerTabs = function(_eq) {
 	var levels = {}; levels['log::level::' + log] = _eq.configuration.loglevel; // Hack to build the array
 	$('#div_broker_log').setValues(levels, '.configKey');
 
-	// Update Real Time mode values
-	$('#mqttIncTopic').value(_eq.cache.mqttIncTopic != undefined ? _eq.cache.mqttIncTopic : '#');
-	$('#mqttExcTopic').value(_eq.cache.mqttExcTopic != undefined ? _eq.cache.mqttExcTopic : 'homeassistant/#');
-	$('#mqttRetTopic').prop('checked', _eq.cache.mqttRetTopic != undefined ? _eq.cache.mqttRetTopic : false);
-
-	// Update Real Time mode buttons
-	jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
-
-	// Display only relevant Real Time data
-	jmqtt.getRealTimeData();
-	$('#table_realtime').find('tr.rtCmd[data-brkId!="' + _eq.id + '"]').hide();
-	$('#table_realtime').find('tr.rtCmd[data-brkId="' + _eq.id + '"]').show();
+	// Update Real Time tab
+	jmqtt.updateRealTimeTab(_eq.id, false);
 }
 
 // On drag of a certificate file in a Broker tab
@@ -457,37 +448,11 @@ jmqtt.updateEqptTabs = function(_eq) {
 	bat.val(_eq.configuration.battery_cmd);
 	avl.val(_eq.configuration.availability_cmd);
 
-	var icos = $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]');
-	// Build icon list on eqLogic
-	if (icos.attr('ready') != 'true') {
-		icos.attr('ready', 'true');
-		icos.html('');
-		$.each(jmqtt_globals.logos, function(key) {
-			opt = new Option(jmqtt_globals.logos[key]['name'], jmqtt_globals.logos[key]['id']);
-			icos.append(opt);
-		});
-		// Set handler on eqLogic logo field set (initial set and finish typing)
-		icos.off('change').on('change', function(e) {
-			// Initialize once the Logo dropbox from logos global table
-			// Get icon name
-			var elt = ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') ? 'broker' : icos.select().val();
-			// Get icon file
-			var logo = jmqtt.logoHelper(elt);
-			if ($("#logo_visu").attr("src") != logo) {
-				$("#logo_visu").attr("src", logo);
-			}
-		});
-	}
 	// Set value
-	icos.value(_eq.configuration.icone); // Use .value(), instead of .val(), to trigger change event
+	$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').value(_eq.configuration.icone); // Use .value() here, instead of .val(), to trigger change event
 
-	// Update Real Time mode buttons
-	jmqtt.updateRealTimeButtons(false, false, false);
-
-	// Display only relevant Real Time data
-	jmqtt.getRealTimeData();
-	$('#table_realtime').find('tr.rtCmd[data-brkId!="' + jmqtt.getBrkId() + '"]').hide();
-	$('#table_realtime').find('tr.rtCmd[data-brkId="' + jmqtt.getBrkId() + '"]').show();
+	// Update Real Time tab
+	jmqtt.updateRealTimeTab(_eq.configuration.eqLogic, false);
 }
 
 // Decorator for Core plugin template on save callback
@@ -503,11 +468,11 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
 		var dialog_message = '';
 		var no_name = false;
 		if (jmqtt_globals.mainTopic == '') {
-			dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br>";
+			dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br/>";
 		} else {
 			dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>";
 			dialog_message += jmqtt_globals.mainTopic;
-			dialog_message += '</b>"<br>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br><br>';
+			dialog_message += '</b>"<br/>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br/><br/>';
 			$('.topicMismatch').each(function (_, item) {
 				if (!$(item).hasClass('eqLogicAttr')) {
 					var cmd = $(item).closest('tr.cmd').find('.cmdAttr[data-l1key=name]').value();
@@ -528,8 +493,8 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
 			});
 		}
 		if (no_name)
-			dialog_message += "<br>{{(Notez que les commandes sans nom seront supprimées lors de la sauvegarde)}}";
-		dialog_message += "<br>{{Souhaitez-vous tout de même sauvegarder l'équipement ?}}";
+			dialog_message += "<br/>{{(Notez que les commandes sans nom seront supprimées lors de la sauvegarde)}}";
+		dialog_message += "<br/>{{Souhaitez-vous tout de même sauvegarder l'équipement ?}}";
 		bootbox.confirm({
 			title: "<b>{{Des problèmes ont été identifiés dans la configuration}}</b>",
 			message: dialog_message,
@@ -549,11 +514,11 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
 // Display an Alert if Real time mode has changed for this eqBroker
 jmqtt.displayRealTimeEvent = function(_eq) {
 	// Fetch current Real Time mode for this Broker
-	var realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + jmqtt.getBrkId() + ']').find('span.hiddenAsTable i.rt-status');
+	var realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.rt-status');
 	if (_eq.cache.realtime_mode == '1') {
 		if (realtime.hasClass('fa-square')) {
 			// Show an alert only if Real time mode was disabled
-			$.fn.showAlert({message: `{{Mode Temps Réel sur le Broker <b>${_eq.name}</b> pendant 3 minutes.}}`, level: 'warning'});
+			$.fn.showAlert({message: `{{Mode Temps Réel sur le Broker <b>${_eq.name}</b> pendant ${_eq.cache.mqttDuration} secondes.}}`, level: 'warning'});
 		}
 	} else if (realtime.hasClass('fa-sign-in-alt')) {
 		// Show an alert only if Real time mode was enabled
@@ -562,49 +527,55 @@ jmqtt.displayRealTimeEvent = function(_eq) {
 }
 
 // Helper to show/hide/disable Real Time buttons
-jmqtt.updateRealTimeButtons = function(enabled, active, paused) {
-	if (!enabled) {       // Disable buttons if eqBroker is disabled
+jmqtt.updateRealTimeTab = function(id, paused) {
+	var eqCard = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id="' + id + '"]');
+	// Get Real Time mode values
+	$('#mqttIncTopic').value(eqCard[0].dataset.rtInc != undefined ? eqCard[0].dataset.rtInc : '#');
+	$('#mqttExcTopic').value(eqCard[0].dataset.rtExc != undefined ? eqCard[0].dataset.rtExc : 'homeassistant/#');
+	$('#mqttRetTopic').prop('checked', eqCard[0].dataset.rtRet == '1' ? eqCard[0].dataset.rtRet : false);
+	$('#mqttDuration').value(eqCard[0].dataset.rtDur != undefined ? eqCard[0].dataset.rtDur : '180');
+	clearInterval(jmqtt_globals.refreshRealTime);
+	// Load Real Time Data every 2s
+	if (!paused) {
+		jmqtt_globals.refreshRealTime = setInterval(function() {
+				// If Real Time table is visible and no data is visible, load it
+				if ($('#table_realtime:visible').length != 0 && eqCard[0].dataset.rtSince == undefined)
+					jmqtt.getRealTimeData();
+				// If Real Time mode is active, load more data
+				else if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length)
+					jmqtt.getRealTimeData();
+			}, 2000);
+	}
+
+	if (eqCard.hasClass('disableCard')) {           // Disable buttons if eqBroker is disabled
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().addClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=playRealTime]').hide();
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
-		$('#mqttIncTopic').attr('disabled', '');
-		$('#mqttExcTopic').attr('disabled', '');
-		$('#mqttRetTopic').attr('disabled', '');
-		clearInterval(jmqtt_globals.refreshRealTime);
-	} else if (!active) { // Show only startRealTimeMode button
+		$('#table_realtime thead input.form-control').attr('disabled', '');
+	} else if (eqCard[0].dataset.rtRun != '1') {    // Show only startRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').show().removeClass('disabled');
 		$('.eqLogicAction[data-action=stopRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=playRealTime]').hide();
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
-		$('#mqttIncTopic').removeAttr('disabled');
-		$('#mqttExcTopic').removeAttr('disabled');
-		$('#mqttRetTopic').removeAttr('disabled');
-		clearInterval(jmqtt_globals.refreshRealTime);
-	} else if (paused) { // Show only stopRealTimeMode & playRealTimeMode button
+		$('#table_realtime thead input.form-control').removeAttr('disabled');
+	} else if (paused) {                            // Show only stopRealTimeMode & playRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
 		$('.eqLogicAction[data-action=playRealTime]').show();
 		$('.eqLogicAction[data-action=pauseRealTime]').hide();
-		$('#mqttIncTopic').attr('disabled', '');
-		$('#mqttExcTopic').attr('disabled', '');
-		$('#mqttRetTopic').attr('disabled', '');
-		clearInterval(jmqtt_globals.refreshRealTime);
-	} else {              // Show stopRealTimeMode & pauseRealTimeMode button
+		$('#table_realtime thead input.form-control').attr('disabled', '');
+	} else {                                        // Show stopRealTimeMode & pauseRealTimeMode button
 		$('.eqLogicAction[data-action=startRealTimeMode]').hide();
 		$('.eqLogicAction[data-action=stopRealTimeMode]').show();
 		$('.eqLogicAction[data-action=playRealTime]').hide();
 		$('.eqLogicAction[data-action=pauseRealTime]').show();
-		$('#mqttIncTopic').attr('disabled', '');
-		$('#mqttExcTopic').attr('disabled', '');
-		$('#mqttRetTopic').attr('disabled', '');
-		// Load Real Time Data every 3s if stopRealTimeMode button is visible
-		jmqtt_globals.refreshRealTime = setInterval(function() {
-				if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length == 0)
-					return;
-				jmqtt.getRealTimeData();
-			}, 2000);
+		$('#table_realtime thead input.form-control').attr('disabled', '');
 	}
+
+	// Display only relevant Real Time data
+	$('#table_realtime').find('tr.rtCmd[data-brkId!="' + id + '"]').hide();
+	$('#table_realtime').find('tr.rtCmd[data-brkId="' + id + '"]').show();
 }
 
 // Inform Jeedom to change Real Time mode
@@ -617,7 +588,8 @@ jmqtt.changeRealTimeMode = function(_id, _mode) {
 			id: _id,
 			subscribe: $('#mqttIncTopic').val(),
 			exclude: $('#mqttExcTopic').val(),
-			retained: $('#mqttRetTopic').is(':checked')
+			retained: $('#mqttRetTopic').is(':checked'),
+			duration: $('#mqttDuration').val()
 		}
 	});
 }
@@ -626,14 +598,14 @@ jmqtt.changeRealTimeMode = function(_id, _mode) {
 jmqtt.newRealTimeCmd = function(_data) {
 	var tr = '<tr class="rtCmd" data-brkId="' + _data.id + '"' + ((_data.id == jmqtt.getBrkId()) ? '' : ' style="display: none;"') + '>';
 	tr += '<td class="fitwidth"><span class="cmdAttr">' + (_data.date ? _data.date : '') + '</span></td>';
-	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic + '" disabled>';
-	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + _data.jsonPath + '" disabled></td>';
+	tr += '<td><input class="cmdAttr form-control input-sm" data-l1key="topic" style="margin-bottom:5px;" value="' + _data.topic.replace(/"/g, '&quot;') + '" disabled>';
+	tr += '<input class="cmdAttr form-control input-sm col-lg-11 col-md-10 col-sm-10 col-xs-10" style="float: right;" data-l1key="jsonPath" value="' + (_data.jsonPath ? _data.jsonPath : '') + '" disabled></td>';
 	tr += '<td><textarea class="cmdAttr form-control input-sm" data-l1key="payload" style="min-height:65px;" readonly=true disabled>' + _data.payload + '</textarea></td>';
 	tr += '<td align="center"><input class="cmdAttr form-control" data-l1key="qos" style="display:none;" value="' + _data.qos + '" disabled>';
 	if (_data.retain)
 		tr += '<i class="fas fa-database warning tooltips" title="{{Ce message est stocké sur le Broker (Retain)}}"></i>';
 	if (_data.retain && _data.existing)
-		tr += '<br /><br />';
+		tr += '<br/><br/>';
 	if (_data.existing)
 		tr += '<i class="fas fa-sign-in-alt fa-rotate-90 success tooltips" title="{{Ce topic est compatible avec le(s) équipement(s) :}}' + _data.existing + '"></i>';
 	tr += '</td><td align="right"><div class="input-group pull-right" style="display:inline-flex">';
@@ -655,27 +627,29 @@ jmqtt.getRealTimeData = function() {
 		return;
 	jmqtt_globals.lockRealTime = true;
 	var broker = jmqtt.getBrkId()
-	var _since = $('#table_realtime').attr('brk' + broker + 'since');
-	_since = ((_since == undefined) ? '' : _since);
+	var eqData = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id="' + broker + '"]')[0].dataset;
 	jmqtt.callPluginAjax({
 		data: {
 			action: "realTimeGet",
 			id: broker,
-			since: _since
+			since: (eqData.rtSince != undefined) ? eqData.rtSince : ''
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
 			jmqtt_globals.lockRealTime = false;
 		},
 		success: function (data) {
+			var since = '';
 			if (data.length > 0) {
-				var realtime = $('#table_realtime tbody');
+				var realtime = '';
 				for (var i in data) {
-					realtime.prepend(jmqtt.newRealTimeCmd(data[i]));
-					_since = data[i].date;
+					data[i].id = broker;
+					realtime = jmqtt.newRealTimeCmd(data[i]) + realtime;
+					since = data[i].date;
 				}
-				$('#table_realtime').attr('brk' + broker + 'since', _since);
+				$('#table_realtime tbody').prepend(realtime);
 			}
+			eqData.rtSince = since;
 			jmqtt_globals.lockRealTime = false;
 		}
 	});
@@ -718,11 +692,11 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 	var mainTopic = (topic[0] == '/' ? '/' : '') + eqName + '/#';
 
 	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br/><br/>';
 	dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br/><br/>';
 	dialog_message += '<label class="control-label checkbox-inline"><input type="checkbox" class="bootbox-input bootbox-checkbox-inline" id="addJmqttAuto"  checked/> ';
-	dialog_message += '{{Ajout automatique des nouvelles commandes sur cet équipement}}</label><br><br>';
+	dialog_message += '{{Ajout automatique des nouvelles commandes sur cet équipement}}</label><br/><br/>';
 
 	// Display new EqLogic modal
 	bootbox.confirm({
@@ -743,7 +717,7 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 
 			// Create a new eqLogic
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ {name: eqName, isEnable: '1', autoAddCmd: autoAdd, type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
@@ -766,11 +740,11 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('[', ':');
 
 	var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br/><br/>';
 	dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> '
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br><br>'
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br/><br/>'
 	dialog_message += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> '
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>'
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br/><br/>'
 
 	// Display new EqLogic modal
 	bootbox.confirm({
@@ -795,7 +769,7 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 
 			// Create a new eqLogic
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ {name: eqName, isEnable: '1', type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
@@ -828,9 +802,9 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 
 // Open modal to add a cmd from Real Time tab
 jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
-	var topicTab  = topic.split('/').filter(t => t.trim().length > 0);
+	var topicTab  = topic.replaceAll('"', '').split('/').filter(t => t.trim().length > 0);
 	topicTab.shift();
-	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('[', ':');
+	var cmdName   = topicTab.join(':') + jsonPath.replaceAll(']', '').replaceAll('"', '').replaceAll('[', ':');
 
 	// Build Object list for new cmd creation modal
 	jeedom.object.getUISelectList({
@@ -842,10 +816,10 @@ jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
 			var msg = '<table class="table table-condensed table-bordered" id="md_addJmqttCmdTable">';
 			msg += '<thead><tr><th style="width: 150px;">{{Objet}}</th><th style="width: 150px;">{{Equipement}}</th></tr></thead>';
 			msg += '<tbody><tr><td class="md_addJmqttCmdValObj">';
-			msg += '<select class="form-control">' + _objectsList + '</select>';
-			msg += '</td><td class="md_addJmqttCmdValeqL"></td></tr></tbody></table><br>';
+			msg += '<select class="form-control"><option value="">{{Aucun}}</option>' + _objectsList + '</select>';
+			msg += '</td><td class="md_addJmqttCmdValeqL"></td></tr></tbody></table><br/>';
 			msg += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> ';
-			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br><br>';
+			msg += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br/><br/>';
 			// Display new cmd creation modal with Eq selector
 			bootbox.confirm({
 				title: '{{Ajouter cette commande à un equipement existant}}',

@@ -55,19 +55,19 @@ textarea.eqLogicAttr.form-control.cert				{ font-family: "CamingoCode",monospace
  * @param jMQTT $eqL
  */
 function displayEqLogicCard($eqL) {
-	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">'; // TODO (low) Add data-eqLogic_type="jMQTT" when working
+	echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqL->getId() . '" jmqtt_type="' . $eqL->getType() . '">';
 	echo '<span class="hiddenAsTable"></span>';
 	if ($eqL->getType() == 'brk')
-		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_broker.svg" /><br>';
+		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_broker.svg" />';
 	else
-		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_.svg" /><br>';
+		echo '<img class="lazy" src="plugins/jMQTT/core/img/node_.svg" />';
 	echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
 	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }
 
 function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 	echo '<div class="eqLogicAction cursor ' . $class . '" data-action="' . $action . '">';
-	echo '<i class="fas ' . $fa_icon . '"></i><br><span>' . $action_name . '</span></div>'."\n";
+	echo '<i class="fas ' . $fa_icon . '"></i><br/><span>' . $action_name . '</span></div>'."\n";
 }
 ?>
 <div class="row row-overflow">
@@ -78,8 +78,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 		displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf', 'logoSecondary');
 		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'addJmqttBrk', 'logoSecondary');
 		displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT', 'logoSecondary');
-		if (isset($_GET['debug']))
-		// if ((log::getLogLevel('jMQTT') <= 100) || (config::byKey('debugMode', 'jMQTT', "0") === "1")) // || (isset($_GET['debug']))
+		if (isset($_GET['debug']) || config::byKey('debugMode', 'jMQTT', "0") === "1" /* || log::getLogLevel('jMQTT') <= 100 */)
 			displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT', 'logoSecondary');
 		displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT', 'logoSecondary');
 		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'addJmqttEq', 'logoSecondary');
@@ -101,7 +100,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 					echo '<div class="eqLogicThumbnailContainer">';
 					echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup>';
 					echo '<i class="fas fa-exclamation-triangle tooltips" title="';
-					echo '{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.}}<br>';
+					echo '{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.}}<br/>';
 					echo '{{Il ne devrait pas y avoir un seul orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
 					$has_orphans = true;
 				}
@@ -128,15 +127,15 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 		?>
 	</div>
 
-	<div class="col-xs-12 eqLogic" style="display: none;">
+	<div class="col-xs-12 eqLogic" data-eqLogic_type="jMQTT" style="display: none;">
 		<div class="row">
 			<div class="input-group pull-right" style="display:inline-flex">
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable" data-action="createTemplate" style="display: none;"><i class="fas fa-cubes"></i> {{Créer Template}}</a>
-				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable" data-action="applyTemplate" style="display: none;"><i class="fas fa-share"></i> {{Appliquer Template}}</a>
-				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable" data-action="updateTopics" style="display: none;"><i class="fas fa-pen"></i> {{Modifier Topics}}</a>
-				<a class="btn btn-primary btn-sm eqLogicAction typ-std" data-action="jsonPathTester"><i class="fas fa-check"></i> {{Testeur Chemin JSON}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i> {{Configuration avancée}}</a>
-				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable" data-action="copy" style="display: none;"><i class="fas fa-copy"></i> {{Dupliquer}}</a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable tooltips" data-action="createTemplate" style="display: none;" title="{{Créer Template}}"><i class="fas fa-cubes"></i></a>
+				<a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable tooltips" data-action="applyTemplate" style="display: none;" title="{{Appliquer Template}}"><i class="fas fa-share"></i></a>
+				<a class="btn btn-success btn-sm eqLogicAction typ-std toDisable tooltips" data-action="updateTopics" style="display: none;" title="{{Modifier Topics}}"><i class="fas fa-pen"></i></a>
+				<a class="btn btn-primary btn-sm eqLogicAction typ-std tooltips" data-action="jsonPathTester" style="display: none;" title="{{Testeur Chemin JSON}}"><i class="fas fa-check"></i></a>
+				<a class="btn btn-default btn-sm eqLogicAction typ-std toDisable tooltips" data-action="copy" style="display: none;" title="{{Dupliquer}}"><i class="fas fa-copy"></i></a>
+				<a class="btn btn-default btn-sm eqLogicAction tooltips" data-action="configure" title="{{Configuration avancée}}"><i class="fas fa-cogs"></i></a>
 				<a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
 				<a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>&nbsp;
 			</div>
@@ -146,7 +145,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 					<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
 					<li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
 					<li role="presentation" class="typ-std" style="display: none;"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
-					<li role="presentation" class="typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab"><i class="fas fa-align-left"></i> {{Temps Réel}}</a></li>
+					<li role="presentation" class="typ-std typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab" style="padding: 10px 14px;"><i class="fas fa-align-left"></i><span class="typ-brk" style="display: none;"> {{Temps Réel}}</span></a></li>
 					<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="refreshPage"><i class="fas fa-sync"></i></a></li>
 				</ul>
 			</div>
@@ -174,24 +173,29 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 					<thead style="position:sticky;top:0;z-index:5;">
 						<tr>
 							<td colspan="5" data-sorter="false" data-filter="false">
-								<label class="col-lg-1 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-								title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
-								<br />Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
-								<br />Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
 								<div class="col-lg-3">
-									<input class="form-control" id="mqttIncTopic">
+									<label class="col-lg-4 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
+										<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
+										<br/>Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
+									<input class="col-lg-8 form-control" id="mqttIncTopic">
 								</div>
-								<label class="col-lg-1 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-								title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
-								<br />Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
-								<br />Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
 								<div class="col-lg-3">
-									<input class="form-control" id="mqttExcTopic">
+									<label class="col-lg-4 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
+										<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
+										<br/>Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
+									<input class="col-lg-8 form-control" id="mqttExcTopic">
 								</div>
-								<label class="col-lg-1 control-label" style="text-align:right;">{{Retain}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-								title="{{Remonter aussi les payload retenus par le Broker.}}"></i></sup></label>
-								<div class="col-lg-1">
+								<div class="col-lg-2">
+									<label class="col-lg-8 control-label" style="text-align:right;">{{Retained}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Remonter aussi les payload retenus par le Broker.}}"></i></sup></label>
 									<input type="checkbox" class="form-control" id="mqttRetTopic" checked="false">
+								</div>
+								<div class="col-lg-2">
+									<label class="col-lg-6 control-label" style="text-align:right;">{{Durée}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
+										title="{{Le temps que le mode Temps Réel doit fonctionner en secondes [1-3600].}}"></i></sup></label>
+									<input class="col-lg-6 form-control" id="mqttDuration">
 								</div>
 								<div class="col-lg-2">
 									<div class="input-group pull-right">
@@ -228,14 +232,10 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 							<th style="min-width:180px;">{{Valeur}}</th>
 							<th style="min-width:100px;width:120px;">{{Paramètres}}</th>
 							<th style="min-width:100px;width:120px;">{{Options}}</th>
-							<th style="min-width:135px;width:135px;"></th>
-<!-- TODO (medium) Change when adding Advanced parameters
-							<th style="min-width:90px;width:100px;">{{Options}}</th>
-							<th style="min-width:160px;width:160px;"></th>
--->
+							<th style="min-width:115px;width:120px;"></th>
 						</tr>
 					</thead>
-					<tbody><!-- TODO (low) Limit the number of displayed lines (by pages of 25? 50? 100?) how? as handled by plugin.template -->
+					<tbody>
 					</tbody>
 				</table>
 			</div>

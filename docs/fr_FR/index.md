@@ -65,7 +65,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation, il suffit d'activer le plugin sur la page de configuration :
 
-![Configuration du plugin](../images/2023-04-10_config.png)
+![Configuration du plugin](../images/2023-04-15_config.png)
 
 Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
@@ -728,7 +728,7 @@ En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la recon
 
 ## Schéma du fonctionnement interne de jMQTT
 
-// TODO Schéma du fonctionnement interne/externe de jMQTT
+// TODO (low) Schéma du fonctionnement interne/externe de jMQTT
 
 -->
 # Registres des évolutions

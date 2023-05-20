@@ -22,21 +22,21 @@ if ($user != 'www-data' || !jeedom::isCapable('sudo')) {
 
 function export_writePidFile() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Writing PID file...");
-	mkdir(__DIR__.'/../data/backup/', 0777, true);
-	file_put_contents(__DIR__.'/../data/backup/backup.pid', posix_getpid());
+	mkdir(__DIR__ . '/../' . jMQTT::PATH_BACKUP, 0777, true);
+	file_put_contents(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup.pid', posix_getpid());
 	print("                                  [ OK ]\n");
 }
 
 function export_deletePidFile() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Removing PID file...");
-	shell_exec(system::getCmdSudo().'rm -rf '.__DIR__.'/../data/backup/backup.pid 2>&1 > /dev/null');
+	shell_exec(system::getCmdSudo().'rm -rf '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup.pid 2>&1 > /dev/null');
 	print("                                 [ OK ]\n");
 }
 
 // Check if another backup is already running
 function export_isRunning() {
-	if (file_exists(__DIR__.'/../data/backup/backup.pid')) {
-		$runing_pid = file_get_contents(__DIR__.'/../data/backup/backup.pid');
+	if (file_exists(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup.pid')) {
+		$runing_pid = file_get_contents(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup.pid');
 		if (@posix_getsid($runing_pid) !== false)
 			return true; // PID is running
 		export_deletePidFile();
@@ -48,9 +48,9 @@ function export_isRunning() {
 function export_cleanup($limit = 5) { // 5 backups max
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Cleaning up... ");
 	// Remove leftovers of a previously running backup
-	shell_exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../data/backup/jMQTT_backingup.tgz '.__DIR__.'/../data/backup/backup 2>&1 > /dev/null');
+	shell_exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'jMQTT_backingup.tgz '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup 2>&1 > /dev/null');
 	// Search for existing backups
-	$backup_files = glob(__DIR__.'/../data/backup/jMQTT_*_*.tgz');
+	$backup_files = glob(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'jMQTT_*_*.tgz');
 	// Only if more backups than the limit
 	if (count($backup_files) <= $limit) {
 		print("                                      [ OK ]\n");
@@ -69,7 +69,7 @@ function export_cleanup($limit = 5) { // 5 backups max
 
 function export_prepare() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Preparing to backup...");
-	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup 2>&1 > /dev/null');
+	shell_exec('mkdir -p '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup 2>&1 > /dev/null');
 	print("                               [ OK ]\n");
 }
 
@@ -191,16 +191,16 @@ function export_history($_filename) {
 // [-P] backup jMQTT plugin dir
 function export_folder() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up jMQTT folder...");
-	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup/jMQTT 2>&1 > /dev/null');
-	shell_exec("tar -cf - -C ".__DIR__."/.. --exclude './data/backup/*' --exclude './.git' . | tar -xC ".__DIR__."/../data/backup/backup/jMQTT 2>&1 > /dev/null");
+	shell_exec('mkdir -p '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/jMQTT 2>&1 > /dev/null');
+	shell_exec("tar -cf - -C ".__DIR__."/.. --exclude './" . jMQTT::PATH_BACKUP . "*' --exclude './.git' . | tar -xC ".__DIR__."/../" . jMQTT::PATH_BACKUP . "backup/jMQTT 2>&1 > /dev/null");
 	print("                           [ OK ]\n");
 }
 
 // [-L] backup jMQTT logs
 function export_logs() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up jMQTT log files...");
-	shell_exec('mkdir -p '.__DIR__.'/../data/backup/backup/logs 2>&1 > /dev/null');
-	shell_exec('cp -a '.__DIR__.'/../../../log/jMQTT* '.__DIR__.'/../data/backup/backup/logs 2>&1 > /dev/null');
+	shell_exec('mkdir -p '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/logs 2>&1 > /dev/null');
+	shell_exec('cp -a '.__DIR__.'/../../../log/jMQTT* '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/logs 2>&1 > /dev/null');
 	print("                        [ OK ]\n");
 }
 
@@ -208,8 +208,8 @@ function export_logs() {
 function export_mosquitto() {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Backing up Mosquitto config...");
 	// do not put trailing '/' after mosquitto
-	shell_exec(system::getCmdSudo().'cp -a /etc/mosquitto '.__DIR__.'/../data/backup/backup 2>&1 > /dev/null');
-	shell_exec(system::getCmdSudo().'chown -R www-data:www-data '.__DIR__.'/../data/backup/backup/mosquitto');
+	shell_exec(system::getCmdSudo().'cp -a /etc/mosquitto '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup 2>&1 > /dev/null');
+	shell_exec(system::getCmdSudo().'chown -R www-data:www-data '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/mosquitto');
 	print("                       [ OK ]\n");
 }
 
@@ -247,9 +247,9 @@ function export_metadata($packages = []) {
 function export_archive() {
 	$date = date("Ymd_His");
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Creating archive jMQTT_".$date.".tgz...");
-	shell_exec(system::getCmdSudo().'tar -zcf '.__DIR__.'/../data/backup/jMQTT_backingup.tgz -C '.__DIR__.'/../data/backup backup/');
-	shell_exec(system::getCmdSudo().'chown www-data:www-data '.__DIR__.'/../data/backup/jMQTT_backingup.tgz');
-	shell_exec('mv '.__DIR__.'/../data/backup/jMQTT_backingup.tgz '.__DIR__.'/../data/backup/jMQTT_'.$date.'.tgz');
+	shell_exec(system::getCmdSudo().'tar -zcf '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'jMQTT_backingup.tgz -C '.__DIR__.'/../' . jMQTT::PATH_BACKUP . ' backup/');
+	shell_exec(system::getCmdSudo().'chown www-data:www-data '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'jMQTT_backingup.tgz');
+	shell_exec('mv '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'jMQTT_backingup.tgz '.__DIR__.'/../' . jMQTT::PATH_BACKUP . 'jMQTT_'.$date.'.tgz');
 	print("        [ OK ]\n");
 }
 
@@ -295,17 +295,17 @@ function backup_main() {
 	$packages = array();
 
 	if (isset($options['all']) || isset($options['I'])) {
-		file_put_contents(__DIR__.'/../data/backup/backup/index.json', json_encode(export_index(), JSON_UNESCAPED_UNICODE));
+		file_put_contents(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/index.json', json_encode(export_index(), JSON_UNESCAPED_UNICODE));
 		$packages[] = 'index';
 	}
 
 	if (isset($options['all']) || isset($options['D'])) {
-		file_put_contents(__DIR__.'/../data/backup/backup/data.json', json_encode(export_data(), JSON_UNESCAPED_UNICODE));
+		file_put_contents(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/data.json', json_encode(export_data(), JSON_UNESCAPED_UNICODE));
 		$packages[] = 'data';
 	}
 
 	if (isset($options['all']) || isset($options['H'])) {
-		export_history(__DIR__.'/../data/backup/backup/history.json');
+		export_history(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/history.json');
 		$packages[] = 'history';
 	}
 
@@ -328,7 +328,7 @@ function backup_main() {
 		}
 	}
 
-	file_put_contents(__DIR__.'/../data/backup/backup/metadata.json', json_encode(export_metadata($packages), JSON_UNESCAPED_UNICODE));
+	file_put_contents(__DIR__.'/../' . jMQTT::PATH_BACKUP . 'backup/metadata.json', json_encode(export_metadata($packages), JSON_UNESCAPED_UNICODE));
 
 	if (isset($options['all']) || isset($options['A']))
 		export_archive();

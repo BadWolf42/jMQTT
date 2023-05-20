@@ -65,7 +65,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation, il suffit d'activer le plugin sur la page de configuration :
 
-![Configuration du plugin](../images/2023-04-10_config.png)
+![Configuration du plugin](../images/2023-04-15_config.png)
 
 Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
@@ -79,7 +79,7 @@ C'est tout pour la configuration générale, passons aux équipements.
 # Gestion des équipements
 
 Dans Jeedom, dès que l'on souhaite récupérer ou interagir avec quelque chose, il faut créer un équipement.
-Donc, il faut créer un équipement dans jMQTT pour récupérer des données envoyées par d'autre Clients via un Broker.
+Donc, il faut créer un équipement dans jMQTT pour récupérer des données envoyées par d'autres Clients via un Broker.
 
 Le plugin jMQTT est disponible dans le menu : `Plugins → Protocole domotique → jMQTT`.
 
@@ -144,7 +144,7 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../images/2022-12-23_eqpt_broker.png)
+![Configuration du Broker](../images/2023-05-20_eqpt_broker.png)
 
 Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
 
@@ -202,9 +202,9 @@ Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des mess
 
 La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2022-11-26_broker_realtime.png)
+![Mode Temps Réel](../images/2023-05-20_broker_realtime.png)
 
-Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel et si les messages retenus par le Broker doivent être inclus dans le Temps Réel (encadré 1).
+Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel, si les messages retenus par le Broker doivent être inclus dans le Temps Réel et la durée d'activation (encadré 1).
 
 Le mode temps réel s’active, pour le Broker concerné, en cliquant sur le bouton *Mode Temps Réel* en haut à droite sur l'équipement Broker et se désactive en recliquant sur le même bouton (encadré 2), ou automatiquement après environ 3 minutes.
 
@@ -235,27 +235,18 @@ Il est possible d'envoyer en MQTT des demandes d'interaction à Jeedom au traver
 
 ## Equipement
 
-Le plugin souscrit auprès du Broker le topic configuré dans [l'onglet Broker](#onglet-Broker) (\# par défaut, i.e. tous les topics) de l'équipement Broker concerné. 
+Les **équipements "classiques"** portent les commandes info qui récupéreront des données envoyées par d'autres Clients via un Broker, ou les commandes action qui enverront des messages vers ce Broker.
 
-Prenons comme exemple les messages MQTT suivants :
+3 onglets sont présents sur les équipements :
 
-    boiler/brand "viesmann"
-    boiler/burner 0
-    boiler/temp 70.0
+  - Equipement, permet la confguration de base de l'équipement lui-même,
+  - Commandes, recense toutes les commandes de équipement,
+  - L'icone Temps Réel, permets d'accéder à la page Temps Réel du Broker auquel cet équipement est rattaché.
 
-A l’arrivée du premier message, le plugin crée automatiquement un équipement nommé *boiler*. Nous verrons dans la section [Onglet Commandes](#onglet-commandes) que, par défaut, il créé aussi les informations associées à chaque message.
-
-> **Tip**
->
-> Le mode Temps Réel n’influe que sur la création de l’équipement, et pas sur la création des informations associées, qui dépend du paramètre *Ajout automatique des commandes* que nous verrons dans le chapitre suivant.
-
-> **Note**
->
-> Une fois les équipements découverts, il est conseillé de quitter le mode automatique pour éviter la création d’équipements non souhaités, notamment dans les situations suivantes : publication de messages (si un équipement Broker reste souscrit à tous les topics, il écoutera ses propres publications), essais avec le Broker, tests de nouveaux équipements, …​
 
 ### Onglet Equipement
 
-![Onglet principal d'un Equipement](../images/2023-04-10_eqpt_equipement.png)
+![Onglet principal d'un Equipement](../images/2023-05-20_eqpt_equipement.png)
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
@@ -275,7 +266,7 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
 
 Concernant les boutons en haut à droite :
 
-![Boutons sur un Equipement](../images/2022-10-26_eqpt_buttons.png)
+![Boutons sur un Equipement](../images/2023-05-20_eqpt_buttons.png)
 
   - `Créer template` permet de [Créer un template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
   - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
@@ -401,7 +392,7 @@ Si nous rebasculons dans la vue JSON, nous obtenons alors :
 
 Les commandes de type action permettent au plugin jMQTT de publier des messages vers le Broker MQTT. Pour cela, créer une commande via le bouton *+ Ajouter une commande action* et remplir les champs selon le besoin :
 
-![Commande Action](../images/2023-04-10_cmd_action.png)
+![Commande Action](../images/2023-05-20_cmd_action.png)
 
   - Nom: champ libre ;
   - Valeur par défaut de la commande: pour lier la valeur de la commande affichée sur le dashboard à une commande de type Information (exemple [ici](https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740)) ;
@@ -416,7 +407,7 @@ Les commandes de type action permettent au plugin jMQTT de publier des messages 
 
 Les configurations suivantes :
 
-![Commande Action sous-type Defaut](../images/2023-04-10_cmd_action_default.png)
+![Commande Action sous-type Defaut](../images/2023-05-20_cmd_action_default.png)
 
 Publieront respectivement :
 
@@ -432,7 +423,7 @@ Publieront respectivement :
 
 Les configurations suivantes publieront la valeur saisie via un widget de type curseur :
 
-![Commande Action sous-type Curseur](../images/2023-04-10_cmd_action_slider.png)
+![Commande Action sous-type Curseur](../images/2023-05-20_cmd_action_slider.png)
 
 Soit respectivement, en supposant que la valeur du curseur est 50 :
 
@@ -450,7 +441,7 @@ Soit respectivement, en supposant que la valeur du curseur est 50 :
 
 Les configurations suivantes publieront la valeur saisie via un widget de type message :
 
-![Commande Action sous-type Message](../images/2023-04-10_cmd_action_message.png)
+![Commande Action sous-type Message](../images/2023-05-20_cmd_action_message.png)
 
 Pour un message dont le titre est `ecs` et le contenu est `50`, la première publiera :
 
@@ -468,7 +459,7 @@ Pour un message dont le titre est `test` et le contenu est `Lumière entrée all
 
 La configuration suivante publiera le code couleur sélectionnée via un widget sélecteur de couleur :
 
-![Commande Action sous-type Couleur](../images/2023-04-10_cmd_action_color.png)
+![Commande Action sous-type Couleur](../images/2023-05-20_cmd_action_color.png)
 
 Pour une couleur rouge clair sélectionnée :
 
@@ -483,7 +474,7 @@ Pour une couleur rouge clair sélectionnée :
 
 La configuration suivante publiera la valeur sélectionnée grâce à la liste de choix d'un widget liste :
 
-![Commande Action sous-type Liste](../images/2023-04-10_cmd_action_select.png)
+![Commande Action sous-type Liste](../images/2023-05-20_cmd_action_select.png)
 
 Soit respectivement, en supposant que la valeur sélectionnée sur le widget est "Auto" :
 
@@ -550,7 +541,7 @@ Les templates conservent toutes les commandes d'origine, leurs configurations et
 
 Dans un permier temps, il est possible de [créer](#création-dun-template-depuis-un-équipement) ou d'[appliquer](#application-dun-template-sur-un-équipement) un template à un équipement existant, celà se passe directement sur un équipement :
 
-![Boutons sur un Equipement](../images/2022-10-26_eqpt_buttons.png)
+![Boutons sur un Equipement](../images/2023-05-20_eqpt_buttons.png)
 
 Ensuite, le gestionnaire de Template est présent dans la section *Gestion* de la page principale du plugin. Il permet d'ajouter, de télécharger et de supprimer des templates et d'en visualiser les commandes.
 
@@ -728,7 +719,7 @@ En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la recon
 
 ## Schéma du fonctionnement interne de jMQTT
 
-// TODO Schéma du fonctionnement interne/externe de jMQTT
+// TODO (low) Schéma du fonctionnement interne/externe de jMQTT
 
 -->
 # Registres des évolutions

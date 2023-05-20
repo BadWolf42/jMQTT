@@ -46,6 +46,7 @@ function jMQTT_update($_direct=true) {
 		$pluginVersion = 0;
 	}
 
+	config::save('previousVersion', config::byKey('version', 'jMQTT', 'unknown'), 'jMQTT');
 	$version = @intval(config::byKey('version', 'jMQTT', $pluginVersion));
 
 	while (++$version <= $pluginVersion) {
@@ -57,10 +58,10 @@ function jMQTT_update($_direct=true) {
 				log::add('jMQTT', 'debug', sprintf(__("Version %d : Modifications appliquées", __FILE__), $version));
 			}
 		} catch (Throwable $e) {
-			log::add('jMQTT', 'error', str_replace("\n",' <br /> ',
-				sprintf(__("Version %1\$d : Exception lors de l'application des modifications : %2\$s", __FILE__).
-					"<br />@Stack: %3\$s,<br />@BrkId: %4\$s.",
-					$version, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
+			log::add('jMQTT', 'error', str_replace("\n",'<br/>',
+				sprintf(__("Version %1\$d : Exception lors de l'application des modifications : %2\$s", __FILE__)."<br/>@Stack: %3\$s.",
+						$version, $e->getMessage(), $e->getTraceAsString())
+			));
 		}
 	}
 

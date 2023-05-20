@@ -21,7 +21,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 	bootbox.prompt("{{Nom du nouveau broker ?}}", function (result) {
 		if (result !== null) {
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
@@ -56,14 +56,14 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 	var dialog_message = '<label class="control-label">{{Choisissez un broker :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
 	$.each(jmqtt_globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
-	dialog_message += '</select><br>';
+	dialog_message += '</select><br/>';
 	dialog_message += '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName"><br/><br/>';
 	dialog_message += '<label class="control-label">{{Utiliser un template :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttTplSelector">';
-	dialog_message += '</select><br>';
+	dialog_message += '</select><br/>';
 	dialog_message += '<label class="control-label" style="display:none;" id="addJmqttTplText">{{Saisissez le Topic de base :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" style="display:none;" autocomplete="nope" type="text" id="addJmqttTplTopic"><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" style="display:none;" autocomplete="nope" type="text" id="addJmqttTplTopic"><br/>';
 	bootbox.confirm({
 		title: "{{Ajouter un nouvel équipement}}",
 		message: dialog_message,
@@ -85,7 +85,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 				return false;
 			}
 			jeedom.eqLogic.save({
-				type: eqType,
+				type: 'jMQTT',
 				eqLogics: [ $.extend({name: eqName}, {type: 'eqpt', eqLogic: broker}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
@@ -144,13 +144,16 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
 //
+
+/* // TODO (low) UNUSED Check if should be removed
 $("#table_cmd").delegate(".listEquipementAction", 'click', function() {
 	var el = $(this);
 	jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
-		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.attr('data-input') + ']');
+		var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
 		calcul.value(result.human);
 	});
 });
+*/
 
 $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 	var el = $(this);
@@ -276,12 +279,12 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=stopRealTimeMode]',
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=playRealTime]', function() {
 	// Restarts Real Time mode view
-	jmqtt.updateRealTimeButtons(true, true, false);
+	jmqtt.updateRealTimeTab(jmqtt.getBrkId(), false);
 });
 
 $('#table_realtime').on('click', '.eqLogicAction[data-action=pauseRealTime]', function() {
 	// Pause Real Time mode view
-	jmqtt.updateRealTimeButtons(true, true, true);
+	jmqtt.updateRealTimeTab(jmqtt.getBrkId(), true);
 });
 
 // Button to empty RealTime view
@@ -297,7 +300,7 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 			$.fn.showAlert({message: error.message, level: 'danger'});
 		},
 		success: function (data) {
-			$('#table_realtime tbody .rtCmd[data-brkid=' + broker + ']').remove();
+			$('#table_realtime tbody .rtCmd[data-brkId=' + broker + ']').remove();
 		}
 	});
 })
@@ -385,6 +388,18 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblc
 	}
 });
 
+// On eqLogic logo field change
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').off('change').on('change', function(e) {
+	// Initialize once the Logo dropbox from logos global table
+	// Get icon name
+	var elt = ($('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() == 'broker') ? 'broker' : $(this).select().val();
+	// Get icon file
+	var logo = (elt == undefined) ? 'plugins/jMQTT/core/img/node_.svg' : 'plugins/jMQTT/core/img/node_' + elt + '.svg';
+	if ($("#logo_visu").attr("src") != logo) {
+		$("#logo_visu").attr("src", logo);
+	}
+});
+
 // Configure the sortable functionality of the commands array
 $("#table_cmd").sortable({axis: "y", cursor: "move", items: ".cmd", placeholder: "ui-state-highlight", tolerance: "intersect", forcePlaceholderSize: true});
 
@@ -408,7 +423,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 			var dialog_message = '<label class="control-label">{{Choisissez un template :}}</label> ';
 			dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="applyTemplateSelector">';
 			for(var i in dataresult){ dialog_message += '<option value="'+dataresult[i][0]+'">'+dataresult[i][0]+'</option>'; }
-			dialog_message += '</select><br>';
+			dialog_message += '</select><br/>';
 
 			dialog_message += '<label class="control-label">{{Saisissez le Topic de base :}}</label> ';
 			var currentTopic = jmqtt_globals.mainTopic;
@@ -416,7 +431,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
 			if (currentTopic.endsWith("/"))
 				currentTopic = currentTopic.substr(0,currentTopic.length-1);
-			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br><br>'
+			dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br/><br/>'
 			dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ';
 			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label></div>';
 			dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="0">' + "{{Les supprimer d'abord}}" + '</label></div>';
@@ -472,9 +487,9 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
 		currentTopic = currentTopic.substr(0,currentTopic.length-1);
 	if (currentTopic.endsWith("/"))
 		currentTopic = currentTopic.substr(0,currentTopic.length-1);
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="oldTopic" value="'+currentTopic+'"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="oldTopic" value="'+currentTopic+'"><br/><br/>';
 	dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
-	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="newTopic"><br><br>';
+	dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="newTopic"><br/><br/>';
 	dialog_message += '<label class="control-label">(' + "{{Pensez à sauvegarder l'équipement pour appliquer les modifications}}" + ')</label>';
 	bootbox.confirm({
 		title: "{{Modifier en masse les Topics de tout l'équipement}}",
@@ -869,17 +884,17 @@ function addCmdToTable(_cmd) {
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
 		tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:60px;display:inline-block;">';
 		tr += '</td><td>';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br/> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br/> ';
 		tr += '</td><td align="right">';
 // TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="configure" title="{{Configurer}}"><i class="fas fa-cogs"></i></a> ';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="test" title="{{Tester}}"><i class="fas fa-rss"></i></a> ';
 		}
-		tr += '&nbsp; &nbsp; <i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+		tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
@@ -955,7 +970,7 @@ function addCmdToTable(_cmd) {
 		tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
 		tr += '</td>';
 		tr += '<td>';
-		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="min-height:62px;margin-top:14px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br />';
+		tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" style="min-height:62px;margin-top:14px;"' + disabled + ' placeholder="{{Topic}}"></textarea><br/>';
 		tr += '</td><td>';
 		tr += '<div class="input-group">';
 		tr += '<textarea class="cmdAttr form-control input-sm roundedLeft" data-l1key="configuration" data-l2key="request" ' + disabled + ' style="min-height:62px;height:62px;" placeholder="Valeur"></textarea>';
@@ -966,20 +981,20 @@ function addCmdToTable(_cmd) {
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
 		tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte}}" title="{{Liste : valeur|texte (séparées entre elles par des points-virgules)}}">';
 		tr += '</td><td>';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br /> ';
-		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br /> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
+		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br/> ';
 		tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;';
-		tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br />(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br /> ';
+		tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br/>(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br/> ';
 		tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
 		tr += '</td>';
 		tr += '<td align="right">';
 // TODO (medium) Change when adding Advanced parameters
 		// tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
 		if (is_numeric(_cmd.id)) {
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> ';
-			tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> {{Tester}}</a>';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="configure" title="{{Configurer}}"><i class="fas fa-cogs"></i></a> ';
+			tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="test" title="{{Tester}}"><i class="fas fa-rss"></i></a> ';
 		}
-		tr += '&nbsp; &nbsp; <i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
+		tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove"></i>';
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
@@ -1136,13 +1151,14 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 		return;
 	// Display an alert if real time mode has changed on this Broker
 	jmqtt.displayRealTimeEvent(_eq);
+	// Update card on main page
+	jmqtt.updateDisplayCard(card, _eq);
 	// Update Panel and menu only when on the right Broker
 	if (jmqtt.getEqId() == _eq.id)
 		jmqtt.updateBrokerTabs(_eq);
-	else if (jmqtt.getBrkId() == _eq.id)
-		jmqtt.updateRealTimeButtons(_eq.isEnable == '1', _eq.cache.realtime_mode == '1', false);
-	// Update card on main page
-	jmqtt.updateDisplayCard(card, _eq);
+	else if (jmqtt.getBrkId() == _eq.id) {
+		jmqtt.updateRealTimeTab(_eq.id, false);
+	}
 });
 
 
@@ -1160,7 +1176,7 @@ $(document).ready(function() {
 	// update DisplayCards on main page at load
 	//
 	jeedom.eqLogic.byType({
-		type: eqType,
+		type: 'jMQTT',
 		noCache: true,
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'warning'});

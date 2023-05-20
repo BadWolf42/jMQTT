@@ -18,7 +18,7 @@
 require_once __DIR__ . '/../../../../core/php/core.inc.php';
 require_once __DIR__ . '/../../resources/mosquitto_topic_matches_sub.php';
 
-//
+// Load JsonPath-PHP library
 if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
 	require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
 
@@ -26,6 +26,7 @@ include_file('core', 'mqttApiRequest', 'class', 'jMQTT');
 include_file('core', 'jMQTTCmd', 'class', 'jMQTT');
 
 class jMQTT extends eqLogic {
+	// TODO (low) use trait to simplify this class -> Need PHP 8.2.0 (consts)
 
 	const FORCE_DEPENDANCY_INSTALL      = 'forceDepInstall';
 
@@ -40,6 +41,7 @@ class jMQTT extends eqLogic {
 
 	const CONF_KEY_TYPE                 = 'type';
 	const CONF_KEY_BRK_ID               = 'eqLogic';
+	const CONF_KEY_JMQTT_UUID           = 'installUUID';
 	const CONF_KEY_MQTT_ADDRESS         = 'mqttAddress';
 	const CONF_KEY_MQTT_PORT            = 'mqttPort';
 	const CONF_KEY_MQTT_WS_URL          = 'mqttWsUrl';
@@ -81,7 +83,9 @@ class jMQTT extends eqLogic {
 	const CACHE_REALTIME_INC_TOPICS     = 'mqttIncTopic';
 	const CACHE_REALTIME_EXC_TOPICS     = 'mqttExcTopic';
 	const CACHE_REALTIME_RET_TOPICS     = 'mqttRetTopic';
+	const CACHE_REALTIME_DURATION       = 'mqttDuration';
 
+	const PATH_BACKUP                   = 'data/backup/';
 	const PATH_TEMPLATES_PERSO          = 'data/template/';
 	const PATH_TEMPLATES_JMQTT          = 'core/config/template/';
 
@@ -221,74 +225,6 @@ class jMQTT extends eqLogic {
 			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
 		}
 		return array();
-	}
-
-	/**
-	 * Split topic and jsonPath of all commands for the template file.
-	 * @param string $_filename template name to look for.
-	 */
-	public static function templateSplitJsonPathByFile($_filename = '') {
-
-		try {
-			[$templateKey, $templateValue] = self::templateRead(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename);
-
-			// Keep track of any change
-			$changed = false;
-
-			// if 'commands' key exists in this template
-			if (isset($templateValue['commands'])) {
-
-				// for each keys under 'commands'
-				foreach ($templateValue['commands'] as &$cmd) {
-
-					// if 'configuration' key exists in this command
-					if (isset($cmd['configuration'])) {
-
-						// get the topic if it exists
-						$topic = (isset($cmd['configuration']['topic'])) ? $cmd['configuration']['topic'] : '';
-
-						$i = strpos($topic, '{');
-						if ($i === false) {
-							// Just set empty jsonPath if it doesn't exists
-							if (!isset($cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH])) {
-								$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = '';
-								$changed = true;
-							}
-						} else {
-							$changed = true;
-							// Set cleaned Topic
-							$cmd['configuration']['topic'] = substr($topic, 0, $i);
-
-							// Split old json path
-							$indexes = substr($topic, $i);
-							$indexes = str_replace(array('}{', '{', '}'), array('|', '', ''), $indexes);
-							$indexes = explode('|', $indexes);
-
-							$jsonPath = '';
-							// For each part of the path
-							foreach ($indexes as $index) {
-								// if this part contains a special character, escape it
-								if (preg_match('/[^\w-]/', $index) !== false)
-									$jsonPath .= '[\'' . str_replace("'", "\\'", $index) . '\']';
-								else
-									$jsonPath .= '[' . $index . ']';
-							}
-							$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = $jsonPath;
-						}
-					}
-				}
-			}
-
-			// Don't write anything if no change was made
-			if (!$changed)
-				return;
-
-			// Save back template in the file
-			$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-			file_put_contents(__DIR__ . '/../../' . self::PATH_TEMPLATES_PERSO . $_filename, $jsonExport);
-		} catch (Throwable $e) {
-			throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $_filename));
-		}
 	}
 
 	/**
@@ -505,8 +441,6 @@ class jMQTT extends eqLogic {
 			throw new Exception(__("Le fichier template est en-dehors de Jeedom.", __FILE__));
 		if (!file_exists($template_path))
 			throw new Exception(__("Le fichier template n'a pas pu être trouvé.", __FILE__));
-		// Convert on the fly template to jsonPath if needed
-		self::templateSplitJsonPathByFile($template_path);
 
 		// Locate the expected broker, if not found then raise !
 		$brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);
@@ -642,7 +576,7 @@ class jMQTT extends eqLogic {
 	 */
 	public static function full_export($clean=false) {
 		$returns = array();
-		foreach (eqLogic::byType('jMQTT') as $eq) {
+		foreach (eqLogic::byType(__CLASS__) as $eq) {
 			$exp = $eq->toArray();
 			$obj_name = (is_object($eq->getObject())) ? $eq->getObject()->getName() : __('Aucun', __FILE__);
 			$exp['name'] = $obj_name.':'.$exp['name'];
@@ -856,7 +790,7 @@ class jMQTT extends eqLogic {
 			if (is_null($this->_preSaveInformations)) {
 
 				// Create log of this broker
-				config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', 'jMQTT');
+				config::save('log::level::' . $this->getMqttClientLogFile(), '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}', __CLASS__);
 
 				// Create status and connected cmds
 				$this->getMqttClientStatusCmd(true);
@@ -1090,7 +1024,7 @@ class jMQTT extends eqLogic {
 			if (file_exists(log::getPathToLog($log))) {
 				unlink(log::getPathToLog($log));
 			}
-			config::remove('log::level::' . $log, 'jMQTT');
+			config::remove('log::level::' . $log, __CLASS__);
 			@cache::delete('jMQTT::' . $this->getId() . '::' . self::CACHE_MQTTCLIENT_CONNECTED);
 
 			// Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
@@ -1184,15 +1118,21 @@ class jMQTT extends eqLogic {
 		$data = array();
 		$data['version'] = 1;
 		$data['hardwareKey'] = jeedom::getHardwareKey();
+		// Ensure system unicity using a rotating UUID
+		$data['lastUUID'] = config::byKey(self::CONF_KEY_JMQTT_UUID, __CLASS__, $data['hardwareKey']);
+		$data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes('107'), true));
 		$data['hardwareName'] = jeedom::getHardwareName();
-		$data['distrib'] = system::getDistrib();
+		// TODO (low) Detect VM and docker
+		$data['distrib'] = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
 		$data['phpVersion'] = phpversion();
+		// TODO (low) Add Python version
 		$data['jeedom'] = jeedom::version();
 		$data['lang'] = config::byKey('language', 'core', 'fr_FR');
-		$jplugin = update::byLogicalId('jMQTT');
+		$jplugin = update::byLogicalId(__CLASS__);
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
-		$data['configVersion'] = config::byKey('version', 'jMQTT', -1);
+		$data['configVersion'] = config::byKey('version', __CLASS__, -1);
+		// TODO (low) Add int nb eqBroker, eqLogic & cmd
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
 			$data['removeMe'] = true;
@@ -1216,6 +1156,7 @@ class jMQTT extends eqLogic {
 			// Could not send or invalid data
 			self::logger('debug', sprintf(__('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__), $result));
 		} else {
+			config::save(self::CONF_KEY_JMQTT_UUID, $data['UUID'], __CLASS__);
 			if ($data['removeMe']) {
 				self::logger('info', __('Données statistiques supprimées', __FILE__));
 				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
@@ -1269,8 +1210,8 @@ class jMQTT extends eqLogic {
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
-		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 135) {
-			self::logger('debug', __('Pas de message ou de Heartbeat reçu depuis >135s, le Démon est probablement mort.', __FILE__));
+		if (time() - (@cache::byKey('jMQTT::'.self::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 300) {
+			self::logger('debug', __('Pas de message ou de Heartbeat reçu depuis >300s, le Démon est probablement mort.', __FILE__));
 			self::deamon_stop(); // Cleanup and put jmqtt in a good state
 			return false;
 		}
@@ -1330,6 +1271,8 @@ class jMQTT extends eqLogic {
 		self::logger('info', __('Démarrage du démon jMQTT', __FILE__));
 		// Always stop first.
 		self::deamon_stop();
+		// Ensure cron is enabled (removing the key or setting it to 1 is equivalent to enabled)
+		config::remove('functionality::cron::enable', __CLASS__);
 		// Check if daemon is launchable
 		$dep_info = self::dependancy_info();
 		if ($dep_info['state'] != self::CLIENT_OK) {
@@ -1480,7 +1423,7 @@ class jMQTT extends eqLogic {
 		self::listenersAddAll();
 		// Prepare and send initial data
 		// TODO (high) Edit Daemon to be enable to receive this information
-		// $returns = self::full_export(true); // FIX ME there is only a jMQTT->full_export() no static one !!!
+		// $returns = self::full_export(true); // TODO (low) FIXME: there is only a jMQTT->full_export() no static one !!!
 		// TODO (code idea) use array_filter on each level of the array?
 		// return json_encode($returns, JSON_UNESCAPED_UNICODE);
 	}
@@ -1515,8 +1458,8 @@ class jMQTT extends eqLogic {
 				if (log::getLogLevel(__CLASS__) > 100)
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
-					self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"<br />@Stack: %3\$s,<br />@BrkId: %4\$s.",
+					self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -1649,7 +1592,7 @@ class jMQTT extends eqLogic {
 		} else {
 			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
 			if (count($output) > 0) {
-				self::logger('error', __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).' <br />'.implode('<br />', $output));
+				self::logger('error', __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).' <br/>'.implode('<br/>', $output));
 				$return['state'] = self::CLIENT_NOK;
 			}
 		}
@@ -1667,9 +1610,22 @@ class jMQTT extends eqLogic {
 		$depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/dependancy';
 
 		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
-		log::remove($depLogFile);
+
+		$update = update::byLogicalId(__CLASS__);
+		shell_exec(
+			'echo "\n\n================================================================================\n'.
+			'== Jeedom '.jeedom::version().' '.jeedom::getHardwareName().
+			' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'.
+			'$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'.
+			'== $(python3 -VV | xargs echo -n)\n'.
+			'== '.__CLASS__.' v'.config::byKey('version', __CLASS__, 'unknown', true).
+			' ('.$update->getLocalVersion().') branch:'.$update->getConfiguration()['version'].
+			' previously:v'.config::byKey('previousVersion', __CLASS__, 'unknown', true).
+			'" >> '.log::getPathToLog($depLogFile)
+		);
+
 		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
+			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile,
 			'log' => log::getPathToLog($depLogFile)
 		);
 	}
@@ -1689,9 +1645,9 @@ class jMQTT extends eqLogic {
 				// Checking for Mosquitto installed in Docker by MQTT Manager
 				if (is_object(update::byLogicalId('mqtt2')) && plugin::byId('mqtt2')->isActive() && config::byKey('mode', 'mqtt2', 'NotThere') == 'docker') {
 					// Plugin Active and mqtt2 mode is docker
+					$res['by'] = __('MQTT Manager (en docker)', __FILE__);
 					$res['message'] = __('Mosquitto est installé <b>en docker</b> par', __FILE__);
 					$res['message'] .= ' <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">' . __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
-					$res['by'] = __('MQTT Manager (en docker)', __FILE__);
 				}
 			} catch (Throwable $e) {}
 			return $res;
@@ -1714,13 +1670,22 @@ class jMQTT extends eqLogic {
 			$res['by'] = __('MQTT Manager (en local)', __FILE__);
 			$res['message'] = __('Mosquitto est installé par', __FILE__);
 			$res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=mqtt2">';
-			$res['message'] .= __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
+			$res['message'] .= 'MQTT Manager</a> (mqtt2).';
+		}
+		// Check if ZigbeeLinker has modified Mosquitto config
+		elseif (file_exists('/etc/mosquitto/mosquitto.conf')
+				&& preg_match('#^include_dir.*zigbee2mqtt/data/mosquitto/include#m',
+					file_get_contents('/etc/mosquitto/mosquitto.conf'))) {
+			$res['by'] = __('ZigbeeLinker', __FILE__);
+			$res['message'] = __('Mosquitto est installé par', __FILE__);
+			$res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=zigbee2mqtt">';
+			$res['message'] .= 'ZigbeeLinker</a> (zigbee2mqtt).';
 		}
 		// Check if jMQTT config file is in place
 		elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
 			$res['by'] = 'jMQTT';
 			$res['message'] = __('Mosquitto est installé par', __FILE__);
-			$res['message'] .= ' <a class="control-label success disabled">' . __('jMQTT', __FILE__) . '</a>.';
+			$res['message'] .= ' <a class="control-label success disabled">jMQTT</a>.';
 		}
 		// Otherwise its considered to be a custom install
 		else {
@@ -1947,8 +1912,8 @@ class jMQTT extends eqLogic {
 				if (log::getLogLevel(__CLASS__) > 100)
 					self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 				else
-					self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"@Stack: %3\$s,<br />@BrkId: %4\$s.",
+					self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+								"@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 								__METHOD__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 			}
 		}
@@ -2065,6 +2030,65 @@ class jMQTT extends eqLogic {
 	}
 
 
+	/**
+	 * Manage the Real Time mode of this broker object
+	 * Called by ajax when the button is pressed by the user
+	 * @param int $mode 0 or 1
+	 */
+	public static function changeRealTimeMode($id, $mode, $subscribe='#', $exclude='homeassistant/#', $retained=false, $duration=180) {
+		$broker = self::getBrokerFromId($id);
+		$broker->log('info', $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
+		// $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)", __FILE__), $id, $mode, $subscribe, $exclude, $retained, $duration));
+		if($mode) { // If Real Time mode needs to be enabled
+			// Check if a subscription topic is provided
+			if (trim($subscribe) == '')
+				throw new Exception(__("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__));
+			$subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
+			// Cleanup subscriptions
+			$subscriptions = [];
+			foreach ($subscribe as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$subscriptions[] = $t;
+			}
+			if (count($subscriptions) == 0)
+				throw new Exception(__("Impossible d'activer le mode Temps Réel sans topic de souscription", __FILE__));
+			// Cleanup exclusions
+			$exclude = (trim($exclude) == '') ? [] : explode('|', $exclude);
+			$exclusions = [];
+			foreach ($exclude as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$exclusions[] = $t;
+			}
+			// Cleanup retained
+			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
+			// Cleanup duration
+			$duration = min(max(1, intval($duration)), 3600);
+			// Start Real Time Mode (must be started before subscribe)
+			self::toDaemon_realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
+			// Update cache
+			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
+			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
+			$broker->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
+			$broker->setCache(self::CACHE_REALTIME_DURATION, $duration);
+		} else { // Real Time mode needs to be disabled
+			// Stop Real Time mode
+			self::toDaemon_realTimeStop($id);
+		}
+	}
+
+	/**
+	 * Returns this broker object Real Time mode status
+	 * @return int 0 or 1
+	 */
+	public function getRealTimeMode() {
+		return $this->getCache(self::CACHE_REALTIME_MODE, 0);
+	}
+
+
 	public static function fromDaemon_brkUp($id) {
 		try { // Catch if broker is unknown / deleted
 			$broker = self::getBrokerFromId(intval($id));
@@ -2103,8 +2127,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br />@BrkId: %4\$s.",
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -2138,8 +2162,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br />@BrkId: %4\$s.",
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id)));
 		}
 	}
@@ -2153,8 +2177,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br />@BrkId: %4\$s,<br />@Topic: %5\$s,<br />@Payload: %6\$s,<br />@Qos: %7\$s,<br />@Retain: %8\$s.",
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>@Topic: %5\$s,<br/>@Payload: %6\$s,<br/>@Qos: %7\$s,<br/>@Retain: %8\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload, $qos, $retain)));
 		}
 	}
@@ -2186,10 +2210,10 @@ class jMQTT extends eqLogic {
 		$brk->sendMqttClientStateEvent();
 	}
 
-	public function toDaemon_realTimeStart($subscribe, $exclude, $retained, $duration = 180) {
+	public static function toDaemon_realTimeStart($id, $subscribe, $exclude, $retained, $duration = 180) {
 		$params['cmd']       = 'realTimeStart';
-		$params['id']        = $this->getId();
-		$params['file']      = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['id']        = $id;
+		$params['file']      = jeedom::getTmpFolder(__CLASS__).'/rt' . $id . '.json';
 		$params['subscribe'] = $subscribe;
 		$params['exclude']   = $exclude;
 		$params['retained']  = $retained;
@@ -2197,16 +2221,16 @@ class jMQTT extends eqLogic {
 		self::sendToDaemon($params);
 	}
 
-	public function toDaemon_realTimeStop() {
+	public static function toDaemon_realTimeStop($id) {
 		$params['cmd'] = 'realTimeStop';
-		$params['id']  = $this->getId();
+		$params['id']  = $id;
 		self::sendToDaemon($params);
 	}
 
-	public function toDaemon_realTimeClear() {
+	public static function toDaemon_realTimeClear($id) {
 		$params['cmd']  = 'realTimeClear';
-		$params['id']   = $this->getId();
-		$params['file'] = jeedom::getTmpFolder(__CLASS__).'/rt' . $this->getId() . '.json';
+		$params['id']   = $id;
+		$params['file'] = jeedom::getTmpFolder(__CLASS__).'/rt' . $id . '.json';
 		self::sendToDaemon($params);
 	}
 
@@ -2293,8 +2317,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('warning', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__), $query, $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				self::logger('warning', str_replace("\n",' <br /> ', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
-							",<br />@Stack: %3\$s.", $query, $e->getMessage(), $e->getTraceAsString())));
+				self::logger('warning', str_replace("\n",' <br/> ', sprintf(__("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
+							",<br/>@Stack: %3\$s.", $query, $e->getMessage(), $e->getTraceAsString())));
 			// Send reply on a /reply subtopic
 			$reply = array_merge(array('status' => ''), $param, array('reply' => '', 'status' => 'nok', 'error' => $e->getMessage()));
 			$this->publish($this->getName(), $this->getConf(self::CONF_KEY_MQTT_INT_TOPIC) . '/reply', json_encode($reply, true), 1, 0);
@@ -2405,8 +2429,8 @@ class jMQTT extends eqLogic {
 							if (log::getLogLevel(__CLASS__) > 100)
 								$this->log('error', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__), $newCmd->getHumanName(), $e->getMessage()));
 							else // More info in debug mode, no big log otherwise
-								$this->log('error', str_replace("\n",' <br /> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
-											",<br />@Stack: %3\$s,<br />@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
+								$this->log('error', str_replace("\n",' <br/> ', sprintf(__("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
+											",<br/>@Stack: %3\$s,<br/>@Dump: %4\$s.", $newCmd->getHumanName(), $e->getMessage(), $e->getTraceAsString(), json_encode($newCmd))));
 						}
 					} else
 						$this->log('debug', sprintf(__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__), $msgTopic, $eqpt->getHumanName()));
@@ -2563,8 +2587,8 @@ class jMQTT extends eqLogic {
 			if (log::getLogLevel(__CLASS__) > 100)
 				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
 			else
-				self::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br />@BrkId: %4\$s,<br />@Topic: %5\$s,<br />@Payload: %6\$s.",
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>@Topic: %5\$s,<br/>@Payload: %6\$s.",
 							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
 		}
 	}
@@ -2805,59 +2829,5 @@ class jMQTT extends eqLogic {
 		/** @var jMQTT[] $eqpts */
 		$returns = self::byTypeAndSearchConfiguration(__CLASS__, substr($brkId, 1, -1));
 		return $returns;
-	}
-
-	/**
-	 * Manage the Real Time mode of this broker object
-	 * Called by ajax when the button is pressed by the user
-	 * @param int $mode 0 or 1
-	 */
-	public function changeRealTimeMode($mode, $subscribe='#', $exclude='homeassistant/#', $retained=false) {
-		$this->log('info', $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__));
-		// $this->log('debug', sprintf(__("changeRealTimeMode(mode=%1\$s, subscribe=%2\$s, exclude=%3\$s, retained=%4\$s)", __FILE__), $mode, $subscribe, $exclude, $retained));
-		if($mode) { // If Real Time mode needs to be enabled
-			// Check if a subscription topic is provided
-			if (trim($subscribe) == '')
-				throw new Exception(__("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__));
-			$subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
-			// Cleanup subscriptions
-			$subscriptions = [];
-			foreach ($subscribe as $t) {
-				$t = trim($t);
-				if ($t == '')
-					continue;
-				$subscriptions[] = $t;
-			}
-			if (count($subscriptions) == 0)
-				throw new Exception(__("Impossible d'activer le mode Temps Réel sans topic de souscription", __FILE__));
-			// Cleanup exclusions
-			$exclude = (trim($exclude) == '') ? [] : explode('|', $exclude);
-			$exclusions = [];
-			foreach ($exclude as $t) {
-				$t = trim($t);
-				if ($t == '')
-					continue;
-				$exclusions[] = $t;
-			}
-			// Cleanup retained
-			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
-			// Start Real Time Mode (must be started before subscribe)
-			$this->toDaemon_realTimeStart($subscriptions, $exclusions, $retained);
-			// Update cache
-			$this->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
-			$this->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
-			$this->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
-		} else { // Real Time mode needs to be disabled
-			// Stop Real Time mode
-			$this->toDaemon_realTimeStop();
-		}
-	}
-
-	/**
-	 * Returns this broker object Real Time mode status
-	 * @return int 0 or 1
-	 */
-	public function getRealTimeMode() {
-		return $this->getCache(self::CACHE_REALTIME_MODE, 0);
 	}
 }

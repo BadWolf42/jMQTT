@@ -19,8 +19,8 @@ foreach ((jMQTT::getBrokers()) as $broker) {
 		if (log::getLogLevel(jMQTT::class) > 100)
 			jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __FUNCTION__, $e->getMessage()));
 		else
-			jMQTT::logger('error', str_replace("\n",' <br /> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-						"<br />@Stack: %3\$s,<br />@BrokerId: %4\$s.",
+			jMQTT::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+						"<br/>@Stack: %3\$s,<br/>@BrokerId: %4\$s.",
 						__FUNCTION__, $e->getMessage(), $e->getTraceAsString(), $broker->getId())));
 	}
 }
