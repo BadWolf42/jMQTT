@@ -58,7 +58,7 @@ jmqtt_config.mosquittoStatus = function (_result) {
 		$('#bt_mosquittoRepare').removeClass('disabled');
 		$('#bt_mosquittoRemove').removeClass('disabled');
 		$('#mosquittoService').empty().html(_result.service);
-		$('.local-install').show();
+		$('#div_plugin_configuration .local-install').show();
 		if (_result.service.includes('running'))
 			$('#bt_mosquittoStop').removeClass('disabled');
 		else
@@ -71,7 +71,7 @@ jmqtt_config.mosquittoStatus = function (_result) {
 		$('#bt_mosquittoInstall').removeClass('disabled');
 		$('#bt_mosquittoRepare').addClass('disabled');
 		$('#bt_mosquittoRemove').addClass('disabled');
-		$('.local-install').hide();
+		$('#div_plugin_configuration .local-install').hide();
 	}
 	$('#mosquittoStatus').empty().html(_result.message);
 }

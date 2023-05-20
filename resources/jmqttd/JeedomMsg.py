@@ -45,7 +45,7 @@ class JeedomMsg():
 		socketserver.TCPServer.allow_reuse_address = True
 
 	def is_working(self):
-		# TODO (important) Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
+		# Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
 		if time.time() - self._last_snd > self._snd_timeout and self._retry_snd > self._retry_max:
 			self._log_snd.error("Nothing could sent for %ds (max %ds) AND after %d attempts (max %d), Jeedom/Apache is probably dead.",
 								time.time() - self._last_snd, self._snd_timeout, self._retry_snd, self._retry_max)

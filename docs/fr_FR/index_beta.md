@@ -728,7 +728,7 @@ En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la recon
 
 ## Schéma du fonctionnement interne de jMQTT
 
-// TODO Schéma du fonctionnement interne/externe de jMQTT
+// TODO (low) Schéma du fonctionnement interne/externe de jMQTT
 
 -->
 # Registres des évolutions

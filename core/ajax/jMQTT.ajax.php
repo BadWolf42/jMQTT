@@ -27,6 +27,8 @@ try {
 
 	ajax::init(array('fileupload'));
 
+	###################################################################################################################
+	# File upload
 	if (init('action') == 'fileupload') {
 		if (!isset($_FILES['file'])) {
 			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
@@ -83,6 +85,66 @@ try {
 		}
 	}
 
+	###################################################################################################################
+	# Add a new command on an existing jMQTT equipment
+	if (init('action') == 'newCmd') {
+		$eqpt = jMQTT::byId(init('id'));
+		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
+			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
+		}
+		$new_cmd = jMQTTCmd::newCmd($eqpt, init('name'), init('topic'), init('jsonPath'));
+		$new_cmd->save();
+		ajax::success(array('id' => $new_cmd->getId(), 'human' => $new_cmd->getHumanName()));
+	}
+
+	###################################################################################################################
+	# Test jsonPath
+	if (init('action') == 'testJsonPath') {
+		$payload = init('payload');
+		if ($payload == '') {
+			ajax::success(array('success' => false, 'message' => __('Pas de payload', __FILE__), 'value' => ''));
+			return;
+		}
+
+		$jsonArray = json_decode($payload, true);
+		if (!is_array($jsonArray) || json_last_error() != JSON_ERROR_NONE) {
+			if (json_last_error() == JSON_ERROR_NONE)
+				ajax::success(array('success' => false, 'message' => __("Problème de format JSON: Le message reçu n'est pas au format JSON.", __FILE__), 'value' => ''));
+			else
+				ajax::success(array('success' => false, 'message' => sprintf(__("Problème de format JSON: %1\$s (%2\$d)", __FILE__), json_last_error_msg(), json_last_error()), 'value' => ''));
+		}
+
+		if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
+			require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
+		if (!class_exists('JsonPath\JsonObject'))
+			throw new Exception(__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
+
+		$jsonPath = trim(init('jsonPath'));
+		if (strlen($jsonPath) == 0 || $jsonPath[0] != '$')
+			$jsonPath = '$' . $jsonPath;
+
+		// Create JsonObject for JsonPath
+		try {
+			$jsonobject = new JsonPath\JsonObject($jsonArray);
+			$value = $jsonobject->get($jsonPath);
+		} catch (Throwable $e) {
+			ajax::success(array('success' => false, 'message' => __("Exception: ", __FILE__) . $e->getMessage(), 'stack' => $e->getTraceAsString(), 'value' => ''));
+			if (log::getLogLevel(__CLASS__) > 100)
+				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
+															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
+			else // More info in debug mode, no big log otherwise
+				$this->getEqLogic()->log('warning', str_replace("\n",' <br/> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",<br/>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
+		}
+
+		if ($value !== false && $value !== array())
+			ajax::success(array('success' => true, 'message' => 'OK', 'value' => json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)));
+		else
+			ajax::success(array('success' => false, 'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__), 'value' => ''));
+	}
+
+	###################################################################################################################
+	# Template
 	if (init('action') == 'getTemplateList') {
 		ajax::success(jMQTT::templateList());
 	}
@@ -116,23 +178,8 @@ try {
 		ajax::success();
 	}
 
-	// Enable/Disable Real Time mode on this Broker
-	if (init('action') == 'changeRealTimeMode') {
-		jMQTT::changeRealTimeMode(init('id'), init('mode'), init('subscribe'), init('exclude'), init('retained'), init('duration'));
-		ajax::success();
-	}
-
-	// Add a new command on an existing jMQTT equipment
-	if (init('action') == 'newCmd') {
-		$eqpt = jMQTT::byId(init('id'));
-		if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
-			throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
-		}
-		$new_cmd = jMQTTCmd::newCmd($eqpt, init('name'), init('topic'), init('jsonPath'));
-		$new_cmd->save();
-		ajax::success(array('id' => $new_cmd->getId(), 'human' => $new_cmd->getHumanName()));
-	}
-
+	###################################################################################################################
+	# Configuration page
 	if (init('action') == 'startMqttClient') {
 		$broker = jMQTT::getBrokerFromId(init('id'));
 		ajax::success($broker->startMqttClient(true));
@@ -146,6 +193,13 @@ try {
 	if (init('action') == 'updateUrlOverride') {
 		config::save('urlOverrideEnable', init('valEn'), 'jMQTT');
 		config::save('urlOverrideValue', init('valUrl'), 'jMQTT');
+		ajax::success();
+	}
+
+	###################################################################################################################
+	# Real Time mode
+	if (init('action') == 'changeRealTimeMode') {
+		jMQTT::changeRealTimeMode(init('id'), init('mode'), init('subscribe'), init('exclude'), init('retained'), init('duration'));
 		ajax::success();
 	}
 
@@ -185,6 +239,8 @@ try {
 		ajax::success();
 	}
 
+	###################################################################################################################
+	# Mosquitto
 	if (init('action') == 'mosquittoInstall') {
 		jMQTT::mosquittoInstall();
 		ajax::success(jMQTT::mosquittoCheck());
@@ -222,6 +278,8 @@ try {
 		ajax::success(jMQTT::mosquittoCheck());
 	}
 
+	###################################################################################################################
+	# Backup / Restore
 	if (init('action') == 'backupCreate') {
 		jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT lancée...", __FILE__)));
 		$out = null;
@@ -309,50 +367,6 @@ try {
 			@message::add('jMQTT', $msg, '', 'backupRestoreEnded');
 			throw new Exception($msg);
 		}
-	}
-
-	if (init('action') == 'testJsonPath') {
-		$payload = init('payload');
-		if ($payload == '') {
-			ajax::success(array('success' => false, 'message' => __('Pas de payload', __FILE__), 'value' => ''));
-			return;
-		}
-
-		$jsonArray = json_decode($payload, true);
-		if (!is_array($jsonArray) || json_last_error() != JSON_ERROR_NONE) {
-			if (json_last_error() == JSON_ERROR_NONE)
-				ajax::success(array('success' => false, 'message' => __("Problème de format JSON: Le message reçu n'est pas au format JSON.", __FILE__), 'value' => ''));
-			else
-				ajax::success(array('success' => false, 'message' => sprintf(__("Problème de format JSON: %1\$s (%2\$d)", __FILE__), json_last_error_msg(), json_last_error()), 'value' => ''));
-		}
-
-		if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
-			require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
-		if (!class_exists('JsonPath\JsonObject'))
-			throw new Exception(__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
-
-		$jsonPath = trim(init('jsonPath'));
-		if (strlen($jsonPath) == 0 || $jsonPath[0] != '$')
-			$jsonPath = '$' . $jsonPath;
-
-		// Create JsonObject for JsonPath
-		try {
-			$jsonobject = new JsonPath\JsonObject($jsonArray);
-			$value = $jsonobject->get($jsonPath);
-		} catch (Throwable $e) {
-			ajax::success(array('success' => false, 'message' => __("Exception: ", __FILE__) . $e->getMessage(), 'stack' => $e->getTraceAsString(), 'value' => ''));
-			if (log::getLogLevel(__CLASS__) > 100)
-				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
-															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
-			else // More info in debug mode, no big log otherwise
-				$this->getEqLogic()->log('warning', str_replace("\n",' <br/> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
-							",<br/>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
-		}
-
-		if ($value !== false && $value !== array())
-			ajax::success(array('success' => true, 'message' => 'OK', 'value' => json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)));
-		else
-			ajax::success(array('success' => false, 'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__), 'value' => ''));
 	}
 
 	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
