@@ -8,13 +8,13 @@
 - Correction des problèmes de multi-lancement du démon avec des signaux de vie entre le démon et Jeedom
 - Correction d'un problème d'affichage et de gestion des équipements orphelins sur la page principale du plugin
 - Correction d'un problème avec le topic de souscription lors de l'application d'un template
-- **Passage à la version 3.0 de galbar/jsonpath : Attention aux changement de l'oppérateur de recherche recursive ( aka `..`)**
+- **Passage à la version 3.0 de galbar/jsonpath : Attention au changement de l'opérateur de recherche recursive ( aka `..`)**
 - **Ajout d'un outil de test des chemins Json (documentation à faire, mais fonctionnement simple)**
 - Amélioration de l'affichage des commandes Action List
 - Ajout du template Tasmota Nous A1T (merci vberder)
 - Ajout de 14 nouvelles icones : espeasy, intex, location, mcz-remote, old-phone, openmqttgateway, phone, smartphone, repeater, smoke-detector, sonometer, stove, tasmota & theengs
 - Première implémentation fonctionnelle du système de sauvegarde et de restauration de jMQTT indépendamment du Core (en BETA pour le moment)
-- Optimisations du code, Corrections syntaxiques et orthographiques
+- Optimisations du code, corrections syntaxiques et orthographiques
 - Mise à jour de la documentation
 
 ## 2023-03-19 (v14 beta)

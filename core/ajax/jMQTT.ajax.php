@@ -316,11 +316,11 @@ try {
 	if (init('action') == 'backupRestore') {
 		$_backup = init('file');
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
-			throw new Exception(__('Merci de fournir le fichier à restorer', __FILE__));
+			throw new Exception(__('Merci de fournir le fichier à restaurer', __FILE__));
 
 		$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
 		if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))
-			throw new Exception(__('Impossible de restorer le fichier fourni', __FILE__));
+			throw new Exception(__('Impossible de restaurer le fichier fourni', __FILE__));
 
 		$msg = sprintf(__("Restauration de la sauvegarde %s...", __FILE__), $_backup);
 		@message::removeAll('jMQTT', 'backupRestoreEnded');
