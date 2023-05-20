@@ -1610,9 +1610,22 @@ class jMQTT extends eqLogic {
 		$depProgressFile = jeedom::getTmpFolder(__CLASS__) . '/dependancy';
 
 		self::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
-		log::remove($depLogFile);
+
+		$update = update::byLogicalId(__CLASS__);
+		shell_exec(
+			'echo "\n\n================================================================================\n'.
+			'== Jeedom '.jeedom::version().' '.jeedom::getHardwareName().
+			' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'.
+			'$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'.
+			'== $(python3 -VV | xargs echo -n)\n'.
+			'== '.__CLASS__.' v'.config::byKey('version', __CLASS__, 'unknown', true).
+			' ('.$update->getLocalVersion().') branch:'.$update->getConfiguration()['version'].
+			' previously:v'.config::byKey('previousVersion', __CLASS__, 'unknown', true).
+			'" >> '.log::getPathToLog($depLogFile)
+		);
+
 		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile . ' ' . update::byLogicalId(__CLASS__)->getLocalVersion(),
+			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile,
 			'log' => log::getPathToLog($depLogFile)
 		);
 	}

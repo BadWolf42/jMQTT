@@ -9,18 +9,7 @@ LANG_DEP=en
 ##################################################################
 
 pre
-step 0 "Checking parameters"
-
-LOCAL_VERSION="????"
-if [ -n $2 ]; then
-	LOCAL_VERSION=$2
-fi
-
-echo "== System: "`uname -a`
-echo "== Jeedom version: "`cat ${BASEDIR}/../../../core/config/version`
-echo "== jMQTT version: "${LOCAL_VERSION}
-
-step 10 "Synchronize the package index"
+step 0 "Synchronize the package index"
 try sudo apt-get update
 
 step 20 "Install Composer"

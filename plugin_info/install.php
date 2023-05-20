@@ -46,6 +46,7 @@ function jMQTT_update($_direct=true) {
 		$pluginVersion = 0;
 	}
 
+	config::save('previousVersion', config::byKey('version', 'jMQTT', 'unknown'), 'jMQTT');
 	$version = @intval(config::byKey('version', 'jMQTT', $pluginVersion));
 
 	while (++$version <= $pluginVersion) {
