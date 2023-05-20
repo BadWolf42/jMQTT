@@ -1645,9 +1645,9 @@ class jMQTT extends eqLogic {
 				// Checking for Mosquitto installed in Docker by MQTT Manager
 				if (is_object(update::byLogicalId('mqtt2')) && plugin::byId('mqtt2')->isActive() && config::byKey('mode', 'mqtt2', 'NotThere') == 'docker') {
 					// Plugin Active and mqtt2 mode is docker
+					$res['by'] = __('MQTT Manager (en docker)', __FILE__);
 					$res['message'] = __('Mosquitto est installé <b>en docker</b> par', __FILE__);
 					$res['message'] .= ' <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">' . __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
-					$res['by'] = __('MQTT Manager (en docker)', __FILE__);
 				}
 			} catch (Throwable $e) {}
 			return $res;
@@ -1671,6 +1671,15 @@ class jMQTT extends eqLogic {
 			$res['message'] = __('Mosquitto est installé par', __FILE__);
 			$res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=mqtt2">';
 			$res['message'] .= 'MQTT Manager</a> (mqtt2).';
+		}
+		// Check if ZigbeeLinker has modified Mosquitto config
+		elseif (file_exists('/etc/mosquitto/mosquitto.conf')
+				&& preg_match('#^include_dir.*zigbee2mqtt/data/mosquitto/include#m',
+					file_get_contents('/etc/mosquitto/mosquitto.conf'))) {
+			$res['by'] = __('ZigbeeLinker', __FILE__);
+			$res['message'] = __('Mosquitto est installé par', __FILE__);
+			$res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=zigbee2mqtt">';
+			$res['message'] .= 'ZigbeeLinker</a> (zigbee2mqtt).';
 		}
 		// Check if jMQTT config file is in place
 		elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
