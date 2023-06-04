@@ -686,8 +686,7 @@ class jMQTTCmd extends cmd {
 		}
 		return sprintf("#%02X%02X%02X", $color['r'], $color['g'], $color['b']);
 	}
-	public static function RGBtoHTML($r, $g=-1, $b=-1)
-	{
+	public static function RGBtoHTML($r, $g=-1, $b=-1) {
 		if (is_array($r) && sizeof($r) == 3)
 			list($r, $g, $b) = $r;
 
