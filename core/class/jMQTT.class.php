@@ -1157,7 +1157,7 @@ class jMQTT extends eqLogic {
 			self::logger('debug', sprintf(__('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__), $result));
 		} else {
 			config::save(self::CONF_KEY_JMQTT_UUID, $data['UUID'], __CLASS__);
-			if ($data['removeMe']) {
+			if (isset($data['removeMe']) && $data['removeMe']) {
 				self::logger('info', __('Données statistiques supprimées', __FILE__));
 				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
 			} else {
