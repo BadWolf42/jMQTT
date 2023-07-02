@@ -32,7 +32,8 @@ $eqBrokers = jMQTT::getBrokers();
 		<tr>
 			<th class="col-md-3">{{Broker}}</th>
 			<th class="col-md-1 center">{{ID}}</th>
-			<th class="col-md-5">{{Statut}}</th>
+			<th class="col-md-4">{{Statut}}</th>
+			<th class="col-md-1 center">{{Équipements}}</th>
 			<th class="col-md-1 center">{{Dernière comm.}}</th>
 			<th class="col-md-1 center">{{Date de création}}</th>
 			<th>&nbsp;</th>
@@ -42,11 +43,12 @@ $eqBrokers = jMQTT::getBrokers();
 <?php
 foreach ($eqBrokers as $eqB) { // List all Brokers on top
 	echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" class="eName" data-key="' . $eqB->getHumanName() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
-	echo '<td class="center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px;height:20px;">' . $eqB->getId() . '</span></td>';
+	echo '<td style="text-align:center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px;height:20px;">' . $eqB->getId() . '</span></td>';
 	echo '<td>' . $eqB->getMqttClientInfo()['message'] . '</td>';
-	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getStatus('lastCommunication') . ' </span></td>';
-	echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getConfiguration('createtime') . ' </span></td>';
-	echo '<td class="center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
+	echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . (isset($eqNonBrokers[$eqB->getId()]) ? count($eqNonBrokers[$eqB->getId()]) : '0') . '</span></td>';
+	echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getStatus('lastCommunication') . ' </span></td>';
+	echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getConfiguration('createtime') . ' </span></td>';
+	echo '<td style="text-align:center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
 	echo '<a class="eqLogicAction" data-action="removeEq"><i class="fas fa-minus-circle"></i></a></td></tr>';
 }
 ?>
@@ -54,14 +56,7 @@ foreach ($eqBrokers as $eqB) { // List all Brokers on top
 </table>
 <?php
 foreach ($eqBrokers as $eqB) { // For each Broker
-	echo '<legend><i class="fas fa-table"></i> ';
-	if (!isset($eqNonBrokers[$eqB->getId()]))
-		echo '{{Aucun équipement connectés à}}';
-	elseif (count($eqNonBrokers[$eqB->getId()]) == 1)
-		echo '{{1 équipement connectés à}}';
-	else
-		echo count($eqNonBrokers[$eqB->getId()]).' {{équipements connectés à}}';
-	echo ' <b>' . $eqB->getName() . '</b></legend>';
+	echo '<legend><i class="fas fa-table"></i> {{Équipement(s) connectés à}} <b>' . $eqB->getName() . '</b></legend>';
 	if (isset($eqNonBrokers[$eqB->getId()])) {
 		echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_'.$eqB->getId().'">';
 ?>
@@ -70,7 +65,7 @@ foreach ($eqBrokers as $eqB) { // For each Broker
 			<th class="col-md-3">{{Module}}</th>
 			<th class="col-md-1 center">{{ID}}</th>
 			<th class="col-md-4">{{Inscrit au Topic}}</th>
-			<th class="col-md-1 center">{{Nb de cmd}}</th>
+			<th class="col-md-1 center">{{Commandes}}</th>
 			<th class="col-md-1 center">{{Dernière comm.}}</th>
 			<th class="col-md-1 center">{{Date de création}}</th>
 			<th>&nbsp;</th>
@@ -80,12 +75,12 @@ foreach ($eqBrokers as $eqB) { // For each Broker
 <?php
 		foreach ($eqNonBrokers[$eqB->getId()] as $eqL) { // List every equipment on the Broker
 			echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" class="eName" data-key="' . $eqL->getHumanName() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
-			echo '<td class="center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px">' . $eqL->getId() . '</span></td>';
+			echo '<td style="text-align:center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px">' . $eqL->getId() . '</span></td>';
 			echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getTopic() . '</span></td>';
-			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . count($eqL->getCmd()) . '</span></td>';
-			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getStatus('lastCommunication') . ' </span></td>';
-			echo '<td class="center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getConfiguration('createtime') . ' </span></td>';
-			echo '<td class="center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
+			echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . count($eqL->getCmd()) . '</span></td>';
+			echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getStatus('lastCommunication') . ' </span></td>';
+			echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getConfiguration('createtime') . ' </span></td>';
+			echo '<td style="text-align:center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
 			echo '<a class="eqLogicAction" data-action="removeEq"><i class="fas fa-minus-circle"></i></a></td></tr>';
 		}
 ?>
