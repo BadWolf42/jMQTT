@@ -215,6 +215,7 @@ class jMQTTCmd extends cmd {
 		$topic = $this->getTopic();
 		$qos = $this->getConfiguration(self::CONF_KEY_PUB_QOS, 1);
 		$retain = $this->getConfiguration(self::CONF_KEY_RETAIN, 0);
+		$eq = $this->getEqLogic();
 		// Prevent error when $_options is null or accessing an unavailable $_options
 		$_defaults = array('other' => '', 'slider' => '#slider#', 'title' => '#title#', 'message' => '#message#', 'color' => '#color#', 'select' => '#select#');
 		$_options = is_null($_options) ? $_defaults : array_merge($_defaults, $_options);
@@ -225,10 +226,14 @@ class jMQTTCmd extends cmd {
 		} else { // Otherwise replace all tags
 			$replace = array('#slider#', '#title#', '#message#', '#color#', '#select#');
 			$replaceBy = array($_options['slider'], $_options['title'], $_options['message'], $_options['color'], $_options['select']);
+			$replace = array_merge($replace, array('#id#', '#name#', '#humanName#', '#subType#', '#topic#'));
+			$replaceBy = array_merge($replaceBy, array($this->getId(), $this->getName(), $this->getHumanName(), $this->getSubType(), $topic));
+			$replace = array_merge($replace, array('#eqId#', '#eqName#', '#eqHumanName#', '#eqTopic#'));
+			$replaceBy = array_merge($replaceBy, array($eq->getId(), $eq->getName(), $eq->getHumanName(), $eq->getTopic()));
 			$request = str_replace($replace, $replaceBy, $request);
 		}
 		$request = jeedom::evaluateExpression($request);
-		$this->getEqLogic()->publish($this->getHumanName(), $topic, $request, $qos, $retain);
+		$eq->publish($this->getHumanName(), $topic, $request, $qos, $retain);
 		return $request;
 	}
 
