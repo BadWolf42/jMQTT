@@ -207,8 +207,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
 					tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" disabled title="{{Max}}" style="width:50px;display:inline-block;">';
 					tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" disabled title="{{Unité}}" style="width:50px;display:inline-block;margin-right:5px;">';
 					tr += '</td><td>';
-					if (init(_cmd.subType) == 'numeric')
-						tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" disabled data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
+					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" disabled data-l1key="isHistorized" checked/>{{Historiser}}</label></span> ';
 					tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" disabled data-l1key="isVisible" checked/>{{Afficher}}</label></span> ';
 					if (init(_cmd.subType) == 'binary')
 						tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" disabled data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span> ';
