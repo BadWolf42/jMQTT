@@ -99,7 +99,6 @@ $('.eqLogicAction[data-action=removeEq]').off('click').on('click', function () {
 	// Just different eqId/eqName handling
 
 	var eqId = $(this).closest('tr').find('.eId').value();
-	// console.log('removeEq', $(this).closest('tr').find('.eId'), $(this).closest('tr').find('.eName').attr('data-key'), this);
 	if (eqId == undefined) {
 		$.fn.showAlert({message: '{{Veuillez sélectionner un équipement à supprimer}}', level: 'danger'});
 		return;
