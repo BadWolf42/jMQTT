@@ -998,6 +998,16 @@ function addCmdToTable(_cmd) {
 		tr += '</td></tr>';
 
 		$('#table_cmd tbody').append(tr);
+
+		// Update mismatch status of this cmd on change and input
+		$('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
+			let topic = $(this).value();
+			if (topic == '' || topic.includes('#') || topic.includes('?'))
+				$(this).addClass('topicMismatch');
+			else
+				$(this).removeClass('topicMismatch');
+		});
+
 		// $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
 		var tr = $('#table_cmd [tree-id="' + _cmd.tree_id + '"]');
 		jeedom.eqLogic.buildSelectCmd({
