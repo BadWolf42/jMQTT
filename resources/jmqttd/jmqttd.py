@@ -417,14 +417,14 @@ if __name__ == '__main__':
 
 	def dumpstacks(signal, frame):
 		id2name = dict([(th.ident, th.name) for th in threading.enumerate()])
-		code = []
+		code = ['A dump of Daemon Stack has been requested:']
 		for threadId, stack in sys._current_frames().items():
 			code.append("\n# Thread: %s(%d)" % (id2name.get(threadId,""), threadId))
 			for filename, lineno, name, line in traceback.extract_stack(stack):
 				code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
 				if line:
 					code.append("  %s" % (line.strip()))
-		logging.debug("\n".join(code))
+		logging.critical("\n".join(code))
 	signal.signal(signal.SIGUSR1, dumpstacks)
 
 	# Interrupt handler
