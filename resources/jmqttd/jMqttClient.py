@@ -127,7 +127,6 @@ class jMqttClient:
 		if self.mqttclient is None:
 			self._log.info('Could not send message Broker not started')
 			return
-		self.mqttclient.publish(topic, payload, qos, retain)
 		# Python Client : publish(topic, payload=None, qos=0, retain=False)
 		# Returns a MQTTMessageInfo which expose the following attributes and methods:
 		#  - rc, the result of the publishing. It could be MQTT_ERR_SUCCESS to indicate success, MQTT_ERR_NO_CONN if the client is not currently connected, or MQTT_ERR_QUEUE_SIZE when max_queued_messages_set is used to indicate that message is neither queued nor sent.
@@ -135,7 +134,15 @@ class jMqttClient:
 		#  - wait_for_publish() will block until the message is published. It will raise ValueError if the message is not queued (rc == MQTT_ERR_QUEUE_SIZE).
 		#  - is_published returns True if the message has been published. It will raise ValueError if the message is not queued (rc == MQTT_ERR_QUEUE_SIZE).
 		#  - A ValueError will be raised if topic is None, has zero length or is invalid (contains a wildcard), if qos is not one of 0, 1 or 2, or if the length of the payload is greater than 268435455 bytes.
-		self._log.info('Sending message to broker (topic="%s", payload="%s", QoS=%s, retain=%s)', topic, payload, qos, retain)
+		try:
+			self.mqttclient.publish(topic, payload, qos, retain)
+		except Exception as e:
+			if self._log.isEnabledFor(logging.DEBUG):
+				self._log.exception('jMqttClient.publish(topic="%s", payload="%s", QoS=%s, retain=%s) Exception', topic, payload, qos, retain)
+			else:
+				self._log.error('Could not send message to broker (topic="%s", payload="%s", QoS=%s, retain=%s): %s', topic, payload, qos, retain, e)
+		else:
+			self._log.info('Sending message to broker (topic="%s", payload="%s", QoS=%s, retain=%s)', topic, payload, qos, retain)
 
 	def start(self):
 		if self.mqttclient is not None:
