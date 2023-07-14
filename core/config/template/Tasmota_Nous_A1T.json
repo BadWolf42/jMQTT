@@ -10,7 +10,6 @@
             "commentaire": "Tasmota Nous A1T\nNeed to configure the Plug in MQTT tab with the topic : %topic%/%prefix% (inverted from default one define)",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Prise ",
             "icone": "power-plug",
             "updatetime": "2023-04-06 00:56:40"
         },

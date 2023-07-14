@@ -478,12 +478,12 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Etat Relais",
+                "name": "Etat",
                 "type": "info",
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s\/relay\/0",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -514,7 +514,7 @@
             },
             {
                 "eqType": "jMQTT",
-                "name": "Relais On",
+                "name": "On",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
@@ -537,18 +537,54 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
+                "value": "Etat",
                 "isVisible": "1",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "Relais Off",
+                "name": "Off",
                 "type": "action",
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/relay\/0\/command",
                     "request": "off",
+                    "retain": "0",
+                    "autoPub": "0",
+                    "timeline::enable": "0",
+                    "interact::auto::disable": "0",
+                    "actionConfirm": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "value": "Etat",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Toggle",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s\/relay\/0\/command",
+                    "request": "toggle",
                     "retain": "0",
                     "autoPub": "0",
                     "timeline::enable": "0",
@@ -774,32 +810,6 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s\/emeter\/1\/energy"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "0",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "relay:0",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s\/relay\/0"
                 },
                 "template": {
                     "dashboard": "default",

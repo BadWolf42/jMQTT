@@ -325,9 +325,9 @@ jmqtt.certUpload = function(ev1) {
 // Check if a topic matches a subscription, return bool
 jmqtt.checkTopicMatch = function (subscription, topic) {
 	if (subscription == '') // Nothing matches an empty subscription topic
-			return false;
+		return false;
 	if (subscription == '#') // Everything matches '#' subscription topic
-			return true;
+		return true;
 	subscription = subscription.replace(/[-[\]{}()*?.,\\^$|\s]/g, '\\$&'); // Escape special character except + and #
 	subscription = subscription.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'); // Replace all + and 1 # by a regex
 	return (new RegExp(`^${subscription}\$`)).test(topic); // Return match
@@ -472,24 +472,26 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
 		} else {
 			dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>";
 			dialog_message += jmqtt_globals.mainTopic;
-			dialog_message += '</b>"<br/>{{Les commandes suivantes sont incompatibles avec ce topic :}}<br/><br/>';
+			dialog_message += '</b>"<br/>{{Les commandes suivantes posent problème :}}<br/><br/>';
 			$('.topicMismatch').each(function (_, item) {
-				if (!$(item).hasClass('eqLogicAttr')) {
-					var cmd = $(item).closest('tr.cmd').find('.cmdAttr[data-l1key=name]').value();
-					// Command has no name
-					if (cmd == '')
-						no_name = true;
-					var topic = $(item).value();
-					// Command with a name and no topic
-					if (cmd != '' && topic == '')
-						dialog_message += '<li>{{Le topic est <b>vide</b> sur la commande}} "<b>' + cmd + '</b>"</li>';
-					// Command with no name and a topic
-					else if (cmd == '' && topic != '')
-						dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur une <b>commande sans nom</b>}}</li>';
-					// Command with a mismatch
-					else
-						dialog_message += '<li>{{Le topic}} "<b>' + topic + '</b>" {{sur la commande}} "<b>' + cmd + '</b>"</li>';
-				}
+				if ($(item).hasClass('eqLogicAttr'))
+					return;
+				let line = $(item).closest('tr.cmd');
+				let cmd = line.find('.cmdAttr[data-l1key=name]').value();
+				let cmdType = (line.find('.cmdAttr[data-l1key=type]').value() == 'info') ? '{{Le topic de souscription}}' : '{{Le topic de publication}}';
+				// Command info has no name
+				if (cmd == '')
+					no_name = true;
+				var topic = $(item).value();
+				// Command with a name and no topic
+				if (cmd != '' && topic == '')
+					dialog_message += '<li>' + cmdType + ' {{est <b>vide</b> sur la commande}} "<b>' + cmd + '</b>"</li>';
+				// Command with no name and a topic
+				else if (cmd == '' && topic != '')
+					dialog_message += '<li>' + cmdType + ' "<b>' + topic + '</b>" {{sur une <b>commande sans nom</b>}}</li>';
+				// Command with a mismatch
+				else
+					dialog_message += '<li>' + cmdType + ' "<b>' + topic + '</b>" {{sur la commande}} "<b>' + cmd + '</b>"</li>';
 			});
 		}
 		if (no_name)

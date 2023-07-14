@@ -605,56 +605,162 @@ function builder_actions(div) {
 	});
 */
 
-// TODO (low) for Debug modal
+
 	div.off('click', 'a.depCheck').on('click', 'a.depCheck', function() {
-		console.log('--> depCheck');
-/*
 		callDebugAjax({
 			data: {
-				action: "sendToDaemon",
-				data : $(this).closest('form').find('textarea.toDaemon').value()
+				action: "depCheck"
 			},
 			error: function(error) {
 				$.fn.showAlert({message: error, level: 'warning'})
 			},
 			success: function(data) {
-				$.fn.showAlert({message: 'Evènement envoyé au Démon', level: 'success'});
+				$.fn.showAlert({message: 'Revérification des dépendances lancée', level: 'success'});
 			}
 		});
-*/
 	});
 	div.off('click', 'a.depDelete').on('click', 'a.depDelete', function() {
-		console.log('--> depDelete');
+		callDebugAjax({
+			data: {
+				action: "depDelete"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Dépendances supprimés', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.venvDelete').on('click', 'a.venvDelete', function() {
-		console.log('--> venvDelete');
+		callDebugAjax({
+			data: {
+				action: "venvDelete"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Venv supprimé', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.dynContentDelete').on('click', 'a.dynContentDelete', function() {
-		console.log('--> dynContentDelete');
+		callDebugAjax({
+			data: {
+				action: "dynContentDelete"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Contenus dynamiques supprimés', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.pidFileDelete').on('click', 'a.pidFileDelete', function() {
-		console.log('--> pidFileDelete');
+		callDebugAjax({
+			data: {
+				action: "pidFileDelete"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Fichier PID supprimé', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.hbStop').on('click', 'a.hbStop', function() {
-		console.log('--> hbStop');
+		callDebugAjax({
+			data: {
+				action: "hbStop"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Heartbeat arrêtés', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.threadDump').on('click', 'a.threadDump', function() {
-		console.log('--> threadDump');
+		callDebugAjax({
+			data: {
+				action: "threadDump"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Demande de dump des threads au Démon envoyée', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.reInstall').on('click', 'a.reInstall', function() {
-		console.log('--> reInstall');
+		callDebugAjax({
+			data: {
+				action: "reInstall"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Réinstallation des dépendances lancée', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.statsSend').on('click', 'a.statsSend', function() {
-		console.log('--> statsSend');
+		callDebugAjax({
+			data: {
+				action: "statsSend"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Statistiques envoyées au serveur', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.listenersRemove').on('click', 'a.listenersRemove', function() {
-		console.log('--> listenersRemove');
+		callDebugAjax({
+			data: {
+				action: "listenersRemove"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Listeners supprimés', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.listenersCreate').on('click', 'a.listenersCreate', function() {
-		console.log('--> listenersCreate');
+		callDebugAjax({
+			data: {
+				action: "listenersCreate"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Listeners re-créés', level: 'success'});
+			}
+		});
 	});
 	div.off('click', 'a.logVerbose').on('click', 'a.logVerbose', function() {
-		console.log('--> logVerbose');
+		callDebugAjax({
+			data: {
+				action: "logVerbose"
+			},
+			error: function(error) {
+				$.fn.showAlert({message: error, level: 'warning'})
+			},
+			success: function(data) {
+				$.fn.showAlert({message: 'Logs du démon à présent en niveau VERBOSE', level: 'success'});
+			}
+		});
 	});
 
 }

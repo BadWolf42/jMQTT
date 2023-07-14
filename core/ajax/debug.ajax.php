@@ -279,6 +279,86 @@ try {
 		ajax::success($response);
 	}
 
+// -------------------- Simulate dangerous actions --------------------
+	if (init('action') == 'depCheck') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		plugin::byId('jMQTT')->dependancy_info(true);
+		ajax::success();
+	}
+	if (init('action') == 'depDelete') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'venvDelete') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'dynContentDelete') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'pidFileDelete') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'hbStop') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'threadDump') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// Get cached PID and PORT
+		$cuid = @cache::byKey('jMQTT::'.jMQTT::CACHE_DAEMON_UID)->getValue("0:0");
+		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
+		// If PID is unavailable or not running
+		if ($cpid == 0 || !@posix_getsid($cpid))
+			throw new Exception(__("Le PID du démon n'a pas été trouvé, est-il lancé ?", __FILE__));
+
+		// Else send signal SIGUSR1
+		posix_kill($cpid, 10);
+		ajax::success();
+	}
+	if (init('action') == 'reInstall') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'statsSend') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		cache::set('jMQTT::nextStats', time() - 300);
+		jMQTT::pluginStats('cron');
+		ajax::success();
+	}
+	if (init('action') == 'listenersRemove') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'listenersCreate') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+	if (init('action') == 'logVerbose') {
+		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+		// TODO (low) Debug modal -> to implement
+		throw new Exception('TODO -> Not implemented');
+		// ajax::success();
+	}
+
 	throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
