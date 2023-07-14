@@ -1,5 +1,16 @@
 # Registre des évolutions
 
+## 2023-07-15 (v19)
+- Ajout de tags utilisables dans les payload des commandes action (cf : https://community.jeedom.com/t/tag-topic/108883)
+- **Correction d'un plantage du démon lors de la publication sur un topic contenant `#` ou `?`**
+- Avertissement en cas de mauvais topic de publication
+- Correction du template du Shelly EM (merci Jeandhom)
+- Correction du template du Tasmota Nous A1T
+- Ajout de l'information d'historisation des commandes dans les templates
+- Ajout du nombre d'équipements et de commandes dans la modale de santé
+- Ajout du template pour le Nuki Smart Lock (merci ludomin & JC38)
+- Ajout de nouvelles fonctions de debug avancé
+
 ## 2023-06-05 (v18)
 - Correction mineure (erreur dans les logs)
 

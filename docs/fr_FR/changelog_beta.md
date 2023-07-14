@@ -1,7 +1,7 @@
 # Registre des évolutions BETA
 
-## 2023-06-05 (v18)
-- Passage de la Beta en stable
+## 2023-07-15 (v19)
+- Passage en stable
 
 
 # Documentations
