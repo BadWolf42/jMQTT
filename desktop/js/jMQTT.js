@@ -22,7 +22,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 		if (result !== null) {
 			jeedom.eqLogic.save({
 				type: 'jMQTT',
-				eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1}) ],
+				eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1, configuration: {Qos:"1", mqttProto:"mqtt"}}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
