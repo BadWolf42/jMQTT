@@ -30,7 +30,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 					var url = jmqtt.initPluginUrl();
 					jmqtt.unsetPageModified();
 					url += '&id=' + data.id + '&saveSuccessFull=1';
-					loadPage(url);
+					jeedomUtils.loadPage(url);
 				}
 			});
 		}
@@ -104,14 +104,14 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 								var url = jmqtt.initPluginUrl();
 								jmqtt.unsetPageModified();
 								url += '&id=' + savedEq.id + '&saveSuccessFull=1';
-								loadPage(url);
+								jeedomUtils.loadPage(url);
 							}
 						});
 					} else {
 						var url = jmqtt.initPluginUrl();
 						jmqtt.unsetPageModified();
 						url += '&id=' + savedEq.id + '&saveSuccessFull=1';
-						loadPage(url);
+						jeedomUtils.loadPage(url);
 					}
 				}
 			});

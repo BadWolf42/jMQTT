@@ -1,5 +1,8 @@
 # Registre des évolutions BETA
 
+## DEV
+- Remplacement de la fonction `loadPage()` dépréciée en v4.4 par `jeedomUtils.loadPage()`
+
 ## 2023-07-15 (v19)
 - Passage en stable
 
