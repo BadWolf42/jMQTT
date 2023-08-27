@@ -2462,13 +2462,13 @@ class jMQTT extends eqLogic {
 			}
 		}
 
-		if (strlen($related_cmd) == 0) {
-			$related_cmd = __(": Aucune", __FILE__);
-		} else {
-			$related_cmd[0] = ':';
-		}
 		$duration_ms = round((microtime(true) - $start_t)*1000);
 		if ($duration_ms > 300) {
+			if (strlen($related_cmd) == 0) {
+				$related_cmd = __(": Aucune", __FILE__);
+			} else {
+				$related_cmd[0] = ':';
+			}
 			$this->log('warning', sprintf(__("Attention, ", __FILE__) .
 										__("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
 										__(" (très long), vérifiez les commandes affiliées %4\$s", __FILE__), $msgValue, $msgTopic, $duration_ms, $related_cmd));
@@ -2509,7 +2509,7 @@ class jMQTT extends eqLogic {
 				$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT est désactivé", __FILE__), $cmdName, $payloadLogMsg));
 				return;
 			}
-			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT n'est pas démarré/connecté", __FILE__), $cmdName, $payloadLogMsg));
+			$this->log('info', sprintf(__("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT n'est pas démarré", __FILE__), $cmdName, $payloadLogMsg));
 			return;
 		}
 		$broker = $this->getBroker();
