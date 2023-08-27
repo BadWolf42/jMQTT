@@ -287,21 +287,23 @@ try {
 	}
 	if (init('action') == 'depDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-// TODO (low) Debug modal -> to implement
-		throw new Exception('TODO -> Not implemented');
-		// ajax::success();
+		jMQTT::deamon_stop();
+		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/composer.lock');
+		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/vendor');
+		ajax::success();
 	}
 	if (init('action') == 'venvDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		// TODO (low) Debug modal -> to implement
-		throw new Exception('TODO -> Not implemented');
-		// ajax::success();
+		jMQTT::deamon_stop();
+		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/venv');
+		ajax::success();
 	}
 	if (init('action') == 'dynContentDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		// TODO (low) Debug modal -> to implement
-		throw new Exception('TODO -> Not implemented');
-		// ajax::success();
+		jMQTT::deamon_stop();
+		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/__pycache__');
+		exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder(__CLASS__).'/rt*.json');
+		ajax::success();
 	}
 	if (init('action') == 'pidFileDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
