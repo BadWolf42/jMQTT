@@ -1,5 +1,16 @@
 # Registre des évolutions
 
+## 2023-09-04 (v20)
+- Suppression de la QoS sur les équipements Broker (car inutilisée)
+- Remplacement de la fonction `loadPage()` par `jeedomUtils.loadPage()` (introduite en 4.2 et dépréciée en v4.4)
+- Ajout de 3 nouveaux templates Shelly : Flood, Vintage et Plus Plug S (merci Nebz et samud)
+- Meilleure initialisation d'un équipement Broker lors de sa création
+- Correction d'une erreur de dépendances suite à la migration vers Debian 11
+- Correction de certains messages pour les rendre plus explicites
+- Suppression de vieux crons orphelins
+- Ajout de nouvelles fonctions de debug avancé
+- Optimisation de la taille des icones
+
 ## 2023-07-15 (v19)
 - Ajout de tags utilisables dans les payload des commandes action (cf : https://community.jeedom.com/t/tag-topic/108883)
 - **Correction d'un plantage du démon lors de la publication sur un topic contenant `#` ou `?`**

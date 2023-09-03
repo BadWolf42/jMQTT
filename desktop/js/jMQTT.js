@@ -22,7 +22,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 		if (result !== null) {
 			jeedom.eqLogic.save({
 				type: 'jMQTT',
-				eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1}) ],
+				eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1, configuration: {Qos:"1", mqttProto:"mqtt"}}) ],
 				error: function (error) {
 					$.fn.showAlert({message: error.message, level: 'danger'});
 				},
@@ -30,7 +30,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
 					var url = jmqtt.initPluginUrl();
 					jmqtt.unsetPageModified();
 					url += '&id=' + data.id + '&saveSuccessFull=1';
-					loadPage(url);
+					jeedomUtils.loadPage(url);
 				}
 			});
 		}
@@ -104,14 +104,14 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 								var url = jmqtt.initPluginUrl();
 								jmqtt.unsetPageModified();
 								url += '&id=' + savedEq.id + '&saveSuccessFull=1';
-								loadPage(url);
+								jeedomUtils.loadPage(url);
 							}
 						});
 					} else {
 						var url = jmqtt.initPluginUrl();
 						jmqtt.unsetPageModified();
 						url += '&id=' + savedEq.id + '&saveSuccessFull=1';
-						loadPage(url);
+						jeedomUtils.loadPage(url);
 					}
 				}
 			});

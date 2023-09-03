@@ -1,0 +1,183 @@
+{
+    "Shelly Flood": {
+        "name": "Shelly Flood",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2021-03-23 18:10:46",
+            "auto_add_cmd": "0",
+            "Qos": "1",
+            "battery_type": "1xCR123A",
+            "icone": "home-flood",
+            "updatetime": "2023-07-24 08:25:31",
+            "sendToHomebridge": "1",
+            "batterytime": "2022-01-20 20:07:52",
+            "auto_add_topic": "%s/#",
+            "battery_cmd": "battery",
+            "commentaire": "Shelly Flood",
+            "availability_cmd": "online"
+        },
+        "category": {
+            "heating": "0",
+            "security": "1",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "232px",
+            "height": "292px"
+        },
+        "status": {
+            "lastCommunication": "2023-07-03 09:57:37",
+            "enableDatime": "2023-07-03 09:57:37"
+        },
+        "cache": {
+            "z2m_eq_name": "0x385cfbfffec74bb7",
+            "mqtt_client_eqId": "1587"
+        },
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "online",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/online",
+                    "customValuesStatelessAllinone": "0",
+                    "SINGLE": "0",
+                    "DOUBLE": "1",
+                    "LONG": "2",
+                    "customValuesStateless": "0",
+                    "BUTTON": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "sensor:act_reasons",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/sensor/act_reasons"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "BATTERY",
+                "eqType": "jMQTT",
+                "name": "battery",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s/sensor/battery",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "customValuesStatelessAllinone": "0",
+                    "SINGLE": "0",
+                    "DOUBLE": "1",
+                    "LONG": "2",
+                    "customValuesStateless": "0",
+                    "BUTTON": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "sensor:error",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/sensor/error"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "generic_type": "FLOOD",
+                "eqType": "jMQTT",
+                "name": "sensor:flood",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/sensor/flood",
+                    "customValuesStatelessAllinone": "0",
+                    "SINGLE": "0",
+                    "DOUBLE": "1",
+                    "LONG": "2",
+                    "customValuesStateless": "0",
+                    "BUTTON": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "sensor:temperature",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s/sensor/temperature"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}

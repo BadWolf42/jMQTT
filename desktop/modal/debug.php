@@ -548,10 +548,10 @@ function builder_actions(div) {
 	var res = /*'<legend><i class="fas fa-hands-wash "></i> {{Nettoyage}}</legend>'*/'<div class="form-group">';
 	res += '<div class="col-sm-5"><a class="btn btn-warning btn-xs depCheck" style="width:100%;text-align:left;">';
 	res += '<i class="fas fa-check-circle icon-white"></i> {{Forcer la revérification des dépendances}}</a></div>';
-	res += '<div class="col-sm-4"><a class="btn btn-danger btn-xs depDelete" style="width:100%;text-align:left;">';
-	res += '<i class="fas fa-trash"></i> {{Supprimer les dépendances}}</a></div>';
-	res += '<div class="col-sm-3"><a class="btn btn-danger btn-xs venvDelete" style="width:100%;text-align:left;">';
-	res += '<i class="fas fa-trash"></i> {{Supprimer le venv}}</a></div>';
+	res += '<div class="col-sm-4"><a class="btn btn-danger btn-xs venvDelete" style="width:100%;text-align:left;">';
+	res += '<i class="fas fa-trash"></i> {{Supprimer déps Python (venv)}}</a></div>';
+	res += '<div class="col-sm-3"><a class="btn btn-danger btn-xs depDelete" style="width:100%;text-align:left;">';
+	res += '<i class="fas fa-trash"></i> {{Supprimer déps PHP}}</a></div>';
 
 	res += '<div class="col-sm-5"><a class="btn btn-danger btn-xs dynContentDelete" style="width:100%;text-align:left;">';
 	res += '<i class="fas fa-trash"></i> {{Supprimer les contenus dynamiques}}</a></div>';
@@ -628,7 +628,7 @@ function builder_actions(div) {
 				$.fn.showAlert({message: error, level: 'warning'})
 			},
 			success: function(data) {
-				$.fn.showAlert({message: 'Dépendances supprimés', level: 'success'});
+				$.fn.showAlert({message: 'Dépendances PHP supprimées', level: 'success'});
 			}
 		});
 	});
@@ -641,7 +641,7 @@ function builder_actions(div) {
 				$.fn.showAlert({message: error, level: 'warning'})
 			},
 			success: function(data) {
-				$.fn.showAlert({message: 'Venv supprimé', level: 'success'});
+				$.fn.showAlert({message: 'Dépendances Python (venv) supprimées', level: 'success'});
 			}
 		});
 	});

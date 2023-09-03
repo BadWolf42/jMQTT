@@ -1,6 +1,6 @@
 # Registre des évolutions BETA
 
-## 2023-07-15 (v19)
+## 2023-09-04 (v20)
 - Passage en stable
 
 

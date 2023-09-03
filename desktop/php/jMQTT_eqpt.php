@@ -68,7 +68,7 @@
 			</div>
 		</div>
 
-		<div class="form-group toDisable typ-std typ-brk">
+		<div class="form-group toDisable typ-std">
 			<label class="col-sm-3 control-label">{{Qos}}</label>
 			<div id="mqttqos" class="col-sm-1">
 				<select class="eqLogicAttr form-control" data-l1key="configuration"
