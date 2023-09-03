@@ -1,10 +1,11 @@
 # Registre des évolutions
 
-## 2023-08-28 (v20)
+## 2023-09-04 (v20)
 - Suppression de la QoS sur les équipements Broker (car inutilisée)
 - Remplacement de la fonction `loadPage()` par `jeedomUtils.loadPage()` (introduite en 4.2 et dépréciée en v4.4)
 - Ajout de 2 nouveau templates : Shelly Flood & Shelly Vintage (merci Nebz)
 - Meilleure initialisation d'un équipement Broker lors de sa création
+- Correction d'une erreur de dépendances suite à la migration vers Debian 11
 - Correction de certains messages pour les rendre plus explicites
 - Suppression de vieux crons orphelins
 - Ajout de nouvelles fonctions de debug avancé

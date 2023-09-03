@@ -12,6 +12,12 @@ pre
 step 0 "Synchronize the package index"
 try sudo apt-get update
 
+step 10 "Purge dynamic contents"
+silent rm -rf $BASEDIR/JsonPath-PHP/composer.lock
+silent rm -rf $BASEDIR/JsonPath-PHP/vendor
+silent rm -rf $BASEDIR/jmqttd/venv
+silent rm -rf $BASEDIR/jmqttd/__pycache__
+
 step 20 "Install Composer"
 try wget 'https://getcomposer.org/installer' -O $BASEDIR/composer-setup.php
 try php $BASEDIR/composer-setup.php --install-dir=$BASEDIR/
