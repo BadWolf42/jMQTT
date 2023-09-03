@@ -3,7 +3,7 @@
 ## 2023-09-04 (v20)
 - Suppression de la QoS sur les équipements Broker (car inutilisée)
 - Remplacement de la fonction `loadPage()` par `jeedomUtils.loadPage()` (introduite en 4.2 et dépréciée en v4.4)
-- Ajout de 2 nouveau templates : Shelly Flood & Shelly Vintage (merci Nebz)
+- Ajout de 3 nouveaux templates Shelly : Flood, Vintage et Plus Plug S (merci Nebz et samud)
 - Meilleure initialisation d'un équipement Broker lors de sa création
 - Correction d'une erreur de dépendances suite à la migration vers Debian 11
 - Correction de certains messages pour les rendre plus explicites
