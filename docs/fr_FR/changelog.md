@@ -1,5 +1,13 @@
 # Registre des évolutions
 
+## 2023-09-25 (v21)
+- Ajout du bouton Community (uniquement pour Jeedom v4.4+)
+- Ajout du template nécessaire au plugin MCZRemote
+- Correction de multiples avertissements lors de la sauvegarde d'un équipement en v4.4
+- Correction d'un bug en Temps Réel, lorsqu'il n'y a pas beaucoup de nouveaux messages
+- Correction de certains log peu explicites
+- Préparation pour PHP > 7.4
+
 ## 2023-09-04 (v20)
 - Suppression de la QoS sur les équipements Broker (car inutilisée)
 - Remplacement de la fonction `loadPage()` par `jeedomUtils.loadPage()` (introduite en 4.2 et dépréciée en v4.4)

@@ -216,14 +216,14 @@ try {
 		// Get filtering data
 		$since = init('since', '');
 		// Search for compatible eqLogic on this Broker
-		$brk_elogics = jMQTT::byBrkId(init('id'));
+		$eqpts = jMQTT::byBrkId(init('id'));
 		$res = [];
 		// Function to filter array on date
 		function since_filter($val) { global $since; return $val['date'] > $since; }
 		// Filter array and search for matching eqLogic on remainings
 		foreach (array_filter($json, 'since_filter') as $msg) {
 			$eqNames = '';
-			foreach ($brk_elogics as $eqpt) {
+			foreach ($eqpts as $eqpt) {
 				if (mosquitto_topic_matches_sub($eqpt->getTopic(), $msg['topic']))
 					$eqNames .= '<br/>#'.$eqpt->getHumanName().'#';
 			}

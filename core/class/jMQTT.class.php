@@ -575,40 +575,32 @@ class jMQTT extends eqLogic {
 	 * @return array representing the eqLogic and its cmd
 	 */
 	public static function full_export($clean=false) {
-		$returns = array();
+		$brks = array();
+		$eqpts = array();
+		$cmds = array();
 		foreach (eqLogic::byType(__CLASS__) as $eq) {
-			$exp = $eq->toArray();
+			$eqar = $eq->toArray();
 			$obj_name = (is_object($eq->getObject())) ? $eq->getObject()->getName() : __('Aucun', __FILE__);
-			$exp['name'] = $obj_name.':'.$exp['name'];
+			$eqar['name'] = $obj_name.':'.$eqar['name'];
 			if ($clean) { // Remove unneeded informations
-				unset($exp['category']);
-				unset($exp['configuration']['battery_type']);
-				unset($exp['configuration']['createtime']);
-				unset($exp['configuration']['commentaire']);
-				unset($exp['configuration']['icone']);
-				unset($exp['configuration']['updatetime']);
-				unset($exp['comment']);
-				unset($exp['display']);
-				unset($exp['isVisible']);
-				unset($exp['object_id']);
-				unset($exp['status']);
-				unset($exp['tags']);
-				unset($exp['timeout']);
+				unset($eqar['category']);
+				unset($eqar['configuration']['battery_type']);
+				unset($eqar['configuration']['createtime']);
+				unset($eqar['configuration']['commentaire']);
+				unset($eqar['configuration']['updatetime']);
+				unset($eqar['comment']);
+				unset($eqar['display']);
+				unset($eqar['isVisible']);
+				unset($eqar['object_id']);
+				unset($eqar['status']);
+				unset($eqar['tags']);
+				unset($eqar['timeout']);
 			}
-			$exp['commands'] = array();
+			($eqar['configuration']['type'] == self::TYP_BRK) ? ($brks[] = $eqar) : ($eqpts[] = $eqar);
 			foreach ($eq->getCmd() as $cmd)
-				$exp['commands'][] = $cmd->full_export($clean);
-			$returns[] = $exp;
+				$cmds[] = $cmd->full_export($clean);
 		}
-		function fsort($a, $b) {
-			$x = ((isset($a['configuration']) && isset($a['configuration']['type'])) ?
-					$a['configuration']['type'] : "z").$a['id'];
-			$y = ((isset($b['configuration']) && isset($b['configuration']['type'])) ?
-					$b['configuration']['type'] : "z").$b['id'];
-			return strcmp($x, $y);
-		}
-		usort($returns, 'fsort'); // Put the Broker first (needed)
-		return $returns;
+		return array_merge($brks, $eqpts, $cmds);
 	}
 
 	/**
@@ -826,7 +818,7 @@ class jMQTT extends eqLogic {
 				// Name changed
 				if ($this->_preSaveInformations['name'] != $this->getName()) {
 					$old_log = __CLASS__ . '_' . str_replace(' ', '_', $this->_preSaveInformations['name']);
-					$new_log = $this->getMqttClientLogFile(true);
+					$new_log = $this->getMqttClientLogFile();
 					if (file_exists(log::getPathToLog($old_log)))
 						rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
 					config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, __CLASS__), __CLASS__);
@@ -1309,7 +1301,8 @@ class jMQTT extends eqLogic {
 		// If daemon has not correctly started
 		if (!self::daemon_state()) {
 			self::deamon_stop();
-			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez les logs de jMQTT', __FILE__), 'unableStartDaemon'); // Use log::add() to set 'unableStartDaemon' as logicalId
+			/* /!\ Use log::add() here to set 'unableStartDaemon' as logicalId /!\ */
+			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez les logs de jMQTT', __FILE__), 'unableStartDaemon');
 			return;
 		}
 		// Else all good
@@ -2070,9 +2063,9 @@ class jMQTT extends eqLogic {
 			// Start Real Time Mode (must be started before subscribe)
 			self::toDaemon_realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
 			// Update cache
-			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
-			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
-			$broker->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
+			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, implode('|', $subscriptions));
+			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode('|', $exclusions));
+			$broker->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained ? 1 : 0);
 			$broker->setCache(self::CACHE_REALTIME_DURATION, $duration);
 		} else { // Real Time mode needs to be disabled
 			// Stop Real Time mode
@@ -2184,10 +2177,38 @@ class jMQTT extends eqLogic {
 	}
 
 	public static function fromDaemon_value($cmdId, $value) {
-		$cmd = jMQTTCmd::byId(intval($cmdId));
-		$cmd->getEqLogic()->getBroker()->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
-		$cmd->updateCmdValue($value);
-		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		try {
+			$cmd = jMQTTCmd::byId(intval($cmdId));
+			if (!is_object($cmd)) {
+				self::logger('debug', sprintf(
+					__("Pas de commande avec l'id %s", __FILE__),
+					$cmdId
+				));
+				return;
+			}
+			$cmd->getEqLogic()->getBroker()->setStatus(array(
+				'lastCommunication' => date('Y-m-d H:i:s'),
+				'timeout' => 0
+			));
+			$cmd->updateCmdValue($value);
+			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		} catch (Throwable $e) {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('error', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__),
+					__METHOD__,
+					$e->getMessage()
+				));
+			else
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+					"@Stack: %3\$s,<br/>@cmdId: %4\$s,<br/>@value: %5\$s.",
+					__METHOD__,
+					$e->getMessage(),
+					$e->getTraceAsString(),
+					$cmdId,
+					$value)));
+		}
 	}
 
 	public static function fromDaemon_realTimeStarted($id) {
@@ -2293,7 +2314,7 @@ class jMQTT extends eqLogic {
 				$param['query'] = $query;
 			// Process parameters
 			if (isset($param['utf8']) && $param['utf8'])
-				$query = utf8_encode($query);
+				$query = mb_convert_encoding($query, 'UTF-8', 'ISO-8859-1');
 			if (isset($param['reply_cmd'])) {
 				$reply_cmd = cmd::byId($param['reply_cmd']);
 				if (is_object($reply_cmd)) {
@@ -2584,12 +2605,25 @@ class jMQTT extends eqLogic {
 			$request = new mqttApiRequest($msg, $this);
 			$request->processRequest($this->getConf(self::CONF_KEY_MQTT_API));
 		} catch (Throwable $e) {
-			if (log::getLogLevel(__CLASS__) > 100)
-				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
-			else
-				self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>@Topic: %5\$s,<br/>@Payload: %6\$s.",
-							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
+			if (log::getLogLevel(__CLASS__) > 100) {
+				self::logger('error', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__),
+					__METHOD__,
+					$e->getMessage()
+				));
+			} else {
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+					"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>".
+					"@Topic: %5\$s,<br/>@Payload: %6\$s.",
+					__METHOD__,
+					$e->getMessage(),
+					$e->getTraceAsString(),
+					$this->getBrkId(),
+					$this->getConf(self::CONF_KEY_MQTT_API),
+					$msg
+				)));
+			}
 		}
 	}
 
@@ -2599,11 +2633,9 @@ class jMQTT extends eqLogic {
 	 * @var bool $force to force the definition of the log file name
 	 * @return string MQTT Client log filename.
 	 */
-	public function getMqttClientLogFile($force=false) {
-		if (!isset($this->_log) || $force) {
-			$this->_log = __CLASS__ . '_' . str_replace(' ', '_', $this->getBroker()->getName());
-		}
-		return $this->_log;
+	public function getMqttClientLogFile() {
+		return __CLASS__ . '_' .
+			str_replace(' ', '_', $this->getBroker()->getName());
 	}
 
 	/**

@@ -66,24 +66,43 @@ function displayEqLogicCard($eqL) {
 	echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }
 
-function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
+function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoSecondary') {
 	echo '<div class="eqLogicAction cursor ' . $class . '" data-action="' . $action . '">';
 	echo '<i class="fas ' . $fa_icon . '"></i><br/><span>' . $action_name . '</span></div>'."\n";
 }
 ?>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
-		<legend><i class="fas fa-cog"></i> {{Gestion}}</legend>
-		<div class="eqLogicThumbnailContainer">
-		<?php
-		displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf', 'logoSecondary');
-		displayActionCard('{{Ajouter un broker}}', 'fa-server', 'addJmqttBrk', 'logoSecondary');
-		displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT', 'logoSecondary');
-		if (isset($_GET['debug']) || config::byKey('debugMode', 'jMQTT', "0") === "1" /* || log::getLogLevel('jMQTT') <= 100 */)
-			displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT', 'logoSecondary');
-		displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT', 'logoSecondary');
-		displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'addJmqttEq', 'logoSecondary');
-		?>
+		<div class="row">
+			<div class="col-sm-10">
+				<legend><i class="fas fa-cog"></i>&nbsp;{{Gestion}}</legend>
+				<div class="eqLogicThumbnailContainer">
+				<?php
+				displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf');
+				displayActionCard('{{Ajouter un broker}}', 'fa-server', 'addJmqttBrk');
+				displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT');
+				if (isset($_GET['debug']) || config::byKey('debugMode', 'jMQTT', "0") === "1" /* || log::getLogLevel('jMQTT') <= 100 */)
+					displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT');
+				displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT');
+				displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'addJmqttEq'/*, 'logoPrimary'*/);
+				?>
+				</div>
+			</div>
+			<?php
+			// Community card, only displayed if Jeedom version 4.4+
+			if (version_compare((jeedom::version() ?? '4.3.0'), '4.4.0', '>=')) {
+			?>
+			<div class="col-sm-2">
+				<legend><i class="fas fa-comments"></i>&nbsp;{{Community}}</legend>
+				<div class="eqLogicThumbnailContainer">
+				<?php
+ 				displayActionCard('{{Nouveau post}}', 'fa-ambulance', 'createCommunityPost');
+				?>
+				</div>
+			</div>
+			<?php
+			}
+			?>
 		</div>
 		<div class="input-group" style="margin:5px;">
 			<input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">
@@ -124,7 +143,6 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 			}
 			echo '</div>';
 		}
-
 		?>
 	</div>
 
@@ -190,7 +208,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = '') {
 								</div>
 								<div class="col-lg-2">
 									<label class="col-lg-8 control-label" style="text-align:right;">{{Retained}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-										title="{{Remonter aussi les payload retenus par le Broker.}}"></i></sup></label>
+										title="{{Recevoir aussi les payload qui sont déjà retenus par le Broker.}}"></i></sup></label>
 									<input type="checkbox" class="form-control" id="mqttRetTopic" checked="false">
 								</div>
 								<div class="col-lg-2">

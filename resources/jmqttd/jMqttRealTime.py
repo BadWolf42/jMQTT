@@ -68,6 +68,8 @@ class jMqttRealTime:
 		self._log.debug('Disconnected from broker %s:%d (%s)', self.mqtthostname, self.mqttport, mqtt.connack_string(rc))
 		nb = len(self.realtimeTab)
 		self._log.info('Real Time Stopped: %i msgs received', nb)
+		with open(self.realtimeFile, 'w') as f:
+			json.dump(self.realtimeTab, f)
 		self.jcom.send_async({'cmd':'realTimeStopped', 'id':self.id, 'nbMsgs':nb})
 
 	def on_message(self, client, userdata, message):
@@ -115,6 +117,10 @@ class jMqttRealTime:
 			self.message['password'] = ''
 		self.connected = False
 #		self._log.debug('jMqttRealTime.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
+
+		# Load back previouly received realtime messages
+		with open(self.realtimeFile, 'r') as f:
+			self.realtimeTab = json.load(f)
 
 		# Create MQTT Client
 		if self.message['proto'].startswith('ws'):

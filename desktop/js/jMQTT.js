@@ -53,7 +53,7 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 });
 
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
-	var dialog_message = '<label class="control-label">{{Choisissez un broker :}}</label> ';
+	var dialog_message = '<label class="control-label">{{Broker utilisé :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
 	$.each(jmqtt_globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br/>';
@@ -1215,12 +1215,15 @@ $(document).ready(function() {
 	// Wrap plugin.template save action handler
 	if (typeof jeeFrontEnd.pluginTemplate === 'undefined') {
 		// TODO (deprecation) Remove when Jeedom 4.3 is no longer supported
-		var core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
+		let core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
 		$('.eqLogicAction[data-action=save]').off('click').on('click', function() {
 			jmqtt.decorateSaveEqLogic(core_save)();
 		});
 	} else {
-		var core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
-		jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
+		if (typeof jeeFrontEnd.pluginTemplate.oldSaveEqLogic === 'undefined') {
+			let core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
+			jeeFrontEnd.pluginTemplate.oldSaveEqLogic = core_save;
+			jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
+		}
 	}
 });

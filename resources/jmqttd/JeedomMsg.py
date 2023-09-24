@@ -31,11 +31,11 @@ class JeedomMsg():
 		self._socketIn    = None
 		self._threadOut   = None
 # TODO (nice to have) implement statistics
-		self._last_snd    = time.time()
-		self._retry_snd   = 0
-		self._retry_max   = 5
+		self._last_snd    = time.time()			# time of the last snd msg
+		self._retry_snd   = 0					# number of send retries
+		self._retry_max   = 5					# max number of send retries
 		self._snd_timeout = 135					# seconds before send timeout
-		self._last_rcv    = time.time()
+		self._last_rcv    = time.time()			# time of the last rcv msg
 		self._hb_delay    = 45					# seconds between 2 heartbeat emission
 		self._hb_retry    = self._hb_delay / 2	# seconds before retrying
 		self._hb_timeout  = self._hb_delay * 7	# seconds before timeout
@@ -230,4 +230,3 @@ class JeedomMsg():
 		self._status &= ~self.CAN_RCV
 		self._socketIn = None
 		self._log_rcv.debug("Stopped")
-
