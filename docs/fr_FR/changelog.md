@@ -1,5 +1,8 @@
 # Registre des évolutions
 
+## 2023-09-25 (v21)
+- Ajout du template nécessaire au plugin MCZRemote
+
 ## 2023-09-04 (v20)
 - Suppression de la QoS sur les équipements Broker (car inutilisée)
 - Remplacement de la fonction `loadPage()` par `jeedomUtils.loadPage()` (introduite en 4.2 et dépréciée en v4.4)
