@@ -818,7 +818,7 @@ class jMQTT extends eqLogic {
 				// Name changed
 				if ($this->_preSaveInformations['name'] != $this->getName()) {
 					$old_log = __CLASS__ . '_' . str_replace(' ', '_', $this->_preSaveInformations['name']);
-					$new_log = $this->getMqttClientLogFile(true);
+					$new_log = $this->getMqttClientLogFile();
 					if (file_exists(log::getPathToLog($old_log)))
 						rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
 					config::save('log::level::' . $new_log, config::byKey('log::level::' . $old_log, __CLASS__), __CLASS__);
@@ -1301,7 +1301,8 @@ class jMQTT extends eqLogic {
 		// If daemon has not correctly started
 		if (!self::daemon_state()) {
 			self::deamon_stop();
-			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez les logs de jMQTT', __FILE__), 'unableStartDaemon'); // Use log::add() to set 'unableStartDaemon' as logicalId
+			/* /!\ Use log::add() here to set 'unableStartDaemon' as logicalId /!\ */
+			log::add(__CLASS__, 'error', __('Impossible de lancer le démon jMQTT, vérifiez les logs de jMQTT', __FILE__), 'unableStartDaemon');
 			return;
 		}
 		// Else all good
@@ -2176,10 +2177,38 @@ class jMQTT extends eqLogic {
 	}
 
 	public static function fromDaemon_value($cmdId, $value) {
-		$cmd = jMQTTCmd::byId(intval($cmdId));
-		$cmd->getEqLogic()->getBroker()->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
-		$cmd->updateCmdValue($value);
-		cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		try {
+			$cmd = jMQTTCmd::byId(intval($cmdId));
+			if (!is_object($cmd)) {
+				self::logger('debug', sprintf(
+					__("Pas de commande avec l'id %s", __FILE__),
+					$cmdId
+				));
+				return;
+			}
+			$cmd->getEqLogic()->getBroker()->setStatus(array(
+				'lastCommunication' => date('Y-m-d H:i:s'),
+				'timeout' => 0
+			));
+			$cmd->updateCmdValue($value);
+			cache::set('jMQTT::'.self::CACHE_DAEMON_LAST_RCV, time());
+		} catch (Throwable $e) {
+			if (log::getLogLevel(__CLASS__) > 100)
+				self::logger('error', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__),
+					__METHOD__,
+					$e->getMessage()
+				));
+			else
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+					"@Stack: %3\$s,<br/>@cmdId: %4\$s,<br/>@value: %5\$s.",
+					__METHOD__,
+					$e->getMessage(),
+					$e->getTraceAsString(),
+					$cmdId,
+					$value)));
+		}
 	}
 
 	public static function fromDaemon_realTimeStarted($id) {
@@ -2576,12 +2605,25 @@ class jMQTT extends eqLogic {
 			$request = new mqttApiRequest($msg, $this);
 			$request->processRequest($this->getConf(self::CONF_KEY_MQTT_API));
 		} catch (Throwable $e) {
-			if (log::getLogLevel(__CLASS__) > 100)
-				self::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), __METHOD__, $e->getMessage()));
-			else
-				self::logger('error', str_replace("\n",' <br/> ', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>@Topic: %5\$s,<br/>@Payload: %6\$s.",
-							__METHOD__, $e->getMessage(), $e->getTraceAsString(), $id, $topic, $payload)));
+			if (log::getLogLevel(__CLASS__) > 100) {
+				self::logger('error', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__),
+					__METHOD__,
+					$e->getMessage()
+				));
+			} else {
+				self::logger('error', str_replace("\n",' <br/> ', sprintf(
+					__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+					"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>".
+					"@Topic: %5\$s,<br/>@Payload: %6\$s.",
+					__METHOD__,
+					$e->getMessage(),
+					$e->getTraceAsString(),
+					$this->getBrkId(),
+					$this->getConf(self::CONF_KEY_MQTT_API),
+					$msg
+				)));
+			}
 		}
 	}
 
@@ -2591,11 +2633,9 @@ class jMQTT extends eqLogic {
 	 * @var bool $force to force the definition of the log file name
 	 * @return string MQTT Client log filename.
 	 */
-	public function getMqttClientLogFile($force=false) {
-		if (!isset($this->_log) || $force) {
-			$this->_log = __CLASS__ . '_' . str_replace(' ', '_', $this->getBroker()->getName());
-		}
-		return $this->_log;
+	public function getMqttClientLogFile() {
+		return __CLASS__ . '_' .
+			str_replace(' ', '_', $this->getBroker()->getName());
 	}
 
 	/**
