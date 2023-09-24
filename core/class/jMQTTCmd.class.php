@@ -86,10 +86,6 @@ class jMQTTCmd extends cmd {
 		$return = utils::o2a($cmd);
 		if ($clean) { // Remove unneeded informations
 			unset($return['alert']);
-			unset($return['configuration']['request']);
-			unset($return['configuration']['minValue']);
-			unset($return['configuration']['maxValue']);
-			unset($return['configuration']['listValue']);
 			unset($return['configuration']['prev_retain']);
 			unset($return['configuration']['commentaire']);
 			unset($return['isHistorized']);
@@ -97,8 +93,6 @@ class jMQTTCmd extends cmd {
 			unset($return['display']);
 			unset($return['order']);
 			unset($return['template']);
-			unset($return['unite']);
-			unset($return['value']);
 		}
 		return $return;
 	}

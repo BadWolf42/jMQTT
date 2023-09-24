@@ -575,40 +575,32 @@ class jMQTT extends eqLogic {
 	 * @return array representing the eqLogic and its cmd
 	 */
 	public static function full_export($clean=false) {
-		$returns = array();
+		$brks = array();
+		$eqpts = array();
+		$cmds = array();
 		foreach (eqLogic::byType(__CLASS__) as $eq) {
-			$exp = $eq->toArray();
+			$eqar = $eq->toArray();
 			$obj_name = (is_object($eq->getObject())) ? $eq->getObject()->getName() : __('Aucun', __FILE__);
-			$exp['name'] = $obj_name.':'.$exp['name'];
+			$eqar['name'] = $obj_name.':'.$eqar['name'];
 			if ($clean) { // Remove unneeded informations
-				unset($exp['category']);
-				unset($exp['configuration']['battery_type']);
-				unset($exp['configuration']['createtime']);
-				unset($exp['configuration']['commentaire']);
-				unset($exp['configuration']['icone']);
-				unset($exp['configuration']['updatetime']);
-				unset($exp['comment']);
-				unset($exp['display']);
-				unset($exp['isVisible']);
-				unset($exp['object_id']);
-				unset($exp['status']);
-				unset($exp['tags']);
-				unset($exp['timeout']);
+				unset($eqar['category']);
+				unset($eqar['configuration']['battery_type']);
+				unset($eqar['configuration']['createtime']);
+				unset($eqar['configuration']['commentaire']);
+				unset($eqar['configuration']['updatetime']);
+				unset($eqar['comment']);
+				unset($eqar['display']);
+				unset($eqar['isVisible']);
+				unset($eqar['object_id']);
+				unset($eqar['status']);
+				unset($eqar['tags']);
+				unset($eqar['timeout']);
 			}
-			$exp['commands'] = array();
+			($eqar['configuration']['type'] == self::TYP_BRK) ? ($brks[] = $eqar) : ($eqpts[] = $eqar);
 			foreach ($eq->getCmd() as $cmd)
-				$exp['commands'][] = $cmd->full_export($clean);
-			$returns[] = $exp;
+				$cmds[] = $cmd->full_export($clean);
 		}
-		function fsort($a, $b) {
-			$x = ((isset($a['configuration']) && isset($a['configuration']['type'])) ?
-					$a['configuration']['type'] : "z").$a['id'];
-			$y = ((isset($b['configuration']) && isset($b['configuration']['type'])) ?
-					$b['configuration']['type'] : "z").$b['id'];
-			return strcmp($x, $y);
-		}
-		usort($returns, 'fsort'); // Put the Broker first (needed)
-		return $returns;
+		return array_merge($brks, $eqpts, $cmds);
 	}
 
 	/**
