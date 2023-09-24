@@ -53,7 +53,7 @@ $('.eqLogicAction[data-action=templatesMQTT]').on('click', function () {
 });
 
 $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function () {
-	var dialog_message = '<label class="control-label">{{Choisissez un broker :}}</label> ';
+	var dialog_message = '<label class="control-label">{{Broker utilisé :}}</label> ';
 	dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttBrkSelector">';
 	$.each(jmqtt_globals.eqBrokers, function(key, name) { dialog_message += '<option value="'+key+'">'+name+'</option>'; });
 	dialog_message += '</select><br/>';
