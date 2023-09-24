@@ -3,6 +3,7 @@
 ## 2023-09-25 (v21)
 - Ajout du bouton Community (uniquement pour Jeedom v4.4+)
 - Ajout du template nécessaire au plugin MCZRemote
+- Préparation pour PHP version >7.4
 - Correction d'un bug en Temps Réel, lorsqu'il n'y a pas beaucoup de nouveaux messages
 - Correction de certains log peu explicites
 

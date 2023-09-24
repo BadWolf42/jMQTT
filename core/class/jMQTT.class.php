@@ -2314,7 +2314,7 @@ class jMQTT extends eqLogic {
 				$param['query'] = $query;
 			// Process parameters
 			if (isset($param['utf8']) && $param['utf8'])
-				$query = utf8_encode($query);
+				$query = mb_convert_encoding($query, 'UTF-8', 'ISO-8859-1');
 			if (isset($param['reply_cmd'])) {
 				$reply_cmd = cmd::byId($param['reply_cmd']);
 				if (is_object($reply_cmd)) {
