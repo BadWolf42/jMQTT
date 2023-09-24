@@ -1,6 +1,7 @@
 # Registre des évolutions
 
 ## 2023-09-25 (v21)
+- Correction d'un bug en Temps Réel, lorsqu'il n'y a pas beaucoup de nouveaux messages
 - Ajout du template nécessaire au plugin MCZRemote
 
 ## 2023-09-04 (v20)

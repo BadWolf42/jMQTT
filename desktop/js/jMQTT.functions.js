@@ -516,7 +516,7 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
 // Display an Alert if Real time mode has changed for this eqBroker
 jmqtt.displayRealTimeEvent = function(_eq) {
 	// Fetch current Real Time mode for this Broker
-	var realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.rt-status');
+	let realtime = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id=' + _eq.id + ']').find('span.hiddenAsTable i.rt-status');
 	if (_eq.cache.realtime_mode == '1') {
 		if (realtime.hasClass('fa-square')) {
 			// Show an alert only if Real time mode was disabled
@@ -541,11 +541,12 @@ jmqtt.updateRealTimeTab = function(id, paused) {
 	if (!paused) {
 		jmqtt_globals.refreshRealTime = setInterval(function() {
 				// If Real Time table is visible and no data is visible, load it
-				if ($('#table_realtime:visible').length != 0 && eqCard[0].dataset.rtSince == undefined)
+				if ($('#table_realtime:visible').length != 0 && eqCard[0].dataset.rtSince == undefined) {
 					jmqtt.getRealTimeData();
 				// If Real Time mode is active, load more data
-				else if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length)
+				} else if ($('.eqLogicAction[data-action=stopRealTimeMode]:visible').length) {
 					jmqtt.getRealTimeData();
+				}
 			}, 2000);
 	}
 
@@ -590,7 +591,7 @@ jmqtt.changeRealTimeMode = function(_id, _mode) {
 			id: _id,
 			subscribe: $('#mqttIncTopic').val(),
 			exclude: $('#mqttExcTopic').val(),
-			retained: $('#mqttRetTopic').is(':checked'),
+			retained: ($('#mqttRetTopic').is(':checked') ? 1 : 0),
 			duration: $('#mqttDuration').val()
 		}
 	});
@@ -630,28 +631,27 @@ jmqtt.getRealTimeData = function() {
 	jmqtt_globals.lockRealTime = true;
 	var broker = jmqtt.getBrkId()
 	var eqData = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id="' + broker + '"]')[0].dataset;
+	if (eqData.rtSince == undefined) eqData.rtSince = 0;
 	jmqtt.callPluginAjax({
 		data: {
 			action: "realTimeGet",
 			id: broker,
-			since: (eqData.rtSince != undefined) ? eqData.rtSince : ''
+			since: eqData.rtSince
 		},
 		error: function (error) {
 			$.fn.showAlert({message: error.message, level: 'danger'});
 			jmqtt_globals.lockRealTime = false;
 		},
 		success: function (data) {
-			var since = '';
 			if (data.length > 0) {
-				var realtime = '';
+				let realtime = '';
 				for (var i in data) {
 					data[i].id = broker;
 					realtime = jmqtt.newRealTimeCmd(data[i]) + realtime;
-					since = data[i].date;
+					eqData.rtSince = data[i].date;
 				}
 				$('#table_realtime tbody').prepend(realtime);
 			}
-			eqData.rtSince = since;
 			jmqtt_globals.lockRealTime = false;
 		}
 	});

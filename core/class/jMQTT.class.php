@@ -2070,9 +2070,9 @@ class jMQTT extends eqLogic {
 			// Start Real Time Mode (must be started before subscribe)
 			self::toDaemon_realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
 			// Update cache
-			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, implode($subscriptions, '|'));
-			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode($exclusions, '|'));
-			$broker->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained);
+			$broker->setCache(self::CACHE_REALTIME_INC_TOPICS, implode('|', $subscriptions));
+			$broker->setCache(self::CACHE_REALTIME_EXC_TOPICS, implode('|', $exclusions));
+			$broker->setCache(self::CACHE_REALTIME_RET_TOPICS, $retained ? 1 : 0);
 			$broker->setCache(self::CACHE_REALTIME_DURATION, $duration);
 		} else { // Real Time mode needs to be disabled
 			// Stop Real Time mode
