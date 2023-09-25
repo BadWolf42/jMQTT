@@ -1,10 +1,13 @@
 # Registre des évolutions
 
+## 2023-09-26 (v22)
+- Correction d'un bug du mode Temps Réel pouvant crasher le Démon (cf : https://community.jeedom.com/t/112665)
+
 ## 2023-09-25 (v21)
 - Ajout du bouton Community (uniquement pour Jeedom v4.4+)
 - Ajout du template nécessaire au plugin MCZRemote
 - Correction de multiples avertissements lors de la sauvegarde d'un équipement en v4.4
-- Correction d'un bug en Temps Réel, lorsqu'il n'y a pas beaucoup de nouveaux messages
+- Correction d'un bug du mode Temps Réel, lorsqu'il n'y a pas beaucoup de nouveaux messages
 - Correction de certains log peu explicites
 - Préparation pour PHP > 7.4
 
