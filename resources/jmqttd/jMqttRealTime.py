@@ -22,6 +22,7 @@ import sys
 import time
 import threading
 from os import unlink
+from os.path import isfile
 from tempfile import NamedTemporaryFile
 from zlib import decompress as zlib_decompress
 
@@ -119,8 +120,9 @@ class jMqttRealTime:
 #		self._log.debug('jMqttRealTime.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
 
 		# Load back previouly received realtime messages
-		with open(self.realtimeFile, 'r') as f:
-			self.realtimeTab = json.load(f)
+		if isfile(self.realtimeFile):
+			with open(self.realtimeFile, 'r') as f:
+				self.realtimeTab = json.load(f)
 
 		# Create MQTT Client
 		if self.message['proto'].startswith('ws'):

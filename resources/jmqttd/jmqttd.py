@@ -215,7 +215,7 @@ class Main():
 
 			# Check for there is a cmd in message
 			if 'cmd' not in message or not isinstance(message['cmd'], str) or message['cmd'] == '':
-				logging.error('Bad cmd parameter in message dump=%s', json.dumps(message))
+				self.log.error('Bad cmd parameter in message dump=%s', json.dumps(message))
 				continue
 
 			if message['cmd'] == 'hb':
@@ -228,7 +228,10 @@ class Main():
 				continue
 
 			# Register the call
-			self.message_map.get(message['cmd'], self.h_unknown)(message)
+			try:
+				self.message_map.get(message['cmd'], self.h_unknown)(message)
+			except Exception as e:
+				self.log.exception('Message FROM Jeedom raised Exception')
 		self.has_stopped.set()
 
 	def h_newClient(self, message):
