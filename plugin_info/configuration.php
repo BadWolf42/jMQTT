@@ -122,7 +122,7 @@ if ($docker) {
 <?php } /* $docker */ ?>
 	</div>
 	<div class="col-sm-6">
-		<legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuation de jMQTT}}</legend>
+		<legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuration de jMQTT}}</legend>
 		<div class="form-group">
 			<label class="col-sm-1 control-label">&nbsp;</label>
 			<div class="col-sm-5">
