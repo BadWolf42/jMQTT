@@ -339,7 +339,7 @@ try {
 	if (init('action') == 'statsSend') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
 		cache::set('jMQTT::nextStats', time() - 300);
-		jMQTT::pluginStats('cron');
+		jMQTT::pluginStats();
 		ajax::success();
 	}
 	if (init('action') == 'listenersRemove') {
