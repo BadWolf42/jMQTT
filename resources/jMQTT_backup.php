@@ -235,7 +235,7 @@ function export_metadata($packages = []) {
 		$res['pluginVersion'] = $info_json['pluginVersion'];
 	} catch (Throwable $e) {
 		print("\n" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Warning: Could not get version number from info.json, this should not be possible!\n");
-		$res['pluginVersion'] = -1;
+		$res['pluginVersion'] = '0.0.0';
 	}
 	$res['configVersion'] = intval(config::byKey('version', 'jMQTT', -1));
 	$res['packages'] = $packages;

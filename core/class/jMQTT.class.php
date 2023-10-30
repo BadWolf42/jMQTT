@@ -1100,26 +1100,34 @@ class jMQTT extends eqLogic {
 		// Check last reporting (or if forced)
 		$nextStats = @cache::byKey('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS)->getValue(0);
 		if ($_reason === 'cron' && (time() < $nextStats)) { // No reason to force send stats
-			// self::logger('debug', sprintf(__("Aucune raison d'envoyer des données statistiques avant le %s", __FILE__), date('Y-m-d H:i:s', $nextStats)));
+			// self::logger('debug', sprintf(
+			// 	__("Aucune raison d'envoyer des données statistiques avant le %s", __FILE__),
+			// 	date('Y-m-d H:i:s', $nextStats)
+			// ));
 			return;
 		}
-		// Ensure next attempt will be in at least 5 minutes
-		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300)); // in 5-10 mins
+		// Ensure between 5 and 10 minutes before next attempt
+		cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300));
+		// Avoid getting all stats exactly at the same time
+		sleep(rand(0, 10));
 
 		$url = 'https://stats.bad.wf/jmqtt.php';
 		$data = array();
-		$data['version'] = 1;
 		$data['hardwareKey'] = jeedom::getHardwareKey();
 		// Ensure system unicity using a rotating UUID
 		$data['lastUUID'] = config::byKey(self::CONF_KEY_JMQTT_UUID, __CLASS__, $data['hardwareKey']);
 		$data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes('107'), true));
 		$data['hardwareName'] = jeedom::getHardwareName();
-		// TODO (low) Detect VM and docker
+		if ($data['hardwareName'] == 'diy')
+			$data['hardwareName'] = trim(shell_exec('systemd-detect-virt'));
+		if ($data['hardwareName'] == 'none')
+			$data['hardwareName'] = 'diy';
 		$data['distrib'] = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
 		$data['phpVersion'] = phpversion();
-		// TODO (low) Add Python version
+		$data['pythonVersion'] = trim(shell_exec("python3 -V | cut -d ' ' -f 2"));
 		$data['jeedom'] = jeedom::version();
 		$data['lang'] = config::byKey('language', 'core', 'fr_FR');
+		$data['lang'] = ($data['lang'] != '') ? $data['lang'] : 'fr_FR';
 		$jplugin = update::byLogicalId(__CLASS__);
 		$data['source'] = $jplugin->getSource();
 		$data['branch'] = $jplugin->getConfiguration('version', 'unknown');
@@ -1127,7 +1135,7 @@ class jMQTT extends eqLogic {
 		// TODO (low) Add int nb eqBroker, eqLogic & cmd
 		$data['reason'] = $_reason;
 		if ($_reason == 'uninstall' || $_reason == 'noStats')
-			$data['removeMe'] = true;
+			$data['next'] = 0;
 		else
 			$data['next'] = time() + 432000 + rand(0, 172800); // Next stats in 5-7 days
 		$options = array('http' => array(
@@ -1149,7 +1157,7 @@ class jMQTT extends eqLogic {
 			self::logger('debug', sprintf(__('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__), $result));
 		} else {
 			config::save(self::CONF_KEY_JMQTT_UUID, $data['UUID'], __CLASS__);
-			if (isset($data['removeMe']) && $data['removeMe']) {
+			if ($data['next'] == 0) {
 				self::logger('info', __('Données statistiques supprimées', __FILE__));
 				cache::set('jMQTT::'.self::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
 			} else {

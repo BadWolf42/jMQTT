@@ -39,33 +39,56 @@ function jMQTT_update($_direct=true) {
 	// (even if plugin is disabled the config key stays)
 	try {
 		$content = file_get_contents(__DIR__ . '/info.json');
-		$data = json_decode($content, true);
-		$pluginVersion = $data['pluginVersion'];
+		$info = json_decode($content, true);
+		$pluginVer = $info['pluginVersion'];
 	} catch (Throwable $e) {
 		log::add('jMQTT', 'warning', __("Impossible de récupérer le numéro de version dans le fichier info.json, ceci ce devrait pas arriver !", __FILE__));
-		$pluginVersion = 0;
+		$pluginVer = '0.0.0';
 	}
 
-	config::save('previousVersion', config::byKey('version', 'jMQTT', 'unknown'), 'jMQTT');
-	$version = @intval(config::byKey('version', 'jMQTT', $pluginVersion));
+	// Backup old version number
+	$currentVer = config::byKey('version', 'jMQTT', $pluginVer);
+	$currentVer = is_int($currentVer) ? strval($currentVer) . '.0.0' : $currentVer;
+	config::save('previousVersion', $currentVer, 'jMQTT');
 
-	while (++$version <= $pluginVersion) {
+	// List all migration files
+	$files = ls(__DIR__ . '/../resources/update/', '*.php', false, array('files'));
+	$migrations = array();
+	foreach($files as $name) {
+		// Use only matching files
+		if (!preg_match_all("/^(\d+)(\.(\d+)(\.(\d+))?)?.php$/", $name, $m))
+			continue;
+		$fileVer = intval($m[1][0]).'.'.intval($m[3][0]).'.'.intval($m[5][0]);
+		// Filter out migration files <= $currentVer
+		if (version_compare($fileVer, $currentVer, '<='))
+			continue;
+		// Filter out migration files > $pluginVer
+		if (version_compare($fileVer, $pluginVer, '>'))
+			continue;
+		$migrations[$fileVer] = $name;
+	}
+
+	// Sort files by key (version number)
+	uksort($migrations, 'version_compare');
+
+	// Apply migration files in the right order
+	foreach($migrations as $ver => $name) {
 		try {
-			$file = __DIR__ . '/../resources/update/' . $version . '.php';
+			$file = __DIR__ . '/../resources/update/' . $name . '.php';
 			if (file_exists($file)) {
-				log::add('jMQTT', 'debug', sprintf(__("Version %d : Application des modifications", __FILE__), $version));
+				log::add('jMQTT', 'debug', sprintf(__("Application du fichier de migration vers la version %d...", __FILE__), $ver));
 				include $file;
-				log::add('jMQTT', 'debug', sprintf(__("Version %d : Modifications appliquées", __FILE__), $version));
+				log::add('jMQTT', 'debug', sprintf(__("Migration vers la version %d réalisée avec succès", __FILE__), $ver));
 			}
 		} catch (Throwable $e) {
 			log::add('jMQTT', 'error', str_replace("\n",'<br/>',
-				sprintf(__("Version %1\$d : Exception lors de l'application des modifications : %2\$s", __FILE__)."<br/>@Stack: %3\$s.",
-						$version, $e->getMessage(), $e->getTraceAsString())
+				sprintf(__("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__)."<br/>@Stack: %3\$s.",
+						$ver, $e->getMessage(), $e->getTraceAsString())
 			));
 		}
 	}
 
-	config::save('version', $pluginVersion, 'jMQTT');
+	config::save('version', $pluginVer, 'jMQTT');
 
 	jMQTT::pluginStats($_direct ? 'update' : 'install');
 }
