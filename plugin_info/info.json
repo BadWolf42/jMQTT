@@ -13,15 +13,15 @@
 	"category": "automation protocol",
 	"hasDependency": true,
 	"hasOwnDeamon": true,
-	"issue": "https://github.com/BadWolf42/plugin-jMQTT/issues",
-	"changelog": "https://BadWolf42.github.io/plugin-jMQTT/fr_FR/changelog",
-	"documentation": "https://BadWolf42.github.io/plugin-jMQTT/fr_FR/index",
-	"changelog_beta": "https://BadWolf42.github.io/plugin-jMQTT/fr_FR/changelog_beta",
-	"documentation_beta": "https://BadWolf42.github.io/plugin-jMQTT/fr_FR/index_beta",
+	"issue": "https://github.com/BadWolf42/jMQTT/issues",
+	"changelog": "https://BadWolf42.github.io/jMQTT/fr_FR/changelog",
+	"documentation": "https://BadWolf42.github.io/jMQTT/fr_FR/index",
+	"changelog_beta": "https://BadWolf42.github.io/jMQTT/fr_FR/changelog_beta",
+	"documentation_beta": "https://BadWolf42.github.io/jMQTT/fr_FR/index_beta",
 	"link": {
-		"community": "https://community.jeedom.com/tag/plugin-jMQTT",
-		"forum": "https://community.jeedom.com/tag/plugin-jMQTT",
-		"github": "https://github.com/BadWolf42/plugin-jMQTT"
+		"community": "https://community.jeedom.com/tag/plugin-jmqtt",
+		"forum": "https://community.jeedom.com/tag/plugin-jmqtt",
+		"github": "https://github.com/BadWolf42/jMQTT"
 	},
 	"languages": ["fr_FR","en_US"],
 	"compatibility": ["atlas","diy","docker","luna","miniplus","rpi","smart","v4"],
