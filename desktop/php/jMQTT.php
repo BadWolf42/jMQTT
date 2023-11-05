@@ -89,6 +89,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
 				</div>
 			</div>
 			<?php
+			// TODO (deprecation) Remove when Jeedom 4.3 is no longer supported
 			// Community card, only displayed if Jeedom version 4.4+
 			if (version_compare((jeedom::version() ?? '4.3.0'), '4.4.0', '>=')) {
 			?>

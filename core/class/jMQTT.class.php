@@ -1344,6 +1344,7 @@ class jMQTT extends eqLogic {
 		}
 		// If something bad happened, clean anyway
 		self::logger('debug', __("Nettoyage du Démon", __FILE__));
+		// TODO (medium) Killall realpath(__DIR__ . '/../../resources/jmqttd').'/venv/bin/python3'
 		self::fromDaemon_daemonDown($cuid);
 	}
 
