@@ -11,7 +11,7 @@ include_file('desktop', 'jMQTT.globals', 'js', 'jMQTT');
 include_file('desktop', 'jMQTT.functions', 'js', 'jMQTT');
 
 // Send daemon current state
-sendVarToJS('jmqtt_globals.daemonState', jMQTT::daemon_state());
+sendVarToJS('jmqtt_globals.daemonState', jMQTTDaemon::state());
 
 /** @var jMQTT[][] $eqNonBrokers */
 $eqNonBrokers = jMQTT::getNonBrokers();

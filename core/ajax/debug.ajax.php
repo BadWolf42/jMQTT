@@ -23,6 +23,8 @@ try {
 	if (!isConnect('admin')) {
 		throw new Exception(__('401 - Accès non autorisé', __FILE__));
 	}
+
+	require_once __DIR__ . '/../../core/class/jMQTT.class.php';
 	ajax::init();
 
 // -------------------- Config Daemon --------------------
@@ -251,7 +253,7 @@ try {
 			ajax::error(__('Format invalide', __FILE__));
 		}
 		// Send to Daemon
-		jMQTT::sendToDaemon($data);
+		jMQTTComToDaemon::send($data);
 		ajax::success();
 	}
 	if (init('action') == 'sendToJeedom') {
@@ -261,7 +263,7 @@ try {
 			ajax::error(__('Format invalide', __FILE__));
 		}
 		// Prepare url
-		$callbackURL = jMQTT::get_callback_url();
+		$callbackURL = jMQTTDaemon::get_callback_url();
 		// To fix issue: https://community.jeedom.com/t/87727/39
 		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0')) && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1')
 			$callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
@@ -287,20 +289,20 @@ try {
 	}
 	if (init('action') == 'depDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		jMQTT::deamon_stop();
+		jMQTTDaemon::stop();
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/composer.lock');
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/vendor');
 		ajax::success();
 	}
 	if (init('action') == 'venvDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		jMQTT::deamon_stop();
+		jMQTTDaemon::stop();
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/venv');
 		ajax::success();
 	}
 	if (init('action') == 'dynContentDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		jMQTT::deamon_stop();
+		jMQTTDaemon::stop();
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/__pycache__');
 		exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder(__CLASS__).'/rt*.json');
 		ajax::success();
@@ -339,7 +341,7 @@ try {
 	if (init('action') == 'statsSend') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
 		cache::set('jMQTT::nextStats', time() - 300);
-		jMQTT::pluginStats();
+		jMQTTDaemon::pluginStats();
 		ajax::success();
 	}
 	if (init('action') == 'listenersRemove') {

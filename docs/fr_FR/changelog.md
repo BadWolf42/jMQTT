@@ -313,7 +313,7 @@
 
 ## 2021-11-29 AutoPublish
   - Ajout de la fonctionalité  "Pub. Auto" qui permet la Publication automatique en MQTT lors du changement du champ Valeur d'une commande action (Attention : la charge engendrée sur le système est actuellement inconnue)
-  - Fix du prototype de la fonction jMQTT:cron()
+  - Fix du prototype de la fonction jMQTT::cron()
 
 ## 2021-11-16 Template Manager
   - Améliorations mineures du log de DEBUG

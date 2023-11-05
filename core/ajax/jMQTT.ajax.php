@@ -25,6 +25,7 @@ try {
 	}
 
 
+	require_once __DIR__ . '/../../core/class/jMQTT.class.php';
 	ajax::init(array('fileupload'));
 
 	###################################################################################################################
@@ -182,11 +183,11 @@ try {
 	# Configuration page
 	if (init('action') == 'startMqttClient') {
 		$broker = jMQTT::getBrokerFromId(init('id'));
-		ajax::success($broker->startMqttClient(true));
+		ajax::success($broker->startMqttClient());
 	}
 
 	if (init('action') == 'sendLoglevel') {
-		jMQTT::toDaemon_setLogLevel(init('level'));
+		jMQTTComToDaemon::setLogLevel(init('level'));
 		ajax::success();
 	}
 
@@ -199,7 +200,68 @@ try {
 	###################################################################################################################
 	# Real Time mode
 	if (init('action') == 'changeRealTimeMode') {
-		jMQTT::changeRealTimeMode(init('id'), init('mode'), init('subscribe'), init('exclude'), init('retained'), init('duration'));
+		$id = init('id');
+		$mode = init('mode');
+		$subscribe = init('subscribe', '#');
+		$exclude = init('exclude', 'homeassistant/#');
+		$retained = init('retained', false);
+		$duration = init('duration', 180);
+
+		$broker = jMQTT::getBrokerFromId($id);
+		$broker->log(
+			'info',
+			$mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__)
+		);
+
+		// $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)", __FILE__),
+		//                               $id, $mode, $subscribe, $exclude, $retained, $duration));
+
+		// If Real Time mode needs to be enabled
+		if($mode) {
+			// Check if a subscription topic is provided
+			if (trim($subscribe) == '') {
+				throw new Exception(
+					__("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__)
+				);
+			}
+			$subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
+			// Cleanup subscriptions
+			$subscriptions = [];
+			foreach ($subscribe as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$subscriptions[] = $t;
+			}
+			if (count($subscriptions) == 0) {
+				throw new Exception(
+					__("Impossible d'activer le mode Temps Réel sans topic de souscription", __FILE__)
+				);
+			}
+			// Cleanup exclusions
+			$exclude = (trim($exclude) == '') ? [] : explode('|', $exclude);
+			$exclusions = [];
+			foreach ($exclude as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$exclusions[] = $t;
+			}
+			// Cleanup retained
+			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
+			// Cleanup duration
+			$duration = min(max(1, intval($duration)), 3600);
+			// Start Real Time Mode (must be started before subscribe)
+			jMQTTComToDaemon::realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
+			// Update cache
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_INC_TOPICS, implode('|', $subscriptions));
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_EXC_TOPICS, implode('|', $exclusions));
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_RET_TOPICS, $retained ? 1 : 0);
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_DURATION, $duration);
+		} else { // Real Time mode needs to be disabled
+			// Stop Real Time mode
+			jMQTTComToDaemon::realTimeStop($id);
+		}
 		ajax::success();
 	}
 
@@ -235,7 +297,7 @@ try {
 	}
 
 	if (init('action') == 'realTimeClear') {
-		jMQTT::toDaemon_realTimeClear(init('id'));
+		jMQTTComToDaemon::realTimeClear(init('id'));
 		ajax::success();
 	}
 

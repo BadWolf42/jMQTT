@@ -90,7 +90,7 @@ if (!$docker) {
 
 if ($docker) {
 	// To fix issue: https://community.jeedom.com/t/87727/39
-	$regularVal = jMQTT::get_callback_url();
+	$regularVal = jMQTTDaemon::get_callback_url();
 	$overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
 	$overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
 	$curVal = ($overrideEn) ? $overrideVal : $regularVal;

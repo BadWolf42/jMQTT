@@ -586,8 +586,8 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...");
 		$old_autoMode = config::byKey('deamonAutoMode', 'jMQTT', 1);
 		config::save('deamonAutoMode', 0, 'jMQTT');
-		$old_daemonState = jMQTT::daemon_state();
-		jMQTT::deamon_stop();
+		$old_daemonState = jMQTTDaemon::state();
+		jMQTTDaemon::stop();
 		print("                             [ OK ]\n");
 	} else {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...                        [ SKIPPED ]\n");
@@ -701,7 +701,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...");
 		if ($old_daemonState)
-			jMQTT::deamon_start();
+			jMQTTDaemon::start();
 		print("                             [ OK ]\n");
 	} else {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...                        [ SKIPPED ]\n");
