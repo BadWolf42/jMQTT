@@ -44,7 +44,9 @@ jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les commandes inf
 $templateFolderPath = __DIR__ . '/../../data/template';
 foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
 	try {
-		[$templateKey, $templateValue] = jMQTT::templateRead(__DIR__ . '/../../' . jMQTT::PATH_TEMPLATES_PERSO . $file);
+		[$templateKey, $templateValue] = jMQTT::templateRead(
+			__DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_PERSO . $file
+		);
 
 		// Keep track of any change
 		$changed = false;
@@ -64,8 +66,8 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
 					$i = strpos($topic, '{');
 					if ($i === false) {
 						// Just set empty jsonPath if it doesn't exists
-						if (!isset($cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH])) {
-							$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = '';
+						if (!isset($cmd['configuration'][jMQTTConst::CONF_KEY_JSON_PATH])) {
+							$cmd['configuration'][jMQTTConst::CONF_KEY_JSON_PATH] = '';
 							$changed = true;
 						}
 					} else {
@@ -87,7 +89,7 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
 							else
 								$jsonPath .= '[' . $index . ']';
 						}
-						$cmd['configuration'][jMQTTCmd::CONF_KEY_JSON_PATH] = $jsonPath;
+						$cmd['configuration'][jMQTTConst::CONF_KEY_JSON_PATH] = $jsonPath;
 					}
 				}
 			}
@@ -99,7 +101,7 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
 
 		// Save back template in the file
 		$jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-		file_put_contents(__DIR__ . '/../../' . jMQTT::PATH_TEMPLATES_PERSO . $file, $jsonExport);
+		file_put_contents(__DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_PERSO . $file, $jsonExport);
 	} catch (Throwable $e) {
 		throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $file));
 	}

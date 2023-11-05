@@ -125,11 +125,11 @@ try {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
 		$cacheKeys = array();
 		$cacheKeys[] = 'dependancyjMQTT';
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_RCV;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_SND;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_PORT;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_UID;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_JMQTT_NEXT_STATS;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_RCV;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_SND;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_PORT;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_UID;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_JMQTT_NEXT_STATS;
 		// $cacheKeys[] = 'jMQTT::dummy';
 		// $cacheKeys[] = ;
 		$data = array();
@@ -167,8 +167,8 @@ try {
 		foreach(jMQTT::getNonBrokers() as $eqpts) {
 			foreach ($eqpts as $eqpt) {
 				$cacheEqptKeys = array();
-				$cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_IGNORE_TOPIC_MISMATCH;
-				// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
+				$cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;
+				// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED;
 				$cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
 				$cacheEqptKeys[] = 'eqLogicStatusAttr'.$eqpt->getId();
 				$data = array();
@@ -265,7 +265,7 @@ try {
 		// To fix issue: https://community.jeedom.com/t/87727/39
 		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0')) && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1')
 			$callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
-		$url = $callbackURL . '?apikey=' . jeedom::getApiKey('jMQTT') . '&uid=' . (@cache::byKey('jMQTT::'.jMQTT::CACHE_DAEMON_UID)->getValue("0:0"));
+		$url = $callbackURL . '?apikey=' . jeedom::getApiKey('jMQTT') . '&uid=' . (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0"));
 
 		// Send to Jeedom
 		$curl = curl_init($url);
@@ -320,7 +320,7 @@ try {
 	if (init('action') == 'threadDump') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
 		// Get cached PID and PORT
-		$cuid = @cache::byKey('jMQTT::'.jMQTT::CACHE_DAEMON_UID)->getValue("0:0");
+		$cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
 		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
 		// If PID is unavailable or not running
 		if ($cpid == 0 || !@posix_getsid($cpid))

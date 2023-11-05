@@ -69,9 +69,24 @@ class jMQTTCmd extends cmd {
 	 */
 	private function eventNewCmd($reload=false) {
 		$eqLogic = $this->getEqLogic();
-		$eqLogic->log('info', sprintf(__("Commande %1\$s #%2\$s# ajoutée", __FILE__), $this->getType(), $this->getHumanName()));
+		$eqLogic->log(
+			'info',
+			sprintf(
+				__("Commande %1\$s #%2\$s# ajoutée", __FILE__),
+				$this->getType(),
+				$this->getHumanName()
+			)
+		);
 		// Advise the desktop page (jMQTT.js) that a new command has been added
-		event::add('jMQTT::cmdAdded', array('eqlogic_id' => $eqLogic->getId(), 'eqlogic_name' => $eqLogic->getName(), 'cmd_name' => $this->getName(), 'reload' => $reload));
+		event::add(
+			'jMQTT::cmdAdded',
+			array(
+				'eqlogic_id' => $eqLogic->getId(),
+				'eqlogic_name' => $eqLogic->getName(),
+				'cmd_name' => $this->getName(),
+				'reload' => $reload
+			)
+		);
 	}
 
 	/**
@@ -102,7 +117,8 @@ class jMQTTCmd extends cmd {
 	 * @param string $value new command value
 	 */
 	public function updateCmdValue($value) {
-		if (in_array(strtolower($this->getName()), ["color", "colour", "couleur", "rgb"]) || $this->getGeneric_type() == "LIGHT_COLOR") {
+		if (in_array(strtolower($this->getName()), ["color", "colour", "couleur", "rgb"])
+			|| $this->getGeneric_type() == "LIGHT_COLOR") {
 			if (is_numeric($value)) {
 				$value = jMQTTCmd::DECtoHEX($value);
 			} else {
@@ -119,21 +135,38 @@ class jMQTTCmd extends cmd {
 		$eqLogic = $this->getEqLogic();
 		$eqLogic->checkAndUpdateCmd($this, $value);
 		$value = $this->getCache('value', 0);
-		$eqLogic->log('info', sprintf(__("Cmd #%1\$s# <- %2\$s", __FILE__), $this->getHumanName(), $value));
-		if ($this->isAvailability() && ((!boolval($value)) != boolval($eqLogic->getStatus('warning', 0)))) {
+		$eqLogic->log(
+			'info',
+			sprintf(
+				__("Cmd #%1\$s# <- %2\$s", __FILE__),
+				$this->getHumanName(),
+				$value
+			)
+		);
+		if ($this->isAvailability()
+			&& ((!boolval($value)) != boolval($eqLogic->getStatus('warning', 0)))) {
 			if (!boolval($value)) {
 				$eqLogic->setStatus('warning', 1);
-				$eqLogic->log('info', sprintf(__("Eq #%s# <- Est Indisponible", __FILE__), $eqLogic->getHumanName()));
+				$eqLogic->log('info', sprintf(
+					__("Eq #%s# <- Est Indisponible", __FILE__),
+					$eqLogic->getHumanName()
+				));
 			} else {
 				$eqLogic->setStatus('warning', 0);
-				$eqLogic->log('info', sprintf(__("Eq #%s# <- Est Disponible", __FILE__), $eqLogic->getHumanName()));
+				$eqLogic->log('info', sprintf(
+					__("Eq #%s# <- Est Disponible", __FILE__),
+					$eqLogic->getHumanName()
+				));
 			}
 		}
 		if ($this->isBattery()) {
 			$value = ($this->getSubType() == 'binary') ? ($value ? 100 : 10) : $value;
 			if ($eqLogic->getStatus('battery') != $value) {
 				$eqLogic->batteryStatus($value);
-				$eqLogic->log('info', sprintf(__("Eq #%1\$s# <- Batterie à %2\$s%%", __FILE__), $eqLogic->getHumanName(), $value));
+				$eqLogic->log('info', sprintf(
+					__("Eq #%1\$s# <- Batterie à %2\$s%%", __FILE__),
+					$eqLogic->getHumanName(), $value
+				));
 			}
 		}
 	}
@@ -146,7 +179,10 @@ class jMQTTCmd extends cmd {
 	public function updateJsonCmdValue($jsonArray) {
 		// if dependancy is not yet installed, we avoid issue when someone create some command with JSONPath
 		if (!class_exists('JsonPath\JsonObject')) {
-			$this->getEqLogic()->log('error', __("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
+			$this->getEqLogic()->log(
+				'error',
+				__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__)
+			);
 			return;
 		}
 		try {
@@ -158,17 +194,48 @@ class jMQTTCmd extends cmd {
 			$jsonobject=new JsonPath\JsonObject($jsonArray);
 			$value = $jsonobject->get($jsonPath);
 			if ($value !== false && $value !== array())
-				$this->updateCmdValue(json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+				$this->updateCmdValue(
+					json_encode(
+						(count($value) > 1) ? $value : $value[0],
+						JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+					)
+				);
 			else
-				$this->getEqLogic()->log('info', sprintf(__("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__), $this->getHumanName()));
+				$this->getEqLogic()->log(
+					'info',
+					sprintf(
+						__("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__),
+						$this->getHumanName()
+					)
+				);
 		}
 		catch (Throwable $e) {
 			if (log::getLogLevel(__CLASS__) > 100)
-				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
-															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
+				$this->getEqLogic()->log(
+					'warning',
+					sprintf(
+						__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
+						$this->getJsonPath(),
+						$this->getHumanName(),
+						$e->getMessage()
+					)
+				);
 			else // More info in debug mode, no big log otherwise
-				$this->getEqLogic()->log('warning', str_replace("\n",' <br/> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
-							",<br/>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
+				$this->getEqLogic()->log(
+					'warning',
+					str_replace(
+						"\n",
+						' <br/> ',
+						sprintf(
+							__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",<br/>@Stack: %4\$s.",
+							$this->getJsonPath(),
+							$this->getHumanName(),
+							$e->getMessage(),
+							$e->getTraceAsString()
+						)
+					)
+				);
 		}
 	}
 
@@ -183,9 +250,23 @@ class jMQTTCmd extends cmd {
 			return $jsonArray;
 		else {
 			if (json_last_error() == JSON_ERROR_NONE)
-				$this->getEqLogic()->log('info', sprintf(__("Problème de format JSON sur la commande #%s#: Le message reçu n'est pas au format JSON.", __FILE__), $this->getHumanName()));
+				$this->getEqLogic()->log(
+					'info',
+					sprintf(
+						__("Problème de format JSON sur la commande #%s#: Le message reçu n'est pas au format JSON.", __FILE__),
+						$this->getHumanName()
+					)
+				);
 			else
-				$this->getEqLogic()->log('warning', sprintf(__("Problème de format JSON sur la commande #%1\$s#: %2\$s (%3\$d)", __FILE__), $this->getHumanName(), json_last_error_msg(), json_last_error()));
+				$this->getEqLogic()->log(
+					'warning',
+					sprintf(
+						__("Problème de format JSON sur la commande #%1\$s#: %2\$s (%3\$d)", __FILE__),
+						$this->getHumanName(),
+						json_last_error_msg(),
+						json_last_error()
+					)
+				);
 			return null;
 		}
 	}
@@ -205,25 +286,62 @@ class jMQTTCmd extends cmd {
 	public function execute($_options = null) {
 		if ($this->getType() != 'action')
 			return;
-		$request = $this->getConfiguration(self::CONF_KEY_REQUEST, "");
+		$request = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, "");
 		$topic = $this->getTopic();
-		$qos = $this->getConfiguration(self::CONF_KEY_PUB_QOS, 1);
-		$retain = $this->getConfiguration(self::CONF_KEY_RETAIN, 0);
+		$qos = $this->getConfiguration(jMQTTConst::CONF_KEY_PUB_QOS, 1);
+		$retain = $this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0);
 		$eq = $this->getEqLogic();
 		// Prevent error when $_options is null or accessing an unavailable $_options
-		$_defaults = array('other' => '', 'slider' => '#slider#', 'title' => '#title#', 'message' => '#message#', 'color' => '#color#', 'select' => '#select#');
+		$_defaults = array(
+			'other' => '',
+			'slider' => '#slider#',
+			'title' => '#title#',
+			'message' => '#message#',
+			'color' => '#color#',
+			'select' => '#select#'
+		);
 		$_options = is_null($_options) ? $_defaults : array_merge($_defaults, $_options);
 		// As per feature request (issue 208: https://github.com/Domochip/jMQTT/issues/208#issuecomment-1206207191)
 		// If request is empty, the corresponding subtype option is implied (Default/other = '')
 		if ($request == '') {
 			$request = $_options[$this->getSubType()];
 		} else { // Otherwise replace all tags
-			$replace = array('#slider#', '#title#', '#message#', '#color#', '#select#');
-			$replaceBy = array($_options['slider'], $_options['title'], $_options['message'], $_options['color'], $_options['select']);
-			$replace = array_merge($replace, array('#id#', '#name#', '#humanName#', '#subType#', '#topic#'));
-			$replaceBy = array_merge($replaceBy, array($this->getId(), $this->getName(), $this->getHumanName(), $this->getSubType(), $topic));
-			$replace = array_merge($replace, array('#eqId#', '#eqName#', '#eqHumanName#', '#eqTopic#'));
-			$replaceBy = array_merge($replaceBy, array($eq->getId(), $eq->getName(), $eq->getHumanName(), $eq->getTopic()));
+			$replace = array(
+				'#slider#',
+				'#title#',
+				'#message#',
+				'#color#',
+				'#select#'
+			);
+			$replaceBy = array(
+				$_options['slider'],
+				$_options['title'],
+				$_options['message'],
+				$_options['color'],
+				$_options['select']
+			);
+			$replace = array_merge(
+				$replace,
+				array('#id#', '#name#', '#humanName#', '#subType#', '#topic#')
+			);
+			$replaceBy = array_merge(
+				$replaceBy,
+				array(
+					$this->getId(),
+					$this->getName(),
+					$this->getHumanName(),
+					$this->getSubType(),
+					$topic
+				)
+			);
+			$replace = array_merge(
+				$replace,
+				array('#eqId#', '#eqName#', '#eqHumanName#', '#eqTopic#')
+			);
+			$replaceBy = array_merge(
+				$replaceBy,
+				array($eq->getId(), $eq->getName(), $eq->getHumanName(), $eq->getTopic())
+			);
 			$request = str_replace($replace, $replaceBy, $request);
 		}
 		$request = jeedom::evaluateExpression($request);
@@ -256,33 +374,45 @@ class jMQTTCmd extends cmd {
 	 */
 	public function preSave() {
 		// Check if name is unique on the equipment for a New cmd
-		if ($this->getId() == '' && is_object(jMQTTCmd::byEqLogicIdCmdName($this->getEqLogic()->getId(), $this->getName()))) {
-			throw new Exception(sprintf(__("Impossible de créer la commande <b>#%s#</b>, car une commande avec le même nom existe déjà !", __FILE__), $this->getHumanName()));
+		if ($this->getId() == ''
+			&& is_object(jMQTTCmd::byEqLogicIdCmdName($this->getEqLogic()->getId(), $this->getName()))
+		) {
+			throw new Exception(
+				sprintf(
+					__("Impossible de créer la commande <b>#%s#</b>, car une commande avec le même nom existe déjà !", __FILE__),
+					$this->getHumanName()
+				)
+			);
 		}
 
 		// --- New cmd or Existing cmd ---
 		// Saving a new command on a Broker must fail, except for the status command
-		if ($this->getEqLogic()->getType() == jMQTT::TYP_BRK && $this->getLogicalId() != jMQTT::CLIENT_STATUS && $this->getLogicalId() != jMQTT::CLIENT_CONNECTED && $this->getId() == '') {
-			$err  = __("Impossible de créer la commande <b>#%1\$s#</b>, seule la commande status est autorisée sur un équipement Broker (%2\$s)", __FILE__);
+		if (
+			$this->getEqLogic()->getType() == jMQTTConst::TYP_BRK
+			&& $this->getLogicalId() != jMQTTConst::CLIENT_STATUS
+			&& $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED
+			&& $this->getId() == ''
+		) {
+			$err = __("Impossible de créer la commande <b>#%1\$s#</b>, seule les commandes de status sont autorisées sur un équipement Broker (%2\$s)", __FILE__);
 			throw new Exception(sprintf($err, $this->getHumanName(), $this->getEqLogic()->getName()));
 		}
 
-		$conf = $this->getConfiguration(self::CONF_KEY_REQUEST);
+		$conf = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST);
 		// If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
 		if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) !== FALSE)) {
-			$this->setConfiguration(self::CONF_KEY_REQUEST, $conf);
+			$this->setConfiguration(jMQTTConst::CONF_KEY_REQUEST, $conf);
 		}
 
 		// Reset autoPub if info cmd (should not happen or be possible)
-		if ($this->getType() == 'info' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0))
-			$this->setConfiguration(self::CONF_KEY_AUTOPUB, 0);
+		if ($this->getType() == 'info' && $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0))
+			$this->setConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0);
 		// Check "request" if autoPub enabled
-		if ($this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
-			$req = $this->getConfiguration(self::CONF_KEY_REQUEST, '');
+		if ($this->getType() == 'action' && $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)) {
+			$req = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '');
 			// Must check If New cmd, autoPub changed or Request changed
 			$must_chk = $this->getId() == '';
-			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration(self::CONF_KEY_AUTOPUB, 0));
-			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration(self::CONF_KEY_REQUEST, '') != $req);
+			$must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0));
+			$must_chk = $must_chk || (self::byId($this->getId())->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '') != $req);
 			if ($must_chk) {
 				// Get all commands
 				preg_match_all("/#([0-9]*)#/", $req, $matches);
@@ -291,13 +421,31 @@ class jMQTTCmd extends cmd {
 					foreach ($cmds as $cmd_id) {
 						$cmd = cmd::byId($cmd_id);
 						if (!is_object($cmd))
-							throw new Exception(sprintf(__("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> est invalide", __FILE__), $this->getHumanName(), $cmd_id));
+							throw new Exception(
+								sprintf(
+									__("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> est invalide", __FILE__),
+									$this->getHumanName(),
+									$cmd_id
+								)
+							);
 						if ($cmd->getType() != 'info')
-							throw new Exception(sprintf(__("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> n'est pas de type info", __FILE__), $this->getHumanName(), $cmd->getHumanName()));
+							throw new Exception(
+								sprintf(
+									__("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> n'est pas de type info", __FILE__),
+									$this->getHumanName(),
+									$cmd->getHumanName()
+								)
+							);
 						if ($cmd->getEqType() =='jMQTT') {
 							$cmd_topic = $cmd->isJson() ? substr($cmd->getTopic(), 0, strpos($cmd->getTopic(), '{')) : $cmd->getTopic();
 							if ($this->getTopic() == $cmd_topic)
-								throw new Exception(sprintf(__("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> référence le même topic", __FILE__), $this->getHumanName(), $cmd->getHumanName()));
+								throw new Exception(
+									sprintf(
+										__("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> référence le même topic", __FILE__),
+										$this->getHumanName(),
+										$cmd->getHumanName()
+									)
+								);
 						}
 					}
 				}
@@ -309,9 +457,9 @@ class jMQTTCmd extends cmd {
 		// It's time to gather informations that will be used in postSave
 		if (is_object($cmd)){
 			$this->_preSaveInformations = array(
-				self::CONF_KEY_RETAIN => $cmd->getConfiguration(self::CONF_KEY_RETAIN, 0),
-				self::CONF_KEY_AUTOPUB => $cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0),
-				self::CONF_KEY_REQUEST => $cmd->getConfiguration(self::CONF_KEY_REQUEST, '')
+				jMQTTConst::CONF_KEY_RETAIN => $cmd->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0),
+				jMQTTConst::CONF_KEY_AUTOPUB => $cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0),
+				jMQTTConst::CONF_KEY_REQUEST => $cmd->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '')
 			);
 		}
 	}
@@ -323,11 +471,17 @@ class jMQTTCmd extends cmd {
 		$eqLogic = $this->getEqLogic();
 
 		// Nothing must be done in postSave on Broker command
-		if ($eqLogic->getType() == jMQTT::TYP_BRK) {
+		if ($eqLogic->getType() == jMQTTConst::TYP_BRK) {
 			// Remove all cmd other than the status cmd
-			if ($this->getLogicalId() != jMQTT::CLIENT_STATUS && $this->getLogicalId() != jMQTT::CLIENT_CONNECTED) {
-				$eqLogic->log('warning', sprintf(__("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule les commandes status et connected sont autorisées sur un équipement Broker.", __FILE__),
-												 $this->getHumanName(), $eqLogic->getName()));
+			if ($this->getLogicalId() != jMQTTConst::CLIENT_STATUS && $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED) {
+				$eqLogic->log(
+					'warning',
+					sprintf(
+						__("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule les commandes status et connected sont autorisées sur un équipement Broker.", __FILE__),
+						$this->getHumanName(),
+						$eqLogic->getName()
+					)
+				);
 				$this->remove();
 			}
 			return;
@@ -343,7 +497,11 @@ class jMQTTCmd extends cmd {
 				$root_topic = $this->getTopic();
 
 				/** @var jMQTTCmd $root_cmd root JSON command */
-				$root_cmd = jMQTTCmd::byEqLogicIdAndTopic($this->getEqLogic_id(), $root_topic, false);
+				$root_cmd = jMQTTCmd::byEqLogicIdAndTopic(
+					$this->getEqLogic_id(),
+					$root_topic,
+					false
+				);
 
 				if (isset($root_cmd)) {
 					$value = $root_cmd->execCmd();
@@ -365,31 +523,67 @@ class jMQTTCmd extends cmd {
 		else { // the cmd has been updated
 
 			// If retain mode changed
-			if ($this->_preSaveInformations[self::CONF_KEY_RETAIN] != $this->getConfiguration(self::CONF_KEY_RETAIN, 0)) {
+			if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_RETAIN]
+				!= $this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0)) {
 
 				// It's enabled now
-				if ($this->getConfiguration(self::CONF_KEY_RETAIN, 0)) {
-					$eqLogic->log('info', sprintf(__("Mode retain activé sur la commande #%s#", __FILE__), $this->getHumanName()));
+				if ($this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0)) {
+					$eqLogic->log(
+						'info',
+						sprintf(
+							__("Mode retain activé sur la commande #%s#", __FILE__),
+							$this->getHumanName()
+						)
+					);
 				} else {
 					//If broker eqpt is enabled
 					if ($eqLogic->getBroker()->getIsEnable()) {
 						// A null payload should be sent to the broker to erase the last retained value
 						// Otherwise, this last value remains retained at broker level
-						$eqLogic->log('info', sprintf(__("Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker", __FILE__), $this->getHumanName()));
-						$eqLogic->publish($this->getHumanName(), $this->getTopic(), '', 1, 1);
+						$eqLogic->log(
+							'info',
+							sprintf(
+								__("Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker", __FILE__),
+								$this->getHumanName()
+							)
+						);
+						$eqLogic->publish(
+							$this->getHumanName(),
+							$this->getTopic(),
+							'',
+							1,
+							1
+						);
 					}
 				}
 			}
 
 			// Only Update listener if "autoPub" or "request" has changed
-			if ($this->_preSaveInformations[self::CONF_KEY_AUTOPUB] != $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)
-					|| $this->_preSaveInformations[self::CONF_KEY_REQUEST] != $this->getConfiguration(self::CONF_KEY_REQUEST, ''))
+			if (
+				(
+					$this->_preSaveInformations[jMQTTConst::CONF_KEY_AUTOPUB]
+					!= $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)
+				) || (
+					$this->_preSaveInformations[jMQTTConst::CONF_KEY_REQUEST]
+					!= $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '')
+				)
+			) {
 				$this->listenerUpdate();
+			}
 		}
 
 		// For info commands (on Equipments), log that the topic is compatible with the subscription command
-		if ($this->getType() == 'info' && !$eqLogic->getCache(jMQTT::CACHE_IGNORE_TOPIC_MISMATCH, 0) && !$this->topicMatchesSubscription($eqLogic->getTopic())) {
-			$eqLogic->log('warning', sprintf(__("Le topic de la commande #%s# est incompatible avec le topic de souscription de l'équipement associé", __FILE__), $this->getHumanName()));
+		if ($this->getType() == 'info'
+			&& !$eqLogic->getCache(jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH, 0)
+			&& !$this->topicMatchesSubscription($eqLogic->getTopic())
+		) {
+			$eqLogic->log(
+				'warning',
+				sprintf(
+					__("Le topic de la commande #%s# est incompatible avec le topic de souscription de l'équipement associé", __FILE__),
+					$this->getHumanName()
+				)
+			);
 		}
 	}
 
@@ -397,19 +591,35 @@ class jMQTTCmd extends cmd {
 	public function listenerUpdate() {
 		$cmds = array();
 		$eq = $this->getEqLogic();
-		if ($eq->getIsEnable() && $this->getType() == 'action' && $this->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
-			preg_match_all("/#([0-9]*)#/", $this->getConfiguration(self::CONF_KEY_REQUEST, ''), $matches);
+		if (
+			$eq->getIsEnable()
+			&& $this->getType() == 'action'
+			&& $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)
+		) {
+			preg_match_all(
+				"/#([0-9]*)#/",
+				$this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, ''),
+				$matches
+			);
 			$cmds = array_unique($matches[1]);
 		}
-		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
+		$listener = listener::searchClassFunctionOption(
+			__CLASS__,
+			'listenerAction',
+			'"cmd":"'.$this->getId().'"'
+		);
 		if (count($listener) == 0) { // No listener found
 			$listener = null;
 		} else {
-			while (count($listener) > 1) // Too many listener for this cmd, let's cleanup
+			while (count($listener) > 1) {
+				// Too many listener for this cmd, let's cleanup
 				array_pop($listener)->remove();
-			$listener = $listener[0]; // Get the last listener
+			}
+			// Get the last listener
+			$listener = $listener[0];
 		}
-		if (count($cmds) > 0) { // We need a listener
+		// We need a listener
+		if (count($cmds) > 0) {
 			if (!is_object($listener))
 				$listener = new listener();
 			$listener->setClass(__CLASS__);
@@ -424,22 +634,51 @@ class jMQTTCmd extends cmd {
 			$listener->setOption('eqLogic', $this->getEqLogic_id());
 			$listener->setOption('background', true);
 			$listener->save();
-			$eq->log('debug', sprintf(__("Listener installé pour #%s#", __FILE__), $this->getHumanName()));
+			$eq->log(
+				'debug',
+				sprintf(
+					__("Listener installé pour #%s#", __FILE__),
+					$this->getHumanName()
+				)
+			);
 		} else { // We don't want a listener
 			if (is_object($listener)) {
 				$listener->remove();
-				$eq->log('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $this->getHumanName()));
+				$eq->log(
+					'debug',
+					sprintf(
+						__("Listener supprimé pour #%s#", __FILE__),
+						$this->getHumanName()
+					)
+				);
 			}
 		}
 	}
 
 	public static function listenerAction($_options) {
 		$cmd = self::byId($_options['cmd']);
-		if (!is_object($cmd) || !$cmd->getEqLogic()->getIsEnable() || !$cmd->getType() == 'action' || !$cmd->getConfiguration(self::CONF_KEY_AUTOPUB, 0)) {
+		if (
+			!is_object($cmd)
+			|| !$cmd->getEqLogic()->getIsEnable()
+			|| !$cmd->getType() == 'action'
+			|| !$cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)
+		) {
 			listener::byId($_options['listener_id'])->remove();
-			$cmd->getEqLogic()->log('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $_options['cmd']));
+			$cmd->getEqLogic()->log(
+				'debug',
+				sprintf(
+					__("Listener supprimé pour #%s#", __FILE__),
+					$_options['cmd']
+				)
+			);
 		} else {
-			$cmd->getEqLogic()->log('debug', sprintf(__("Publication automatique de #%s#", __FILE__), $cmd->getHumanName()));
+			$cmd->getEqLogic()->log(
+				'debug',
+				sprintf(
+					__("Publication automatique de #%s#", __FILE__),
+					$cmd->getHumanName()
+				)
+			);
 			$cmd->execute();
 		}
 	}
@@ -450,25 +689,60 @@ class jMQTTCmd extends cmd {
 	public function preRemove() {
 		$eqLogic = $this->getEqLogic();
 		if ($eqLogic) {
-			$eqLogic->log('info', sprintf(__("Suppression de la commande #%s#", __FILE__), $this->getHumanName()));
+			$eqLogic->log(
+				'info',
+				sprintf(
+					__("Suppression de la commande #%s#", __FILE__),
+					$this->getHumanName()
+				)
+			);
 			// Remove battery status from eqLogic on delete
 			if ($this->isBattery()) {
-				$eqLogic->log('debug', sprintf(__("Suppression de la commande de Batterie de l'équipement #%s#", __FILE__), $eqLogic->getHumanName()));
-				$eqLogic->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, '');
+				$eqLogic->log(
+					'debug',
+					sprintf(
+						__("Suppression de la commande de Batterie de l'équipement #%s#", __FILE__),
+						$eqLogic->getHumanName()
+					)
+				);
+				$eqLogic->setConfiguration(jMQTTConst::CONF_KEY_BATTERY_CMD, '');
 				$eqLogic->save();
 			}
 			// Remove availability status from eqLogic on delete
 			if ($this->isAvailability()) {
-				$eqLogic->log('debug', sprintf(__("Suppression de la commande de Disponibilité de l'équipement #%s#", __FILE__), $eqLogic->getHumanName()));
-				$eqLogic->setConfiguration(jMQTT::CONF_KEY_AVAILABILITY_CMD, '');
+				$eqLogic->log(
+					'debug',
+					sprintf(
+						__("Suppression de la commande de Disponibilité de l'équipement #%s#", __FILE__),
+						$eqLogic->getHumanName()
+					)
+				);
+				$eqLogic->setConfiguration(jMQTTConst::CONF_KEY_AVAILABILITY_CMD, '');
 				$eqLogic->save();
 			}
 		} else {
-			jMQTT::logger('info', sprintf(__("Suppression de la commande orpheline #%s# (%s)", __FILE__), $this->getId(), $this->getName()));
+			jMQTT::logger(
+				'info',
+				sprintf(
+					__("Suppression de la commande orpheline #%s# (%s)", __FILE__),
+					$this->getId(),
+					$this->getName()
+				)
+			);
 		}
-		$listener = listener::searchClassFunctionOption(__CLASS__, 'listenerAction', '"cmd":"'.$this->getId().'"');
+		$listener = listener::searchClassFunctionOption(
+			__CLASS__,
+			'listenerAction',
+			'"cmd":"'.$this->getId().'"'
+		);
 		foreach ($listener as $l) {
-			jMQTT::logger('debug', sprintf(__("Listener supprimé pour #%s#", __FILE__), $l->getOption('cmd')));
+			jMQTT::logger(
+				'debug',
+				sprintf(
+					__("Listener supprimé pour #%s#", __FILE__),
+					$l->getOption('cmd')
+				)
+			);
 			$l->remove();
 		}
 	}
@@ -488,11 +762,11 @@ class jMQTTCmd extends cmd {
 	}
 
 	public function setJsonPath($jsonPath) {
-		$this->setConfiguration(self::CONF_KEY_JSON_PATH, $jsonPath);
+		$this->setConfiguration(jMQTTConst::CONF_KEY_JSON_PATH, $jsonPath);
 	}
 
 	public function getJsonPath() {
-		return $this->getConfiguration(self::CONF_KEY_JSON_PATH, '');
+		return $this->getConfiguration(jMQTTConst::CONF_KEY_JSON_PATH, '');
 	}
 
 	/**
@@ -508,14 +782,22 @@ class jMQTTCmd extends cmd {
 	 */
 	public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
 		// JSON_UNESCAPED_UNICODE used to fix #92
-		$confTopic = substr(json_encode(array('topic' => $topic), JSON_UNESCAPED_UNICODE), 1, -1);
+		$confTopic = substr(
+			json_encode(
+				array('topic' => $topic),
+				JSON_UNESCAPED_UNICODE
+			),
+			1,
+			-1
+		);
 		$confTopic = str_replace('\\', '\\\\', $confTopic);
 
 		$values = array(
 			'eqLogic_id' => $eqLogic_id,
 			'topic' => '%' . $confTopic . '%',
 		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . 'FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic';
+		$sql = 'SELECT ' . DB::buildField(__CLASS__);
+		$sql . ' FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic';
 
 		// Searching for only one topic
 		if (!$multiple) {
@@ -578,10 +860,18 @@ class jMQTTCmd extends cmd {
 		if (! isset(self::$_cmdNameMaxLength)) {
 // TODO (nice to have) Move lenght in plugin config and refresh at plugin enable/update or core update
 			$field = 'character_maximum_length';
-			$sql = "SELECT " . $field . " FROM information_schema.columns WHERE table_name='cmd' AND column_name='name'";
+			$sql = "SELECT " . $field;
+			$sql .= " FROM information_schema.columns";
+			$sql .= " WHERE table_name='cmd' AND column_name='name'";
 			$res = DB::Prepare($sql, array());
 			self::$_cmdNameMaxLength = $res[$field];
-			$eqLogic->log('debug', sprintf(__("Taille maximale du nom d'une commande en base de donnée : %s caractères", __FILE__), self::$_cmdNameMaxLength));
+			$eqLogic->log(
+				'debug',
+				sprintf(
+					__("Taille maximale du nom d'une commande en base de donnée : %s caractères", __FILE__),
+					self::$_cmdNameMaxLength
+				)
+			);
 		}
 
 		if (strlen($name) > self::$_cmdNameMaxLength)
