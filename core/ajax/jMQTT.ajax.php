@@ -304,28 +304,28 @@ try {
 	###################################################################################################################
 	# Mosquitto
 	if (init('action') == 'mosquittoInstall') {
-		jMQTT::mosquittoInstall();
-		ajax::success(jMQTT::mosquittoCheck());
+		jMQTTPlugin::mosquittoInstall();
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoRepare') {
-		jMQTT::mosquittoRepare();
-		ajax::success(jMQTT::mosquittoCheck());
+		jMQTTPlugin::mosquittoRepare();
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoRemove') {
-		jMQTT::mosquittoRemove();
-		ajax::success(jMQTT::mosquittoCheck());
+		jMQTTPlugin::mosquittoRemove();
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoReStart') {
 		exec(system::getCmdSudo() . ' systemctl restart mosquitto');
-		ajax::success(jMQTT::mosquittoCheck());
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoStop') {
 		exec(system::getCmdSudo() . ' systemctl stop mosquitto');
-		ajax::success(jMQTT::mosquittoCheck());
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoConf') {
@@ -337,7 +337,7 @@ try {
 		if (init('config') == '')
 			throw new Exception(__('Configuration manquante', __FILE__));
 		shell_exec(system::getCmdSudo() . ' tee /etc/mosquitto/conf.d/jMQTT.conf > /dev/null <<jmqttEOF' . "\n" . init('config') . 'jmqttEOF');
-		ajax::success(jMQTT::mosquittoCheck());
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	###################################################################################################################

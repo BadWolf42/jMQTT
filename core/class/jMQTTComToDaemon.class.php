@@ -179,5 +179,3 @@ class jMQTTComToDaemon {
 
 
 }
-
-?>

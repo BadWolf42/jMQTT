@@ -23,8 +23,11 @@ if (!isConnect()) {
 	die();
 }
 
+require_once __DIR__ . '/../core/class/jMQTT.class.php';
+
+
 // Send Mosquitto installation status
-sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
+sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTTPlugin::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
 $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
 sendVarToJS('dStatus', $docker);

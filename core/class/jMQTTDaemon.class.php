@@ -220,7 +220,7 @@ class jMQTTDaemon {
 		// Ensure cron is enabled (removing the key or setting it to 1 is equivalent to enabled)
 		config::remove('functionality::cron::enable', jMQTT::class);
 		// Check if daemon is launchable
-		$dep_info = jMQTT::dependancy_info();
+		$dep_info = jMQTTPlugin::dependancy_info();
 		if ($dep_info['state'] != jMQTTConst::CLIENT_OK) {
 			throw new Exception(__('Veuillez vérifier la configuration et les dépendances', __FILE__));
 		}
@@ -351,6 +351,14 @@ class jMQTTDaemon {
 		}
 	}
 
+	/**
+	 * cron callback
+	 * check MQTT Clients are up and connected
+	 */
+	public static function cron() {
+		jMQTTDaemon::checkAllMqttClients();
+		jMQTTDaemon::pluginStats();
+	}
 
 	/**
 	 * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
@@ -361,5 +369,3 @@ class jMQTTDaemon {
 	}
 
 }
-
-?>

@@ -83,5 +83,3 @@ class jMQTTConst {
 	const TYP_BRK = 'broker';
 
 }
-
-?>
