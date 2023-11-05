@@ -1378,7 +1378,7 @@ class jMQTT extends eqLogic {
 		return jMQTTPlugin::dependancy_install();
 	}
 
-// Create or update all autoPub listeners
+	// Create or update all autoPub listeners
 	public static function listenersAddAll() {
 		foreach (
 			cmd::searchConfiguration(
@@ -1390,13 +1390,13 @@ class jMQTT extends eqLogic {
 		}
 	}
 
-// Remove all autoPub listeners
+	// Remove all autoPub listeners
 	public static function listenersRemoveAll() {
 		foreach (listener::byClass('jMQTTCmd') as $l)
 			$l->remove();
 	}
 
-// Create or update all autoPub listeners from this eqLogic
+	// Create or update all autoPub listeners from this eqLogic
 	public function listenersAdd() {
 		foreach (
 			jMQTTCmd::searchConfigurationEqLogic(
@@ -1408,7 +1408,7 @@ class jMQTT extends eqLogic {
 		}
 	}
 
-// Remove all autoPub listeners from this eqLogic
+	// Remove all autoPub listeners from this eqLogic
 	public function listenersRemove() {
 		$listener = listener::searchClassFunctionOption(
 			'jMQTTCmd',
@@ -1441,6 +1441,26 @@ class jMQTT extends eqLogic {
 	public static function getDaemonAutoMode() {
 		return (config::byKey('deamonAutoMode', __CLASS__, 1) == 1);
 	}
+
+	/*
+	public static function deadCmd() {
+		// return eqLogic::deadCmdGeneric(__CLASS__);
+		$sql = "SELECT `cmd`.`id`, `cmd`.`name`, `cmd`.`eqLogic_id`, `cmd`.`type`, `cmd`.`subType`";
+		$sql .= " FROM `cmd` LEFT JOIN `eqLogic` ON `eqLogic`.`id` = `cmd`.`eqLogic_id`";
+		$sql .= " WHERE `cmd`.`eqType` = 'jMQTT' AND `eqLogic`.`name` IS NULL";
+		$results = DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
+		$return = array();
+		foreach ($results as $result) {
+			$return[] = array(
+				'detail' => $result['name'],
+				'who' => '#' . $result['id'] . '#' . ' (' . __('ancien équipement :', __FILE__) . ' #' . $result['eqLogic_id'] . '#)',
+				'help' => $result['type'] . ' / ' . $result['subType'] . '<span class="label label-info eId hidden">30</span><a class="eqLogicAction" data-action="removeEq"><i class="fas fa-minus-circle"></i></a>'
+				// . '<a href="/index.php?v=d&m=jMQTT&p=jMQTT&id=">' . __('Supprimer', __FILE__) . '</a>'
+			);
+		}
+		return $return;
+	}
+*/
 
 	/**
 	 * Core callback on API key change
@@ -1738,6 +1758,7 @@ class jMQTT extends eqLogic {
 	 * @param $msgValue string
 	 *            payload of the message
 	 */
+	// TODO (low) REFACTOR
 	public function brokerMessageCallback($msgTopic, $msgValue, $msgQos, $msgRetain) {
 
 		$start_t = microtime(true);
@@ -1886,11 +1907,12 @@ class jMQTT extends eqLogic {
 						$this->log(
 							'debug',
 							sprintf(
-								__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement #%2\$s#, car la création automatique de commande est désactivée sur cet équipement", __FILE__),
+								__("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement #%2\$s#", __FILE__) .
 								$msgTopic,
 								$eqpt->getHumanName()
-							)
-						);
+							) .
+							' ' . __("(création automatique de commande)", __FILE__),
+					);
 				}
 
 				// If there is some cmd matching exactly with the topic
@@ -1939,7 +1961,8 @@ class jMQTT extends eqLogic {
 			$this->log(
 				'debug',
 				sprintf(
-					__("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms, commandes affiliées %4\$s", __FILE__),
+					__("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
+					__(", commandes affiliées %4\$s", __FILE__),
 					$msgValue, $msgTopic, $duration_ms, $related_cmd
 				)
 			);
@@ -2042,7 +2065,7 @@ class jMQTT extends eqLogic {
 					$retain
 				)
 			);
-		jMQTTDaemon::publish($this->getBrkId(), $topic, $payload, $qos, $retain);
+		jMQTTComToDaemon::publish($this->getBrkId(), $topic, $payload, $qos, $retain);
 		$d = date('Y-m-d H:i:s');
 		$this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
 		if ($this->getType() == jMQTTConst::TYP_EQPT)
@@ -2127,8 +2150,8 @@ class jMQTT extends eqLogic {
 						' <br/> ',
 						sprintf(
 							__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>".
-							"@Topic: %5\$s,<br/>@Payload: %6\$s.",
+							",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s,".
+							"<br/>@Topic: %5\$s,<br/>@Payload: %6\$s.",
 							__METHOD__,
 							$e->getMessage(),
 							$e->getTraceAsString(),

@@ -339,7 +339,7 @@ class jMQTTDaemon {
 							' <br/> ',
 							sprintf(
 								__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"@Stack: %3\$s,<br/>@BrkId: %4\$s.",
+								",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 								__METHOD__,
 								$e->getMessage(),
 								$e->getTraceAsString(),

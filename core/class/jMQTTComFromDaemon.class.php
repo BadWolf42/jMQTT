@@ -58,12 +58,14 @@ class jMQTTComFromDaemon {
 		// Searching a match for RemoteUID (PID and PORT) in listening ports
 		$retval = 255;
 		exec("ss -Htulpn 'sport = :" . $rport ."' 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+pid=" . $rpid . "' 2> /dev/null", $output, $retval);
-		if ($retval != 0) { // Execution issue with ss? Try netstat!
+		// Execution issue with ss (too new)? Try (the good old) netstat!
+		if ($retval != 0) {
 			// Be sure to clear $output first
 			unset($output);
 			exec("netstat -lntp 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
 		}
-		if ($retval != 0) { // Execution issue with netstat? Try lsof!
+		// Execution issue with netstat? Try (the slow) lsof!
+		if ($retval != 0) {
 			// Be sure to clear $output first
 			unset($output);
 			exec("lsof -nP -iTCP -sTCP:LISTEN | grep -E 'python3[ \t]+" . $rpid . "[ \t]+.+[:]" . $rport ."[ \t]+' 2> /dev/null", $output, $retval);
@@ -199,9 +201,11 @@ class jMQTTComFromDaemon {
 					jMQTT::logger(
 						'error',
 						str_replace(
-							"\n",' <br/> ', sprintf(
+							"\n",
+							' <br/> ',
+							sprintf(
 								__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-								"<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
+								",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 								__METHOD__,
 								$e->getMessage(),
 								$e->getTraceAsString(),
@@ -285,8 +289,9 @@ class jMQTTComFromDaemon {
 					str_replace(
 						"\n",
 						' <br/> ',
-						sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br/>@BrkId: %4\$s.",
+						sprintf(
+							__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 							__METHOD__,
 							$e->getMessage(),
 							$e->getTraceAsString(),
@@ -361,7 +366,7 @@ class jMQTTComFromDaemon {
 						' <br/> ',
 						sprintf(
 							__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br/>@BrkId: %4\$s.",
+							",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
 							__METHOD__,
 							$e->getMessage(),
 							$e->getTraceAsString(),
@@ -393,8 +398,11 @@ class jMQTTComFromDaemon {
 					str_replace(
 						"\n",
 						' <br/> ',
-						sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-							"@Stack: %3\$s,<br/>@BrkId: %4\$s,<br/>@Topic: %5\$s,<br/>@Payload: %6\$s,<br/>@Qos: %7\$s,<br/>@Retain: %8\$s.",
+						sprintf(
+							__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s,".
+							"<br/>@Topic: %5\$s,<br/>@Payload: %6\$s,".
+							"<br/>@Qos: %7\$s,<br/>@Retain: %8\$s.",
 							__METHOD__,
 							$e->getMessage(),
 							$e->getTraceAsString(),
@@ -423,20 +431,32 @@ class jMQTTComFromDaemon {
 			cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
 		} catch (Throwable $e) {
 			if (log::getLogLevel(jMQTT::class) > 100)
-				jMQTT::logger('error', sprintf(
-					__("%1\$s() a levé l'Exception: %2\$s", __FILE__),
-					__METHOD__,
-					$e->getMessage()
-				));
+				jMQTT::logger(
+					'error',
+					sprintf(
+						__("%1\$s() a levé l'Exception: %2\$s", __FILE__),
+						__METHOD__,
+						$e->getMessage()
+					)
+				);
 			else
-				jMQTT::logger('error', str_replace("\n",' <br/> ', sprintf(
-					__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-					"@Stack: %3\$s,<br/>@cmdId: %4\$s,<br/>@value: %5\$s.",
-					__METHOD__,
-					$e->getMessage(),
-					$e->getTraceAsString(),
-					$cmdId,
-					$value)));
+				jMQTT::logger(
+					'error',
+					str_replace(
+						"\n",
+						' <br/> ',
+						sprintf(
+							__("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+							",<br/>@Stack: %3\$s,<br/>@cmdId: %4\$s,".
+							"<br/>@value: %5\$s.",
+							__METHOD__,
+							$e->getMessage(),
+							$e->getTraceAsString(),
+							$cmdId,
+							$value
+						)
+					)
+				);
 		}
 	}
 

@@ -797,7 +797,7 @@ class jMQTTCmd extends cmd {
 			'topic' => '%' . $confTopic . '%',
 		);
 		$sql = 'SELECT ' . DB::buildField(__CLASS__);
-		$sql . ' FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic';
+		$sql .= ' FROM cmd WHERE eqLogic_id=:eqLogic_id AND configuration LIKE :topic';
 
 		// Searching for only one topic
 		if (!$multiple) {
@@ -858,7 +858,7 @@ class jMQTTCmd extends cmd {
 	 */
 	private static function checkCmdName($eqLogic, $name) {
 		if (! isset(self::$_cmdNameMaxLength)) {
-// TODO (nice to have) Move lenght in plugin config and refresh at plugin enable/update or core update
+			// TODO (nice to have) Move lenght in plugin config and refresh at plugin enable/update or core update
 			$field = 'character_maximum_length';
 			$sql = "SELECT " . $field;
 			$sql .= " FROM information_schema.columns";
@@ -934,6 +934,7 @@ class jMQTTCmd extends cmd {
 			'bri' => round($xyz['y'] * 255),
 		);
 	}
+
 	/**
 	 * Converts XY (and brightness) values to RGB
 	 *
@@ -975,6 +976,7 @@ class jMQTTCmd extends cmd {
 		}
 		return sprintf("#%02X%02X%02X", $color['r'], $color['g'], $color['b']);
 	}
+
 	public static function RGBtoHTML($r, $g=-1, $b=-1) {
 		if (is_array($r) && sizeof($r) == 3)
 			list($r, $g, $b) = $r;
@@ -991,6 +993,7 @@ class jMQTTCmd extends cmd {
 		$color .= (strlen($b) < 2?'0':'').$b;
 		return '#'.$color;
 	}
+
 	public static function HEXtoDEC($s) {
 		$s = str_replace("#", "", $s);
 		$output = 0;
@@ -1006,6 +1009,7 @@ class jMQTTCmd extends cmd {
 
 		return $output;
 	}
+
 	public static function DECtoHEX($d) {
 		return("#".substr("000000".dechex($d),-6));
 	}

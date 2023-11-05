@@ -104,10 +104,10 @@ function jMQTT_update($_direct=true) {
 				'error',
 				str_replace(
 					"\n",
-					'<br/>',
+					' <br/> ',
 					sprintf(
 						__("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__).
-						"<br/>@Stack: %3\$s.",
+						",<br/>@Stack: %3\$s.",
 						$ver,
 						$e->getMessage(),
 						$e->getTraceAsString()
