@@ -57,7 +57,6 @@ $('#in_testJsonPath').keypress(function(event) {
 
 $('#bt_executeTestJsonPath').on('click',function() {
 	$('#out_status').removeClass('success danger');
-	$('#out_testResult').empty();
 	$('#out_message').empty();
 	jmqtt.callPluginAjax({
 		data: {
@@ -67,12 +66,12 @@ $('#bt_executeTestJsonPath').on('click',function() {
 		},
 		error: function (error) {
 			$('#out_status').addClass('danger');
+			$('#out_testResult').value('');
 		},
 		success: function (data) {
-			console.log(data);
 			(data.success) ? $('#out_status').addClass('success') : $('#out_status').addClass('danger');
-			$('#out_testResult').append(data.value);
 			$('#out_message').append('[ ' + data.message + ' ]');
+			$('#out_testResult').value(data.value);
 		}
 	});
 });
