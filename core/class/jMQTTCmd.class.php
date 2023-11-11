@@ -301,7 +301,7 @@ class jMQTTCmd extends cmd {
 			'select' => '#select#'
 		);
 		$_options = is_null($_options) ? $_defaults : array_merge($_defaults, $_options);
-		// As per feature request (issue 208: https://github.com/Domochip/jMQTT/issues/208#issuecomment-1206207191)
+		// As per feature request (issue 208: https://github.com/BadWolf42/jMQTT/issues/208#issuecomment-1206207191)
 		// If request is empty, the corresponding subtype option is implied (Default/other = '')
 		if ($request == '') {
 			$request = $_options[$this->getSubType()];

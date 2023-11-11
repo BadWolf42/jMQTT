@@ -551,7 +551,7 @@ Dans le gestionnaire, on distingue différentes sections :
   1. La liste des templates existants.
 
 Ceux préfixés par `[Perso]` sont liés à votre installation, les autres arrivent directement avec jMQTT.
-Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à [ouvrir un ticket sur GitHub](https://github.com/Domochip/jMQTT/issues).
+Si vous souhaitez mettre à disposition vos templates, n'hésitez pas à [ouvrir un ticket sur GitHub](https://github.com/BadWolf42/jMQTT/issues).
 
   2. Un bouton d'import de template dans jMQTT depuis un fichier json.
 
@@ -654,7 +654,7 @@ Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Identi
 
 # Problèmes inconnus
 
-Les problèmes en cours d’investigation sont sur GitHub : [Issues jMQTT](https://github.com/domochip/jMQTT/issues).
+Les problèmes en cours d’investigation sont sur GitHub : [Issues jMQTT](https://github.com/BadWolf42/jMQTT/issues).
 
 
 ## Quelles données fournir pour investigation en cas de problèmes ?
