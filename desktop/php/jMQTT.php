@@ -11,7 +11,7 @@ include_file('desktop', 'jMQTT.globals', 'js', 'jMQTT');
 include_file('desktop', 'jMQTT.functions', 'js', 'jMQTT');
 
 // Send daemon current state
-sendVarToJS('jmqtt_globals.daemonState', jMQTT::daemon_state());
+sendVarToJS('jmqtt_globals.daemonState', jMQTTDaemon::state());
 
 /** @var jMQTT[][] $eqNonBrokers */
 $eqNonBrokers = jMQTT::getNonBrokers();
@@ -89,6 +89,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
 				</div>
 			</div>
 			<?php
+			// TODO (deprecation) Remove when Jeedom 4.3 is no longer supported
 			// Community card, only displayed if Jeedom version 4.4+
 			if (version_compare((jeedom::version() ?? '4.3.0'), '4.4.0', '>=')) {
 			?>

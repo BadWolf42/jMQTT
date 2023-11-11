@@ -13,7 +13,7 @@ foreach (jMQTT::byType('jMQTT') as $eqLogic) {
 	foreach (jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info') as $cmd) {
 		// Old isBattery()
 		if ($cmd->getType() == 'info' && ($cmd->getGeneric_type() == 'BATTERY' || preg_match('/(battery|batterie)$/i', $cmd->getName()))) {
-			$eqLogic->setConfiguration(jMQTT::CONF_KEY_BATTERY_CMD, $cmd->getId());
+			$eqLogic->setConfiguration(jMQTTConst::CONF_KEY_BATTERY_CMD, $cmd->getId());
 			jMQTT::logger('info', sprintf(__("#%1\$s# définit la batterie de #%2\$s#", __FILE__), $cmd->getHumanName(), $eqLogic->getHumanName()));
 			$eqLogic->save();
 		}

@@ -42,7 +42,11 @@ function jMQTT_update($_direct=true) {
 		$info = json_decode($content, true);
 		$pluginVer = $info['pluginVersion'];
 	} catch (Throwable $e) {
-		log::add('jMQTT', 'warning', __("Impossible de récupérer le numéro de version dans le fichier info.json, ceci ce devrait pas arriver !", __FILE__));
+		log::add(
+			'jMQTT',
+			'warning',
+			__("Impossible de récupérer le numéro de version dans le fichier info.json, ceci ce devrait pas arriver !", __FILE__)
+		);
 		$pluginVer = '0.0.0';
 	}
 
@@ -76,27 +80,52 @@ function jMQTT_update($_direct=true) {
 		try {
 			$file = __DIR__ . '/../resources/update/' . $name . '.php';
 			if (file_exists($file)) {
-				log::add('jMQTT', 'debug', sprintf(__("Application du fichier de migration vers la version %d...", __FILE__), $ver));
+				log::add(
+					'jMQTT',
+					'debug',
+					sprintf(
+						__("Application du fichier de migration vers la version %d...", __FILE__),
+						$ver
+					)
+				);
 				include $file;
-				log::add('jMQTT', 'debug', sprintf(__("Migration vers la version %d réalisée avec succès", __FILE__), $ver));
+				log::add(
+					'jMQTT',
+					'debug',
+					sprintf(
+						__("Migration vers la version %d réalisée avec succès", __FILE__),
+						$ver
+					)
+				);
 			}
 		} catch (Throwable $e) {
-			log::add('jMQTT', 'error', str_replace("\n",'<br/>',
-				sprintf(__("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__)."<br/>@Stack: %3\$s.",
-						$ver, $e->getMessage(), $e->getTraceAsString())
-			));
+			log::add(
+				'jMQTT',
+				'error',
+				str_replace(
+					"\n",
+					' <br/> ',
+					sprintf(
+						__("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__).
+						",<br/>@Stack: %3\$s.",
+						$ver,
+						$e->getMessage(),
+						$e->getTraceAsString()
+					)
+				)
+			);
 		}
 	}
 
 	config::save('version', $pluginVer, 'jMQTT');
 
-	jMQTT::pluginStats($_direct ? 'update' : 'install');
+	jMQTTDaemon::pluginStats($_direct ? 'update' : 'install');
 }
 
 function jMQTT_remove() {
 	jMQTT::logger('debug', 'install.php: jMQTT_remove()');
-	jMQTT::pluginStats('uninstall');
-	cache::delete('jMQTT::' . jMQTT::CACHE_DAEMON_CONNECTED);
+	jMQTTDaemon::pluginStats('uninstall');
+	cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_CONNECTED);
 }
 
 ?>

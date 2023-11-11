@@ -25,6 +25,7 @@ try {
 	}
 
 
+	require_once __DIR__ . '/../../core/class/jMQTT.class.php';
 	ajax::init(array('fileupload'));
 
 	###################################################################################################################
@@ -34,11 +35,11 @@ try {
 			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		if (init('dir') == 'template') {
-			$uploaddir = realpath(__DIR__ . '/../../' . jMQTT::PATH_TEMPLATES_PERSO);
+			$uploaddir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_PERSO);
 			$allowed_ext = '.json';
 			$max_size = 500*1024; // 500KB
 		} elseif (init('dir') == 'backup') {
-			$uploaddir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
+			$uploaddir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
 			$allowed_ext = '.tgz';
 			$max_size = 100*1024*1024; // 100MB
 		} else {
@@ -74,7 +75,7 @@ try {
 			ajax::success($fname);
 		}
 		elseif (init('dir') == 'backup') {
-			$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
+			$backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
 			$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
 			sort($files);
 			$backups = array();
@@ -133,8 +134,21 @@ try {
 				$this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
 															$this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
 			else // More info in debug mode, no big log otherwise
-				$this->getEqLogic()->log('warning', str_replace("\n",' <br/> ', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
-							",<br/>@Stack: %4\$s.", $this->getJsonPath(), $this->getHumanName(), $e->getMessage(), $e->getTraceAsString())));
+				$this->getEqLogic()->log(
+					'warning',
+					str_replace(
+						"\n",
+						' <br/> ',
+						sprintf(
+							__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+							",<br/>@Stack: %4\$s.",
+							$this->getJsonPath(),
+							$this->getHumanName(),
+							$e->getMessage(),
+							$e->getTraceAsString()
+						)
+					)
+				);
 		}
 
 		if ($value !== false && $value !== array())
@@ -182,11 +196,11 @@ try {
 	# Configuration page
 	if (init('action') == 'startMqttClient') {
 		$broker = jMQTT::getBrokerFromId(init('id'));
-		ajax::success($broker->startMqttClient(true));
+		ajax::success($broker->startMqttClient());
 	}
 
 	if (init('action') == 'sendLoglevel') {
-		jMQTT::toDaemon_setLogLevel(init('level'));
+		jMQTTComToDaemon::setLogLevel(init('level'));
 		ajax::success();
 	}
 
@@ -199,7 +213,68 @@ try {
 	###################################################################################################################
 	# Real Time mode
 	if (init('action') == 'changeRealTimeMode') {
-		jMQTT::changeRealTimeMode(init('id'), init('mode'), init('subscribe'), init('exclude'), init('retained'), init('duration'));
+		$id = init('id');
+		$mode = init('mode');
+		$subscribe = init('subscribe', '#');
+		$exclude = init('exclude', 'homeassistant/#');
+		$retained = init('retained', false);
+		$duration = init('duration', 180);
+
+		$broker = jMQTT::getBrokerFromId($id);
+		$broker->log(
+			'info',
+			$mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__)
+		);
+
+		// $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)", __FILE__),
+		//                               $id, $mode, $subscribe, $exclude, $retained, $duration));
+
+		// If Real Time mode needs to be enabled
+		if($mode) {
+			// Check if a subscription topic is provided
+			if (trim($subscribe) == '') {
+				throw new Exception(
+					__("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__)
+				);
+			}
+			$subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
+			// Cleanup subscriptions
+			$subscriptions = [];
+			foreach ($subscribe as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$subscriptions[] = $t;
+			}
+			if (count($subscriptions) == 0) {
+				throw new Exception(
+					__("Impossible d'activer le mode Temps Réel sans topic de souscription", __FILE__)
+				);
+			}
+			// Cleanup exclusions
+			$exclude = (trim($exclude) == '') ? [] : explode('|', $exclude);
+			$exclusions = [];
+			foreach ($exclude as $t) {
+				$t = trim($t);
+				if ($t == '')
+					continue;
+				$exclusions[] = $t;
+			}
+			// Cleanup retained
+			$retained = is_bool($retained) ? $retained : ($retained == '1' || $retained == 'true');
+			// Cleanup duration
+			$duration = min(max(1, intval($duration)), 3600);
+			// Start Real Time Mode (must be started before subscribe)
+			jMQTTComToDaemon::realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
+			// Update cache
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_INC_TOPICS, implode('|', $subscriptions));
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_EXC_TOPICS, implode('|', $exclusions));
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_RET_TOPICS, $retained ? 1 : 0);
+			$broker->setCache(jMQTTConst::CACHE_REALTIME_DURATION, $duration);
+		} else { // Real Time mode needs to be disabled
+			// Stop Real Time mode
+			jMQTTComToDaemon::realTimeStop($id);
+		}
 		ajax::success();
 	}
 
@@ -235,35 +310,35 @@ try {
 	}
 
 	if (init('action') == 'realTimeClear') {
-		jMQTT::toDaemon_realTimeClear(init('id'));
+		jMQTTComToDaemon::realTimeClear(init('id'));
 		ajax::success();
 	}
 
 	###################################################################################################################
 	# Mosquitto
 	if (init('action') == 'mosquittoInstall') {
-		jMQTT::mosquittoInstall();
-		ajax::success(jMQTT::mosquittoCheck());
+		jMQTTPlugin::mosquittoInstall();
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoRepare') {
-		jMQTT::mosquittoRepare();
-		ajax::success(jMQTT::mosquittoCheck());
+		jMQTTPlugin::mosquittoRepare();
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoRemove') {
-		jMQTT::mosquittoRemove();
-		ajax::success(jMQTT::mosquittoCheck());
+		jMQTTPlugin::mosquittoRemove();
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoReStart') {
 		exec(system::getCmdSudo() . ' systemctl restart mosquitto');
-		ajax::success(jMQTT::mosquittoCheck());
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoStop') {
 		exec(system::getCmdSudo() . ' systemctl stop mosquitto');
-		ajax::success(jMQTT::mosquittoCheck());
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	if (init('action') == 'mosquittoConf') {
@@ -275,7 +350,7 @@ try {
 		if (init('config') == '')
 			throw new Exception(__('Configuration manquante', __FILE__));
 		shell_exec(system::getCmdSudo() . ' tee /etc/mosquitto/conf.d/jMQTT.conf > /dev/null <<jmqttEOF' . "\n" . init('config') . 'jmqttEOF');
-		ajax::success(jMQTT::mosquittoCheck());
+		ajax::success(jMQTTPlugin::mosquittoCheck());
 	}
 
 	###################################################################################################################
@@ -288,7 +363,7 @@ try {
 		if ($code)
 			throw new Exception(__("Échec de la sauvegarde de jMQTT, consultez le log jMQTT", __FILE__));
 
-		$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
+		$backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
 		$files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
 		sort($files);
 		$backups = array();
@@ -305,7 +380,7 @@ try {
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
 			throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
 
-		$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
+		$backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
 		if (in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))) && file_exists($backup_dir.'/'.$_backup))
 			unlink($backup_dir.'/'.$_backup);
 		else
@@ -318,7 +393,7 @@ try {
 		if (!isset($_backup) || is_null($_backup) || $_backup == '')
 			throw new Exception(__('Merci de fournir le fichier à restaurer', __FILE__));
 
-		$backup_dir = realpath(__DIR__ . '/../../' . jMQTT::PATH_BACKUP);
+		$backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
 		if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))
 			throw new Exception(__('Impossible de restaurer le fichier fourni', __FILE__));
 

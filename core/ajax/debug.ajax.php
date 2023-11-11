@@ -23,6 +23,8 @@ try {
 	if (!isConnect('admin')) {
 		throw new Exception(__('401 - Accès non autorisé', __FILE__));
 	}
+
+	require_once __DIR__ . '/../../core/class/jMQTT.class.php';
 	ajax::init();
 
 // -------------------- Config Daemon --------------------
@@ -125,11 +127,11 @@ try {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
 		$cacheKeys = array();
 		$cacheKeys[] = 'dependancyjMQTT';
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_RCV;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_LAST_SND;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_PORT;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_DAEMON_UID;
-		$cacheKeys[] = 'jMQTT::' . jMQTT::CACHE_JMQTT_NEXT_STATS;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_RCV;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_SND;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_PORT;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_UID;
+		$cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_JMQTT_NEXT_STATS;
 		// $cacheKeys[] = 'jMQTT::dummy';
 		// $cacheKeys[] = ;
 		$data = array();
@@ -167,8 +169,8 @@ try {
 		foreach(jMQTT::getNonBrokers() as $eqpts) {
 			foreach ($eqpts as $eqpt) {
 				$cacheEqptKeys = array();
-				$cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_IGNORE_TOPIC_MISMATCH;
-				// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
+				$cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;
+				// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED;
 				$cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
 				$cacheEqptKeys[] = 'eqLogicStatusAttr'.$eqpt->getId();
 				$data = array();
@@ -251,7 +253,7 @@ try {
 			ajax::error(__('Format invalide', __FILE__));
 		}
 		// Send to Daemon
-		jMQTT::sendToDaemon($data);
+		jMQTTComToDaemon::send($data);
 		ajax::success();
 	}
 	if (init('action') == 'sendToJeedom') {
@@ -261,11 +263,11 @@ try {
 			ajax::error(__('Format invalide', __FILE__));
 		}
 		// Prepare url
-		$callbackURL = jMQTT::get_callback_url();
+		$callbackURL = jMQTTDaemon::get_callback_url();
 		// To fix issue: https://community.jeedom.com/t/87727/39
 		if ((file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0')) && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1')
 			$callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
-		$url = $callbackURL . '?apikey=' . jeedom::getApiKey('jMQTT') . '&uid=' . (@cache::byKey('jMQTT::'.jMQTT::CACHE_DAEMON_UID)->getValue("0:0"));
+		$url = $callbackURL . '?apikey=' . jeedom::getApiKey('jMQTT') . '&uid=' . (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0"));
 
 		// Send to Jeedom
 		$curl = curl_init($url);
@@ -287,20 +289,20 @@ try {
 	}
 	if (init('action') == 'depDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		jMQTT::deamon_stop();
+		jMQTTDaemon::stop();
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/composer.lock');
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/vendor');
 		ajax::success();
 	}
 	if (init('action') == 'venvDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		jMQTT::deamon_stop();
+		jMQTTDaemon::stop();
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/venv');
 		ajax::success();
 	}
 	if (init('action') == 'dynContentDelete') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-		jMQTT::deamon_stop();
+		jMQTTDaemon::stop();
 		exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/__pycache__');
 		exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder(__CLASS__).'/rt*.json');
 		ajax::success();
@@ -320,7 +322,7 @@ try {
 	if (init('action') == 'threadDump') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
 		// Get cached PID and PORT
-		$cuid = @cache::byKey('jMQTT::'.jMQTT::CACHE_DAEMON_UID)->getValue("0:0");
+		$cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
 		list($cpid, $cport) = array_map('intval', explode(":", $cuid));
 		// If PID is unavailable or not running
 		if ($cpid == 0 || !@posix_getsid($cpid))
@@ -339,7 +341,7 @@ try {
 	if (init('action') == 'statsSend') {
 		jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
 		cache::set('jMQTT::nextStats', time() - 300);
-		jMQTT::pluginStats();
+		jMQTTDaemon::pluginStats();
 		ajax::success();
 	}
 	if (init('action') == 'listenersRemove') {

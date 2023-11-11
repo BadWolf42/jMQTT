@@ -9,8 +9,12 @@ updates:
     directory: "/resources/JsonPath-PHP"
     schedule:
       interval: "daily"
+    assignees:
+      - ${GITHUB_REPOSITORY_OWNER}
 
   - package-ecosystem: "pip"
     directory: "/resources/python-requirements"
     schedule:
       interval: "daily"
+    assignees:
+      - ${GITHUB_REPOSITORY_OWNER}

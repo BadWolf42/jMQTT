@@ -205,7 +205,7 @@ function createCmdWithId($_id) {
 // Restore jMQTT plugin files, keeping existing jMQTT backups and .git folder
 function restore_folder($tmp_dir) {
 	print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Saving existing jMQTT backups...");
-	exec('cp -a ' . __DIR__ . '/../' . jMQTT::PATH_BACKUP . '* ' . $tmp_dir . '/backup/jMQTT/' . jMQTT::PATH_BACKUP . ' 2>&1 > /dev/null');
+	exec('cp -a ' . __DIR__ . '/../' . jMQTTConst::PATH_BACKUP . '* ' . $tmp_dir . '/backup/jMQTT/' . jMQTTConst::PATH_BACKUP . ' 2>&1 > /dev/null');
 	if (file_exists(__DIR__ . '/../.git'))
 		exec('cp -a ' . __DIR__ . '/../.git ' . $tmp_dir . '/backup/jMQTT 2>&1 > /dev/null');
 	print("                     [ OK ]\n");
@@ -473,7 +473,7 @@ function full_import($data) {
 		$eq = new jMQTT();
 		utils::a2o($eq, $data_eq);
 		$eq->setId('');
-		if ($eq->getType() == jMQTT::TYP_BRK) {
+		if ($eq->getType() == jMQTTConst::TYP_BRK) {
 			$eq->setIsEnable('0');
 		} else {
 			$eq->setBrkId($old_eqs[$eq->getBrkId()]->getId());
@@ -586,8 +586,8 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...");
 		$old_autoMode = config::byKey('deamonAutoMode', 'jMQTT', 1);
 		config::save('deamonAutoMode', 0, 'jMQTT');
-		$old_daemonState = jMQTT::daemon_state();
-		jMQTT::deamon_stop();
+		$old_daemonState = jMQTTDaemon::state();
+		jMQTTDaemon::stop();
 		print("                             [ OK ]\n");
 	} else {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...                        [ SKIPPED ]\n");
@@ -701,7 +701,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
 
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...");
 		if ($old_daemonState)
-			jMQTT::deamon_start();
+			jMQTTDaemon::start();
 		print("                             [ OK ]\n");
 	} else {
 		print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...                        [ SKIPPED ]\n");

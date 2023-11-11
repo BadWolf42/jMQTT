@@ -27,7 +27,7 @@ jMQTT::logger('info', __("Suppression du démon cron précédent", __FILE__));
 // plugin::byId('jMQTT')->dependancy_info(true);
 
 // So best option is to remove old daemon dependancies
-// ***REMOVED*** Code removed due to side effect on other plugins. Problem handled by VERSION=5 and deamon_start() ***REMOVED***
+// ***REMOVED*** Code removed due to side effect on other plugins. Problem handled by VERSION=5 and jMQTTDaemon::start() ***REMOVED***
 
 
 ?>

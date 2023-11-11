@@ -23,8 +23,11 @@ if (!isConnect()) {
 	die();
 }
 
+require_once __DIR__ . '/../core/class/jMQTT.class.php';
+
+
 // Send Mosquitto installation status
-sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTT::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
+sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTTPlugin::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
 $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
 sendVarToJS('dStatus', $docker);
@@ -90,7 +93,7 @@ if (!$docker) {
 
 if ($docker) {
 	// To fix issue: https://community.jeedom.com/t/87727/39
-	$regularVal = jMQTT::get_callback_url();
+	$regularVal = jMQTTDaemon::get_callback_url();
 	$overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
 	$overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
 	$curVal = ($overrideEn) ? $overrideVal : $regularVal;
@@ -137,7 +140,7 @@ if ($docker) {
 				<select class="form-control" id="sel_backupJMqtt">
 <?php
 // List all jMQTT backup files
-$backup_dir = realpath(__DIR__ . '/../' . jMQTT::PATH_BACKUP);
+$backup_dir = realpath(__DIR__ . '/../' . jMQTTConst::PATH_BACKUP);
 $backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
 rsort($backups);
 foreach ($backups as $backup)
