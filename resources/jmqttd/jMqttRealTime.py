@@ -32,6 +32,7 @@ except ImportError:
     print("Error: importing module paho.mqtt")
     sys.exit(1)
 
+
 class jMqttRealTime:
     def __init__(
         self,
@@ -78,7 +79,6 @@ class jMqttRealTime:
                 # Only catch ValueError
                 pass
             self._log.error('Topic subscription failed "%s"', topic)
-
 
     def on_disconnect(self, client, userdata, rc):
         self.connected = False

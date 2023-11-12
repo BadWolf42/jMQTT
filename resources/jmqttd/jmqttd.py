@@ -232,7 +232,7 @@ class Main():
             except Exception:
                 if self.log.isEnabledFor(logging.DEBUG):
                     self.log.exception('Unable to get a message or decode JSON')
-                continue # Let's retry
+                continue  # Let's retry
             # Check API key
             if 'apikey' not in message or message['apikey'] != self._apikey:
                 self.log.error('Invalid apikey from socket : %s', message)
