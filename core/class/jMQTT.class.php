@@ -1783,7 +1783,7 @@ class jMQTT extends eqLogic {
     private function interactMessage($query, $param=array()) {
         try {
             // Validate query
-            if (is_null($query) || is_string($query) || $query == '')
+            if (!is_string($query))
                 $param['query'] = '';
             else
                 $param['query'] = $query;
@@ -1818,7 +1818,7 @@ class jMQTT extends eqLogic {
             $this->publish(
                 $this->getName(),
                 $this->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC) . '/reply',
-                json_encode($reply, true),
+                json_encode($reply, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 1,
                 0
             );
@@ -1859,7 +1859,7 @@ class jMQTT extends eqLogic {
             $this->publish(
                 $this->getName(),
                 $this->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC) . '/reply',
-                json_encode($reply, true),
+                json_encode($reply, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 1,
                 0
             );
