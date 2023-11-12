@@ -6,12 +6,12 @@
  */
 /** @var cmd $cmd */
 foreach (cmd::searchConfiguration('', 'jMQTT') as $cmd) {
-	jMQTT::logger('debug', __('Migration de la commande info:', __FILE__) . ' ' . $cmd->getHumanName());
-	$cmd->setConfiguration('parseJson', null);
-	$cmd->setConfiguration('prevParseJson', null);
-	$cmd->setConfiguration('jParent', null);
-	$cmd->setConfiguration('jOrder', null);
-	$cmd->save();
+    jMQTT::logger('debug', __('Migration de la commande info:', __FILE__) . ' ' . $cmd->getHumanName());
+    $cmd->setConfiguration('parseJson', null);
+    $cmd->setConfiguration('prevParseJson', null);
+    $cmd->setConfiguration('jParent', null);
+    $cmd->setConfiguration('jOrder', null);
+    $cmd->save();
 }
 
 jMQTT::logger('info', __("Migration vers la version json#76", __FILE__));

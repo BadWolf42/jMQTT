@@ -1,448 +1,448 @@
 {
-	"Nuki Smart Lock": {
-		"name": "Nuki Smart Lock",
-		"eqType_name": "jMQTT",
-		"configuration": {
-			"type": "eqpt",
-			"createtime": "2023-04-02 21:49:04",
-			"auto_add_cmd": "0",
-			"auto_add_topic": "%s/#",
-			"Qos": "1",
-			"battery_cmd": "Batterie",
-			"availability_cmd": "Connecté",
-			"commentaire": "Jeedom Community: https://community.jeedom.com/t/nuki-smart-lock-3-0-pro-sous-jeedom/94065/51",
-			"icone": "door"
-		},
-		"category": {
-			"heating": "0",
-			"security": "1",
-			"energy": "0",
-			"light": "0",
-			"opening": "0",
-			"automatism": "0",
-			"multimedia": "0",
-			"default": "0"
-		},
-		"display": {
-			"width": "210px",
-			"height": "140px"
-		},
-		"commands": [
-			{
-				"eqType": "jMQTT",
-				"name": "Connecté",
-				"type": "info",
-				"subType": "binary",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/connected"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "1",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Connection Serveur",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/serverConnected"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Batterie en charge",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/batteryCharging"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Batterie",
-				"type": "info",
-				"subType": "numeric",
-				"isHistorized": "1",
-				"unite": "%",
-				"configuration": {
-					"topic": "%s/batteryChargeState",
-					"minValue": "0",
-					"maxValue": "100",
-					"timeline::enable": "0",
-					"influx::enable": "0",
-					"interact::auto::disable": "0",
-					"jeedomCheckCmdOperator": "==",
-					"historizeMode": "avg",
-					"repeatEventManagement": "never",
-					"alert::messageReturnBack": "0",
-					"actionCheckCmd": [],
-					"jeedomPreExecCmd": [],
-					"jeedomPostExecCmd": []
-				},
-				"template": {
-					"dashboard": "core::line",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0",
-					"showNameOndashboard": "1",
-					"showNameOnmobile": "1",
-					"showIconAndNamedashboard": "0",
-					"showIconAndNamemobile": "0",
-					"forceReturnLineBefore": "1",
-					"forceReturnLineAfter": "0",
-					"parameters": [],
-					"icon": "<i class=\"fas fa-battery-full \"></i>"
-				},
-				"isVisible": "1",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Batterie Critique",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/batteryCritical"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Batterie Capteur Porte Critique",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/doorsensorBatteryCritical"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Batterie Clavier Critique",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/keypadBatteryCritical"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "commandResponse",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/commandResponse"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Etat",
-				"type": "info",
-				"subType": "numeric",
-				"isHistorized": "1",
-				"configuration": {
-					"topic": "%s/state",
-					"timeline::enable": "0",
-					"influx::enable": "0",
-					"interact::auto::disable": "0",
-					"jeedomCheckCmdOperator": "==",
-					"historizeMode": "avg",
-					"repeatEventManagement": "never",
-					"alert::messageReturnBack": "0",
-					"actionCheckCmd": [],
-					"jeedomPreExecCmd": [],
-					"jeedomPostExecCmd": []
-				},
-				"template": {
-					"dashboard": "custom::Serrure Nuki",
-					"mobile": "custom::Serrure Nuki"
-				},
-				"display": {
-					"invertBinary": "0",
-					"showNameOndashboard": "0",
-					"showNameOnmobile": "0",
-					"showIconAndNamedashboard": "0",
-					"showIconAndNamemobile": "0",
-					"forceReturnLineBefore": "0",
-					"forceReturnLineAfter": "0",
-					"parameters": []
-				},
-				"isVisible": "1",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Capteur Porte",
-				"type": "info",
-				"subType": "numeric",
-				"isHistorized": "1",
-				"configuration": {
-					"topic": "%s/doorsensorState",
-					"timeline::enable": "0",
-					"influx::enable": "0",
-					"interact::auto::disable": "0",
-					"jeedomCheckCmdOperator": "==",
-					"repeatEventManagement": "never",
-					"alert::messageReturnBack": "0",
-					"actionCheckCmd": [],
-					"jeedomPreExecCmd": [],
-					"jeedomPostExecCmd": [],
-					"historizeMode": "avg"
-				},
-				"template": {
-					"dashboard": "custom::Porte Nuki",
-					"mobile": "custom::Porte Nuki"
-				},
-				"display": {
-					"invertBinary": "0",
-					"showNameOndashboard": "0",
-					"showNameOnmobile": "0",
-					"showIconAndNamedashboard": "0",
-					"showIconAndNamemobile": "0",
-					"forceReturnLineBefore": "0",
-					"forceReturnLineAfter": "0",
-					"parameters": []
-				},
-				"isVisible": "1",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Déverouillage",
-				"type": "action",
-				"subType": "other",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/lockAction",
-					"request": "1",
-					"retain": "0",
-					"autoPub": "0"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"showNameOndashboard": "1",
-					"showNameOnmobile": "1",
-					"showIconAndNamedashboard": "0",
-					"showIconAndNamemobile": "0",
-					"forceReturnLineBefore": "0",
-					"forceReturnLineAfter": "0",
-					"parameters": []
-				},
-				"isVisible": "1",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Vérouillage",
-				"type": "action",
-				"subType": "other",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/lockAction",
-					"request": "2",
-					"retain": "0",
-					"autoPub": "0"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"showNameOndashboard": "1",
-					"showNameOnmobile": "1",
-					"showIconAndNamedashboard": "0",
-					"showIconAndNamemobile": "0",
-					"forceReturnLineBefore": "0",
-					"forceReturnLineAfter": "0",
-					"parameters": []
-				},
-				"isVisible": "1",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "lockActionEvent",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/lockActionEvent"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Device Type",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/deviceType"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Firmware",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/firmware"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Mode",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/mode"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Name",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/name"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			},
-			{
-				"eqType": "jMQTT",
-				"name": "Heure",
-				"type": "info",
-				"subType": "string",
-				"isHistorized": "0",
-				"configuration": {
-					"topic": "%s/timestamp"
-				},
-				"template": {
-					"dashboard": "core::default",
-					"mobile": "core::default"
-				},
-				"display": {
-					"invertBinary": "0"
-				},
-				"isVisible": "0",
-				"alert": []
-			}
-		]
-	}
+    "Nuki Smart Lock": {
+        "name": "Nuki Smart Lock",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2023-04-02 21:49:04",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
+            "Qos": "1",
+            "battery_cmd": "Batterie",
+            "availability_cmd": "Connecté",
+            "commentaire": "Jeedom Community: https://community.jeedom.com/t/nuki-smart-lock-3-0-pro-sous-jeedom/94065/51",
+            "icone": "door"
+        },
+        "category": {
+            "heating": "0",
+            "security": "1",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "210px",
+            "height": "140px"
+        },
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "Connecté",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/connected"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Connection Serveur",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/serverConnected"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie en charge",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/batteryCharging"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s/batteryChargeState",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "1",
+                    "forceReturnLineAfter": "0",
+                    "parameters": [],
+                    "icon": "<i class=\"fas fa-battery-full \"></i>"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie Critique",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/batteryCritical"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie Capteur Porte Critique",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/doorsensorBatteryCritical"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Batterie Clavier Critique",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/keypadBatteryCritical"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "commandResponse",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/commandResponse"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Etat",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/state",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "custom::Serrure Nuki",
+                    "mobile": "custom::Serrure Nuki"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Capteur Porte",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/doorsensorState",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": [],
+                    "historizeMode": "avg"
+                },
+                "template": {
+                    "dashboard": "custom::Porte Nuki",
+                    "mobile": "custom::Porte Nuki"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Déverouillage",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/lockAction",
+                    "request": "1",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Vérouillage",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/lockAction",
+                    "request": "2",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "lockActionEvent",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/lockActionEvent"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Device Type",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/deviceType"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Firmware",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/firmware"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mode",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/mode"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Name",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/name"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/timestamp"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            }
+        ]
+    }
 }
