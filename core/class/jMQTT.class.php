@@ -1858,13 +1858,19 @@ class jMQTT extends eqLogic {
                         $allCmdsNames = array();
                         // Get all commands names for this equipment
                         foreach (jMQTTCmd::byEqLogicId($eqpt->getId()) as $cmd)
-                            $allCmdsNames[] = trim($cmd->getName());
+                            $allCmdsNames[] = strtolower(trim($cmd->getName()));
                         // If cmdName is already used, add suffix '-<number>'
                         if (false !== array_search($cmdName, $allCmdsNames)) {
                             $cmdName .= '-';
-                            $increment = 2;
-                            while (false !== array_search($cmdName.$increment, $allCmdsNames))
+                            $increment = 1;
+                            do {
                                 $increment++;
+                            } while (
+                                false !== array_search(
+                                    strtolower($cmdName . $increment),
+                                    $allCmdsNames
+                                )
+                            );
                             $cmdName .= $increment;
                         }
                         // Create the new cmd
