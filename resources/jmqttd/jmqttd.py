@@ -22,6 +22,7 @@ import threading
 import traceback
 import time
 
+from AddLogging import add_new_loglevels
 from JeedomMsg import JeedomMsg
 from jMqttClient import jMqttClient
 
@@ -80,6 +81,7 @@ class Main():
         self._apikey = os.getenv("APIKEY", None)
 
         # Class logger
+        add_new_loglevels()
         self.log = logging.getLogger('Main')
 
         # Handle Run & Shutdown
