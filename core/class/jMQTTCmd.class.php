@@ -496,11 +496,11 @@ class jMQTTCmd extends cmd {
                     false
                 );
 
-                if (isset($root_cmd)) {
+                if (is_object($root_cmd)) {
                     $value = $root_cmd->execCmd();
-                    if (! empty($value)) {
+                    if (!empty($value)) {
                         $jsonArray = $root_cmd->decodeJsonMsg($value);
-                        if (isset($jsonArray)) {
+                        if (!is_null($jsonArray)) {
                             $this->updateJsonCmdValue($jsonArray);
                         }
                     }
