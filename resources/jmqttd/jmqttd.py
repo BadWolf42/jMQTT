@@ -22,9 +22,8 @@ import threading
 import traceback
 import time
 
-import AddLogging
-from JeedomMsg import *
-from jMqttClient import *
+from JeedomMsg import JeedomMsg
+from jMqttClient import jMqttClient
 
 
 # Takes a message "msg" and an array of (key, mandatory, default_val, expected_type) tupples to validate
@@ -41,7 +40,12 @@ def validate_params(msg, constraints):
         if key not in msg or msg[key] == '':
             if mandatory:
                 if default_val is None:
-                    logging.error('Cmd "%s" is missing parameter "%s" dump=%s', cmd, key, json.dumps(msg))
+                    logging.error(
+                        'Cmd "%s" is missing parameter "%s" dump=%s',
+                        msg['cmd'],
+                        key,
+                        json.dumps(msg)
+                    )
                     res = False
                 else:
                     msg[key] = default_val
@@ -51,45 +55,55 @@ def validate_params(msg, constraints):
                     msg[key] = str(msg[key]).lower() in ['true', '1']
                 else:
                     msg[key] = expected_type(msg[key])
-            except:
-                logging.error('Cmd "%s" has incorrect parameter "%s" (is %s, should be %s) dump=%s', cmd, key, type(msg[key]), expected_type, json.dumps(msg))
+            except Exception:
+                logging.error(
+                    'Cmd "%s" has incorrect parameter "%s" (is %s, should be %s) dump=%s',
+                    msg['cmd'],
+                    key,
+                    type(msg[key]),
+                    expected_type,
+                    json.dumps(msg)
+                )
                 res = False
     return res
 
 # ----------------------------------------------------------------------------
 
+
 class Main():
     def __init__(self, flag):
         # Values from ENV with defaults
-        self._log_level   = os.getenv("LOGLEVEL", "error")
+        self._log_level = os.getenv("LOGLEVEL", "error")
         self._socket_port = int(os.getenv("SOCKETPORT", 0))
-        self._pidfile     = os.getenv("PIDFILE", '/tmp/jmqttd.pid')
-        self._callback    = os.getenv("CALLBACK", None)
-        self._apikey      = os.getenv("APIKEY", None)
+        self._pidfile = os.getenv("PIDFILE", '/tmp/jmqttd.pid')
+        self._callback = os.getenv("CALLBACK", None)
+        self._apikey = os.getenv("APIKEY", None)
 
         # Class logger
         self.log = logging.getLogger('Main')
 
         # Handle Run & Shutdown
-        self.should_stop  = flag
-        self.has_stopped  = threading.Event()
+        self.should_stop = flag
+        self.has_stopped = threading.Event()
         self.has_stopped.set()
 
         # Tables for the meal
-        self.message_map  = {'newMqttClient':   self.h_newClient,
-                            'removeMqttClient': self.h_delClient,
-                            'subscribeTopic':   self.h_subTopic,
-                            'unsubscribeTopic': self.h_unsubTopic,
-                            'messageOut':       self.h_messageOut,
-                            'realTimeStart':    self.h_realTimeStart,
-                            'realTimeStop':     self.h_realTimeStop,
-                            'realTimeClear':    self.h_realTimeClear,
-                            'changeApiKey':     self.h_changeApiKey,
-                            'loglevel':         self.h_logLevel}
+        self.message_map = {
+            'newMqttClient': self.h_newClient,
+            'removeMqttClient': self.h_delClient,
+            'subscribeTopic': self.h_subTopic,
+            'unsubscribeTopic': self.h_unsubTopic,
+            'messageOut': self.h_messageOut,
+            'realTimeStart': self.h_realTimeStart,
+            'realTimeStop': self.h_realTimeStop,
+            'realTimeClear': self.h_realTimeClear,
+            'changeApiKey': self.h_changeApiKey,
+            'loglevel': self.h_logLevel
+        }
         self.jmqttclients = {}
-        self.jcom         = None
+        self.jcom = None
 
-    def set_log_level(self, level = 'error'):
+    def set_log_level(self, level='error'):
         newlevel = {
             'verbose':  logging.VERBOSE,
             'debug':    logging.DEBUG,
@@ -138,12 +152,12 @@ class Main():
             try:
                 # Try to ping the pid
                 os.kill(pid, 0)
-            except OSError: # PID does not run we can continue
+            except OSError:  # PID does not run we can continue
                 pass
-            except: # just in case
+            except Exception:  # just in case
                 self.log.exception("Unexpected error when checking PID")
                 sys.exit(3)
-            else: # PID is alive -> we die
+            else:  # PID is alive -> we die
                 self.log.error('This daemon already runs! Exit 0')
                 sys.exit(0)
         try:
@@ -152,7 +166,7 @@ class Main():
             self.log.debug("Writing PID %s to %s", pid, self._pidfile)
             with open(self._pidfile, 'w') as f:
                 f.write("%s\n" % pid)
-        except:
+        except Exception:
             self.log.exception('Could not write PID file')
             sys.exit(4)
 
@@ -165,23 +179,34 @@ class Main():
 
     def open_comm(self):
         self.jcom = JeedomMsg(self._callback, self._apikey, self._socket_port)
-        try: # Create communication channel to get instructions FROM Jeedom
+        try:  # Create communication channel to get instructions FROM Jeedom
             self.jcom.receiver_start()
-        except:
+        except Exception:
             if self.log.isEnabledFor(logging.DEBUG):
-                self.log.exception('Failed to Open the communication channel to get instructions FROM Jeedom')
+                self.log.exception(
+                    'Failed to Open the communication channel to get instructions FROM Jeedom'
+                )
             else:
-                self.log.critical('Failed to Open the communication channel to get instructions FROM Jeedom')
+                self.log.critical(
+                    'Failed to Open the communication channel to get instructions FROM Jeedom'
+                )
             return False
-        if self.jcom.send_test(): # Test communication channel TO Jeedom
-            self.jcom.sender_start() # Start sender
-            data = self.jcom.send([{"cmd":"daemonUp"}]) # Must use send to be synchronous and get a reply
+        if self.jcom.send_test():  # Test communication channel TO Jeedom
+            self.jcom.sender_start()  # Start sender
+            data = self.jcom.send([{"cmd": "daemonUp"}])  # Must use send to be synchronous and get a reply
             # self.log.info('Successfully informed Jeedom')
-            self.log.debug('Open Comm   : Sent Daemon Up signal to Jeedom, got data: "%s"', data)
+            self.log.debug(
+                'Open Comm   : Sent Daemon Up signal to Jeedom, got data: "%s"',
+                data
+            )
         else:
-            self.log.critical('Open Comm   : Failed to Open the communication channel to send informations back TO Jeedom')
+            self.log.critical(
+                'Open Comm   : Failed to Open the communication channel to send informations back TO Jeedom'
+            )
             self.jcom.receiver_stop()
-            self.log.critical('Open Comm   : Closed the communication channel to get instructions FROM Jeedom')
+            self.log.critical(
+                'Open Comm   : Closed the communication channel to get instructions FROM Jeedom'
+            )
             self.jcom = None
             return False
         return True
@@ -190,28 +215,28 @@ class Main():
         self.has_stopped.clear()
         # Wait for instructions
         while not self.should_stop.is_set():
-            if not self.jcom.is_working(): # Check if there has been bidirectional communication with Jeedom
+            if not self.jcom.is_working():  # Check if there has been bidirectional communication with Jeedom
                 self.should_stop.set()
-            if len(self.jcom.qFromJ) == 0: # faster that Exception handling
+            if len(self.jcom.qFromJ) == 0:  # faster that Exception handling
                 time.sleep(0.1)
-                continue # Check if should_stop changed
+                continue  # Check if should_stop changed
 
             # Get some new raw data and cook it
             try:
                 jeedom_raw = self.jcom.qFromJ.pop()
                 jeedom_msg = jeedom_raw.decode('utf-8')
-                #self.log.debug('Received from Jeedom: %s', jeedom_msg)
+                # self.log.debug('Received from Jeedom: %s', jeedom_msg)
                 message = json.loads(jeedom_msg)
             except IndexError:
-                continue # More chance next time
-            except:
+                continue  # More chance next time
+            except Exception:
                 if self.log.isEnabledFor(logging.DEBUG):
                     self.log.exception('Unable to get a message or decode JSON')
                 continue # Let's retry
             # Check API key
             if 'apikey' not in message or message['apikey'] != self._apikey:
                 self.log.error('Invalid apikey from socket : %s', message)
-                continue # Ignore unauthorized messages
+                continue  # Ignore unauthorized messages
 
             # Check for there is a cmd in message
             if 'cmd' not in message or not isinstance(message['cmd'], str) or message['cmd'] == '':
@@ -223,14 +248,14 @@ class Main():
                 continue
 
             # Check for mandatory parameters before handling the message
-            if not validate_params(message,  # key, mandatory, default_val, expected_type
-                                            [['id',      True,        None, str]]):
+            #                                  key, mandatory, default_val, expected_type
+            if not validate_params(message, [['id',      True,        None, str]]):
                 continue
 
             # Register the call
             try:
                 self.message_map.get(message['cmd'], self.h_unknown)(message)
-            except Exception as e:
+            except Exception:
                 self.log.exception('Message FROM Jeedom raised Exception')
         self.has_stopped.set()
 
@@ -245,29 +270,47 @@ class Main():
             if 'tlscafile' not in message or message['tlscafile'] == '':
                 message['tlscafile'] = None
             elif not os.access(message['tlscafile'], os.R_OK):
-                self.log.warning('Unable to read CA file "%s" for Broker %s', message['tlscafile'], message['id'])
+                self.log.warning(
+                    'Unable to read CA file "%s" for Broker %s',
+                    message['tlscafile'],
+                    message['id']
+                )
                 return
             if 'tlsclicertfile' not in message or message['tlsclicertfile'] == '':
                 message['tlsclicertfile'] = None
             elif not os.access(message['tlsclicertfile'], os.R_OK):
-                self.log.warning('Unable to read Client Certificate file "%s" for Broker %s', message['tlsclicertfile'], message['id'])
+                self.log.warning(
+                    'Unable to read Client Certificate file "%s" for Broker %s',
+                    message['tlsclicertfile'],
+                    message['id']
+                )
                 return
             if 'tlsclikeyfile' not in message or message['tlsclikeyfile'] == '':
                 message['tlsclikeyfile'] = None
             elif not os.access(message['tlsclikeyfile'], os.R_OK):
-                self.log.warning('Unable to read Client Key file "%s" for Broker %s', message['tlsclikeyfile'], message['id'])
+                self.log.warning(
+                    'Unable to read Client Key file "%s" for Broker %s',
+                    message['tlsclikeyfile'],
+                    message['id']
+                )
                 return
             if message['tlsclicertfile'] is None and message['tlsclikeyfile'] is not None:
-                self.log.warning('Client Certificate is defined but Client Key is NOT for Broker %s', message['id'])
+                self.log.warning(
+                    'Client Certificate is defined but Client Key is NOT for Broker %s',
+                    message['id']
+                )
                 return
             if message['tlsclicertfile'] is not None and message['tlsclikeyfile'] is None:
-                self.log.warning('Client Key is defined but Client Certificate is NOT for Broker %s', message['id'])
+                self.log.warning(
+                    'Client Key is defined but Client Certificate is NOT for Broker %s',
+                    message['id']
+                    )
                 return
         # if jmqttclient already exists then restart it
         if message['id'] in self.jmqttclients:
             self.log.info('Client already exists for Broker %s. Restarting it.', message['id'])
             self.jmqttclients[message['id']].restart(message)
-        else: # create requested jmqttclient
+        else:  # create requested jmqttclient
             self.log.info('Creating Client for Broker %s.', message['id'])
             newjMqttClient = jMqttClient(self.jcom, message)
             newjMqttClient.start()
@@ -283,9 +326,9 @@ class Main():
             self.log.info('No client found for Broker %s', message['id'])
 
     def h_subTopic(self, message):
-        # Check for                  key, mandatory, default_val, expected_type
-        if not validate_params(message, [['topic',     True,        None, str],
-                                         ['qos',       True,        None, int]]):
+        # Check for                     key, mandatory, default_val, expected_type
+        if not validate_params(message, [['topic', True, None, str],
+                                         ['qos', True, None, int]]):
             return
         if message['id'] in self.jmqttclients:
             self.jmqttclients[message['id']].subscribe_topic(message['topic'], message['qos'])
@@ -293,15 +336,21 @@ class Main():
             self.log.debug('No client found for Broker %s', message['id'])
 
     def h_realTimeStart(self, message):
-        # Check for                               key, mandatory, default_val, expected_type
-        if not validate_params(message, [[     'file',      True,        None, str],
-                                         ['subscribe',      True,          [], list],
-                                         [  'exclude',      True,          [], list],
-                                         [ 'retained',      True,       False, bool],
-                                         [ 'duration',      True,         180, int]]):
+        # Check for                     key, mandatory, default_val, expected_type
+        if not validate_params(message, [['file', True, None, str],
+                                         ['subscribe', True, [], list],
+                                         ['exclude', True, [], list],
+                                         ['retained', True, False, bool],
+                                         ['duration', True, 180, int]]):
             return
         if message['id'] in self.jmqttclients:
-            self.jmqttclients[message['id']].realtime_start(message['file'], message['subscribe'], message['exclude'], message['retained'], message['duration'])
+            self.jmqttclients[message['id']].realtime_start(
+                message['file'],
+                message['subscribe'],
+                message['exclude'],
+                message['retained'],
+                message['duration']
+            )
         else:
             self.log.debug('No client found for Broker %s', message['id'])
 
@@ -312,8 +361,8 @@ class Main():
             self.log.debug('No client found for Broker %s', message['id'])
 
     def h_realTimeClear(self, message):
-        # Check for                              key, mandatory, default_val, expected_type
-        if not validate_params(message, [[    'file',      True,        None, str]]):
+        # Check for                     key, mandatory, default_val, expected_type
+        if not validate_params(message, [['file', True, None, str]]):
             return
         if message['id'] in self.jmqttclients:
             self.jmqttclients[message['id']].realtime_clear(message['file'])
@@ -321,7 +370,7 @@ class Main():
             self.log.debug('No client found for Broker %s', message['id'])
 
     def h_unsubTopic(self, message):
-        # Check for                   key, mandatory, default_val, expected_type
+        # Check for                     key, mandatory, default_val, expected_type
         if not validate_params(message, [['topic',      True,        None, str]]):
             return
         if message['id'] in self.jmqttclients:
@@ -341,7 +390,12 @@ class Main():
             self.log.error('Wrong value for qos "%d" for Broker %s', message['qos'], message['id'])
             return
         if message['id'] in self.jmqttclients:
-            self.jmqttclients[message['id']].publish(message['topic'], message['payload'], message['qos'], message['retain'])
+            self.jmqttclients[message['id']].publish(
+                message['topic'],
+                message['payload'],
+                message['qos'],
+                message['retain']
+            )
         else:
             self.log.debug('No client found for Broker %s', message['id'])
 
@@ -369,7 +423,7 @@ class Main():
         try:
             if self.jcom is not None:
                 self.jcom.receiver_stop()
-        except:
+        except Exception:
             if self.log.isEnabledFor(logging.DEBUG):
                 self.log.debug("Failed to close Socket for Jeedom")
 
@@ -377,7 +431,7 @@ class Main():
         try:
             for id in list(self.jmqttclients):
                 self.jmqttclients[id].stop()
-        except:
+        except Exception:
             if self.log.isEnabledFor(logging.DEBUG):
                 self.log.exception('Clients Stop Exception')
 
@@ -385,7 +439,7 @@ class Main():
         try:
             for id in list(self.jmqttclients):
                 del self.jmqttclients[id]
-        except:
+        except Exception:
             if self.log.isEnabledFor(logging.DEBUG):
                 self.log.exception('Clients Kill Exception')
 
@@ -394,14 +448,17 @@ class Main():
             self.log.debug('Sent Daemon Down signal to Jeedom')
             # self.jcom.send_async({"cmd":"daemonDown"})
             self.jcom.sender_stop()
-            self.jcom.send([{"cmd":"daemonDown"}])
+            self.jcom.send([{"cmd": "daemonDown"}])
 
 # ----------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
     # Formater for the output of the logger
     # formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
-    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(name)-15s %(threadName)-10s %(funcName)15s() : %(message)s')
+    formatter = logging.Formatter(
+        '[%(asctime)s][%(levelname)s] %(name)-15s %(threadName)-10s %(funcName)15s() : %(message)s'
+    )
 
     # STDOUT will get all logs
     ch = logging.StreamHandler()
@@ -422,7 +479,7 @@ if __name__ == '__main__':
         id2name = dict([(th.ident, th.name) for th in threading.enumerate()])
         code = ['A dump of Daemon Stack has been requested:']
         for threadId, stack in sys._current_frames().items():
-            code.append("\n# Thread: %s(%d)" % (id2name.get(threadId,""), threadId))
+            code.append("\n# Thread: %s(%d)" % (id2name.get(threadId, ""), threadId))
             for filename, lineno, name, line in traceback.extract_stack(stack):
                 code.append('File: "%s", line %d, in %s' % (filename, lineno, name))
                 if line:
@@ -431,7 +488,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGUSR1, dumpstacks)
 
     # Interrupt handler
-    def signal_handler(signum = None, frame = None):
+    def signal_handler(signum=None, frame=None):
         logging.debug("Signal %d caught, exiting...", signum)
         should_stop.set()
 
