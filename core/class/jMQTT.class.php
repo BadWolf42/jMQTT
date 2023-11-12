@@ -2441,7 +2441,7 @@ class jMQTT extends eqLogic {
      * @return string either jMQTT::TYPE_EQPT, jMQTTConst::TYP_BRK, or empty string if not defined
      */
     public function getType() {
-        return $this->getConf(jMQTTConst::CONF_KEY_TYPE);
+        return $this->getConfiguration(jMQTTConst::CONF_KEY_TYPE, '');
     }
 
     /**
@@ -2449,9 +2449,11 @@ class jMQTT extends eqLogic {
      *
      * @param string $type either jMQTTConst::TYP_BRK or jMQTTConst::TYP_EQPT (default)
      */
-    public function setType($type) {
-        if($type != jMQTTConst::TYP_EQPT && $type != jMQTTConst::TYP_BRK) return;
-        $this->setConfiguration(jMQTTConst::CONF_KEY_TYPE, $type);
+    public function setType($type = jMQTTConst::TYP_EQPT) {
+        $this->setConfiguration(
+            jMQTTConst::CONF_KEY_TYPE,
+            ($type == jMQTTConst::TYP_BRK) ? jMQTTConst::TYP_BRK : jMQTTConst::TYP_EQPT
+        );
     }
 
     /**
