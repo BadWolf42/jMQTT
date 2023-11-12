@@ -45,4 +45,4 @@ jobs:
       #     dir: '.'
 
       - name: Run PHPStan
-        run: phpstan analyse src
+        run: phpstan analyse plugin_info core/class core/ajax core/php desktop/modal desktop/php
