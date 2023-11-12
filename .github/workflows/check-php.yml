@@ -31,7 +31,7 @@ jobs:
         # run: composer install --prefer-dist
         run: composer update --working-dir=$BASEDIR/JsonPath-PHP
 
-      - name: Setup PHP
+      - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
@@ -40,7 +40,7 @@ jobs:
           debug: true
 
       - name: PHP Syntax Checker (Lint)
-        uses: StephaneBour/actions-php-lint@${{ matrix.php-version }}
+        uses: StephaneBour/actions-php-lint@${{ php-version }}
         with:
           dir: '.'
 
