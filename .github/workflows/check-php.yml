@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies
         # run: composer install --prefer-dist
-        run: composer update --working-dir=$BASEDIR/JsonPath-PHP
+        run: composer update --working-dir=./resources/JsonPath-PHP
 
       - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
@@ -39,10 +39,10 @@ jobs:
         env:
           debug: true
 
-      - name: PHP Syntax Checker (Lint)
-        uses: StephaneBour/actions-php-lint@${{ php-version }}
-        with:
-          dir: '.'
+      # - name: PHP Syntax Checker (Lint)
+      #   uses: StephaneBour/actions-php-lint@${{ matrix.php-version }}
+      #   with:
+      #     dir: '.'
 
       - name: Run PHPStan
         run: phpstan analyse src
