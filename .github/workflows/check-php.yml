@@ -11,10 +11,26 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
+        jeedom-branch: ['V4-stable']
+        php-version: ['7.3']
+        # jeedom-branch: ['V4-stable', 'alpha']
+        # php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
+        uses: actions/checkout@v3
+        with:
+          repository: jeedom/core
+          ref: ${{ matrix.jeedom-branch }}
+
+      - name: Create plugins folder
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/plugins/jMQTT
+
+      - name: Checkout jMQTT
+        uses: actions/checkout@v3
+        with:
+          path: plugins/jMQTT
 
       - name: Get composer cache directory
         id: composer-cache
@@ -29,7 +45,7 @@ jobs:
 
       - name: Install dependencies
         # run: composer install --prefer-dist
-        run: composer update --working-dir=./resources/JsonPath-PHP
+        run: composer update --working-dir=${GITHUB_WORKSPACE}/plugins/jMQTT/resources/JsonPath-PHP
 
       - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
@@ -44,5 +60,15 @@ jobs:
       #   with:
       #     dir: '.'
 
+      # - name: LS all workspace
+      #   run: |
+      #     ls -lahR ${GITHUB_WORKSPACE}
+
       - name: Run PHPStan
-        run: phpstan analyse plugin_info core/class core/ajax core/php desktop/modal desktop/php
+        run: phpstan analyse -c plugins/jMQTT/phpstan.neon
+
+      # - name: Run Action PHPStan
+      #   uses: php-actions/phpstan@v3
+      #   with:
+      #     path: plugins/jMQTT/plugin_info/ plugins/jMQTT/core/ plugins/jMQTT/desktop/
+      #     autoload_file: core/php/core.inc.php
