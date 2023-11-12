@@ -145,9 +145,13 @@ jmqtt.asCardHelper = function(_eq, _item, iClass) {
     return '<i class="' + icon + iClass + '"></i>';
 }
 
+// TODO: Align icons in "hiddenAsCard" view
+//  cf: https://community.jeedom.com/t/pb-decalage-icones-equipement/113879
+//  labels: bug, css, javascript
+
 // Build an icon in hiddenAsCard card span
 jmqtt.asTableHelper = function(_eq, _item, aClass) {
-    aClass   = aClass != '' ? ' ' + aClass : '';
+    aClass = aClass != '' ? ' ' + aClass : '';
 
     // Handle bad eqLogics (orphans)
     if (_eq.configuration == undefined || _eq.configuration.type == undefined || jmqtt_globals.icons[_eq.configuration.type][_item] == undefined)

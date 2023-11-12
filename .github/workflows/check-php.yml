@@ -1,0 +1,48 @@
+name: Check PHP
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  check-php:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        # run: composer install --prefer-dist
+        run: composer update --working-dir=$BASEDIR/JsonPath-PHP
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: phpstan
+        env:
+          debug: true
+
+      - name: PHP Syntax Checker (Lint)
+        uses: StephaneBour/actions-php-lint@${{ matrix.php-version }}
+        with:
+          dir: '.'
+
+      - name: Run PHPStan
+        run: phpstan analyse src

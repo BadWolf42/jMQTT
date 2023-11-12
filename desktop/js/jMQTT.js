@@ -15,7 +15,7 @@
  */
 
 // TODO: Remove jQuery from jMQTT
-//  labels: enhancement, help wanted javascript
+//  labels: enhancement, help wanted, javascript
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on main plugin view
@@ -895,7 +895,12 @@ function addCmdToTable(_cmd) {
         tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br/> ';
         tr += '</td><td align="right">';
         // TODO: Add Advanced parameters modale on each cmd
-        //  The modale should include autoPub, Qos, related discovery config, etc
+        //  The modale should include:
+        //  - autoPub,
+        //  - Qos,
+        //  - move topic to other eqLogic,
+        //  - related discovery config,
+        //  - etc
         //  labels: enhancement, javascript
         // tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
         if (is_numeric(_cmd.id)) {
