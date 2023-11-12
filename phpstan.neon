@@ -2,6 +2,9 @@ parameters:
     level: 5
     paths:
         - plugin_info
+        - resources/mosquitto_topic_matches_sub.php
+        - resources/jMQTT_backup.php
+        - resources/jMQTT_restore.php
         - core
         - desktop
     scanDirectories:

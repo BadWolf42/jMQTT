@@ -125,7 +125,7 @@ function jMQTT_update($_direct=true) {
 function jMQTT_remove() {
     jMQTT::logger('debug', 'install.php: jMQTT_remove()');
     jMQTTDaemon::pluginStats('uninstall');
-    cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_CONNECTED);
+    @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
 }
 
 ?>

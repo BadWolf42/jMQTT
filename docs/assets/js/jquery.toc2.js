@@ -1,5 +1,5 @@
 /*
- * Table of Contents Generator library for jQuery 
+ * Table of Contents Generator library for jQuery
  *
  * Inspired from https://github.com/idiotWu/jQuery-TOC
  *
@@ -21,10 +21,8 @@
 
     /**
      * get header level
-     * 
-     * @param {String}
-     *            header: header's tag name
-     * 
+     *
+     * @param {String} header: header's tag name
      * @return {Number}
      */
     var getLevel = function(header) {
@@ -38,12 +36,9 @@
 
     /**
      * create ordered list
-     * 
-     * @param {jQuert}
-     *            $wrapper
-     * @param {Number}
-     *            count
-     * 
+     *
+     * @param {jQuert} $wrapper
+     * @param {Number} count
      * @return {jQuery} list
      */
     var createList = function($wrapper, count) {
@@ -60,12 +55,9 @@
 
     /**
      * insert position jump back
-     * 
-     * @param {jQuery}
-     *            $currentWrapper: current insert point
-     * @param {Number}
-     *            offset: distance between current's and target's depth
-     * 
+     *
+     * @param {jQuery} $currentWrapper: current insert point
+     * @param {Number} offset: distance between current's and target's depth
      * @return {jQuery} insert point
      */
     var jumpBack = function($currentWrapper, offset) {
@@ -78,12 +70,9 @@
 
     /**
      * set element href/id and content
-     * 
-     * @param {Boolean}
-     *            overwrite: whether overwrite source element existed id
-     * @param {String}
-     *            prefix: prefix to prepend to href/id
-     * 
+     *
+     * @param {Boolean} overwrite: whether overwrite source element existed id
+     * @param {String} prefix: prefix to prepend to href/id
      * @return {Function}
      */
     var setAttrs = function(overwrite, prefix) {
@@ -91,17 +80,17 @@
             var content = $src.text();
             var id_pre = prefix + '-' + index;
             var number_pre = number + '. ';
-            
+
             // To avoid repetition of the number in case several toc are put in the page
             if (content.substr(0, number_pre.length) == number_pre)
                 content = content.substr(number_pre.length);
-            
+
             $target.append(
                     $('<span/>', {'class' : 'tocnumber', 'text' : number + ' '}),
                     $('<span/>', {'class' : 'toctext'}).html('<span class="tocfirst-letter">' + content.substr(0,1) + '</span>' + content.substr(1)));
 
             var id = overwrite ? id_pre : ($src.attr('id') || id_pre);
-            
+
             $src.attr('id', id).text(number_pre + content);
             $target.attr('href', '#' + id);
         };
@@ -109,10 +98,8 @@
 
     /**
      * build table of contents
-     * 
-     * @param {Object}
-     *            options
-     * 
+     *
+     * @param {Object} options
      * @return {jQuery} list
      */
     var buildTOC = function(options) {
@@ -131,7 +118,7 @@
                 function(index, elem) {
                     var currentDepth = getLevel(elem.tagName);
                     var offset = currentDepth - prevDepth;
-                    
+
                     if (offset > 0) {
                         $wrapper = createList($lastLi, offset);
                         var n=indices.length;
@@ -177,7 +164,7 @@
 
     /**
      * init table of contents
-     * 
+     *
      * @param {Object}
      *            [option]: TOC options, available props: {String} [selector]:
      *            headers selector, default is 'h1, h2, h3, h4, h5, h6' {String}
@@ -186,7 +173,6 @@
      *            headers' id, default is false {String} [prefix]: string to
      *            prepend to id/href prop, default is 'toc' {String} [toctitle]:
      *            TOC title displayed first, default is empty
-     * 
      * @return {jQuery} $this
      */
     $.fn.initTOC = function(options) {

@@ -1136,11 +1136,11 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 /**
  * Management of the display when an information command is added
  * Triggerred when the plugin core send a jMQTT::cmdAdded event
- * @param _event string event name
- * @param _options['eqlogic_name'] string name of the eqLogic command is added to
- * @param _options['eqlogic_id'] int id of the eqLogic command is added to
- * @param _options['cmd_name'] string name of the new command
- * @param _options['reload'] bool whether or not a reload of the page is requested
+ * @param {string} _event event name
+ * @param {string} _options['eqlogic_name'] name of the eqLogic command is added to
+ * @param {int} _options['eqlogic_id'] id of the eqLogic command is added to
+ * @param {string} _options['cmd_name'] name of the new command
+ * @param {bool} _options['reload'] whether or not a reload of the page is requested
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
     var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;

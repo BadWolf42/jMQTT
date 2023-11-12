@@ -60,7 +60,7 @@ class mqttApiRequest {
                 $this->id = $jsonArray[self::JRPC_ID];
 
             if (! isset($jsonArray[self::JRPC_METHOD]) || empty($jsonArray[self::JRPC_METHOD]))
-                $errArr = self::newErrorArray(- 32601, 'Method not found');
+                $errArr = self::newErrorArray(-32601, 'Method not found');
             else
                 $this->method = $jsonArray[self::JRPC_METHOD];
 
@@ -69,11 +69,11 @@ class mqttApiRequest {
                 if (is_array($jsonArray[self::JRPC_PARAMS]))
                     $this->params = array_merge($jsonArray[self::JRPC_PARAMS], $this->params);
                 else
-                    $errArr = self::newErrorArray(- 32602, 'Invalid params: shall be an array', $this->id);
+                    $errArr = self::newErrorArray(-32602, 'Invalid params: shall be an array', $this->id);
             }
         }
         else {
-            $errArr = self::newErrorArray(- 32600, 'Invalid request: cannot decode a JSON structure');
+            $errArr = self::newErrorArray(-32600, 'Invalid request: cannot decode a JSON structure');
         }
 
         if (isset($errArr)) {
@@ -84,17 +84,26 @@ class mqttApiRequest {
 
     /**
      * Process this request
+     *
+     * @param bool $enabled
      */
     public function processRequest($enabled = false) {
         if (!$enabled) {
             $this->publishError(
-                self::newErrorArray(- 32001, "Vous n'êtes pas autorisé à effectuer cette action (API is disable)"));
+                self::newErrorArray(-32001, "Vous n'êtes pas autorisé à effectuer cette action (API is disable)"));
             return;
         }
 
         $request = json_encode(
             self::newJsonRpcArray(
-                self::addParam(array(self::JRPC_METHOD => $this->method), self::JRPC_PARAMS, $this->params), $this->id));
+                self::addParam(
+                    array(self::JRPC_METHOD => $this->method),
+                    self::JRPC_PARAMS,
+                    $this->params
+                ),
+                $this->id
+            )
+        );
         $this->broker->log('debug', 'API: jsonrpc request is ' . $request);
 
         // Process the request
@@ -105,16 +114,25 @@ class mqttApiRequest {
         }
 
         $arrRes = json_decode($jsonRes, true);
-        if (! is_array($arrRes) || json_last_error() != JSON_ERROR_NONE || ! isset($arrRes[self::JRPC_JSONRPC]) ||
-            $arrRes[self::JRPC_JSONRPC] != self::JRPC_VERSION ||
-            (! isset($arrRes[self::JRPC_RESULT]) && ! isset($arrRes[self::JRPC_ERR])) ||
-            (isset($arrRes[self::JRPC_ERR]) && ! isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_CODE]) &&
-                ! isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_MSG]))) {
-            $arrRes = self::newErrorArray(- 32603, 'Internal error', $this->id);
+        if (
+            !is_array($arrRes)
+            || json_last_error() != JSON_ERROR_NONE
+            || !isset($arrRes[self::JRPC_JSONRPC])
+            || $arrRes[self::JRPC_JSONRPC] != self::JRPC_VERSION
+            || (
+                ! isset($arrRes[self::JRPC_RESULT])
+                && !isset($arrRes[self::JRPC_ERR])
+            ) || (
+                isset($arrRes[self::JRPC_ERR])
+                && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_CODE])
+                && !isset($arrRes[self::JRPC_ERR][self::JRPC_ERR_MSG])
+            )
+        ) {
+            $arrRes = self::newErrorArray(-32603, 'Internal error', $this->id);
         }
 
         if (isset($arrRes[self::JRPC_ERR]))
-            $this->publishError($arrRes, $this->ret_topic);
+            $this->publishError($arrRes);
         else
             $this->publishSuccess($jsonRes);
     }
@@ -122,10 +140,15 @@ class mqttApiRequest {
     /**
      * Send the request to the JSON RPC API
      * This method is inspired from jsonrpcClient::send (in core/class)
+     *
+     * @param string $_request
+     * @param int $_timeout
+     * @param int $_maxRetry
+     * @return array|string
      */
     protected function send($_request, $_timeout = 15, $_maxRetry = 2) {
         $nbRetry = 0;
-        while ($nbRetry < $_maxRetry) {
+        do {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $this->apiAddr);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -138,15 +161,14 @@ class mqttApiRequest {
             curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
             $response = preg_replace('/[^[:print:]]/', '', trim(curl_exec($ch)));
             $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $nbRetry ++;
+            $nbRetry++;
             if (curl_errno($ch) && $nbRetry < $_maxRetry) {
                 curl_close($ch);
                 usleep(500000);
+            } else {
+                break;
             }
-            else {
-                $nbRetry = $_maxRetry + 1;
-            }
-        }
+        } while ($nbRetry <= $_maxRetry);
         if ($http_status == 301) {
             if (preg_match('/<a href="(.*)">/i', $response, $r)) {
                 $this->apiAddr = trim($r[1]);
@@ -154,11 +176,16 @@ class mqttApiRequest {
             }
         }
         if ($http_status != 200) {
-            $response = $this->newErrorMsg(- 32300, 'Erreur http : ' . $http_status . ' Details : ' . $response);
+            $response = $this->newErrorMsg(
+                -32300,
+                'Erreur http : ' . $http_status . ' Details : ' . $response
+            );
         }
         if (curl_errno($ch)) {
-            $response = $this->newErrorMsg(- 32400,
-                'Erreur curl sur : ' . $this->apiAddr . '. Détail :' . curl_error($ch));
+            $response = $this->newErrorMsg(
+                -32400,
+                'Erreur curl sur : ' . $this->apiAddr . '. Détail :' . curl_error($ch)
+            );
         }
         curl_close($ch);
         return $response;
@@ -167,86 +194,123 @@ class mqttApiRequest {
     /**
      * Publish the given error array to the MQTT broker if $this->ret_topic is set
      *
-     * @param
-     *            array error message
+     * @param array $_arrErr error message
      */
     protected function publishError($_arrErr) {
-        $this->broker->log('error', sprintf('API: %s (code: %s)', $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG], $_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE]));
+        $this->broker->log(
+            'error',
+            sprintf(
+                'API: %s (code: %s)',
+                $_arrErr[self::JRPC_ERR][self::JRPC_ERR_MSG],
+                $_arrErr[self::JRPC_ERR][self::JRPC_ERR_CODE]
+            )
+        );
         if (isset($this->ret_topic))
-            $this->broker->publish('api', $this->ret_topic, json_encode($_arrErr), '1', '0');
+            $this->broker->publish(
+                'api',
+                $this->ret_topic,
+                json_encode($_arrErr),
+                '1',
+                '0'
+            );
     }
 
     /**
      * Publish the given result to the MQTT broker if $this->ret_topic is set
      *
-     * @param
-     *            string result (JSON encoded)
+     * @param string $_jsonRes result (JSON encoded)
      */
     protected function publishSuccess($_jsonRes) {
         if (isset($this->ret_topic))
             $this->broker->publish('api', $this->ret_topic, $_jsonRes, '1', '0');
         else
-            $this->broker->log('warning', __("API: La réponse n'a pas pu être publiée car il n'y avait pas de topic de réponse dans la requête.", __FILE__));
+            $this->broker->log(
+                'warning',
+                __("API: La réponse n'a pas pu être publiée car il n'y avait pas de topic de réponse dans la requête.", __FILE__)
+            );
     }
 
     /**
      * Create and return an error message
      *
-     * @param
-     *            _code int error code
-     * @param
-     *            _message string error message
-     * @return error message (JSON encoded)
+     * @param int $_code error code
+     * @param string $_message error message
+     * @return string error message (JSON encoded)
      */
     public function newErrorMsg($_code, $_message) {
-        return json_encode(self::newErrorArray($_code, $_message, $this->id));
+        return json_encode(
+            self::newErrorArray(
+                $_code,
+                $_message,
+                $this->id
+            )
+        );
     }
 
     /**
      * Create and return a success message
      *
-     * @param
-     *            _result array result JSON array
+     * @param array $_result result JSON array
      * @return string success message (JSON encoded)
      */
     public function newSuccessMsg($_result) {
-        return json_encode(self::newJsonRpcArray(array(self::JRPC_RESULT => $_result), $this->id));
+        return json_encode(
+            self::newJsonRpcArray(
+                array(self::JRPC_RESULT => $_result),
+                $this->id
+            )
+        );
     }
 
     /**
      * Create and return an error array
      *
-     * @param
-     *            _code int error code
-     * @param
-     *            _message string error message
-     * @param
-     *            _id string request id (optional - NULL by default)
-     * @return error array (JSON)
+     * @param int $_code error code
+     * @param string $_message error message
+     * @param string $_id request id (optional - NULL by default)
+     * @return array error array (JSON)
      */
     private static function newErrorArray($_code, $_message, $_id = NULL) {
         return self::newJsonRpcArray(
-            array(self::JRPC_ERR => array(self::JRPC_ERR_CODE => $_code,self::JRPC_ERR_MSG => $_message)), $_id);
+            array(
+                self::JRPC_ERR => array(
+                    self::JRPC_ERR_CODE => $_code,
+                    self::JRPC_ERR_MSG => $_message
+                )
+            ),
+            $_id
+        );
     }
 
     /**
      * Create and return a new RPC JSON response array.
-     * Return array is initialized from the given one and following is added : JSON RPC version (2.0),
-     * and the request id. (if not NULL).
+     * Return array is initialized from the given one and following is added :
+     * JSON RPC version (2.0), and the request id. (if not NULL).
      *
-     * @param array $_array
-     *            initilisation array (JSON)
-     * @param
-     *            _id string request id (optional - NULL by default)
+     * @param array $_array initilisation array (JSON)
+     * @param string $_id request id (optional - NULL by default)
      * @return array new JSON RPC response array
      */
     private static function newJsonRpcArray($_array, $_id = NULL) {
-        return self::addParam(array_merge(array(self::JRPC_JSONRPC => self::JRPC_VERSION), $_array), self::JRPC_ID, $_id);
+        return self::addParam(
+            array_merge(
+                array(self::JRPC_JSONRPC => self::JRPC_VERSION),
+                $_array
+            ),
+            self::JRPC_ID,
+            $_id
+        );
     }
 
     /**
      * Add the given parameter the given array.
-     * The parameter is defined by its key and is value; it is added if the value is set (isset returns true)
+     * The parameter is defined by its key and is value;
+     * it is added if the value is set (isset returns true)
+     *
+     * @param array $_arr
+     * @param mixed $_key
+     * @param mixed $_value
+     * @return array
      */
     private static function addParam($_arr, $_key, $_value) {
         if (isset($_value))

@@ -49,7 +49,7 @@ function restore_extactBackup($file, $tmp_dir) {
 function restore_getBackupM($tmp_dir) {
     print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Metadata...");
     if (file_exists($tmp_dir . '/backup/metadata.json')) {
-        $metadata = json_decode(file_get_contents($tmp_dir . '/backup/metadata.json'), JSON_UNESCAPED_UNICODE);
+        $metadata = json_decode(file_get_contents($tmp_dir . '/backup/metadata.json'), true);
         print("                     [ OK ]\n");
     } else {
         print("                  [ ERROR ]\n");
@@ -78,7 +78,7 @@ function restore_checkHwKey($current, $old, $no_hw_check) {
 // Return Indexes from the extacted backup temporary folder
 function restore_getBackupI($tmp_dir) {
     print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Index...");
-    $index  = json_decode(file_get_contents($tmp_dir . '/backup/index.json'), JSON_UNESCAPED_UNICODE);
+    $index = json_decode(file_get_contents($tmp_dir . '/backup/index.json'), true);
     print("                        [ OK ]\n");
     return $index;
 }
@@ -164,7 +164,7 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
 // Return Data from the extacted backup temporary folder
 function restore_getBackupD($tmp_dir) {
     print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT Data...");
-    $data = json_decode(file_get_contents($tmp_dir . '/backup/data.json'), JSON_UNESCAPED_UNICODE);
+    $data = json_decode(file_get_contents($tmp_dir . '/backup/data.json'), true);
     print("                         [ OK ]\n");
     return $data;
 }
@@ -172,7 +172,7 @@ function restore_getBackupD($tmp_dir) {
 // Return History from the extacted backup temporary folder
 function restore_getBackupH($tmp_dir) {
     print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Getting backup jMQTT History...");
-    $history = json_decode(file_get_contents($tmp_dir . '/backup/history.json'), JSON_UNESCAPED_UNICODE);
+    $history = json_decode(file_get_contents($tmp_dir . '/backup/history.json'), true);
     print("                      [ OK ]\n");
     return $history;
 }
@@ -445,14 +445,14 @@ function full_export_old() {
             $exp['commands'][] = $cmd->full_export();
         $returns[] = $exp;
     }
-    function fsort($a, $b) {
+    function fullsort($a, $b) {
         $x = ((isset($a['configuration']) && isset($a['configuration']['type'])) ?
                 $a['configuration']['type'] : "z").$a['id'];
         $y = ((isset($b['configuration']) && isset($b['configuration']['type'])) ?
                 $b['configuration']['type'] : "z").$b['id'];
         return strcmp($x, $y);
     }
-    usort($returns, 'fsort'); // Put the Broker first (needed)
+    usort($returns, 'fullsort'); // Put the Broker first (needed)
     return $returns;
 }
 
@@ -549,6 +549,8 @@ function full_import($data) {
 
 function restore_mainlogic(&$options, &$tmp_dir) {
     $error_code = 0;
+    $old_autoMode = config::byKey('deamonAutoMode', 'jMQTT', 1);
+    $old_daemonState = jMQTTDaemon::state();
 
     // Get info on current install
     $initial_metadata = null;
@@ -585,9 +587,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
     // If not --not-folder or not --not-eq-cmd AND --apply, then Stop and disabled Daemon
     if ((!$options['not-folder'] || !$options['not-eq-cmd']) && $options['apply']) {
         print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Stopping jMQTT daemon...");
-        $old_autoMode = config::byKey('deamonAutoMode', 'jMQTT', 1);
         config::save('deamonAutoMode', 0, 'jMQTT');
-        $old_daemonState = jMQTTDaemon::state();
         jMQTTDaemon::stop();
         print("                             [ OK ]\n");
     } else {
@@ -701,8 +701,9 @@ function restore_mainlogic(&$options, &$tmp_dir) {
         print("                 [ OK ]\n");
 
         print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...");
-        if ($old_daemonState)
+        if ($old_daemonState) {
             jMQTTDaemon::start();
+        }
         print("                             [ OK ]\n");
     } else {
         print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Starting jMQTT daemon...                        [ SKIPPED ]\n");

@@ -30,94 +30,106 @@ function mosquitto_topic_matches_sub($sub, $topic){
     if (gettype($sub) != 'string' || gettype($topic) != 'string') {
         return false; // MOSQ_ERR_INVAL
     }
-    if (strlen($sub) == 0 || strlen($topic) == 0){
+    if (strlen($sub) == 0 || strlen($topic) == 0) {
         return false; // MOSQ_ERR_INVAL
     }
 
-    if (($sub[0] == '$' && $topic[0] != '$') || ($topic[0] == '$' && $sub[0] != '$')){
+    if (
+        ($sub[0] == '$' && $topic[0] != '$')
+        || ($topic[0] == '$' && $sub[0] != '$')
+    ) {
         return false; // MOSQ_ERR_SUCCESS
     }
 
     $spos = 0;
     $previoussubchar = '';
 
-    while (strlen($sub) > 0){
-        if (strlen($topic) > 0 && ($topic[0] == '+' || $topic[0] == '#')){  // PHP transcoding : strlen added
+    while (strlen($sub) > 0) {
+        if (strlen($topic) > 0 && ($topic[0] == '+' || $topic[0] == '#')) {  // PHP transcoding : strlen added
             return false; // MOSQ_ERR_INVAL
         }
-        if(strlen($topic) == 0 || $sub[0] != $topic[0]){ /* Check for wildcard matches */   // PHP transcoding : order of condition changed
-            if($sub[0] == '+'){
+        if (strlen($topic) == 0 || $sub[0] != $topic[0]) { /* Check for wildcard matches */   // PHP transcoding : order of condition changed
+            if ($sub[0] == '+') {
                 /* Check for bad "+foo" or "a/+foo" subscription */
-                if($spos > 0 && $previoussubchar != '/'){
+                if (
+                    $spos > 0
+                    && $previoussubchar != '/'
+                ) {
                     return false; // MOSQ_ERR_INVAL
                 }
                 /* Check for bad "foo+" or "foo+/a" subscription */
-                if(strlen($sub) > 1 && $sub[1] != '/'){
+                if (strlen($sub) > 1 && $sub[1] != '/') {
                     return false; // MOSQ_ERR_INVAL
                 }
                 $spos++;
                 $previoussubchar = $sub[0];
-                $sub=substr($sub, 1);
-                while(strlen($topic) > 0 && $topic[0] != '/'){
-                    if($topic[0] == '+' || $topic[0] == '#'){
+                $sub = substr($sub, 1);
+                while (strlen($topic) > 0 && $topic[0] != '/') {
+                    if ($topic[0] == '+' || $topic[0] == '#') {
                         return false; // MOSQ_ERR_INVAL
                     }
-                    $topic=substr($topic, 1);
+                    $topic = substr($topic, 1);
                 }
-                if(strlen($topic) == 0 && strlen($sub) == 0){
+                if (strlen($topic) == 0 && strlen($sub) == 0) {
                     $result = true;
                     return $result; // MOSQ_ERR_SUCCESS
                 }
-            }else if($sub[0] == '#'){
+            } else if ($sub[0] == '#') {
                 /* Check for bad "foo#" subscription */
-                if($spos > 0 && $previoussubchar != '/'){
+                if (
+                    $spos > 0
+                    && $previoussubchar != '/'
+                ) {
                     return false; // MOSQ_ERR_INVAL
                 }
                 /* Check for # not the final character of the sub, e.g. "#foo" */
-                if(strlen($sub) > 1){
+                if (strlen($sub) > 1) {
                     return false; // MOSQ_ERR_INVAL
-                }else{
-                    while(strlen($topic) > 0){
-                        if($topic[0] == '+' || $topic[0] == '#'){
+                } else {
+                    while (strlen($topic) > 0) {
+                        if ($topic[0] == '+' || $topic[0] == '#') {
                             return false; // MOSQ_ERR_INVAL
                         }
-                        $topic=substr($topic, 1);
+                        $topic = substr($topic, 1);
                     }
                     $result = true;
                     return $result; // MOSQ_ERR_SUCCESS
                 }
-            }else{
+            } else {
                 /* Check for e.g. foo/bar matching foo/+/# */
-                if(strlen($topic) == 0
-                        && $spos > 0
-                        && $previoussubchar == '+'
-                        && $sub[0] == '/'
-                        && $sub[1] == '#')
-                {
+                if (
+                    strlen($topic) == 0
+                    && $spos > 0
+                    && $previoussubchar == '+'
+                    && $sub[0] == '/'
+                    && $sub[1] == '#'
+                ) {
                     $result = true;
                     return $result; // MOSQ_ERR_SUCCESS
                 }
 
                 /* There is no match at this point, but is the sub invalid? */
-                while(strlen($sub) > 0){
-                    if($sub[0] == '#' && strlen($sub) > 1){
+                while (strlen($sub) > 0) {
+                    if ($sub[0] == '#' && strlen($sub) > 1) {
                         return false; // MOSQ_ERR_INVAL
                     }
                     $spos++;
                     $previoussubchar = $sub[0];
-                    $sub=substr($sub, 1);
+                    $sub = substr($sub, 1);
                 }
 
                 /* Valid input, but no match */
                 return $result; // MOSQ_ERR_SUCCESS
             }
-        }else{
+        } else {
             /* sub[spos] == topic[tpos] */
-            if(strlen($topic) == 1){
+            if (strlen($topic) == 1) {
                 /* Check for e.g. foo matching foo/# */
-                if(strlen($sub) == 3 // PHP transcoding : order of condition changed
-                        && $sub[1] == '/'
-                        && $sub[2] == '#'){
+                if (
+                    strlen($sub) == 3 // PHP transcoding : order of condition changed
+                    && $sub[1] == '/'
+                    && $sub[2] == '#'
+                ) {
                     $result = true;
                     return $result; // MOSQ_ERR_SUCCESS
                 }
@@ -126,26 +138,36 @@ function mosquitto_topic_matches_sub($sub, $topic){
             $previoussubchar = $sub[0];
             $sub=substr($sub, 1);
             $topic=substr($topic, 1);
-            if(strlen($sub) == 0 && strlen($topic) == 0){
+            if (strlen($sub) == 0 && strlen($topic) == 0) {
                 $result = true;
                 return $result; // MOSQ_ERR_SUCCESS
-            }else if(strlen($topic) == 0 && $sub[0] == '+' && strlen($sub) == 1){
-                if($spos > 0 && $previoussubchar != '/'){
+            } else if (
+                strlen($topic) == 0
+                && $sub[0] == '+'
+                && strlen($sub) == 1
+            ) {
+                if (
+                    $spos > 0
+                    && $previoussubchar != '/'
+                ) {
                     return false; // MOSQ_ERR_INVAL
                 }
                 $spos++;
                 $previoussubchar = $sub[0];
-                $sub=substr($sub, 1);
+                $sub = substr($sub, 1);
                 $result = true;
                 return $result; // MOSQ_ERR_SUCCESS
             }
         }
     }
-    if((strlen($topic) > 0 || strlen($sub) > 0)){
+    if (
+        strlen($topic) > 0
+        || strlen($sub) > 0
+    ) {
         $result = false;
     }
-    while(strlen($topic) > 0){
-        if($topic[0] == '+' || $topic[0] == '#'){
+    while (strlen($topic) > 0) {
+        if ($topic[0] == '+' || $topic[0] == '#') {
             return false; // MOSQ_ERR_INVAL
         }
         $topic=substr($topic, 1);

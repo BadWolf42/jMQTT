@@ -39,7 +39,7 @@ function export_deletePidFile() {
 function export_isRunning() {
     if (file_exists(__DIR__.'/../' . jMQTTConst::PATH_BACKUP . 'backup.pid')) {
         $runing_pid = file_get_contents(__DIR__.'/../' . jMQTTConst::PATH_BACKUP . 'backup.pid');
-        if (@posix_getsid($runing_pid) !== false)
+        if (@posix_getsid(intval($runing_pid)) !== false)
             return true; // PID is running
         export_deletePidFile();
     }

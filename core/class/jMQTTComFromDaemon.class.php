@@ -7,7 +7,7 @@ class jMQTTComFromDaemon {
      */
     public static function daemonUp($ruid) {
         // If we get here, apikey is OK!
-        //jMQTT::logger('debug', 'daemonUp(ruid='.$ruid.')');
+        // jMQTT::logger('debug', 'daemonUp(ruid='.$ruid.')');
         // Verify that daemon RemoteUID contains ':' or die
         if (is_null($ruid) || !is_string($ruid) || (strpos($ruid, ':') === false)) {
             jMQTT::logger(

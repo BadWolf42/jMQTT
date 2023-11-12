@@ -297,7 +297,14 @@ class jMQTTPlugin {
         // Check if Mosquitto package is installed
         exec('dpkg -s mosquitto 2> /dev/null 1> /dev/null', $output, $retval); // retval = 1 not installed ; 0 installed
         if ($retval == 1) {
-            event::add('jeedom::alert', array('level' => 'danger', 'page' => 'plugin', 'message' => __("Mosquitto n'est pas installé sur ce système !", __FILE__),));
+            event::add(
+                'jeedom::alert',
+                array(
+                    'level' => 'danger',
+                    'page' => 'plugin',
+                    'message' => __("Mosquitto n'est pas installé sur ce système !", __FILE__)
+                )
+            );
             return;
         }
         // Remove package and /etc folder

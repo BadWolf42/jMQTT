@@ -28,13 +28,8 @@ class jMQTTCmd extends cmd {
     const CONF_KEY_RETAIN               = 'retain';
 
     /**
-     * @var int maximum length of command name supported by the database scheme
-     */
-    private static $_cmdNameMaxLength;
-
-    /**
      * Data shared between preSave and postSave
-     * @var array values from preSave used for postSave actions
+     * @var null|array values from preSave used for postSave actions
      */
     private $_preSaveInformations;
 
@@ -46,7 +41,6 @@ class jMQTTCmd extends cmd {
      * @return jMQTTCmd new command (NULL if not created)
      */
     public static function newCmd($eqLogic, $name, $topic, $jsonPath = '') {
-
         $cmd = new jMQTTCmd();
         $cmd->setEqLogic($eqLogic);
         $cmd->setEqLogic_id($eqLogic->getId());
@@ -352,8 +346,8 @@ class jMQTTCmd extends cmd {
     /**
      * Used by jMQTT::applyATemplate() to updates referenced cmd
      * Replace all template names from $cmdsName by ids in $cmdsId
-     * @param array(string) $cmdsName list of names (to be replaced by ids)
-     * @param array(string) $cmdsId list of ids (to be replace names)
+     * @param array $cmdsName list of names (to be replaced by ids)
+     * @param array $cmdsId list of ids (to be replace names)
      */
     public function replaceCmdIds(&$cmdsName, &$cmdsId) {
         array_walk_recursive(
@@ -497,7 +491,6 @@ class jMQTTCmd extends cmd {
 
                 $root_topic = $this->getTopic();
 
-                /** @var jMQTTCmd $root_cmd root JSON command */
                 $root_cmd = jMQTTCmd::byEqLogicIdAndTopic(
                     $this->getEqLogic_id(),
                     $root_topic,
@@ -752,6 +745,7 @@ class jMQTTCmd extends cmd {
         // Since 3.3.22, the core removes / from command names
         $name = str_replace("/", ":", $name);
         parent::setName($name);
+        return $this;
     }
 
     public function setTopic($topic) {
@@ -779,7 +773,7 @@ class jMQTTCmd extends cmd {
      * @param int $eqLogic_id of the eqLogic
      * @param string $topic topic to search
      * @param boolean $multiple true if the cmd related topic and associated JSON derived commands are requested
-     * @return NULL|jMQTTCmd|array(jMQTTCmd)
+     * @return null|jMQTTCmd|array(jMQTTCmd)
      */
     public static function byEqLogicIdAndTopic($eqLogic_id, $topic, $multiple=false) {
         // JSON_UNESCAPED_UNICODE used to fix #92
@@ -885,13 +879,10 @@ class jMQTTCmd extends cmd {
 
 
     /**
-     * Converts RGB values to XY values
+     * Converts HTML color value to XY values
      * Based on: http://stackoverflow.com/a/22649803
      *
-     * @param int $red   Red value
-     * @param int $green Green value
-     * @param int $blue  Blue value
-     *
+     * @param int $_color HTML color
      * @return array x, y, bri key/value
      */
     public static function HTMLtoXY($_color) {
@@ -944,8 +935,7 @@ class jMQTTCmd extends cmd {
      * @param float $x X value
      * @param float $y Y value
      * @param int $bri Brightness value
-     *
-     * @return array red, green, blue key/value
+     * @return string red, green, blue
      */
     public static function XYtoHTML($x, $y, $bri = 255) {
         // Calculate XYZ
@@ -980,11 +970,18 @@ class jMQTTCmd extends cmd {
         return sprintf("#%02X%02X%02X", $color['r'], $color['g'], $color['b']);
     }
 
+    /**
+     * @param int|array $r
+     * @param int $g
+     * @param int $b
+     * @return string
+     */
     public static function RGBtoHTML($r, $g=-1, $b=-1) {
         if (is_array($r) && sizeof($r) == 3)
             list($r, $g, $b) = $r;
 
-        $r = intval($r); $g = intval($g);
+        $r = intval($r);
+        $g = intval($g);
         $b = intval($b);
 
         $r = dechex($r<0?0:($r>255?255:$r));
@@ -997,6 +994,10 @@ class jMQTTCmd extends cmd {
         return '#'.$color;
     }
 
+    /**
+     * @param string $s
+     * @return int
+     */
     public static function HEXtoDEC($s) {
         $s = str_replace("#", "", $s);
         $output = 0;
@@ -1009,10 +1010,13 @@ class jMQTTCmd extends cmd {
             elseif ( ($c >= 'a') && ($c <= 'f') ) // care about lower case
                 $output = $output*16 + ord($c) - ord('a') + 10;
         }
-
         return $output;
     }
 
+    /**
+     * @param int $d
+     * @return string
+     */
     public static function DECtoHEX($d) {
         return("#".substr("000000".dechex($d),-6));
     }

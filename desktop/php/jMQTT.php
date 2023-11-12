@@ -63,6 +63,13 @@ function displayEqLogicCard($eqL) {
     echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }
 
+/**
+ *
+ * @param string $action_name action name of the card
+ * @param string $fa_icon icon class name
+ * @param string $action data-action value (default: '')
+ * @param string $class div class (default: 'logoSecondary')
+ */
 function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoSecondary') {
     echo '<div class="eqLogicAction cursor ' . $class . '" data-action="' . $action . '">';
     echo '<i class="fas ' . $fa_icon . '"></i><br/><span>' . $action_name . '</span></div>'."\n";
