@@ -164,16 +164,14 @@ class jMQTT extends eqLogic {
                 if ($templateKey == $name)
                     return $templateValue;
             } catch (Throwable $e) {
-                self::logger(
-                    'warning',
-                    sprintf(
-                        __("Erreur lors de la lecture du Template '%s'", __FILE__),
-                        $_name
-                    )
+                $log = sprintf(
+                    __("Erreur lors de la lecture du Template '%s'", __FILE__),
+                    $_name
                 );
+                self::logger('warning', $log);
+                throw new Exception($log);
             }
         }
-        return null;
     }
 
     /**
