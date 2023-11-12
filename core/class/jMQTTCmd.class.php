@@ -50,10 +50,9 @@ class jMQTTCmd extends cmd {
         $cmd->setSubType('string');
         $cmd->setTopic($topic);
         $cmd->setJsonPath($jsonPath);
-
-        // Check cmd name does not exceed the max lenght of the database scheme (fix issue #58)
-        $cmd->setName(self::checkCmdName($eqLogic, $name));
-
+        // Cmd name if troncated by the core since 4.1.17
+        // Cf https://github.com/jeedom/core/commit/93e590142d774b48eee64e0901859384d246cd41
+        $cmd->setName($name);
         return $cmd;
     }
 
@@ -844,37 +843,6 @@ class jMQTTCmd extends cmd {
      */
     public function topicMatchesSubscription($subscription) {
         return mosquitto_topic_matches_sub($subscription, $this->getTopic());
-    }
-
-    /**
-     * @param jMQTT eqLogic the command belongs to
-     * @param string $name
-     * @return string input name if the command name is valid, corrected cmd name otherwise
-     */
-    private static function checkCmdName($eqLogic, $name) {
-        if (! isset(self::$_cmdNameMaxLength)) {
-            // TODO: Find a better way to get cmd name max length
-            //  Maybe move lenght in plugin config and refresh at plugin enable/update or core update
-            //  labels: enhancement, php
-            $field = 'character_maximum_length';
-            $sql = "SELECT " . $field;
-            $sql .= " FROM information_schema.columns";
-            $sql .= " WHERE table_name='cmd' AND column_name='name'";
-            $res = DB::Prepare($sql, array());
-            self::$_cmdNameMaxLength = $res[$field];
-            $eqLogic->log(
-                'debug',
-                sprintf(
-                    __("Taille maximale du nom d'une commande en base de donnée : %s caractères", __FILE__),
-                    self::$_cmdNameMaxLength
-                )
-            );
-        }
-
-        if (strlen($name) > self::$_cmdNameMaxLength)
-            return hash("md4", $name);
-        else
-            return $name;
     }
 
 
