@@ -11,10 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        jeedom-branch: ['V4-stable']
-        php-version: ['7.3']
-        # jeedom-branch: ['V4-stable', 'alpha']
-        # php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
+        jeedom-branch: ['V4-stable', 'alpha']
+        php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
 
     steps:
       - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
