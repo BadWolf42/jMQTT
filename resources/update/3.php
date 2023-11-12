@@ -6,9 +6,9 @@
  */
 // remove all jMQTT old daemon crons
 do {
-	$cron = cron::byClassAndFunction('jMQTT', 'daemon');
-	if (is_object($cron)) $cron->remove(true);
-	else break;
+    $cron = cron::byClassAndFunction('jMQTT', 'daemon');
+    if (is_object($cron)) $cron->remove(true);
+    else break;
 }
 while (true);
 
@@ -28,6 +28,5 @@ jMQTT::logger('info', __("Suppression du démon cron précédent", __FILE__));
 
 // So best option is to remove old daemon dependancies
 // ***REMOVED*** Code removed due to side effect on other plugins. Problem handled by VERSION=5 and jMQTTDaemon::start() ***REMOVED***
-
 
 ?>

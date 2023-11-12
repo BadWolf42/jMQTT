@@ -2,97 +2,97 @@
 
 class jMQTTPlugin {
 
-	/**
-	 * cron callback
-	 * check MQTT Clients are up and connected
-	 */
-	public static function cron() {
-		jMQTTDaemon::checkAllMqttClients();
-		jMQTTDaemon::pluginStats();
-	}
+    /**
+     * cron callback
+     * check MQTT Clients are up and connected
+     */
+    public static function cron() {
+        jMQTTDaemon::checkAllMqttClients();
+        jMQTTDaemon::pluginStats();
+    }
 
-	/**
-	 * Provides dependancy information
-	 */
-	public static function dependancy_info() {
-		$depLogFile = 'jMQTT_dep';
-		$depProgressFile = jeedom::getTmpFolder('jMQTT') . '/dependancy';
+    /**
+     * Provides dependancy information
+     */
+    public static function dependancy_info() {
+        $depLogFile = 'jMQTT_dep';
+        $depProgressFile = jeedom::getTmpFolder('jMQTT') . '/dependancy';
 
-		$return = array();
-		$return['log'] = log::getPathToLog($depLogFile);
-		$return['progress_file'] = $depProgressFile;
-		$return['state'] = jMQTTConst::CLIENT_OK;
+        $return = array();
+        $return['log'] = log::getPathToLog($depLogFile);
+        $return['progress_file'] = $depProgressFile;
+        $return['state'] = jMQTTConst::CLIENT_OK;
 
-		if (file_exists($depProgressFile)) {
-			jMQTT::logger(
-				'debug',
-				sprintf(
-					__("Dépendances en cours d'installation... (%s%%)", __FILE__),
-					trim(file_get_contents($depProgressFile))
-				)
-			);
-			$return['state'] = jMQTTConst::CLIENT_NOK;
-			return $return;
-		}
+        if (file_exists($depProgressFile)) {
+            jMQTT::logger(
+                'debug',
+                sprintf(
+                    __("Dépendances en cours d'installation... (%s%%)", __FILE__),
+                    trim(file_get_contents($depProgressFile))
+                )
+            );
+            $return['state'] = jMQTTConst::CLIENT_NOK;
+            return $return;
+        }
 
-		if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
-			jMQTT::logger(
-				'debug',
-				__('Relancez les dépendances, le package PHP JsonPath est manquant', __FILE__)
-			);
-			$return['state'] = jMQTTConst::CLIENT_NOK;
-		}
+        if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
+            jMQTT::logger(
+                'debug',
+                __('Relancez les dépendances, le package PHP JsonPath est manquant', __FILE__)
+            );
+            $return['state'] = jMQTTConst::CLIENT_NOK;
+        }
 
-		if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
-			jMQTT::logger(
-				'debug',
-				__("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__)
-			);
-			$return['state'] = jMQTTConst::CLIENT_NOK;
-		} else {
-			exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
-			if (count($output) > 0) {
-				jMQTT::logger(
-					'error',
-					__('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).
-					' <br/>'.implode('<br/>', $output)
-				);
-				$return['state'] = jMQTTConst::CLIENT_NOK;
-			}
-		}
+        if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
+            jMQTT::logger(
+                'debug',
+                __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__)
+            );
+            $return['state'] = jMQTTConst::CLIENT_NOK;
+        } else {
+            exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
+            if (count($output) > 0) {
+                jMQTT::logger(
+                    'error',
+                    __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).
+                    ' <br/>'.implode('<br/>', $output)
+                );
+                $return['state'] = jMQTTConst::CLIENT_NOK;
+            }
+        }
 
-		if ($return['state'] == jMQTTConst::CLIENT_OK)
-			jMQTT::logger('debug', sprintf(__('Dépendances installées.', __FILE__)));
-		return $return;
-	}
+        if ($return['state'] == jMQTTConst::CLIENT_OK)
+            jMQTT::logger('debug', sprintf(__('Dépendances installées.', __FILE__)));
+        return $return;
+    }
 
-	/**
-	 * Provides dependancy installation script
-	 */
-	public static function dependancy_install() {
-		$depLogFile = 'jMQTT_dep';
-		$depProgressFile = jeedom::getTmpFolder('jMQTT') . '/dependancy';
+    /**
+     * Provides dependancy installation script
+     */
+    public static function dependancy_install() {
+        $depLogFile = 'jMQTT_dep';
+        $depProgressFile = jeedom::getTmpFolder('jMQTT') . '/dependancy';
 
-		jMQTT::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
+        jMQTT::logger('info', sprintf(__('Installation des dépendances, voir log dédié (%s)', __FILE__), $depLogFile));
 
-		$update = update::byLogicalId('jMQTT');
-		shell_exec(
-			'echo "\n\n================================================================================\n'.
-			'== Jeedom '.jeedom::version().' '.jeedom::getHardwareName().
-			' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'.
-			'$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'.
-			'== $(python3 -VV | xargs echo -n)\n'.
-			'== jMQTT v'.config::byKey('version', 'jMQTT', 'unknown', true).
-			' ('.$update->getLocalVersion().') branch:'.$update->getConfiguration()['version'].
-			' previously:v'.config::byKey('previousVersion', 'jMQTT', 'unknown', true).
-			'" >> '.log::getPathToLog($depLogFile)
-		);
+        $update = update::byLogicalId('jMQTT');
+        shell_exec(
+            'echo "\n\n================================================================================\n'.
+            '== Jeedom '.jeedom::version().' '.jeedom::getHardwareName().
+            ' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'.
+            '$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'.
+            '== $(python3 -VV | xargs echo -n)\n'.
+            '== jMQTT v'.config::byKey('version', 'jMQTT', 'unknown', true).
+            ' ('.$update->getLocalVersion().') branch:'.$update->getConfiguration()['version'].
+            ' previously:v'.config::byKey('previousVersion', 'jMQTT', 'unknown', true).
+            '" >> '.log::getPathToLog($depLogFile)
+        );
 
-		return array(
-			'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile,
-			'log' => log::getPathToLog($depLogFile)
-		);
-	}
+        return array(
+            'script' => __DIR__ . '/../../resources/install_#stype#.sh ' . $depProgressFile,
+            'log' => log::getPathToLog($depLogFile)
+        );
+    }
 
 
     // Check install status of Mosquitto service
@@ -118,7 +118,8 @@ class jMQTTPlugin {
                     $res['message'] .= __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
                 }
             } catch (Throwable $e) {
-                // TODO (low) Add debug message here?
+                // TODO: Add debug message if `mosquittoCheck()` throws
+                //  labels: quality, php
             }
             return $res;
         }
@@ -132,7 +133,9 @@ class jMQTTPlugin {
 
         // Read in Core config who is supposed to have installed Mosquitto
         $res['core'] = config::byKey('mosquitto::installedBy', '', 'Unknown');
-        // TODO (important) When config key will be widely used, resolve Mosquitto installer here
+        // TODO: Decide if `mosquitto::installedBy` is usefull
+        //  When config key will be widely used, resolve Mosquitto installer here
+        //  labels: quality, php
 
         // Check if mosquitto.service has been changed by mqtt2
         if (file_exists('/lib/systemd/system/mosquitto.service')

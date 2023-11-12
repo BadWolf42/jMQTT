@@ -43,36 +43,36 @@ if (!isConnect('admin')) {
 
 <script>
 $(function() {
-	if ($(window).width() > 800)
-		$('#md_modal').dialog("option", "width", 800);
-	if ($(window).height() > 330)
-		$('#md_modal').dialog("option", "height", 330);
+    if ($(window).width() > 800)
+        $('#md_modal').dialog("option", "width", 800);
+    if ($(window).height() > 330)
+        $('#md_modal').dialog("option", "height", 330);
 });
 
 $('#in_testJsonPath').keypress(function(event) {
-	if (event.which == 13) {
-		$('#bt_executeTestJsonPath').trigger('click');
-	}
+    if (event.which == 13) {
+        $('#bt_executeTestJsonPath').trigger('click');
+    }
 });
 
 $('#bt_executeTestJsonPath').on('click',function() {
-	$('#out_status').removeClass('success danger');
-	$('#out_message').empty();
-	jmqtt.callPluginAjax({
-		data: {
-			action: "testJsonPath",
-			payload: $('#in_testPayload').val(),
-			jsonPath: $('#in_testJsonPath').val()
-		},
-		error: function (error) {
-			$('#out_status').addClass('danger');
-			$('#out_testResult').value('');
-		},
-		success: function (data) {
-			(data.success) ? $('#out_status').addClass('success') : $('#out_status').addClass('danger');
-			$('#out_message').append('[ ' + data.message + ' ]');
-			$('#out_testResult').value(data.value);
-		}
-	});
+    $('#out_status').removeClass('success danger');
+    $('#out_message').empty();
+    jmqtt.callPluginAjax({
+        data: {
+            action: "testJsonPath",
+            payload: $('#in_testPayload').val(),
+            jsonPath: $('#in_testJsonPath').val()
+        },
+        error: function (error) {
+            $('#out_status').addClass('danger');
+            $('#out_testResult').value('');
+        },
+        success: function (data) {
+            (data.success) ? $('#out_status').addClass('success') : $('#out_status').addClass('danger');
+            $('#out_message').append('[ ' + data.message + ' ]');
+            $('#out_testResult').value(data.value);
+        }
+    });
 });
 </script>
