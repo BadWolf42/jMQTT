@@ -30,16 +30,16 @@ jobs:
         with:
           path: plugins/jMQTT
 
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      # - name: Get composer cache directory
+      #   id: composer-cache
+      #   run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
+      # - name: Cache dependencies
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ steps.composer-cache.outputs.dir }}
+      #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+      #     restore-keys: ${{ runner.os }}-composer-
 
       - name: Install dependencies
         # run: composer install --prefer-dist
@@ -64,9 +64,3 @@ jobs:
 
       - name: Run PHPStan
         run: phpstan analyse -c plugins/jMQTT/phpstan.neon
-
-      # - name: Run Action PHPStan
-      #   uses: php-actions/phpstan@v3
-      #   with:
-      #     path: plugins/jMQTT/plugin_info/ plugins/jMQTT/core/ plugins/jMQTT/desktop/
-      #     autoload_file: core/php/core.inc.php
