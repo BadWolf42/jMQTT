@@ -260,8 +260,13 @@ class jMQTT extends eqLogic {
     public static function deleteTemplateByFile($_filename){
         // self::logger('debug', 'deleteTemplateByFile: ' . $_filename);
         /** @var null|string $_filename */
-        if (!isset($_filename) || is_null($_filename) || $_filename == '')
+        if (
+            !isset($_filename)
+            || is_null($_filename) // @phpstan-ignore-line
+            || $_filename == ''
+        ) {
             return false;
+        }
         $existing_files = self::templateList();
         $exists = false;
         foreach ($existing_files as list($n, $f))
@@ -282,8 +287,12 @@ class jMQTT extends eqLogic {
      * @param bool $_keepCmd keep existing commands
      */
     public function applyATemplate($_template, $_baseTopic, $_keepCmd = true){
-        if ($this->getType() != jMQTTConst::TYP_EQPT || is_null($_template))
+        if (
+            $this->getType() != jMQTTConst::TYP_EQPT
+            || is_null($_template) // @phpstan-ignore-line
+        ) {
             return;
+        }
 
         // Cleanup base topic (remove '/', '#' and '+' at the end)
         if (
@@ -724,7 +733,7 @@ class jMQTT extends eqLogic {
             $eqar = $eq->toArray();
             if (is_object($eq->getObject())) {
                 $obj_name = $eq->getObject()->getName();
-            } else { // @phpstan-ignore-line
+            } else {
                 $obj_name = __('Aucun', __FILE__);
             }
             $eqar['name'] = $obj_name.':'.$eqar['name'];

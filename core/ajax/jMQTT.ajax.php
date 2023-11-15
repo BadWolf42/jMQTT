@@ -392,8 +392,13 @@ try {
     if (init('action') == 'backupRemove') {
         /** @var null|string $_backup */
         $_backup = init('file');
-        if (!isset($_backup) || is_null($_backup) || $_backup == '')
+        if (
+            !isset($_backup)
+            || is_null($_backup) // @phpstan-ignore-line
+            || $_backup == ''
+        ) {
             throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
+        }
 
         $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
         if (in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))) && file_exists($backup_dir.'/'.$_backup))
@@ -406,8 +411,13 @@ try {
     if (init('action') == 'backupRestore') {
         /** @var null|string $_backup */
         $_backup = init('file');
-        if (!isset($_backup) || is_null($_backup) || $_backup == '')
+        if (
+            !isset($_backup)
+            || is_null($_backup) // @phpstan-ignore-line
+            || $_backup == ''
+        ){
             throw new Exception(__('Merci de fournir le fichier à restaurer', __FILE__));
+        }
 
         $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
         if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))

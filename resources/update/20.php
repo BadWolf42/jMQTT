@@ -1,12 +1,13 @@
 <?php
 
 // Delete orphan crons
-/** @var null|false|object $cron */
 // @phpstan-ignore-next-line
 while ($cron = cron::byClassAndFunction('jMQTT', 'disableIncludeMode')) {
+    /** @var cron $cron */
     $cron->remove(false);
 }
 
+// @phpstan-ignore-next-line
 jMQTT::logger('info', __("Crons orphelins supprimés", __FILE__));
 
 ?>
