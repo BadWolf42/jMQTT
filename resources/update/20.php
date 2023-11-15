@@ -1,6 +1,7 @@
 <?php
 
 // Delete orphan crons
+/** @var null|object $cron */
 while ($cron = cron::byClassAndFunction('jMQTT', 'disableIncludeMode')) {
     $cron->remove(false);
 }

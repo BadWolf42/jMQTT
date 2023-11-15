@@ -107,7 +107,7 @@ class jMQTTCmd extends cmd {
 
     /**
      * Update this command value, and inform all stakeholders about the new value
-     * @param string $value new command value
+     * @param int|string $value new command value
      */
     public function updateCmdValue($value) {
         if (in_array(strtolower($this->getName()), ["color", "colour", "couleur", "rgb"])
@@ -499,6 +499,7 @@ class jMQTTCmd extends cmd {
                 if (is_object($root_cmd)) {
                     $value = $root_cmd->execCmd();
                     if (!empty($value)) {
+                        /** @var string $value */
                         $jsonArray = $root_cmd->decodeJsonMsg($value);
                         if (!is_null($jsonArray)) {
                             $this->updateJsonCmdValue($jsonArray);
@@ -850,7 +851,7 @@ class jMQTTCmd extends cmd {
      * Converts HTML color value to XY values
      * Based on: http://stackoverflow.com/a/22649803
      *
-     * @param int $_color HTML color
+     * @param string $_color HTML color
      * @return array x, y, bri key/value
      */
     public static function HTMLtoXY($_color) {

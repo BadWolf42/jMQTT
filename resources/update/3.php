@@ -6,6 +6,7 @@
  */
 // remove all jMQTT old daemon crons
 do {
+    /** @var null|object $cron */
     $cron = cron::byClassAndFunction('jMQTT', 'daemon');
     if (is_object($cron)) $cron->remove(true);
     else break;

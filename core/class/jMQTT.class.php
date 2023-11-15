@@ -61,7 +61,7 @@ class jMQTT extends eqLogic {
     private $_connectedCmd;
 
 
-    private static function templateRead($_file) {
+    public static function templateRead($_file) {
         // read content from file without error handeling!
         $content = file_get_contents($_file);
         // decode template file content to json (or raise)
@@ -75,7 +75,7 @@ class jMQTT extends eqLogic {
     /**
      * Return a list of all templates name and file.
      *
-     * @return array list of name and file array.
+     * @return array[] list of name and file array.
      */
     public static function templateList() {
         // self::logger('debug', 'templateList()');
@@ -137,10 +137,10 @@ class jMQTT extends eqLogic {
      * Return a template content (from json files).
      *
      * @param string $_name template name to look for
-     * @return array Tempalte as an array
+     * @return array Template as an array
      * @throws Exception if template in not readable
      */
-    public static function templateByName($_name){
+    public static function templateByName($_name) {
         // self::logger('debug', 'templateByName: ' . $_name);
         if (strpos($_name , '[Perso] ') === 0) {
             // Get personal templates
@@ -151,6 +151,10 @@ class jMQTT extends eqLogic {
             $name = $_name;
             $folder = '/../../' . jMQTTConst::PATH_TEMPLATES_JMQTT;
         }
+        $log = sprintf(
+            __("Erreur lors de la lecture du Template '%s'", __FILE__),
+            $_name
+        );
         foreach (
             ls(
                 __DIR__ . $folder,
@@ -164,14 +168,10 @@ class jMQTT extends eqLogic {
                 if ($templateKey == $name)
                     return $templateValue;
             } catch (Throwable $e) {
-                $log = sprintf(
-                    __("Erreur lors de la lecture du Template '%s'", __FILE__),
-                    $_name
-                );
-                self::logger('warning', $log);
-                throw new Exception($log);
             }
         }
+        self::logger('warning', $log);
+        throw new Exception($log);
     }
 
     /**
@@ -753,7 +753,7 @@ class jMQTT extends eqLogic {
     /**
      * Return jMQTT objects of type broker
      *
-     * @return jMQTT array of eqBroker
+     * @return jMQTT[] array of eqBroker
      */
     public static function getBrokers() {
         /** @var jMQTT[] $brokers */
@@ -777,7 +777,7 @@ class jMQTT extends eqLogic {
     /**
      * Return jMQTT objects of type standard equipement
      *
-     * @return jMQTT array of arrays of jMQTT eqLogic objects
+     * @return jMQTT[][] array of arrays of jMQTT eqLogic objects
      */
     public static function getNonBrokers() {
         /** @var jMQTT[] $eqls */
@@ -1138,7 +1138,7 @@ class jMQTT extends eqLogic {
                             $this->_preSaveInformations[jMQTTConst::CONF_KEY_MQTT_LWT],
                             '',
                             1,
-                            1
+                            true
                         );
                     }
                 }
@@ -1474,6 +1474,7 @@ class jMQTT extends eqLogic {
      * Create or update all autoPub listeners
      */
     public static function listenersAddAll() {
+        /** @var jMQTTCmd $cmd */
         foreach (
             cmd::searchConfiguration(
                 '"'.jMQTTConst::CONF_KEY_AUTOPUB.'":"1"',
@@ -1820,7 +1821,7 @@ class jMQTT extends eqLogic {
                 $this->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC) . '/reply',
                 json_encode($reply, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 1,
-                0
+                false
             );
         } catch (Throwable $e) {
             if (log::getLogLevel(__CLASS__) > 100) {
@@ -1861,7 +1862,7 @@ class jMQTT extends eqLogic {
                 $this->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC) . '/reply',
                 json_encode($reply, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 1,
-                0
+                false
             );
         }
     }
@@ -1958,6 +1959,7 @@ class jMQTT extends eqLogic {
                             else
                                 next($msgTopicArray);
                         }
+                        // @phpstan-ignore-next-line
                         if (current($msgTopicArray) === false) {
                             $cmdName = end($msgTopicArray);
                         } else {

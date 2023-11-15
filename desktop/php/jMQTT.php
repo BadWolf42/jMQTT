@@ -249,7 +249,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             </div>
             <!--
                 TODO: Add here the "Discovery" tab
-                 labels: enhancement
+                 labels: enhancement, html
             -->
             <div role="tabpanel" class="tab-pane toDisable" id="commandtab">
                 <table id="table_cmd" class="table tree table-bordered table-condensed table-striped">

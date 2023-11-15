@@ -97,6 +97,7 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
     $current_indexes = array('eqLogic' => array(), 'cmd' => array());
     $diff_indexes = array('eqLogic' => array(), 'cmd' => array());
 
+    // @phpstan-ignore-next-line
     function abstract_diffIndexes($type, &$options, &$backup_indexes, &$current_indexes, &$diff_indexes, &$sucess) {
         // For all existing jMQTT eqLogic/cmd
         $all = ($type == 'eqLogic') ? eqLogic::byType('jMQTT') : cmd::searchConfiguration('', 'jMQTT');
@@ -445,7 +446,7 @@ function full_export_old() {
             $exp['commands'][] = $cmd->full_export();
         $returns[] = $exp;
     }
-    function fullsort($a, $b) {
+    function fullsort($a, $b) { // @phpstan-ignore-line
         $x = ((isset($a['configuration']) && isset($a['configuration']['type'])) ?
                 $a['configuration']['type'] : "z").$a['id'];
         $y = ((isset($b['configuration']) && isset($b['configuration']['type'])) ?
