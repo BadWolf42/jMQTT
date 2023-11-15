@@ -12,15 +12,12 @@ parameters:
 
     excludePaths:
         analyse:
+            - resources/mosquitto_topic_matches_sub.php
             - resources/JsonPath-PHP
             - resources/phpstan-stubs
 
     ignoreErrors:
-        - '#method config::save\(\) expects array\|object\|string#'
-        - '#method event::add\(\) expects float,#'
         - '#method event::add\(\) invoked with 2 parameters,#'
-        - '#method message::add\(\) expects type,#'
-        - '#usort expects callable\(mixed, mixed\): int, .* given#'
 
     stubFiles:
         - resources/phpstan-stubs/jeedom.stub

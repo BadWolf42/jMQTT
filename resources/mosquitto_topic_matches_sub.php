@@ -23,11 +23,21 @@
 // https://github.com/eclipse/mosquitto/blob/34522913ea0666c4ecd765e3327f435f60572e97/lib/util_topic.c#L192
 
 
-function mosquitto_topic_matches_sub($sub, $topic){
+/**
+ * Does a topic match a subscription?
+ *
+ * @param string $sub
+ * @param string $topic
+ * @return bool
+ */
+function mosquitto_topic_matches_sub($sub, $topic) {
 
     $result = false;
 
-    if (gettype($sub) != 'string' || gettype($topic) != 'string') {
+    if (
+        gettype($sub) != 'string'
+        || gettype($topic) != 'string'
+    ) {
         return false; // MOSQ_ERR_INVAL
     }
     if (strlen($sub) == 0 || strlen($topic) == 0) {
@@ -52,7 +62,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
             if ($sub[0] == '+') {
                 /* Check for bad "+foo" or "a/+foo" subscription */
                 if (
-                    $spos > 0 // @phpstan-ignore-line
+                    $spos > 0
                     && $previoussubchar != '/'
                 ) {
                     return false; // MOSQ_ERR_INVAL
@@ -77,7 +87,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
             } else if ($sub[0] == '#') {
                 /* Check for bad "foo#" subscription */
                 if (
-                    $spos > 0 // @phpstan-ignore-line
+                    $spos > 0
                     && $previoussubchar != '/'
                 ) {
                     return false; // MOSQ_ERR_INVAL
@@ -98,8 +108,8 @@ function mosquitto_topic_matches_sub($sub, $topic){
             } else {
                 /* Check for e.g. foo/bar matching foo/+/# */
                 if (
-                    strlen($topic) == 0 // @phpstan-ignore-line
-                    && $spos > 0 // @phpstan-ignore-line
+                    strlen($topic) == 0
+                    && $spos > 0
                     && $previoussubchar == '+'
                     && $sub[0] == '/'
                     && $sub[1] == '#'
@@ -147,7 +157,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
                 && strlen($sub) == 1
             ) {
                 if (
-                    $spos > 0 // @phpstan-ignore-line
+                    $spos > 0
                     && $previoussubchar != '/'
                 ) {
                     return false; // MOSQ_ERR_INVAL
@@ -162,7 +172,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
     }
     if (
         strlen($topic) > 0
-        || strlen($sub) > 0 // @phpstan-ignore-line
+        || strlen($sub) > 0
     ) {
         $result = false;
     }

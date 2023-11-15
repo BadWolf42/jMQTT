@@ -499,8 +499,7 @@ class jMQTTCmd extends cmd {
 
                 if (is_object($root_cmd)) {
                     $value = $root_cmd->execCmd();
-                    if (!empty($value)) { // @phpstan-ignore-line
-                        /** @var string $value */
+                    if (!is_null($value) && $value !== '') {
                         $jsonArray = $root_cmd->decodeJsonMsg($value);
                         if (!is_null($jsonArray)) {
                             $this->updateJsonCmdValue($jsonArray);

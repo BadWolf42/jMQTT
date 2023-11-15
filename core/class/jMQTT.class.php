@@ -730,6 +730,7 @@ class jMQTT extends eqLogic {
         $eqpts = array();
         $cmds = array();
         foreach (eqLogic::byType(__CLASS__) as $eq) {
+            /** @var jMQTT $eq */
             $eqar = $eq->toArray();
             if (is_object($eq->getObject())) {
                 $obj_name = $eq->getObject()->getName();

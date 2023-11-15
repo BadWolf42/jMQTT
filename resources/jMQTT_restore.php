@@ -336,7 +336,7 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
 }
 
 // Purge existing cmds histories
-function restore_purgeHistories(&$diff_indexes, $type, $_date = '', $verbose) {
+function restore_purgeHistories(&$diff_indexes, $type, $_date = '', $verbose = false) {
     print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Purging the previously " . $type . " cmds history...");
     $logs = array();
     foreach ($diff_indexes['cmd'] as $id=>&$state) {
@@ -454,7 +454,7 @@ function full_export_old() {
                 $b['configuration']['type'] : "z").$b['id'];
         return strcmp($x, $y);
     }
-    usort($returns, 'fullsort'); // Put the Broker first (needed)
+    usort($returns, 'fullsort'); // @phpstan-ignore-line // Put the Broker first (needed)
     return $returns;
 }
 
