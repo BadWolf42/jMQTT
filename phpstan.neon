@@ -13,13 +13,14 @@ parameters:
     excludePaths:
         analyse:
             - resources/JsonPath-PHP
+            - resources/phpstan-stubs
 
     ignoreErrors:
-        - '#method cache::byKey\(\) expects type,#'
         - '#method config::save\(\) expects array\|object\|string#'
         - '#method event::add\(\) expects float,#'
         - '#method event::add\(\) invoked with 2 parameters,#'
-        - '#method getValue\(\) on an unknown class type#'
-        - '#method listener::searchClassFunctionOption\(\) expects array, string given#'
         - '#method message::add\(\) expects type,#'
         - '#usort expects callable\(mixed, mixed\): int, .* given#'
+
+    stubFiles:
+        - resources/phpstan-stubs/jeedom.stub

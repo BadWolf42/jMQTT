@@ -1,0 +1,30 @@
+<?php
+
+class cache {
+    /**
+    * @param string $_key
+    * @return cache
+    */
+    public static function byKey($_key) {
+    }
+
+    /**
+    * @param null|int|string $_default
+    * @return null|int|string
+    */
+    public function getValue($_default = '') {
+    }
+}
+
+class listener {
+    /**
+     * @param string $_class
+     * @param string $_function
+     * @param string $_option
+     * @return listener[]
+     */
+    public static function searchClassFunctionOption($_class, $_function, $_option = '') {
+    }
+}
+
+?>
