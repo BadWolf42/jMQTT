@@ -259,6 +259,7 @@ class jMQTT extends eqLogic {
      */
     public static function deleteTemplateByFile($_filename){
         // self::logger('debug', 'deleteTemplateByFile: ' . $_filename);
+        /** @var null|string $_filename */
         if (!isset($_filename) || is_null($_filename) || $_filename == '')
             return false;
         $existing_files = self::templateList();
@@ -342,6 +343,7 @@ class jMQTT extends eqLogic {
             $this->save();
         }
 
+        /** @var jMQTTCmd $cmd */
         // complete cmd topics and replace template cmd names by cmd ids
         foreach ($this->getCmd() as $cmd) {
             $cmd->setTopic(sprintf($cmd->getTopic(), $_baseTopic));
@@ -387,6 +389,7 @@ class jMQTT extends eqLogic {
         // Create a replacement array with cmd names & id for further use
         $cmdsId = array();
         $cmdsName = array();
+        /** @var jMQTTCmd $cmd */
         foreach ($this->getCmd() as $cmd) {
             $cmdsId[] = '#' . $cmd->getId() . '#';
             $cmdsName[] = '#[' . $cmd->getName() . ']#';
@@ -644,6 +647,7 @@ class jMQTT extends eqLogic {
         $cmdsOldId = array();
         $cmdsNewId = array();
         // Clone commands
+        /** @var jMQTTCmd $cmd */
         foreach ($this->getCmd() as $cmd) {
             $cmdCopy = clone $cmd;
             $cmdCopy->setId('');
@@ -720,7 +724,7 @@ class jMQTT extends eqLogic {
             $eqar = $eq->toArray();
             if (is_object($eq->getObject())) {
                 $obj_name = $eq->getObject()->getName();
-            } else {
+            } else { // @phpstan-ignore-line
                 $obj_name = __('Aucun', __FILE__);
             }
             $eqar['name'] = $obj_name.':'.$eqar['name'];
@@ -743,6 +747,7 @@ class jMQTT extends eqLogic {
             } else {
                 $eqpts[] = $eqar;
             }
+            /** @var jMQTTCmd $cmd */
             foreach ($eq->getCmd() as $cmd)
                 $cmds[] = $cmd->full_export($clean);
         }
@@ -981,6 +986,7 @@ class jMQTT extends eqLogic {
         else { // Existing eqpt
 
             // load eqLogic from DB
+            /** @var jMQTT $eqLogic */
             $eqLogic = self::byId($this->getId());
             $this->_preSaveInformations = array(
                 'name'                        => $eqLogic->getName(),

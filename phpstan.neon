@@ -20,5 +20,6 @@ parameters:
         - '#method event::add\(\) expects float,#'
         - '#method event::add\(\) invoked with 2 parameters,#'
         - '#method getValue\(\) on an unknown class type#'
+        - '#method listener::searchClassFunctionOption\(\) expects array, string given#'
         - '#method message::add\(\) expects type,#'
         - '#usort expects callable\(mixed, mixed\): int, .* given#'

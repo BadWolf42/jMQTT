@@ -52,7 +52,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
             if ($sub[0] == '+') {
                 /* Check for bad "+foo" or "a/+foo" subscription */
                 if (
-                    $spos > 0
+                    $spos > 0 // @phpstan-ignore-line
                     && $previoussubchar != '/'
                 ) {
                     return false; // MOSQ_ERR_INVAL
@@ -77,7 +77,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
             } else if ($sub[0] == '#') {
                 /* Check for bad "foo#" subscription */
                 if (
-                    $spos > 0
+                    $spos > 0 // @phpstan-ignore-line
                     && $previoussubchar != '/'
                 ) {
                     return false; // MOSQ_ERR_INVAL
@@ -98,8 +98,8 @@ function mosquitto_topic_matches_sub($sub, $topic){
             } else {
                 /* Check for e.g. foo/bar matching foo/+/# */
                 if (
-                    strlen($topic) == 0
-                    && $spos > 0
+                    strlen($topic) == 0 // @phpstan-ignore-line
+                    && $spos > 0 // @phpstan-ignore-line
                     && $previoussubchar == '+'
                     && $sub[0] == '/'
                     && $sub[1] == '#'
@@ -147,7 +147,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
                 && strlen($sub) == 1
             ) {
                 if (
-                    $spos > 0
+                    $spos > 0 // @phpstan-ignore-line
                     && $previoussubchar != '/'
                 ) {
                     return false; // MOSQ_ERR_INVAL
@@ -162,7 +162,7 @@ function mosquitto_topic_matches_sub($sub, $topic){
     }
     if (
         strlen($topic) > 0
-        || strlen($sub) > 0
+        || strlen($sub) > 0 // @phpstan-ignore-line
     ) {
         $result = false;
     }

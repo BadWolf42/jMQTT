@@ -2,6 +2,7 @@
 
 
 $eqLogics = jMQTT::byType('jMQTT');
+/** @var jMQTT[] $eqLogics */
 foreach ($eqLogics as $eqLogic) {
     $eqLogic->moveTopicToConfiguration();
 }

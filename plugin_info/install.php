@@ -52,7 +52,7 @@ function jMQTT_update($_direct=true) {
 
     // Backup old version number
     $currentVer = config::byKey('version', 'jMQTT', $pluginVer);
-    /** @var int|string $currentVer */
+    // @phpstan-ignore-next-line
     $currentVer = is_int($currentVer) ? strval($currentVer) . '.0.0' : $currentVer;
     config::save('previousVersion', $currentVer, 'jMQTT');
 

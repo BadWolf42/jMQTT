@@ -46,6 +46,7 @@ foreach ((jMQTT::getBrokers()) as $broker) {
 }
 
 foreach (jMQTT::byType(jMQTT::class) as $eqLogic) {
+    /** @var jMQTTCmd $eqLogic */
     try {
         if ($eqLogic->getType() == jMQTTConst::TYP_BRK) {
             jMQTT::logger('debug', $eqLogic->getHumanName() . ' est un Broker');

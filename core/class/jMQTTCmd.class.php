@@ -431,6 +431,7 @@ class jMQTTCmd extends cmd {
                                 )
                             );
                         if ($cmd->getEqType() =='jMQTT') {
+                            /** @var jMQTTCmd $cmd */
                             $cmd_topic = $cmd->isJson() ? substr($cmd->getTopic(), 0, strpos($cmd->getTopic(), '{')) : $cmd->getTopic();
                             if ($this->getTopic() == $cmd_topic)
                                 throw new Exception(

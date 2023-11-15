@@ -3,6 +3,7 @@
 $eqLogics = jMQTT::byType('jMQTT');
 foreach ($eqLogics as $eqLogic) {
     // get info cmds of current eqLogic
+    /** @var jMQTTCmd[] $infoCmds */
     $infoCmds = jMQTTCmd::byEqLogicId($eqLogic->getId(), 'info');
     // split topic and jsonPath of cmd
     foreach ($infoCmds as $cmd) {

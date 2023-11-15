@@ -81,6 +81,7 @@ function export_index() {
     print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating index file...");
     $res = array('eqLogic' => array(), 'cmd' => array());
 
+    /** @var jMQTT[] $allEqLogics */
     $allEqLogics = eqLogic::byType('jMQTT');
     // Preprend brokers
     foreach ($allEqLogics as $o) {

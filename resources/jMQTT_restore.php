@@ -156,8 +156,8 @@ function restore_diffIndexes(&$options, &$backup_indexes, &$current_indexes, &$d
             }
         }
     }
-    abstract_diffIndexes('eqLogic', $options, $backup_indexes, $current_indexes, $diff_indexes, $sucess);
-    abstract_diffIndexes('cmd',     $options, $backup_indexes, $current_indexes, $diff_indexes, $sucess);
+    abstract_diffIndexes('eqLogic', $options, $backup_indexes, $current_indexes, $diff_indexes, $sucess); // @phpstan-ignore-line
+    abstract_diffIndexes('cmd',     $options, $backup_indexes, $current_indexes, $diff_indexes, $sucess); // @phpstan-ignore-line
 
     return $sucess;
 }
@@ -442,6 +442,7 @@ function full_export_old() {
     foreach (eqLogic::byType('jMQTT') as $eq) {
         $exp = $eq->toArray();
         $exp['commands'] = array();
+        /** @var jMQTTCmd $cmd */
         foreach ($eq->getCmd() as $cmd)
             $exp['commands'][] = $cmd->full_export();
         $returns[] = $exp;

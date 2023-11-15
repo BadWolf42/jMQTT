@@ -186,6 +186,7 @@ try {
     }
 
     if (init('action') == 'applyTemplate') {
+        /** @var jMQTT $eqpt */
         $eqpt = jMQTT::byId(init('id'));
         if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
             throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
@@ -196,6 +197,7 @@ try {
     }
 
     if (init('action') == 'createTemplate') {
+        /** @var jMQTT $eqpt */
         $eqpt = jMQTT::byId(init('id'));
         if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
             throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
@@ -388,8 +390,7 @@ try {
     }
 
     if (init('action') == 'backupRemove') {
-        jMQTT::logger('debug', sprintf(__("backupRemove: %s", __FILE__), init('file')));
-
+        /** @var null|string $_backup */
         $_backup = init('file');
         if (!isset($_backup) || is_null($_backup) || $_backup == '')
             throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
@@ -403,6 +404,7 @@ try {
     }
 
     if (init('action') == 'backupRestore') {
+        /** @var null|string $_backup */
         $_backup = init('file');
         if (!isset($_backup) || is_null($_backup) || $_backup == '')
             throw new Exception(__('Merci de fournir le fichier à restaurer', __FILE__));
