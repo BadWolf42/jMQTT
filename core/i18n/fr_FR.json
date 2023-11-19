@@ -712,7 +712,7 @@
 	},
 	"plugins/jMQTT/plugin_info/configuration.php": {
 		"(Re)Démarrer": "(Re)Démarrer",
-		"Ajouter une sauvegarde": "Ajouter une sauvegarde",
+		"Ajouter une sauvegarde": "Téléverser une sauvegarde",
 		"Appliquer": "Appliquer",
 		"Arrête le service Mosquitto local.": "Arrête le service Mosquitto local.",
 		"Arrêter": "Arrêter",
