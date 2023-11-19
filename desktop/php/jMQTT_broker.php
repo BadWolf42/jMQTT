@@ -97,7 +97,7 @@
                                 <input class="eqLogicAttr form-control tooltips jmqttPort roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="port"
                                     title="{{Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
                                 <span class="input-group-addon jmqttWsUrl" style="display:none">/</span>
-                                <input class="eqLogicAttr form-control tooltips roundedRight jmqttWsUrl" data-l1key="configuration" data-l2key="mqttWsUrl" style="display:none" placeholder="{{mqtt}}"
+                                <input class="eqLogicAttr form-control tooltips roundedRight jmqttWsUrl" data-l1key="configuration" data-l2key="mqttWsUrl" style="display:none" placeholder="mqtt"
                                     title="{{URL de la connexion Web Sockets du serveur distant, sans '/' initial.<br/>Valeur si vide, 'mqtt'. Ne pas modifier si vous ne savez pas ce que vous faites.}}">
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttLwt">
                             </div>
                             <div class="col-lg-6 jmqttLwt" style="display: none;">
-                                <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="{{jeedom/status}}"
+                                <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="jeedom/status"
                                 title="{{Topic de publication du statut (Last Will and Testament) en MQTT sur ce Broker ('jeedom/status' par défaut).}}">
                             </div>
                         </div>
@@ -152,7 +152,7 @@
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttInt">
                             </div>
                             <div class="col-lg-6 jmqttInt" style="display: none;">
-                                <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttIntTopic" placeholder="{{jeedom/interact}}"
+                                <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttIntTopic" placeholder="jeedom/interact"
                                 title="{{Topic d'accès aux interactions de Jeedom sur ce Broker ('jeedom/interact' par défaut).<br/>Envoyer la demande en texte directement sur ce topic, elle sera transmise au moteur d'interaction de Jeedom.<br/>La réponse sera envoyée sur le sous-topic '/reply' (donc 'jeedom/interact/reply' par défaut).<br/>Pour des interactions avancées, il est possible de formuler une demande complexe sur le sous-topic '/advanced'.}}">
                             </div>
                         </div>
