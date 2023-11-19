@@ -1,10 +1,10 @@
-![stable version number](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/stable/plugin_info/info.json&query=$.pluginVersion&label=Stable%20version%20is)
-![beta version number](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/beta/plugin_info/info.json&query=$.pluginVersion&label=Beta%20version%20is)
-![dev version number](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/dev/plugin_info/info.json&query=$.pluginVersion&label=Dev%20version%20is)
+[![stable version number](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/stable/plugin_info/info.json&query=$.pluginVersion&label=Stable%20version%20is)](https://github.com/BadWolf42/jMQTT/tree/stable)
+[![beta version number](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/beta/plugin_info/info.json&query=$.pluginVersion&label=Beta%20version%20is)](https://github.com/BadWolf42/jMQTT/tree/beta)
+[![dev version number](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/dev/plugin_info/info.json&query=$.pluginVersion&label=Dev%20version%20is)](https://github.com/BadWolf42/jMQTT/tree/dev)
 <br/>
-![dev jeedom version min](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/dev/plugin_info/info.json&query=$.require&label=Supports%20Jeedom%20%3e%3d%20)
+[![dev jeedom version min](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/dev/plugin_info/info.json&query=$.require&label=Supports%20Jeedom%20%3e%3d%20)](https://doc.jeedom.com/)
 [![commit activity](https://img.shields.io/github/commit-activity/m/BadWolf42/jMQTT)](https://github.com/BadWolf42/jMQTT/pulse)
-[![latest commit](https://badgen.net/github/last-commit/BadWolf42/jMQTT/dev?label=Latest%20commit)](https://GitHub.com/BadWolf42/jMQTT/dev)
+[![latest commit](https://badgen.net/github/last-commit/BadWolf42/jMQTT/dev?label=Latest%20commit)](https://GitHub.com/BadWolf42/jMQTT)
 <br/>
 [![Check PHP](https://github.com/BadWolf42/jMQTT/actions/workflows/check-php.yml/badge.svg)](https://github.com/BadWolf42/jMQTT/actions/workflows/check-php.yml)
 [![Check Python](https://github.com/BadWolf42/jMQTT/actions/workflows/check-python.yml/badge.svg)](https://github.com/BadWolf42/jMQTT/actions/workflows/check-python.yml)
