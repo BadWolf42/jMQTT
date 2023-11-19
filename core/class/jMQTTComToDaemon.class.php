@@ -36,7 +36,7 @@ class jMQTTComToDaemon {
             return;
         }
         socket_close($socket);
-        // jMQTT::logger('debug', sprintf(__("sendToDaemon: port=%1\$s, payload=%2\$s", __FILE__), $port, $payload));
+        // jMQTT::logger('debug', sprintf("sendToDaemon: port=%1\$s, payload=%2\$s", $port, $payload));
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
     }
 

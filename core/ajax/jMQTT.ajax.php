@@ -89,6 +89,7 @@ try {
     ###################################################################################################################
     # Add a new command on an existing jMQTT equipment
     if (init('action') == 'newCmd') {
+        /** @var jMQTT $eqpt */
         $eqpt = jMQTT::byId(init('id'));
         if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
             throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
@@ -128,33 +129,44 @@ try {
         try {
             $jsonobject = new JsonPath\JsonObject($jsonArray);
             $value = $jsonobject->get($jsonPath);
+                if ($value !== false && $value !== array())
+                ajax::success(array(
+                    'success' => true,
+                    'message' => 'OK',
+                    'value' => json_encode(
+                        (count($value) > 1) ? $value : $value[0],
+                        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+                    )
+                ));
+            else
+                ajax::success(array(
+                    'success' => false,
+                    'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__),
+                    'value' => ''
+                ));
         } catch (Throwable $e) {
-            ajax::success(array('success' => false, 'message' => __("Exception: ", __FILE__) . $e->getMessage(), 'stack' => $e->getTraceAsString(), 'value' => ''));
-            if (log::getLogLevel(__CLASS__) > 100)
-                $this->getEqLogic()->log('warning', sprintf(__("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
-                                                            $this->getJsonPath(), $this->getHumanName(), $e->getMessage()));
-            else // More info in debug mode, no big log otherwise
-                $this->getEqLogic()->log(
+            ajax::success(array(
+                'success' => false,
+                'message' => __("Exception: ", __FILE__) . $e->getMessage(),
+                'stack' => $e->getTraceAsString(),
+                'value' => ''
+            ));
+            if (log::getLogLevel('jMQTT') <= 100)
+                jMQTT::logger(
                     'warning',
                     str_replace(
                         "\n",
                         ' <br/> ',
                         sprintf(
-                            __("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+                            __("Chemin JSON '%1\$s' dans le testeur de JsonPath a levé l'Exception: %2\$s", __FILE__).
                             ",<br/>@Stack: %4\$s.",
-                            $this->getJsonPath(),
-                            $this->getHumanName(),
+                            $jsonPath,
                             $e->getMessage(),
                             $e->getTraceAsString()
                         )
                     )
                 );
         }
-
-        if ($value !== false && $value !== array())
-            ajax::success(array('success' => true, 'message' => 'OK', 'value' => json_encode((count($value) > 1) ? $value : $value[0], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)));
-        else
-            ajax::success(array('success' => false, 'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__), 'value' => ''));
     }
 
     ###################################################################################################################
@@ -174,6 +186,7 @@ try {
     }
 
     if (init('action') == 'applyTemplate') {
+        /** @var jMQTT $eqpt */
         $eqpt = jMQTT::byId(init('id'));
         if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
             throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
@@ -184,6 +197,7 @@ try {
     }
 
     if (init('action') == 'createTemplate') {
+        /** @var jMQTT $eqpt */
         $eqpt = jMQTT::byId(init('id'));
         if (!is_object($eqpt) || $eqpt->getEqType_name() != jMQTT::class) {
             throw new Exception(sprintf(__("Pas d'équipement jMQTT avec l'id %s", __FILE__), init('id')));
@@ -226,7 +240,7 @@ try {
             $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__)
         );
 
-        // $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)", __FILE__),
+        // $broker->log('debug', sprintf("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)",
         //                               $id, $mode, $subscribe, $exclude, $retained, $duration));
 
         // If Real Time mode needs to be enabled
@@ -237,10 +251,9 @@ try {
                     __("Impossible d'activer le mode Temps Réel avec un topic de souscription vide", __FILE__)
                 );
             }
-            $subscribe = (trim($subscribe) == '') ? [] : explode('|', $subscribe);
-            // Cleanup subscriptions
+            // Cleanup subscriptions ($subscribe is never empty here)
             $subscriptions = [];
-            foreach ($subscribe as $t) {
+            foreach (explode('|', $subscribe) as $t) {
                 $t = trim($t);
                 if ($t == '')
                     continue;
@@ -368,17 +381,24 @@ try {
         sort($files);
         $backups = array();
         foreach ($files as $backup)
-            $backups[] = array('name' => $backup, 'size' => sizeFormat(filesize($backup_dir.'/'.$backup)));
+            $backups[] = array(
+                'name' => $backup,
+                'size' => sizeFormat(filesize($backup_dir.'/'.$backup))
+            );
         jMQTT::logger('info', __("Sauvegarde de jMQTT effectuée", __FILE__));
         ajax::success($backups);
     }
 
     if (init('action') == 'backupRemove') {
-        jMQTT::logger('debug', sprintf(__("backupRemove: %s", __FILE__), init('file')));
-
+        /** @var null|string $_backup */
         $_backup = init('file');
-        if (!isset($_backup) || is_null($_backup) || $_backup == '')
+        if (
+            !isset($_backup)
+            || is_null($_backup) // @phpstan-ignore-line
+            || $_backup == ''
+        ) {
             throw new Exception(__('Merci de fournir le fichier à supprimer', __FILE__));
+        }
 
         $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
         if (in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))) && file_exists($backup_dir.'/'.$_backup))
@@ -389,9 +409,15 @@ try {
     }
 
     if (init('action') == 'backupRestore') {
+        /** @var null|string $_backup */
         $_backup = init('file');
-        if (!isset($_backup) || is_null($_backup) || $_backup == '')
+        if (
+            !isset($_backup)
+            || is_null($_backup) // @phpstan-ignore-line
+            || $_backup == ''
+        ){
             throw new Exception(__('Merci de fournir le fichier à restaurer', __FILE__));
+        }
 
         $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
         if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))

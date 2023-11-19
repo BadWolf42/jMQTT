@@ -36,7 +36,7 @@ class jMQTTDaemon {
         $data['hardwareKey'] = jeedom::getHardwareKey();
         // Ensure system unicity using a rotating UUID
         $data['lastUUID'] = config::byKey(jMQTTConst::CONF_KEY_JMQTT_UUID, jMQTT::class, $data['hardwareKey']);
-        $data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes('107'), true));
+        $data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes(107), true));
         $data['hardwareName'] = jeedom::getHardwareName();
         if ($data['hardwareName'] == 'diy')
             $data['hardwareName'] = trim(shell_exec('systemd-detect-virt'));
@@ -75,7 +75,10 @@ class jMQTTDaemon {
             // Could not send or invalid data
             jMQTT::logger(
                 'debug',
-                __('Impossible de communiquer avec le serveur de statistiques (Réponse : false)', __FILE__)
+                sprintf(
+                    __('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__),
+                    'false'
+                )
             );
             return;
         }
@@ -108,29 +111,12 @@ class jMQTTDaemon {
         }
     }
 
-
-    // TODO: Remove unused function `jMQTT::clean_cache()`
-    //  labels: quality, php
-    private static function clean_cache() {
-        // for each id, clean cached values
-        foreach (jMQTT::getBrokers() as $broker) {
-            $broker->setCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false);
-            $broker->setCache(jMQTTConst::CACHE_REALTIME_MODE, false);
-        }
-        @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
-        @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_PORT);
-        @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_SND);
-        @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_RCV);
-        jMQTTDaemon::sendMqttDaemonStateEvent(false);
-    }
-
     public static function valid_uid($ruid) {
         $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
         if ($cuid === "0:0")
              return null;
         return $cuid === $ruid;
     }
-
 
     /**
      * Validates that a daemon is connected, running and is communicating
@@ -364,7 +350,7 @@ class jMQTTDaemon {
 
     /**
      * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
-     * @param $_state bool true if Daemon is running and connected
+     * @param bool $_state true if Daemon is running and connected
      */
     public static function sendMqttDaemonStateEvent($_state) {
         event::add('jMQTT::EventDaemonState', $_state);

@@ -1,0 +1,86 @@
+<?php
+
+class cache {
+    /**
+    * @param string $_key
+    * @return cache
+    */
+    public static function byKey($_key) {}
+
+    /**
+    * @param null|int|string $_default
+    * @return null|int|string
+    */
+    public function getValue($_default = '') {}
+}
+
+class cmd {
+    /**
+     * @param null|string $_options
+     * @param bool $_sendNodeJsEvent
+     * @param bool $_quote
+     * @return null|string
+     * @throws Exception
+     */
+    public function execCmd($_options = null, $_sendNodeJsEvent = false, $_quote = false) {}
+}
+
+class config {
+    /**
+     * Save key to config
+     * @param string $_key
+     * @param int|string|mixed[]|object $_value
+     * @param string $_plugin
+     * @return boolean
+     */
+    public static function save($_key, $_value, $_plugin = 'core') {}
+}
+
+class eqLogic {
+    /**
+     * @return null|jeeObject
+     */
+    public function getObject() {}
+}
+
+class jeeObject {
+    /**
+     * @return string
+     */
+    public static function getName() {}
+}
+
+class event {
+    /**
+     * @param string $_event
+     * @param mixed[] $_option
+     * @return void
+     */
+    public static function add($_event, $_option = array()) {}
+}
+
+class listener {
+    /**
+     * @param string $_class
+     * @param string $_function
+     * @param string $_option
+     * @return listener[]
+     */
+    public static function searchClassFunctionOption($_class, $_function, $_option = '') {}
+}
+
+class message {
+    /**
+     *
+     * @param string $_type
+     * @param string $_message
+     * @param string $_action
+     * @param string $_logicalId
+     * @param bool $_writeMessage
+     * @param null $_channel
+     * @return null
+     */
+    public static function add($_type, $_message, $_action = '', $_logicalId = '', $_writeMessage = true, $_channel = null) {}
+}
+
+?>

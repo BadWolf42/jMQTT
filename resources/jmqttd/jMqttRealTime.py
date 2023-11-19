@@ -17,9 +17,7 @@ from binascii import b2a_base64
 from datetime import datetime
 import json
 import logging
-import queue
 import sys
-import time
 import threading
 from os import unlink
 from os.path import isfile
@@ -34,73 +32,129 @@ except ImportError:
     print("Error: importing module paho.mqtt")
     sys.exit(1)
 
+
 class jMqttRealTime:
-    def __init__(self, jcom, message, filename, subscribe=[], exclude=[], retained=False, duration=180):
-        self._log            = logging.getLogger('ClientRT')
+    def __init__(
+        self,
+        jcom,
+        message,
+        filename,
+        subscribe=[],
+        exclude=[],
+        retained=False,
+        duration=180
+    ):
+        self._log = logging.getLogger('ClientRT')
         # self._log.debug('jMqttRealTime.init(): message=%r', message)
-        self.jcom            = jcom
-        self.message         = message
-        self.realtimeFile    = filename
-        self.realtimeInc     = subscribe
-        self.realtimeExc     = exclude
-        self.realtimeRet     = retained
-        self.realtimeDur     = duration
-        self.realtimeTab     = []
-        self.connected       = False
-        self.mqttclient      = None
+        self.jcom = jcom
+        self.message = message
+        self.realtimeFile = filename
+        self.realtimeInc = subscribe
+        self.realtimeExc = exclude
+        self.realtimeRet = retained
+        self.realtimeDur = duration
+        self.realtimeTab = []
+        self.connected = False
+        self.mqttclient = None
 
     def on_connect(self, client, userdata, flags, rc):
         self.connected = True
-        self._log.debug('Connected to broker %s:%d (%s)', self.mqtthostname, self.mqttport, mqtt.connack_string(rc))
-        self.jcom.send_async({'cmd':'realTimeStarted', 'id':self.id})
+        self._log.debug(
+            'Connected to broker %s:%d (%s)',
+            self.mqtthostname,
+            self.mqttport,
+            mqtt.connack_string(rc)
+        )
+        self.jcom.send_async({'cmd': 'realTimeStarted', 'id': self.id})
         for topic in self.realtimeInc:
             try:
                 res = self.mqttclient.subscribe(topic, 1)
-                if res[0] == mqtt.MQTT_ERR_SUCCESS or res[0] == mqtt.MQTT_ERR_NO_CONN:
+                if (
+                    res[0] == mqtt.MQTT_ERR_SUCCESS
+                    or res[0] == mqtt.MQTT_ERR_NO_CONN
+                ):
                     self._log.info('Topic subscribed "%s"', topic)
                     return
-            except ValueError: # Only catch ValueError
+            except ValueError:
+                # Only catch ValueError
                 pass
             self._log.error('Topic subscription failed "%s"', topic)
 
-
     def on_disconnect(self, client, userdata, rc):
         self.connected = False
-        self._log.debug('Disconnected from broker %s:%d (%s)', self.mqtthostname, self.mqttport, mqtt.connack_string(rc))
+        self._log.debug(
+            'Disconnected from broker %s:%d (%s)',
+            self.mqtthostname,
+            self.mqttport,
+            mqtt.connack_string(rc)
+        )
         nb = len(self.realtimeTab)
         self._log.info('Real Time Stopped: %i msgs received', nb)
         with open(self.realtimeFile, 'w') as f:
             json.dump(self.realtimeTab, f)
-        self.jcom.send_async({'cmd':'realTimeStopped', 'id':self.id, 'nbMsgs':nb})
+        self.jcom.send_async(
+            {
+                'cmd': 'realTimeStopped',
+                'id': self.id,
+                'nbMsgs': nb
+            }
+        )
 
     def on_message(self, client, userdata, message):
         try:
             usablePayload = message.payload.decode('utf-8')
-            form = '' # Successfully decoded as utf8
-        except:
-            try: # jMQTT will try automaticaly to decompress the payload (requested in issue #135)
+            # Successfully decoded as utf8
+            form = ''
+        except Exception:
+            # jMQTT will try automaticaly to decompress the payload (requested in issue #135)
+            try:
                 unzip = zlib_decompress(message.payload, wbits=-15)
                 usablePayload = unzip.decode('utf-8')
                 form = ' (decompressed)'
-            except: # If payload cannot be decoded or decompressed it is returned in base64
+            except Exception:
+                # If payload cannot be decoded or decompressed it is returned in base64
                 usablePayload = b2a_base64(message.payload, newline=False).decode('utf-8')
                 form = ' (bin in base64)'
-        # self._log.debug('Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', message.topic, usablePayload, form, message.qos, bool(message.retain))
+        # self._log.debug(
+        #     'Message received (topic="%s", payload="%s"%s, QoS=%s, retain=%s)',
+        #     message.topic,
+        #     usablePayload,
+        #     form,
+        #     message.qos,
+        #     bool(message.retain)
+        # )
 
         if bool(message.retain) and not self.realtimeRet:
             return
         for e in self.realtimeExc:
             if mqtt.topic_matches_sub(e, message.topic):
                 return
-        self._log.info('Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)', message.topic, usablePayload, form, message.qos, bool(message.retain))
+        self._log.info(
+            'Message in Real Time (topic="%s", payload="%s"%s, QoS=%s, retain=%s)',
+            message.topic,
+            usablePayload,
+            form,
+            message.qos,
+            bool(message.retain)
+        )
         d = datetime.now().strftime('%F %T.%f')[:-3]
-        self.realtimeTab.append({'date':d, 'topic':message.topic, 'payload':usablePayload, 'qos':message.qos, 'retain':bool(message.retain)})
+        self.realtimeTab.append(
+            {
+                'date': d,
+                'topic': message.topic,
+                'payload': usablePayload,
+                'qos': message.qos,
+                'retain': bool(message.retain)
+            }
+        )
         with open(self.realtimeFile, 'w') as f:
             json.dump(self.realtimeTab, f)
 
     def start(self):
         if self.mqttclient is not None:
-            self._log.info('jMqttRealTime already started (start ignored), should have used restart?')
+            self._log.info(
+                'jMqttRealTime already started (start ignored), should have used restart?'
+            )
             return
         self.id = self.message['id']
         self._log = logging.getLogger('ClientRT'+self.id)
@@ -110,14 +164,28 @@ class jMqttRealTime:
         if 'port' not in self.message:
             self.message['port'] = ''
         if self.message['port'] == '':
-            self.mqttport = {'mqtt': 1883, 'mqtts': 8883, 'ws': 1884, 'wss': 8884}.get(self.message['proto'], 1883)
+            self.mqttport = {
+                'mqtt': 1883,
+                'mqtts': 8883,
+                'ws': 1884,
+                'wss': 8884
+            }.get(self.message['proto'], 1883)
         self.mqttport = self.message['port'] if 'port' in self.message else 1883
         if 'username' not in self.message:
             self.message['username'] = ''
         if 'password' not in self.message:
             self.message['password'] = ''
         self.connected = False
-        # self._log.debug('jMqttRealTime.init() SELF dump: %r', [(attr, getattr(self, attr)) for attr in vars(self) if not callable(getattr(self, attr)) and not attr.startswith("__")])
+        # self._log.debug(
+        #     'jMqttRealTime.init() SELF dump: %r',
+        #     [
+        #         (
+        #             attr, getattr(self, attr)
+        #         ) for attr in vars(self) if (
+        #             not callable(getattr(self, attr)) and not attr.startswith("__")
+        #         )
+        #     ]
+        # )
 
         # Load back previouly received realtime messages
         if isfile(self.realtimeFile):
@@ -128,7 +196,8 @@ class jMqttRealTime:
         if self.message['proto'].startswith('ws'):
             self.mqttclient = mqtt.Client(transport="websockets")
             if 'mqttWsUrl' in self.message and self.message['mqttWsUrl'] != '':
-                self.message['mqttWsUrl'] = (self.message['mqttWsUrl'] if (self.message['mqttWsUrl'][0] == '/') else '/' + self.message['mqttWsUrl'])
+                if self.message['mqttWsUrl'][0] != '/':
+                    self.message['mqttWsUrl'] = '/' + self.message['mqttWsUrl']
                 self.mqttclient.ws_set_options(self.message['mqttWsUrl'])
         else:
             self.mqttclient = mqtt.Client()
@@ -158,7 +227,10 @@ class jMqttRealTime:
                 # Get Private Cert / Key if needed
                 cert = None
                 key = None
-                if {'tlscli', 'tlsclicert', 'tlsclikey'} <= self.message.keys() and self.message['tlscli']:
+                if (
+                    {'tlscli', 'tlsclicert', 'tlsclikey'} <= self.message.keys()
+                    and self.message['tlscli']
+                ):
                     fcert = NamedTemporaryFile(delete=False)
                     fcert.write(str.encode(self.message['tlsclicert']))
                     fcert.close()
@@ -177,14 +249,22 @@ class jMqttRealTime:
                     unlink(fcert.name)
                 if key is not None:
                     unlink(fkey.name)
-            except:
-                self._log.exception('Fatal TLS Certificate import Exception, this connection will most likely fail!')
+            except Exception:
+                self._log.exception(
+                    'Fatal TLS Certificate import Exception, this connection will most likely fail!'
+                )
 
         self.mqttclient.reconnect_delay_set(5, 15)
         self.mqttclient.on_connect = self.on_connect
         self.mqttclient.on_disconnect = self.on_disconnect
         self.mqttclient.on_message = self.on_message
-        self._log.info('Real Time Started: subscribe=%s, exclude=%s, retained=%s, duration=%i', json.dumps(self.realtimeInc), json.dumps(self.realtimeExc), self.realtimeRet, self.realtimeDur)
+        self._log.info(
+            'Real Time Started: subscribe=%s, exclude=%s, retained=%s, duration=%i',
+            json.dumps(self.realtimeInc),
+            json.dumps(self.realtimeExc),
+            self.realtimeRet,
+            self.realtimeDur
+        )
         try:
             self.mqttclient.connect(self.mqtthostname, self.mqttport, 30)
             self.mqttclient.loop_start()

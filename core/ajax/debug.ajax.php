@@ -236,7 +236,7 @@ try {
 // -------------------- Cache set / delete --------------------
     if (init('action') == 'cacheSet') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val'));
-        cache::set(init('key'), json_decode(init('val'), JSON_UNESCAPED_UNICODE));
+        cache::set(init('key'), json_decode(init('val'), true));
         ajax::success();
     }
     if (init('action') == 'cacheDel') {
@@ -304,7 +304,7 @@ try {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         jMQTTDaemon::stop();
         exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/__pycache__');
-        exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder(__CLASS__).'/rt*.json');
+        exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder('jMQTT').'/rt*.json');
         ajax::success();
     }
     if (init('action') == 'threadDump') {

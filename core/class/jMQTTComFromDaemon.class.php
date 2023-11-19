@@ -7,7 +7,7 @@ class jMQTTComFromDaemon {
      */
     public static function daemonUp($ruid) {
         // If we get here, apikey is OK!
-        //jMQTT::logger('debug', 'daemonUp(ruid='.$ruid.')');
+        // jMQTT::logger('debug', 'daemonUp(ruid='.$ruid.')');
         // Verify that daemon RemoteUID contains ':' or die
         if (is_null($ruid) || !is_string($ruid) || (strpos($ruid, ':') === false)) {
             jMQTT::logger(
@@ -304,6 +304,7 @@ class jMQTTComFromDaemon {
 
     public static function brkDown($id) {
         try { // Catch if broker is unknown / deleted
+            /** @var jMQTT $broker */
             $broker = jMQTT::byId($id); // Don't use getBrokerFromId here!
             if (!is_object($broker)) {
                 jMQTT::logger(
@@ -415,6 +416,7 @@ class jMQTTComFromDaemon {
 
     public static function value($cmdId, $value) {
         try {
+            /** @var jMQTTCmd $cmd */
             $cmd = jMQTTCmd::byId(intval($cmdId));
             if (!is_object($cmd)) {
                 jMQTT::logger('debug', sprintf(

@@ -1,0 +1,67 @@
+name: Check PHP
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  check-php:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jeedom-branch: ['V4-stable', 'alpha']
+        php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
+
+    steps:
+      - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
+        uses: actions/checkout@v3
+        with:
+          repository: jeedom/core
+          ref: ${{ matrix.jeedom-branch }}
+
+      - name: Create plugins folder
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/plugins/jMQTT
+
+      - name: Checkout jMQTT
+        uses: actions/checkout@v3
+        with:
+          path: plugins/jMQTT
+
+      # - name: Get composer cache directory
+      #   id: composer-cache
+      #   run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      # - name: Cache dependencies
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ steps.composer-cache.outputs.dir }}
+      #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+      #     restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        # run: composer install --prefer-dist
+        run: composer update --working-dir=${GITHUB_WORKSPACE}/plugins/jMQTT/resources/JsonPath-PHP
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: phpstan
+        env:
+          debug: true
+
+      # - name: PHP Syntax Checker (Lint)
+      #   uses: StephaneBour/actions-php-lint@${{ matrix.php-version }}
+      #   with:
+      #     dir: '.'
+
+      # - name: LS all workspace
+      #   run: |
+      #     ls -lahR ${GITHUB_WORKSPACE}
+
+      - name: Run PHPStan
+        run: phpstan analyse -c plugins/jMQTT/phpstan.neon

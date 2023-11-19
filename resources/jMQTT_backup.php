@@ -39,7 +39,7 @@ function export_deletePidFile() {
 function export_isRunning() {
     if (file_exists(__DIR__.'/../' . jMQTTConst::PATH_BACKUP . 'backup.pid')) {
         $runing_pid = file_get_contents(__DIR__.'/../' . jMQTTConst::PATH_BACKUP . 'backup.pid');
-        if (@posix_getsid($runing_pid) !== false)
+        if (@posix_getsid(intval($runing_pid)) !== false)
             return true; // PID is running
         export_deletePidFile();
     }
@@ -81,6 +81,7 @@ function export_index() {
     print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Generating index file...");
     $res = array('eqLogic' => array(), 'cmd' => array());
 
+    /** @var jMQTT[] $allEqLogics */
     $allEqLogics = eqLogic::byType('jMQTT');
     // Preprend brokers
     foreach ($allEqLogics as $o) {

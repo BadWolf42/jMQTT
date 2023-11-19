@@ -15,7 +15,7 @@
  */
 
 // TODO: Remove jQuery from jMQTT
-//  labels: enhancement, help wanted javascript
+//  labels: enhancement, help wanted, javascript
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on main plugin view
@@ -46,7 +46,7 @@ $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
 });
 
 $('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
-    $('#md_modal').dialog({title: "{{Debug jMQTT}}"});
+    $('#md_modal').dialog({title: "Debug jMQTT"});
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=debug').dialog('open');
 });
 
@@ -895,7 +895,12 @@ function addCmdToTable(_cmd) {
         tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br/> ';
         tr += '</td><td align="right">';
         // TODO: Add Advanced parameters modale on each cmd
-        //  The modale should include autoPub, Qos, related discovery config, etc
+        //  The modale should include:
+        //  - autoPub,
+        //  - Qos,
+        //  - move topic to other eqLogic,
+        //  - related discovery config,
+        //  - etc
         //  labels: enhancement, javascript
         // tr += '<a class="btn btn-default btn-xs cmdAction tooltips" data-action="advanced" title="{{Paramètres avancés}}"><i class="fas fa-wrench"></i></a> ';
         if (is_numeric(_cmd.id)) {
@@ -1106,7 +1111,7 @@ $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
  */
 $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _options) {
-    var msg = `{{L'équipement}} <b>${_options.eqlogic_name}</b> vient d'être ajouté}}`;
+    var msg = `{{L'équipement <b>${_options.eqlogic_name}</b> vient d'être ajouté}}`;
 
     // If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
     // Otherwise: display an alert message and reload the page
@@ -1131,11 +1136,11 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 /**
  * Management of the display when an information command is added
  * Triggerred when the plugin core send a jMQTT::cmdAdded event
- * @param _event string event name
- * @param _options['eqlogic_name'] string name of the eqLogic command is added to
- * @param _options['eqlogic_id'] int id of the eqLogic command is added to
- * @param _options['cmd_name'] string name of the new command
- * @param _options['reload'] bool whether or not a reload of the page is requested
+ * @param {string} _event event name
+ * @param {string} _options['eqlogic_name'] name of the eqLogic command is added to
+ * @param {int} _options['eqlogic_id'] id of the eqLogic command is added to
+ * @param {string} _options['cmd_name'] name of the new command
+ * @param {bool} _options['reload'] whether or not a reload of the page is requested
  */
 $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
     var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;

@@ -63,6 +63,13 @@ function displayEqLogicCard($eqL) {
     echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
 }
 
+/**
+ *
+ * @param string $action_name action name of the card
+ * @param string $fa_icon icon class name
+ * @param string $action data-action value (default: '')
+ * @param string $class div class (default: 'logoSecondary')
+ */
 function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoSecondary') {
     echo '<div class="eqLogicAction cursor ' . $class . '" data-action="' . $action . '">';
     echo '<i class="fas ' . $fa_icon . '"></i><br/><span>' . $action_name . '</span></div>'."\n";
@@ -94,7 +101,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             if (version_compare((jeedom::version() ?? '4.3.0'), '4.4.0', '>=')) {
             ?>
             <div class="col-sm-2">
-                <legend><i class="fas fa-comments"></i>&nbsp;{{Community}}</legend>
+                <legend><i class="fas fa-comments"></i>&nbsp;Community</legend>
                 <div class="eqLogicThumbnailContainer">
                 <?php
                  displayActionCard('{{Nouveau post}}', 'fa-ambulance', 'createCommunityPost');
@@ -195,16 +202,12 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                             <td colspan="5" data-sorter="false" data-filter="false">
                                 <div class="col-lg-3">
                                     <label class="col-lg-4 control-label" style="text-align:right;">{{Souscriptions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                                        title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.
-                                        <br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
-                                        <br/>Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
+                                        title="{{Topics de souscription utilisés lorsque le mode Temps Réel est actif sur ce Broker.<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).<br/>Par défaut, le topic de souscription est '#', donc tous les topics, ce qui peut être beaucoup sur certaines installations.}}"></i></sup></label>
                                     <input class="col-lg-8 form-control" id="mqttIncTopic">
                                 </div>
                                 <div class="col-lg-3">
                                     <label class="col-lg-4 control-label" style="text-align:right;">{{Exclusions}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                                        title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.
-                                        <br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).
-                                        <br/>Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
+                                        title="{{Topics à ne pas remonter lorsque le mode Temps Réel est actif.<br/>Plusieurs topics peuvent être fournis en les séparant par des '|' (pipe).<br/>Par exemple, le topic d'auto-découverte HA ('homeassistant/#') est souvent exclu, car il est très verbeux.}}"></i></sup></label>
                                     <input class="col-lg-8 form-control" id="mqttExcTopic">
                                 </div>
                                 <div class="col-lg-2">
@@ -242,7 +245,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             </div>
             <!--
                 TODO: Add here the "Discovery" tab
-                 labels: enhancement
+                 labels: enhancement, html
             -->
             <div role="tabpanel" class="tab-pane toDisable" id="commandtab">
                 <table id="table_cmd" class="table tree table-bordered table-condensed table-striped">

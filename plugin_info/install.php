@@ -52,6 +52,7 @@ function jMQTT_update($_direct=true) {
 
     // Backup old version number
     $currentVer = config::byKey('version', 'jMQTT', $pluginVer);
+    // @phpstan-ignore-next-line
     $currentVer = is_int($currentVer) ? strval($currentVer) . '.0.0' : $currentVer;
     config::save('previousVersion', $currentVer, 'jMQTT');
 
@@ -125,7 +126,7 @@ function jMQTT_update($_direct=true) {
 function jMQTT_remove() {
     jMQTT::logger('debug', 'install.php: jMQTT_remove()');
     jMQTTDaemon::pluginStats('uninstall');
-    cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_CONNECTED);
+    @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
 }
 
 ?>

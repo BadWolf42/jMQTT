@@ -112,10 +112,10 @@ class jMQTTPlugin {
                     && plugin::byId('mqtt2')->isActive()
                     && config::byKey('mode', 'mqtt2', 'NotThere') == 'docker') {
                     // Plugin Active and mqtt2 mode is docker
-                    $res['by'] = __('MQTT Manager (en docker)', __FILE__);
+                    $res['by'] = 'MQTT Manager ' . __('(en docker)', __FILE__);
                     $res['message'] = __('Mosquitto est installé <b>en docker</b> par', __FILE__);
                     $res['message'] .= ' <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">';
-                    $res['message'] .= __('MQTT Manager', __FILE__) . '</a> (' . __('mqtt2', __FILE__) . ').';
+                    $res['message'] .= 'MQTT Manager</a> (mqtt2).';
                 }
             } catch (Throwable $e) {
                 // TODO: Add debug message if `mosquittoCheck()` throws
@@ -140,7 +140,7 @@ class jMQTTPlugin {
         // Check if mosquitto.service has been changed by mqtt2
         if (file_exists('/lib/systemd/system/mosquitto.service')
                 && strpos(file_get_contents('/lib/systemd/system/mosquitto.service'), 'mqtt2') !== false) {
-            $res['by'] = __('MQTT Manager (en local)', __FILE__);
+            $res['by'] = 'MQTT Manager ' . __('(en local)', __FILE__);
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=mqtt2">';
             $res['message'] .= 'MQTT Manager</a> (mqtt2).';
@@ -149,7 +149,7 @@ class jMQTTPlugin {
         elseif (file_exists('/etc/mosquitto/mosquitto.conf')
                 && preg_match('#^include_dir.*zigbee2mqtt/data/mosquitto/include#m',
                     file_get_contents('/etc/mosquitto/mosquitto.conf'))) {
-            $res['by'] = __('ZigbeeLinker', __FILE__);
+            $res['by'] = 'ZigbeeLinker';
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=zigbee2mqtt">';
             $res['message'] .= 'ZigbeeLinker</a> (zigbee2mqtt).';
@@ -297,7 +297,14 @@ class jMQTTPlugin {
         // Check if Mosquitto package is installed
         exec('dpkg -s mosquitto 2> /dev/null 1> /dev/null', $output, $retval); // retval = 1 not installed ; 0 installed
         if ($retval == 1) {
-            event::add('jeedom::alert', array('level' => 'danger', 'page' => 'plugin', 'message' => __("Mosquitto n'est pas installé sur ce système !", __FILE__),));
+            event::add(
+                'jeedom::alert',
+                array(
+                    'level' => 'danger',
+                    'page' => 'plugin',
+                    'message' => __("Mosquitto n'est pas installé sur ce système !", __FILE__)
+                )
+            );
             return;
         }
         // Remove package and /etc folder
