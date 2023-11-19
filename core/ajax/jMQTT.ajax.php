@@ -240,7 +240,7 @@ try {
             $mode ? __("Lancement du Mode Temps Réel...", __FILE__) : __("Arrêt du Mode Temps Réel...", __FILE__)
         );
 
-        // $broker->log('debug', sprintf(__("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)", __FILE__),
+        // $broker->log('debug', sprintf("changeRealTimeMode(id=%1\$s, mode=%2\$s, subscribe=%3\$s, exclude=%4\$s, retained=%5\$s, duration=%6)",
         //                               $id, $mode, $subscribe, $exclude, $retained, $duration));
 
         // If Real Time mode needs to be enabled

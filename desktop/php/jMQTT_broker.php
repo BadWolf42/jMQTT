@@ -113,10 +113,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Client-Id}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                            title="{{Identifiant avec lequel l’équipement Broker s’inscrit auprès du Broker MQTT.
-                            <br/>Il est important que cet identifiant ne soit utilisé QUE par jMQTT sur ce Broker.
-                            <br/>Définissez le Client-Id UNIQUEMENT si c'est réellement nécessaire pour vous.}}"></i></sup></label>
+                            <label class="col-lg-4 control-label">Client-Id&nbsp;<sup><i class="fa fa-question-circle tooltips"
+                            title="{{Identifiant avec lequel l’équipement Broker s’inscrit auprès du Broker MQTT.<br/>Il est important que cet identifiant ne soit utilisé QUE par jMQTT sur ce Broker.<br/>Définissez le Client-Id UNIQUEMENT si c'est réellement nécessaire pour vous.}}"></i></sup></label>
                             <div class="col-lg-1">
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttId">
                             </div>
@@ -155,10 +153,7 @@
                             </div>
                             <div class="col-lg-6 jmqttInt" style="display: none;">
                                 <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttIntTopic" placeholder="{{jeedom/interact}}"
-                                title="{{Topic d'accès aux interactions de Jeedom sur ce Broker ('jeedom/interact' par défaut).
-                                <br/>Envoyer la demande en texte directement sur ce topic, elle sera transmise au moteur d'interaction de Jeedom.
-                                <br/>La réponse sera envoyée sur le sous-topic '/reply' (donc 'jeedom/interact/reply' par défaut).
-                                <br/>Pour des interactions avancées, il est possible de formuler une demande complexe sur le sous-topic '/advanced'.}}">
+                                title="{{Topic d'accès aux interactions de Jeedom sur ce Broker ('jeedom/interact' par défaut).<br/>Envoyer la demande en texte directement sur ce topic, elle sera transmise au moteur d'interaction de Jeedom.<br/>La réponse sera envoyée sur le sous-topic '/reply' (donc 'jeedom/interact/reply' par défaut).<br/>Pour des interactions avancées, il est possible de formuler une demande complexe sur le sous-topic '/advanced'.}}">
                             </div>
                         </div>
 
@@ -169,7 +164,7 @@
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttApi">
                             </div>
                             <div class="col-lg-6 jmqttApi" style="display: none;">
-                                <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttApiTopic" placeholder="{{jeedom/api}}"
+                                <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttApiTopic" placeholder="jeedom/api"
                                 title="{{Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('jeedom/status' par défaut).}}">
                             </div>
                         </div>
