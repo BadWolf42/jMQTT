@@ -11,7 +11,7 @@
 - fix: Translation tokens
 - fix: Translations second pass
 - fix: Translations third pass
-- Release of Beta v23.0.10
+- Release of Beta v23.1.0
 
 ## 2023-11-15 (Interim v23.0.9)
 - CI: Update checks and todos
