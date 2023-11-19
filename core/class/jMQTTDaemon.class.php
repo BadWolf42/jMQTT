@@ -75,7 +75,10 @@ class jMQTTDaemon {
             // Could not send or invalid data
             jMQTT::logger(
                 'debug',
-                __('Impossible de communiquer avec le serveur de statistiques (Réponse : false)', __FILE__)
+                sprintf(
+                    __('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__),
+                    'false'
+                )
             );
             return;
         }

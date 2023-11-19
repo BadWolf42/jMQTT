@@ -6,7 +6,7 @@
             <div class="col-sm-3">
                 <input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display: none;" />
                 <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="type" style="display: none;" />
-                <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement jMQTT}}" />
+                <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement}}" />
             </div>
         </div>
 
@@ -131,7 +131,7 @@ $icons['barometre']             = __('Baromètre', __FILE__);
 $icons['battery']               = __('Batterie', __FILE__);
 $icons['bell']                  = __('Sonnerie', __FILE__);
 $icons['boiteauxlettres']       = __('Boite aux Lettres', __FILE__);
-$icons['bt']                    = __('Bluetooth', __FILE__);
+$icons['bt']                    = 'Bluetooth';
 $icons['chauffage']             = __('Chauffage', __FILE__);
 $icons['compteur']              = __('Compteur', __FILE__);
 $icons['contact']               = __('Contact', __FILE__);

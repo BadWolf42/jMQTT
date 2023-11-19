@@ -588,7 +588,7 @@ function builder_actions(div) {
         error: function(error) { $.fn.showAlert({message: error, level: 'danger'}) },
         success: function(_data) {
             var res = '<table class="table table-bordered" style="table-layout:fixed;width:100%;">';
-            res += '<thead><tr><th style="width:180px">{{PID}}</th><th>{{Port}}</th>';
+            res += '<thead><tr><th style="width:180px">PID</th><th>{{Port}}</th>';
             res += '<th style="width:85px;text-align:center"><a class="btn btn-danger btn-xs pull-right killAll" style="top:0px!important;">';
             res += '<i class="fas fa-check-circle icon-white"></i> {{Kill All}}</a></th>';
             res += '</tr></thead><tbody>';

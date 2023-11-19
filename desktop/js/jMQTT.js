@@ -46,7 +46,7 @@ $('.eqLogicAction[data-action=healthMQTT]').on('click', function () {
 });
 
 $('.eqLogicAction[data-action=debugJMQTT]').on('click', function () {
-    $('#md_modal').dialog({title: "{{Debug jMQTT}}"});
+    $('#md_modal').dialog({title: "Debug jMQTT"});
     $('#md_modal').load('index.php?v=d&plugin=jMQTT&modal=debug').dialog('open');
 });
 
@@ -1111,7 +1111,7 @@ $('body').off('jMQTT::cmdEvent').on('jMQTT::cmdEvent', function (_event,_options
  * @param {string} _options['eqlogic_name'] string name of the eqLogic command is added to
  */
 $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _options) {
-    var msg = `{{L'équipement}} <b>${_options.eqlogic_name}</b> vient d'être ajouté}}`;
+    var msg = `{{L'équipement <b>${_options.eqlogic_name}</b> vient d'être ajouté}}`;
 
     // If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
     // Otherwise: display an alert message and reload the page
