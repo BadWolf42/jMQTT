@@ -4,7 +4,7 @@
 <br/>
 [![dev jeedom version min](https://img.shields.io/badge/dynamic/json?url=https://github.com/BadWolf42/jMQTT/raw/dev/plugin_info/info.json&query=$.require&label=Supports%20Jeedom%20%3e%3d%20)](https://doc.jeedom.com/)
 [![commit activity](https://img.shields.io/github/commit-activity/m/BadWolf42/jMQTT)](https://github.com/BadWolf42/jMQTT/pulse)
-[![latest commit](https://badgen.net/github/last-commit/BadWolf42/jMQTT/dev?label=Latest%20commit)](https://GitHub.com/BadWolf42/jMQTT)
+[![last commit](https://img.shields.io/github/last-commit/BadWolf42/jMQTT)](https://GitHub.com/BadWolf42/jMQTT)
 <br/>
 [![Check PHP](https://github.com/BadWolf42/jMQTT/actions/workflows/check-php.yml/badge.svg)](https://github.com/BadWolf42/jMQTT/actions/workflows/check-php.yml)
 [![Check Python](https://github.com/BadWolf42/jMQTT/actions/workflows/check-python.yml/badge.svg)](https://github.com/BadWolf42/jMQTT/actions/workflows/check-python.yml)

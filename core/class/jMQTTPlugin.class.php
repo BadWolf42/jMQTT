@@ -13,6 +13,8 @@ class jMQTTPlugin {
 
     /**
      * Provides dependancy information
+     *
+     * @return string[]
      */
     public static function dependancy_info() {
         $depLogFile = 'jMQTT_dep';
@@ -68,6 +70,8 @@ class jMQTTPlugin {
 
     /**
      * Provides dependancy installation script
+     *
+     * @return string[]
      */
     public static function dependancy_install() {
         $depLogFile = 'jMQTT_dep';

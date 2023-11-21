@@ -1469,7 +1469,7 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Core callback to provides dependancy information
+     * Core callback to provide dependancy information
      *
      * @return array
      */
@@ -1478,7 +1478,7 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Core callback to provides dependancy installation script
+     * Core callback to provide dependancy installation script
      *
      * @return array
      */
