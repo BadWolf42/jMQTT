@@ -196,7 +196,24 @@ $icons['window-closed-variant'] = __('Fenêtre', __FILE__);
 $icons['zigbee']                = 'Zigbee';
 $icons['zwave']                 = 'ZWave';
 
-asort($icons, SORT_STRING);
+/**
+ * @param mixed $a
+ * @param mixed $b
+ * @return int
+ */
+function compareASCII($a, $b) {
+    return strcmp(
+        strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $a)),
+        strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $b))
+    );
+}
+
+// Mandatory for correct sorting: locale backup, change and restore
+$old_locale = setlocale(LC_ALL, 0);
+setlocale(LC_ALL, 'en_US.UTF-8');
+uasort($icons, 'compareASCII');
+setlocale(LC_ALL, $old_locale);
+
 foreach ($icons as $id => $name) {
     echo '<option value="' . $id . '">' . $name . '</option>';
 }
