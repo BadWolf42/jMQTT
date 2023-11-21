@@ -139,7 +139,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
             eq += '<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" value="'+init(data.configuration.battery_type)+'" disabled />';
             eq += '</div></div>';
             // Battery
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Commande d\'état de la batterie}}</label><div class="col-sm-3">';
+            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Commande d'état de la batterie}}"+'</label><div class="col-sm-3">';
             eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_cmd" disabled>';
             eq += '<option value="">{{Aucune}}</option>';
             if (init(data.configuration.battery_cmd))
@@ -147,7 +147,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
             eq += '</select>';
             eq += '</div></div>';
             // Availability
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Commande de disponibilité}}</label><div class="col-sm-3">';
+            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Commande d'état de disponibilité}}"+'</label><div class="col-sm-3">';
             eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="availability_cmd" disabled>';
             eq += '<option value="">{{Aucune}}</option>';
             if (init(data.configuration.availability_cmd))
