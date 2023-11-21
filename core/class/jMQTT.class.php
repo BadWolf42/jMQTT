@@ -1487,6 +1487,15 @@ class jMQTT extends eqLogic {
     }
 
     /**
+     * Core callback to provide additional information for a new Community post
+     *
+     * @return array
+     */
+    public static function getConfigForCommunity() {
+        return jMQTTPlugin::getConfigForCommunity();
+     }
+
+    /**
      * Create or update all autoPub listeners
      */
     public static function listenersAddAll() {
