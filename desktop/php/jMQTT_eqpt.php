@@ -209,7 +209,7 @@ function compareASCII($a, $b) {
 }
 
 // Mandatory for correct sorting: locale backup, change and restore
-$old_locale = setlocale(LC_ALL, 0);
+$old_locale = setlocale(LC_ALL, '0');
 setlocale(LC_ALL, 'en_US.UTF-8');
 uasort($icons, 'compareASCII');
 setlocale(LC_ALL, $old_locale);
