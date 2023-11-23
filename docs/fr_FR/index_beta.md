@@ -89,10 +89,10 @@ Le panneau supérieur gauche, intitulé *Gestion*, permet de configurer le plugi
 
 Détail des différents boutons :
   - Configuration : donne accès à la page de [Configuration du plugin](#configuration-du-plugin);
-  - Ajouter un broker : sert à [ajouter un client MQTT](#ajout-manuel-dun-équipement) pour accéder à un nouveau Broker MQTT;
+  - Broker : sert à [ajouter un client MQTT](#ajout-manuel-dun-équipement) pour accéder à un nouveau Broker MQTT;
   - Santé : ouvre la [fenêtre de Santé](#santé-du-plugin) de jMQTT;
   - Templates : ouvre la [fenêtre du Gestionnaire de Template](#gestion-des-templates);
-  - Ajouter : permet d'[ajouter manuellement un équipement](#ajout-manuel-dun-équipement) lié à un des Broker;
+  - Equipement : permet d'[ajouter manuellement un équipement](#ajout-manuel-dun-équipement) lié à un des Broker;
 
 En-dessous se trouve un champ de recherche, puis un panneau listant les équipements par Broker :
 

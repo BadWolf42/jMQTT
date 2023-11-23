@@ -832,7 +832,7 @@ jmqtt.addCmdFromRealTime = function(topic, jsonPath) {
         },
         success: function(_objectsList) {
             var msg = '<table class="table table-condensed table-bordered" id="md_addJmqttCmdTable">';
-            msg += '<thead><tr><th style="width: 150px;">{{Objet}}</th><th style="width: 150px;">{{Equipement}}</th></tr></thead>';
+            msg += '<thead><tr><th style="width: 150px;">{{Objet}}</th><th style="width: 150px;">{{Équipement}}</th></tr></thead>';
             msg += '<tbody><tr><td class="md_addJmqttCmdValObj">';
             msg += '<select class="form-control"><option value="">{{Aucun}}</option>' + _objectsList + '</select>';
             msg += '</td><td class="md_addJmqttCmdValeqL"></td></tr></tbody></table><br/>';

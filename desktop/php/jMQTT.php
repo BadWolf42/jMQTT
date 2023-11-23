@@ -83,12 +83,12 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                 <div class="eqLogicThumbnailContainer">
                 <?php
                 displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf');
-                displayActionCard('{{Ajouter un broker}}', 'fa-server', 'addJmqttBrk');
+                displayActionCard('{{Broker}}', 'fa-plus-circle', 'addJmqttBrk');
                 displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT');
                 if (isset($_GET['debug']) || config::byKey('debugMode', 'jMQTT', "0") === "1" /* || log::getLogLevel('jMQTT') <= 100 */)
                     displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT');
                 displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT');
-                displayActionCard('{{Ajouter}}', 'fa-plus-circle', 'addJmqttEq'/*, 'logoPrimary'*/);
+                displayActionCard('{{Équipement}}', 'fa-plus-circle', 'addJmqttEq', 'logoPrimary');
                 ?>
                 </div>
             </div>
@@ -169,7 +169,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             <div class="input-group pull-left" style="display:inline-flex">
                 <ul class="nav nav-tabs" role="tablist">
                     <li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fa fa-arrow-circle-left"></i></a></li>
-                    <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+                    <li role="presentation" class="active"><a href="#eqlogictab" aria-controls="eqlogictab" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Équipement}}</a></li>
                     <li role="presentation" class="typ-brk" style="display: none;"><a href="#brokertab" aria-controls="brokertab" role="tab" data-toggle="tab"><i class="fas fa-rss"></i> {{Broker}}</a></li>
                     <li role="presentation" class="typ-std" style="display: none;"><a href="#commandtab" aria-controls="commandtab" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
                     <li role="presentation" class="typ-std typ-brk" style="display: none;"><a href="#realtimetab" aria-controls="realtimetab" role="tab" data-toggle="tab" style="padding: 10px 14px;"><i class="fas fa-align-left"></i><span class="typ-brk" style="display: none;"> {{Temps Réel}}</span></a></li>
