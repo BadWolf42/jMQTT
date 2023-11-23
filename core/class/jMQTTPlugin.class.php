@@ -115,7 +115,11 @@ class jMQTTPlugin {
         $res .= ' ; Python: ' . trim(shell_exec("python3 -V | cut -d ' ' -f 2"));
         $res .= '<br/>jMQTT: v' . config::byKey('version', 'jMQTT', 'unknown', true);
         $res .= ' ; Brokers: ' . count(jMQTT::getBrokers());
-        $res .= ' ; Equipments: ' . count(jMQTT::getNonBrokers());
+        $nbEq = 0;
+        foreach (jMQTT::getNonBrokers() as $brk) {
+            $nbEq += count($brk);
+        }
+        $res .= ' ; Equipments: ' . $nbEq;
         $res .= ' ; cmds: ' . count(cmd::searchConfiguration('', jMQTT::class));
         return $res;
     }
