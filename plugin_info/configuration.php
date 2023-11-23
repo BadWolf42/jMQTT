@@ -35,7 +35,7 @@ sendVarToJS('dStatus', $docker);
 ?>
 <form class="form-horizontal" style="min-height: 250px;">
     <div class="row">
-    <div class="col-sm-6">
+    <div class="col-lg-6 col-sm-12">
 <?php
 if (!$docker) {
 ?>
@@ -122,7 +122,7 @@ if ($docker) {
         </div>
 <?php } /* $docker */ ?>
     </div>
-    <div class="col-sm-6">
+    <div class="col-lg-6 col-sm-12">
         <legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuration de jMQTT}}</legend>
         <div class="form-group">
             <label class="col-sm-1 control-label">&nbsp;</label>
