@@ -31,8 +31,9 @@ class jMQTTDaemon {
         // Avoid getting all stats exactly at the same time
         sleep(rand(0, 10));
 
-        $url = 'https://stats.bad.wf/jmqtt.php';
+        $url = 'https://stats.bad.wf/v1/query';
         $data = array();
+        $data['plugin'] = 'jmqtt';
         $data['hardwareKey'] = jeedom::getHardwareKey();
         // Ensure system unicity using a rotating UUID
         $data['lastUUID'] = config::byKey(jMQTTConst::CONF_KEY_JMQTT_UUID, jMQTT::class, $data['hardwareKey']);
@@ -57,15 +58,19 @@ class jMQTTDaemon {
             $data['next'] = 0;
         else
             $data['next'] = time() + 432000 + rand(0, 172800); // Next stats in 5-7 days
-        $options = array('http' => array(
-            'header'  => "Content-type: application/x-www-form-urlencoded\r\n",
-            'method'  => 'POST', 'content' => http_build_query($data)
-        ));
+        $encoded = json_encode($data);
+        $options = array(
+            'http' => array(
+                'method'  => 'POST',
+                'header'  => "Content-Type: application/json\r\n",
+                'content' => $encoded
+            )
+        );
         jMQTT::logger(
             'debug',
             sprintf(
                 __('Transmission des données statistiques suivantes : %s', __FILE__),
-                json_encode($data)
+                $encoded
             )
         );
         $context = stream_context_create($options);
