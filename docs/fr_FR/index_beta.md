@@ -65,7 +65,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation, il suffit d'activer le plugin sur la page de configuration :
 
-![Configuration du plugin](../images/2023-04-15_config.png)
+![Configuration du plugin](../images/2023-11-25_config.png)
 
 Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
@@ -85,7 +85,7 @@ Le plugin jMQTT est disponible dans le menu : `Plugins → Protocole domotique �
 
 Le panneau supérieur gauche, intitulé *Gestion*, permet de configurer le plugin :
 
-![Gestion du plugin](../images/2022-10-16_gestion_plugin.png)
+![Gestion du plugin](../images/2023-11-25_gestion_plugin.png)
 
 Détail des différents boutons :
   - Configuration : donne accès à la page de [Configuration du plugin](#configuration-du-plugin);
@@ -121,7 +121,7 @@ Un équipement :
 
 Il existe également une vue sous forme de table (TableView) :
 
-![Table View](../images/2022-10-16_gestion_table_view.png)
+![Table View](../images/2023-11-25_gestion_table_view.png)
 
 Elle s'active en cliquant sur le bouton tout à droite du champ de recherche (dans l'encadré rouge ci-dessus).
 
@@ -246,7 +246,7 @@ Les **équipements "classiques"** portent les commandes info qui récupéreront 
 
 ### Onglet Equipement
 
-![Onglet principal d'un Equipement](../images/2023-05-20_eqpt_equipement.png)
+![Onglet principal d'un Equipement](../images/2023-11-25_eqpt_equipement.png)
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
