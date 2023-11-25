@@ -248,6 +248,7 @@
 		" ?": "?",
 		"Afficher plus d'informations lors de la restauration": "Display more information during restoration",
 		"APPLIQUER": "APPLY",
+		"Avis": "Reviews",
 		"Etes-vous sûr de vouloir installer le service Mosquitto en local ?": "Are you sure you want to install Mosquitto locally?",
 		"Etes-vous sûr de vouloir réparer le service Mosquitto local ?": "Are you sure you want to repair your local Mosquitto service?",
 		"Etes-vous sûr de vouloir supprimer le service Mosquitto local ?": "Are you sure you want to delete the local Mosquitto service?",
