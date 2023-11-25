@@ -1,5 +1,15 @@
 # Registre des évolutions BETA
 
+## 2023-11-25 (Beta v23.11.2)
+- Ajout du template pour Tomotics WiFi switch v1 (merci SuperToma)
+- Ajout du numéro de version réel du plugin dans la page de configuration
+- Ajout d'un bouton pour accéder aux avis sur le plugin
+- Correction de la vue/modale de configuration pour les petits écrans
+- Correction du nombre d'équipements remontés dans un nouveau sujet Community (v4.4)
+- Utilisation de la nouvelle API pour les statistiques
+- Mise à jour de captures d'écran dans la documentation
+- Mise à jour de traductions
+
 ## 2023-11-21 (Beta v23.11.1)
 - Correction du tri par ordre alphabétique des icones des équipements
 - Correction de l'affichage de la modale de gestion des templates
