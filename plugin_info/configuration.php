@@ -24,6 +24,7 @@ if (!isConnect()) {
 }
 
 require_once __DIR__ . '/../core/class/jMQTT.class.php';
+sendVarToJS('version', config::byKey('version', 'jMQTT', 'unknown', true));
 
 
 // Send Mosquitto installation status
