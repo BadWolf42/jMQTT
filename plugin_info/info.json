@@ -14,10 +14,8 @@
     "hasDependency" : true,
     "hasOwnDeamon" : true,
     "issue" : "https://github.com/BadWolf42/jMQTT/issues",
-    "changelog" : "https://docs.bad.wf/#language#/jmqtt/stable/changelog",
-    "documentation" : "https://docs.bad.wf/#language#/jmqtt/stable/index",
-    "changelog_beta" : "https://docs.bad.wf/#language#/jmqtt/beta/changelog",
-    "documentation_beta" : "https://docs.bad.wf/#language#/jmqtt/beta/index",
+    "changelog" : "https://docs.bad.wf/#language#/jmqtt/v3/changelog",
+    "documentation" : "https://docs.bad.wf/#language#/jmqtt/v3/index",
     "link" : {
         "community": "https://community.jeedom.com/tag/plugin-jmqtt",
         "forum": "https://community.jeedom.com/tag/plugin-jmqtt",
