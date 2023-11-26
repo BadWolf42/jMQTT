@@ -15,7 +15,7 @@ __________________
 <p align="center">
 <a href="https://community.jeedom.com/tag/plugin-jmqtt">Community</a> -
 <a href="https://docs.bad.wf/fr_FR/jmqtt/dev">Documentation</a> -
-<a href="https://docs.bad.wf/fr_FR/jmqtt/dev/changelog">Change Log</a>
+<a href="https://docs.bad.wf/fr_FR/jmqtt/changelog">Change Log</a>
 </p>
 
 __________________
@@ -59,5 +59,5 @@ __________________
 <p align="center">
 <a href="https://community.jeedom.com/tag/plugin-jmqtt">Community</a> -
 <a href="https://docs.bad.wf/fr_FR/jmqtt/dev">Documentation</a> -
-<a href="https://docs.bad.wf/fr_FR/jmqtt/dev/changelog">Change Log</a>
+<a href="https://docs.bad.wf/fr_FR/jmqtt/changelog">Change Log</a>
 </p>
