@@ -370,11 +370,14 @@ function jMQTT_update($_direct=true) {
 	}
 	else
 		config::save(VERSION, 10, 'jMQTT');
+
+	jMQTT::pluginStats($_direct ? 'update' : 'install');
 }
 
 function jMQTT_remove() {
 	jMQTT::logger('debug', 'install.php: jMQTT_remove()');
-	cache::delete('jMQTT::' . jMQTT::CACHE_DAEMON_CONNECTED);
+	jMQTT::pluginStats('uninstall');
+	@cache::delete('jMQTT::' . jMQTT::CACHE_DAEMON_CONNECTED);
 }
 
 ?>

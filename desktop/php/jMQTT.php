@@ -74,7 +74,7 @@ function displayEqLogicCard($eqL, $node_images) {
 <div id="div_cmdMsg"></div>
 <div id="div_newEqptMsg"></div>
 <div id="div_inclusionModeMsg"></div>
-<span class="label control-label label-danger" style="width:100%;font-size:13px!important;padding:0px;">{{Ceci est la dernière version de jMQTT supportant Jeedom 3. Passez Jeedom en version 4.2 pour bénéficier des prochaines évolutions de jMQTT.}}</span>
+<span class="label control-label label-danger" style="width:100%;font-size:13px!important;padding:0px;">{{Ceci est la dernière version de jMQTT supportant Jeedom 3. Passez Jeedom en version 4.3+ pour bénéficier des prochaines évolutions de jMQTT.}}</span>
 <div class="row row-overflow">
 	<div class="col-xs-12 eqLogicThumbnailDisplay">
 		<legend><i class="fas fa-cog"></i> {{Gestion plugin et brokers}}</legend>
@@ -122,7 +122,7 @@ function displayEqLogicCard($eqL, $node_images) {
 			}
 			echo '</div>';
 		}
-		
+
 // TODO: Check if this is still usefull (condition is always false)
 		if ($has_orphans) {
 			echo '<legend><i class="fas fa-table"></i> {{Equipements}} {{orphelins}}</legend>';

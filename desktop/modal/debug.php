@@ -24,15 +24,6 @@ if (!isConnect('admin')) {
 		<div style="display: none;" id="md_jmqttDebug"></div>
 	</div>
 
-
-<!-- <div class="hasfloatingbar col-xs-12 col-lg-12" style=""> -->
-<!--
-	<div class="floatingbar">
-		<div class="input-group">
-			<span class="input-group-btn" id="span_right_button"><a class="btn btn-sm roundedLeft bt_refreshPluginInfo"><i class="fas fa-sync"></i> Rafraichir</a><a class="btn btn-primary btn-sm" target="_blank" href="https://domochip.github.io/jMQTT/fr_FR/"><i class="fas fa-book"></i> Documentation</a><a class="btn btn-primary btn-sm" target="_blank" href="https://domochip.github.io/jMQTT/fr_FR/changelog"><i class="fas fa-book"></i> Changelog</a><a class="btn btn-danger btn-sm removePlugin roundedRight" data-market_logicalid="jMQTT"><i class="fas fa-trash"></i> Supprimer</a></span>
-		</div>
-	</div>
--->
 	<script>
 function callDebugAjax(_params) {
 	$.ajax({
@@ -329,7 +320,7 @@ foreach(jMQTT::getNonBrokers() as $eqpts) {
 		// $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTT::CACHE_MQTTCLIENT_CONNECTED;
 		$cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
 		$printEqH = '							<tr><td colspan="3" style="font-weight:bolder;color:var(--al-primary-color);">{{Equipement}} '.$eqpt->getHumanName().' ('.$eqpt->getId().')</td></tr>';
-		
+
 		$printEqB = '';
 		foreach ($cacheEqptKeys as $k) {
 			$val = cache::byKey($k)->getValue(null);
@@ -355,7 +346,7 @@ foreach (cmd::searchConfiguration('', jMQTT::class) as $cmd) {
 	$cacheCmdKeys = array();
 	$cacheCmdKeys[] = 'cmdCacheAttr'.$cmd->getId();
 	$printCmdH = '							<tr class="lcmd hidden"><td colspan="3" style="font-weight:bolder;color:var(--al-success-color);">{{Commande}} '.$cmd->getHumanName().' ('.$cmd->getId().')</td></tr>';
-	
+
 	$printCmdB = '';
 	foreach ($cacheCmdKeys as $k) {
 		$val = cache::byKey($k)->getValue(null);
