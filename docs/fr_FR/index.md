@@ -1,4 +1,3 @@
-
 # Présentation
 
 Le plugin jMQTT permet de connecter Jeedom à un ou plusieurs serveurs MQTT (appelé Broker) afin de recevoir les messages souscrits et de publier ses propres messages.
@@ -65,7 +64,7 @@ Pour en savoir plus, ça se passe en anglais par ici : [MQTT Essentials](https:/
 
 Après installation, il suffit d'activer le plugin sur la page de configuration :
 
-![Configuration du plugin](../images/2023-04-15_config.png)
+![Configuration du plugin](images/2023-11-25_config.png)
 
 Quelques instants sont nécessaires à l'installation des dépendances. Le suivi de la progression est possible via le log `jMQTT_dep`.
 
@@ -85,7 +84,7 @@ Le plugin jMQTT est disponible dans le menu : `Plugins → Protocole domotique �
 
 Le panneau supérieur gauche, intitulé *Gestion*, permet de configurer le plugin :
 
-![Gestion du plugin](../images/2022-10-16_gestion_plugin.png)
+![Gestion du plugin](images/2023-11-25_gestion_plugin.png)
 
 Détail des différents boutons :
   - Configuration : donne accès à la page de [Configuration du plugin](#configuration-du-plugin);
@@ -96,7 +95,7 @@ Détail des différents boutons :
 
 En-dessous se trouve un champ de recherche, puis un panneau listant les équipements par Broker :
 
-![Brokers](../images/2023-04-10_gestion_brokers.png)
+![Brokers](images/2023-04-10_gestion_brokers.png)
 
 jMQTT possède 2 types d'équipements. Il est très important de faire la distinction entre :
   - les **équipements de type Broker**, qui sont les clients MQTT qui gèrent la connexion avec les Broker MQTT.
@@ -106,7 +105,7 @@ Ils sont souvent appelés **Broker** par abus de langage, ce sera le cas dans la
 
 Sur les équipements Broker, un point de couleur indique l'état de la connexion au Broker :
 
-![Status Broker](../images/2022-10-16_broker_status.png)
+![Status Broker](images/2022-10-16_broker_status.png)
 
 * Vert : le service MQTT est joignable et la communication est opérationnelle
 * Orange : le démon n'arrive pas à se connecter au service MQTT, vérifiez les paramètres de configuration
@@ -121,7 +120,7 @@ Un équipement :
 
 Il existe également une vue sous forme de table (TableView) :
 
-![Table View](../images/2022-10-16_gestion_table_view.png)
+![Table View](images/2023-11-25_gestion_table_view.png)
 
 Elle s'active en cliquant sur le bouton tout à droite du champ de recherche (dans l'encadré rouge ci-dessus).
 
@@ -144,7 +143,7 @@ Il peut aussi servir en interne Jeedom pour monitorer la connexion au Broker via
 
 ### Configuration
 
-![Configuration du Broker](../images/2023-05-20_eqpt_broker.png)
+![Configuration du Broker](images/2023-05-20_eqpt_broker.png)
 
 Par défaut, un équipement Broker est créé lors de l'installation de Mosquitto par jMQTT et configuré pour s'y inscrire nativement.
 
@@ -179,7 +178,7 @@ Pour modifier les informations de connexion au Broker, les paramètres sont :
     - _Clé Privée Client_ : visible si Certificat Client rempli, sélectionne la Clé Privée du Client permettant de discuter avec le Broker.
       Cette clé privée client est le pendant du certificat client ci-dessus, si l'un est fourni l'autre est obligatoire.
 
-> **Attention**: _L'identifiant de connexion_ doit être unique par client par Broker. Sinon les clients portant le même identifiant vont se déconnecter mutuellement.
+> **Attention**: _Le Client-Id_ doit être unique par client par Broker. Sinon les clients portant le même identifiant vont se déconnecter mutuellement.
 
 Une aide contextuelle est également disponible pour chaque champ.
 Il est possible d'importer les certificats en déposant les fichiers sur les champs ou avec les boutons à leur droite.
@@ -202,7 +201,7 @@ Le mode Temps Réel (encadré 5) permet la visualisation en temps réel des mess
 
 La visualisation des messages MQTT en temps réel se situe dans l'onglet Temps Réel de chaque Broker :
 
-![Mode Temps Réel](../images/2023-05-20_broker_realtime.png)
+![Mode Temps Réel](images/2023-05-20_broker_realtime.png)
 
 Il faut d'abord configurer les Topics de souscription Temps Réel pour récupérer les messages, éventuellement les Topics exclus du Temps Réel, si les messages retenus par le Broker doivent être inclus dans le Temps Réel et la durée d'activation (encadré 1).
 
@@ -246,11 +245,11 @@ Les **équipements "classiques"** portent les commandes info qui récupéreront 
 
 ### Onglet Equipement
 
-![Onglet principal d'un Equipement](../images/2023-05-20_eqpt_equipement.png)
+![Onglet principal d'un Equipement](images/2023-11-25_eqpt_equipement.png)
 
 Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres communs aux autres équipements Jeedom, ainsi que cinq paramètres spécifiques au plugin :
   - _Broker associé_ : Broker auquel est associé l'équipement. **Attention**: ne modifier ce paramètre qu'en sachant bien ce que vous faites ;
-  - _Inscrit au Topic_ : topic de souscription auprès du Broker MQTT. Pour un équipement de type Broker, ce paramètre n'est pas modifiable, il est imposé par l'identifiant de connexion au Broker, voir [Onglet Broker](#onglet-Broker) ;
+  - _Inscrit au Topic_ : topic de souscription auprès du Broker MQTT. Pour un équipement de type Broker, ce paramètre n'est pas modifiable, il est imposé par le Client-Id au Broker, voir [Onglet Broker](#onglet-Broker) ;
   - _Ajout automatique des commandes_ : si coché, les [commandes de type information](#commandes-de-type-information) seront automatiquement créés par le plugin, et l’équipement apparaitra avec une petite icône d’inclusion superposé dans la page de [Gestion des équipements](#gestion-des-équipements). La case est cochée par défaut ;
   - _Qos_ : qualité de service souscrit ;
   - _Type d'alimentation_ : paramètre libre vous permettant de préciser le type d'alimentation de l'équipement (non disponible pour un équipement Broker) ;
@@ -266,7 +265,7 @@ Dans le premier onglet d’un équipement jMQTT, nous trouvons les paramètres c
 
 Concernant les boutons en haut à droite :
 
-![Boutons sur un Equipement](../images/2023-05-20_eqpt_buttons.png)
+![Boutons sur un Equipement](images/2023-05-20_eqpt_buttons.png)
 
   - `Créer template` permet de [Créer un template à partir de l'équipement en cours](#création-dun-template-depuis-un-équipement) ;
   - `Appliquer template` permet d'[Appliquer un template existant à l'équipement en cours](#application-dun-template-sur-un-équipement) ;
@@ -392,7 +391,7 @@ Si nous rebasculons dans la vue JSON, nous obtenons alors :
 
 Les commandes de type action permettent au plugin jMQTT de publier des messages vers le Broker MQTT. Pour cela, créer une commande via le bouton *+ Ajouter une commande action* et remplir les champs selon le besoin :
 
-![Commande Action](../images/2023-05-20_cmd_action.png)
+![Commande Action](images/2023-05-20_cmd_action.png)
 
   - Nom: champ libre ;
   - Valeur par défaut de la commande: pour lier la valeur de la commande affichée sur le dashboard à une commande de type Information (exemple [ici](https://www.jeedom.com/forum/viewtopic.php?f=96&t=32675&p=612364#p602740)) ;
@@ -407,7 +406,7 @@ Les commandes de type action permettent au plugin jMQTT de publier des messages 
 
 Les configurations suivantes :
 
-![Commande Action sous-type Defaut](../images/2023-05-20_cmd_action_default.png)
+![Commande Action sous-type Defaut](images/2023-05-20_cmd_action_default.png)
 
 Publieront respectivement :
 
@@ -423,7 +422,7 @@ Publieront respectivement :
 
 Les configurations suivantes publieront la valeur saisie via un widget de type curseur :
 
-![Commande Action sous-type Curseur](../images/2023-05-20_cmd_action_slider.png)
+![Commande Action sous-type Curseur](images/2023-05-20_cmd_action_slider.png)
 
 Soit respectivement, en supposant que la valeur du curseur est 50 :
 
@@ -441,7 +440,7 @@ Soit respectivement, en supposant que la valeur du curseur est 50 :
 
 Les configurations suivantes publieront la valeur saisie via un widget de type message :
 
-![Commande Action sous-type Message](../images/2023-05-20_cmd_action_message.png)
+![Commande Action sous-type Message](images/2023-05-20_cmd_action_message.png)
 
 Pour un message dont le titre est `ecs` et le contenu est `50`, la première publiera :
 
@@ -459,7 +458,7 @@ Pour un message dont le titre est `test` et le contenu est `Lumière entrée all
 
 La configuration suivante publiera le code couleur sélectionnée via un widget sélecteur de couleur :
 
-![Commande Action sous-type Couleur](../images/2023-05-20_cmd_action_color.png)
+![Commande Action sous-type Couleur](images/2023-05-20_cmd_action_color.png)
 
 Pour une couleur rouge clair sélectionnée :
 
@@ -474,7 +473,7 @@ Pour une couleur rouge clair sélectionnée :
 
 La configuration suivante publiera la valeur sélectionnée grâce à la liste de choix d'un widget liste :
 
-![Commande Action sous-type Liste](../images/2023-05-20_cmd_action_select.png)
+![Commande Action sous-type Liste](images/2023-05-20_cmd_action_select.png)
 
 Soit respectivement, en supposant que la valeur sélectionnée sur le widget est "Auto" :
 
@@ -489,7 +488,7 @@ Ici, la liste de choix est pour les 2 commandes `on|On;auto|Auto;off|Off`. Cette
 
 #### Vue Classic, vue JSON
 
-![Cassic/JSON buttons](../images/2022-10-16_classic_json_buttons.png)
+![Cassic/JSON buttons](images/2022-10-16_classic_json_buttons.png)
 
 Deux boutons en haut à droite de la page permettent de choisir entre 2 types du vue :
   - La vue **Classic** montre les commandes dans l’ordre d’affichage sur la tuile du Dashboard. Elle permet de les réordonner par glissé/déposé ;
@@ -501,7 +500,7 @@ Il est possible de créer manuellement des équipements jMQTT.
 
 Cliquer sur le bouton **+** de la page principale et saisir le nom de l’équipement à créer, ainsi que l'équipement Broker auquel il doit être attaché. Il est également possible sur cette page d'utiliser immédiatement un template au moment de la création. Dans ce cas, il est nécessaire de préciser aussi le "Topic de base" pour qu'il soit substitué dans le modèle.
 
-![Créer manuellement un équipement jMQTT](../images/2023-04-10_eqpt_new.png)
+![Créer manuellement un équipement jMQTT](images/2023-04-10_eqpt_new.png)
 
 Dans la page [Onglet Equipement](#onglet-equipement), le topic de souscription définit les informations qui seront souscrites par l’équipement.
 
@@ -530,7 +529,7 @@ Une boite de dialogue demande le nom du nouvel équipement. Sont dupliqués :
 
 Le bouton *Santé*, présent dans la page de [Gestion des équipements](#gestion-des-équipements), permet d'afficher une vue de la santé des Broker et des équipements :
 
-![Modal Santé](../images/2023-04-10_health.png)
+![Modal Santé](images/2023-04-10_health.png)
 
 Les informations présentes sont : le nom, l'ID, le Topic de souscription, la date de Dernière communication, la Date de création, l'état des Brokers, ainsi que le nombre de commande sur chaque équipement.
 
@@ -541,11 +540,11 @@ Les templates conservent toutes les commandes d'origine, leurs configurations et
 
 Dans un permier temps, il est possible de [créer](#création-dun-template-depuis-un-équipement) ou d'[appliquer](#application-dun-template-sur-un-équipement) un template à un équipement existant, celà se passe directement sur un équipement :
 
-![Boutons sur un Equipement](../images/2023-05-20_eqpt_buttons.png)
+![Boutons sur un Equipement](images/2023-05-20_eqpt_buttons.png)
 
 Ensuite, le gestionnaire de Template est présent dans la section *Gestion* de la page principale du plugin. Il permet d'ajouter, de télécharger et de supprimer des templates et d'en visualiser les commandes.
 
-![Modal gestion des templates](../images/2022-10-16_modal_gestion_templates.png)
+![Modal gestion des templates](images/2022-10-16_modal_gestion_templates.png)
 
 Dans le gestionnaire, on distingue différentes sections :
   1. La liste des templates existants.
@@ -566,7 +565,7 @@ Lorsqu'un template est selectionné dans la liste, la partie de droite est rense
 
 La seule information à renseigner est le nom que vous souhaitez donner à votre template.
 
-![Créer un template](../images/2022-10-16_create_template.png)
+![Créer un template](images/2022-10-16_create_template.png)
 
 Une fois la fenêtre validée, un nouveau template est disponible sur le système et peut être utilisé.
 
@@ -574,7 +573,7 @@ Une fois la fenêtre validée, un nouveau template est disponible sur le systèm
 
 Quand on souhaite appliquer un template, 3 informations sont attendues :
 
-![Appliquer un template](../images/2022-10-16_apply_template.png)
+![Appliquer un template](images/2022-10-16_apply_template.png)
 
   - Le template à appliquer ;
   - Le topic de base qui sera utilisé pour spécialiser les commandes et la souscription de l'équipement ;
@@ -650,7 +649,7 @@ Pour cela, il fallait désactiver puis réactiver l'équipement Broker concerné
 
 ## Le démon se déconnecte avec le message "Erreur sur jMQTT::daemon() : The connection was lost."
 
-Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Identifiant de connexion* dans l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
+Vérifier qu’il n’y a pas 2 clients ayant le même identifiant, voir *Client-Id* dans l'[onglet Broker](#onglet-Broker) de l'équipement Broker concerné.
 
 # Problèmes inconnus
 
@@ -686,11 +685,11 @@ Nous souhaitons que lorsqu'une application publie le message `saison/set hiver` 
 
 Pour ce faire, il faut créer une deuxième commande action côté virtuel (commande *set\_saison* ci-dessous) qui mette à jour l’information saison du virtuel à partir de celle de l’équipement jMQTT. Le virtuel est donc configuré comme ceci :
 
-![saison virtuel](../images/2022-10-16_saison_virtuel.png)
+![saison virtuel](images/2022-10-16_saison_virtuel.png)
 
 Côté équipement jMQTT, nous avons la configuration simple suivante :
 
-![saison jmqtt](../images/2022-10-16_saison_jmqtt.png)
+![saison jmqtt](images/2022-10-16_saison_jmqtt.png)
 
 Ensuite, il y a deux solutions pour lier les commandes :
 
@@ -698,11 +697,11 @@ Ensuite, il y a deux solutions pour lier les commandes :
 
   - Configurer une *action sur valeur* en cliquant sur la roue crantée à droite de la commande info `[Saison jMQTT][set]`, onglet *Configuration*:
 
-![saison action sur valeur](../images/2022-10-16_saison_action_sur_valeur.png)
+![saison action sur valeur](images/2022-10-16_saison_action_sur_valeur.png)
 
 Attention, quel que soit la solution, il est important de configurer la *Gestion de la répétition des valeurs* de la commande info `[Saison jMQTT][set]` à *Toujours répéter* pour que toutes les valeurs remontent au virtuel. Pour cela, toujours en cliquant sur la roue crantée à droite de cette dernière, onglet *Configuration*:
 
-![saison répétition](../images/2022-10-16_saison_repetition.png)
+![saison répétition](images/2022-10-16_saison_repetition.png)
 
 ## Conservation de l'état précédant une coupure de courant (exemple commande action avec "Retain")
 
@@ -722,14 +721,3 @@ En effet, publier le message ON et OFF en Retain permet d'assurer qu'à la recon
 // TODO: Add jMQTT internal and external schematics
 //  labels: documentation, quality
 -->
-# Registres des évolutions
-
-[Evolutions de la branche beta](changelog_beta)
-
-[Evolutions de la branche stable](changelog)
-
-[Evolutions archivées](changelog_archived)
-
-[Documentation de la branche beta](index_beta)
-
-[Documentation de la branche stable](index)

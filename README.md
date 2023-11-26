@@ -13,7 +13,9 @@
 __________________
 
 <p align="center">
-<a href="https://community.jeedom.com/tag/plugin-jmqtt">Community</a>   -   <a href="https://BadWolf42.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://BadWolf42.github.io/jMQTT/fr_FR/changelog">Change Log</a>
+<a href="https://community.jeedom.com/tag/plugin-jmqtt">Community</a> -
+<a href="https://docs.bad.wf/fr_FR/jmqtt/dev">Documentation</a> -
+<a href="https://docs.bad.wf/fr_FR/jmqtt/dev/changelog">Change Log</a>
 </p>
 
 __________________
@@ -55,5 +57,7 @@ This plugin relies on the work done by:
 __________________
 
 <p align="center">
-<a href="https://community.jeedom.com/tag/plugin-jmqtt">Community</a>   -   <a href="https://BadWolf42.github.io/jMQTT/fr_FR/">Documentation</a>   -   <a href="https://BadWolf42.github.io/jMQTT/fr_FR/changelog">Change Log</a>
+<a href="https://community.jeedom.com/tag/plugin-jmqtt">Community</a> -
+<a href="https://docs.bad.wf/fr_FR/jmqtt/dev">Documentation</a> -
+<a href="https://docs.bad.wf/fr_FR/jmqtt/dev/changelog">Change Log</a>
 </p>
