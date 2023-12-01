@@ -61,7 +61,7 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s/rpc",
-                    "request": "{method:'Switch.Set', params:{id:0,on:true}}",
+                    "request": "{\"method\":\"Switch.Set\",\"params\":{\"id\":0,\"on\":true}}",
                     "retain": "0",
                     "autoPub": "0"
                 },
@@ -81,7 +81,7 @@
                 "isHistorized": "0",
                 "configuration": {
                     "topic": "%s/rpc",
-                    "request": "{method:'Switch.Set', params:{id:0,on:false}}",
+                    "request": "{\"method\":\"Switch.Set\",\"params\":{\"id\":0,\"on\":false}}",
                     "retain": "0",
                     "autoPub": "0"
                 },
@@ -387,6 +387,26 @@
                 "display": {
                     "invertBinary": "0"
                 },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Reboot",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/rpc",
+                    "request": "{\"id\":0,\"src\":\"WS_in\",\"method\":\"Shelly.Reboot\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat",
                 "isVisible": "1",
                 "alert": []
             },
