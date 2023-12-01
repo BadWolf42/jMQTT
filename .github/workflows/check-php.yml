@@ -13,8 +13,8 @@ jobs:
       # fail-fast: false
       max-parallel: 2
       matrix:
-        jeedom-branch: ['V4-stable', 'alpha']
         php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
+        jeedom-branch: ['V4-stable', 'alpha']
 
     steps:
       - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
