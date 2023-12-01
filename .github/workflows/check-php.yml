@@ -10,7 +10,8 @@ jobs:
   check-php:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      # fail-fast: false
+      max-parallel: 2
       matrix:
         jeedom-branch: ['V4-stable', 'alpha']
         php-version: ['7.3', '7.4', '8.0', '8.1', '8.2']
@@ -31,19 +32,7 @@ jobs:
         with:
           path: plugins/jMQTT
 
-      # - name: Get composer cache directory
-      #   id: composer-cache
-      #   run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-      # - name: Cache dependencies
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ${{ steps.composer-cache.outputs.dir }}
-      #     key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-      #     restore-keys: ${{ runner.os }}-composer-
-
       - name: Install dependencies
-        # run: composer install --prefer-dist
         run: composer update --working-dir=${GITHUB_WORKSPACE}/plugins/jMQTT/resources/JsonPath-PHP
 
       - name: Setup PHP ${{ matrix.php-version }}
@@ -53,15 +42,6 @@ jobs:
           tools: phpstan
         env:
           debug: true
-
-      # - name: PHP Syntax Checker (Lint)
-      #   uses: StephaneBour/actions-php-lint@${{ matrix.php-version }}
-      #   with:
-      #     dir: '.'
-
-      # - name: LS all workspace
-      #   run: |
-      #     ls -lahR ${GITHUB_WORKSPACE}
 
       - name: Run PHPStan
         run: phpstan analyse -c plugins/jMQTT/.github/phpstan/config.neon
