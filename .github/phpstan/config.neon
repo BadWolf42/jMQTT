@@ -2,21 +2,21 @@ parameters:
     level: 5
 
     scanDirectories:
-        - ../../core
+        - ../../../../core
 
     paths:
-        - core
-        - desktop
-        - plugin_info
-        - resources
+        - ../../core
+        - ../../desktop
+        - ../../plugin_info
+        - ../../resources
 
     excludePaths:
         analyse:
-            - resources/mosquitto_topic_matches_sub.php
-            - resources/JsonPath-PHP
+            - ../../resources/mosquitto_topic_matches_sub.php
+            - ../../resources/JsonPath-PHP
 
     ignoreErrors:
         - '#method event::add\(\) invoked with 2 parameters,#'
 
     stubFiles:
-        - .github/phpstan/jeedom.stub
+        - jeedom.stub

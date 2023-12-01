@@ -15,6 +15,7 @@
     "hasOwnDeamon": true,
     "issue": "https://github.com/BadWolf42/jMQTT/issues",
     "changelog": "https://docs.bad.wf/#language#/jmqtt/changelog",
+    "changelog_beta": "https://docs.bad.wf/#language#/jmqtt/changelog",
     "documentation": "https://docs.bad.wf/#language#/jmqtt/stable/index",
     "documentation_beta": "https://docs.bad.wf/#language#/jmqtt/beta/index",
     "link": {
