@@ -64,4 +64,4 @@ jobs:
       #     ls -lahR ${GITHUB_WORKSPACE}
 
       - name: Run PHPStan
-        run: phpstan analyse -c plugins/jMQTT/phpstan.neon
+        run: phpstan analyse -c plugins/jMQTT/.github/phpstan/config.neon

@@ -14,10 +14,9 @@ parameters:
         analyse:
             - resources/mosquitto_topic_matches_sub.php
             - resources/JsonPath-PHP
-            - resources/phpstan-stubs
 
     ignoreErrors:
         - '#method event::add\(\) invoked with 2 parameters,#'
 
     stubFiles:
-        - resources/phpstan-stubs/jeedom.stub
+        - .github/phpstan/jeedom.stub
