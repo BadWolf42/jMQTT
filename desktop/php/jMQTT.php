@@ -212,7 +212,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                                 </div>
                                 <div class="col-lg-2">
                                     <label class="col-lg-8 control-label" style="text-align:right;">{{Retained}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                                        title="{{Recevoir aussi les payload qui sont déjà retenus par le Broker.}}"></i></sup></label>
+                                        title="{{Recevoir aussi les payloads qui sont déjà retenus par le Broker.}}"></i></sup></label>
                                     <input type="checkbox" class="form-control" id="mqttRetTopic" checked="false">
                                 </div>
                                 <div class="col-lg-2">
