@@ -559,7 +559,7 @@
 		"Options": "Options",
 		"Paramètres": "Paramètres",
 		"Pause": "Pause",
-		"Recevoir aussi les payload qui sont déjà retenus par le Broker.": "Recevoir aussi les payload qui sont déjà retenus (retained) par le Broker.",
+		"Recevoir aussi les payloads qui sont déjà retenus par le Broker.": "Recevoir aussi les payloads qui sont déjà retenus (retained) par le Broker.",
 		"Rechercher": "Rechercher",
 		"Reprendre": "Reprendre",
 		"Retained": "Retained",
