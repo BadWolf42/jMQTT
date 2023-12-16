@@ -60,7 +60,7 @@ function displayEqLogicCard($eqL) {
     else
         echo '<img class="lazy" src="plugins/jMQTT/core/img/node_.svg" />';
     echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
-    echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
+    echo '<span class="hiddenAsCard input-group displayTableRight hidden" style="font-size:12px"></span></div>'."\n";
 }
 
 /**
