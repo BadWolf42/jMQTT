@@ -25,8 +25,8 @@ $configToRemove = array('mqttAddress',
 
 // getNonBrokers() returns a 2-dimensional array containing eqpt eqLogics
 $eqNonBrokers = jMQTT::getNonBrokers();
-foreach ($eqNonBrokers as $eqLogics) {
-    foreach ($eqLogics as $eqLogic) {
+foreach ($eqNonBrokers as $brk) {
+    foreach ($brk as $eqLogic) {
 
         foreach ($configToRemove as $configKey) {
             // remove leaked configuration

@@ -120,7 +120,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             </div>
         </div>
         <?php
-        // Check there are orphans first
+        // Check if there are orphans first
         $has_orphans = false;
         foreach ($eqNonBrokers as $id => $nonBrokers) {
             if (!isset($eqBrokers[$id])) {
@@ -141,13 +141,12 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             echo '</div>';
 
         foreach ($eqBrokers as $eqB) {
-            echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
+            $nbEq = count($eqNonBrokers[$eqB->getId()]);
+            echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . $nbEq . ')</legend>';
             echo '<div class="eqLogicThumbnailContainer">';
             displayEqLogicCard($eqB);
-            if (isset($eqNonBrokers[$eqB->getId()])) {
-                foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
-                    displayEqLogicCard($eqL);
-                }
+            foreach ($eqNonBrokers[$eqB->getId()] as $eqL) {
+                displayEqLogicCard($eqL);
             }
             echo '</div>';
         }
