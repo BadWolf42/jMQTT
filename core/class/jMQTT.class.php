@@ -802,6 +802,8 @@ class jMQTT extends eqLogic {
         foreach ($eqls as $eql) {
             if ($eql->getType() != jMQTTConst::TYP_BRK) {
                 $returns[$eql->getBrkId()][] = $eql;
+            } elseif (!isset($returns[$eql->getBrkId()])) {
+                $returns[$eql->getBrkId()] = array();
             }
         }
 
