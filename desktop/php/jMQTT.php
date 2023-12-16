@@ -60,7 +60,7 @@ function displayEqLogicCard($eqL) {
     else
         echo '<img class="lazy" src="plugins/jMQTT/core/img/node_.svg" />';
     echo '<span class="name">' . $eqL->getHumanName(true, true) . '</span>';
-    echo '<span class="hiddenAsCard input-group displayTableRight hidden"></span></div>'."\n";
+    echo '<span class="hiddenAsCard input-group displayTableRight hidden" style="font-size:12px"></span></div>'."\n";
 }
 
 /**
@@ -141,7 +141,8 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             echo '</div>';
 
         foreach ($eqBrokers as $eqB) {
-            echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . @count($eqNonBrokers[$eqB->getId()]) . ')</legend>';
+            $nbEq = (is_null($eqNonBrokers[$eqB->getId()])) ? 0 : count($eqNonBrokers[$eqB->getId()]);
+            echo '<legend><i class="fas fa-table"></i> {{Mes Equipements sur le broker}} <b>' . $eqB->getName() . '</b> (' . $nbEq . ')</legend>';
             echo '<div class="eqLogicThumbnailContainer">';
             displayEqLogicCard($eqB);
             if (isset($eqNonBrokers[$eqB->getId()])) {

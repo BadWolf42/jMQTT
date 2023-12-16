@@ -145,29 +145,25 @@ jmqtt.asCardHelper = function(_eq, _item, iClass) {
     return '<i class="' + icon + iClass + '"></i>';
 }
 
-// TODO: Align icons in "hiddenAsCard" view
-//  cf: https://community.jeedom.com/t/pb-decalage-icones-equipement/113879
-//  labels: bug, css, javascript
-
 // Build an icon in hiddenAsCard card span
 jmqtt.asTableHelper = function(_eq, _item, aClass) {
     aClass = aClass != '' ? ' ' + aClass : '';
 
     // Handle bad eqLogics (orphans)
     if (_eq.configuration == undefined || _eq.configuration.type == undefined || jmqtt_globals.icons[_eq.configuration.type][_item] == undefined)
-        return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="w18"></i></a>';
+        return '';
 
     var v    = jmqtt_globals.icons[_eq.configuration.type][_item].selector(_eq);
     var i    = jmqtt_globals.icons[_eq.configuration.type][_item][v];
     // var colored = _eq.configuration.type == 'broker' && (jmqtt_globals.daemonState && _eq.isEnable == '1') && _item == 'status';
     var colored = _item == 'status' || (_eq.isEnable == '1' && (_eq.configuration.type != 'broker' || jmqtt_globals.daemonState));
-    var icon = colored ? (i.icon + ' ' + i.color) : i.icon;
+    //var icon = colored ? (i.icon + ' ' + i.color) : i.icon;
     var msg  = colored ? (i.msg) : '';
 
     if (msg == '')
-        return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="' + icon + ' w18"></i></a>';
+        return '';
     else
-        return '<a class="btn btn-xs cursor w30' + aClass + '"><i class="' + icon + ' w18 tooltips" title="' + msg + '"></i></a>';
+        return '<span class="' + (i.color == '' ? 'label label-info' : ('label label-' + i.color)) + '">' + msg + '</span>&nbsp;';
 }
 
 // Update display card on plugin main page
@@ -205,12 +201,12 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
     _card.find('span.hiddenAsTable').empty().html(asCard);
 
     var asTable = '';
-    asTable += jmqtt.asTableHelper(_eq, 'status', 'roundedLeft');
+    asTable += jmqtt.asTableHelper(_eq, 'status', '');
     asTable += jmqtt.asTableHelper(_eq, 'visible', '');
     asTable += jmqtt.asTableHelper(_eq, 'learning', '');
     asTable += jmqtt.asTableHelper(_eq, 'battery', '');
     asTable += jmqtt.asTableHelper(_eq, 'availability', '');
-    asTable += '<a class="btn btn-xs cursor w30 roundedRight"><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></a>';
+    asTable += '<span><i class="fas fa-cogs eqLogicAction tooltips" title="{{Configuration avancée}}" data-action="confEq"></i></span>';
     _card.find('span.hiddenAsCard').empty().html(asTable);
 
     // Add Click handler on confEq

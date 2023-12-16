@@ -70,29 +70,29 @@ jmqtt_globals.icons = {
     eqpt: {
         status: {
             selector: function(_eq) { return _eq.isEnable == '1'; },
-            true:     { icon: 'fas fa-check', color: 'success', msg: '{{Equipement activé}}' },
-            false:    { icon: 'fas fa-times', color: 'danger',  msg: '{{Equipement désactivé}}' }
+            true:     { icon: 'fas fa-check', color: 'success', msg: '{{Activé}}' },
+            false:    { icon: 'fas fa-times', color: 'danger',  msg: '{{Désactivé}}' }
         },
         visible: {
             selector: function(_eq) { return _eq.isVisible == '1'; },
-            true:     { icon: 'fas fa-eye',       color: 'success', msg: '{{Equipement visible}}' },
-            false:    { icon: 'fas fa-eye-slash', color: 'warning', msg: '{{Equipement masqué}}' }
+            true:     { icon: 'fas fa-eye',       color: 'success', msg: '{{Visible}}' },
+            false:    { icon: 'fas fa-eye-slash', color: 'warning', msg: '{{Masqué}}' }
         },
         learning: {
             selector: function(_eq) { return _eq.configuration.auto_add_cmd == '1'; },
-            true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'warning', msg: '{{Ajout automatique de commandes activée}}' },
-            false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Ajout automatique de commandes désactivée}}' }
+            true:     { icon: 'fas fa-sign-in-alt fa-rotate-90', color: 'danger', msg: '{{Ajout auto. de commandes activé}}' },
+            false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Ajout auto. de commandes désactivé}}' }
         },
         battery: {
             selector: function(_eq) { return (_eq.configuration.battery_cmd == '') ? 'none' : (_eq.status.batterydanger ? 'nok' : (_eq.status.batterywarning ? 'pok' : 'ok')); },
-            none:     { icon: 'fas fa-plug',            color: '',        msg: "{{Pas d'état de la batterie}}" },
+            none:     { icon: 'fas fa-plug',            color: '',        msg: '' },
             ok:       { icon: 'fas fa-battery-full',    color: 'success', msg: '{{Batterie OK}}' },
             pok:      { icon: 'fas fa-battery-quarter', color: 'warning', msg: '{{Batterie en alarme}}' },
             nok:      { icon: 'fas fa-battery-empty',   color: 'danger',  msg: '{{Batterie en fin de vie}}' }
         },
         availability: {
             selector: function(_eq) { return (_eq.configuration.availability_cmd == '') ? 'none' : (_eq.status.warning ? 'nok' : 'ok'); },
-            none:     { icon: 'far fa-bell', color: '',        msg: "{{Pas d'état de disponibilité}}" },
+            none:     { icon: 'far fa-bell', color: '',        msg: '' },
             ok:       { icon: 'fas fa-bell', color: 'success', msg: '{{Equipement disponible}}' },
             nok:      { icon: 'fas fa-bell', color: 'danger',  msg: '{{Equipement indisponible}}' }
         }
