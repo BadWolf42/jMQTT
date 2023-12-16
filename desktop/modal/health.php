@@ -46,7 +46,7 @@ foreach ($eqBrokers as $eqB) { // List all Brokers on top
     echo '<tr><td><a href="' . $eqB->getLinkToConfiguration() . '" class="eName" data-key="' . $eqB->getHumanName() . '" style="text-decoration: none;">' . $eqB->getHumanName(true) . '</a></td>';
     echo '<td style="text-align:center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px;height:20px;">' . $eqB->getId() . '</span></td>';
     echo '<td>' . $eqB->getMqttClientInfo()['message'] . '</td>';
-    echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . (isset($eqNonBrokers[$eqB->getId()]) ? count($eqNonBrokers[$eqB->getId()]) : '0') . '</span></td>';
+    echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . count($eqNonBrokers[$eqB->getId()]) . '</span></td>';
     echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getStatus('lastCommunication') . ' </span></td>';
     echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqB->getConfiguration('createtime') . ' </span></td>';
     echo '<td style="text-align:center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
@@ -58,7 +58,7 @@ foreach ($eqBrokers as $eqB) { // List all Brokers on top
 <?php
 foreach ($eqBrokers as $eqB) { // For each Broker
     echo '<legend><i class="fas fa-table"></i> {{Équipement(s) connectés à}} <b>' . $eqB->getName() . '</b></legend>';
-    if (isset($eqNonBrokers[$eqB->getId()])) {
+    if (count($eqNonBrokers[$eqB->getId()]) > 0) {
         echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_'.$eqB->getId().'">';
 ?>
     <thead>

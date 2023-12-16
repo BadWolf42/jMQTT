@@ -61,8 +61,8 @@ try {
     if (init('action') == 'configGetEquipments') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         $res = array();
-        foreach (jMQTT::getNonBrokers() as $eqpts)
-            foreach ($eqpts as $eqLogic) {
+        foreach (jMQTT::getNonBrokers() as $brk)
+            foreach ($brk as $eqLogic) {
                 $data = array();
                 foreach (utils::o2a($eqLogic)['configuration'] as $k => $val)
                     $data[] = array('key' => $k, 'value' => $val);
@@ -166,8 +166,8 @@ try {
     if (init('action') == 'cacheGetEquipments') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         $res = array();
-        foreach(jMQTT::getNonBrokers() as $eqpts) {
-            foreach ($eqpts as $eqpt) {
+        foreach(jMQTT::getNonBrokers() as $brk) {
+            foreach ($brk as $eqpt) {
                 $cacheEqptKeys = array();
                 $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;
                 // $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED;
