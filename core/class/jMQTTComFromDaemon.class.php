@@ -182,8 +182,6 @@ class jMQTTComFromDaemon {
             cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
         } catch (Exception $e) {
             // Cache file/key missed, nothing to do here
-        } catch (Error $e) {
-            // Cache file/key missed, nothing to do here
         }
         // Send state to WebUI
         jMQTTDaemon::sendMqttDaemonStateEvent(false);
