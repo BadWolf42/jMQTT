@@ -224,7 +224,7 @@ class jMQTTDaemon {
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         // Start Python daemon
-        $path = realpath(__DIR__ . '/../../resources/jmqttd');
+        $path = realpath(__DIR__ . '/../../resources/jmqttd_api');
         $callbackURL = jMQTTDaemon::get_callback_url();
         // To fix issue: https://community.jeedom.com/t/87727/39
         if ((file_exists('/.dockerenv')
@@ -236,7 +236,7 @@ class jMQTTDaemon {
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
         $shellCmd .= ' APIKEY=' . jeedom::getApiKey(jMQTT::class);
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/jmqttd.py.pid ';
-        $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
+        $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/main.py';
         $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d') . ' 2>&1 &';
         if (log::getLogLevel(jMQTT::class) > 100)
             jMQTT::logger('info', __('Lancement du démon jMQTT', __FILE__));
@@ -301,7 +301,7 @@ class jMQTTDaemon {
         // If something bad happened, clean anyway
         jMQTT::logger('debug', __("Nettoyage du Démon", __FILE__));
         // TODO: Kill all jMQTT daemon(s) when daemon is stopped
-        //  Use `realpath(__DIR__ . '/../../resources/jmqttd').'/venv/bin/python3'`
+        //  Use `realpath(__DIR__ . '/../../resources/jmqttd_api').'/venv/bin/python3'`
         //  labels: enhancement, php
         jMQTTComFromDaemon::daemonDown($cuid);
     }

@@ -297,13 +297,13 @@ try {
     if (init('action') == 'venvDelete') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         jMQTTDaemon::stop();
-        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/venv');
+        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd_api/venv');
         ajax::success();
     }
     if (init('action') == 'dynContentDelete') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         jMQTTDaemon::stop();
-        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/__pycache__');
+        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd_api/__pycache__');
         exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder('jMQTT').'/rt*.json');
         ajax::success();
     }

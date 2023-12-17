@@ -15,8 +15,8 @@ try sudo apt-get update
 step 10 "Purge dynamic contents"
 silent rm -rf $BASEDIR/JsonPath-PHP/composer.lock
 silent rm -rf $BASEDIR/JsonPath-PHP/vendor
-silent rm -rf $BASEDIR/jmqttd/venv
-silent rm -rf $BASEDIR/jmqttd/__pycache__
+silent rm -rf $BASEDIR/jmqttd_api/venv
+silent rm -rf $BASEDIR/jmqttd_api/__pycache__
 
 step 20 "Install Composer"
 try wget 'https://getcomposer.org/installer' -O $BASEDIR/composer-setup.php
@@ -33,9 +33,9 @@ step 50 "Install python3 venv and pip debian packages"
 try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-venv python3-pip
 
 step 60 "Create a python3 Virtual Environment"
-try sudo -u www-data python3 -m venv $BASEDIR/jmqttd/venv
+try sudo -u www-data python3 -m venv $BASEDIR/jmqttd_api/venv
 
 step 70 "Install required python3 libraries in venv"
-try sudo -u www-data $BASEDIR/jmqttd/venv/bin/pip3 install --no-cache-dir -r $BASEDIR/python-requirements/requirements.txt
+try sudo -u www-data $BASEDIR/jmqttd_api/venv/bin/pip3 install --no-cache-dir -r $BASEDIR/jmqttd_api/requirements.txt
 
 post

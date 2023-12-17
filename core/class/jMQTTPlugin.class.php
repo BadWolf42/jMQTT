@@ -45,14 +45,14 @@ class jMQTTPlugin {
             $return['state'] = jMQTTConst::CLIENT_NOK;
         }
 
-        if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
+        if (!file_exists(__DIR__ . '/../../resources/jmqttd_api/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd_api/venv/bin/python3')) {
             jMQTT::logger(
                 'debug',
                 __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__)
             );
             $return['state'] = jMQTTConst::CLIENT_NOK;
         } else {
-            exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
+            exec(__DIR__ . '/../../resources/jmqttd_api/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/jmqttd_api/requirements.txt 2>&1 >/dev/null', $output);
             if (count($output) > 0) {
                 jMQTT::logger(
                     'error',
