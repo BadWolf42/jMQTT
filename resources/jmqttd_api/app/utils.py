@@ -1,7 +1,6 @@
 import logging
 import logging.config
 from socket import socket, AF_INET6, IPPROTO_IPV6, IPV6_V6ONLY, SO_REUSEADDR, SOL_SOCKET
-from yaml import safe_load
 
 from fastapi import HTTPException, Security, status
 from fastapi.security import HTTPBearer
@@ -41,10 +40,8 @@ def setupLoggers():
             self._log(logging.NOTICE, message, args, **kws)
     logging.Logger.notice = notice
 
-    # Load logging configuration # TODO put the config (dict) here?
-    with open(logconfig, 'rt') as f:
-        config = safe_load(f.read())
-    logging.config.dictConfig(config)
+    # Load logging configuration
+    logging.config.dictConfig(logconfig)
 
 # -----------------------------------------------------------------------------
 def setLevel(level, _logger = ''):
