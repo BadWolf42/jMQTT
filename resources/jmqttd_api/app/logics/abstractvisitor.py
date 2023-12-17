@@ -5,13 +5,13 @@ from abc import ABC, abstractmethod
 # -----------------------------------------------------------------------------
 class LogicVisitor(ABC):
     @abstractmethod
-    def visit_brklogic(self, l) -> None:
+    def visit_brklogic(self, e) -> None:
         pass
     @abstractmethod
-    def visit_eqlogic(self, l) -> None:
+    def visit_eqlogic(self, e) -> None:
         pass
     @abstractmethod
-    def visit_cmdlogic(self, l) -> None:
+    def visit_cmdlogic(self, e) -> None:
         pass
 
 # -----------------------------------------------------------------------------

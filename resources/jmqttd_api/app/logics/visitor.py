@@ -16,14 +16,14 @@ class RegisteringLogicVisitor(LogicVisitor):
     def __init__(self):
         self.logger = getLogger('jmqtt.visitor.reg')
 
-    def visit_brklogic(self, l: BrkLogic) -> None:
+    def visit_brklogic(self, e: BrkLogic) -> None:
         self.logger.debug('id=%s, registering', e.model.id)
         # Add BrkLogic in brkLogic table
         BrkLogic.all[e.model.id] = e
         e.start()
         self.logger.debug('id=%s, registered', e.model.id)
 
-    def visit_eqlogic(self, l: EqLogic) -> None:
+    def visit_eqlogic(self, e: EqLogic) -> None:
         self.logger.debug('id=%s, registering', e.model.id)
         brkId = e.model.configuration.eqLogic
         # If BrkLogic is not found
@@ -45,7 +45,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         e.weakBrk().eqpts[e.model.id] = e
         self.logger.debug('id=%s, registered', e.model.id)
 
-    def visit_cmdlogic(self, l: CmdLogic) -> None:
+    def visit_cmdlogic(self, e: CmdLogic) -> None:
         self.logger.debug('id=%s, registering', e.model.id)
         # Get parent eqLogic
         if e.model.eqLogic_id in EqLogic.all:
@@ -124,7 +124,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         self.logger = getLogger('jmqtt.visitor.unreg')
         self.result = []
 
-    def visit_brklogic(self, l: BrkLogic) -> None:
+    def visit_brklogic(self, e: BrkLogic) -> None:
         self.logger.debug('id=%s, unregistering', e.model.id)
         # Let's stop first MQTT Client (and Real Time)
         e.stop()
@@ -144,7 +144,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         del BrkLogic.all[e.model.id]
         self.logger.debug('id=%s, unregistered', e.model.id)
 
-    def visit_eqlogic(self, l: EqLogic) -> None:
+    def visit_eqlogic(self, e: EqLogic) -> None:
         self.logger.debug('id=%s, unregistering', e.model.id)
         # Append this EqLogic to the result
         self.result.append(e)
@@ -165,7 +165,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         del EqLogic.all[e.model.id]
         self.logger.debug('id=%s, unregistered', e.model.id)
 
-    def visit_cmdlogic(self, l: CmdLogic) -> None:
+    def visit_cmdlogic(self, e: CmdLogic) -> None:
         self.logger.debug('id=%s, unregistering', e.model.id)
         # Append this CmdLogic to the result
         self.result.append(e)
@@ -212,7 +212,7 @@ class PrintVisitor(LogicVisitor):
         self.logger = getLogger('jmqtt.visitor.print')
         self.level = 0
 
-    def visit_brklogic(self, l: BrkLogic) -> None:
+    def visit_brklogic(self, e: BrkLogic) -> None:
         self.logger.debug(
             '%s┌─►  BrkLogic id=%s, name=%s, enabled=%s',
             '│ '*self.level,
@@ -238,7 +238,7 @@ class PrintVisitor(LogicVisitor):
         self.logger.debug('%s└%s', '│ '*self.level, '─'*(50-2*self.level-1))
 
 
-    def visit_eqlogic(self, l: EqLogic) -> None:
+    def visit_eqlogic(self, e: EqLogic) -> None:
         self.logger.debug(
             '%s┌─►  EqLogic  id=%s, name=%s, enabled=%s',
             '│ '*self.level,
@@ -254,7 +254,7 @@ class PrintVisitor(LogicVisitor):
         self.level -= 1
         self.logger.debug('%s└%s', '│ '*self.level, '─'*(50-2*self.level-1))
 
-    def visit_cmdlogic(self, l: CmdLogic) -> None:
+    def visit_cmdlogic(self, e: CmdLogic) -> None:
         if e.model.type == 'info':
             self.logger.debug(
                 '%s - CmdLogic id=%s, name=%s, type=info, topic=%s, jsonPath=%s',
