@@ -33,8 +33,10 @@ from settings import settings, rootloglevel
 from utils import dumpLoggers, setLevel
 
 
-# -----------------------------------------------------------------------------
 logger = getLogger('jmqtt.rest')
+
+
+# -----------------------------------------------------------------------------
 daemon = APIRouter(
     prefix="/daemon",
     tags=["Daemon"],

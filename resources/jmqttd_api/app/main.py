@@ -25,6 +25,9 @@ from settings import pid, settings
 from utils import dumpLoggers, getSocket, getToken, setLevel, setupLoggers
 
 
+logger = getLogger('jmqtt')
+
+
 # -----------------------------------------------------------------------------
 def setup():
     # Add trace, notice and none loglevels
@@ -143,8 +146,6 @@ async def lifespan(app: FastAPI):
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    logger = getLogger('jmqtt')
-
     setup()
 
     # Create application

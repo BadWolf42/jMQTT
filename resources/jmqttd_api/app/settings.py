@@ -17,7 +17,11 @@ logconfig: dict = {
         'withFunction': {'format': '[%(asctime)s]%(levelname)-10s %(name)-20s %(funcName)20s() : %(message)s'},
         'normal': {'format': '[%(asctime)s]%(levelname)-10s %(name)-15s : %(message)s'}
     },
-    'filters': {'logFilter': {'()': 'utils.LogFilter'}},
+    'filters': {
+        'logFilter': {
+            '()': 'utils.LogFilter'
+        }
+    },
     'handlers': {
         'consoleHandler': {
             'class': 'logging.StreamHandler',
