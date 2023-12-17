@@ -72,7 +72,7 @@ timeout_cancel: float = 3.0 # seconds to wait for a task to be canceled
 
 class JmqttSettings(BaseSettings):
     apikey: str = '!secret'
-    callback: str = 'http://localhost/plugins/jMQTT/core/php/stub.php'
+    callback: str = 'http://localhost/plugins/jMQTT/core/php/callback.php'
     logfile: str = '../../../log/jMQTTd_api'
     loglevel: str = 'warning'
     localonly: bool = True
