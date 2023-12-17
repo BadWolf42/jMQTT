@@ -148,18 +148,6 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
 //
 
-// TODO: Check if unused click on `listEquipementAction` can be removed?
-//  labels: quality, javascript
-/*
-$("#table_cmd").delegate(".listEquipementAction", 'click', function() {
-    var el = $(this);
-    jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function(result) {
-        var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
-        calcul.value(result.human);
-    });
-});
-*/
-
 $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     var el = $(this);
     jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
