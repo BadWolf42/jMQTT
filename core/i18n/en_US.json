@@ -206,6 +206,7 @@
 		"Veuillez vérifier la configuration et les dépendances": "Please check configuration and dependencies"
 	},
 	"plugins/jMQTT/core/class/jMQTTPlugin.class.php": {
+		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
 		"(en docker)": "(in Docker)",
 		"(en local)": "(local)",
 		"Aucun équipement Broker local n'a été trouvé, création en cours...": "No local Broker equipment found, creation in progress...",

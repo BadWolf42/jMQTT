@@ -147,8 +147,28 @@ class jMQTTPlugin {
                     $res['message'] .= 'MQTT Manager</a> (mqtt2).';
                 }
             } catch (Throwable $e) {
-                // TODO: Add debug message if `mosquittoCheck()` throws
-                //  labels: quality, php
+                if (log::getLogLevel('jMQTT') > 100) {
+                    self::logger('error', sprintf(
+                        __("%1\$s() a levé l'Exception: %2\$s", __FILE__),
+                        __METHOD__,
+                        $e->getMessage()
+                    ));
+                } else {
+                    self::logger(
+                        'error',
+                        str_replace(
+                            "\n",
+                            ' <br/> ',
+                            sprintf(
+                                __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+                                ",<br/>@Stack: %3\$s.",
+                                __METHOD__,
+                                $e->getMessage(),
+                                $e->getTraceAsString()
+                            )
+                        )
+                    );
+                }
             }
             return $res;
         }
