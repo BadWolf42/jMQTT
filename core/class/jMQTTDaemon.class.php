@@ -173,7 +173,15 @@ class jMQTTDaemon {
      * Simple tests if a daemon is connected (do not validate it)
      */
     public static function state() {
-        return (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0")) !== "0:0";
+        try {
+            return cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0") !== "0:0";
+        } catch (Exception $e) {
+            // Cache file/key missed
+            return false;
+        } catch (Error $e) {
+            // Cache file/key missed
+            return false;
+        }
     }
 
     /**

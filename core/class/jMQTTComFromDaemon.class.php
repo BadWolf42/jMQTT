@@ -178,7 +178,13 @@ class jMQTTComFromDaemon {
         if (file_exists($pid_file = jeedom::getTmpFolder(jMQTT::class) . '/jmqttd.py.pid'))
             shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
         // Delete in cache the daemon uid (as it is disconnected)
-        @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
+        try {
+            cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
+        } catch (Exception $e) {
+            // Cache file/key missed, nothing to do here
+        } catch (Error $e) {
+            // Cache file/key missed, nothing to do here
+        }
         // Send state to WebUI
         jMQTTDaemon::sendMqttDaemonStateEvent(false);
         // Remove listeners
