@@ -1,0 +1,9 @@
+#wheel
+#requests
+#setuptools
+paho-mqtt
+#jsonpath-ng
+#Jinja2
+fastapi
+uvicorn[standard]
+pydantic-settings
