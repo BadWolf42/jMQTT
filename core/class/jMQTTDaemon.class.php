@@ -178,9 +178,6 @@ class jMQTTDaemon {
         } catch (Exception $e) {
             // Cache file/key missed
             return false;
-        } catch (Error $e) {
-            // Cache file/key missed
-            return false;
         }
     }
 

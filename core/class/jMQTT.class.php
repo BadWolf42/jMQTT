@@ -1368,8 +1368,6 @@ class jMQTT extends eqLogic {
                 cache::delete('jMQTT::' . $this->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED);
             } catch (Exception $e) {
                 // Cache file/key missed, nothing to do here
-            } catch (Error $e) {
-                // Cache file/key missed, nothing to do here
             }
             // Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
             foreach (self::byBrkId($this->_preRemoveInformations['id']) as $eqpt) {
