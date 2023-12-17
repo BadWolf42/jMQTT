@@ -35,7 +35,10 @@ try sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3-venv python3-
 step 60 "Create a python3 Virtual Environment"
 try sudo -u www-data python3 -m venv $BASEDIR/jmqttd_api/venv
 
-step 70 "Install required python3 libraries in venv"
+step 70 "Upgrade pip3 in Virtual Environment"
+try sudo -u www-data $BASEDIR/jmqttd_api/venv/bin/pip3 install --no-cache-dir --upgrade pip
+
+step 80 "Install required python3 libraries in venv"
 try sudo -u www-data $BASEDIR/jmqttd_api/venv/bin/pip3 install --no-cache-dir -r $BASEDIR/jmqttd_api/requirements.txt
 
 post
