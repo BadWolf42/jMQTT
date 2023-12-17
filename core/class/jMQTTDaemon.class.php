@@ -236,7 +236,7 @@ class jMQTTDaemon {
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
         $shellCmd .= ' APIKEY=' . jeedom::getApiKey(jMQTT::class);
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/jmqttd.py.pid ';
-        $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/main.py';
+        $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py';
         $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d') . ' 2>&1 &';
         if (log::getLogLevel(jMQTT::class) > 100)
             jMQTT::logger('info', __('Lancement du démon jMQTT', __FILE__));
