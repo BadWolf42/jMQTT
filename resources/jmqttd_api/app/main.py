@@ -6,7 +6,7 @@ from fastapi.security import HTTPBearer
 from json import load
 from logging import getLogger, DEBUG
 from os import kill, remove
-from os.path import isfile
+from os.path import isfile, dirname, realpath
 from platform import python_version, version, system
 from sys import exit
 from typing import List
@@ -40,7 +40,7 @@ def setup():
         'Python v%s on %s %s',
         python_version(), system(), version()
     )
-    with open('../../plugin_info/info.json') as json_file:
+    with open(dirname(realpath(__file__)) + '/../../../plugin_info/info.json') as json_file:
         logger.info(
             'Thank you for using jMQTT v%s',
             load(json_file)['pluginVersion']
