@@ -148,13 +148,13 @@ class jMQTTPlugin {
                 }
             } catch (Throwable $e) {
                 if (log::getLogLevel('jMQTT') > 100) {
-                    self::logger('error', sprintf(
+                    jMQTT::logger('error', sprintf(
                         __("%1\$s() a levé l'Exception: %2\$s", __FILE__),
                         __METHOD__,
                         $e->getMessage()
                     ));
                 } else {
-                    self::logger(
+                    jMQTT::logger(
                         'error',
                         str_replace(
                             "\n",
