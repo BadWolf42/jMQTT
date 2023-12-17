@@ -79,7 +79,7 @@ function jMQTT_update($_direct=true) {
     // Apply migration files in the right order
     foreach($migrations as $ver => $name) {
         try {
-            $file = __DIR__ . '/../resources/update/' . $name . '.php';
+            $file = __DIR__ . '/../resources/update/' . $name;
             if (file_exists($file)) {
                 log::add(
                     'jMQTT',
