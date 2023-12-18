@@ -120,12 +120,12 @@ function jMQTT_update($_direct=true) {
 
     config::save('version', $pluginVer, 'jMQTT');
 
-    jMQTTDaemon::pluginStats($_direct ? 'update' : 'install');
+    jMQTTPlugin::stats($_direct ? 'update' : 'install');
 }
 
 function jMQTT_remove() {
     jMQTT::logger('debug', 'install.php: jMQTT_remove()');
-    jMQTTDaemon::pluginStats('uninstall');
+    jMQTTPlugin::stats('uninstall');
     @cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
 }
 

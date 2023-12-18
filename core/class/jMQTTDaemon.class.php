@@ -16,106 +16,6 @@ class jMQTTDaemon {
         return $proto.'127.0.0.1:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
     }
 
-    public static function pluginStats($_reason = 'cron') {
-        // Check last reporting (or if forced)
-        $nextStats = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS)->getValue(0);
-        if ($_reason === 'cron' && (time() < $nextStats)) { // No reason to force send stats
-            // jMQTT::logger('debug', sprintf(
-            //  __("Aucune raison d'envoyer des données statistiques avant le %s", __FILE__),
-            //  date('Y-m-d H:i:s', $nextStats)
-            // ));
-            return;
-        }
-        // Ensure between 5 and 10 minutes before next attempt
-        cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300));
-        // Avoid getting all stats exactly at the same time
-        sleep(rand(0, 10));
-
-        $url = 'https://stats.bad.wf/v1/query';
-        $data = array();
-        $data['plugin'] = 'jmqtt';
-        $data['hardwareKey'] = jeedom::getHardwareKey();
-        // Ensure system unicity using a rotating UUID
-        $data['lastUUID'] = config::byKey(jMQTTConst::CONF_KEY_JMQTT_UUID, jMQTT::class, $data['hardwareKey']);
-        $data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes(107), true));
-        $data['hardwareName'] = jeedom::getHardwareName();
-        if ($data['hardwareName'] == 'diy')
-            $data['hardwareName'] = trim(shell_exec('systemd-detect-virt'));
-        if ($data['hardwareName'] == 'none')
-            $data['hardwareName'] = 'diy';
-        $data['distrib'] = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
-        $data['phpVersion'] = phpversion();
-        $data['pythonVersion'] = trim(shell_exec("python3 -V | cut -d ' ' -f 2"));
-        $data['jeedom'] = jeedom::version();
-        $data['lang'] = config::byKey('language', 'core', 'fr_FR');
-        $data['lang'] = ($data['lang'] != '') ? $data['lang'] : 'fr_FR';
-        $jplugin = update::byLogicalId(jMQTT::class);
-        $data['source'] = $jplugin->getSource();
-        $data['branch'] = $jplugin->getConfiguration('version', 'unknown');
-        $data['configVersion'] = config::byKey('version', jMQTT::class, -1);
-        $data['reason'] = $_reason;
-        if ($_reason == 'uninstall' || $_reason == 'noStats')
-            $data['next'] = 0;
-        else
-            $data['next'] = time() + 432000 + rand(0, 172800); // Next stats in 5-7 days
-        $encoded = json_encode($data);
-        $options = array(
-            'http' => array(
-                'method'  => 'POST',
-                'header'  => "Content-Type: application/json\r\n",
-                'content' => $encoded
-            )
-        );
-        jMQTT::logger(
-            'debug',
-            sprintf(
-                __('Transmission des données statistiques suivantes : %s', __FILE__),
-                $encoded
-            )
-        );
-        $context = stream_context_create($options);
-        $result = @file_get_contents($url, false, $context);
-
-        if ($result === false) {
-            // Could not send or invalid data
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    __('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__),
-                    'false'
-                )
-            );
-            return;
-        }
-        $response = @json_decode($result, true);
-        if (!isset($response['status']) || $response['status'] != 'success') {
-            // Could not send or invalid data
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    __('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__),
-                    $result
-                )
-            );
-        } else {
-            config::save(jMQTTConst::CONF_KEY_JMQTT_UUID, $data['UUID'], jMQTT::class);
-            if ($data['next'] == 0) {
-                jMQTT::logger('info', __('Données statistiques supprimées', __FILE__));
-                cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
-            } else {
-                jMQTT::logger(
-                    'debug',
-                    sprintf(
-                        __('Données statistiques envoyées (Réponse : %s)', __FILE__),
-                        $result
-                    )
-                );
-                // Set last sent datetime
-                cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, $data['next']);
-            }
-        }
-    }
-
     public static function valid_uid($ruid) {
         $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
         if ($cuid === "0:0")
@@ -350,14 +250,6 @@ class jMQTTDaemon {
         }
     }
 
-    /**
-     * cron callback
-     * check MQTT Clients are up and connected
-     */
-    public static function cron() {
-        jMQTTDaemon::checkAllMqttClients();
-        jMQTTDaemon::pluginStats();
-    }
 
     /**
      * Send a jMQTT::EventDaemonState event to the UI containing current daemon state
