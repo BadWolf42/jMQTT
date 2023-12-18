@@ -12,10 +12,10 @@ logconfig: dict = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'withCallTrace': {'format': '[%(asctime)s]%(levelname)-10s %(threadName)-11s %(name)-15s %(funcName)20s() L%(lineno)-4d %(message)s   call_trace=%(pathname)s L%(lineno)-4d'},
-        'withThread': {'format': '[%(asctime)s]%(levelname)-10s %(threadName)-11s %(name)-15s %(funcName)20s() : %(message)s'},
-        'withFunction': {'format': '[%(asctime)s]%(levelname)-10s %(name)-20s %(funcName)20s() : %(message)s'},
-        'normal': {'format': '[%(asctime)s]%(levelname)-10s %(name)-15s : %(message)s'}
+        'withCallTrace': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s %(name)-15s %(funcName)20s() L%(lineno)-4d %(message)s   call_trace=%(pathname)s L%(lineno)-4d'},
+        'withThread': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s %(name)-15s %(funcName)20s() : %(message)s'},
+        'withFunction': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-20s %(funcName)20s() : %(message)s'},
+        'normal': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-15s : %(message)s'}
     },
     'filters': {
         'logFilter': {
@@ -23,21 +23,21 @@ logconfig: dict = {
         }
     },
     'handlers': {
-        'consoleHandler': {
-            'class': 'logging.StreamHandler',
+        'fileHandler': {
+            'class': 'logging.FileHandler',
             # 'level': 'DEBUG',
             # 'formatter': 'withCallTrace',
             # 'formatter': 'withThread',
             'formatter': 'withFunction',
             # 'formatter': 'normal',
-            'stream': 'ext://sys.stdout',
+            'filename': '/tmp/jMQTTd.log',
             'filters': [ 'logFilter' ]
         }
     },
     'root': {
         'level': 'DEBUG',
         # 'level': 'WARNING', # TODO disable DEBUG
-        'handlers': [ 'consoleHandler' ]
+        'handlers': [ 'fileHandler' ]
     # },
     # 'loggers': {
     #     'asyncio': {
@@ -73,7 +73,7 @@ timeout_cancel: float = 3.0 # seconds to wait for a task to be canceled
 class JmqttSettings(BaseSettings):
     apikey: str = '!secret'
     callback: str = 'http://localhost/plugins/jMQTT/core/php/callback.php'
-    logfile: str = '../../../log/jMQTTd_api'
+    logfile: str = '/tmp/jMQTTd.log'
     loglevel: str = 'warning'
     localonly: bool = True
     pidfile: str = '/tmp/jmqttd.tmp.pid'

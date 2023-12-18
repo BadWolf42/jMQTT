@@ -20,7 +20,7 @@ class LogFilter(logging.Filter):
         return True
 
 # -----------------------------------------------------------------------------
-def setupLoggers():
+def setupLoggers(logfile: str):
     # Add 3 new levels to logging module
     logging.TRACE = logging.DEBUG - 5
     logging.NOTICE = logging.INFO + 5
@@ -41,6 +41,7 @@ def setupLoggers():
     logging.Logger.notice = notice
 
     # Load logging configuration
+    logconfig['handlers']['fileHandler']['filename'] = logfile
     logging.config.dictConfig(logconfig)
 
 # -----------------------------------------------------------------------------

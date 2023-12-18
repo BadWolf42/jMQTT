@@ -30,8 +30,8 @@ logger = getLogger('jmqtt')
 
 # -----------------------------------------------------------------------------
 def setup():
-    # Add trace, notice and none loglevels
-    setupLoggers()
+    # Add trace, notice, none loglevels and logfilename
+    setupLoggers(settings.logfile)
     # Get loglevel from ENV
     setLevel(settings.loglevel, 'jmqtt')
 
@@ -91,6 +91,7 @@ async def startup():
         logger.debug('│ Listening   : on all interfaces (doc enabled)')
     # if dynamic port, socketport is only available after setup
     logger.info('│ Socket port : %s', settings.socketport)
+    logger.info('│ Log file    : %s', settings.logfile)
     logger.info('│ Log level   : %s', settings.loglevel)
     logger.info('│ Callback url: %s', settings.callback)
     logger.debug('│ PID file    : %s', settings.pidfile)

@@ -233,11 +233,12 @@ class jMQTTDaemon {
             $callbackURL = config::byKey('urlOverrideValue', jMQTT::class, $callbackURL);
         }
         $shellCmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(jMQTT::class));
+        $shellCmd .= ' LOGFILE=' . log::getPathToLog(jMQTT::class.'d');
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
         $shellCmd .= ' APIKEY=' . jeedom::getApiKey(jMQTT::class);
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/jmqttd.py.pid ';
         $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py';
-        $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d') . ' 2>&1 &';
+        $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d_trash') . ' 2>&1 &';
         if (log::getLogLevel(jMQTT::class) > 100)
             jMQTT::logger('info', __('Lancement du démon jMQTT', __FILE__));
         else
