@@ -151,7 +151,7 @@ class jMQTTComFromDaemon {
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         jMQTTDaemon::sendMqttDaemonStateEvent(true);
         // Launch MQTT Clients
-        jMQTTDaemon::checkAllMqttClients();
+        jMQTTPlugin::checkAllMqttClients();
         // Active listeners
         jMQTT::listenersAddAll();
         // Prepare and send initial data
