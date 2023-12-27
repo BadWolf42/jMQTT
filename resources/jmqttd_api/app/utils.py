@@ -1,6 +1,6 @@
 import logging
 import logging.config
-from socket import socket, AF_INET6, IPPROTO_IPV6, IPV6_V6ONLY, SO_REUSEADDR, SOL_SOCKET
+from socket import socket, AF_INET, SO_REUSEADDR, SOL_SOCKET
 
 from fastapi import HTTPException, Security, status
 from fastapi.security import HTTPBearer
@@ -72,13 +72,12 @@ def dumpLoggers():
 
 
 # -----------------------------------------------------------------------------
-# Build a reusable socket listening in IPv4 and IPv6
+# Build a reusable socket listening in IPv4
 def getSocket():
-    sock = socket(AF_INET6)
-    sock.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, False)
+    sock = socket(AF_INET)
     sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, True)
 
-    host = '::1' if settings.localonly else '::'
+    host = '127.0.0.1' if settings.localonly else '0.0.0.0'
     try:
         sock.bind((host, settings.socketport))
     except OSError:

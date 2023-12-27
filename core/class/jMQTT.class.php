@@ -1404,7 +1404,7 @@ class jMQTT extends eqLogic {
             $socket = socket_create(AF_INET, SOCK_STREAM, 0);
             $state = false;
             if ($socket !== false) {
-                $state = socket_connect($socket , $mosqHost, $mosqPort);
+                $state = socket_connect($socket, $mosqHost, $mosqPort);
                 socket_close($socket);
             }
 
