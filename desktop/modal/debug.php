@@ -802,14 +802,13 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">Plugins installées</label>
-                                <div class="col-sm-9">
-<?php
-$all_plugins = "";
-foreach (plugin::listPlugin(false, false, true, true) as $p) // use $_nameOnly=true
-    $all_plugins .= ' '.$p;
-?>
-                                    <span><?php echo $all_plugins; ?></span>
+                                <label class="col-sm-3 control-label">PID</label>
+                                <div class="col-sm-3">
+                                    <span><?php echo jMQTTDaemon::getPid(); ?></span>
+                                </div>
+                                <label class="col-sm-3 control-label">Port</label>
+                                <div class="col-sm-3">
+                                    <span><?php echo jMQTTDaemon::getPort(); ?></span>
                                 </div>
                             </div>
                         </fieldset>

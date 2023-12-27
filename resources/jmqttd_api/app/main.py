@@ -1,4 +1,4 @@
-from asyncio import sleep
+from asyncio import create_task
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, Security, status
 from fastapi.responses import JSONResponse
@@ -42,7 +42,7 @@ def setup():
     )
     with open(dirname(realpath(__file__)) + '/../../../plugin_info/info.json') as json_file:
         logger.info(
-            'Thank you for using jMQTT v%s',
+            '❤ Thank you for using jMQTT v%s ❤',
             load(json_file)['pluginVersion']
         )
 
@@ -68,7 +68,7 @@ def setup():
             logger.exception("Unexpected error when checking PID")
             exit(3)
         else: # PID is alive -> we die
-            logger.error('This daemon already runs! Exit 0')
+            logger.error('A jMQTT daemon already running! Exit 0')
             exit(0)
     try:
         # Try to write PID to file
@@ -108,10 +108,7 @@ async def startup():
         )
         raise Exception('Could not communicate with Jeedom')
 
-    await sleep(1)
     logger.info('jMQTTd is started')
-    await Heartbeat.start()
-    await Callbacks.daemonUp()
 
 # -----------------------------------------------------------------------------
 async def shutdown():
@@ -142,6 +139,8 @@ async def shutdown():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await startup()
+    await Heartbeat.start()
+    create_task(Callbacks.daemonUp())
     yield
     await shutdown()
 
@@ -168,7 +167,10 @@ if __name__ == "__main__":
     @app.exception_handler(Exception)
     def validation_exception_handler(request, err):
         base_error_message = f"Failed to execute: {request.method}: {request.url}"
-        return JSONResponse(status_code=400, content={"message": f"{base_error_message}. Detail: {err}"})
+        return JSONResponse(
+            status_code=400,
+            content={"message": f"{base_error_message}. Details: {err}"}
+        )
 
 
     # Attach routers
@@ -178,10 +180,12 @@ if __name__ == "__main__":
     app.include_router(command)
 
     # Prepare uvicon Server
-    uv = Server(Config(
-        app,
-        log_config=None
-    ))
+    uv = Server(
+        Config(
+            app,
+            log_config=None
+        )
+    )
 
     # Get socket listening in IPv4 and IPv6
     sock = getSocket()

@@ -18,9 +18,7 @@
 require_once dirname(__FILE__) . "/../../../../core/php/core.inc.php";
 
 
-
 class JmqttdCallbacks {
-    private static $ruid = '0:0';
     private static $allowedActions = array(
         'brokerDown',
         'brokerUp',
@@ -32,58 +30,44 @@ class JmqttdCallbacks {
         'values'
     );
 
-    public static function checkApiKey() {
-        if (!jeedom::apiAccess(init('k'), 'jMQTT')) {
-        // if (init('k') !== '!secret') {                     // TODO Remove me
+    public static function checkAuthorization() {
+        $headers = getallheaders();
+        if (
+            !array_key_exists('Authorization', $headers)
+            || 'Bearer' !== trim(substr($headers['Authorization'], 0, 6))
+        ) {
             http_response_code(401);
             echo 'Unauthorized access.';
-            if (init('k') != '')
-                log::add(
-                    'jMQTT',
-                    'error',
-                    sprintf(
-                        __("Accès non autorisé depuis %1\$s, avec la clé API commençant par %2\$.8s...", __FILE__),
-                        $_SERVER['REMOTE_ADDR'],
-                        init('key')
-                    )
-                );
-            else
-                log::add(
-                    'jMQTT',
-                    'error',
-                    sprintf(
-                        __("Accès non autorisé depuis %s (pas de clé API)", __FILE__),
-                        $_SERVER['REMOTE_ADDR']
-                    )
-                );
+            log::add(
+                'jMQTT',
+                'error',
+                sprintf(
+                    __("Accès non autorisé depuis %1\$s (pas de clé API)", __FILE__),
+                    $_SERVER['REMOTE_ADDR']
+                )
+            );
             die();
         }
-    }
 
-    public static function checkMethod() {
-        // NOT POST, we just close the connection
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-            http_response_code(405);
-            echo 'Method Not Allowed.';
-            die();
+        if (!jeedom::apiAccess(trim(substr($headers['Authorization'], 6)), 'jMQTT')) {
+            http_response_code(401);
+            echo 'Unauthorized access.';
+            log::add(
+                'jMQTT',
+                'error',
+                sprintf(
+                    __("Accès non autorisé depuis %1\$s, avec la clé API commençant par %2\$.8s...", __FILE__),
+                    $_SERVER['REMOTE_ADDR'],
+                    trim(substr($headers['Authorization'], 6))
+                )
+            );
         }
-    }
-
-    public static function getRuid() {
-        // Collect Remote PID and PORT at connection
-        return init('u');
     }
 
     public static function getPayload() {
         try {
             $received = file_get_contents("php://input"); // Get page full content
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    __("Payload='%1\$s'", __FILE__),
-                    $received
-                )
-            );
+            jMQTT::logger('debug', sprintf("Payload='%1\$s'", $received));
         } catch (Throwable $e) {
             http_response_code(400);
             echo 'Bad Request.';
@@ -128,32 +112,17 @@ class JmqttdCallbacks {
 
     public static function processRequest() {
         // Check if API key and method are correct (or die)
-        self::checkApiKey();
-        self::checkMethod();
+        self::checkAuthorization();
+
+        // NOT POST, we just close the connection
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            http_response_code(405);
+            echo 'Method Not Allowed.';
+            die();
+        }
 
         // Get action and remote uid (or die)
         $action = self::getAction();
-        self::$ruid = self::getRuid();
-
-        // Evaluate the capability of this daemon to send data to Jeedom
-        $legit = true;
-        // $legit = jMQTTDaemon::valid_uid($ruid);
-
-        // Check if daemon is in a correct state or deny the message
-        if (!$legit && ($action != 'daemonUp') && $action != 'test') {
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    is_null($legit) ?
-                    __("Requête '%1\$s' refusée (avant daemonUp)", __FILE__) :
-                    __("Requête '%1\$s' refusée (démon invalide)", __FILE__),
-                    $action
-                )
-            );
-            http_response_code(406);
-            echo 'Not Acceptable Demand.';
-            die();
-        }
 
         // Execute static method corresponding to the action
         $action = 'on'.ucfirst($action);
@@ -172,14 +141,9 @@ class JmqttdCallbacks {
             echo 'Bad Request parameter.';
             die();
         }
-        jMQTT::logger(
-            'debug',
-            sprintf(
-                __("brokerDown: %1\$s", __FILE__),
-                $message['id']
-            )
-        );
-        // jMQTTComFromDaemon::brkDown($message['id']);
+        $id = $message['id'];
+        jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $id));
+        // jMQTTComFromDaemon::brkDown($id);
     }
 
     public static function onBrokerUp() {
@@ -189,38 +153,30 @@ class JmqttdCallbacks {
             echo 'Bad Request parameter.';
             die();
         }
-        jMQTT::logger(
-            'debug',
-            sprintf(
-                __("brokerUp: %1\$s", __FILE__),
-                $message['id']
-            )
-        );
+        $id = $message['id'];
+        jMQTT::logger('debug', sprintf("%1\$s: %1\$s", __METHOD__, $id));
         // jMQTTComFromDaemon::brkUp($message['id']);
     }
 
     public static function onDaemonDown() {
-        jMQTT::logger(
-            'debug',
-            sprintf(__("daemonDown", __FILE__))
-        );
-        // jMQTTComFromDaemon::daemonDown($ruid);
+        jMQTT::logger('debug', __METHOD__);
+        jMQTTComFromDaemon::daemonDown();
     }
 
     public static function onDaemonHB() {
-        jMQTT::logger(
-            'debug',
-            sprintf(__("daemonHB", __FILE__))
-        );
-        // jMQTTComFromDaemon::hb($ruid);
+        jMQTT::logger('debug', __METHOD__);
+        jMQTTComFromDaemon::hb();
     }
 
     public static function onDaemonUp() {
-        jMQTT::logger(
-            'debug',
-            sprintf(__("daemonUp", __FILE__))
-        );
-        // jMQTTComFromDaemon::daemonUp($ruid);
+        $message = self::getPayload();
+        if (!isset($message['port'])) {
+            http_response_code(400);
+            echo 'Bad Request parameter.';
+            die();
+        }
+        jMQTT::logger('debug', __METHOD__);
+        jMQTTComFromDaemon::daemonUp($message['port']);
     }
 
     public static function onMessage() {
@@ -237,7 +193,7 @@ class JmqttdCallbacks {
         jMQTT::logger(
             'debug',
             sprintf(
-                __("message: id='%1\$s', topic='%2\$s', payload='%3\$s', qos=%4\$s, retain=%5\$s", __FILE__),
+                "onMessage: id='%1\$s', topic='%2\$s', payload='%3\$s', qos=%4\$s, retain=%5\$s",
                 $message['id'],
                 $message['topic'],
                 $message['payload'],
@@ -249,10 +205,7 @@ class JmqttdCallbacks {
     }
 
     public static function onTest() {
-        jMQTT::logger(
-            'debug',
-            sprintf(__("test", __FILE__))
-        );
+        jMQTT::logger('debug', __METHOD__);
     }
 
     public static function onValues() {
@@ -265,7 +218,7 @@ class JmqttdCallbacks {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __("values: id='%1\$s', value='%2\$s'", __FILE__),
+                    "onValues: id='%1\$s', value='%2\$s'",
                     $val['id'],
                     $val['value']
                 )
@@ -281,13 +234,7 @@ class JmqttdCallbacks {
             echo 'Bad Request.';
             die();
         }
-        jMQTT::logger(
-            'debug',
-            sprintf(
-                __("realTimeStarted: %1\$s", __FILE__),
-                $message['id']
-            )
-        );
+        jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $message['id']));
         // jMQTTComFromDaemon::realTimeStarted($message['id']);
     }
 
@@ -300,7 +247,8 @@ class JmqttdCallbacks {
         jMQTT::logger(
             'debug',
             sprintf(
-                __("realTimeStopped: %1\$s / %2\$s", __FILE__),
+                "%1\$s: %2\$s / %3\$s",
+                __METHOD__,
                 $message['id'],
                 $message['nbMsgs']
             )

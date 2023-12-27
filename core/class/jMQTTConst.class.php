@@ -52,8 +52,6 @@ class jMQTTConst {
 
     const CACHE_DAEMON_LAST_SND         = 'daemonLastSnd';
     const CACHE_DAEMON_LAST_RCV         = 'daemonLastRcv';
-    const CACHE_DAEMON_PORT             = 'daemonPort';
-    const CACHE_DAEMON_UID              = 'daemonUid';
     const CACHE_IGNORE_TOPIC_MISMATCH   = 'ignore_topic_mismatch';
     const CACHE_JMQTT_NEXT_STATS        = 'nextStats';
     const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';

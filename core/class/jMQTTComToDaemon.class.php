@@ -12,8 +12,8 @@ class jMQTTComToDaemon {
         $params['apikey'] = jeedom::getApiKey(jMQTT::class);
         $payload = json_encode($params);
         $socket = socket_create(AF_INET, SOCK_STREAM, 0);
-        $port = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_PORT)->getValue(0);
-        if (!socket_connect($socket, '127.0.0.1', $port)) {
+        $port = jMQTTDaemon::getPort();
+        if ($port == 0 || !socket_connect($socket, '127.0.0.1', $port)) {
             jMQTT::logger(
                 'debug',
                 sprintf(

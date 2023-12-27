@@ -129,8 +129,6 @@ try {
         $cacheKeys[] = 'dependancyjMQTT';
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_RCV;
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_SND;
-        $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_PORT;
-        $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_UID;
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_JMQTT_NEXT_STATS;
         // $cacheKeys[] = 'jMQTT::dummy';
         // $cacheKeys[] = ;
@@ -267,12 +265,15 @@ try {
         // To fix issue: https://community.jeedom.com/t/87727/39
         if ((file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0')) && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1')
             $callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
-        $url = $callbackURL . '?apikey=' . jeedom::getApiKey('jMQTT') . '&uid=' . (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0"));
 
         // Send to Jeedom
-        $curl = curl_init($url);
+        $curl = curl_init($callbackURL);
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jeedom::getApiKey('jMQTT'),
+            'PID: ' . jMQTTDaemon::getPid()
+        ));
         curl_setopt($curl, CURLOPT_POSTFIELDS, init('data'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($curl);
@@ -310,14 +311,13 @@ try {
     if (init('action') == 'threadDump') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         // Get cached PID and PORT
-        $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
-        list($cpid, $cport) = array_map('intval', explode(":", $cuid));
+        $pid = jMQTTDaemon::getPid();
         // If PID is unavailable or not running
-        if ($cpid == 0 || !@posix_getsid($cpid))
+        if ($pid == 0 || !@posix_getsid($pid))
             throw new Exception(__("Le PID du démon n'a pas été trouvé, est-il lancé ?", __FILE__));
 
         // Else send signal SIGUSR1
-        posix_kill($cpid, 10);
+        posix_kill($pid, 10);
         ajax::success();
     }
     if (init('action') == 'statsSend') {

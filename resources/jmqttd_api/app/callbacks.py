@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import sleep
 
 from aiohttp import ClientSession
 from enum import Enum
@@ -33,14 +33,14 @@ class Callbacks:
     @classmethod
     async def __send(cls, action: str, data: dict = {}):
         async with ClientSession() as session:
-            params = {
-                'a': action,
-                'u': pid + ':' + str(settings.socketport),
-                'k': settings.apikey
-            }
             async with session.post(
                 settings.callback,
-                params=params,
+                #TODO Remove PID from headers
+                headers={
+                    'Authorization': 'Bearer ' + settings.apikey,
+                    'PID': pid
+                },
+                params={'a': action},
                 json=data
             ) as resp:
                 logger.debug(
@@ -62,7 +62,11 @@ class Callbacks:
 
     @classmethod
     async def daemonUp(cls):
-        return Heartbeat.onSend(await cls.__send('daemonUp'))
+        # Let port some time to open in main task
+        sleep(1)
+        return Heartbeat.onSend(
+            await cls.__send('daemonUp', {'port': settings.socketport})
+        )
 
     @classmethod
     async def daemonHB(cls):

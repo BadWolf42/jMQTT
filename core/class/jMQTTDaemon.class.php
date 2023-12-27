@@ -16,38 +16,38 @@ class jMQTTDaemon {
         return $proto.'127.0.0.1:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
     }
 
-    public static function valid_uid($ruid) {
-        $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
-        if ($cuid === "0:0")
-             return null;
-        return $cuid === $ruid;
-    }
-
     /**
      * Validates that a daemon is connected, running and is communicating
      */
     public static function check() {
-        // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
+        // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
         // jMQTT::logger('debug', 'check() ['.getmypid().']: ref='.$_SERVER['HTTP_REFERER']);
 
-        // Get Cached PID and PORT
-        $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
-        if ($cuid == "0:0") { // If UID nul -> not running
-            // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
-            // jMQTT::logger('debug', __('Démon avec un UID nul.', __FILE__));
+        // Get expected daemon port (fast fail)
+        $port = jMQTTDaemon::getPort();
+        if ($port == 0) {
+            // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
+            // jMQTT::logger('debug', 'Daemon PORT is absent or inactive.');
             return false;
         }
-        list($cpid, $cport) = array_map('intval', explode(":", $cuid));
-        if (!@posix_getsid($cpid)) { // PID IS NOT alive
-            jMQTT::logger('debug', __('Démon avec un PID mort.', __FILE__));
-            jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
+        // Get expected daemon PID (second fast fail)
+        $pid = jMQTTDaemon::getPid();
+        // If PID nul OR no PORT -> not running
+        if ($pid == 0) {
+            // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
+            // jMQTT::logger('debug', 'Daemon PID is absent or inactive.');
+            // Delete port to trigger first fast fail next time
+            jMQTTDaemon::delPort();
             return false;
         }
-        if ((@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_PORT)->getValue(0)) != $cport) {
+        // If PID and PORT does not match
+        if (!jMQTTDaemon::checkPidPortMatch($pid, $port)) {
             jMQTT::logger('debug', __('Démon avec un mauvais port.', __FILE__));
+            // Cleanup and put jmqtt in a good state
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
+        // Checking last message FROM daemon
         if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 300) {
             jMQTT::logger(
                 'debug',
@@ -56,6 +56,7 @@ class jMQTTDaemon {
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
+        // Checking last message TO daemon
         if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0)) > 45) {
             jMQTT::logger(
                 'debug',
@@ -64,7 +65,7 @@ class jMQTTDaemon {
             jMQTTComToDaemon::hb();
             return true;
         }
-        // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
+        // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
         // jMQTT::logger('debug', __('Démon OK', __FILE__));
         return true;
     }
@@ -73,12 +74,7 @@ class jMQTTDaemon {
      * Simple tests if a daemon is connected (do not validate it)
      */
     public static function state() {
-        try {
-            return cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0") !== "0:0";
-        } catch (Exception $e) {
-            // Cache file/key missed
-            return false;
-        }
+        return jMQTTDaemon::getPort() !== 0 && jMQTTDaemon::getPid() !== 0;
     }
 
     /**
@@ -110,16 +106,20 @@ class jMQTTDaemon {
             // Installation of the dependancies occures in another process, this one must end.
             return;
         }
-        jMQTT::logger('info', __('Démarrage du démon jMQTT', __FILE__));
         // Always stop first.
         jMQTTDaemon::stop();
-        // Ensure cron is enabled (removing the key or setting it to 1 is equivalent to enabled)
+        jMQTT::logger('info', __('Démarrage du démon jMQTT', __FILE__));
+        // Ensure 1 minute cron is enabled (removing the key or setting it to 1 is equivalent)
         config::remove('functionality::cron::enable', jMQTT::class);
         // Check if daemon is launchable
         $dep_info = jMQTTPlugin::dependancy_info();
         if ($dep_info['state'] != jMQTTConst::CLIENT_OK) {
-            throw new Exception(__('Veuillez vérifier la configuration et les dépendances', __FILE__));
+            throw new Exception(
+                __('Veuillez vérifier la configuration et les dépendances', __FILE__)
+            );
         }
+        // Get a free port on the system
+        // $port = jMQTTDaemon::newPort();
         // Reset timers to let Daemon start
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -135,10 +135,12 @@ class jMQTTDaemon {
         $shellCmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(jMQTT::class));
         $shellCmd .= ' LOGFILE=' . log::getPathToLog(jMQTT::class.'d');
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
+        // $shellCmd .= ' SOCKETPORT=' . $port;
+        $shellCmd .= ' SOCKETPORT=18883'; // TODO Remove me <----------------------------------------------------------------------------------------
         $shellCmd .= ' APIKEY=' . jeedom::getApiKey(jMQTT::class);
-        $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/jmqttd.py.pid ';
+        $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid ';
         $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py';
-        $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d_trash') . ' 2>&1 &';
+        $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d_trash') . ' 2>&1 &'; // TODO Remove LOG FILE <---------------------------------------
         if (log::getLogLevel(jMQTT::class) > 100)
             jMQTT::logger('info', __('Lancement du démon jMQTT', __FILE__));
         else
@@ -174,17 +176,90 @@ class jMQTTDaemon {
         message::removeAll(jMQTT::class, 'unableStartDaemon');
     }
 
+    public static function getPid() {
+        $pid_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid';
+        if (!file_exists($pid_file))
+            return 0;
+        $pid = intval(trim(file_get_contents($pid_file)));
+        // If PID is available and running
+        if ($pid != 0 && @posix_getsid($pid))
+            return $pid;
+        return 0;
+    }
+
+    public static function delPid() {
+        $pid_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid';
+        if (file_exists($pid_file))
+            unlink($pid_file);
+    }
+
+    public static function newPort() {
+        $sock = socket_create_listen(0);
+        socket_getsockname($sock, $addr, $port);
+        socket_close($sock);
+        return $port;
+    }
+
+    public static function getPort() {
+        $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
+        if (!file_exists($port_file))
+            return 0;
+        return intval(trim(file_get_contents($port_file)));
+    }
+
+    public static function setPort($port) {
+        if ($port <= 1024) {
+            $f = 'Unusable new port provided (%d), this should not happend!';
+            $msg = sprintf($f, $port);
+            jMQTT::logger('error', $msg);
+            throw new Exception($msg);
+        }
+        $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
+        file_put_contents($port_file, strval($port), LOCK_EX);
+    }
+
+    public static function delPort() {
+        $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
+        if (file_exists($port_file))
+            unlink($port_file);
+    }
+
+    public static function checkPidPortMatch($pid, $port) {
+        // Searching a match for PID and PORT in listening ports
+        $retval = 255;
+        exec("ss -Htulpn 'sport = :" . $port . "' 2> /dev/null | grep -E '[:]" . $port . "[ \t]+.*[:][*][ \t]+.+pid=" . $pid . "' 2> /dev/null", $output, $retval);
+        if ($retval == 0)
+            return true;
+
+        // Be sure to clear $output first
+        unset($output);
+        // Execution issue with ss (too new)? Try (the good old) netstat!
+        exec("netstat -lntp 2> /dev/null | grep -E '[:]" . $port . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $pid . "/python3' 2> /dev/null", $output, $retval);
+        if ($retval == 0)
+            return true;
+
+        // Be sure to clear $output first
+        unset($output);
+        // Execution issue with netstat? Try (the slow) lsof!
+        exec("lsof -nP -iTCP -sTCP:LISTEN | grep -E 'python3[ \t]+" . $pid . "[ \t]+.+[:]" . $port ."[ \t]+' 2> /dev/null", $output, $retval);
+        if ($retval != 0 || count($output) == 0) {
+            // Execution issue, could not get a match
+            return false;
+        }
+        return true;
+    }
+
+
     /**
      * callback to stop daemon
      */
     public static function stop() {
-        // Get cached PID and PORT
-        $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
-        list($cpid, $cport) = array_map('intval', explode(":", $cuid));
+        // Get running PID attached to PID file
+        $pid = jMQTTDaemon::getPid();
         // If PID is available and running
-        if ($cpid != 0 && @posix_getsid($cpid)) {
+        if ($pid != 0) {
             jMQTT::logger('info', __("Arrêt du démon jMQTT", __FILE__));
-            posix_kill($cpid, 15);  // Signal SIGTERM
+            posix_kill($pid, 15);  // Signal SIGTERM
             jMQTT::logger('debug', __("Envoi du signal SIGTERM au Démon", __FILE__));
             for ($i = 1; $i <= 40; $i++) { //wait max 10 seconds for python daemon stop
                 if (!jMQTTDaemon::state()) {
@@ -195,16 +270,22 @@ class jMQTTDaemon {
             }
             if (jMQTTDaemon::state()) {
                 // Signal SIGKILL
-                posix_kill($cpid, 9);
+                posix_kill($pid, 9);
                 jMQTT::logger('debug', __("Envoi du signal SIGKILL au Démon", __FILE__));
             }
         }
         // If something bad happened, clean anyway
         jMQTT::logger('debug', __("Nettoyage du Démon", __FILE__));
-        // TODO: Kill all jMQTT daemon(s) when daemon is stopped
-        //  Use `realpath(__DIR__ . '/../../resources/jmqttd_api').'/venv/bin/python3'`
-        //  labels: enhancement, php
-        jMQTTComFromDaemon::daemonDown($cuid);
+        // Kill existing jMQTT process by name
+        system::kill('[/]jmqttd');
+        // Kill existing jMQTT process by socket port
+        $port = jMQTTDaemon::getPort();
+        if ($port != 0) {
+            // Kill daemon using stored port
+            system::fuserk($port);
+        }
+        // Execute daemonDown callback anyway
+        jMQTTComFromDaemon::daemonDown();
     }
 
     /**

@@ -264,6 +264,10 @@ class jMQTTPlugin {
         }
         $res .= ' ; Equipments: ' . $nbEq;
         $res .= ' ; cmds: ' . count(cmd::searchConfiguration('', jMQTT::class));
+        $res .= '<br/>Other plugins: ';
+        foreach (plugin::listPlugin(false, false, true, true) as $p) { // use $_nameOnly=true
+            $res .= ' '.$p;
+        }
         return $res;
     }
 

@@ -5,148 +5,30 @@ class jMQTTComFromDaemon {
     /**
      * Daemon callback to tell Jeedom it is started
      */
-    public static function daemonUp($ruid) {
+    public static function daemonUp($port) {
         // If we get here, apikey is OK!
-        // jMQTT::logger('debug', 'daemonUp(ruid='.$ruid.')');
-        // Verify that daemon RemoteUID contains ':' or die
-        if (is_null($ruid) || !is_string($ruid) || (strpos($ruid, ':') === false)) {
-            jMQTT::logger(
-                'warning',
-                sprintf(
-                    __("Démon [%s] : Inconsistant", __FILE__),
-                    $ruid
-                )
-            );
-            return '';
-        }
+        // jMQTT::logger('debug', 'daemonUp()');
         // Verify that this daemon is not already initialized
-        $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
-        if ($cuid == $ruid) {
-            jMQTT::logger(
-                'info',
-                sprintf(
-                    __("Démon [%s] : Déjà initialisé", __FILE__),
-                    $ruid
-                )
-            );
-            return '';
-        }
-        list($rpid, $rport) = array_map('intval', explode(":", $ruid));
-        // Verify Remote UID coherence
-        if ($rpid == 0) {
-            // If Remote PID is NOT available
-            jMQTT::logger(
-                'warning',
-                sprintf(
-                    __("Démon [%s] : Pas d'identifiant d'exécution", __FILE__),
-                    $ruid
-                )
-            );
-            return '';
-        }
-        if (!@posix_getsid($rpid)) {
-            // Remote PID is not running
-            jMQTT::logger(
-                'warning',
-                sprintf(
-                    __("Démon [%s] : Mauvais identifiant d'exécution", __FILE__),
-                    $ruid
-                )
-            );
-            return '';
-        }
-        // Searching a match for RemoteUID (PID and PORT) in listening ports
-        $retval = 255;
-        exec("ss -Htulpn 'sport = :" . $rport ."' 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+pid=" . $rpid . "' 2> /dev/null", $output, $retval);
-        // Execution issue with ss (too new)? Try (the good old) netstat!
-        if ($retval != 0) {
-            // Be sure to clear $output first
-            unset($output);
-            exec("netstat -lntp 2> /dev/null | grep -E '[:]" . $rport . "[ \t]+.*[:][*][ \t]+.+[ \t]+" . $rpid . "/python3' 2> /dev/null", $output, $retval);
-        }
-        // Execution issue with netstat? Try (the slow) lsof!
-        if ($retval != 0) {
-            // Be sure to clear $output first
-            unset($output);
-            exec("lsof -nP -iTCP -sTCP:LISTEN | grep -E 'python3[ \t]+" . $rpid . "[ \t]+.+[:]" . $rport ."[ \t]+' 2> /dev/null", $output, $retval);
-        }
-        if ($retval != 0 || count($output) == 0) {
+
+        // Get expected daemon port and PID
+        $pid = jMQTTDaemon::getPid();
+        // Searching a match for PID and PORT in listening ports
+        if (
+            jMQTTDaemon::getPort() == 0
+            && !jMQTTDaemon::checkPidPortMatch($pid, $port)
+        ) {
             // Execution issue, could not get a match
             jMQTT::logger(
                 'warning',
-                sprintf(
-                    __("Démon [%s] : N'a pas pu être authentifié", __FILE__),
-                    $ruid
-                )
+                __("Démon : N'a pas pu être authentifié", __FILE__)
             );
-            return '';
+            // TODO: Daemon should be informed back that it is NOT accepted
+            return;
         }
-        // Verify if another daemon is not running
-        list($cpid, $cport) = array_map('intval', explode(":", $cuid));
-        if ($cpid != 0) { // Cached PID is available
-            if (!@posix_getsid($cpid)) { // Cached PID is NOT running
-                jMQTT::logger(
-                    'warning',
-                    sprintf(
-                        __("Démon [%1\$s] va remplacer le Démon [%2\$s] !", __FILE__),
-                        $ruid,
-                        $cuid
-                    )
-                );
-                // Must NOT `return ''` here, new daemon still needs to be accepted
-                jMQTTDaemon::stop();
-            } else { // Cached PID IS running
-                jMQTT::logger(
-                    'warning',
-                    sprintf(
-                        __("Démon [%1\$s] essaye de remplacer le Démon [%2\$s] !", __FILE__),
-                        $ruid,
-                        $cuid
-                    )
-                );
-                exec(system::getCmdSudo() . 'fuser ' . $cport . '/tcp 2> /dev/null', $output, $retval);
-                if ($retval != 0 || count($output) == 0) {
-                    // Execution issue, could not get a match
-                    jMQTT::logger(
-                        'warning',
-                        sprintf(
-                            __("Démon [%s] : N'a pas pu être identifié", __FILE__),
-                            $cuid
-                        )
-                    );
-                    // Must NOT `return ''` here, new daemon still needs to be accepted
-                    jMQTTDaemon::stop();
-                } elseif (intval(trim($output[0])) != $cpid) {
-                    // No match for old daemon
-                    jMQTT::logger(
-                        'warning',
-                        sprintf(
-                            __("Démon [%s] : Reprend la main", __FILE__),
-                            $ruid
-                        )
-                    );
-                    // Must NOT `return ''` here, new daemon still needs to be accepted
-                    jMQTTDaemon::stop();
-                } else {
-                    // Old daemon is still alive. If Daemon is semi-dead, it may die by missing enough heartbeats
-                    jMQTT::logger(
-                        'warning',
-                        sprintf(
-                            __("Démon [%1\$s] va survivre au Démon [%2\$s] !", __FILE__),
-                            $cuid,
-                            $ruid
-                        )
-                    );
-                    posix_kill($rpid, 15);
-                    return '';
-                }
-            }
-        }
-        // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
-        //jMQTT::logger('debug', sprintf(__("Démon [%s] est vivant", __FILE__), $ruid));
-        // Save in cache the daemon RemoteUID (as it is connected)
-        cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID, $ruid);
-        cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_PORT, $rport);
+        // Daemon is UP, registering PORT
+        jMQTTDaemon::setPort(intval($port));
+        jMQTT::logger('debug', __("Démon vivant", __FILE__));
+        // Reset daemon timers
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         jMQTTDaemon::sendMqttDaemonStateEvent(true);
@@ -154,7 +36,9 @@ class jMQTTComFromDaemon {
         jMQTTPlugin::checkAllMqttClients();
         // Active listeners
         jMQTT::listenersAddAll();
-        // Prepare and send initial data
+
+        // Prepare and send all the eqLogics/cmds to the daemon
+
         // TODO: Send all the eqLogics/cmds to the daemon
         //  labels: enhancement, php
         // $all_data = jMQTT::full_export();
@@ -164,25 +48,20 @@ class jMQTTComFromDaemon {
     /**
      * Daemon callback to tell Jeedom it is OK
      */
-    public static function hb($uid) {
-        jMQTT::logger('debug', sprintf(__("Démon [%s] est en vie", __FILE__), $uid));
+    public static function hb() {
+        jMQTT::logger('debug', __("Démon est en vie", __FILE__));
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
     }
 
     /**
      * Daemon callback to tell Jeedom it is stopped
      */
-    public static function daemonDown($uid) {
+    public static function daemonDown() {
         //jMQTT::logger('debug', 'daemonDown(uid='.$uid.')');
-        // Remove PID file
-        if (file_exists($pid_file = jeedom::getTmpFolder(jMQTT::class) . '/jmqttd.py.pid'))
-            shell_exec(system::getCmdSudo() . 'rm -rf ' . $pid_file . ' 2>&1 > /dev/null');
-        // Delete in cache the daemon uid (as it is disconnected)
-        try {
-            cache::delete('jMQTT::' . jMQTTConst::CACHE_DAEMON_UID);
-        } catch (Exception $e) {
-            // Cache file/key missed, nothing to do here
-        }
+        // Delete daemon PORT file in temporary folder (as it is now disconnected)
+        jMQTTDaemon::delPort();
+        // Delete daemon PID file in temporary folder (as it is now disconnected)
+        jMQTTDaemon::delPid();
         // Send state to WebUI
         jMQTTDaemon::sendMqttDaemonStateEvent(false);
         // Remove listeners
