@@ -79,7 +79,7 @@ class JmqttdCallbacks {
             die();
         }
         try {
-            $message = json_decode($received, true); // Try to decode json
+            $message = json_decode($received, true, 128, JSON_THROW_ON_ERROR ); // Try to decode json
         } catch (Throwable $e) {
             jMQTT::logger(
                 'error',
@@ -102,7 +102,7 @@ class JmqttdCallbacks {
             echo 'Not Acceptable Action.';
             die();
         }
-        if (!is_callable(self::class, 'on'.ucfirst($action))) {
+        if (!is_callable(array(self::class, 'on'.ucfirst($action)))) {
             http_response_code(501);
             echo 'Not Implemented.';
             die();
@@ -154,7 +154,7 @@ class JmqttdCallbacks {
             die();
         }
         $id = $message['id'];
-        jMQTT::logger('debug', sprintf("%1\$s: %1\$s", __METHOD__, $id));
+        jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $id));
         // jMQTTComFromDaemon::brkUp($message['id']);
     }
 
