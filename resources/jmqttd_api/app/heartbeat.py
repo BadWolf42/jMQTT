@@ -1,7 +1,6 @@
 import asyncio
 
 from logging import getLogger
-from os import getpid
 from time import time
 
 # from .callbacks import Callbacks
@@ -12,17 +11,17 @@ logger = getLogger('jmqtt.heartbeat')
 
 
 class Heartbeat():
-    _retry_snd: int = 0 # number of send retries
-    _retry_max: int = 5 # max number of send retries
-    _last_snd: int = time() # time of the last snd msg
-    _last_hb: int = time() # time of the last snd HB msg
-    _snd_timeout: float = 135.0 # seconds before send timeout
-    _last_rcv: int = time() # time of the last rcv msg
-    _hb_delay: float = 45.0 # seconds between 2 heartbeat emission
-    _hb_retry: float = _hb_delay / 2 # seconds before retrying
-    _hb_timeout: float = _hb_delay * 7 # seconds before timeout
+    _retry_snd: int = 0  # number of send retries
+    _retry_max: int = 5  # max number of send retries
+    _last_snd: int = time()  # time of the last snd msg
+    _last_hb: int = time()  # time of the last snd HB msg
+    _snd_timeout: float = 135.0  # seconds before send timeout
+    _last_rcv: int = time()  # time of the last rcv msg
+    _hb_delay: float = 45.0  # seconds between 2 heartbeat emission
+    _hb_retry: float = _hb_delay / 2  # seconds before retrying
+    _hb_timeout: float = _hb_delay * 7  # seconds before timeout
 
-    _task: asyncio.Task = None # Heartbeat task initialised by daemonUp method
+    _task: asyncio.Task = None  # Heartbeat task initialised by daemonUp method
 
     @classmethod
     def onSend(cls, status: bool) -> bool:
@@ -49,7 +48,8 @@ class Heartbeat():
             # TODO Handle timeouts/hb
             """
             now = time()
-            # Kill daemon if we cannot send for a total of X seconds and/or a total of Y retries "Jeedom is no longer available"
+            # Kill daemon if we cannot send for a total of X seconds
+            #  and/or a total of Y retries "Jeedom is no longer available"
             if now - cls._last_snd > cls._snd_timeout and cls._retry_snd > cls._retry_max:
                 logger.error(
                     "Nothing could sent for %ds (max %ds) AND after %d attempts (max %d), Jeedom/Apache is probably dead.",

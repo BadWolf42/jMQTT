@@ -1,15 +1,13 @@
 from asyncio import create_task
 from contextlib import asynccontextmanager
-from fastapi import Depends, FastAPI, HTTPException, Security, status
+from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBearer
 from json import load
 from logging import getLogger, DEBUG
 from os import kill, remove
 from os.path import isfile, dirname, realpath
 from platform import python_version, version, system
 from sys import exit
-from typing import List
 from uvicorn import Config, Server
 
 from callbacks import Callbacks
@@ -20,7 +18,7 @@ from routers import (
     daemon,
     equipment,
 )
-from logics import BrkLogic, Logic
+from logics import BrkLogic
 from settings import pid, settings
 from utils import dumpLoggers, getSocket, getToken, setLevel, setupLoggers
 
@@ -62,12 +60,15 @@ def setup():
         try:
             # Try to ping the pid
             kill(fpid, 0)
-        except OSError: # PID does not run we can continue
+        except OSError:
+            # PID does not run we can continue
             pass
-        except Exception: # just in case
+        except Exception:
+            # just in case
             logger.exception("Unexpected error when checking PID")
             exit(3)
-        else: # PID is alive -> we die
+        else:
+            # PID is alive -> we die
             logger.error('A jMQTT daemon already running! Exit 0')
             exit(0)
     try:
@@ -78,6 +79,7 @@ def setup():
     except Exception:
         logger.exception('Could not write PID file')
         exit(4)
+
 
 # -----------------------------------------------------------------------------
 async def startup():
@@ -110,6 +112,7 @@ async def startup():
 
     logger.info('jMQTTd is started')
 
+
 # -----------------------------------------------------------------------------
 async def shutdown():
     logger.info('jMQTTd is stopping...')
@@ -134,6 +137,7 @@ async def shutdown():
 
     logger.info('jMQTTd is stopped')
 
+
 # -----------------------------------------------------------------------------
 # Attach startup & shutdown handlers
 @asynccontextmanager
@@ -144,6 +148,7 @@ async def lifespan(app: FastAPI):
     yield
     await shutdown()
 
+
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
     setup()
@@ -151,18 +156,18 @@ if __name__ == "__main__":
     # Create application
     if settings.localonly:
         app = FastAPI(
-            docs_url=None, # Disable docs (Swagger UI)
-            redoc_url=None, # Disable redoc
+            docs_url=None,  # Disable docs (Swagger UI)
+            redoc_url=None,  # Disable redoc
             lifespan=lifespan,
             dependencies=[Depends(getToken)],
         )
     else:
         app = FastAPI(
-            docs_url='/docs', # Enable docs (Swagger UI)
-            redoc_url='/redoc', # Enable redoc
+            docs_url='/docs',  # Enable docs (Swagger UI)
+            redoc_url='/redoc',  # Enable redoc
             lifespan=lifespan,
             dependencies=[Depends(getToken)],
-    )
+        )
 
     @app.exception_handler(Exception)
     def validation_exception_handler(request, err):
@@ -171,7 +176,6 @@ if __name__ == "__main__":
             status_code=400,
             content={"message": f"{base_error_message}. Details: {err}"}
         )
-
 
     # Attach routers
     app.include_router(daemon)

@@ -14,10 +14,11 @@ logger = logging.getLogger('jmqtt.utils')
 # -----------------------------------------------------------------------------
 class LogFilter(logging.Filter):
     def filter(self, record):
-        record.levelname = '[' + record.levelname +']'
+        record.levelname = '[' + record.levelname + ']'
         if record.threadName == 'AnyIO worker thread':
             record.threadName = 'AnyIO'
         return True
+
 
 # -----------------------------------------------------------------------------
 def setupLoggers(logfile: str):
@@ -44,8 +45,9 @@ def setupLoggers(logfile: str):
     logconfig['handlers']['fileHandler']['filename'] = logfile
     logging.config.dictConfig(logconfig)
 
+
 # -----------------------------------------------------------------------------
-def setLevel(level, _logger = ''):
+def setLevel(level, _logger=''):
     newlevel = {
         'trace':    logging.TRACE,
         'debug':    logging.DEBUG,
@@ -60,12 +62,14 @@ def setLevel(level, _logger = ''):
     logging.getLogger(_logger).setLevel(newlevel)
     return newlevel
 
+
 # -----------------------------------------------------------------------------
 def dumpLoggers():
     return {
-        name: logging.getLevelName(logging.getLogger(name).getEffectiveLevel()) \
+        name: logging.getLevelName(logging.getLogger(name).getEffectiveLevel())
         for name in [''] + sorted(logging.root.manager.loggerDict)
     }
+
 
 # -----------------------------------------------------------------------------
 # Build a reusable socket listening in IPv4 and IPv6
@@ -77,10 +81,11 @@ def getSocket():
     host = '::1' if settings.localonly else '::'
     try:
         sock.bind((host, settings.socketport))
-    except OSError as e:
+    except OSError:
         return None
 
     return sock
+
 
 # -----------------------------------------------------------------------------
 def getToken(token: str = Security(HTTPBearer())):

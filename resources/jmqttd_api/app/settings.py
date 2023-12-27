@@ -12,10 +12,22 @@ logconfig: dict = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'withCallTrace': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s %(name)-15s %(funcName)20s() L%(lineno)-4d %(message)s   call_trace=%(pathname)s L%(lineno)-4d'},
-        'withThread': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s %(name)-15s %(funcName)20s() : %(message)s'},
-        'withFunction': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-20s %(funcName)20s() : %(message)s'},
-        'normal': {'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-15s : %(message)s'}
+        'withCallTrace': {
+            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s %(name)-15s'
+            ' %(funcName)20s() L%(lineno)-4d %(message)s   call_trace=%(pathname)s L%(lineno)-4d'
+        },
+        'withThread': {
+            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s'
+            ' %(name)-15s %(funcName)20s() : %(message)s'
+        },
+        'withFunction': {
+            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-20s %(funcName)20s()'
+            ' : %(message)s'
+        },
+        'normal': {
+            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-15s'
+            ' : %(message)s'
+        }
     },
     'filters': {
         'logFilter': {
@@ -31,13 +43,13 @@ logconfig: dict = {
             'formatter': 'withFunction',
             # 'formatter': 'normal',
             'filename': '/tmp/jMQTTd.log',
-            'filters': [ 'logFilter' ]
+            'filters': ['logFilter']
         }
     },
     'root': {
         'level': 'DEBUG',
         # 'level': 'WARNING', # TODO disable DEBUG
-        'handlers': [ 'fileHandler' ]
+        'handlers': ['fileHandler']
     # },
     # 'loggers': {
     #     'asyncio': {
@@ -64,7 +76,7 @@ logconfig: dict = {
     }
 }
 
-timeout_cancel: float = 3.0 # seconds to wait for a task to be canceled
+timeout_cancel: float = 3.0  # seconds to wait for a task to be canceled
 
 
 ###############################################################################

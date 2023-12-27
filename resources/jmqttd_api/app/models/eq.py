@@ -1,4 +1,3 @@
-from enum import Enum
 from typing_extensions import Literal, Annotated
 from typing import Union, List, Optional, Set
 from pydantic import BaseModel, ValidationError, validator, Field

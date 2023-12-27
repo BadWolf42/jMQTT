@@ -1,12 +1,9 @@
 from asyncio import sleep
 
 from aiohttp import ClientSession
-from enum import Enum
 from json import dumps
 from logging import getLogger
-from pydantic import BaseModel, RootModel
-from time import time
-from typing_extensions import Literal, Annotated
+from pydantic import BaseModel
 from typing import Union, List
 
 from heartbeat import Heartbeat
@@ -35,7 +32,7 @@ class Callbacks:
         async with ClientSession() as session:
             async with session.post(
                 settings.callback,
-                #TODO Remove PID from headers
+                # TODO Remove PID from headers
                 headers={
                     'Authorization': 'Bearer ' + settings.apikey,
                     'PID': pid
@@ -63,7 +60,7 @@ class Callbacks:
     @classmethod
     async def daemonUp(cls):
         # Let port some time to open in main task
-        sleep(1)
+        await sleep(1)
         return Heartbeat.onSend(
             await cls.__send('daemonUp', {'port': settings.socketport})
         )
