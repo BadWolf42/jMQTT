@@ -4,71 +4,134 @@ class jMQTTComToDaemon {
 
     public static function send($params, $except = true) {
         if (!jMQTTDaemon::state()) {
-            if ($except)
-                throw new Exception(__("Le démon n'est pas démarré", __FILE__));
-            else
-                return;
+            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
         }
-        $params['apikey'] = jeedom::getApiKey(jMQTT::class);
+
+        // $params['id'] = $id;
         $payload = json_encode($params);
-        $socket = socket_create(AF_INET, SOCK_STREAM, 0);
+        // $payload = http_build_query($params);
+
         $port = jMQTTDaemon::getPort();
-        if ($port == 0 || !socket_connect($socket, '127.0.0.1', $port)) {
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    __("Impossible de se connecter du Démon sur le port %1\$s, erreur %2\$s", __FILE__),
-                    $port,
-                    socket_strerror(socket_last_error($socket))
-                )
-            );
-            return;
+        $curl = curl_init('http://127.0.0.1:' . $port . '/URL');
+        curl_setopt($curl, CURLOPT_POST, true);
+        // curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+        ));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+        if (curl_exec($curl)) {
+            cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
+        } else {
+            // jMQTT::logger(
+            //     'debug',
+            //     sprintf(
+            //         __("Impossible de se connecter du Démon sur le port %1\$s, erreur %2\$s", __FILE__),
+            //         $port,
+            //         socket_strerror(socket_last_error($socket))
+            //     )
+            // );
+            // jMQTT::logger(
+            //     'debug',
+            //     sprintf(
+            //         __("Impossible d'envoyer un message au Démon sur le port %1\$s, erreur %2\$s", __FILE__),
+            //         $port,
+            //         socket_strerror(socket_last_error($socket))
+            //     )
+            // );
         }
-        if (socket_write($socket, $payload, strlen($payload)) === false) {
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    __("Impossible d'envoyer un message au Démon sur le port %1\$s, erreur %2\$s", __FILE__),
-                    $port,
-                    socket_strerror(socket_last_error($socket))
-                )
-            );
-            return;
-        }
-        socket_close($socket);
-        // jMQTT::logger('debug', sprintf("sendToDaemon: port=%1\$s, payload=%2\$s", $port, $payload));
-        cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
+        curl_close($curl);
+        // jMQTT::logger('debug', sprintf("send: port=%1\$s, payload=%2\$s", $port, json_encode($params)));
     }
 
 
     public static function hb() {
-        $params['cmd']      = 'hb';
-        jMQTTComToDaemon::send($params, false);
+        if (!jMQTTDaemon::state()) {
+            return;
+        }
+
+        $port = jMQTTDaemon::getPort();
+        $curl = curl_init('http://127.0.0.1:' . $port . '/daemon/hb');
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+        ));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(array()));
+        if (curl_exec($curl)) {
+            cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
+        }
+        curl_close($curl);
     }
 
     public static function setLogLevel($_level=null) {
-        $params['cmd']      = 'loglevel';
-        $params['id']       = 0;
-        $params['level']    = is_null($_level) ? log::getLogLevel(__class__) : $_level;
+        if (!jMQTTDaemon::state()) {
+            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+        }
+
+        $params['level'] = is_null($_level) ? log::getLogLevel(__class__) : $_level;
         if ($params['level'] == 'default') // Replace 'default' log level
             $params['level'] = log::getConfig('log::level');
         if (is_numeric($params['level'])) // Replace numeric log level par text level
             $params['level'] = log::convertLogLevel($params['level']);
-        jMQTTComToDaemon::send($params);
+        $payload = http_build_query($params);
+
+        $port = jMQTTDaemon::getPort();
+        $curl = curl_init('http://127.0.0.1:' . $port . '/daemon/loglevel');
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+        ));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+        if (curl_exec($curl)) {
+            cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
+        }
+        curl_close($curl);
     }
 
     public static function changeApiKey($newApiKey) {
-        $params['cmd']       = 'changeApiKey';
-        $params['id']        = 0;
-        $params['newApiKey'] = $newApiKey;
-        // Inform Daemon without generating exception if not running
-        jMQTTComToDaemon::send($params, false);
+        if (!jMQTTDaemon::state()) {
+            return;
+        }
+
+        $params['option'] = $newApiKey;
+        $payload = http_build_query($params);
+
+        $port = jMQTTDaemon::getPort();
+        $curl = curl_init('http://127.0.0.1:' . $port . '/daemon/api');
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+        ));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+        if (curl_exec($curl)) {
+            cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
+        }
+        curl_close($curl);
     }
 
     public static function newClient($id, $params = array()) {
-        $params['cmd']      = 'newMqttClient';
-        $params['id']       = $id;
-        jMQTTComToDaemon::send($params);
+        if (!jMQTTDaemon::state()) {
+            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+        }
+
+        $params['id'] = $id;
+        $payload = json_encode($params);
+
+        $port = jMQTTDaemon::getPort();
+        $curl = curl_init('http://127.0.0.1:' . $port . '/broker');
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+        ));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
+        if (curl_exec($curl)) {
+            cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
+        }
+        curl_close($curl);
     }
 
     public static function removeClient($id) {
