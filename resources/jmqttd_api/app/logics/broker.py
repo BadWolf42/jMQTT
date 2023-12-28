@@ -6,15 +6,14 @@ from logging import getLogger  # , DEBUG
 from typing import Dict
 from weakref import WeakValueDictionary
 
-# from ..callbacks import Callbacks
-# from ..settings import settings
-
-from models import (
-    BrkModel,
-    # CmdInfoModel,
-    # CmdActionModel
-)
-from . import VisitableLogic, LogicVisitor
+# from callbacks import Callbacks
+from logics.abstractvisitor import VisitableLogic, LogicVisitor
+from models.broker import BrkModel
+# from models.cmd import (
+#     CmdInfoModel,
+#     CmdActionModel
+# )
+# from settings import settings
 
 
 """

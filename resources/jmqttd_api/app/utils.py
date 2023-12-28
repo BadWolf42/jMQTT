@@ -11,7 +11,8 @@ from settings import pid, settings, logconfig
 
 from callbacks import Callbacks
 from heartbeat import Heartbeat
-from logics import BrkLogic, Logic
+from logics.logic import Logic
+from logics.broker import BrkLogic
 
 
 logger = logging.getLogger('jmqtt.utils')

@@ -11,12 +11,10 @@ from uvicorn import Config, Server
 
 from callbacks import Callbacks
 from heartbeat import Heartbeat
-from routers import (
-    broker,
-    command,
-    daemon,
-    equipment,
-)
+from routers.broker import broker
+from routers.command import command
+from routers.daemon import daemon
+from routers.equipment import equipment
 from settings import settings
 from utils import (
     getSocket,

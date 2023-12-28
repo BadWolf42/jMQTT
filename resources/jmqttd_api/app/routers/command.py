@@ -2,9 +2,9 @@ from logging import getLogger
 from fastapi import APIRouter, HTTPException, status
 from typing import List
 
-from models import CmdModel
-from logics import Logic, CmdLogic
-
+from logics.cmd import CmdLogic
+from logics.logic import Logic
+from models.unions import CmdModel
 
 logger = getLogger('jmqtt.rest')
 command = APIRouter(

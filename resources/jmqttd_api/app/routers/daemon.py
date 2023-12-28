@@ -6,20 +6,16 @@ from fastapi import APIRouter
 
 # from ..jmqttDaemon import JmqttDaemon
 from heartbeat import Heartbeat
-from models import (
-    BrkModel,
-    DataModel,
-    EqModel,
-    LogLevelModel,
-)
-from logics import (
-    BrkLogic,
-    EqLogic,
-    CmdLogic,
-)
-from .broker import broker_post
-from .equipment import equipment_post
-from .command import command_post
+from logics.broker import BrkLogic
+from logics.cmd import CmdLogic
+from logics.eq import EqLogic
+from models.broker import BrkModel
+from models.eq import EqModel
+from models.messages import LogLevelModel
+from models.unions import DataModel
+from routers.broker import broker_post
+from routers.command import command_post
+from routers.equipment import equipment_post
 from settings import settings, rootloglevel
 from utils import dumpLoggers, setLevel
 

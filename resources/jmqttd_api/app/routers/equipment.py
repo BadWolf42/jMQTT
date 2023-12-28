@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 from logging import getLogger
 from typing import List
 
-from logics import Logic, EqLogic
-from models import EqModel
+from logics.logic import Logic, EqLogic
+from models.eq import EqModel
 
 
 # -----------------------------------------------------------------------------

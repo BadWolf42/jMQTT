@@ -2,9 +2,10 @@ from logging import getLogger
 from fastapi import APIRouter, HTTPException, status
 from typing import List
 
-from logics import BrkLogic, Logic
-from models import (
-    BrkModel,
+from logics.broker import BrkLogic
+from logics.logic import Logic
+from models.broker import BrkModel
+from models.messages import (
     MqttMessageModel,
     RealTimeModel,
     RealTimeStatusModel,

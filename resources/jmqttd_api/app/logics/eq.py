@@ -3,12 +3,9 @@ from logging import getLogger
 from typing import Dict
 from weakref import ref, WeakValueDictionary
 
-from models import (
-    EqModel,
-    # CmdInfoModel,
-    # CmdActionModel
-)
-from . import VisitableLogic, LogicVisitor
+from logics.abstractvisitor import VisitableLogic, LogicVisitor
+# from models.cmd import CmdInfoModel, CmdActionModel
+from models.eq import EqModel
 
 
 logger = getLogger('jmqtt.eq')

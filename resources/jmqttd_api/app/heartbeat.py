@@ -3,7 +3,7 @@ import asyncio
 from logging import getLogger
 from time import time
 
-# from .callbacks import Callbacks
+# from callbacks import Callbacks
 from settings import timeout_cancel
 
 

@@ -1,18 +1,16 @@
 from typing import List, Union
 
-from models import (
-    BrkModel,
-    EqModel,
-    CmdModel,
-)
-from . import (
-    BrkLogic,
-    EqLogic,
-    CmdLogic,
+from logics.broker import BrkLogic
+from logics.cmd import CmdLogic
+from logics.eq import EqLogic
+from logics.visitor import (
     RegisteringLogicVisitor,
     UnregisteringLogicVisitor,
     PrintVisitor,
 )
+from models.broker import BrkModel
+from models.eq import EqModel
+from models.unions import CmdModel
 
 
 class Logic():

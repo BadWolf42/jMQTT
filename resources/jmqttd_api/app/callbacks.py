@@ -7,7 +7,8 @@ from pydantic import BaseModel
 from typing import Union, List
 
 from heartbeat import Heartbeat
-from models import EqModel, CmdModel
+from models.eq import EqModel
+from models.unions import CmdModel
 from settings import pid, settings
 
 

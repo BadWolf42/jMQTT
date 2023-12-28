@@ -3,8 +3,8 @@ from logging import getLogger
 from typing import Dict
 from weakref import ref
 
-from models import CmdModel
-from . import VisitableLogic, LogicVisitor
+from logics.abstractvisitor import VisitableLogic, LogicVisitor
+from models.unions import CmdModel
 
 
 logger = getLogger('jmqtt.cmd')
