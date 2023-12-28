@@ -4,9 +4,9 @@ from pydantic import BaseModel, validator
 
 from .utils import strToInt
 
+
 ###############################################################################
 # --- Messages FROM Jeedom model-
-
 class LogLevelModel(str, Enum):
     trace = 'trace'
     debug = 'debug'
@@ -18,6 +18,7 @@ class LogLevelModel(str, Enum):
     none = 'none'
     notset = 'notset'
 
+
 # -----------------------------------------------------------------------------
 class MqttMessageModel(BaseModel):
     topic: str
@@ -25,13 +26,16 @@ class MqttMessageModel(BaseModel):
     retain: Optional[bool] = False
     qos: Optional[int] = 1
 
+
 # -----------------------------------------------------------------------------
 # class MqttTopic(str):
 #     pass
 
+
 # -----------------------------------------------------------------------------
 # class MqttSubscTopic(MqttTopic):
 #     pass
+
 
 # -----------------------------------------------------------------------------
 class RealTimeModel(BaseModel):
@@ -45,6 +49,7 @@ class RealTimeModel(BaseModel):
     duration: Optional[int] = 180
 
     _val_eqLogic: classmethod = validator("eqLogic", allow_reuse=True, pre=True)(strToInt)
+
 
 # -----------------------------------------------------------------------------
 class RealTimeStatusModel(RealTimeModel):

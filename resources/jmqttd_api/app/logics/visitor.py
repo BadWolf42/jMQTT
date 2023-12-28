@@ -11,20 +11,21 @@ from . import (
     CmdLogic,
 )
 
+
 # -----------------------------------------------------------------------------
 class RegisteringLogicVisitor(LogicVisitor):
     def __init__(self):
         self.logger = getLogger('jmqtt.visitor.reg')
 
     def visit_brklogic(self, e: BrkLogic) -> None:
-        self.logger.debug('id=%s, registering', e.model.id)
+        self.logger.trace('id=%s, registering', e.model.id)
         # Add BrkLogic in brkLogic table
         BrkLogic.all[e.model.id] = e
         e.start()
         self.logger.debug('id=%s, registered', e.model.id)
 
     def visit_eqlogic(self, e: EqLogic) -> None:
-        self.logger.debug('id=%s, registering', e.model.id)
+        self.logger.trace('id=%s, registering', e.model.id)
         brkId = e.model.configuration.eqLogic
         # If BrkLogic is not found
         if brkId not in BrkLogic.all:
@@ -46,7 +47,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         self.logger.debug('id=%s, registered', e.model.id)
 
     def visit_cmdlogic(self, e: CmdLogic) -> None:
-        self.logger.debug('id=%s, registering', e.model.id)
+        self.logger.trace('id=%s, registering', e.model.id)
         # Get parent eqLogic
         if e.model.eqLogic_id in EqLogic.all:
             # Parent is an EqLogic
@@ -60,7 +61,7 @@ class RegisteringLogicVisitor(LogicVisitor):
             # Add the reference to EqLogic and BrkLogic
             e.weakEq = ref(eq)
             e.weakBrk = ref(eq)
-        else: # Could not found a parent
+        else:  # Could not found a parent
             self.logger.warning(
                 'id=%s, disregarded: EqId=%s not found',
                 e.model.id,
@@ -109,7 +110,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         # Add CmdLogic to topics in BrkLogic
         brk.topics[topic][e.model.id] = e
         if sub_needed and brk.model.isEnable:
-            brk.subscribe(topic, 1) # TODO Get QoS when Qos location is in cmd
+            brk.subscribe(topic, 1)  # TODO Get QoS when Qos location is in cmd
         self.logger.debug('id=%s, registered', e.model.id)
 
     @classmethod
@@ -125,7 +126,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         self.result = []
 
     def visit_brklogic(self, e: BrkLogic) -> None:
-        self.logger.debug('id=%s, unregistering', e.model.id)
+        self.logger.trace('id=%s, unregistering', e.model.id)
         # Let's stop first MQTT Client (and Real Time)
         e.stop()
         # Then append the BrkLogic first to the result
@@ -145,7 +146,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         self.logger.debug('id=%s, unregistered', e.model.id)
 
     def visit_eqlogic(self, e: EqLogic) -> None:
-        self.logger.debug('id=%s, unregistering', e.model.id)
+        self.logger.trace('id=%s, unregistering', e.model.id)
         # Append this EqLogic to the result
         self.result.append(e)
         # Call the visitor on each CmdLogic info linked directly to the Broker
@@ -166,7 +167,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         self.logger.debug('id=%s, unregistered', e.model.id)
 
     def visit_cmdlogic(self, e: CmdLogic) -> None:
-        self.logger.debug('id=%s, unregistering', e.model.id)
+        self.logger.trace('id=%s, unregistering', e.model.id)
         # Append this CmdLogic to the result
         self.result.append(e)
         # Handle removal from BrkLogic
@@ -236,7 +237,6 @@ class PrintVisitor(LogicVisitor):
             eq.accept(self)
         self.level -= 1
         self.logger.debug('%s└%s', '│ '*self.level, '─'*(50-2*self.level-1))
-
 
     def visit_eqlogic(self, e: EqLogic) -> None:
         self.logger.debug(

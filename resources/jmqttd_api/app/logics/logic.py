@@ -14,6 +14,7 @@ from . import (
     PrintVisitor,
 )
 
+
 class Logic():
     @classmethod
     def registerGenericModel(
@@ -83,7 +84,6 @@ class Logic():
     @classmethod
     def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         return cls.unregisterGenericId(id, CmdLogic)
-
 
 # -----------------------------------------------------------------------------
     @classmethod

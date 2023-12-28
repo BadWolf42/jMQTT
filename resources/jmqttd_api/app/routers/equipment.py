@@ -13,6 +13,7 @@ equipment = APIRouter(
     tags=["eqLogic"],
 )
 
+
 # -----------------------------------------------------------------------------
 @equipment.post("", status_code=204)
 def equipment_post(eq: EqModel):
@@ -22,6 +23,7 @@ def equipment_post(eq: EqModel):
             detail="eqLogic exists"
         )
     Logic.registerEqModel(eq)
+
 
 # -----------------------------------------------------------------------------
 @equipment.put("", status_code=204, response_model_exclude_defaults=True)
@@ -33,10 +35,12 @@ def equipment_put(eq: EqModel):
         )
     return Logic.registerEqModel(eq)
 
+
 # -----------------------------------------------------------------------------
 @equipment.get("", response_model_exclude_defaults=True)
 def equipment_get() -> List[EqModel]:
     return [eq.model for eq in EqLogic.all.values()]
+
 
 # -----------------------------------------------------------------------------
 @equipment.get("/{id}", response_model_exclude_defaults=True)
@@ -47,6 +51,7 @@ def equipment_get_id(id: int) -> EqModel:
             detail="eqLogic not found"
         )
     return EqLogic.all[id].model
+
 
 # -----------------------------------------------------------------------------
 @equipment.delete("/{id}", status_code=204)

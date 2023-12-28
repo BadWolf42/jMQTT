@@ -1,6 +1,6 @@
 from __future__ import annotations
 from logging import getLogger
-from typing import Dict, List
+from typing import Dict
 from weakref import ref
 
 from models import CmdModel

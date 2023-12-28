@@ -1,9 +1,9 @@
 from __future__ import annotations
 import asyncio
 # from json import load
-from logging import getLogger #, DEBUG
+from logging import getLogger  # , DEBUG
 # from time import time
-from typing import Dict, List
+from typing import Dict
 from weakref import WeakValueDictionary
 
 # from ..callbacks import Callbacks
@@ -61,8 +61,6 @@ class BrkLogic(VisitableLogic):
     # def isEnabled(self) -> bool:
     #     return self.model.isEnable
 
-
-# -----------------------------------------------------------------------------
     def start(self):
         if not self.model.isEnable:
             self.log.debug('Not enabled, Broker not started')

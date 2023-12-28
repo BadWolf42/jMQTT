@@ -1,9 +1,8 @@
 from logging import getLogger
 from fastapi import APIRouter, HTTPException, status
+from typing import List
 
-# from heartbeat import Heartbeat
-from models import *
-
+from models import CmdModel
 from logics import Logic, CmdLogic
 
 
@@ -55,6 +54,7 @@ def command_get_id(id: int) -> CmdModel:
         )
     return CmdLogic.all[id].model
 
+
 # -----------------------------------------------------------------------------
 # DELETE /command/{Id} => Remove command
 @command.delete("/{id}", status_code=204)
@@ -65,6 +65,7 @@ def command_delete_id(id: int):
             detail="Cmd not found"
         )
     Logic.unregisterCmdId(id)
+
 
 # -----------------------------------------------------------------------------
 # POST /callback => Send an event to Jeedom

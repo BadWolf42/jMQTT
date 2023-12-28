@@ -50,7 +50,7 @@ logconfig: dict = {
         'level': 'DEBUG',
         # 'level': 'WARNING', # TODO disable DEBUG
         'handlers': ['fileHandler']
-    # },
+    },
     # 'loggers': {
     #     'asyncio': {
     #         'level': 'WARNING'
@@ -73,7 +73,7 @@ logconfig: dict = {
     #     'gunicorn': {
     #         'level': 'WARNING'
     #     }
-    }
+    # }
 }
 
 timeout_cancel: float = 3.0  # seconds to wait for a task to be canceled

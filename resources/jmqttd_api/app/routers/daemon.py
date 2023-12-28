@@ -2,7 +2,7 @@ from logging import getLevelName, getLogger
 from os import getpid, kill
 from signal import SIGTERM
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter
 
 # from ..jmqttDaemon import JmqttDaemon
 from heartbeat import Heartbeat
@@ -42,6 +42,7 @@ daemon = APIRouter(
     tags=["Daemon"],
 )
 
+
 # -----------------------------------------------------------------------------
 @daemon.post(
     "",
@@ -66,6 +67,7 @@ def daemon_post(data: DataModel):
             else:
                 command_post(item)
 
+
 # -----------------------------------------------------------------------------
 @daemon.get(
     "",
@@ -76,6 +78,7 @@ def daemon_get():
     # JmqttDaemon.XXX() ### TODO SERIALIZE DAEMON STATE
     return []
 
+
 # -----------------------------------------------------------------------------
 @daemon.delete(
     "",
@@ -84,6 +87,7 @@ def daemon_get():
 )
 def daemon_delete():
     pass
+
 
 # -----------------------------------------------------------------------------
 @daemon.put(
@@ -94,10 +98,12 @@ def daemon_delete():
 def daemon_put_hb():
     Heartbeat.onReceive()
 
+
 # -----------------------------------------------------------------------------
 @daemon.put("/api", status_code=204, summary="Modify Daemon apikey")
 def daemon_put_api(option: str):
     settings.apikey = option
+
 
 # -----------------------------------------------------------------------------
 @daemon.get(
@@ -107,6 +113,7 @@ def daemon_put_api(option: str):
 )
 def daemon_get_loglevel(name: str = '') -> str:
     return getLevelName(getLogger(name).getEffectiveLevel())
+
 
 # -----------------------------------------------------------------------------
 @daemon.put("/loglevel", status_code=204, summary="Set a loglevel")
@@ -130,6 +137,7 @@ def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
             name, getLevelName(newlevel)
         )
 
+
 # -----------------------------------------------------------------------------
 @daemon.get(
     "/loglevels",
@@ -138,6 +146,7 @@ def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
 )
 def daemon_get_loglevels() -> dict:
     return dumpLoggers()
+
 
 # -----------------------------------------------------------------------------
 @daemon.put("/stop", status_code=204, summary="Stop the daemon")

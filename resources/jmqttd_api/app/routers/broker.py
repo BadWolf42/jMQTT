@@ -20,6 +20,7 @@ broker = APIRouter(
     tags=["eqBroker"],
 )
 
+
 # -----------------------------------------------------------------------------
 @broker.get(
     "",
@@ -29,6 +30,7 @@ broker = APIRouter(
 )
 def broker_get():
     return [id.model for id in BrkLogic.all.values()]
+
 
 # -----------------------------------------------------------------------------
 @broker.put(
@@ -44,6 +46,7 @@ def broker_put(broker: BrkModel):
         )
     Logic.registerBrkModel(broker)
 
+
 # -----------------------------------------------------------------------------
 @broker.post("", status_code=204, summary="Create a new Broker in the Daemon")
 def broker_post(broker: BrkModel):
@@ -53,6 +56,7 @@ def broker_post(broker: BrkModel):
             detail="Broker exists"
         )
     Logic.registerBrkModel(broker)
+
 
 # -----------------------------------------------------------------------------
 @broker.delete("", status_code=204, summary="Delete all Brokers in the Daemon")
@@ -71,11 +75,12 @@ def broker_delete():
 )
 def broker_get_id(id: int):
     if id in BrkLogic.all:
-        return BrkLogic.all[id].model # TODO Check if should be something else
+        return BrkLogic.all[id].model  # TODO Check if should be something else
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Broker not found"
     )
+
 
 # -----------------------------------------------------------------------------
 @broker.delete(
@@ -106,6 +111,7 @@ def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
         )
     # TODO
 
+
 # -----------------------------------------------------------------------------
 @broker.get(
     "/{id}/restart",
@@ -120,9 +126,9 @@ def broker_get_id_restart(id: int):
         )
     BrkLogic.all[id].restart()
 
+
 ###################################################################
 # Real Time
-
 @broker.put(
     "/{id}/realtime/start",
     status_code=204,
@@ -136,6 +142,7 @@ def broker_put_id_rt_start(id: int, option: RealTimeModel):
             detail="Broker not found"
         )
     # TODO
+
 
 # -----------------------------------------------------------------------------
 @broker.get(
@@ -153,6 +160,7 @@ def broker_get_id_rt_status(id: int) -> RealTimeStatusModel:
     return {"result": "success"}
     # TODO
 
+
 # -----------------------------------------------------------------------------
 @broker.put(
     "/{id}/realtime/stop",
@@ -167,6 +175,7 @@ def broker_put_id_rt_stop(id: int):
             detail="Broker not found"
         )
     # TODO
+
 
 # -----------------------------------------------------------------------------
 @broker.get(
@@ -183,6 +192,7 @@ def broker_get_id_rt(id: int, since: int = 0) -> RealTimeStatusModel:
         )
     return {"result": "success"}
     # TODO
+
 
 # -----------------------------------------------------------------------------
 @broker.put(

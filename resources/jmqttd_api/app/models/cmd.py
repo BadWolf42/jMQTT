@@ -1,10 +1,11 @@
 from enum import Enum
-from typing_extensions import Literal, Annotated
-from typing import Union, List, Optional, Set
-from pydantic import BaseModel, ValidationError, validator, Field
+from typing_extensions import Literal
+from typing import Optional
+from pydantic import BaseModel, validator
 
 from .bases import CmdBaseModel
 from .utils import strToBool, strToInt
+
 
 # -----------------------------------------------------------------------------
 # --- Cmd Info model
@@ -12,11 +13,13 @@ class CmdInfoConfigModel(BaseModel):
     topic: Optional[str] = ''
     jsonPath: Optional[str] = ''
 
+
 # -----------------------------------------------------------------------------
 class CmdInfoSubTypeModel(str, Enum):
     binary = 'binary'
     numeric = 'numeric'
     string = 'string'
+
 
 # -----------------------------------------------------------------------------
 class CmdInfoModel(CmdBaseModel):
@@ -38,6 +41,7 @@ class CmdActionConfigModel(BaseModel):
     _val_retain: classmethod = validator("retain", allow_reuse=True, pre=True)(strToBool)
     _val_autoPub: classmethod = validator("autoPub", allow_reuse=True, pre=True)(strToBool)
 
+
 # -----------------------------------------------------------------------------
 class CmdActionSubTypeModel(str, Enum):
     color = 'color'
@@ -45,6 +49,7 @@ class CmdActionSubTypeModel(str, Enum):
     select = 'select'
     slider = 'slider'
     other = 'other'
+
 
 # -----------------------------------------------------------------------------
 class CmdActionModel(CmdBaseModel):

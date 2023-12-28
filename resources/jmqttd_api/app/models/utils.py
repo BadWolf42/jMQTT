@@ -1,7 +1,8 @@
 def strToBool(v):
     if isinstance(v, str):
-        return v == '1' #or v.lower() == 'enable'
+        return v == '1'  # or v.lower() == 'enable'
     return v
+
 
 def strToInt(v):
     if isinstance(v, str):
