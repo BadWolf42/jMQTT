@@ -43,6 +43,7 @@ class jMQTTComFromDaemon {
         //  labels: enhancement, php
         // $all_data = jMQTT::full_export();
         // return json_encode($all_data, JSON_UNESCAPED_UNICODE);
+        jMQTTComToDaemon::initDaemon(jMQTT::full_export());
     }
 
     /**

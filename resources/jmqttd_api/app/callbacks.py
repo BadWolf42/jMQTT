@@ -40,7 +40,7 @@ class Callbacks:
                 params={'a': action},
                 json=data
             ) as resp:
-                logger.debug(
+                logger.trace(
                     '%s: Status=%i, Body="%s"',
                     action, resp.status, await resp.text()
                 )

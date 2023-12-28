@@ -112,16 +112,15 @@ class jMQTTComToDaemon {
         curl_close($curl);
     }
 
-    public static function newClient($id, $params = array()) {
+    public static function initDaemon($params) {
         if (!jMQTTDaemon::state()) {
             throw new Exception(__("Le démon n'est pas démarré", __FILE__));
         }
 
-        $params['id'] = $id;
-        $payload = json_encode($params);
+        $payload = json_encode($params, JSON_UNESCAPED_UNICODE);
 
         $port = jMQTTDaemon::getPort();
-        $curl = curl_init('http://127.0.0.1:' . $port . '/broker');
+        $curl = curl_init('http://127.0.0.1:' . $port . '/daemon');
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
@@ -132,6 +131,10 @@ class jMQTTComToDaemon {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         }
         curl_close($curl);
+    }
+
+    public static function newClient($id, $params = array()) {
+        jMQTT::logger('debug', "jMQTTComToDaemon::newClient(): <<UNUSED>>");
     }
 
     public static function removeClient($id) {
