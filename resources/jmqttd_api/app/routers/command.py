@@ -15,25 +15,8 @@ command = APIRouter(
 
 # -----------------------------------------------------------------------------
 # POST /command => Create command
-@command.post("", status_code=204)
+@command.post("", status_code=204, summary="Create or update a Command in Daemon")
 def command_post(cmd: CmdModel):
-    if id in CmdLogic.all:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Cmd exists"
-        )
-    Logic.registerCmdModel(cmd)
-
-
-# -----------------------------------------------------------------------------
-# PUT /command => modify command
-@command.put("", status_code=204)
-def command_put(cmd: CmdModel):
-    if id not in CmdLogic.all:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Cmd not found"
-        )
     Logic.registerCmdModel(cmd)
 
 

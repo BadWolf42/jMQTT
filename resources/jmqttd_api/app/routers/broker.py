@@ -20,46 +20,25 @@ broker = APIRouter(
     tags=["eqBroker"],
 )
 
-
 # -----------------------------------------------------------------------------
 @broker.get(
     "",
     response_model=List[BrkModel],
     response_model_exclude_defaults=True,
-    summary="List all Brokers in the Daemon"
+    summary="List all Brokers in Daemon"
 )
 def broker_get():
     return [id.model for id in BrkLogic.all.values()]
 
 
 # -----------------------------------------------------------------------------
-@broker.put(
-    "",
-    status_code=204,
-    summary="Modify the provided Broker in the Daemon"
-)
-def broker_put(broker: BrkModel):
-    if broker.id not in BrkLogic.all:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
-        )
-    Logic.registerBrkModel(broker)
-
-
-# -----------------------------------------------------------------------------
-@broker.post("", status_code=204, summary="Create a new Broker in the Daemon")
+@broker.post("", status_code=204, summary="Create or update a Broker in Daemon")
 def broker_post(broker: BrkModel):
-    if broker.id in BrkLogic.all:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="Broker exists"
-        )
     Logic.registerBrkModel(broker)
 
 
 # -----------------------------------------------------------------------------
-@broker.delete("", status_code=204, summary="Delete all Brokers in the Daemon")
+@broker.delete("", status_code=204, summary="Delete all Brokers in Daemon")
 def broker_delete():
     for k in BrkLogic.all.copy():
         broker_delete_id(k)
@@ -71,7 +50,7 @@ def broker_delete():
     "/{id}",
     response_model=BrkModel,
     response_model_exclude_defaults=True,
-    summary="Get Broker properties in the Daemon"
+    summary="Get Broker properties in Daemon"
 )
 def broker_get_id(id: int):
     if id in BrkLogic.all:
@@ -86,7 +65,7 @@ def broker_get_id(id: int):
 @broker.delete(
     "/{id}",
     status_code=204,
-    summary="Remove Broker from the Daemon"
+    summary="Remove Broker from Daemon"
 )
 def broker_delete_id(id: int):
     if id not in BrkLogic.all:

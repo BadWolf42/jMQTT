@@ -17,18 +17,9 @@ from logics import (
     EqLogic,
     CmdLogic,
 )
-from .broker import (
-    broker_post,
-    broker_put,
-)
-from .equipment import (
-    equipment_post,
-    equipment_put,
-)
-from .command import (
-    command_post,
-    command_put,
-)
+from .broker import broker_post
+from .equipment import equipment_post
+from .command import command_post
 from settings import settings, rootloglevel
 from utils import dumpLoggers, setLevel
 
@@ -47,32 +38,23 @@ daemon = APIRouter(
 @daemon.post(
     "",
     status_code=204,
-    summary="Initialize Brokers, Equipments and Commands in the Daemon"
+    summary="Initialize Brokers, Equipments and Commands in Daemon"
 )
 def daemon_post(data: DataModel):
     for item in data:
         if isinstance(item, BrkModel):
-            if item.id in BrkLogic.all:
-                broker_put(item)
-            else:
-                broker_post(item)
+            broker_post(item)
         elif isinstance(item, EqModel):
-            if item.id in EqLogic.all:
-                equipment_put(item)
-            else:
-                equipment_post(item)
+            equipment_post(item)
         else:
-            if item.id in CmdLogic.all:
-                command_put(item)
-            else:
-                command_post(item)
+            command_post(item)
 
 
 # -----------------------------------------------------------------------------
 @daemon.get(
     "",
     response_model_exclude_defaults=True,
-    summary="Return all Brokers, Equipments and Commands in the Daemon"
+    summary="Return all Brokers, Equipments and Commands in Daemon"
 )
 def daemon_get():
     # JmqttDaemon.XXX() ### TODO SERIALIZE DAEMON STATE
@@ -83,7 +65,7 @@ def daemon_get():
 @daemon.delete(
     "",
     status_code=204,
-    summary="Clear all Brokers, Equipments and Commands in the Daemon"
+    summary="Clear all Brokers, Equipments and Commands in Daemon"
 )
 def daemon_delete():
     pass

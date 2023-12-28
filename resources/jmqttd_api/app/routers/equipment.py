@@ -15,25 +15,9 @@ equipment = APIRouter(
 
 
 # -----------------------------------------------------------------------------
-@equipment.post("", status_code=204)
+@equipment.post("", status_code=204, summary="Create or update an Equipment in Daemon")
 def equipment_post(eq: EqModel):
-    if id in EqLogic.all:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="eqLogic exists"
-        )
     Logic.registerEqModel(eq)
-
-
-# -----------------------------------------------------------------------------
-@equipment.put("", status_code=204, response_model_exclude_defaults=True)
-def equipment_put(eq: EqModel):
-    if id not in EqLogic.all:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="eqLogic not found"
-        )
-    return Logic.registerEqModel(eq)
 
 
 # -----------------------------------------------------------------------------
