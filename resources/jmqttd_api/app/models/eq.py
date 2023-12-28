@@ -11,7 +11,7 @@ from .utils import strToBool, strToInt
 # --- Eq model
 class EqConfigModel(BaseModel):
     type: Literal['eqpt']
-    eqLogic: int  #= Field(gt=0, description="Broker id", alias='brkId')
+    eqLogic: int  # = Field(gt=0, description="Broker id", alias='brkId')
     icone: Optional[str] = ''
     auto_add_cmd: Optional[bool] = False
     auto_add_topic: Optional[str] = ''
