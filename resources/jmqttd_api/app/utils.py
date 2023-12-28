@@ -93,7 +93,7 @@ def getSocket():
 
 
 # -----------------------------------------------------------------------------
-async def setup():
+def setup():
     # Add trace, notice, none loglevels and logfilename
     setupLoggers(settings.logfile)
     # Get loglevel from ENV

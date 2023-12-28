@@ -52,7 +52,7 @@ async def lifespan(app: FastAPI):
 
 # -----------------------------------------------------------------------------
 if __name__ == "__main__":
-    await setup()
+    setup()
 
     # Create application
     if settings.localonly:
