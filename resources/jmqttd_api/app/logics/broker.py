@@ -76,8 +76,14 @@ class BrkLogic(VisitableLogic):
         self.stop()
         self.start()
 
+    def publish(self, topic: str, payload: str, qos: int, retain: bool):
+        self.log.debug(f'TODO: {{"topic":"{topic}","payload":"{payload}","qos":{qos},"retain":{retain}}}')
+        # TODO
+
     def subscribe(self, topic: str, qos: int) -> None:
-        pass
+        self.log.debug(f'TODO: {{"topic":"{topic}","qos":{qos}}}')
+        # TODO
 
     def unsubscribe(self, topic: str) -> None:
-        pass
+        self.log.debug(f'TODO: {{"topic":"{topic}"}}')
+        # TODO

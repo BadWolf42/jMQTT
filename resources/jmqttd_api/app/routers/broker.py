@@ -88,7 +88,7 @@ def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Broker not found"
         )
-    # TODO
+    BrkLogic.all[id].publish(data.topic, data.payload, data.qos, data.retain)
 
 
 # -----------------------------------------------------------------------------
