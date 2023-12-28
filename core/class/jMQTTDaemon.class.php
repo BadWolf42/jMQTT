@@ -134,6 +134,8 @@ class jMQTTDaemon {
         }
         $shellCmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(jMQTT::class));
         $shellCmd .= ' LOGFILE=' . log::getPathToLog(jMQTT::class.'d');
+        // TODO: Remove LOCALONLY debug parameter
+        $shellCmd .= ' LOCALONLY=False';
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
         // $shellCmd .= ' SOCKETPORT=' . $port;
         $shellCmd .= ' SOCKETPORT=18883'; // TODO Remove me <----------------------------------------------------------------------------------------
