@@ -23,8 +23,8 @@ class LogLevelModel(str, Enum):
 class MqttMessageModel(BaseModel):
     topic: str
     payload: str
-    retain: Optional[bool] = False
     qos: Optional[int] = 1
+    retain: Optional[bool] = False
 
 
 # -----------------------------------------------------------------------------
