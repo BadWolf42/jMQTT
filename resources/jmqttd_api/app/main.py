@@ -1,4 +1,5 @@
 from asyncio import create_task
+from pydantic import ValidationError
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI
 from fastapi.responses import JSONResponse
@@ -169,9 +170,17 @@ if __name__ == "__main__":
             dependencies=[Depends(getToken)],
         )
 
+    @app.exception_handler(ValidationError)
+    def validation_exception_handler(req: Request, err: ValidationError):
+        base_error_message = f"Failed to execute: {req.method}: {req.url}"
+        return JSONResponse(
+            status_code=400,
+            content={"message": f"{base_error_message}. Details: {err.json()}"}
+        )
+
     @app.exception_handler(Exception)
-    def validation_exception_handler(request, err):
-        base_error_message = f"Failed to execute: {request.method}: {request.url}"
+    def exception_handler(req: Request, err: Exception):
+        base_error_message = f"Failed to execute: {req.method}: {req.url}"
         return JSONResponse(
             status_code=400,
             content={"message": f"{base_error_message}. Details: {err}"}
