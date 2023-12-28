@@ -57,7 +57,6 @@ class jMQTTComToDaemon {
             'Content-Type: application/json',
             'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
         ));
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query(array()));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         }
@@ -69,21 +68,20 @@ class jMQTTComToDaemon {
             throw new Exception(__("Le démon n'est pas démarré", __FILE__));
         }
 
-        $params['level'] = is_null($_level) ? log::getLogLevel(__class__) : $_level;
-        if ($params['level'] == 'default') // Replace 'default' log level
-            $params['level'] = log::getConfig('log::level');
-        if (is_numeric($params['level'])) // Replace numeric log level par text level
-            $params['level'] = log::convertLogLevel($params['level']);
-        $payload = http_build_query($params);
+        $level = is_null($_level) ? log::getLogLevel(__class__) : $_level;
+        if ($level == 'default') // Replace 'default' log level
+            $level = log::getConfig('log::level');
+        if (is_numeric($level)) // Replace numeric log level par text level
+            $level = log::convertLogLevel($level);
 
-        $port = jMQTTDaemon::getPort();
-        $curl = curl_init('http://127.0.0.1:' . $port . '/daemon/loglevel');
+        $url = 'http://127.0.0.1:' . jMQTTDaemon::getPort();
+        $url .= '/daemon/loglevel?name=jmqtt&level=' . $level;
+        $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
             'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
         ));
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         }
