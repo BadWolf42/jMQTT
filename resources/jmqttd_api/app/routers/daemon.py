@@ -101,8 +101,8 @@ def daemon_put_hb():
 
 # -----------------------------------------------------------------------------
 @daemon.put("/api", status_code=204, summary="Modify Daemon apikey")
-def daemon_put_api(option: str):
-    settings.apikey = option
+def daemon_put_api(newapikey: str):
+    settings.apikey = newapikey
 
 
 # -----------------------------------------------------------------------------

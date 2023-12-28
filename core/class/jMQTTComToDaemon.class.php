@@ -91,21 +91,22 @@ class jMQTTComToDaemon {
     }
 
     public static function changeApiKey($newApiKey) {
-        if (!jMQTTDaemon::state()) {
+        if (
+            !jMQTTDaemon::state()
+            || is_null($newApiKey)
+            || strlen(trim($newApiKey)) == 0
+        ) {
             return;
         }
 
-        $params['option'] = $newApiKey;
-        $payload = http_build_query($params);
-
-        $port = jMQTTDaemon::getPort();
-        $curl = curl_init('http://127.0.0.1:' . $port . '/daemon/api');
+        $url = 'http://127.0.0.1:' . jMQTTDaemon::getPort();
+        $url .= '/daemon/loglevel?newapikey=' . trim($newApiKey);
+        $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
             'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
         ));
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         }
