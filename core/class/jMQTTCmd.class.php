@@ -357,6 +357,7 @@ class jMQTTCmd extends cmd {
         }
         // Must check If Request has changed
         if (!$must_chk) {
+            // @phpstan-ignore-next-line
             $old_req = $old_cmd->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '');
             $must_chk = $old_req != $req;
         }

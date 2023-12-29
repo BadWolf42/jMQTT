@@ -881,7 +881,7 @@ class jMQTT extends eqLogic {
                     self::logger(
                         'warning',
                         sprintf(
-                            'DELETED configkey="%1\$s" (value="%2\$s") on #%3\$s#',
+                            "DELETED configkey='%1\$s' (value='%2\$s') on #%3\$s#",
                             $key,
                             $this->getConf($key),
                             $this->getHumanName()
@@ -932,7 +932,7 @@ class jMQTT extends eqLogic {
                     self::logger(
                         'warning',
                         sprintf(
-                            'DELETED configkey="%1\$s" (value="%2\$s") on #%3\$s#',
+                            "DELETED configkey='%1\$s' (value='%2\$s') on #%3\$s#",
                             $key,
                             $this->getConf($key),
                             $this->getHumanName()
