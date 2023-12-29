@@ -37,12 +37,6 @@ class jMQTT extends eqLogic {
     private $_preSaveInformations;
 
     /**
-     * Data shared between preRemove and postRemove
-     * @var array values from preRemove used for postRemove actions
-     */
-    private $_preRemoveInformations;
-
-    /**
      * Broker jMQTT object related to this object
      * @var null|jMQTT broker object
      */
@@ -1343,12 +1337,6 @@ class jMQTT extends eqLogic {
                 )
             );
         }
-
-
-        // load eqLogic from DB
-        $this->_preRemoveInformations = array(
-            'id' => $this->getId()
-        );
     }
 
     /**
@@ -1368,10 +1356,6 @@ class jMQTT extends eqLogic {
                 cache::delete('jMQTT::' . $this->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED);
             } catch (Exception $e) {
                 // Cache file/key missed, nothing to do here
-            }
-            // Remove all equipments attached to the removed broker (id saved in _preRemoveInformations)
-            foreach (self::byBrkId($this->_preRemoveInformations['id']) as $eqpt) {
-                $eqpt->remove();
             }
         }
         // ------------------------ Normal eqpt ------------------------
