@@ -70,16 +70,6 @@ class jMQTTCmd extends cmd {
                 $this->getHumanName()
             )
         );
-        // Advise the desktop page (jMQTT.js) that a new command has been added
-        event::add(
-            'jMQTT::cmdAdded',
-            array(
-                'eqlogic_id' => $eqLogic->getId(),
-                'eqlogic_name' => $eqLogic->getName(),
-                'cmd_name' => $this->getName(),
-                'reload' => $reload
-            )
-        );
     }
 
     /**

@@ -1121,39 +1121,6 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
     }
 });
 
-/**
- * Management of the display when an information command is added
- * Triggerred when the plugin core send a jMQTT::cmdAdded event
- * @param {string} _event event name
- * @param {string} _options['eqlogic_name'] name of the eqLogic command is added to
- * @param {int} _options['eqlogic_id'] id of the eqLogic command is added to
- * @param {string} _options['cmd_name'] name of the new command
- * @param {bool} _options['reload'] whether or not a reload of the page is requested
- */
-$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
-    var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;
-
-    // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
-    if (jmqtt.isPageModified() || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||
-            $('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
-        $.fn.showAlert({message: msg, level: 'warning'});
-    }
-    // Otherwise: display an alert message and reload the page
-    else {
-        $.fn.showAlert({
-            message: msg + ' {{La page va se réactualiser automatiquement}}.',
-            level: 'warning'
-        });
-        // Reload the page after a delay to let the user read the message
-        if (jmqtt_globals.refreshTimeout === undefined) {
-            jmqtt_globals.refreshTimeout = setTimeout(function() {
-                jmqtt_globals.refreshTimeout = undefined;
-                $('.eqLogicAction[data-action=refreshPage]').click();
-            }, 3000);
-        }
-    }
-});
-
 // Update the broker card and the real time mode display on reception of a new state event
 $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq) {
     var card = $('.eqLogicDisplayCard[jmqtt_type="broker"][data-eqlogic_id="' + _eq.id + '"]');

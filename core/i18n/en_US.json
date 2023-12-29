@@ -347,7 +347,6 @@
 		"Historiser": "Historize",
 		"Inverser": "Invert",
 		"L'équipement <b>${_options.eqlogic_name}</b> vient d'être ajouté": "Equipment <b>${_options.eqlogic_name}</b> has been added",
-		"La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.": "Command <b>${_options.cmd_name}</b> has been added to equipment <b>${_options.eqlogic_name}</b>.",
 		"La commande <b>${_options.name}</b> vient d'être ${_options.action}.": "Command <b>${_options.name}</b> has been ${_options.action}.",
 		"La page va se réactualiser automatiquement": "The page will refresh automatically",
 		"Le nom de l'équipement ne peut pas être vide !": "Equipment name cannot be empty!",
