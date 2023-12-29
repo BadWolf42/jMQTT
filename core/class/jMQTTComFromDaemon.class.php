@@ -121,41 +121,8 @@ class jMQTTComFromDaemon {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
             $broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
             $broker->sendMqttClientStateEvent();
-            // Subscribe to topics
-            foreach (jMQTT::byBrkId($id) as $eq) {
-                if ($eq->getIsEnable() && $eq->getId() != $broker->getId()) {
-                    $eq->subscribeTopic($eq->getTopic(), $eq->getQos());
-                }
-            }
 
-            // Enable Interactions
-            if ($broker->getConf(jMQTTConst::CONF_KEY_MQTT_INT)) {
-                $broker->log(
-                    'info',
-                    sprintf(
-                        __("Souscription au topic d'Interaction '%s'", __FILE__),
-                        $broker->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC)
-                    )
-                );
-                $broker->subscribeTopic($broker->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC), '1');
-                $broker->subscribeTopic($broker->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC) . '/advanced', '1');
-            } else
-                $broker->log('debug', __("L'accès aux Interactions est désactivé", __FILE__));
-
-            // Enable API
-            if ($broker->getConf(jMQTTConst::CONF_KEY_MQTT_API)) {
-                $broker->log(
-                    'info',
-                    sprintf(
-                        __("Souscription au topic API '%s'", __FILE__),
-                        $broker->getConf(jMQTTConst::CONF_KEY_MQTT_API_TOPIC)
-                    )
-                );
-                $broker->subscribeTopic($broker->getConf(jMQTTConst::CONF_KEY_MQTT_API_TOPIC), '1');
-            } else
-                $broker->log('debug', __("L'accès à l'API est désactivé", __FILE__));
-
-            // Active listeners
+            // Activate listeners
             jMQTT::listenersAddAll();
         } catch (Throwable $e) {
             if (log::getLogLevel(jMQTT::class) > 100)

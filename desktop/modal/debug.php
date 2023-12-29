@@ -481,8 +481,6 @@ function builder_daemon(div) {
     res += '<textarea class="bootbox-input bootbox-input-text form-control toDaemon" style="min-height:65px;">';
     res += '{"cmd": "newMqttClient", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}\n';
     res += '{"cmd": "removeMqttClient", "id": ""}\n';
-    res += '{"cmd": "subscribeTopic", "id": "", "topic": "", "qos": ""}\n';
-    res += '{"cmd": "unsubscribeTopic", "id": "", "topic": ""}\n';
     res += '{"cmd": "messageOut", "id": "", "topic": "", "payload": "", "qos": "", "retain": ""}\n';
     res += '{"cmd": "hb", "id": ""}\n';
     res += '{"cmd": "loglevel", "id": "", "level": ""}';
