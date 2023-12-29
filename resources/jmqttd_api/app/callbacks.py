@@ -61,7 +61,7 @@ class Callbacks:
     @classmethod
     async def daemonUp(cls):
         # Let port some time to open in main task
-        await sleep(1)
+        await sleep(0.5)
         return Heartbeat.onSend(
             await cls.__send('daemonUp', {'port': settings.socketport})
         )
