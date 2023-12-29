@@ -828,8 +828,9 @@ class jMQTT extends eqLogic {
                 ) {
                     throw new Exception(
                         sprintf(
-                            __("Le Broker #%s# porte déjà le même nom", __FILE__),
-                            $this->getHumanName()
+                            __("Le Broker #%1\$s# porte déjà le même nom (#%2\$s#)", __FILE__),
+                            $broker->getId(),
+                            $broker->getName()
                         )
                     );
                 }
@@ -841,27 +842,16 @@ class jMQTT extends eqLogic {
             // jMQTTConst::CONF_KEY_MQTT_TLS_CA
             // jMQTTConst::CONF_KEY_MQTT_TLS_CLI_CERT
             // jMQTTConst::CONF_KEY_MQTT_TLS_CLI_KEY
-        }
 
-        // ------------------------ New or Existing Broker or Normal eqpt ------------------------
-
-        // It's time to gather informations that will be used in postSave
-        if ($this->getId() == '')
-            $this->_preSaveInformations = null; // New eqpt => Nothing to collect
-        else { // Existing eqpt
-
-            // load eqLogic from DB
-            /** @var jMQTT $eqLogic */
-            $eqLogic = self::byId($this->getId());
-            $this->_preSaveInformations = array(
-                'name'                        => $eqLogic->getName(),
-                'isEnable'                    => $eqLogic->getIsEnable(),
-                'topic'                       => $eqLogic->getTopic(),
-                jMQTTConst::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
-            );
-
-            // load trivials eqLogic from DB
-            $backupVal = array(
+            // Cleanup Broker from unexpected config
+            $expectedData = array(
+                jMQTTConst::CONF_KEY_TYPE,
+                'createtime',
+                'updatetime',
+                'previousIsEnable',
+                'previousIsVisible',
+                // TODO: Migrate eq/configuration/commentaire to eq/comment
+                'commentaire',
                 jMQTTConst::CONF_KEY_LOGLEVEL,
                 jMQTTConst::CONF_KEY_MQTT_PROTO,
                 jMQTTConst::CONF_KEY_MQTT_ADDRESS,
@@ -883,12 +873,106 @@ class jMQTT extends eqLogic {
                 jMQTTConst::CONF_KEY_MQTT_INT,
                 jMQTTConst::CONF_KEY_MQTT_INT_TOPIC,
                 jMQTTConst::CONF_KEY_MQTT_API,
-                jMQTTConst::CONF_KEY_MQTT_API_TOPIC,
+                jMQTTConst::CONF_KEY_MQTT_API_TOPIC
+            );
+            $data = $this->toArray();
+            foreach ($data['configuration'] as $key) {
+                if (!in_array($key, $expectedData)) {
+                    self::logger(
+                        'warning',
+                        sprintf(
+                            'DELETED configkey="%1\$s" (value="%2\$s") on #%3\$s#',
+                            $key,
+                            $this->getConf($key),
+                            $this->getHumanName()
+                        )
+                    );
+                    // TODO: Enable deletion unexpected config on Broker
+                    // $this->setConfiguration($key, null);
+                }
+            }
+        }
+        // ------------------------ New or Existing Normal eqpt ------------------------
+        else {
+            try {
+                // Try to get Broker from id
+                self::getBrokerFromId(
+                    $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
+                );
+            } catch (Throwable $e) {
+                throw new Exception(
+                    sprintf(
+                        __('Erreur sur le Broker sélectionné: %s', __FILE__),
+                        $e->getMessage()
+                    )
+                );
+            }
+
+            // Cleanup Equipment from unexpected config
+            $expectedData = array(
+                jMQTTConst::CONF_KEY_TYPE,
+                'createtime',
+                'updatetime',
+                'previousIsEnable',
+                'previousIsVisible',
+                jMQTTConst::CONF_KEY_BRK_ID,
+                // TODO: Migrate eq/configuration/commentaire to eq/comment
+                'commentaire',
+                'icone',
+                jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
+                jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
                 jMQTTConst::CONF_KEY_BATTERY_CMD,
                 jMQTTConst::CONF_KEY_AVAILABILITY_CMD,
-                jMQTTConst::CONF_KEY_QOS);
-            foreach ($backupVal as $key)
-                $this->_preSaveInformations[$key] = $eqLogic->getConf($key);
+                jMQTTConst::CONF_KEY_QOS,
+                jMQTTConst::CONF_KEY_TEMPLATE_UUID
+            );
+            $data = $this->toArray();
+            foreach ($data['configuration'] as $key) {
+                if (!in_array($key, $expectedData)) {
+                    self::logger(
+                        'warning',
+                        sprintf(
+                            'DELETED configkey="%1\$s" (value="%2\$s") on #%3\$s#',
+                            $key,
+                            $this->getConf($key),
+                            $this->getHumanName()
+                        )
+                    );
+                    // TODO: Enable deletion unexpected config on Equipment
+                    // $this->setConfiguration($key, null);
+                }
+            }
+        }
+
+        // ------------------------ New or Existing Broker or Normal eqpt ------------------------
+        foreach (eqLogic::byType(__CLASS__) as $eqpt) {
+            if (
+                $eqpt->getHumanName() == $this->getHumanName()
+                && $eqpt->getId() != $this->getId()
+            ) {
+                if ($this->getType() == jMQTTConst::TYP_BRK) {
+                    $msg = __("Le Broker #%1\$s# porte déjà le même nom (#%2\$s#)", __FILE__);
+                } else {
+                    $msg = __("L'équipement #%1\$s# porte déjà le même nom (#%2\$s#)", __FILE__);
+                }
+                throw new Exception(
+                    sprintf($msg, $eqpt->getId(), $eqpt->getHumanName())
+                );
+            }
+        }
+
+        // It's time to gather informations that will be used in postSave
+        $this->_preSaveInformations = null;
+
+        // load current eqLogic from DB
+        /** @var jMQTT $eqLogic */
+        $eqLogic = self::byId($this->getId());
+        // If existing eqpt
+        if (is_object($eqLogic)) {
+            $data = utils::o2a($eqLogic, true);
+            $this->_preSaveInformations = $data['configuration'];
+            $this->_preSaveInformations['name'] = $eqLogic->getName();
+            $this->_preSaveInformations['isEnable'] = $eqLogic->getIsEnable();
         }
     }
 
@@ -896,6 +980,7 @@ class jMQTT extends eqLogic {
      * postSave apply changes to MqttClient and log
      */
     public function postSave() {
+        $sendUpdate = false;
 
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == jMQTTConst::TYP_BRK) {
@@ -914,56 +999,51 @@ class jMQTT extends eqLogic {
                 $this->getMqttClientStatusCmd(true);
                 $this->getMqttClientConnectedCmd(true);
 
-                // Enabled => Start MqttClient
-                if ($this->getIsEnable())
-                    $this->startMqttClient();
+                $sendUpdate = true;
             }
             // --- Existing broker ---
             else {
-
-                $stopped = ($this->getMqttClientState() == jMQTTConst::CLIENT_NOK);
-                $startRequested = false;
-
                 // isEnable changed
                 if ($this->_preSaveInformations['isEnable'] != $this->getIsEnable()) {
                     if ($this->getIsEnable()) {
                         // Force current status to offline
-                        $this->getMqttClientStatusCmd(true)->event(jMQTTConst::CLIENT_STATUS_OFFLINE);
+                        $this->getMqttClientStatusCmd(true)->event(
+                            jMQTTConst::CLIENT_STATUS_OFFLINE
+                        );
                         // Force current connected to 0
                         $this->getMqttClientConnectedCmd(true)->event(0);
                         $this->setStatus('warning', 1); // And a warning
-                        $startRequested = true; //If nothing happens in between, it will be restarted
-                    } else {
-                        // Note that $stopped is always true here
-                        $this->stopMqttClient();
                     }
+                    $sendUpdate = true;
                 }
-
                 // LogLevel change
-                if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_LOGLEVEL]
-                    != $this->getConf(jMQTTConst::CONF_KEY_LOGLEVEL)) {
+                if (
+                    $this->_preSaveInformations[jMQTTConst::CONF_KEY_LOGLEVEL]
+                    != $this->getConf(jMQTTConst::CONF_KEY_LOGLEVEL)
+                ) {
                     config::save(
                         'log::level::' . $this->getMqttClientLogFile(),
                         $this->getConf(jMQTTConst::CONF_KEY_LOGLEVEL),
                         __CLASS__
                     );
                 }
-
                 // Name changed
                 if ($this->_preSaveInformations['name'] != $this->getName()) {
                     $old_log = __CLASS__ . '_' . str_replace(' ', '_', $this->_preSaveInformations['name']);
                     $new_log = $this->getMqttClientLogFile();
-                    if (file_exists(log::getPathToLog($old_log)))
+                    if (file_exists(log::getPathToLog($old_log))) {
                         rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
+                    }
                     config::save(
                         'log::level::' . $new_log,
                         config::byKey('log::level::' . $old_log, __CLASS__),
                         __CLASS__
                     );
                     config::remove('log::level::' . $old_log, __CLASS__);
+                    $sendUpdate = true;
                 }
 
-                // Check changes that would trigger MQTT Client reload
+                // Check other changes that would trigger MQTT Client update
                 $checkChanged = array(
                     jMQTTConst::CONF_KEY_MQTT_PROTO,
                     jMQTTConst::CONF_KEY_MQTT_ADDRESS,
@@ -989,36 +1069,37 @@ class jMQTT extends eqLogic {
                 );
                 foreach ($checkChanged as $key) {
                     if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
-                        if (!$stopped) {
-                            $this->stopMqttClient();
-                            $stopped = true;
-                        }
-                        $startRequested = true;
+                        $sendUpdate = true;
                         break;
                     }
                 }
+            }
 
-                // LWT Topic changed
-                if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_MQTT_LWT]
-                     != $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT)
-                    || $this->_preSaveInformations[jMQTTConst::CONF_KEY_MQTT_LWT_TOPIC]
-                     != $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT_TOPIC)) {
-                    if (!$stopped) {
-                        // Just try to remove the previous status topic
-                        $this->publish(
-                            $this->getName(),
-                            $this->_preSaveInformations[jMQTTConst::CONF_KEY_MQTT_LWT],
-                            '',
-                            1,
-                            true
-                        );
-                    }
+            // In the end, does Daemon data need to be updated
+            if ($sendUpdate) {
+                $data = utils::o2a($this, true);
+                $data['cache'] = $this->getCache();
+                if (is_object($this->getObject())) {
+                    $obj_name = $this->getObject()->getName();
+                } else {
+                    $obj_name = __('Aucun', __FILE__);
                 }
-
-                // In the end, does MqttClient need to be Started
-                if($startRequested && $this->getIsEnable()){
-                    $this->startMqttClient();
-                }
+                $data['name'] = $obj_name.':'.$data['name'];
+                // Do some cleanup
+                unset($data['category']);
+                unset($data['configuration']['battery_type']);
+                unset($data['configuration']['createtime']);
+                unset($data['configuration']['commentaire']);
+                unset($data['configuration']['updatetime']);
+                unset($data['comment']);
+                unset($data['display']);
+                unset($data['isVisible']);
+                unset($data['object_id']);
+                unset($data['status']);
+                unset($data['tags']);
+                unset($data['timeout']);
+                // Send update of eqLogic (and only eqLogic) to Daemon
+                jMQTTComToDaemon::brokerSet($data);
             }
         }
         // ------------------------ Normal eqpt ------------------------
@@ -1026,6 +1107,7 @@ class jMQTT extends eqLogic {
 
             // --- New eqpt ---
             if (is_null($this->_preSaveInformations)) {
+                $sendUpdate = true;
             }
             // --- Existing eqpt ---
             else {
@@ -1037,6 +1119,7 @@ class jMQTT extends eqLogic {
                     } else {
                         $this->listenersRemove();
                     }
+                    $sendUpdate = true;
                 }
 
                 // brkId changed
@@ -1046,6 +1129,7 @@ class jMQTT extends eqLogic {
                 ) {
                     // Get new Broker
                     $this->_broker = self::getBrokerFromId($this->getBrkId());
+                    $sendUpdate = true;
                 }
 
                 // Battery removed -> Clear Battery status
@@ -1079,6 +1163,45 @@ class jMQTT extends eqLogic {
                     );
                 }
 
+                // Check other changes that would trigger MQTT Client update
+                $checkChanged = array(
+                    // jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
+                    jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
+                    jMQTTConst::CONF_KEY_QOS
+                );
+                foreach ($checkChanged as $key) {
+                    if ($this->_preSaveInformations[$key] != $this->getConf($key)) {
+                        $sendUpdate = true;
+                        break;
+                    }
+                }
+            }
+
+            // In the end, does Daemon data need to be updated
+            if ($sendUpdate) {
+                $data = utils::o2a($this, true);
+                $data['cache'] = $this->getCache();
+                if (is_object($this->getObject())) {
+                    $obj_name = $this->getObject()->getName();
+                } else {
+                    $obj_name = __('Aucun', __FILE__);
+                }
+                $data['name'] = $obj_name.':'.$data['name'];
+                // Do some cleanup
+                unset($data['category']);
+                unset($data['configuration']['battery_type']);
+                unset($data['configuration']['createtime']);
+                unset($data['configuration']['commentaire']);
+                unset($data['configuration']['updatetime']);
+                unset($data['comment']);
+                unset($data['display']);
+                unset($data['isVisible']);
+                unset($data['object_id']);
+                unset($data['status']);
+                unset($data['tags']);
+                unset($data['timeout']);
+                // Send update of eqLogic (and only eqLogic) to Daemon
+                jMQTTComToDaemon::eqptSet($data);
             }
         }
     }
@@ -1104,13 +1227,19 @@ class jMQTT extends eqLogic {
                 $this->setIsEnable(0);
                 $this->save();
 
-                // Wait up to 10s for MqttClient stopped
-                for ($i=0; $i < 40; $i++) {
+                // Wait up to 3s for MqttClient to stop
+                for ($i=0; $i < 12; $i++) {
                     if ($this->getMqttClientState() != jMQTTConst::CLIENT_OK)
                         break;
                     usleep(250000);
                 }
             }
+
+            // Remove log level from config
+            $log = $this->getMqttClientLogFile();
+            config::remove('log::level::' . $log, __CLASS__);
+
+            jMQTTComToDaemon::brokerDel($this->getId());
         }
         // ------------------------ Normal eqpt ------------------------
         else {
@@ -1121,30 +1250,7 @@ class jMQTT extends eqLogic {
                     $this->getHumanName()
                 )
             );
-        }
-    }
-
-    /**
-     * postRemove callback to restart the daemon when deemed necessary (see also preRemove)
-     */
-    public function postRemove() {
-        // ------------------------ Broker eqpt ------------------------
-        if ($this->getType() == jMQTTConst::TYP_BRK) {
-
-            // Suppress the log file
-            $log = $this->getMqttClientLogFile();
-            if (file_exists(log::getPathToLog($log))) {
-                unlink(log::getPathToLog($log));
-            }
-            config::remove('log::level::' . $log, __CLASS__);
-            try {
-                cache::delete('jMQTT::' . $this->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED);
-            } catch (Exception $e) {
-                // Cache file/key missed, nothing to do here
-            }
-        }
-        // ------------------------ Normal eqpt ------------------------
-        else {
+            jMQTTComToDaemon::eqptDel($this->getId());
         }
     }
 

@@ -57,22 +57,6 @@ class jMQTTCmd extends cmd {
     }
 
     /**
-     * Inform that a command has been created (in the log and to the ui though an event)
-     * @param bool $reload indicate if the desktop page shall be reloaded
-     */
-    private function eventNewCmd($reload=false) {
-        $eqLogic = $this->getEqLogic();
-        $eqLogic->log(
-            'info',
-            sprintf(
-                __("Commande %1\$s #%2\$s# ajoutée", __FILE__),
-                $this->getType(),
-                $this->getHumanName()
-            )
-        );
-    }
-
-    /**
      * Return a full export of this command as an array.
      * @param boolean $clean irrelevant values to Daemon must be removed from the return
      * @return array representing the cmd
@@ -260,7 +244,7 @@ class jMQTTCmd extends cmd {
      * @return boolean TRUE of the parameter is valid, FALSE if not
      */
     public static function isConfigurationValid($value) {
-        return (json_encode(array('v' => $value), JSON_UNESCAPED_UNICODE) !== FALSE);
+        return (json_encode(array('v' => $value), JSON_UNESCAPED_UNICODE) !== false);
     }
 
     /**
@@ -353,13 +337,81 @@ class jMQTTCmd extends cmd {
     }
 
     /**
+     * Used to check in preSave if autoPub is OK on this cmd
+     * @throws Exception is save should be stopped
+     */
+    private function checkAutoPublishable() {
+        // Reset autoPub if info cmd (should not happen or be possible)
+        if ($this->getType() == 'info') {
+            $this->setConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0);
+            return;
+        }
+        // Getting new request
+        $req = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '');
+        // Must check If it is a New cmd
+        $must_chk = $this->getId() == '';
+        // Must check If autoPub has changed
+        if (!$must_chk) {
+            $old_cmd = self::byId($this->getId());
+            $must_chk = !$old_cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0);
+        }
+        // Must check If Request has changed
+        if (!$must_chk) {
+            $old_req = $old_cmd->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '');
+            $must_chk = $old_req != $req;
+        }
+        // OK no need to check this command.
+        if (!$must_chk)
+            return;
+        // Get and check all commands in the new Request
+        preg_match_all("/#([0-9]*)#/", $req, $matches);
+        $cmds = array_unique($matches[1]);
+        // OK there is no command in the new Request
+        if (count($cmds) <= 0)
+            return;
+        // For all commands in the new Request
+        foreach ($cmds as $cmd_id) {
+            // Get targeted cmd
+            $cmd = cmd::byId($cmd_id);
+            // Fail if cmd does not exist
+            if (!is_object($cmd))
+                throw new Exception(sprintf(
+                    __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> est invalide", __FILE__),
+                    $this->getHumanName(),
+                    $cmd_id
+                ));
+            // Fail if cmd is not an info
+            if ($cmd->getType() != 'info')
+                throw new Exception(sprintf(
+                    __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> n'est pas de type info", __FILE__),
+                    $this->getHumanName(),
+                    $cmd->getHumanName()
+                ));
+            // OK if not linked to a jMQTT cmd
+            if ($cmd->getEqType() == 'jMQTT')
+                return;
+            // Fail if linked jMQTT cmd is has the same topic
+            /** @var jMQTTCmd $cmd */
+            if ($this->getTopic() == $cmd->getTopic())
+                throw new Exception(sprintf(
+                    __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> référence le même topic", __FILE__),
+                    $this->getHumanName(),
+                    $cmd->getHumanName()
+                ));
+        }
+    }
+
+    /**
      * preSave callback called by the core before saving this command in the DB
      */
     public function preSave() {
         // Check if name is unique on the equipment for a New cmd
         if (
             $this->getId() == ''
-            && is_object(jMQTTCmd::byEqLogicIdCmdName($this->getEqLogic()->getId(), $this->getName()))
+            && is_object(jMQTTCmd::byEqLogicIdCmdName(
+                    $this->getEqLogic()->getId(),
+                    $this->getName()
+            ))
         ) {
             throw new Exception(
                 sprintf(
@@ -372,80 +424,49 @@ class jMQTTCmd extends cmd {
         // --- New cmd or Existing cmd ---
         // Saving a new command on a Broker must fail, except for the status command
         if (
-            $this->getEqLogic()->getType() == jMQTTConst::TYP_BRK
+            $this->getId() == ''
+            && $this->getEqLogic()->getType() == jMQTTConst::TYP_BRK
             && $this->getLogicalId() != jMQTTConst::CLIENT_STATUS
             && $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED
-            && $this->getId() == ''
         ) {
-            $err = __("Impossible de créer la commande <b>#%1\$s#</b>, seule les commandes de status sont autorisées sur un équipement Broker (%2\$s)", __FILE__);
-            throw new Exception(sprintf($err, $this->getHumanName(), $this->getEqLogic()->getName()));
+            throw new Exception(sprintf(
+                __("Impossible de créer la commande <b>#%1\$s#</b>, seule les commandes status et connected sont autorisées sur un équipement Broker (%2\$s)", __FILE__),
+                $this->getHumanName(),
+                $this->getEqLogic()->getName()
+            ));
         }
 
-        $conf = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST);
-        // If request is an array, it means a JSON (starting by '{') has been parsed in 'request' field (parsed by getValues in jquery.utils.js)
-        if (is_array($conf) && (($conf = json_encode($conf, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) !== FALSE)) {
-            $this->setConfiguration(jMQTTConst::CONF_KEY_REQUEST, $conf);
+        $request = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST);
+        // If request is an array, then it means a JSON (starting by '{') has
+        // been parsed in request field (parsed by getValues in jquery.utils.js)
+        if (
+            is_array($request)
+            && (
+                ($request = json_encode(
+                    $request,
+                    JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+                ) !== false
+            )
+        ) {
+            $this->setConfiguration(jMQTTConst::CONF_KEY_REQUEST, $request);
         }
 
-        // Reset autoPub if info cmd (should not happen or be possible)
-        if ($this->getType() == 'info' && $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0))
-            $this->setConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0);
-        // Check "request" if autoPub enabled
-        if ($this->getType() == 'action' && $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)) {
-            $req = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '');
-            // Must check If New cmd, autoPub changed or Request changed
-            $must_chk = $this->getId() == '';
-            $must_chk = $must_chk || !(self::byId($this->getId())->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0));
-            $must_chk = $must_chk || (self::byId($this->getId())->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '') != $req);
-            if ($must_chk) {
-                // Get all commands
-                preg_match_all("/#([0-9]*)#/", $req, $matches);
-                $cmds = array_unique($matches[1]);
-                if (count($cmds) > 0) { // There are commands
-                    foreach ($cmds as $cmd_id) {
-                        $cmd = cmd::byId($cmd_id);
-                        if (!is_object($cmd))
-                            throw new Exception(
-                                sprintf(
-                                    __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> est invalide", __FILE__),
-                                    $this->getHumanName(),
-                                    $cmd_id
-                                )
-                            );
-                        if ($cmd->getType() != 'info')
-                            throw new Exception(
-                                sprintf(
-                                    __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> n'est pas de type info", __FILE__),
-                                    $this->getHumanName(),
-                                    $cmd->getHumanName()
-                                )
-                            );
-                        if ($cmd->getEqType() =='jMQTT') {
-                            /** @var jMQTTCmd $cmd */
-                            $cmd_topic = $cmd->isJson() ? substr($cmd->getTopic(), 0, strpos($cmd->getTopic(), '{')) : $cmd->getTopic();
-                            if ($this->getTopic() == $cmd_topic)
-                                throw new Exception(
-                                    sprintf(
-                                        __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> référence le même topic", __FILE__),
-                                        $this->getHumanName(),
-                                        $cmd->getHumanName()
-                                    )
-                                );
-                        }
-                    }
-                }
-            }
+        // Check autoPub
+        if ($this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)) {
+            $this->checkAutoPublishable();
         }
 
-        $this->_preSaveInformations = null;
-        $cmd = self::byId($this->getId());
         // It's time to gather informations that will be used in postSave
-        if (is_object($cmd)){
-            $this->_preSaveInformations = array(
-                jMQTTConst::CONF_KEY_RETAIN => $cmd->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0),
-                jMQTTConst::CONF_KEY_AUTOPUB => $cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0),
-                jMQTTConst::CONF_KEY_REQUEST => $cmd->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '')
-            );
+        $this->_preSaveInformations = null;
+
+        // load current cmd from DB
+        /** @var jMQTTCmd $cmd */
+        $cmd = self::byId($this->getId());
+        // If existing eqpt
+        if (is_object($cmd)) {
+            $data = utils::o2a($cmd, true);
+            $this->_preSaveInformations = $data['configuration'];
+            $this->_preSaveInformations['name'] = $cmd->getName();
         }
     }
 
@@ -453,30 +474,31 @@ class jMQTTCmd extends cmd {
      * Callback called by the core after having saved this command in the DB
      */
     public function postSave() {
+        $sendUpdate = false;
         $eqLogic = $this->getEqLogic();
 
         // Nothing must be done in postSave on Broker command
         if ($eqLogic->getType() == jMQTTConst::TYP_BRK) {
             // Remove all cmd other than the status cmd
-            if ($this->getLogicalId() != jMQTTConst::CLIENT_STATUS && $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED) {
-                $eqLogic->log(
-                    'warning',
-                    sprintf(
-                        __("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule les commandes status et connected sont autorisées sur un équipement Broker.", __FILE__),
-                        $this->getHumanName(),
-                        $eqLogic->getName()
-                    )
-                );
+            if (
+                $this->getLogicalId() != jMQTTConst::CLIENT_STATUS
+                && $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED
+            ) {
+                $eqLogic->log('warning', sprintf(
+                    __("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule les commandes status et connected sont autorisées sur un équipement Broker.", __FILE__),
+                    $this->getHumanName(),
+                    $eqLogic->getName()
+                ));
                 $this->remove();
             }
             return;
         }
 
-
         // If _preSaveInformations is null, It's a fresh new cmd.
         if (is_null($this->_preSaveInformations)) {
 
-            // Type Info and deriving from a JSON payload : Initialize value from "root" cmd
+            // Type Info and deriving from a JSON payload :
+            // Initializing value from "root" cmd
             if ($this->getType() == 'info' && $this->isJson()) {
 
                 $root_topic = $this->getTopic();
@@ -501,16 +523,35 @@ class jMQTTCmd extends cmd {
             // Update listener on Eq (not Broker) at creation
             $this->listenerUpdate();
 
-            // Send an event regarding this new cmd
-            $this->eventNewCmd();
+            // Write a log regarding this newly created cmd
+            $eqLogic->log(
+                'info',
+                sprintf(
+                    __("Commande %1\$s #%2\$s# ajoutée", __FILE__),
+                    $this->getType(),
+                    $this->getHumanName()
+                )
+            );
+            $sendUpdate = true;
         }
-        else { // the cmd has been updated
+
+        // Cmd has been updated
+        else {
+
+            // If name or topic changed
+            if (
+                $this->_preSaveInformations['name'] != $this->getName()
+                || $this->_preSaveInformations['topic'] != $this->getTopic()
+            ) {
+                $sendUpdate = true;
+            }
 
             // If retain mode changed
-            if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_RETAIN]
-                != $this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0)) {
-
-                // It's enabled now
+            if (
+                $this->_preSaveInformations[jMQTTConst::CONF_KEY_RETAIN]
+                != $this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0)
+            ) {
+                // Retain is enabled now
                 if ($this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0)) {
                     $eqLogic->log(
                         'info',
@@ -519,27 +560,27 @@ class jMQTTCmd extends cmd {
                             $this->getHumanName()
                         )
                     );
-                } else {
-                    //If broker eqpt is enabled
-                    if ($eqLogic->getBroker()->getIsEnable()) {
-                        // A null payload should be sent to the broker to erase the last retained value
-                        // Otherwise, this last value remains retained at broker level
-                        $eqLogic->log(
-                            'info',
-                            sprintf(
-                                __("Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker", __FILE__),
-                                $this->getHumanName()
-                            )
-                        );
-                        $eqLogic->publish(
-                            $this->getHumanName(),
-                            $this->getTopic(),
-                            '',
-                            1,
-                            1
-                        );
-                    }
                 }
+                // If broker eqpt is enabled and retain is now disabled
+                elseif ($eqLogic->getBroker()->getIsEnable()) {
+                    // A null payload should be sent to the broker to erase the last retained value
+                    // Otherwise, this last value remains retained at broker level
+                    $eqLogic->log(
+                        'info',
+                        sprintf(
+                            __("Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker", __FILE__),
+                            $this->getHumanName()
+                        )
+                    );
+                    $eqLogic->publish(
+                        $this->getHumanName(),
+                        $this->getTopic(),
+                        '',
+                        1,
+                        1
+                    );
+                }
+                $sendUpdate = true;
             }
 
             // Only Update listener if "autoPub" or "request" has changed
@@ -553,10 +594,11 @@ class jMQTTCmd extends cmd {
                 )
             ) {
                 $this->listenerUpdate();
+                $sendUpdate = true;
             }
         }
 
-        // For info commands (on Equipments), log that the topic is compatible with the subscription command
+        // For info commands (on Equipments), log that the topic is incompatible with the subscription command
         if ($this->getType() == 'info'
             && !$eqLogic->getCache(jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH, 0)
             && !$this->topicMatchesSubscription($eqLogic->getTopic())
@@ -568,6 +610,22 @@ class jMQTTCmd extends cmd {
                     $this->getHumanName()
                 )
             );
+        }
+
+        // In the end, does Daemon data need to be updated
+        if ($sendUpdate) {
+            $data = utils::o2a($this, true);
+            $data['cache'] = $this->getCache();
+            // Do some cleanup
+            unset($data['alert']);
+            unset($data['configuration']['prev_retain']);
+            unset($data['isHistorized']);
+            unset($data['isVisible']);
+            unset($data['display']);
+            unset($data['order']);
+            unset($data['template']);
+            // Send update of this cmd to Daemon
+            jMQTTComToDaemon::cmdSet($data);
         }
     }
 
