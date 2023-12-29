@@ -167,7 +167,6 @@
 	},
 	"plugins/jMQTT/core/class/jMQTTComToDaemon.class.php": {
 		"Impossible d'envoyer un message au Démon sur le port %1\\$s, erreur %2\\$s": "Impossible d'envoyer un message au Démon sur le port %1\\$s, erreur %2\\$s",
-		"Impossible de se connecter du Démon sur le port %1\\$s, erreur %2\\$s": "Impossible de se connecter du Démon sur le port %1\\$s, erreur %2\\$s",
 		"Le démon n'est pas démarré": "Le démon n'est pas démarré"
 	},
 	"plugins/jMQTT/core/class/jMQTTDaemon.class.php": {
@@ -403,6 +402,7 @@
 		"Etat Général de jMQTT": "Etat Général de jMQTT",
 		"Forcer la revérification des dépendances": "Forcer la revérification des dépendances",
 		"Kill All": "Kill All",
+		"Le démon n'est pas démarré": "Le démon n'est pas démarré",
 		"Logs en VERBOSE": "Logs en VERBOSE",
 		"Masquer": "Masquer",
 		"Modifier le paramètre de configuration": "Modifier le paramètre de configuration",

@@ -873,7 +873,7 @@ class jMQTT extends eqLogic {
                     $topic,
                     $qos)
                 );
-        jMQTTComToDaemon::subscribe($broker->getId(), $topic, $qos);
+        // jMQTTComToDaemon::subscribe($broker->getId(), $topic, $qos);
     }
 
     /**
@@ -948,7 +948,7 @@ class jMQTT extends eqLogic {
                     $topic
                 )
             );
-        jMQTTComToDaemon::unsubscribe($broker->getId(), $topic);
+        // jMQTTComToDaemon::unsubscribe($broker->getId(), $topic);
     }
 
     /**
@@ -1773,7 +1773,7 @@ class jMQTT extends eqLogic {
                 unset($params['tlsclikey']);
             }
         }
-        jMQTTComToDaemon::newClient($this->getId(), $params);
+        // jMQTTComToDaemon::newClient($this->getId(), $params);
     }
 
     /**
@@ -1784,7 +1784,7 @@ class jMQTT extends eqLogic {
         if ($daemon_info['state'] == jMQTTConst::CLIENT_NOK)
             return; // Return if client is not running
         $this->log('info', __('Arrêt du Client MQTT', __FILE__));
-        jMQTTComToDaemon::removeClient($this->getId());
+        // jMQTTComToDaemon::removeClient($this->getId());
         // Need to send current state before brkDown give NOK
         $this->sendMqttClientStateEvent();
     }
@@ -2220,7 +2220,7 @@ class jMQTT extends eqLogic {
                 )
             );
 
-        jMQTTComToDaemon::publish($this->getBrkId(), $topic, $payload, $qos, $retain);
+        jMQTTComToDaemon::brokerPublish($this->getBrkId(), $topic, $payload, $qos, $retain);
         $d = date('Y-m-d H:i:s');
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
         if ($this->getType() == jMQTTConst::TYP_EQPT)

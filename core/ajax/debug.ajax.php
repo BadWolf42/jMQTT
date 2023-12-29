@@ -246,12 +246,27 @@ try {
 // -------------------- Send raw data to Daemon --------------------
     if (init('action') == 'sendToDaemon') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': data='.init('data'));
-        $data = json_decode(init('data'), true);
-        if (is_null($data) || !is_array($data)) {
+        $data = init('data');
+        $decoded = json_decode($data, true);
+        if (is_null($decoded) || !is_array($decoded)) {
             ajax::error(__('Format invalide', __FILE__));
         }
         // Send to Daemon
-        jMQTTComToDaemon::send($data);
+        if (!jMQTTDaemon::state()) {
+            ajax::error(__("Le démon n'est pas démarré", __FILE__));
+        }
+        $port = jMQTTDaemon::getPort();
+        // TODO: Add Method+URL+key as parameters and return the error code+result?
+        $curl = curl_init('http://127.0.0.1:' . $port . '/URL');
+        curl_setopt($curl, CURLOPT_POST, true);
+        // curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+        ));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_exec($curl);
+        curl_close($curl);
         ajax::success();
     }
     if (init('action') == 'sendToJeedom') {

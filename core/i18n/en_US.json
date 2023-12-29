@@ -167,7 +167,6 @@
 	},
 	"plugins/jMQTT/core/class/jMQTTComToDaemon.class.php": {
 		"Impossible d'envoyer un message au Démon sur le port %1\\$s, erreur %2\\$s": "Unable to send a message to Daemon on port %1\\$s, error %2\\$s",
-		"Impossible de se connecter du Démon sur le port %1\\$s, erreur %2\\$s": "Cannot connect to Daemon on port %1\\$s, error %2\\$s",
 		"Le démon n'est pas démarré": "Daemon not started"
 	},
 	"plugins/jMQTT/core/class/jMQTTDaemon.class.php": {
@@ -387,7 +386,7 @@
 	"plugins/jMQTT/desktop/modal/debug.php": {
 		"401 - Accès non autorisé": "401 - Unauthorized access",
 		"Actions sur jMQTT": "Actions on jMQTT",
-		"Afficher": "Visible",
+		"Afficher": "Show",
 		"Ajouter": "Add",
 		"Ajouter un paramètre au cache": "Add a parameter to the cache",
 		"Ajouter un paramètre de configuration": "Add a configuration parameter",
@@ -403,6 +402,7 @@
 		"Etat Général de jMQTT": "jMQTT general status",
 		"Forcer la revérification des dépendances": "Force dependencies to be rechecked",
 		"Kill All": "Kill All",
+		"Le démon n'est pas démarré": "Daemon not started",
 		"Logs en VERBOSE": "VERBOSE logs",
 		"Masquer": "Hide",
 		"Modifier le paramètre de configuration": "Edit configuration parameter",
