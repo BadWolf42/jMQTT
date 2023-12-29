@@ -26,6 +26,7 @@ def command_post(cmd: CmdModel):
 def command_get() -> List[CmdModel]:
     return [cmd.model for cmd in CmdLogic.all.values()]
 
+
 # -----------------------------------------------------------------------------
 # GET /command/{Id} => Get command properties
 @command.get("/{id}", response_model_exclude_defaults=True)

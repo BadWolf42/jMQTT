@@ -111,9 +111,21 @@ try {
         $jsonArray = json_decode($payload, true);
         if (!is_array($jsonArray) || json_last_error() != JSON_ERROR_NONE) {
             if (json_last_error() == JSON_ERROR_NONE)
-                ajax::success(array('success' => false, 'message' => __("Problème de format JSON: Le message reçu n'est pas au format JSON.", __FILE__), 'value' => ''));
+                ajax::success(array(
+                    'success' => false,
+                    'message' => __("Problème de format JSON: Le message reçu n'est pas au format JSON.", __FILE__),
+                    'value' => ''
+                ));
             else
-                ajax::success(array('success' => false, 'message' => sprintf(__("Problème de format JSON: %1\$s (%2\$d)", __FILE__), json_last_error_msg(), json_last_error()), 'value' => ''));
+                ajax::success(array(
+                    'success' => false,
+                    'message' => sprintf(
+                        __("Problème de format JSON: %1\$s (%2\$d)", __FILE__),
+                        json_last_error_msg(),
+                        json_last_error()
+                    ),
+                    'value' => ''
+                ));
         }
 
         if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
@@ -278,7 +290,7 @@ try {
             // Cleanup duration
             $duration = min(max(1, intval($duration)), 3600);
             // Start Real Time Mode (must be started before subscribe)
-            jMQTTComToDaemon::realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
+            jMQTTComToDaemon::brokerRealTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
             // Update cache
             $broker->setCache(jMQTTConst::CACHE_REALTIME_INC_TOPICS, implode('|', $subscriptions));
             $broker->setCache(jMQTTConst::CACHE_REALTIME_EXC_TOPICS, implode('|', $exclusions));
@@ -286,7 +298,7 @@ try {
             $broker->setCache(jMQTTConst::CACHE_REALTIME_DURATION, $duration);
         } else { // Real Time mode needs to be disabled
             // Stop Real Time mode
-            jMQTTComToDaemon::realTimeStop($id);
+            jMQTTComToDaemon::brokerRealTimeStop($id);
         }
         ajax::success();
     }
@@ -323,7 +335,7 @@ try {
     }
 
     if (init('action') == 'realTimeClear') {
-        jMQTTComToDaemon::realTimeClear(init('id'));
+        jMQTTComToDaemon::brokerRealTimeClear(init('id'));
         ajax::success();
     }
 

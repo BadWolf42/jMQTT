@@ -122,18 +122,3 @@ class Callbacks:
     @classmethod
     async def saveCmd(cls, cmd: CmdModel):
         return Heartbeat.onSend(await cls.__send('saveCmd', cmd.model_dump()))
-
-
-# TODO TESTS:
-
-# import asyncio, callbacks, models
-# c = callbacks.callbacks
-
-# asyncio.run(c.values([callbacks.JmqttdValue(id=666, value='jMQTT'), callbacks.JmqttdValue(id=11, value=True), callbacks.JmqttdValue(id=0xcafe, value='cafe')]))
-# res check bool
-
-# asyncio.run(c.saveEq(models.EqModel(id=42, eqType_name='jMQTT', isEnable=True, configuration=models.EqConfigModel(type='eqpt', eqLogic=4))))
-# res KO: {"type":"saveEq","eqLogic":{"id":42,"name":null,"logicalId":null,"eqType_name":"jMQTT","isEnable":true,"configuration":{"type":"eqpt","eqLogic":4,"icone":"","auto_add_cmd":false,"auto_add_topic":"","Qos":1,"availability_cmd":0,"battery_cmd":0}}}
-
-# asyncio.run(c.saveCmd(models.CmdInfoModel(id=42, eqType='jMQTT', isEnable=True, eqLogic_id=4, type='info', subType='binary', configuration=models.CmdInfoConfigModel(topic='my/topic'))))
-# res ??: {"type":"saveCmd","cmd":{"id":42,"logicalId":null,"eqType":"jMQTT","name":null,"eqLogic_id":4,"type":"info","subType":"binary","configuration":{"topic":"my\/topic","jsonPath":""}}}

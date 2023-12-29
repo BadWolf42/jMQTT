@@ -2,9 +2,9 @@
 
 class jMQTTDaemon {
 
-    private $apikey = null;
-    private $pid = null;
-    private $port = null;
+    private static $apikey = null;
+    private static $pid = null;
+    private static $port = null;
 
     /**
      * jMQTT static function returning an automatically detected callback url to Jeedom for the daemon

@@ -22,7 +22,7 @@ class Logic():
     ) -> None:
         # If Logic exists in register
         if model.id in logic.all:
-        # Unregister it
+            # Unregister it
             unreged = UnregisteringLogicVisitor.do(logic.all[model.id])
             # And replace it
             unreged[0] = logic(model)

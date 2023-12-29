@@ -6,9 +6,6 @@ from fastapi import APIRouter
 
 # from ..jmqttDaemon import JmqttDaemon
 from heartbeat import Heartbeat
-from logics.broker import BrkLogic
-from logics.cmd import CmdLogic
-from logics.eq import EqLogic
 from models.broker import BrkModel
 from models.eq import EqModel
 from models.messages import LogLevelModel
