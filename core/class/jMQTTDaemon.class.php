@@ -3,6 +3,8 @@
 class jMQTTDaemon {
 
     private $apikey = null;
+    private $pid = null;
+    private $port = null;
 
     /**
      * jMQTT static function returning an automatically detected callback url to Jeedom for the daemon
@@ -20,20 +22,21 @@ class jMQTTDaemon {
 
     /**
      * Validates that a daemon is connected, running and is communicating
+     * Neved uses cache
      */
     public static function check() {
         // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
         // jMQTT::logger('debug', 'check() ['.getmypid().']: ref='.$_SERVER['HTTP_REFERER']);
 
         // Get expected daemon port (fast fail)
-        $port = jMQTTDaemon::getPort();
+        $port = jMQTTDaemon::getPort(false);
         if ($port == 0) {
             // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
             // jMQTT::logger('debug', 'Daemon PORT is absent or inactive.');
             return false;
         }
         // Get expected daemon PID (second fast fail)
-        $pid = jMQTTDaemon::getPid();
+        $pid = jMQTTDaemon::getPid(false);
         // If PID nul OR no PORT -> not running
         if ($pid == 0) {
             // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
@@ -74,9 +77,10 @@ class jMQTTDaemon {
 
     /**
      * Simple tests if a daemon is connected (do not validate it)
+     * Use cached PID and PORT by defaut
      */
-    public static function state() {
-        return jMQTTDaemon::getPort() !== 0 && jMQTTDaemon::getPid() !== 0;
+    public static function state($cache = true) {
+        return jMQTTDaemon::getPort($cache) !== 0 && jMQTTDaemon::getPid($cache) !== 0;
     }
 
     /**
@@ -141,7 +145,7 @@ class jMQTTDaemon {
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
         // $shellCmd .= ' SOCKETPORT=' . $port;
         $shellCmd .= ' SOCKETPORT=18883'; // TODO Remove me <----------------------------------------------------------------------------------------
-        $shellCmd .= ' APIKEY=' . jeedom::getApiKey(jMQTT::class);
+        $shellCmd .= ' APIKEY=' . jMQTTDaemon::getApiKey();
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid ';
         $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py';
         $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d_trash') . ' 2>&1 &'; // TODO Remove LOG FILE <---------------------------------------
@@ -158,7 +162,7 @@ class jMQTTDaemon {
         exec($shellCmd);
         // Wait up to 10 seconds for daemon to start
         for ($i = 1; $i <= 40; $i++) {
-            if (jMQTTDaemon::state()) {
+            if (jMQTTDaemon::state(false)) { // Do not use cached state here
                 jMQTT::logger('info', __('Démon démarré', __FILE__));
                 break;
             }
@@ -188,21 +192,30 @@ class jMQTTDaemon {
         return self::$apikey;
     }
 
-    public static function getPid() {
+    public static function getPid($cache = true) {
+        if ($cache && !is_null(self::$pid)) {
+            return self::$pid;
+        }
         $pid_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid';
-        if (!file_exists($pid_file))
-            return 0;
-        $pid = intval(trim(file_get_contents($pid_file)));
-        // If PID is available and running
-        if ($pid != 0 && @posix_getsid($pid))
-            return $pid;
-        return 0;
+        if (!file_exists($pid_file)) {
+            self::$pid = 0;
+        } else {
+            $pid = intval(trim(file_get_contents($pid_file)));
+            // If PID is available and running
+            if ($pid != 0 && @posix_getsid($pid)) {
+                self::$pid = $pid;
+            } else {
+                self::$pid = 0;
+            }
+        }
+        return self::$pid;
     }
 
     public static function delPid() {
         $pid_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid';
         if (file_exists($pid_file))
             unlink($pid_file);
+        self::$pid = 0;
     }
 
     public static function newPort() {
@@ -212,11 +225,17 @@ class jMQTTDaemon {
         return $port;
     }
 
-    public static function getPort() {
+    public static function getPort($cache = true) {
+        if ($cache && !is_null(self::$port)) {
+            return self::$port;
+        }
         $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
-        if (!file_exists($port_file))
-            return 0;
-        return intval(trim(file_get_contents($port_file)));
+        if (!file_exists($port_file)) {
+            self::$port = 0;
+        } else {
+            self::$port = intval(trim(file_get_contents($port_file)));
+        }
+        return self::$port;
     }
 
     public static function setPort($port) {
@@ -228,12 +247,14 @@ class jMQTTDaemon {
         }
         $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
         file_put_contents($port_file, strval($port), LOCK_EX);
+        self::$port = $port;
     }
 
     public static function delPort() {
         $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
         if (file_exists($port_file))
             unlink($port_file);
+        self::$port = 0;
     }
 
     public static function checkPidPortMatch($pid, $port) {
@@ -274,7 +295,7 @@ class jMQTTDaemon {
             posix_kill($pid, 15);  // Signal SIGTERM
             jMQTT::logger('debug', __("Envoi du signal SIGTERM au Démon", __FILE__));
             for ($i = 1; $i <= 40; $i++) { //wait max 10 seconds for python daemon stop
-                if (!jMQTTDaemon::state()) {
+                if (!jMQTTDaemon::state(false)) { // Do not use cached state here
                     jMQTT::logger('info', __("Démon jMQTT arrêté", __FILE__));
                     break;
                 }
