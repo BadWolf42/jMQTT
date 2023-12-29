@@ -262,7 +262,7 @@ try {
         // curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_exec($curl);
@@ -286,7 +286,7 @@ try {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey('jMQTT'),
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey(),
             'PID: ' . jMQTTDaemon::getPid()
         ));
         curl_setopt($curl, CURLOPT_POSTFIELDS, init('data'));

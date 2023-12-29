@@ -11,7 +11,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -46,7 +46,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -70,7 +70,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -91,7 +91,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         if (curl_exec($curl)) {
@@ -110,7 +110,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
@@ -130,7 +130,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -148,7 +148,7 @@ class jMQTTComToDaemon {
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -174,7 +174,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         $data = json_encode($params, JSON_UNESCAPED_SLASHES);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
@@ -230,7 +230,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         if (curl_exec($curl)) {
@@ -249,7 +249,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -268,7 +268,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
@@ -288,7 +288,7 @@ class jMQTTComToDaemon {
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization: Bearer ' . jeedom::getApiKey(jMQTT::class)
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());

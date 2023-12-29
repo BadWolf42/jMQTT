@@ -2,6 +2,8 @@
 
 class jMQTTDaemon {
 
+    private $apikey = null;
+
     /**
      * jMQTT static function returning an automatically detected callback url to Jeedom for the daemon
      */
@@ -176,6 +178,14 @@ class jMQTTDaemon {
         }
         // Else all good
         message::removeAll(jMQTT::class, 'unableStartDaemon');
+    }
+
+    public static function getApiKey($cache = true) {
+        if ($cache && !is_null(self::$apikey)) {
+            return self::$apikey;
+        }
+        self::$apikey = jeedom::getApiKey(jMQTT::class);
+        return self::$apikey;
     }
 
     public static function getPid() {
