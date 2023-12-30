@@ -29,7 +29,7 @@ class CmdBaseModel(BaseModel):
     logicalId: Optional[str] = None
     # generic_type: Optional[str] = None
     eqType: Literal['jMQTT']
-    eqLogic_id: int
+    eqLogic_id: Optional[int] = -1
     # isHistorized: Optional[bool] = False
     # isVisible: Optional[bool] = False
 
