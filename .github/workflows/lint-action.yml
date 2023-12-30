@@ -65,6 +65,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/requirements-tests.txt
 
+      - name: Lint with PHPStan
+        run: phpstan analyse -c plugins/jMQTT/.github/configs/phpstan.neon
+
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
@@ -85,6 +88,3 @@ jobs:
           # eslint_args: -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/eslint.json
           # prettier: true
           # prettier_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/prettier.json
-
-      - name: Lint with PHPStan
-        run: phpstan analyse -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/phpstan.neon
