@@ -1,4 +1,4 @@
 -r requirements.txt
-black
+black==23.7.0
 flake8
 pytest
