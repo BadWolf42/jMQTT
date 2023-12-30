@@ -87,4 +87,4 @@ jobs:
           # prettier_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/prettier.json
 
       - name: Lint with PHPStan
-        run: phpstan analyse -c plugins/jMQTT/.github/configs/phpstan.neon
+        run: phpstan analyse -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/phpstan.neon
