@@ -64,7 +64,7 @@ jobs:
           python -m pip install -r ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/requirements-tests.txt
 
       - name: Lint with PHPStan
-        run: phpstan analyse -c plugins/jMQTT/.github/phpstan/config.neon
+        run: phpstan analyse -c plugins/jMQTT/.github/configs/phpstan.neon
 
       - name: Lint with flake8
         run: |
@@ -78,6 +78,11 @@ jobs:
         with:
           php_codesniffer: true
           black: true
+          # black_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/black.toml
           flake8: true
-          eslint: true
+          # flake8_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/flake8.toml
+          # eslint: true
+          # eslint_args: -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/eslint.json
           prettier: true
+          prettier_args: --no-config
+          # prettier_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/prettier.json
