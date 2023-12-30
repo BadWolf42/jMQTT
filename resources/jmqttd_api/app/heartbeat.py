@@ -3,7 +3,7 @@ import asyncio
 from logging import getLogger
 from time import time
 
-# from callbacks import Callbacks
+from callbacks import Callbacks
 from settings import timeout_cancel
 
 
@@ -45,35 +45,34 @@ class Heartbeat():
     async def __heartbeat(cls):
         logger.debug('Heartbeat task started')
         while True:
-            # TODO Handle timeouts/hb
-            """
             now = time()
             # Kill daemon if we cannot send for a total of X seconds
             #  and/or a total of Y retries "Jeedom is no longer available"
             if now - cls._last_snd > cls._snd_timeout and cls._retry_snd > cls._retry_max:
                 logger.error(
-                    "Nothing could sent for %ds (max %ds) AND after %d attempts (max %d), Jeedom/Apache is probably dead.",
+                    "Nothing could be sent for %ds (max %ds) AND after %d attempts (max %d), "
+                    "Jeedom/Apache is probably dead.",
                     now - cls._last_snd, cls._snd_timeout, cls._retry_snd, cls._retry_max
                 )
                 kill(getpid(), SIGTERM)
                 return
             if now - cls._last_rcv > cls._hb_timeout:
                 logger.error(
-                    "Nothing has been received for %ds (max %ds), Jeedom does not want me any longer.",
+                    "Nothing has been received for %ds (max %ds), "
+                    "Jeedom does not want me any longer.",
                     now - cls._last_rcv, cls._hb_timeout
                 )
                 kill(getpid(), SIGTERM)
                 return
 
             if now - cls._last_snd > cls._hb_delay:
-                if now - cls._last_hb > cls._hb_retry: # Avoid sending continuously hb
-                    # Send the heartbeat asynchronously to avoid congestion (lots of messages in qToJ)
+                # Avoid sending heartbeats continuously
+                if now - cls._last_hb > cls._hb_retry:
                     Callbacks.daemonHB()
                     logger.debug(
                         "Sending a heartbeat to Jeedom, nothing sent since %ds (max %ds)",
                         now - cls._last_snd, cls._hb_delay
                     )
-            """
             # logger.debug('<3 Heartbeat <3')
             await asyncio.sleep(15)
         logger.debug('Heartbeat task ended unexpectidely')
