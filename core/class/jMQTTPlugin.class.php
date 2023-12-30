@@ -7,8 +7,8 @@ class jMQTTPlugin {
      * check MQTT Clients are up and connected
      */
     public static function cron() {
-        jMQTTPlugin::checkAllMqttClients();
         jMQTTPlugin::stats();
+        jMQTTDaemon::check();
     }
 
     /**
@@ -194,49 +194,6 @@ class jMQTTPlugin {
                 );
                 // Set last sent datetime
                 cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, $data['next']);
-            }
-        }
-    }
-
-    /**
-     * Check all MQTT Clients (start them if needed)
-     */
-    public static function checkAllMqttClients() {
-        if (!jMQTTDaemon::check())
-            return;
-        foreach (jMQTT::getBrokers() as $broker) {
-            if (!$broker->getIsEnable()
-                || $broker->getMqttClientState() == jMQTTConst::CLIENT_OK) {
-                continue;
-            }
-            try {
-                $broker->startMqttClient();
-            } catch (Throwable $e) {
-                if (log::getLogLevel(jMQTT::class) > 100)
-                    jMQTT::logger(
-                        'error',
-                        sprintf(
-                            __("%1\$s() a levé l'Exception: %2\$s", __FILE__),
-                            __METHOD__,
-                            $e->getMessage()
-                        )
-                    );
-                else
-                    jMQTT::logger(
-                        'error',
-                        str_replace(
-                            "\n",
-                            ' <br/> ',
-                            sprintf(
-                                __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                                ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
-                                __METHOD__,
-                                $e->getMessage(),
-                                $e->getTraceAsString(),
-                                $broker->getId()
-                            )
-                        )
-                    );
             }
         }
     }

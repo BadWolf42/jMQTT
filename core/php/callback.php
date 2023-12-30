@@ -163,13 +163,10 @@ class JmqttdCallbacks {
         jMQTT::logger('debug', __("Démon a bien démarré", __FILE__));
         // Reset send daemon timer
         // cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
-
+        // Send state to WebUI
         jMQTTDaemon::sendMqttDaemonStateEvent(true);
-        // Launch MQTT Clients
-        jMQTTPlugin::checkAllMqttClients();
         // Active listeners
         jMQTT::listenersAddAll();
-
         // Send all the eqLogics/cmds to the daemon
         jMQTTComToDaemon::initDaemon(jMQTT::full_export());
     }
@@ -244,8 +241,9 @@ class JmqttdCallbacks {
         $id = $message['id'];
         jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $id));
 
-        // Catch if broker is unknown / deleted
+        // Catch if thing do bad
         try {
+            // Throws if broker is unknown
             $broker = jMQTT::getBrokerFromId(intval($id));
             // Save in cache that Mqtt Client is connected
             $broker->setCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, true);
@@ -334,13 +332,15 @@ class JmqttdCallbacks {
             // Save in cache that Mqtt Client is disconnected
             $broker->setCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false);
 
-            // If command exists update the status (used to get broker connection status inside Jeedom)
-            // Need to check if statusCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+            // If command exists update the status
+            // Check if statusCmd exists, because cmd
+            // are destroyed first by eqLogic::remove()
             $broker->checkAndUpdateCmd(
                 $broker->getMqttClientStatusCmd(),
                 jMQTTConst::CLIENT_STATUS_OFFLINE
             );
-            // Need to check if connectedCmd exists, because during Remove cmd are destroyed first by eqLogic::remove()
+            // Check if connectedCmd exists, because cmd
+            // are destroyed first by eqLogic::remove()
             $broker->checkAndUpdateCmd(
                 $broker->getMqttClientConnectedCmd(),
                 0
@@ -525,14 +525,17 @@ class JmqttdCallbacks {
             echo 'Bad Request.';
             die();
         }
-        jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $message['id']));
+        jMQTT::logger(
+            'debug',
+            sprintf("%1\$s: %2\$s", __METHOD__, $message['id'])
+        );
 
-        $brk = jMQTT::getBrokerFromId(intval($message['id']));
+        $broker = jMQTT::getBrokerFromId(intval($message['id']));
         // Update cache
-        $brk->setCache(jMQTTConst::CACHE_REALTIME_MODE, 1);
+        $broker->setCache(jMQTTConst::CACHE_REALTIME_MODE, 1);
         // Send event to WebUI
-        $brk->log('info', __("Mode Temps Réel activé", __FILE__));
-        $brk->sendMqttClientStateEvent();
+        $broker->log('info', __("Mode Temps Réel activé", __FILE__));
+        $broker->sendMqttClientStateEvent();
     }
 
     /**
@@ -554,22 +557,19 @@ class JmqttdCallbacks {
             )
         );
 
-        $brk = jMQTT::getBrokerFromId(intval($message['id']));
+        $broker = jMQTT::getBrokerFromId(intval($message['id']));
         // Update cache
-        $brk->setCache(jMQTTConst::CACHE_REALTIME_MODE, 0);
+        $broker->setCache(jMQTTConst::CACHE_REALTIME_MODE, 0);
         // Send event to WebUI
-        $brk->log(
+        $broker->log(
             'info',
             sprintf(
                 __("Mode Temps Réel désactivé, %s messages disponibles", __FILE__),
                 $message['nbMsgs']
             )
         );
-        $brk->sendMqttClientStateEvent();
-
+        $broker->sendMqttClientStateEvent();
     }
-
-
 }
 
 // Call the request processor
