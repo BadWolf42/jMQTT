@@ -179,6 +179,10 @@ class jMQTTDaemon {
         message::removeAll(jMQTT::class, 'unableStartDaemon');
     }
 
+    /**
+     * Cached function du get jMQTT internal API key
+     * @return string
+     */
     public static function getApiKey($cache = true) {
         if ($cache && !is_null(self::$apikey)) {
             return self::$apikey;
@@ -187,6 +191,11 @@ class jMQTTDaemon {
         return self::$apikey;
     }
 
+    /**
+     * Cache function to get daemon current PID
+     * @param bool $cache Use cache if True (default)
+     * @return int Daemon PID if PID is alive, 0 otherwise
+     */
     public static function getPid($cache = true) {
         if ($cache && !is_null(self::$pid)) {
             return self::$pid;
@@ -206,6 +215,10 @@ class jMQTTDaemon {
         return self::$pid;
     }
 
+    /**
+     * Delete PID file and store 0 in PID cache
+     * @return void
+     */
     public static function delPid() {
         $pid_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid';
         if (file_exists($pid_file))
@@ -213,6 +226,10 @@ class jMQTTDaemon {
         self::$pid = 0;
     }
 
+    /**
+     * Find an unused TCP port on the system
+     * @return int Available PORT on the system
+     */
     public static function newPort() {
         $sock = socket_create_listen(0);
         socket_getsockname($sock, $addr, $port);
@@ -220,6 +237,11 @@ class jMQTTDaemon {
         return $port;
     }
 
+    /**
+     * Cache function to get daemon current PORT
+     * @param bool $cache Use cache if True (default)
+     * @return int Daemon PORT if file exists, 0 otherwise
+     */
     public static function getPort($cache = true) {
         if ($cache && !is_null(self::$port)) {
             return self::$port;
@@ -233,6 +255,11 @@ class jMQTTDaemon {
         return self::$port;
     }
 
+    /**
+     * Set PORT in PORT file and cache
+     * @param int $port Port used by the daemon (must be > 1024)
+     * @return void
+     */
     public static function setPort($port) {
         if ($port <= 1024) {
             $f = 'Unusable new port provided (%d), this should not happend!';
@@ -245,6 +272,10 @@ class jMQTTDaemon {
         self::$port = $port;
     }
 
+    /**
+     * Delete PORT file and store 0 in PORT cache
+     * @return void
+     */
     public static function delPort() {
         $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
         if (file_exists($port_file))
@@ -252,6 +283,12 @@ class jMQTTDaemon {
         self::$port = 0;
     }
 
+    /**
+     * Check if PID has oppened PORT
+     * @param int $pid The PID to test
+     * @param int $port The PORT to test
+     * @return bool True if PID has oppened PORT
+     */
     public static function checkPidPortMatch($pid, $port) {
         // Searching a match for PID and PORT in listening ports
         $retval = 255;
@@ -278,7 +315,7 @@ class jMQTTDaemon {
     }
 
     /**
-     * callback to stop daemon
+     * Callback to stop daemon
      */
     public static function stop() {
         // Get running PID attached to PID file
