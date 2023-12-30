@@ -147,23 +147,6 @@
 		"Suppression de la commande de Disponibilité de l'équipement #%s#": "Deleting Availability command of equipment #%s#",
 		"Suppression de la commande orpheline #%s# (%s)": "Delete orphan command #%s# (%s)"
 	},
-	"plugins/jMQTT/core/class/jMQTTComFromDaemon.class.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
-		"Client MQTT connecté au Broker": "MQTT client connected to Broker",
-		"Client MQTT déconnecté du Broker": "MQTT client disconnected from Broker",
-		"Démon : N'a pas pu être authentifié": "Daemon: Could not be authenticated",
-		"Démon est en vie": "daemon is alive",
-		"Démon vivant": "Daemon is living",
-		"L'accès aux Interactions est désactivé": "Access to Interactions is disabled",
-		"L'accès à l'API est désactivé": "API access disabled",
-		"L'équipement %s n'est pas de type Broker": "Equipment %s is not a Broker.",
-		"Mode Temps Réel activé": "Real Time mode activated",
-		"Mode Temps Réel désactivé, %s messages disponibles": "Real Time mode disabled, %s messages available",
-		"Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)": "No equipment with id %s (probably just as been deleted)",
-		"Pas de commande avec l'id %s": "No command with id %s",
-		"Souscription au topic API '%s'": "Subscribed to API topic '%s",
-		"Souscription au topic d'Interaction '%s'": "Subscribing to Interaction topic '%s'"
-	},
 	"plugins/jMQTT/core/class/jMQTTComToDaemon.class.php": {
 		"Le démon n'est pas démarré": "Daemon not started"
 	},
@@ -220,9 +203,20 @@
 		"API: Traitement de la requête :": "API: Processing query:"
 	},
 	"plugins/jMQTT/core/php/callback.php": {
+		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
 		"Accès non autorisé depuis %1\\$s (pas de clé API)": "Unauthorized access from %1$\\s (no API key)",
 		"Accès non autorisé depuis %1\\$s, avec la clé API commençant par %2\\$.8s...": "Unauthorized access from %1\\$s, with the API key starting by %2\\$.8s...",
-		"Format JSON erroné: '%1\\$s'": "Invalid Json format: '%1\\$s'."
+		"Client MQTT connecté au Broker": "MQTT client connected to Broker",
+		"Client MQTT déconnecté du Broker": "MQTT client disconnected from Broker",
+		"Démon : N'a pas pu être authentifié": "Daemon: Could not be authenticated",
+		"Démon a bien démarré": "Daemon is started",
+		"Démon est en vie": "daemon is alive",
+		"Format JSON erroné: '%1\\$s'": "Invalid Json format: '%1\\$s'.",
+		"L'équipement %s n'est pas de type Broker": "Equipment %s is not a Broker.",
+		"Mode Temps Réel activé": "Real Time mode activated",
+		"Mode Temps Réel désactivé, %s messages disponibles": "Real Time mode disabled, %s messages available",
+		"Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)": "No equipment with id %s (probably just as been deleted)",
+		"Pas de commande avec l'id %s": "No command with id %s"
 	},
 	"plugins/jMQTT/desktop/js/jMQTT.config.js": {
 		" ?": "?",

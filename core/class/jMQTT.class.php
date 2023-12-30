@@ -5,7 +5,6 @@ require_once __DIR__ . '/../../resources/mosquitto_topic_matches_sub.php';
 require_once __DIR__ . '/jMQTTConst.class.php';
 require_once __DIR__ . '/jMQTTDaemon.class.php';
 require_once __DIR__ . '/jMQTTPlugin.class.php';
-require_once __DIR__ . '/jMQTTComFromDaemon.class.php';
 require_once __DIR__ . '/jMQTTComToDaemon.class.php';
 require_once __DIR__ . '/jMQTTCmd.class.php';
 

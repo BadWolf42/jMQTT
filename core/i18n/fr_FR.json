@@ -147,23 +147,6 @@
 		"Suppression de la commande de Disponibilité de l'équipement #%s#": "Suppression de la commande de Disponibilité de l'équipement #%s#",
 		"Suppression de la commande orpheline #%s# (%s)": "Suppression de la commande orpheline #%s# (%s)"
 	},
-	"plugins/jMQTT/core/class/jMQTTComFromDaemon.class.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() a levé l'Exception: %2\\$s",
-		"Client MQTT connecté au Broker": "Client MQTT connecté au Broker",
-		"Client MQTT déconnecté du Broker": "Client MQTT déconnecté du Broker",
-		"Démon : N'a pas pu être authentifié": "Démon : N'a pas pu être authentifié",
-		"Démon est en vie": "Démon est en vie",
-		"Démon vivant": "Démon vivant",
-		"L'accès aux Interactions est désactivé": "L'accès aux Interactions est désactivé",
-		"L'accès à l'API est désactivé": "L'accès à l'API est désactivé",
-		"L'équipement %s n'est pas de type Broker": "L'équipement %s n'est pas de type Broker",
-		"Mode Temps Réel activé": "Mode Temps Réel activé",
-		"Mode Temps Réel désactivé, %s messages disponibles": "Mode Temps Réel désactivé, %s messages disponibles",
-		"Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)": "Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)",
-		"Pas de commande avec l'id %s": "Pas de commande avec l'id %s",
-		"Souscription au topic API '%s'": "Souscription au topic API '%s'",
-		"Souscription au topic d'Interaction '%s'": "Souscription au topic d'Interaction '%s'"
-	},
 	"plugins/jMQTT/core/class/jMQTTComToDaemon.class.php": {
 		"Le démon n'est pas démarré": "Le démon n'est pas démarré"
 	},
@@ -220,9 +203,20 @@
 		"API: Traitement de la requête :": "API: Traitement de la requête :"
 	},
 	"plugins/jMQTT/core/php/callback.php": {
+		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() a levé l'Exception: %2\\$s",
 		"Accès non autorisé depuis %1\\$s (pas de clé API)": "Accès non autorisé depuis %1$\\s (pas de clé API)",
 		"Accès non autorisé depuis %1\\$s, avec la clé API commençant par %2\\$.8s...": "Accès non autorisé depuis %1\\$s, avec la clé API commençant par %2\\$.8s...",
-		"Format JSON erroné: '%1\\$s'": "Format Json erroné: '%1\\$s'"
+		"Client MQTT connecté au Broker": "Client MQTT connecté au Broker",
+		"Client MQTT déconnecté du Broker": "Client MQTT déconnecté du Broker",
+		"Démon : N'a pas pu être authentifié": "Démon : N'a pas pu être authentifié",
+		"Démon a bien démarré": "Démon a bien démarré",
+		"Démon est en vie": "Démon est en vie",
+		"Format JSON erroné: '%1\\$s'": "Format Json erroné: '%1\\$s'",
+		"L'équipement %s n'est pas de type Broker": "L'équipement %s n'est pas de type Broker",
+		"Mode Temps Réel activé": "Mode Temps Réel activé",
+		"Mode Temps Réel désactivé, %s messages disponibles": "Mode Temps Réel désactivé, %s messages disponibles",
+		"Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)": "Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)",
+		"Pas de commande avec l'id %s": "Pas de commande avec l'id %s"
 	},
 	"plugins/jMQTT/desktop/js/jMQTT.config.js": {
 		" ?": " ?",

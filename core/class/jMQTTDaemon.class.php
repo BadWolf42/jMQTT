@@ -286,7 +286,6 @@ class jMQTTDaemon {
         return true;
     }
 
-
     /**
      * callback to stop daemon
      */
@@ -322,7 +321,7 @@ class jMQTTDaemon {
             system::fuserk($port);
         }
         // Execute daemonDown callback anyway
-        jMQTTComFromDaemon::daemonDown();
+        JmqttdCallbacks::onDaemonDown();
     }
 
     /**

@@ -59,6 +59,11 @@ class jMQTTComToDaemon {
     public static function initDaemon($params) {
         $payload = json_encode($params, JSON_UNESCAPED_UNICODE);
         self::doSend('POST', '/daemon', $payload, __METHOD__, '...');
+        // jMQTT::logger(
+        //     'debug',
+        //     'INIT res: ' .
+        //     self::doSend('POST', '/daemon', $payload, __METHOD__, '...', true)
+        // );
     }
 
     public static function hb() {
