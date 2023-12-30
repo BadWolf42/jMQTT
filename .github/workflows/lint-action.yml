@@ -13,7 +13,7 @@ jobs:
       matrix:
         php-version: ['8.2']
         python-version: ['3.11']
-        node-version: ['12']
+        # node-version: ['12']
         jeedom-branch: ['V4-stable', 'alpha']
 
     steps:
@@ -35,9 +35,9 @@ jobs:
           show-progress: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        # with:
+        #   node-version: ${{ matrix.node-version }}
 
       - name: Install Node.js dependencies
         # run: npm ci
