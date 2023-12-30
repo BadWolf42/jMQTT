@@ -467,10 +467,10 @@ class jMQTTCmd extends cmd {
         if (is_object($cmd)) {
             $this->_preSaveInformations = array(
                 'name' => $cmd->getName(),
-                'topic' => $this->getTopic(),
-                jMQTTConst::CONF_KEY_RETAIN => $this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0),
-                jMQTTConst::CONF_KEY_AUTOPUB => $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0),
-                jMQTTConst::CONF_KEY_REQUEST => $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '')
+                'topic' => $cmd->getTopic(),
+                jMQTTConst::CONF_KEY_RETAIN => $cmd->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0),
+                jMQTTConst::CONF_KEY_AUTOPUB => $cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0),
+                jMQTTConst::CONF_KEY_REQUEST => $cmd->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '')
             );
         }
     }

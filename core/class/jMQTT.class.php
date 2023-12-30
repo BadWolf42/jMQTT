@@ -959,7 +959,7 @@ class jMQTT extends eqLogic {
                 jMQTTConst::CONF_KEY_MQTT_API_TOPIC
             );
             foreach ($saveMe as $key) {
-                $this->_preSaveInformations[$key] = $this->getConf($key);
+                $this->_preSaveInformations[$key] = $eqLogic->getConf($key);
             }
         }
     }
