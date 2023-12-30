@@ -1,6 +1,8 @@
 import asyncio
 
 from logging import getLogger
+from os import getpid, kill
+from signal import SIGTERM
 from time import time
 
 from callbacks import Callbacks
@@ -11,10 +13,7 @@ logger = getLogger('jmqtt.heartbeat')
 
 
 class Heartbeat():
-    _retry_snd: int = 0  # number of send retries
     _retry_max: int = 5  # max number of send retries
-    _last_snd: int = time()  # time of the last snd msg
-    _last_hb: int = time()  # time of the last snd HB msg
     _snd_timeout: float = 135.0  # seconds before send timeout
     _last_rcv: int = time()  # time of the last rcv msg
     _hb_delay: float = 45.0  # seconds between 2 heartbeat emission
@@ -22,20 +21,6 @@ class Heartbeat():
     _hb_timeout: float = _hb_delay * 7  # seconds before timeout
 
     _task: asyncio.Task = None  # Heartbeat task initialised by daemonUp method
-
-    @classmethod
-    def onSend(cls, status: bool) -> bool:
-        if status:
-            cls._last_snd = time()
-            cls._retry_snd = 0
-        else:
-            cls._retry_snd += 1
-        return status
-
-    @classmethod
-    def onHB(cls, status: bool) -> bool:
-        cls._last_hb = time()
-        return status
 
     @classmethod
     def onReceive(cls):
@@ -48,11 +33,11 @@ class Heartbeat():
             now = time()
             # Kill daemon if we cannot send for a total of X seconds
             #  and/or a total of Y retries "Jeedom is no longer available"
-            if now - cls._last_snd > cls._snd_timeout and cls._retry_snd > cls._retry_max:
+            if now - Callbacks._last_snd > cls._snd_timeout and Callbacks._retry_snd > cls._retry_max:
                 logger.error(
                     "Nothing could be sent for %ds (max %ds) AND after %d attempts (max %d), "
                     "Jeedom/Apache is probably dead.",
-                    now - cls._last_snd, cls._snd_timeout, cls._retry_snd, cls._retry_max
+                    now - Callbacks._last_snd, cls._snd_timeout, Callbacks._retry_snd, cls._retry_max
                 )
                 kill(getpid(), SIGTERM)
                 return
@@ -65,14 +50,14 @@ class Heartbeat():
                 kill(getpid(), SIGTERM)
                 return
 
-            if now - cls._last_snd > cls._hb_delay:
+            if now - Callbacks._last_snd > cls._hb_delay:
                 # Avoid sending heartbeats continuously
-                if now - cls._last_hb > cls._hb_retry:
-                    Callbacks.daemonHB()
+                if now - Callbacks._last_hb > cls._hb_retry:
                     logger.debug(
                         "Sending a heartbeat to Jeedom, nothing sent since %ds (max %ds)",
-                        now - cls._last_snd, cls._hb_delay
+                        now - Callbacks._last_snd, cls._hb_delay
                     )
+                    await Callbacks.daemonHB()
             # logger.debug('<3 Heartbeat <3')
             await asyncio.sleep(15)
         logger.debug('Heartbeat task ended unexpectidely')

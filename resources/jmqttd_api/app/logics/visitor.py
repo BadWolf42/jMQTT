@@ -58,7 +58,7 @@ class RegisteringLogicVisitor(LogicVisitor):
             # Add the reference to EqLogic and BrkLogic
             e.weakEq = ref(eq)
             e.weakBrk = ref(eq)
-        else:  # Could not found a parent
+        else:  # Could not find a parent
             self.logger.warning(
                 'id=%s, disregarded: EqId=%s not found',
                 e.model.id,
