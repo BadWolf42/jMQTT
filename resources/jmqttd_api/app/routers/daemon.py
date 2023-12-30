@@ -13,7 +13,7 @@ from models.unions import DataModel
 from routers.broker import broker_post
 from routers.command import command_post
 from routers.equipment import equipment_post
-from settings import settings, rootloglevel
+from settings import settings
 from utils import dumpLoggers, setLevel
 
 
@@ -95,7 +95,7 @@ def daemon_get_loglevel(name: str = '') -> str:
 def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
     newlevel = setLevel(level, name)
     if name == '':
-        rootloglevel = level
+        settings.rootloglevel = level
         logger.notice(
             'Log level of root logger set to: %s',
             getLevelName(newlevel)

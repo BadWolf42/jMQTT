@@ -7,7 +7,6 @@ from pydantic_settings import BaseSettings
 
 pid: str = str(getpid())
 
-rootloglevel: str = 'warning'
 logconfig: dict = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -87,6 +86,7 @@ class JmqttSettings(BaseSettings):
     callback: str = 'http://localhost/plugins/jMQTT/core/php/callback.php'
     logfile: str = '/tmp/jMQTTd.log'
     loglevel: str = 'warning'
+    rootloglevel: str = 'warning'
     localonly: bool = True
     pidfile: str = '/tmp/jmqttd.tmp.pid'
     socketport: int = 0
