@@ -844,14 +844,40 @@ class jMQTT extends eqLogic {
             // jMQTTConst::CONF_KEY_MQTT_TLS_CLI_KEY
 
             // Cleanup Broker from unexpected config
-            $expectedData = array(
-                jMQTTConst::CONF_KEY_TYPE,
-                'createtime',
-                'updatetime',
-                'previousIsEnable',
-                'previousIsVisible',
+            $toRemove = array(
                 // TODO: Migrate eq/configuration/commentaire to eq/comment
-                'commentaire',
+                jMQTTConst::CONF_KEY_BRK_ID,
+                'icone',
+                jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
+                jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
+                jMQTTConst::CONF_KEY_BATTERY_CMD,
+                jMQTTConst::CONF_KEY_AVAILABILITY_CMD,
+                jMQTTConst::CONF_KEY_QOS,
+                jMQTTConst::CONF_KEY_TEMPLATE_UUID
+            );
+            foreach ($toRemove as $key) {
+                $this->setConfiguration($key, null);
+            }
+        }
+        // ------------------------ New or Existing Normal eqpt ------------------------
+        else {
+            try {
+                // Try to get Broker from id
+                self::getBrokerFromId(
+                    $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
+                );
+            } catch (Throwable $e) {
+                throw new Exception(
+                    sprintf(
+                        __('Erreur sur le Broker sélectionné: %s', __FILE__),
+                        $e->getMessage()
+                    )
+                );
+            }
+
+            // Cleanup Equipment from unexpected config
+            $toRemove = array(
+                // TODO: Migrate eq/configuration/commentaire to eq/comment
                 jMQTTConst::CONF_KEY_LOGLEVEL,
                 jMQTTConst::CONF_KEY_MQTT_PROTO,
                 jMQTTConst::CONF_KEY_MQTT_ADDRESS,
@@ -875,72 +901,8 @@ class jMQTT extends eqLogic {
                 jMQTTConst::CONF_KEY_MQTT_API,
                 jMQTTConst::CONF_KEY_MQTT_API_TOPIC
             );
-            $data = $this->toArray();
-            foreach ($data['configuration'] as $key) {
-                if (!in_array($key, $expectedData)) {
-                    self::logger(
-                        'warning',
-                        sprintf(
-                            "DELETED configkey='%1\$s' (value='%2\$s') on #%3\$s#",
-                            $key,
-                            $this->getConf($key),
-                            $this->getHumanName()
-                        )
-                    );
-                    // TODO: Enable deletion unexpected config on Broker
-                    // $this->setConfiguration($key, null);
-                }
-            }
-        }
-        // ------------------------ New or Existing Normal eqpt ------------------------
-        else {
-            try {
-                // Try to get Broker from id
-                self::getBrokerFromId(
-                    $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
-                );
-            } catch (Throwable $e) {
-                throw new Exception(
-                    sprintf(
-                        __('Erreur sur le Broker sélectionné: %s', __FILE__),
-                        $e->getMessage()
-                    )
-                );
-            }
-
-            // Cleanup Equipment from unexpected config
-            $expectedData = array(
-                jMQTTConst::CONF_KEY_TYPE,
-                'createtime',
-                'updatetime',
-                'previousIsEnable',
-                'previousIsVisible',
-                jMQTTConst::CONF_KEY_BRK_ID,
-                // TODO: Migrate eq/configuration/commentaire to eq/comment
-                'commentaire',
-                'icone',
-                jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
-                jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
-                jMQTTConst::CONF_KEY_BATTERY_CMD,
-                jMQTTConst::CONF_KEY_AVAILABILITY_CMD,
-                jMQTTConst::CONF_KEY_QOS,
-                jMQTTConst::CONF_KEY_TEMPLATE_UUID
-            );
-            $data = $this->toArray();
-            foreach ($data['configuration'] as $key) {
-                if (!in_array($key, $expectedData)) {
-                    self::logger(
-                        'warning',
-                        sprintf(
-                            "DELETED configkey='%1\$s' (value='%2\$s') on #%3\$s#",
-                            $key,
-                            $this->getConf($key),
-                            $this->getHumanName()
-                        )
-                    );
-                    // TODO: Enable deletion unexpected config on Equipment
-                    // $this->setConfiguration($key, null);
-                }
+            foreach ($toRemove as $key) {
+                $this->setConfiguration($key, null);
             }
         }
 
