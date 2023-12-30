@@ -862,7 +862,7 @@ class jMQTT extends eqLogic {
         // ------------------------ New or Existing Normal eqpt ------------------------
         else {
             try {
-                // Try to get Broker from id
+                // Try to get Broker from id (will raise if bad or absent)
                 self::getBrokerFromId(
                     $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
                 );
@@ -931,10 +931,36 @@ class jMQTT extends eqLogic {
         $eqLogic = self::byId($this->getId());
         // If existing eqpt
         if (is_object($eqLogic)) {
-            $data = utils::o2a($eqLogic, true);
-            $this->_preSaveInformations = $data['configuration'];
+            $this->_preSaveInformations = array();
             $this->_preSaveInformations['name'] = $eqLogic->getName();
             $this->_preSaveInformations['isEnable'] = $eqLogic->getIsEnable();
+            $saveMe = array(
+                jMQTTConst::CONF_KEY_LOGLEVEL,
+                jMQTTConst::CONF_KEY_MQTT_PROTO,
+                jMQTTConst::CONF_KEY_MQTT_ADDRESS,
+                jMQTTConst::CONF_KEY_MQTT_PORT,
+                jMQTTConst::CONF_KEY_MQTT_WS_URL,
+                jMQTTConst::CONF_KEY_MQTT_USER,
+                jMQTTConst::CONF_KEY_MQTT_PASS,
+                jMQTTConst::CONF_KEY_MQTT_ID,
+                jMQTTConst::CONF_KEY_MQTT_ID_VALUE,
+                jMQTTConst::CONF_KEY_MQTT_LWT,
+                jMQTTConst::CONF_KEY_MQTT_LWT_TOPIC,
+                jMQTTConst::CONF_KEY_MQTT_LWT_ONLINE,
+                jMQTTConst::CONF_KEY_MQTT_LWT_OFFLINE,
+                jMQTTConst::CONF_KEY_MQTT_TLS_CHECK,
+                jMQTTConst::CONF_KEY_MQTT_TLS_CA,
+                jMQTTConst::CONF_KEY_MQTT_TLS_CLI,
+                jMQTTConst::CONF_KEY_MQTT_TLS_CLI_CERT,
+                jMQTTConst::CONF_KEY_MQTT_TLS_CLI_KEY,
+                jMQTTConst::CONF_KEY_MQTT_INT,
+                jMQTTConst::CONF_KEY_MQTT_INT_TOPIC,
+                jMQTTConst::CONF_KEY_MQTT_API,
+                jMQTTConst::CONF_KEY_MQTT_API_TOPIC
+            );
+            foreach ($saveMe as $key) {
+                $this->_preSaveInformations[$key] = $this->getConf($key);
+            }
         }
     }
 
@@ -1089,7 +1115,7 @@ class jMQTT extends eqLogic {
                     $this->_preSaveInformations[jMQTTConst::CONF_KEY_BRK_ID]
                     != $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
                 ) {
-                    // Get new Broker
+                    // Get the new Broker
                     $this->_broker = self::getBrokerFromId($this->getBrkId());
                     $sendUpdate = true;
                 }

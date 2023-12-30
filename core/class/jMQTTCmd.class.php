@@ -465,9 +465,13 @@ class jMQTTCmd extends cmd {
         $cmd = self::byId($this->getId());
         // If existing eqpt
         if (is_object($cmd)) {
-            $data = utils::o2a($cmd, true);
-            $this->_preSaveInformations = $data['configuration'];
-            $this->_preSaveInformations['name'] = $cmd->getName();
+            $this->_preSaveInformations = array(
+                'name' => $cmd->getName(),
+                'topic' => $this->getTopic(),
+                jMQTTConst::CONF_KEY_RETAIN => $this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0),
+                jMQTTConst::CONF_KEY_AUTOPUB => $this->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0),
+                jMQTTConst::CONF_KEY_REQUEST => $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '')
+            );
         }
     }
 
@@ -788,6 +792,7 @@ class jMQTTCmd extends cmd {
             );
             $l->remove();
         }
+        jMQTTComToDaemon::cmdDel($this->getId());
     }
 
     public function setName($name) {
