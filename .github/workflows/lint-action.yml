@@ -79,10 +79,12 @@ jobs:
         uses: wearerequired/lint-action@v2
         with:
           check_name: ${linter} (${{ matrix.php-version }}, ${{ matrix.python-version }}, ${{ matrix.jeedom-branch }})
-          php_codesniffer: true
+          # php_codesniffer: true
           black: true
-          black_args: ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/ --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/black.toml
+          black_dir: ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/
+          black_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/black.toml
           flake8: true
+          flake8_dir: ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/
           flake8_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/flake8.toml
           # eslint: true
           # eslint_args: -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/eslint.json
