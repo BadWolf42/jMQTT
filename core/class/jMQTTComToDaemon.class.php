@@ -7,7 +7,7 @@ class jMQTTComToDaemon {
      *
      * @param string $method Either GET, PUT, POST or DELETE
      * @param string $path Path part of the destination URL (with leading /)
-     * @param string $payload Payload to send in the BODY (or null)
+     * @param string|null $payload Payload to send in the BODY (or null)
      * @param string $logfname Function name to put in debug logs (__METHOD__)
      * @param string $logparams Function parameters to put in debug logs
      * @param bool $result True if curl_exec should return the transfer
