@@ -90,7 +90,7 @@ jobs:
           flake8_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/flake8.toml
           flake8_auto_fix: false
           eslint: true
-          eslint_dir: plugins/jMQTT/desktop/**/*.js plugins/jMQTT/desktop/**/*.php
+          eslint_dir: plugins/jMQTT/desktop/
           # eslint_args: -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/eslint.json
           # prettier: true
           # prettier_dir: plugins/jMQTT
