@@ -30,15 +30,16 @@ class jMQTTComToDaemon {
     }
 
     public static function setLogLevel($_level=null) {
-        if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
-        }
-
         $level = is_null($_level) ? log::getLogLevel(__class__) : $_level;
         if ($level == 'default') // Replace 'default' log level
             $level = log::getConfig('log::level');
         if (is_numeric($level)) // Replace numeric log level par text level
             $level = log::convertLogLevel($level);
+
+        if (!jMQTTDaemon::state()) {
+            jMQTT::logger('debug', __METHOD__ . '(level=' . $level . '): Daemon not started');
+            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+        }
 
         $url = 'http://127.0.0.1:' . jMQTTDaemon::getPort();
         $url .= '/daemon/loglevel?name=jmqtt&level=' . $level;
@@ -63,7 +64,6 @@ class jMQTTComToDaemon {
         ) {
             return;
         }
-
         $url = 'http://127.0.0.1:' . jMQTTDaemon::getPort();
         $url .= '/daemon/loglevel?newapikey=' . trim($newApiKey);
         $curl = curl_init($url);
@@ -81,11 +81,10 @@ class jMQTTComToDaemon {
 
     public static function initDaemon($params) {
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(...): Daemon not started');
+            return;
         }
-
         $payload = json_encode($params, JSON_UNESCAPED_UNICODE);
-
         $port = jMQTTDaemon::getPort();
         $curl = curl_init('http://127.0.0.1:' . $port . '/daemon');
         curl_setopt($curl, CURLOPT_POST, true);
@@ -102,8 +101,10 @@ class jMQTTComToDaemon {
     }
 
     public static function brokerSet($params) {
+        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(' . $payload . '): Daemon not started');
+            return;
         }
         $port = jMQTTDaemon::getPort();
         $curl = curl_init('http://127.0.0.1:' . $port . '/broker');
@@ -112,7 +113,6 @@ class jMQTTComToDaemon {
             'Content-Type: application/json',
             'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
-        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -123,7 +123,8 @@ class jMQTTComToDaemon {
 
     public static function brokerDel($id) {
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): Daemon not started');
+            return;
         }
         $port = jMQTTDaemon::getPort();
         $curl = curl_init('http://127.0.0.1:' . $port . '/broker/' . $id);
@@ -141,7 +142,8 @@ class jMQTTComToDaemon {
 
     public static function brokerRestart($id) {
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): Daemon not started');
+            return;
         }
         $url = 'http://127.0.0.1:' . jMQTTDaemon::getPort();
         $url .= '/broker/' . $id . '/restart';
@@ -158,15 +160,18 @@ class jMQTTComToDaemon {
     }
 
     public static function brokerPublish($id, $topic, $payload, $qos = 1, $retain = false) {
-        if (empty($topic)) return;
+        if (empty($topic))
+            return;
         $params = array(
             'topic' => $topic,
             'payload' => $payload,
             'qos' => $qos,
             'retain' => $retain
         );
+        $data = json_encode($params, JSON_UNESCAPED_SLASHES);
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(id=' . $id . ', data=' . $data . '): Daemon not started');
+            return;
         }
         $url = 'http://127.0.0.1:' . jMQTTDaemon::getPort();
         $url .= '/broker/' . $id . '/publish';
@@ -176,7 +181,6 @@ class jMQTTComToDaemon {
             'Content-Type: application/json',
             'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
-        $data = json_encode($params, JSON_UNESCAPED_SLASHES);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -201,7 +205,7 @@ class jMQTTComToDaemon {
         $params['duration'] = $duration;
         // TODO: Implement this method
         $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
-        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . ', data=' . $payload . '): ' /* . curl_errno($curl) */);
+        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . ', data=' . $payload . '): NOT IMPLEMENTED' /* . curl_errno($curl) */);
     }
 
     public static function brokerRealTimeStop($id) {
@@ -211,19 +215,20 @@ class jMQTTComToDaemon {
 
     public static function brokerRealTimeGet($id, $since) {
         // TODO: Implement this method
-        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . ', since=' . $since . '): ' /* . curl_errno($curl) */);
+        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . ', since=' . $since . '): NOT IMPLEMENTED' /* . curl_errno($curl) */);
     }
 
     public static function brokerRealTimeClear($id) {
         // TODO: Implement this method
-        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): ' /* . curl_errno($curl) */);
+        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): NOT IMPLEMENTED' /* . curl_errno($curl) */);
     }
 
 
     public static function eqptSet($params) {
         $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(' . $payload . '): Daemon not started');
+            return;
         }
         $port = jMQTTDaemon::getPort();
         $curl = curl_init('http://127.0.0.1:' . $port . '/equipment');
@@ -242,7 +247,8 @@ class jMQTTComToDaemon {
 
     public static function eqptDel($id) {
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): Daemon not started');
+            return;
         }
         $port = jMQTTDaemon::getPort();
         $curl = curl_init('http://127.0.0.1:' . $port . '/equipment/' . $id);
@@ -260,8 +266,10 @@ class jMQTTComToDaemon {
 
 
     public static function cmdSet($params) {
+        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(' . $payload . '): Daemon not started');
+            return;
         }
         $port = jMQTTDaemon::getPort();
         $curl = curl_init('http://127.0.0.1:' . $port . '/command');
@@ -270,7 +278,6 @@ class jMQTTComToDaemon {
             'Content-Type: application/json',
             'Authorization: Bearer ' . jMQTTDaemon::getApiKey()
         ));
-        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $payload);
         if (curl_exec($curl)) {
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -281,7 +288,8 @@ class jMQTTComToDaemon {
 
     public static function cmdDel($id) {
         if (!jMQTTDaemon::state()) {
-            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+            jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): Daemon not started');
+            return;
         }
         $port = jMQTTDaemon::getPort();
         $curl = curl_init('http://127.0.0.1:' . $port . '/command/' . $id);
