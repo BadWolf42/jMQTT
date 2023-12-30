@@ -630,7 +630,7 @@ class jMQTTCmd extends cmd {
         }
     }
 
-// Listener for autoPub action command
+    // Listener for autoPub action command
     public function listenerUpdate() {
         $cmds = array();
         $eq = $this->getEqLogic();
@@ -731,7 +731,7 @@ class jMQTTCmd extends cmd {
      */
     public function preRemove() {
         $eqLogic = $this->getEqLogic();
-        if ($eqLogic) {
+        if (is_object($eqLogic)) {
             $eqLogic->log(
                 'info',
                 sprintf(

@@ -226,7 +226,7 @@ class jMQTTComToDaemon {
             throw new Exception(__("Le démon n'est pas démarré", __FILE__));
         }
         $port = jMQTTDaemon::getPort();
-        $curl = curl_init('http://127.0.0.1:' . $port . '/equipement');
+        $curl = curl_init('http://127.0.0.1:' . $port . '/equipment');
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
@@ -245,7 +245,7 @@ class jMQTTComToDaemon {
             throw new Exception(__("Le démon n'est pas démarré", __FILE__));
         }
         $port = jMQTTDaemon::getPort();
-        $curl = curl_init('http://127.0.0.1:' . $port . '/equipement/' . $id);
+        $curl = curl_init('http://127.0.0.1:' . $port . '/equipment/' . $id);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "DELETE");
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',

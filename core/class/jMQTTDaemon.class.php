@@ -115,6 +115,9 @@ class jMQTTDaemon {
         // Always stop first.
         jMQTTDaemon::stop();
         jMQTT::logger('info', __('Démarrage du démon jMQTT', __FILE__));
+        // Ensure Core hearbeat is disabled
+        config::save('heartbeat::delay::jMQTT', '', 'core');
+        config::save('heartbeat::restartDeamon::jMQTT', '0', 'core');
         // Ensure 1 minute cron is enabled (removing the key or setting it to 1 is equivalent)
         config::remove('functionality::cron::enable', jMQTT::class);
         // Check if daemon is launchable

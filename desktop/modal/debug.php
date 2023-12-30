@@ -20,6 +20,8 @@ if (!isConnect('admin')) {
     throw new Exception('{{401 - Accès non autorisé}}');
 }
 
+require_once __DIR__ . '/../../core/class/jMQTT.class.php';
+
 function panelCreator($title, $type, $icon, $builder) {
     echo '            <div class="panel panel-'.$type.'">';
     echo '                <div class="panel-heading"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
