@@ -39,9 +39,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           coverage: none
-          tools:
-            - phpstan
-            - phpcs
+          tools: phpstan, phpcs
         env:
           debug: true
 
