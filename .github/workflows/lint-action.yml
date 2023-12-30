@@ -1,0 +1,69 @@
+name: Check PHP
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  linters:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2']
+        python-version: ['3.11']
+        jeedom-branch: ['V4-stable', 'alpha']
+
+    steps:
+      - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
+        uses: actions/checkout@v3
+        with:
+          repository: jeedom/core
+          ref: ${{ matrix.jeedom-branch }}
+
+      - name: Create plugins folder
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/plugins/jMQTT
+
+      - name: Checkout jMQTT
+        uses: actions/checkout@v3
+        with:
+          path: plugins/jMQTT
+
+      - name: Install dependencies
+        run: composer update --working-dir=${GITHUB_WORKSPACE}/plugins/jMQTT/resources/JsonPath-PHP
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+          tools:
+            - phpstan
+            - phpcs
+        env:
+          debug: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+
+      - name: Run PHPStan
+        run: phpstan analyse -c plugins/jMQTT/.github/phpstan/config.neon
+
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          flake8 ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/ --count --select=E9,F63,F7,F82 --show-source
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          flake8 ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/ --count --exit-zero --max-complexity=10 --max-line-length=127
+
+      - name: Lint Action
+        uses: wearerequired/lint-action@v2
+        with:
+          php_codesniffer: true
+          black: true
+          flake8: true
