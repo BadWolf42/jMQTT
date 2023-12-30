@@ -106,7 +106,7 @@ function export_index() {
 
     if($error) {
         print("                        [ WARNING ]\n");
-        foreach($error as $e)
+        foreach ($error as $e)
             print($e);
     } else {
         print("                             [ OK ]\n");

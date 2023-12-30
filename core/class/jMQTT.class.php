@@ -514,7 +514,7 @@ class jMQTT extends eqLogic {
         $brk_addr = (is_null($brk_addr) || $brk_addr == '') ? '127.0.0.1' : gethostbyname($brk_addr);
         $broker = null;
 
-        foreach(self::getBrokers() as $brk) {
+        foreach (self::getBrokers() as $brk) {
             $ip = gethostbyname($brk->getConf(jMQTTConst::CONF_KEY_MQTT_ADDRESS));
             if ($ip == $brk_addr || (substr($ip, 0, 4) == '127.' && substr($brk_addr, 0, 4) == '127.')) {
                 $broker = $brk;
@@ -821,7 +821,7 @@ class jMQTT extends eqLogic {
         // ------------------------ New or Existing Broker eqpt ------------------------
         if ($this->getType() == jMQTTConst::TYP_BRK) {
             // Check for a broker eqpt with the same name (which is not this)
-            foreach(self::getBrokers() as $broker) {
+            foreach (self::getBrokers() as $broker) {
                 if (
                     $broker->getName() == $this->getName()
                     && $broker->getId() != $this->getId()
@@ -1270,7 +1270,7 @@ class jMQTT extends eqLogic {
      */
     public static function health() {
         $return = array();
-        foreach(self::getBrokers() as $broker) {
+        foreach (self::getBrokers() as $broker) {
             if(!$broker->getIsEnable()) {
                 $return[] = array(
                     'test' => __('Accès au broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
@@ -1834,7 +1834,7 @@ class jMQTT extends eqLogic {
                     $cmds = array();
                 $jsonCmds = array();
                 // Keep only info cmds in $cmds and put all JSON info commands in $jsonCmds
-                foreach($cmds as $k => $cmd) {
+                foreach ($cmds as $k => $cmd) {
                     if ($cmd->getType() == 'action') {
                         $this->log(
                             'debug',

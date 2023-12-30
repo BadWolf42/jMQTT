@@ -204,7 +204,7 @@ class jMQTTPlugin {
     public static function checkAllMqttClients() {
         if (!jMQTTDaemon::check())
             return;
-        foreach(jMQTT::getBrokers() as $broker) {
+        foreach (jMQTT::getBrokers() as $broker) {
             if (!$broker->getIsEnable()
                 || $broker->getMqttClientState() == jMQTTConst::CLIENT_OK) {
                 continue;
@@ -340,24 +340,25 @@ class jMQTTPlugin {
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=mqtt2">';
             $res['message'] .= 'MQTT Manager</a> (mqtt2).';
-        }
-        // Check if ZigbeeLinker has modified Mosquitto config
-        elseif (file_exists('/etc/mosquitto/mosquitto.conf')
-                && preg_match('#^include_dir.*zigbee2mqtt/data/mosquitto/include#m',
-                    file_get_contents('/etc/mosquitto/mosquitto.conf'))) {
+        } elseif (
+            file_exists('/etc/mosquitto/mosquitto.conf')
+            && preg_match(
+                '#^include_dir.*zigbee2mqtt/data/mosquitto/include#m',
+                file_get_contents('/etc/mosquitto/mosquitto.conf')
+            )
+        ) {
+            // Check if ZigbeeLinker has modified Mosquitto config
             $res['by'] = 'ZigbeeLinker';
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=zigbee2mqtt">';
             $res['message'] .= 'ZigbeeLinker</a> (zigbee2mqtt).';
-        }
-        // Check if jMQTT config file is in place
-        elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
+        } elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
+            // Check if jMQTT config file is in place
             $res['by'] = 'jMQTT';
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label success disabled">jMQTT</a>.';
-        }
-        // Otherwise its considered to be a custom install
-        else {
+        } else {
+            // Otherwise its considered to be a custom install
             $res['by'] = __("Inconnu", __FILE__);
             $res['message'] = __("Mosquitto n'a pas été installé par un plugin connu.", __FILE__);
         }
@@ -403,7 +404,7 @@ class jMQTTPlugin {
 
         // Looking for eqBroker pointing to local mosquitto
         $brokerexists = false;
-        foreach(jMQTT::getBrokers() as $broker) {
+        foreach (jMQTT::getBrokers() as $broker) {
             $hn = $broker->getConf(jMQTTConst::CONF_KEY_MQTT_ADDRESS);
             $ip = gethostbyname($hn);
             $localips = explode(' ', exec(system::getCmdSudo() . 'hostname -I'));
@@ -430,7 +431,7 @@ class jMQTTPlugin {
 
             // Looking for a conflict with eqBroker name
             $brokernameconflict = false;
-            foreach(jMQTT::getBrokers() as $broker) {
+            foreach (jMQTT::getBrokers() as $broker) {
                 if ($broker->getName() == $brokername) {
                     $brokernameconflict = true;
                     break;
@@ -442,7 +443,7 @@ class jMQTTPlugin {
                     $i++;
                     $brokernameconflict = false;
                     $brokername = 'local'.$i;
-                    foreach(jMQTT::getBrokers() as $broker) {
+                    foreach (jMQTT::getBrokers() as $broker) {
                         if ($broker->getName() == $brokername) {
                             $brokernameconflict = true;
                             break;

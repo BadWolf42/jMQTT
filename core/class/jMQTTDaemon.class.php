@@ -152,9 +152,9 @@ class jMQTTDaemon {
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid ';
         $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py';
         $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d_trash') . ' 2>&1 &'; // TODO Remove LOG FILE <---------------------------------------
-        if (log::getLogLevel(jMQTT::class) > 100)
+        if (log::getLogLevel(jMQTT::class) > 100) {
             jMQTT::logger('info', __('Lancement du démon jMQTT', __FILE__));
-        else
+        } else {
             jMQTT::logger(
                 'info',
                 sprintf(
@@ -162,6 +162,7 @@ class jMQTTDaemon {
                     $shellCmd
                 )
             );
+        }
         exec($shellCmd);
         // Wait up to 10 seconds for daemon to start
         for ($i = 1; $i <= 40; $i++) {

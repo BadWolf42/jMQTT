@@ -68,7 +68,7 @@ class jMQTTComFromDaemon {
         // Remove listeners
         jMQTT::listenersRemoveAll();
         // Get all brokers and set them as disconnected
-        foreach(jMQTT::getBrokers() as $broker) {
+        foreach (jMQTT::getBrokers() as $broker) {
             try {
                 jMQTTComFromDaemon::brkDown($broker->getId());
             } catch (Throwable $e) {

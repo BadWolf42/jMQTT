@@ -164,7 +164,7 @@ try {
     if (init('action') == 'cacheGetEquipments') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         $res = array();
-        foreach(jMQTT::getNonBrokers() as $brk) {
+        foreach (jMQTT::getNonBrokers() as $brk) {
             foreach ($brk as $eqpt) {
                 $cacheEqptKeys = array();
                 $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;

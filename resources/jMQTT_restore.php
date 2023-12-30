@@ -248,7 +248,7 @@ function restore_purgeEqAndCmd(&$diff_indexes, $type, $verbose = false) {
             $logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' (type: ' . $state . ") removed\n";
     }
     print("                   [ OK ]\n");
-    foreach($logs as $l)
+    foreach ($logs as $l)
         print($l);
 }
 
@@ -279,7 +279,7 @@ function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
         }
     }
     print("                [ OK ]\n");
-    foreach($logs as $l)
+    foreach ($logs as $l)
         print($l);
 }
 
@@ -329,7 +329,7 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
     }
     print($errorC ? "[ ERROR ]\n" : "   [ OK ]\n");
 
-    foreach($logs as $l)
+    foreach ($logs as $l)
         print($l);
 
     return !$errorE && !$errorC;
@@ -347,7 +347,7 @@ function restore_purgeHistories(&$diff_indexes, $type, $_date = '', $verbose = f
             $logs[] = date('[Y-m-d H:i:s][\D\E\B\U\G] : ') . '    -> cmd:' . $id . ' history' . (($_date == '') ? '' : (' <= ' . $_date)) . " purged\n";
     }
     print("      [ OK ]\n");
-    foreach($logs as $l)
+    foreach ($logs as $l)
         print($l);
 }
 
@@ -522,7 +522,7 @@ function full_import($data) {
             }
         }
 
-        foreach($link_infos as $cmd) {
+        foreach ($link_infos as $cmd) {
             if (!isset($link_names[$cmd->getValue()]))
                 continue;
             $id = $link_names[$cmd->getValue()];
@@ -531,7 +531,7 @@ function full_import($data) {
             $cmd->save();
         }
     }
-    foreach($link_actions as $cmd) {
+    foreach ($link_actions as $cmd) {
         $req = $cmd->getConfiguration('request', '');
         preg_match_all("/#([0-9]*)#/", $req, $matches);
         $req_cmds = array_unique($matches[1]);

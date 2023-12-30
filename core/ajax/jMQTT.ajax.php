@@ -28,8 +28,8 @@ try {
     require_once __DIR__ . '/../../core/class/jMQTT.class.php';
     ajax::init(array('fileupload'));
 
-    ###################################################################################################################
-    # File upload
+    // ########################################################################
+    // File upload
     if (init('action') == 'fileupload') {
         if (!isset($_FILES['file'])) {
             throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
@@ -73,8 +73,7 @@ try {
             jMQTT::moveTopicToConfigurationByFile($fname);
             jMQTT::logger('info', sprintf(__("Template %s correctement téléversée", __FILE__), $fname));
             ajax::success($fname);
-        }
-        elseif (init('dir') == 'backup') {
+        } elseif (init('dir') == 'backup') {
             $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
             $files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
             sort($files);
@@ -86,8 +85,8 @@ try {
         }
     }
 
-    ###################################################################################################################
-    # Add a new command on an existing jMQTT equipment
+    // ########################################################################
+    // Add a new command on an existing jMQTT equipment
     if (init('action') == 'newCmd') {
         /** @var jMQTT $eqpt */
         $eqpt = jMQTT::byId(init('id'));
@@ -99,8 +98,8 @@ try {
         ajax::success(array('id' => $new_cmd->getId(), 'human' => $new_cmd->getHumanName()));
     }
 
-    ###################################################################################################################
-    # Test jsonPath
+    // ########################################################################
+    // Test jsonPath
     if (init('action') == 'testJsonPath') {
         $payload = init('payload');
         if ($payload == '') {
@@ -181,8 +180,8 @@ try {
         }
     }
 
-    ###################################################################################################################
-    # Template
+    // ########################################################################
+    // Template
     if (init('action') == 'getTemplateList') {
         ajax::success(jMQTT::templateList());
     }
@@ -218,8 +217,8 @@ try {
         ajax::success();
     }
 
-    ###################################################################################################################
-    # Configuration page
+    // ########################################################################
+    // Configuration page
     if (init('action') == 'startMqttClient') {
         $broker = jMQTT::getBrokerFromId(init('id'));
         ajax::success($broker->startMqttClient());
@@ -236,8 +235,8 @@ try {
         ajax::success();
     }
 
-    ###################################################################################################################
-    # Real Time mode
+    // ########################################################################
+    // Real Time mode
     if (init('action') == 'changeRealTimeMode') {
         $id = init('id');
         $mode = init('mode');
@@ -339,8 +338,8 @@ try {
         ajax::success();
     }
 
-    ###################################################################################################################
-    # Mosquitto
+    // ########################################################################
+    // Mosquitto
     if (init('action') == 'mosquittoInstall') {
         jMQTTPlugin::mosquittoInstall();
         ajax::success(jMQTTPlugin::mosquittoCheck());
@@ -378,8 +377,8 @@ try {
         ajax::success(jMQTTPlugin::mosquittoCheck());
     }
 
-    ###################################################################################################################
-    # Backup / Restore
+    // ########################################################################
+    // Backup / Restore
     if (init('action') == 'backupCreate') {
         jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT lancée...", __FILE__)));
         $out = null;
@@ -483,8 +482,10 @@ try {
     }
 
     throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
-    /*     * *********Catch exeption*************** */
-} catch (Exception $e) {
+
+}
+// ********* Catch exeption ***************
+catch (Exception $e) {
     ajax::error(displayException($e), $e->getCode());
 }
 ?>

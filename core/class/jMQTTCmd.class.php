@@ -213,9 +213,9 @@ class jMQTTCmd extends cmd {
      */
     public function decodeJsonMsg($payload) {
         $jsonArray = json_decode($payload, true);
-        if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE)
+        if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE) {
             return $jsonArray;
-        else {
+        } else {
             if (json_last_error() == JSON_ERROR_NONE)
                 $this->getEqLogic()->log(
                     'info',
@@ -565,9 +565,9 @@ class jMQTTCmd extends cmd {
                             $this->getHumanName()
                         )
                     );
-                }
-                // If broker eqpt is enabled and retain is now disabled
-                elseif ($eqLogic->getBroker()->getIsEnable()) {
+                } elseif ($eqLogic->getBroker()->getIsEnable()) {
+                    // If broker eqpt is enabled and retain is now disabled
+
                     // A null payload should be sent to the broker to erase the last retained value
                     // Otherwise, this last value remains retained at broker level
                     $eqLogic->log(

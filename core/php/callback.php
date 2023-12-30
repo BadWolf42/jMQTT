@@ -214,7 +214,7 @@ class JmqttdCallbacks {
             echo 'Bad Request.';
             die();
         }
-        foreach($message as $val) {
+        foreach ($message as $val) {
             jMQTT::logger(
                 'debug',
                 sprintf(
