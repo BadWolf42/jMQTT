@@ -260,7 +260,45 @@ class JmqttdCallbacks {
             // Remove warning status
             $broker->setStatus('warning', null);
             $broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
+            $broker->setCache(jMQTTConst::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
             $broker->sendMqttClientStateEvent();
+
+            // $params = array();
+            // $params['hostname'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_ADDRESS);
+            // $params['proto'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_PROTO);
+            // $params['port'] = intval($this->getConf(jMQTTConst::CONF_KEY_MQTT_PORT));
+            // $params['wsUrl'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_WS_URL);
+            // $params['mqttId'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_ID) == "1";
+            // $params['mqttIdValue'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_ID_VALUE);
+            // $params['lwt'] = ($this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT) == '1');
+            // $params['lwtTopic'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT_TOPIC);
+            // $params['lwtOnline'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT_ONLINE);
+            // $params['lwtOffline'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT_OFFLINE);
+            // $params['username'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_USER);
+            // $params['password'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_PASS);
+            // $params['tlscheck'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CHECK);
+            // switch ($this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CHECK)) {
+            //     case 'disabled':
+            //         $params['tlsinsecure'] = true;
+            //         break;
+            //     case 'public':
+            //         $params['tlsinsecure'] = false;
+            //         break;
+            //     case 'private':
+            //         $params['tlsinsecure'] = false;
+            //         $params['tlsca'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CA);
+            //         break;
+            // }
+            // $params['tlscli'] = ($this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CLI) == '1');
+            // if ($params['tlscli']) {
+            //     $params['tlsclicert'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CLI_CERT);
+            //     $params['tlsclikey'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CLI_KEY);
+            //     if ($params['tlsclicert'] == '' || $params['tlsclikey'] == '') {
+            //         $params['tlscli']    = false;
+            //         unset($params['tlsclicert']);
+            //         unset($params['tlsclikey']);
+            //     }
+            // }
 
             // Activate listeners
             jMQTT::listenersAddAll();
@@ -306,27 +344,14 @@ class JmqttdCallbacks {
         $id = $message['id'];
         jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $id));
 
-        try { // Catch if broker is unknown / deleted
-            /** @var jMQTT $broker */
-            $broker = jMQTT::byId($id); // Don't use getBrokerFromId here!
-            if (!is_object($broker)) {
-                jMQTT::logger(
-                    'debug',
-                    sprintf(
-                        __("Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)", __FILE__),
-                        $id
-                    )
-                );
-                return;
-            }
-            if ($broker->getType() != jMQTTConst::TYP_BRK) {
-                jMQTT::logger(
-                    'error',
-                    sprintf(
-                        __("L'équipement %s n'est pas de type Broker", __FILE__),
-                        $id
-                    )
-                );
+        // Catch if thing do bad
+        try {
+            // Catch if broker is unknown / deleted
+            try {
+                $broker = jMQTT::getBrokerFromId(intval($id));
+            } catch (Throwable $e) {
+                jMQTT::logger('debug', $e->getMessage());
+                $e->getMessage();
                 return;
             }
             // Save in cache that Mqtt Client is disconnected

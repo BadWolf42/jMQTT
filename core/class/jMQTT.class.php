@@ -1321,7 +1321,9 @@ class jMQTT extends eqLogic {
      * @return array
      */
     public static function deamon_info() {
-        return jMQTTDaemon::info();
+        $return = array('launchable' => jMQTTConst::CLIENT_OK, 'log' => jMQTT::class);
+        $return['state'] = (jMQTTDaemon::check()) ? jMQTTConst::CLIENT_OK : jMQTTConst::CLIENT_NOK;
+        return $return;
     }
 
     /**
@@ -1579,79 +1581,6 @@ class jMQTT extends eqLogic {
         if ($this->getIsEnable())
             return jMQTTConst::CLIENT_POK;
         return jMQTTConst::CLIENT_NOK;
-    }
-
-    /**
-     * Start the MQTT Client of this broker if it is launchable
-     *
-     * @throws Exception if the MQTT Client is not launchable
-     */
-    public function startMqttClient() {
-        // if daemon is not ok, do Nothing
-        $daemon_info = jMQTTDaemon::info();
-        if ($daemon_info['state'] != jMQTTConst::CLIENT_OK)
-            return;
-        //If MqttClient is not launchable (daemon is running), throw exception to get message
-        $mqttclient_info = $this->getMqttClientInfo();
-        if ($mqttclient_info['launchable'] != jMQTTConst::CLIENT_OK)
-            throw new Exception(
-                __("Le client MQTT n'est pas démarrable :", __FILE__)
-                 . ' ' . $mqttclient_info['message']
-            );
-        $this->log('info', __('Démarrage du Client MQTT', __FILE__));
-        $this->setCache(jMQTTConst::CACHE_LAST_LAUNCH_TIME, date('Y-m-d H:i:s'));
-        $this->sendMqttClientStateEvent(); // Need to send current state before brkUp give OK
-        // Preparing some additional data for the broker
-        $params = array();
-        $params['hostname'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_ADDRESS);
-        $params['proto'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_PROTO);
-        $params['port'] = intval($this->getConf(jMQTTConst::CONF_KEY_MQTT_PORT));
-        $params['wsUrl'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_WS_URL);
-        $params['mqttId'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_ID) == "1";
-        $params['mqttIdValue'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_ID_VALUE);
-        $params['lwt'] = ($this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT) == '1');
-        $params['lwtTopic'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT_TOPIC);
-        $params['lwtOnline'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT_ONLINE);
-        $params['lwtOffline'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_LWT_OFFLINE);
-        $params['username'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_USER);
-        $params['password'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_PASS);
-        $params['tlscheck'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CHECK);
-        switch ($this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CHECK)) {
-            case 'disabled':
-                $params['tlsinsecure'] = true;
-                break;
-            case 'public':
-                $params['tlsinsecure'] = false;
-                break;
-            case 'private':
-                $params['tlsinsecure'] = false;
-                $params['tlsca'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CA);
-                break;
-        }
-        $params['tlscli'] = ($this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CLI) == '1');
-        if ($params['tlscli']) {
-            $params['tlsclicert'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CLI_CERT);
-            $params['tlsclikey'] = $this->getConf(jMQTTConst::CONF_KEY_MQTT_TLS_CLI_KEY);
-            if ($params['tlsclicert'] == '' || $params['tlsclikey'] == '') {
-                $params['tlscli']    = false;
-                unset($params['tlsclicert']);
-                unset($params['tlsclikey']);
-            }
-        }
-        // jMQTTComToDaemon::newClient($this->getId(), $params);
-    }
-
-    /**
-     * Stop the MQTT Client of this broker type object
-     */
-    public function stopMqttClient() {
-        $daemon_info = jMQTTDaemon::info();
-        if ($daemon_info['state'] == jMQTTConst::CLIENT_NOK)
-            return; // Return if client is not running
-        $this->log('info', __('Arrêt du Client MQTT', __FILE__));
-        // jMQTTComToDaemon::removeClient($this->getId());
-        // Need to send current state before brkDown give NOK
-        $this->sendMqttClientStateEvent();
     }
 
     /**

@@ -84,15 +84,6 @@ class jMQTTDaemon {
     }
 
     /**
-     * Jeedom callback to get information on the daemon
-     */
-    public static function info() {
-        $return = array('launchable' => jMQTTConst::CLIENT_OK, 'log' => jMQTT::class);
-        $return['state'] = (jMQTTDaemon::check()) ? jMQTTConst::CLIENT_OK : jMQTTConst::CLIENT_NOK;
-        return $return;
-    }
-
-    /**
      * Jeedom callback to start daemon
      */
     public static function start() {
