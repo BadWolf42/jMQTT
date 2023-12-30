@@ -547,7 +547,6 @@
 		"Vider": "Empty"
 	},
 	"plugins/jMQTT/desktop/php/jMQTT_broker.php": {
-		"(Re)Démarrer": "(Re)Start",
 		"Active/Désactive la publication du statut (Last Will and Testament) en MQTT sur le Broker.": "Enable/Disable MQTT LWT (Last Will and Testament) status publication by jMQTT on the Broker.",
 		"Active/Désactive les interactions au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.": "Enables/disables Interaction via MQTT protocol.<br/>For more information, please refer to the documentation.",
 		"Activé - Autorité Personnalisée": "Enabled - Custom Authority",
@@ -587,6 +586,7 @@
 		"Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.": "Allows access to all Json RPC API methods via the MQTT protocol.<br/>For more information, please refer to the documentation.",
 		"Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.": "Network port Broker is listening on.<br/>Value if empty, 1883 in mqtt, 8883 in mqtts, 1884 in ws and 8884 in wss.",
 		"Publier le statut (LWT)": "Publish status (LWT)",
+		"Redémarrer": "Restart",
 		"Statut": "Status",
 		"Topic d'accès aux interactions de Jeedom sur ce Broker ('jeedom/interact' par défaut).<br/>Envoyer la demande en texte directement sur ce topic, elle sera transmise au moteur d'interaction de Jeedom.<br/>La réponse sera envoyée sur le sous-topic '/reply' (donc 'jeedom/interact/reply' par défaut).<br/>Pour des interactions avancées, il est possible de formuler une demande complexe sur le sous-topic '/advanced'.": "Topic for Jeedom interactions on this Broker (by default: 'jeedom/interact').<br/>Send the request in text directly to this topic, it will be transmitted to Jeedom interaction engine.<br/>The response will be sent to the '/reply' subtopic (so by default: 'jeedom/interact/reply').<br/>For advanced interactions, it is possible to formulate a complex request on the '/advanced' subtopic.",
 		"Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('jeedom/status' par défaut).": "Topic to access the Jeedom Json RPC API on this Broker (by default: 'jeedom/status').",

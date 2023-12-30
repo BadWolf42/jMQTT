@@ -547,7 +547,6 @@
 		"Vider": "Vider"
 	},
 	"plugins/jMQTT/desktop/php/jMQTT_broker.php": {
-		"(Re)Démarrer": "(Re)Démarrer",
 		"Active/Désactive la publication du statut (Last Will and Testament) en MQTT sur le Broker.": "Active/Désactive la publication du statut LWT (Last Will and Testament) de jMQTT en MQTT sur le Broker.",
 		"Active/Désactive les interactions au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.": "Active/Désactive les interactions au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.",
 		"Activé - Autorité Personnalisée": "Activé - Autorité Personnalisée",
@@ -587,6 +586,7 @@
 		"Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.": "Permet d’accéder à toutes les méthodes de l’API Json RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.",
 		"Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.": "Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.",
 		"Publier le statut (LWT)": "Publier le statut (LWT)",
+		"Redémarrer": "Redémarrer",
 		"Statut": "Statut",
 		"Topic d'accès aux interactions de Jeedom sur ce Broker ('jeedom/interact' par défaut).<br/>Envoyer la demande en texte directement sur ce topic, elle sera transmise au moteur d'interaction de Jeedom.<br/>La réponse sera envoyée sur le sous-topic '/reply' (donc 'jeedom/interact/reply' par défaut).<br/>Pour des interactions avancées, il est possible de formuler une demande complexe sur le sous-topic '/advanced'.": "Topic d'accès aux interactions de Jeedom sur ce Broker ('jeedom/interact' par défaut).<br/>Envoyer la demande en texte directement sur ce topic, elle sera transmise au moteur d'interaction de Jeedom.<br/>La réponse sera envoyée sur le sous-topic '/reply' (donc 'jeedom/interact/reply' par défaut).<br/>Pour des interactions avancées, il est possible de formuler une demande complexe sur le sous-topic '/advanced'.",
 		"Topic d'accès à l'API JSON RPC de Jeedom sur ce Broker ('jeedom/status' par défaut).": "Topic d'accès à l'API Json RPC de Jeedom sur ce Broker ('jeedom/status' par défaut).",

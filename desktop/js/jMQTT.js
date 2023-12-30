@@ -145,11 +145,11 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
-$('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
+$('.eqLogicAction[data-action=restartMqttClient]').on('click',function(){
     var id = jmqtt.getEqId();
     if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
-    jmqtt.callPluginAjax({data: {action: 'startMqttClient', id: id}});
+    jmqtt.callPluginAjax({data: {action: 'restartMqttClient', id: id}});
 });
 
 $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {

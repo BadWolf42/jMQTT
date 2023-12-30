@@ -203,7 +203,7 @@ try {
 
     // ########################################################################
     // Configuration page
-    if (init('action') == 'startMqttClient') {
+    if (init('action') == 'restartMqttClient') {
 
         // if daemon is not running, do Nothing
         if (!jMQTTDaemon::state())

@@ -232,8 +232,8 @@ jmqtt.updateBrokerTabs = function(_eq) {
     $('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + info.color).text(info.state.toUpperCase());
     $('.mqttClientState span.state').text(' ' + info.message);
 
-    // Show / hide startMqttClient button
-    (info.la == 'ok') ? $('.eqLogicAction[data-action=startMqttClient]').show() : $('.eqLogicAction[data-action=startMqttClient]').hide();
+    // Show / hide restartMqttClient button
+    (info.la == 'ok') ? $('.eqLogicAction[data-action=restartMqttClient]').show() : $('.eqLogicAction[data-action=restartMqttClient]').hide();
 
     // Update LastLaunch span
     $('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
