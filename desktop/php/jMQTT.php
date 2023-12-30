@@ -132,11 +132,11 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
     <div class="col-xs-12 eqLogic" data-eqLogic_type="jMQTT" style="display: none;">
         <div class="row">
             <div class="input-group pull-right" style="display:inline-flex">
-                <a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft toDisable tooltips" data-action="createTemplate" style="display: none;" title="{{Créer Template}}"><i class="fas fa-cubes"></i></a>
-                <a class="btn btn-warning btn-sm eqLogicAction typ-std toDisable tooltips" data-action="applyTemplate" style="display: none;" title="{{Appliquer Template}}"><i class="fas fa-share"></i></a>
-                <a class="btn btn-success btn-sm eqLogicAction typ-std toDisable tooltips" data-action="updateTopics" style="display: none;" title="{{Modifier Topics}}"><i class="fas fa-pen"></i></a>
+                <a class="btn btn-primary btn-sm eqLogicAction typ-std roundedLeft tooltips" data-action="createTemplate" style="display: none;" title="{{Créer Template}}"><i class="fas fa-cubes"></i></a>
+                <a class="btn btn-warning btn-sm eqLogicAction typ-std tooltips" data-action="applyTemplate" style="display: none;" title="{{Appliquer Template}}"><i class="fas fa-share"></i></a>
+                <a class="btn btn-success btn-sm eqLogicAction typ-std tooltips" data-action="updateTopics" style="display: none;" title="{{Modifier Topics}}"><i class="fas fa-pen"></i></a>
                 <a class="btn btn-primary btn-sm eqLogicAction typ-std tooltips" data-action="jsonPathTester" style="display: none;" title="{{Testeur Chemin JSON}}"><i class="fas fa-check"></i></a>
-                <a class="btn btn-default btn-sm eqLogicAction typ-std toDisable tooltips" data-action="copy" style="display: none;" title="{{Dupliquer}}"><i class="fas fa-copy"></i></a>
+                <a class="btn btn-default btn-sm eqLogicAction typ-std tooltips" data-action="copy" style="display: none;" title="{{Dupliquer}}"><i class="fas fa-copy"></i></a>
                 <a class="btn btn-default btn-sm eqLogicAction tooltips" data-action="configure" title="{{Configuration avancée}}"><i class="fas fa-cogs"></i></a>
                 <a class="btn btn-success btn-sm eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}</a>
                 <a class="btn btn-danger btn-sm eqLogicAction roundedRight" data-action="remove"><i class="fas fa-minus-circle"></i> {{Supprimer}}</a>&nbsp;
@@ -154,8 +154,8 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
         </div>
         <div id="menu-bar" style="display: none;">
             <div class="form-actions">
-                <a class="btn btn-info btn-xs eqLogicAction toDisable" data-action="addMQTTAction"><i class="fas fa-plus-circle"></i> {{Ajouter une commande action}}</a>
-                <a class="btn btn-warning btn-xs eqLogicAction toDisable" data-action="addMQTTInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une commande info}}</a>
+                <a class="btn btn-info btn-xs eqLogicAction" data-action="addMQTTAction"><i class="fas fa-plus-circle"></i> {{Ajouter une commande action}}</a>
+                <a class="btn btn-warning btn-xs eqLogicAction" data-action="addMQTTInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une commande info}}</a>
                 <div class="btn-group pull-right" data-toggle="buttons">
                     <a class="btn btn-primary btn-xs roundedLeft eqLogicAction active" data-action="classicView"><input type="radio" checked><i class="fas fa-list-alt"></i> Classic </a>
                     <a class="btn btn-default btn-xs roundedRight eqLogicAction" data-action="jsonView"><input type="radio"><i class="fas fa-sitemap"></i> JSON </a>
@@ -167,10 +167,10 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
             <div role="tabpanel" class="tab-pane active" id="eqlogictab">
                 <?php include_file('desktop', 'jMQTT_eqpt', 'php', 'jMQTT'); ?>
             </div>
-            <div role="tabpanel" class="tab-pane toDisable" id="brokertab">
+            <div role="tabpanel" class="tab-pane" id="brokertab">
                 <?php include_file('desktop', 'jMQTT_broker', 'php', 'jMQTT'); ?>
             </div>
-            <div role="tabpanel" class="tab-pane toDisable" id="realtimetab">
+            <div role="tabpanel" class="tab-pane" id="realtimetab">
                 <table id="table_realtime" class="table tree table-bordered table-condensed table-striped">
                     <thead style="position:sticky;top:0;z-index:5;">
                         <tr>
@@ -222,7 +222,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                 TODO: Add here the "Discovery" tab
                  labels: enhancement, html
             -->
-            <div role="tabpanel" class="tab-pane toDisable" id="commandtab">
+            <div role="tabpanel" class="tab-pane" id="commandtab">
                 <table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
                     <thead>
                         <tr>

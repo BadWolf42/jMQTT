@@ -843,9 +843,8 @@ class jMQTT extends eqLogic {
             // jMQTTConst::CONF_KEY_MQTT_TLS_CLI_CERT
             // jMQTTConst::CONF_KEY_MQTT_TLS_CLI_KEY
 
-            // Cleanup Broker from unexpected config
+            // Cleanup Broker from Equipment config keys
             $toRemove = array(
-                // TODO: Migrate eq/configuration/commentaire to eq/comment
                 jMQTTConst::CONF_KEY_BRK_ID,
                 'icone',
                 jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
@@ -875,9 +874,8 @@ class jMQTT extends eqLogic {
                 );
             }
 
-            // Cleanup Equipment from unexpected config
+            // Cleanup Equipment from Broker config keys
             $toRemove = array(
-                // TODO: Migrate eq/configuration/commentaire to eq/comment
                 jMQTTConst::CONF_KEY_LOGLEVEL,
                 jMQTTConst::CONF_KEY_MQTT_PROTO,
                 jMQTTConst::CONF_KEY_MQTT_ADDRESS,

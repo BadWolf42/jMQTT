@@ -300,14 +300,14 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 
 // Button to add a new eq and cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
-    var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
+    var topic = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
     var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
     jmqtt.addEqFromRealTime(topic, jsonPath);
 })
 
 // Button to add a cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addCmd]', function() {
-    var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
+    var topic = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
     var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
     jmqtt.addCmdFromRealTime(topic, jsonPath);
 })
@@ -614,7 +614,7 @@ function printEqLogic(_eqLogic) {
          */
         function addPayload(topic, jsonPath, payload, parent_id) {
             var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
-            var c =  existingCmd(_eqLogic.cmd, topic, jsonPath);
+            var c = existingCmd(_eqLogic.cmd, topic, jsonPath);
             //console.log('addPayload: topic=' + topic + ', jsonPath=' + jsonPath + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
             if (c === undefined) {
                 return addCmd({
@@ -735,35 +735,21 @@ function printEqLogic(_eqLogic) {
     }
 
     // Show UI elements depending on the type
-    if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.eqLogic == undefined || _eqLogic.configuration.eqLogic < 0))
-            || (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
-        $('.toDisable').addClass('disabled');
+    if (_eqLogic.configuration.type != 'broker') { // jMQTT Eq or orphan
         $('.typ-brk').hide();
-        $('.typ-std').hide();
-        $('.typ-brk-select').show();
-        $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
+        $('.typ-std').show();
+        $('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
 
         // Udpate panel as if on an eqLogic
         $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val('eqpt');
         jmqtt.updateEqptTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
-        $('.toDisable').removeClass('disabled');
+    } else { // jMQTT Broker
         $('.typ-std').hide();
         $('.typ-brk').show();
         $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
         // Udpate panel on eqBroker
         jmqtt.updateBrokerTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
-        $('.toDisable').removeClass('disabled');
-        $('.typ-brk').hide();
-        $('.typ-std').show();
-        $('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
-
-        // Udpate panel on eqLogic
-        jmqtt.updateEqptTabs(_eqLogic);
     }
 }
 
@@ -779,7 +765,7 @@ function saveEqLogic(_eqLogic) {
     if (_eqLogic.configuration.type == 'broker') {
         var log_level = $('#div_broker_log').getValues('.configKey')[0];
         if (!$.isEmptyObject(log_level)) {
-            _eqLogic.loglevel =  log_level;
+            _eqLogic.loglevel = log_level;
         }
     }
 

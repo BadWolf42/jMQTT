@@ -114,32 +114,32 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
             $('#div_listJmqttTemplate').show()
             var eq =  '';
             // Nom
-            eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">'+"{{Nom de l'équipement}}"+'</label><div class="col-sm-4"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
+            eq += '<div class="form-group"><label class="col-sm-3 control-label">'+"{{Nom de l'équipement}}"+'</label><div class="col-sm-4"><input type="text" class="eqLogicAttr form-control" data-l1key="name" value="'+init(data.name)+'" disabled /></div></div>';
             // Category
-            eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
+            eq += '<div class="form-group"><label class="col-sm-3 control-label">{{Catégorie}}</label><div class="col-sm-8">';
             eq += '<?php
             foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value)
                 echo '<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="'.$key.'" \'+((init(data.category.'.$key.')=="1")?\'checked \':\'\')+\'disabled />'.$value['name'].'</label>'; ?>';
             eq += '</div></div>';
             // Auto add cmd
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label><div class="col-sm-3">';
+            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label><div class="col-sm-3">';
             eq += '<input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" '+((init(data.configuration.auto_add_cmd)=="1")?'checked ':'')+'disabled />';
             eq += '</div></div>';
             // Topic
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-4">';
+            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-4">';
             eq += '<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
             eq += '</div></div>';
             // Qos
-            eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Qos}}</label><div id="mqttqos" class="col-sm-1">';
+            eq += '<div class="form-group"><label class="col-sm-3 control-label">{{Qos}}</label><div id="mqttqos" class="col-sm-1">';
             eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="Qos" disabled>';
             eq += '<option selected>'+init(data.configuration.Qos)+'</option></select>';
             eq += '</div></div>';
             // Alimentation
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Type d'alimentation}}"+'</label><div class="col-sm-4">';
+            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">'+"{{Type d'alimentation}}"+'</label><div class="col-sm-4">';
             eq += '<input class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_type" value="'+init(data.configuration.battery_type)+'" disabled />';
             eq += '</div></div>';
             // Battery
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Commande d'état de la batterie}}"+'</label><div class="col-sm-3">';
+            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">'+"{{Commande d'état de la batterie}}"+'</label><div class="col-sm-3">';
             eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="battery_cmd" disabled>';
             eq += '<option value="">{{Aucune}}</option>';
             if (init(data.configuration.battery_cmd))
@@ -147,7 +147,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
             eq += '</select>';
             eq += '</div></div>';
             // Availability
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">'+"{{Commande d'état de disponibilité}}"+'</label><div class="col-sm-3">';
+            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">'+"{{Commande d'état de disponibilité}}"+'</label><div class="col-sm-3">';
             eq += '<select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="availability_cmd" disabled>';
             eq += '<option value="">{{Aucune}}</option>';
             if (init(data.configuration.availability_cmd))
@@ -155,11 +155,11 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
             eq += '</select>';
             eq += '</div></div>';
             // Comment
-            eq += '<div class="form-group toDisable"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-8">';
+            eq += '<div class="form-group"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-8">';
             eq += '<textarea class="eqLogicAttr form-control" style="resize:vertical!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
             eq += '</div></div>';
             // Logo
-            eq += '<div class="form-group toDisable typ-std"><label class="col-sm-3 control-label">&nbsp;</label><div class="col-sm-4">';
+            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">&nbsp;</label><div class="col-sm-4">';
             eq += '<img id="logo_visu_tpl" style="margin-top: 10px;" src="plugins/jMQTT/core/img/node_' + init(data.configuration.icone) + '.svg" height="100" />';
             eq += '</div></div>';
             // Display equipements

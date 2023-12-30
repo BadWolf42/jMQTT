@@ -461,7 +461,8 @@ jmqtt.updateEqptTabs = function(_eq) {
     $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').value(_eq.configuration.icone); // Use .value() here, instead of .val(), to trigger change event
 
     // Update Real Time tab
-    jmqtt.updateRealTimeTab(_eq.configuration.eqLogic, false);
+    if (_eq.configuration.eqLogic != undefined && _eq.configuration.eqLogic > 0)
+        jmqtt.updateRealTimeTab(_eq.configuration.eqLogic, false);
 }
 
 // Decorator for Core plugin template on save callback
