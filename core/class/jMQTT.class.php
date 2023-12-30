@@ -845,14 +845,13 @@ class jMQTT extends eqLogic {
 
             // Cleanup Broker from Equipment config keys
             $toRemove = array(
-                jMQTTConst::CONF_KEY_BRK_ID,
-                'icone',
                 jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
                 jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
-                jMQTTConst::CONF_KEY_BATTERY_CMD,
                 jMQTTConst::CONF_KEY_AVAILABILITY_CMD,
-                jMQTTConst::CONF_KEY_QOS,
-                jMQTTConst::CONF_KEY_TEMPLATE_UUID
+                jMQTTConst::CONF_KEY_BATTERY_CMD,
+                jMQTTConst::CONF_KEY_BRK_ID,
+                jMQTTConst::CONF_KEY_ICON,
+                jMQTTConst::CONF_KEY_QOS
             );
             foreach ($toRemove as $key) {
                 $this->setConfiguration($key, null);
@@ -931,8 +930,10 @@ class jMQTT extends eqLogic {
         if (is_object($eqLogic)) {
             $this->_preSaveInformations = array();
             $this->_preSaveInformations['name'] = $eqLogic->getName();
+            $this->_preSaveInformations['object'] = $this->getObject();
             $this->_preSaveInformations['isEnable'] = $eqLogic->getIsEnable();
             $saveMe = array(
+                // Broker config keys
                 jMQTTConst::CONF_KEY_LOGLEVEL,
                 jMQTTConst::CONF_KEY_MQTT_PROTO,
                 jMQTTConst::CONF_KEY_MQTT_ADDRESS,
@@ -954,7 +955,14 @@ class jMQTT extends eqLogic {
                 jMQTTConst::CONF_KEY_MQTT_INT,
                 jMQTTConst::CONF_KEY_MQTT_INT_TOPIC,
                 jMQTTConst::CONF_KEY_MQTT_API,
-                jMQTTConst::CONF_KEY_MQTT_API_TOPIC
+                jMQTTConst::CONF_KEY_MQTT_API_TOPIC,
+                // Equipment config keys
+                jMQTTConst::CONF_KEY_BRK_ID,
+                jMQTTConst::CONF_KEY_BATTERY_CMD,
+                jMQTTConst::CONF_KEY_AVAILABILITY_CMD,
+                jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
+                // jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
+                jMQTTConst::CONF_KEY_QOS
             );
             foreach ($saveMe as $key) {
                 $this->_preSaveInformations[$key] = $eqLogic->getConf($key);
@@ -1031,6 +1039,8 @@ class jMQTT extends eqLogic {
 
                 // Check other changes that would trigger MQTT Client update
                 $checkChanged = array(
+                    'name',
+                    'object',
                     jMQTTConst::CONF_KEY_MQTT_PROTO,
                     jMQTTConst::CONF_KEY_MQTT_ADDRESS,
                     jMQTTConst::CONF_KEY_MQTT_PORT,
@@ -1113,8 +1123,19 @@ class jMQTT extends eqLogic {
                     $this->_preSaveInformations[jMQTTConst::CONF_KEY_BRK_ID]
                     != $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
                 ) {
+                    self::logger(
+                        'debug',
+                        sprintf(
+                            'UPDATED %s BrkId %s->%s',
+                            $this->getHumanName(),
+                            json_encode($this->_preSaveInformations[jMQTTConst::CONF_KEY_BRK_ID]),
+                            json_encode($this->getConf(jMQTTConst::CONF_KEY_BRK_ID))
+                        )
+                    );
                     // Get the new Broker
-                    $this->_broker = self::getBrokerFromId($this->getBrkId());
+                    $this->_broker = self::getBrokerFromId(
+                        $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
+                    );
                     $sendUpdate = true;
                 }
 
@@ -1151,6 +1172,8 @@ class jMQTT extends eqLogic {
 
                 // Check other changes that would trigger MQTT Client update
                 $checkChanged = array(
+                    'name',
+                    'object',
                     // jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
                     jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
                     jMQTTConst::CONF_KEY_QOS
