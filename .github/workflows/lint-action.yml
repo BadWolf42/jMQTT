@@ -78,15 +78,20 @@ jobs:
       - name: Lint Action
         uses: wearerequired/lint-action@v2
         with:
+          auto_fix: false
           check_name: ${linter} (${{ matrix.php-version }}, ${{ matrix.python-version }}, ${{ matrix.jeedom-branch }})
-          # php_codesniffer: true
+          php_codesniffer: true
+          php_codesniffer_dir: plugins/jMQTT
           black: true
-          black_dir: ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/
+          black_dir: plugins/jMQTT/resources/jmqttd_api
           black_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/black.toml
           flake8: true
-          flake8_dir: ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/
+          flake8_dir: plugins/jMQTT/resources/jmqttd_api
           flake8_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/flake8.toml
-          # eslint: true
+          flake8_auto_fix: false
+          eslint: true
+          eslint_dir: plugins/jMQTT
           # eslint_args: -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/eslint.json
-          # prettier: true
+          prettier: true
+          prettier_dir: plugins/jMQTT
           # prettier_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/prettier.json
