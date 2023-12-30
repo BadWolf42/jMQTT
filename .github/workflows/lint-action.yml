@@ -1,4 +1,4 @@
-name: Check PHP
+name: Lint Action
 
 on:
   push:
@@ -31,9 +31,6 @@ jobs:
         with:
           path: plugins/jMQTT
 
-      - name: Install dependencies
-        run: composer update --working-dir=${GITHUB_WORKSPACE}/plugins/jMQTT/resources/JsonPath-PHP
-
       - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
@@ -43,13 +40,20 @@ jobs:
         env:
           debug: true
 
+      - name: Install PHP dependencies
+        run: composer update --working-dir=${GITHUB_WORKSPACE}/plugins/jMQTT/resources/JsonPath-PHP
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/requirements-tests.txt
 
-      - name: Run PHPStan
+      - name: Lint with PHPStan
         run: phpstan analyse -c plugins/jMQTT/.github/phpstan/config.neon
 
       - name: Lint with flake8
