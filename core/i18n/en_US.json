@@ -165,7 +165,6 @@
 		"Souscription au topic d'Interaction '%s'": "Subscribing to Interaction topic '%s'"
 	},
 	"plugins/jMQTT/core/class/jMQTTComToDaemon.class.php": {
-		"Impossible d'envoyer un message au Démon sur le port %1\\$s, erreur %2\\$s": "Unable to send a message to Daemon on port %1\\$s, error %2\\$s",
 		"Le démon n'est pas démarré": "Daemon not started"
 	},
 	"plugins/jMQTT/core/class/jMQTTDaemon.class.php": {
