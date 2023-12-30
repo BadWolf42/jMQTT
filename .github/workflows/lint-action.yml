@@ -13,6 +13,7 @@ jobs:
       matrix:
         php-version: ['8.2']
         python-version: ['3.11']
+        node-version: ['12']
         jeedom-branch: ['V4-stable', 'alpha']
 
     steps:
@@ -30,6 +31,16 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: plugins/jMQTT
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # ESLint and Prettier must be in `package.json`
+      - name: Install Node.js dependencies
+        # run: npm ci
+        run: npm ci --save-dev --save-exact eslint prettier
 
       - name: Setup PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
@@ -69,3 +80,5 @@ jobs:
           php_codesniffer: true
           black: true
           flake8: true
+          eslint: true
+          prettier: true
