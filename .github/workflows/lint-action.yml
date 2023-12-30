@@ -80,8 +80,8 @@ jobs:
         with:
           auto_fix: false
           check_name: ${linter} (${{ matrix.php-version }}, ${{ matrix.python-version }}, ${{ matrix.jeedom-branch }})
-          php_codesniffer: true
-          php_codesniffer_dir: plugins/jMQTT
+          # php_codesniffer: true
+          # php_codesniffer_dir: plugins/jMQTT
           black: true
           black_dir: plugins/jMQTT/resources/jmqttd_api
           black_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/black.toml
@@ -89,9 +89,9 @@ jobs:
           flake8_dir: plugins/jMQTT/resources/jmqttd_api
           flake8_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/flake8.toml
           flake8_auto_fix: false
-          # eslint: true
-          # eslint_dir: plugins/jMQTT
+          eslint: true
+          eslint_dir: plugins/jMQTT/desktop/**/*.js plugins/jMQTT/desktop/**/*.php
           # eslint_args: -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/eslint.json
-          prettier: true
-          prettier_dir: plugins/jMQTT
+          # prettier: true
+          # prettier_dir: plugins/jMQTT
           # prettier_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/prettier.json
