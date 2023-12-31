@@ -914,7 +914,7 @@ class jMQTT extends eqLogic {
         if (is_object($eqLogic)) {
             $this->_preSaveInformations = array();
             $this->_preSaveInformations['name'] = $eqLogic->getName();
-            $this->_preSaveInformations['object'] = $this->getObject();
+            $this->_preSaveInformations['object'] = $eqLogic->getObject();
             $this->_preSaveInformations['isEnable'] = $eqLogic->getIsEnable();
             $saveMe = array(
                 // Broker config keys
