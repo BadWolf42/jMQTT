@@ -26,13 +26,6 @@
             "width": "232px",
             "height": "252px"
         },
-        "status": {
-            "lastCommunication": "2022-09-18 06:53:50",
-            "enableDatime": "2022-09-18 06:53:50"
-        },
-        "cache": {
-            "z2m_eq_name": "Machine_a_laver"
-        },
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",

@@ -42,14 +42,6 @@
             "width": "138px",
             "height": "248px"
         },
-        "status": {
-            "lastCommunication": "2022-11-14 22:49:40",
-            "enableDatime": "2022-11-14 22:49:40"
-        },
-        "cache": {
-            "z2m_eq_name": "_CasaIA",
-            "mqtt_client_eqId": "2286"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",

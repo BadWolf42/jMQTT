@@ -34,11 +34,6 @@
             "backGraph::color": "#4572a7",
             "parameters": []
         },
-        "status": {
-            "lastCommunication": "2022-03-19 15:19:04",
-            "enableDatime": "2022-03-19 15:19:04"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",

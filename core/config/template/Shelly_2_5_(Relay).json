@@ -28,10 +28,6 @@
             "width": "236px",
             "height": "150px"
         },
-        "status": {
-            "lastCommunication": "2022-10-15 11:21:55",
-            "enableDatime": "2022-10-15 11:21:55"
-        },
         "commands": [
             {
                 "generic_type": "FLAP_STATE",

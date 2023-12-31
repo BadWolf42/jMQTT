@@ -31,11 +31,6 @@
             "backGraph::type": "areaspline",
             "parameters": []
         },
-        "status": {
-            "lastCommunication": "2022-12-09 18:55:55",
-            "enableDatime": "2022-12-09 18:55:55"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",

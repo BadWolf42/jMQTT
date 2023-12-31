@@ -34,10 +34,6 @@
             "backGraph::color": "#4572a7",
             "parameters": []
         },
-        "status": {
-            "lastCommunication": "2022-10-15 11:21:55",
-            "enableDatime": "2022-10-15 11:21:55"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",

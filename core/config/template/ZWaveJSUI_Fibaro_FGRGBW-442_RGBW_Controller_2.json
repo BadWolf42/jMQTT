@@ -30,9 +30,6 @@
             "backGraph::format": "month",
             "backGraph::type": "areaspline"
         },
-        "status": {
-            "lastCommunication": "2022-09-25 20:17:33"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",

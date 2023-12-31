@@ -30,8 +30,6 @@
             "width": "232px",
             "height": "272px"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",

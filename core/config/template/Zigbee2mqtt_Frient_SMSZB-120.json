@@ -24,8 +24,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
