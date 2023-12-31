@@ -110,6 +110,7 @@ try {
     if (init('action') == 'cacheGetInternal') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         $cacheKeys = array();
+        $cacheKeys[] = 'deamonStartjMQTTinprogress';
         $cacheKeys[] = 'dependancyjMQTT';
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_RCV;
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_SND;
