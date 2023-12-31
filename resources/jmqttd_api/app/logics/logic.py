@@ -13,7 +13,7 @@ from models.eq import EqModel
 from models.unions import CmdModel
 
 
-class Logic():
+class Logic:
     @classmethod
     def registerGenericModel(
         cls,
@@ -86,7 +86,6 @@ class Logic():
     def printTree(cls) -> None:
         for b in BrkLogic.all.values():
             PrintVisitor.do(b)
-
 
     """
     # On BrkLogic

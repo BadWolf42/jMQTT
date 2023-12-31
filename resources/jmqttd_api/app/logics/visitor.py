@@ -27,9 +27,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         # If BrkLogic is not found
         if brkId not in BrkLogic.all:
             self.logger.warning(
-                'id=%s, disregarded: BrkId=%s not found',
-                e.model.id,
-                brkId
+                'id=%s, disregarded: BrkId=%s not found', e.model.id, brkId
             )
             return
         # Cleanup EqLogic just in case
@@ -60,9 +58,7 @@ class RegisteringLogicVisitor(LogicVisitor):
             e.weakBrk = ref(eq)
         else:  # Could not find a parent
             self.logger.warning(
-                'id=%s, disregarded: EqId=%s not found',
-                e.model.id,
-                e.model.eqLogic_id
+                'id=%s, disregarded: EqId=%s not found', e.model.id, e.model.eqLogic_id
             )
             return
         # Only add in CmdLogic if found a parent
@@ -72,32 +68,20 @@ class RegisteringLogicVisitor(LogicVisitor):
             eq.cmd_i[e.model.id] = e
         else:
             eq.cmd_a[e.model.id] = e
-            self.logger.debug(
-                'id=%s, disregarded: not an info cmd',
-                e.model.id
-            )
+            self.logger.debug('id=%s, disregarded: not an info cmd', e.model.id)
         # Finish here if eq is not enabled
         if not eq.model.isEnable:
-            self.logger.debug(
-                'id=%s, is not enabled, but registered',
-                e.model.id
-            )
+            self.logger.debug('id=%s, is not enabled, but registered', e.model.id)
             return
         # Insert path in info topic tree
         if e.model.type != 'info':
-            self.logger.debug(
-                'id=%s, is an action cmd, but registered',
-                e.model.id
-            )
+            self.logger.debug('id=%s, is an action cmd, but registered', e.model.id)
             return
         topic = e.model.configuration.topic
         # TODO Check if topic is subscribable
         # if isBadTopicFilter(e.subscription):
         if topic == '':
-            self.logger.info(
-                'id=%s, is not subscribable, but registered',
-                e.model.id
-            )
+            self.logger.info('id=%s, is not subscribable, but registered', e.model.id)
             return
         brk = e.weakBrk()
         # Add topic to BrkLogic if missing
@@ -213,18 +197,18 @@ class PrintVisitor(LogicVisitor):
     def visit_brklogic(self, e: BrkLogic) -> None:
         self.logger.debug(
             '%s┌─►  BrkLogic id=%s, name=%s, enabled=%s',
-            '│ '*self.level,
+            '│ ' * self.level,
             e.model.id,
             e.model.name,
-            '1' if e.model.isEnable else '0'
+            '1' if e.model.isEnable else '0',
         )
 
         for t in e.topics:
             self.logger.debug(
                 '%s│      %s => %s',
-                '│ '*self.level,
+                '│ ' * self.level,
                 t,
-                ' '.join([str(v.model.id) for v in e.topics[t].values()])
+                ' '.join([str(v.model.id) for v in e.topics[t].values()]),
             )
         self.level += 1
         linked_cmd_eq = [v for v in e.cmd_i.values()]
@@ -233,12 +217,12 @@ class PrintVisitor(LogicVisitor):
         for eq in linked_cmd_eq:
             eq.accept(self)
         self.level -= 1
-        self.logger.debug('%s└%s', '│ '*self.level, '─'*(50-2*self.level-1))
+        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level-1))
 
     def visit_eqlogic(self, e: EqLogic) -> None:
         self.logger.debug(
             '%s┌─►  EqLogic  id=%s, name=%s, enabled=%s',
-            '│ '*self.level,
+            '│ ' * self.level,
             e.model.id,
             e.model.name,
             '1' if e.model.isEnable else '0'
@@ -249,13 +233,13 @@ class PrintVisitor(LogicVisitor):
         for cmd in [v for v in e.cmd_a.values()]:
             cmd.accept(self)
         self.level -= 1
-        self.logger.debug('%s└%s', '│ '*self.level, '─'*(50-2*self.level-1))
+        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level-1))
 
     def visit_cmdlogic(self, e: CmdLogic) -> None:
         if e.model.type == 'info':
             self.logger.debug(
                 '%s - CmdLogic id=%s, name=%s, type=info, topic=%s, jsonPath=%s',
-                '│ '*self.level,
+                '│ ' * self.level,
                 e.model.id,
                 e.model.name,
                 e.model.configuration.topic,
@@ -264,7 +248,7 @@ class PrintVisitor(LogicVisitor):
         else:
             self.logger.debug(
                 '%s - CmdLogic id=%s, name=%s, type=%s, topic=%s',
-                '│ '*self.level,
+                '│ ' * self.level,
                 e.model.id,
                 e.model.name,
                 e.model.type,

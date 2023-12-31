@@ -73,9 +73,7 @@ def daemon_put_api(newapikey: str):
 
 
 # -----------------------------------------------------------------------------
-@daemon.get(
-    "/loglevel", response_model_exclude_defaults=True, summary="Get a loglevel"
-)
+@daemon.get("/loglevel", response_model_exclude_defaults=True, summary="Get a loglevel")
 def daemon_get_loglevel(name: str = '') -> str:
     return getLevelName(getLogger(name).getEffectiveLevel())
 
@@ -96,9 +94,7 @@ def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
 
 # -----------------------------------------------------------------------------
 @daemon.get(
-    "/loglevels",
-    response_model_exclude_defaults=True,
-    summary="Get all loglevel"
+    "/loglevels", response_model_exclude_defaults=True, summary="Get all loglevel"
 )
 def daemon_get_loglevels() -> dict:
     return dumpLoggers()

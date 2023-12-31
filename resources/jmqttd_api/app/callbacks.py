@@ -39,7 +39,7 @@ class Callbacks:
                 # TODO Remove PID from headers
                 headers={'Authorization': 'Bearer ' + settings.apikey, 'PID': pid},
                 params={'a': action},
-                json=data
+                json=data,
             ) as resp:
                 logger.trace(
                     '%s: Status=%i, Body="%s"', action, resp.status, await resp.text()
@@ -95,7 +95,7 @@ class Callbacks:
                 'payload': payload,
                 'qos': qos,
                 'retain': retain,
-            }
+            },
         )
 
     @classmethod

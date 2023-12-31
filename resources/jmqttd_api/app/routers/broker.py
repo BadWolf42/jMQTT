@@ -27,7 +27,7 @@ broker = APIRouter(
     "",
     response_model=List[BrkModel],
     response_model_exclude_defaults=True,
-    summary="List all Brokers in Daemon"
+    summary="List all Brokers in Daemon",
 )
 def broker_get():
     return [id.model for id in BrkLogic.all.values()]
@@ -52,14 +52,13 @@ def broker_delete():
     "/{id}",
     response_model=BrkModel,
     response_model_exclude_defaults=True,
-    summary="Get Broker properties in Daemon"
+    summary="Get Broker properties in Daemon",
 )
 def broker_get_id(id: int):
     if id in BrkLogic.all:
         return BrkLogic.all[id].model  # TODO Check if should be something else
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Broker not found"
+        status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
     )
 
 
@@ -67,7 +66,7 @@ def broker_get_id(id: int):
 @broker.delete(
     "/{id}",
     status_code=204,
-    summary="Remove Broker from Daemon"
+    summary="Remove Broker from Daemon",
 )
 def broker_delete_id(id: int):
     if id not in BrkLogic.all:
@@ -82,13 +81,12 @@ def broker_delete_id(id: int):
 @broker.post(
     "/{id}/publish",
     status_code=204,
-    summary="Send an MQTT message to an existing Broker"
+    summary="Send an MQTT message to an existing Broker",
 )
 def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     BrkLogic.all[id].publish(data.topic, data.payload, data.qos, data.retain)
 
@@ -97,13 +95,12 @@ def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
 @broker.get(
     "/{id}/restart",
     status_code=204,
-    summary="Restart connection to the broker"
+    summary="Restart connection to the broker",
 )
 def broker_get_id_restart(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     BrkLogic.all[id].restart()
 
@@ -119,8 +116,7 @@ def broker_get_id_restart(id: int):
 def broker_put_id_rt_start(id: int, option: RealTimeModel):
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     # TODO
 
@@ -135,8 +131,7 @@ def broker_put_id_rt_start(id: int, option: RealTimeModel):
 def broker_get_id_rt_status(id: int) -> RealTimeStatusModel:
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     return {"result": "success"}
     # TODO
@@ -152,8 +147,7 @@ def broker_get_id_rt_status(id: int) -> RealTimeStatusModel:
 def broker_put_id_rt_stop(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     # TODO
 
@@ -168,8 +162,7 @@ def broker_put_id_rt_stop(id: int):
 def broker_get_id_rt(id: int, since: int = 0) -> RealTimeStatusModel:
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     return {"result": "success"}
     # TODO
@@ -185,8 +178,7 @@ def broker_get_id_rt(id: int, since: int = 0) -> RealTimeStatusModel:
 def broker_put_id_rt_clear(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     return {"result": "success"}
     # TODO

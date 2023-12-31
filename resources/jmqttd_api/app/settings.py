@@ -26,12 +26,12 @@ logconfig: dict = {
         'normal': {
             'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-15s'
             ' : %(message)s'
-        }
+        },
     },
     'filters': {
         'logFilter': {
-            '()': 'utils.LogFilter'
-        }
+            '()': 'utils.LogFilter',
+        },
     },
     'handlers': {
         'fileHandler': {
@@ -42,13 +42,13 @@ logconfig: dict = {
             'formatter': 'withFunction',
             # 'formatter': 'normal',
             'filename': '/tmp/jMQTTd.log',
-            'filters': ['logFilter']
+            'filters': ['logFilter'],
         }
     },
     'root': {
         'level': 'DEBUG',
         # 'level': 'WARNING', # TODO disable DEBUG
-        'handlers': ['fileHandler']
+        'handlers': ['fileHandler'],
     },
     # 'loggers': {
     #     'asyncio': {
@@ -80,7 +80,6 @@ timeout_cancel: float = 3.0  # seconds to wait for a task to be canceled
 
 ###############################################################################
 # Store settings imported from environment, with default values
-
 class JmqttSettings(BaseSettings):
     apikey: str = '!secret'
     callback: str = 'http://localhost/plugins/jMQTT/core/php/callback.php'
