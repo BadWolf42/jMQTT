@@ -9,7 +9,7 @@ from callbacks import Callbacks
 from settings import timeout_cancel
 
 
-logger = getLogger('jmqtt.check')
+logger = getLogger('jmqtt.healthcheck')
 
 
 class Healthcheck:
@@ -44,7 +44,7 @@ class Healthcheck:
                     now - Callbacks._last_snd,
                     cls._snd_timeout,
                     Callbacks._retry_snd,
-                    cls._retry_max
+                    cls._retry_max,
                 )
                 kill(getpid(), SIGTERM)
                 return
@@ -52,7 +52,6 @@ class Healthcheck:
                 logger.error(
                     "Nothing has been received for %ds, Jeedom does not want me any longer.",
                     now - cls._last_rcv,
-                    cls._hb_timeout
                 )
                 kill(getpid(), SIGTERM)
                 return

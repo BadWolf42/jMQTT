@@ -1,7 +1,7 @@
 from logging import getLevelName, getLogger
 from os import getpid, kill
 from signal import SIGTERM
-
+from time import time
 from fastapi import APIRouter
 
 # from ..jmqttDaemon import JmqttDaemon
@@ -67,6 +67,10 @@ async def daemon_delete():
 # -----------------------------------------------------------------------------
 @daemon.put("/hb", status_code=204, summary="Receive heatbeat from Jeedom")
 async def daemon_put_hb():
+    logger.debug(
+        "Jeedom -> Heartbeat (nothing received since %ds)",
+        time() - Healthcheck._last_rcv,
+    )
     await Healthcheck.onReceive()
 
 
