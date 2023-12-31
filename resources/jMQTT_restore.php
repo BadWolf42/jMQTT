@@ -602,6 +602,7 @@ function restore_mainlogic(&$options, &$tmp_dir) {
         $error_code = 24;
     } elseif (!$options['not-folder'] && $options['apply']) {
         restore_folder($tmp_dir);
+        // TODO Check if need a fix with the new multiple classes?
         include __DIR__ . '/../core/class/jMQTT.class.php';
         print(date('[Y-m-d H:i:s][\I\N\F\O] : ') . "Reloading jMQTT classes...                           [ OK ]\n");
     } else {
