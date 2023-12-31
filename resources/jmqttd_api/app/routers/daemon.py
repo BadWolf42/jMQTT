@@ -5,7 +5,7 @@ from signal import SIGTERM
 from fastapi import APIRouter
 
 # from ..jmqttDaemon import JmqttDaemon
-from heartbeat import Heartbeat
+from healthcheck import Healthcheck
 from models.broker import BrkModel
 from models.eq import EqModel
 from models.messages import LogLevelModel
@@ -67,7 +67,7 @@ async def daemon_delete():
 # -----------------------------------------------------------------------------
 @daemon.put("/hb", status_code=204, summary="Receive heatbeat from Jeedom")
 async def daemon_put_hb():
-    await Heartbeat.onReceive()
+    await Healthcheck.onReceive()
 
 
 # -----------------------------------------------------------------------------

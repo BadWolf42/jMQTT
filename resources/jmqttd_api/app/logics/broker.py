@@ -5,7 +5,7 @@ from typing import Dict
 from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
-from heartbeat import Heartbeat
+from healthcheck import Healthcheck
 from logics.abstractvisitor import VisitableLogic, LogicVisitor
 from models.broker import BrkModel
 # from models.cmd import (
@@ -80,7 +80,7 @@ class BrkLogic(VisitableLogic):
             f'TODO: {{"topic":"{topic}","payload":"{payload}","qos":{qos},"retain":{retain}}}'
         )
         # TODO
-        await Heartbeat.onReceive()
+        await Healthcheck.onReceive()
 
     async def subscribe(self, topic: str, qos: int) -> None:
         self.log.debug(f'TODO: {{"topic":"{topic}","qos":{qos}}}')

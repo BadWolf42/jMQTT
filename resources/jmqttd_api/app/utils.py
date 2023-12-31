@@ -10,7 +10,7 @@ from sys import exit
 from settings import pid, settings, logconfig
 
 from callbacks import Callbacks
-from heartbeat import Heartbeat
+from healthcheck import Healthcheck
 from logics.logic import Logic
 from logics.broker import BrkLogic
 
@@ -188,7 +188,7 @@ async def shutdown():
     await Logic.printTree()
 
     # logger.debug('Running tasks:\n%s', asyncio.all_tasks())
-    await Heartbeat.stop()
+    await Healthcheck.stop()
 
     # Stop all register BrkLogic
     for inst in BrkLogic.all.values():

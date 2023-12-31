@@ -10,7 +10,7 @@ from sys import exit
 from uvicorn import Config, Server
 
 from callbacks import Callbacks
-from heartbeat import Heartbeat
+from healthcheck import Healthcheck
 from routers.broker import broker
 from routers.command import command
 from routers.daemon import daemon
@@ -39,7 +39,7 @@ def getToken(token: str = Security(HTTPBearer())):
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await startup()
-    await Heartbeat.start()
+    await Healthcheck.start()
     create_task(Callbacks.daemonUp())
     yield
     await shutdown()
