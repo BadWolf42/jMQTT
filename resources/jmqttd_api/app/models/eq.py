@@ -19,9 +19,9 @@ class EqConfigModel(BaseModel):
     # availability_eq: Optional[int] = 0
     battery_cmd: Optional[int] = 0
 
-    _val_eqLogic: classmethod = validator(
-        "eqLogic", allow_reuse=True, pre=True
-    )(strToInt)
+    _val_eqLogic: classmethod = validator("eqLogic", allow_reuse=True, pre=True)(
+        strToInt
+    )
     _val_auto_add_cmd: classmethod = validator(
         "auto_add_cmd", allow_reuse=True, pre=True
     )(strToBool)

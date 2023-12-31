@@ -18,9 +18,9 @@ class EqBaseModel(BaseModel):
 
     _val_id: classmethod = validator("id", allow_reuse=True, pre=True)(strToInt)
     # _val_isVisible: classmethod = validator("isVisible", allow_reuse=True, pre=True)(strToBool)
-    _val_isEnable: classmethod = validator(
-        "isEnable", allow_reuse=True, pre=True
-    )(strToBool)
+    _val_isEnable: classmethod = validator("isEnable", allow_reuse=True, pre=True)(
+        strToBool
+    )
 
 
 # -----------------------------------------------------------------------------
@@ -36,8 +36,8 @@ class CmdBaseModel(BaseModel):
     # isVisible: Optional[bool] = False
 
     _val_id: classmethod = validator("id", allow_reuse=True, pre=True)(strToInt)
-    _val_eqLogic_id: classmethod = validator(
-        "eqLogic_id", allow_reuse=True, pre=True
-    )(strToInt)
+    _val_eqLogic_id: classmethod = validator("eqLogic_id", allow_reuse=True, pre=True)(
+        strToInt
+    )
     # _val_isHistorized: classmethod = validator("isHistorized", allow_reuse=True, pre=True)(strToBool)
     # _val_isVisible: classmethod = validator("isVisible", allow_reuse=True, pre=True)(strToBool)

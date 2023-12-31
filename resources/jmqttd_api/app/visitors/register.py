@@ -57,7 +57,9 @@ class RegisteringLogicVisitor(LogicVisitor):
             e.weakBrk = ref(eq)
         else:  # Could not find a parent
             self.logger.warning(
-                'id=%s, cmd disregarded: EqId=%s not found', e.model.id, e.model.eqLogic_id
+                'id=%s, cmd disregarded: EqId=%s not found',
+                e.model.id,
+                e.model.eqLogic_id,
             )
             return
         # Only add in CmdLogic if found a parent
