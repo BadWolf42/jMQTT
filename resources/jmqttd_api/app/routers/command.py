@@ -33,8 +33,7 @@ def command_get() -> List[CmdModel]:
 def command_get_id(id: int) -> CmdModel:
     if id not in CmdLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Cmd not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
     return CmdLogic.all[id].model
 
@@ -45,8 +44,7 @@ def command_get_id(id: int) -> CmdModel:
 def command_delete_id(id: int):
     if id not in CmdLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Cmd not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
     Logic.unregisterCmdId(id)
 
@@ -59,4 +57,4 @@ def command_delete_id(id: int):
 #     tags=['Callback']
 # )
 # def callback_event_to_jeedom(event: JmqttdEvent):
-    # return {"result": "success"}
+#     return {"result": "success"}

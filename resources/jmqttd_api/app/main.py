@@ -31,10 +31,7 @@ logger = getLogger('jmqtt')
 def getToken(token: str = Security(HTTPBearer())):
     if token.credentials == settings.apikey:
         return token
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="Invalid API key"
-    )
+    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API key")
 
 
 # -----------------------------------------------------------------------------
@@ -73,7 +70,7 @@ if __name__ == "__main__":
         base_error_message = f"Failed to execute: {req.method}: {req.url}"
         return JSONResponse(
             status_code=400,
-            content={"message": f"{base_error_message}. Details: {err.json()}"}
+            content={"message": f"{base_error_message}. Details: {err.json()}"},
         )
 
     @app.exception_handler(Exception)
@@ -81,7 +78,7 @@ if __name__ == "__main__":
         base_error_message = f"Failed to execute: {req.method}: {req.url}"
         return JSONResponse(
             status_code=400,
-            content={"message": f"{base_error_message}. Details: {err}"}
+            content={"message": f"{base_error_message}. Details: {err}"},
         )
 
     # Attach routers
@@ -91,12 +88,7 @@ if __name__ == "__main__":
     app.include_router(command)
 
     # Prepare uvicon Server
-    uv = Server(
-        Config(
-            app,
-            log_config=None
-        )
-    )
+    uv = Server(Config(app, log_config=None))
 
     # Get socket listening in IPv4 and IPv6
     sock = getSocket()

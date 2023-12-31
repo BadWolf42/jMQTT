@@ -29,9 +29,7 @@ daemon = APIRouter(
 
 # -----------------------------------------------------------------------------
 @daemon.post(
-    "",
-    status_code=204,
-    summary="Initialize Brokers, Equipments and Commands in Daemon"
+    "", status_code=204, summary="Initialize Brokers, Equipments and Commands in Daemon"
 )
 def daemon_post(data: DataModel):
     for item in data:
@@ -47,7 +45,7 @@ def daemon_post(data: DataModel):
 @daemon.get(
     "",
     response_model_exclude_defaults=True,
-    summary="Return all Brokers, Equipments and Commands in Daemon"
+    summary="Return all Brokers, Equipments and Commands in Daemon",
 )
 def daemon_get():
     # JmqttDaemon.XXX() ### TODO SERIALIZE DAEMON STATE
@@ -56,20 +54,14 @@ def daemon_get():
 
 # -----------------------------------------------------------------------------
 @daemon.delete(
-    "",
-    status_code=204,
-    summary="Clear all Brokers, Equipments and Commands in Daemon"
+    "", status_code=204, summary="Clear all Brokers, Equipments and Commands in Daemon"
 )
 def daemon_delete():
     pass
 
 
 # -----------------------------------------------------------------------------
-@daemon.put(
-    "/hb",
-    status_code=204,
-    summary="Receive heatbeat from Jeedom"
-)
+@daemon.put("/hb", status_code=204, summary="Receive heatbeat from Jeedom")
 def daemon_put_hb():
     Heartbeat.onReceive()
 
@@ -82,9 +74,7 @@ def daemon_put_api(newapikey: str):
 
 # -----------------------------------------------------------------------------
 @daemon.get(
-    "/loglevel",
-    response_model_exclude_defaults=True,
-    summary="Get a loglevel"
+    "/loglevel", response_model_exclude_defaults=True, summary="Get a loglevel"
 )
 def daemon_get_loglevel(name: str = '') -> str:
     return getLevelName(getLogger(name).getEffectiveLevel())
@@ -96,21 +86,12 @@ def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
     newlevel = setLevel(level, name)
     if name == '':
         settings.rootloglevel = level
-        logger.notice(
-            'Log level of root logger set to: %s',
-            getLevelName(newlevel)
-        )
+        logger.notice('Log level of root logger set to: %s', getLevelName(newlevel))
     elif name == 'jmqtt':
         settings.loglevel = level
-        logger.notice(
-            'Log level of logger jmqtt set to: %s',
-            getLevelName(newlevel)
-        )
+        logger.notice('Log level of logger jmqtt set to: %s', getLevelName(newlevel))
     else:
-        logger.notice(
-            'Log level of logger %s set to: %s',
-            name, getLevelName(newlevel)
-        )
+        logger.notice('Log level of logger %s set to: %s', name, getLevelName(newlevel))
 
 
 # -----------------------------------------------------------------------------

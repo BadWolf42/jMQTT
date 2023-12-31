@@ -38,8 +38,12 @@ class CmdActionConfigModel(BaseModel):
     autoPub: Optional[bool] = False
 
     _val_Qos: classmethod = validator("Qos", allow_reuse=True, pre=True)(strToInt)
-    _val_retain: classmethod = validator("retain", allow_reuse=True, pre=True)(strToBool)
-    _val_autoPub: classmethod = validator("autoPub", allow_reuse=True, pre=True)(strToBool)
+    _val_retain: classmethod = validator(
+        "retain", allow_reuse=True, pre=True
+    )(strToBool)
+    _val_autoPub: classmethod = validator(
+        "autoPub", allow_reuse=True, pre=True
+    )(strToBool)
 
 
 # -----------------------------------------------------------------------------

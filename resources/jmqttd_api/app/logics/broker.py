@@ -1,8 +1,6 @@
 from __future__ import annotations
 from asyncio import run, Task
-# from json import load
 from logging import getLogger  # , DEBUG
-# from time import time
 from typing import Dict
 from weakref import WeakValueDictionary
 
@@ -78,7 +76,9 @@ class BrkLogic(VisitableLogic):
         self.start()
 
     def publish(self, topic: str, payload: str, qos: int, retain: bool):
-        self.log.debug(f'TODO: {{"topic":"{topic}","payload":"{payload}","qos":{qos},"retain":{retain}}}')
+        self.log.debug(
+            f'TODO: {{"topic":"{topic}","payload":"{payload}","qos":{qos},"retain":{retain}}}'
+        )
         # TODO
 
     def subscribe(self, topic: str, qos: int) -> None:

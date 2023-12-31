@@ -18,7 +18,7 @@ class Logic():
     def registerGenericModel(
         cls,
         model: Union[BrkModel, EqModel, CmdModel],
-        logic: Union[BrkLogic, EqLogic, CmdLogic]
+        logic: Union[BrkLogic, EqLogic, CmdLogic],
     ) -> None:
         # If Logic exists in register
         if model.id in logic.all:
@@ -33,44 +33,42 @@ class Logic():
             # With the register class method of the object
             RegisteringLogicVisitor.do(inst)
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def unregisterGenericId(
-        cls,
-        id: int,
-        logic: Union[BrkLogic, EqLogic, CmdLogic]
+        cls, id: int, logic: Union[BrkLogic, EqLogic, CmdLogic]
     ) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         if id not in logic.all:
             return []
         return UnregisteringLogicVisitor.do(logic.all[id])
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def registerBrkModel(cls, model: BrkModel) -> None:
         cls.registerGenericModel(model, BrkLogic)
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def unregisterBrkId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         return cls.unregisterGenericId(id, BrkLogic)
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def clear(cls) -> None:
         for inst in [v for v in BrkLogic.all.values()]:
             UnregisteringLogicVisitor.do(inst)
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def registerEqModel(cls, model: EqModel) -> None:
         cls.registerGenericModel(model, EqLogic)
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def unregisterEqId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         return cls.unregisterGenericId(id, EqLogic)
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def registerCmdModel(cls, model: CmdModel) -> None:
         cls.registerGenericModel(model, CmdLogic)
@@ -78,20 +76,20 @@ class Logic():
         #     UnregisteringLogicVisitor.do(cls.all[model.id])
         # RegisteringLogicVisitor.do(CmdLogic(model))
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         return cls.unregisterGenericId(id, CmdLogic)
 
-# -----------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------
     @classmethod
     def printTree(cls) -> None:
         for b in BrkLogic.all.values():
             PrintVisitor.do(b)
 
 
-"""
-# On BrkLogic
+    """
+    # On BrkLogic
     @classmethod
     def registerBrkModel(cls, model: BrkModel) -> None:
         # If BrkLogic exists
@@ -116,8 +114,8 @@ class Logic():
         for inst in cls.all.copy():
             UnregisteringLogicVisitor.do(inst)
 
-# -----------------------------------------------------------------------------
-# On EqLogic
+    # -----------------------------------------------------------------------------
+    # On EqLogic
     @classmethod
     def registerEqModel(cls, model: EqModel) -> None:
         # If EqLogic exists
@@ -140,8 +138,8 @@ class Logic():
             return []
         return UnregisteringLogicVisitor.do(cls.all[id])
 
-# -----------------------------------------------------------------------------
-# On CmdLogic
+    # -----------------------------------------------------------------------------
+    # On CmdLogic
     @classmethod
     def registerCmdModel(cls, model: CmdModel) -> None:
         if model.id in cls.all:
@@ -154,4 +152,4 @@ class Logic():
         if id not in cls.all:
             return []
         return UnregisteringLogicVisitor.do(cls.all[id])
-"""
+    """

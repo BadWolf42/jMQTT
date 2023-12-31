@@ -12,7 +12,7 @@ from settings import timeout_cancel
 logger = getLogger('jmqtt.heartbeat')
 
 
-class Heartbeat():
+class Heartbeat:
     _retry_max: int = 5  # max number of send retries
     _snd_timeout: float = 135.0  # seconds before send timeout
     _last_rcv: int = time()  # time of the last rcv msg
@@ -33,11 +33,17 @@ class Heartbeat():
             now = time()
             # Kill daemon if we cannot send for a total of X seconds
             #  and/or a total of Y retries "Jeedom is no longer available"
-            if now - Callbacks._last_snd > cls._snd_timeout and Callbacks._retry_snd > cls._retry_max:
+            if (
+                now - Callbacks._last_snd > cls._snd_timeout
+                and Callbacks._retry_snd > cls._retry_max
+            ):
                 logger.error(
                     "Nothing could be sent for %ds (max %ds) AND after %d attempts (max %d), "
                     "Jeedom/Apache is probably dead.",
-                    now - Callbacks._last_snd, cls._snd_timeout, Callbacks._retry_snd, cls._retry_max
+                    now - Callbacks._last_snd,
+                    cls._snd_timeout,
+                    Callbacks._retry_snd,
+                    cls._retry_max
                 )
                 kill(getpid(), SIGTERM)
                 return
@@ -45,7 +51,8 @@ class Heartbeat():
                 logger.error(
                     "Nothing has been received for %ds (max %ds), "
                     "Jeedom does not want me any longer.",
-                    now - cls._last_rcv, cls._hb_timeout
+                    now - cls._last_rcv,
+                    cls._hb_timeout
                 )
                 kill(getpid(), SIGTERM)
                 return
@@ -55,7 +62,8 @@ class Heartbeat():
                 if now - Callbacks._last_hb > cls._hb_retry:
                     logger.debug(
                         "Sending a heartbeat to Jeedom, nothing sent since %ds (max %ds)",
-                        now - Callbacks._last_snd, cls._hb_delay
+                        now - Callbacks._last_snd,
+                        cls._hb_delay
                     )
                     await Callbacks.daemonHB()
             # logger.debug('<3 Heartbeat <3')

@@ -17,11 +17,10 @@ logger = getLogger('jmqtt.callbacks')
 
 ###############################################################################
 # --- Messages TO jeedom models -----------------------------------------------
-
-# {"id":int, "value":[bool/int/str]}
 class JmqttdValue(BaseModel):
     id: int
     value: Union[bool, int, str]
+
 
 # class JmqttdValueList(RootModel):
 #     root: List[JmqttdValue]
@@ -38,16 +37,12 @@ class Callbacks:
             async with session.post(
                 settings.callback,
                 # TODO Remove PID from headers
-                headers={
-                    'Authorization': 'Bearer ' + settings.apikey,
-                    'PID': pid
-                },
+                headers={'Authorization': 'Bearer ' + settings.apikey, 'PID': pid},
                 params={'a': action},
                 json=data
             ) as resp:
                 logger.trace(
-                    '%s: Status=%i, Body="%s"',
-                    action, resp.status, await resp.text()
+                    '%s: Status=%i, Body="%s"', action, resp.status, await resp.text()
                 )
                 await resp.text()
                 if resp.status in [200, 204]:
@@ -90,12 +85,7 @@ class Callbacks:
 
     @classmethod
     async def message(
-        cls,
-        id: int,
-        topic: str,
-        payload: str,
-        qos: int = 1,
-        retain: bool = False
+        cls, id: int, topic: str, payload: str, qos: int = 1, retain: bool = False
     ):
         return await cls.__send(
             'message',
@@ -104,7 +94,7 @@ class Callbacks:
                 'topic': topic,
                 'payload': payload,
                 'qos': qos,
-                'retain': retain
+                'retain': retain,
             }
         )
 

@@ -31,8 +31,7 @@ def equipment_get() -> List[EqModel]:
 def equipment_get_id(id: int) -> EqModel:
     if id not in EqLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="eqLogic not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="eqLogic not found"
         )
     return EqLogic.all[id].model
 
@@ -42,7 +41,6 @@ def equipment_get_id(id: int) -> EqModel:
 def equipment_delete_id(id: int):
     if id not in EqLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="eqLogic not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="eqLogic not found"
         )
     Logic.unregisterEqId(id)

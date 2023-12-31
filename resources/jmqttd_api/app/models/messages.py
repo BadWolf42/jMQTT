@@ -48,7 +48,9 @@ class RealTimeModel(BaseModel):
     retained: Optional[bool] = True
     duration: Optional[int] = 180
 
-    _val_eqLogic: classmethod = validator("eqLogic", allow_reuse=True, pre=True)(strToInt)
+    _val_eqLogic: classmethod = validator(
+        "eqLogic", allow_reuse=True, pre=True
+    )(strToInt)
 
 
 # -----------------------------------------------------------------------------
