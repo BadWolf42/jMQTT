@@ -204,20 +204,21 @@ try {
     // ########################################################################
     // Configuration page
     if (init('action') == 'restartMqttClient') {
-
         // if daemon is not running, do Nothing
         if (!jMQTTDaemon::state())
             return;
+        $id = init('id', '-1');
+        $broker = jMQTT::getBrokerFromId($id);
         // If MqttClient is not launchable (daemon is running),
         // Then throw exception to get a message on WebUI
-        $mqttclient_info = $this->getMqttClientInfo();
-        if ($mqttclient_info['launchable'] != jMQTTConst::CLIENT_OK)
+        $info = $broker->getMqttClientInfo();
+        if ($info['launchable'] != jMQTTConst::CLIENT_OK)
             throw new Exception(
                 __("Le client MQTT n'est pas démarrable :", __FILE__) .
-                ' ' . $mqttclient_info['message']
+                ' ' . $info['message']
             );
-
-        jMQTTComToDaemon::brokerRestart(init('id', '-1'));
+        jMQTTComToDaemon::brokerRestart($id);
+        ajax::success();
     }
 
     if (init('action') == 'sendLoglevel') {

@@ -180,8 +180,8 @@ class jMQTTDaemon {
     }
 
     /**
-     * Cached function du get jMQTT internal API key
-     * @return string
+     * Cached function to get jMQTT internal API key
+     * @return string jMQTT current internal API key
      */
     public static function getApiKey($cache = true) {
         if ($cache && !is_null(self::$apikey)) {

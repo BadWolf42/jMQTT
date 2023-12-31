@@ -333,15 +333,18 @@ class JmqttdCallbacks {
 
     /**
      * Daemon callback to tell Jeedom a broker is disconnected
+     * @param int|null $id Optional id of the broker
      */
-    public static function onBrokerDown() {
-        $message = self::getPayload();
-        if (!isset($message['id'])) {
-            http_response_code(400);
-            echo 'Bad Request parameter.';
-            die();
+    public static function onBrokerDown($id = null) {
+        if (is_null($id)) {
+            $message = self::getPayload();
+            if (!isset($message['id'])) {
+                http_response_code(400);
+                echo 'Bad Request parameter.';
+                die();
+            }
+            $id = $message['id'];
         }
-        $id = $message['id'];
         jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $id));
 
         // Catch if thing do bad
