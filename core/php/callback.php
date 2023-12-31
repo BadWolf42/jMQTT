@@ -354,9 +354,12 @@ class JmqttdCallbacks {
                 $broker = jMQTT::getBrokerFromId(intval($id));
             } catch (Throwable $e) {
                 jMQTT::logger('debug', $e->getMessage());
-                $e->getMessage();
                 return;
             }
+            // If Broker is already down, then return
+            if (!$broker->getCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false))
+                return;
+
             // Save in cache that Mqtt Client is disconnected
             $broker->setCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false);
 
