@@ -59,7 +59,7 @@ class Healthcheck:
                 logger.warning(
                     "Nothing received for %ds, Deamon will stop if >%ds.",
                     now - cls._last_rcv,
-                    cls._hb_timeout
+                    cls._hb_timeout,
                 )
 
             if now - Callbacks._last_snd > cls._hb_delay:

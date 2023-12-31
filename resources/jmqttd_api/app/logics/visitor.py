@@ -217,7 +217,7 @@ class PrintVisitor(LogicVisitor):
         for eq in linked_cmd_eq:
             await eq.accept(self)
         self.level -= 1
-        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level-1))
+        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
 
     async def visit_eqlogic(self, e: EqLogic) -> None:
         self.logger.debug(
@@ -233,7 +233,7 @@ class PrintVisitor(LogicVisitor):
         for cmd in [v for v in e.cmd_a.values()]:
             await cmd.accept(self)
         self.level -= 1
-        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level-1))
+        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
 
     async def visit_cmdlogic(self, e: CmdLogic) -> None:
         if e.model.type == 'info':
@@ -243,7 +243,7 @@ class PrintVisitor(LogicVisitor):
                 e.model.id,
                 e.model.name,
                 e.model.configuration.topic,
-                e.model.configuration.jsonPath
+                e.model.configuration.jsonPath,
             )
         else:
             self.logger.debug(
@@ -252,7 +252,7 @@ class PrintVisitor(LogicVisitor):
                 e.model.id,
                 e.model.name,
                 e.model.type,
-                e.model.configuration.topic
+                e.model.configuration.topic,
             )
 
     @classmethod

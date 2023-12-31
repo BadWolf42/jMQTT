@@ -41,11 +41,13 @@ def setupLoggers(logfile: str):
     def trace(self, message, *args, **kws):
         if self.isEnabledFor(logging.TRACE):
             self._log(logging.TRACE, message, args, **kws)
+
     logging.Logger.trace = trace
 
     def notice(self, message, *args, **kws):
         if self.isEnabledFor(logging.NOTICE):
             self._log(logging.NOTICE, message, args, **kws)
+
     logging.Logger.notice = notice
 
     # Load logging configuration
@@ -56,15 +58,15 @@ def setupLoggers(logfile: str):
 # -----------------------------------------------------------------------------
 def setLevel(level, _logger=''):
     newlevel = {
-        'trace':    logging.TRACE,
-        'debug':    logging.DEBUG,
-        'info':     logging.INFO,
-        'notice':   logging.NOTICE,
-        'warning':  logging.WARNING,
-        'error':    logging.ERROR,
+        'trace': logging.TRACE,
+        'debug': logging.DEBUG,
+        'info': logging.INFO,
+        'notice': logging.NOTICE,
+        'warning': logging.WARNING,
+        'error': logging.ERROR,
         'critical': logging.CRITICAL,
-        'none':     logging.ERROR,
-        'notset':   logging.NOTSET
+        'none': logging.ERROR,
+        'notset': logging.NOTSET
     }.get(level, logging.ERROR)
     logging.getLogger(_logger).setLevel(newlevel)
     return newlevel
@@ -101,14 +103,12 @@ def setup():
     setLevel(settings.loglevel, 'jmqtt')
 
     # Welcome message
-    logger.debug(
-        'Python v%s on %s %s',
-        python_version(), system(), version()
-    )
-    with open(dirname(realpath(__file__)) + '/../../../plugin_info/info.json') as json_file:
+    logger.debug('Python v%s on %s %s', python_version(), system(), version())
+    with open(
+        dirname(realpath(__file__)) + '/../../../plugin_info/info.json'
+    ) as json_file:
         logger.info(
-            '❤ Thank you for using jMQTT v%s ❤',
-            load(json_file)['pluginVersion']
+            '❤ Thanks for using jMQTT v%s ❤', load(json_file)['pluginVersion']
         )
 
     # Display loggers informations if logging at least in DEBUG
