@@ -71,8 +71,7 @@ async def broker_get_id(id: int):
 async def broker_delete_id(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Broker not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     await Logic.unregisterBrkId(id)
 

@@ -47,7 +47,7 @@ class BrkLogic(VisitableLogic):
         self.realtime: Task = None
 
     async def accept(self, visitor: LogicVisitor) -> None:
-        await visitor.visit_brklogic(self)
+        await visitor.visit_brk(self)
 
     # def getBrokerId(self) -> int:
     #     return self.model.id

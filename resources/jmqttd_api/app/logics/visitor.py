@@ -14,20 +14,20 @@ class RegisteringLogicVisitor(LogicVisitor):
     def __init__(self):
         self.logger = getLogger('jmqtt.visitor.reg')
 
-    async def visit_brklogic(self, e: BrkLogic) -> None:
-        self.logger.trace('id=%s, registering', e.model.id)
+    async def visit_brk(self, e: BrkLogic) -> None:
+        self.logger.trace('id=%s, registering brk', e.model.id)
         # Add BrkLogic in brkLogic table
         BrkLogic.all[e.model.id] = e
         await e.start()
-        self.logger.debug('id=%s, registered', e.model.id)
+        self.logger.debug('id=%s, brk registered', e.model.id)
 
-    async def visit_eqlogic(self, e: EqLogic) -> None:
-        self.logger.trace('id=%s, registering', e.model.id)
+    async def visit_eq(self, e: EqLogic) -> None:
+        self.logger.trace('id=%s, registering eq', e.model.id)
         brkId = e.model.configuration.eqLogic
         # If BrkLogic is not found
         if brkId not in BrkLogic.all:
             self.logger.warning(
-                'id=%s, disregarded: BrkId=%s not found', e.model.id, brkId
+                'id=%s, eq disregarded: BrkId=%s not found', e.model.id, brkId
             )
             return
         # Cleanup EqLogic just in case
@@ -39,10 +39,10 @@ class RegisteringLogicVisitor(LogicVisitor):
         EqLogic.all[e.model.id] = e
         # Add EqLogic in BrkLogic eqLogics list
         e.weakBrk().eqpts[e.model.id] = e
-        self.logger.debug('id=%s, registered', e.model.id)
+        self.logger.debug('id=%s, brk registered', e.model.id)
 
-    async def visit_cmdlogic(self, e: CmdLogic) -> None:
-        self.logger.trace('id=%s, registering', e.model.id)
+    async def visit_cmd(self, e: CmdLogic) -> None:
+        self.logger.trace('id=%s, registering cmd', e.model.id)
         # Get parent eqLogic
         if e.model.eqLogic_id in EqLogic.all:
             # Parent is an EqLogic
@@ -58,7 +58,7 @@ class RegisteringLogicVisitor(LogicVisitor):
             e.weakBrk = ref(eq)
         else:  # Could not find a parent
             self.logger.warning(
-                'id=%s, disregarded: EqId=%s not found', e.model.id, e.model.eqLogic_id
+                'id=%s, cmd disregarded: EqId=%s not found', e.model.id, e.model.eqLogic_id
             )
             return
         # Only add in CmdLogic if found a parent
@@ -68,20 +68,23 @@ class RegisteringLogicVisitor(LogicVisitor):
             eq.cmd_i[e.model.id] = e
         else:
             eq.cmd_a[e.model.id] = e
-            self.logger.debug('id=%s, disregarded: not an info cmd', e.model.id)
+            # self.logger.debug('id=%s, cmd disregarded: not an info', e.model.id)
         # Finish here if eq is not enabled
         if not eq.model.isEnable:
-            self.logger.debug('id=%s, is not enabled, but registered', e.model.id)
+            self.logger.debug('id=%s, cmd registered, but is not enabled', e.model.id)
             return
         # Insert path in info topic tree
         if e.model.type != 'info':
-            self.logger.debug('id=%s, is an action cmd, but registered', e.model.id)
+            self.logger.debug('id=%s, cmd registered, but is an action', e.model.id)
             return
         topic = e.model.configuration.topic
         # TODO Check if topic is subscribable
         # if isBadTopicFilter(e.subscription):
         if topic == '':
-            self.logger.info('id=%s, is not subscribable, but registered', e.model.id)
+            self.logger.info(
+                'id=%s, cmd registered, but topic "%s" is not subscribable',
+                e.model.id, topic
+            )
             return
         brk = e.weakBrk()
         # Add topic to BrkLogic if missing
@@ -92,7 +95,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         brk.topics[topic][e.model.id] = e
         if sub_needed and brk.model.isEnable:
             await brk.subscribe(topic, 1)  # TODO Get QoS when Qos location is in cmd
-        self.logger.debug('id=%s, registered', e.model.id)
+        self.logger.debug('id=%s, cmd registered', e.model.id)
 
     @classmethod
     async def do(cls, e: VisitableLogic) -> None:
@@ -106,8 +109,8 @@ class UnregisteringLogicVisitor(LogicVisitor):
         self.logger = getLogger('jmqtt.visitor.unreg')
         self.result = []
 
-    async def visit_brklogic(self, e: BrkLogic) -> None:
-        self.logger.trace('id=%s, unregistering', e.model.id)
+    async def visit_brk(self, e: BrkLogic) -> None:
+        self.logger.trace('id=%s, unregistering brk', e.model.id)
         # Let's stop first MQTT Client (and Real Time)
         await e.stop()
         # Then append the BrkLogic first to the result
@@ -124,10 +127,10 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.eqpts.clear()
         # Delete the BrkLogic from the registery
         del BrkLogic.all[e.model.id]
-        self.logger.debug('id=%s, unregistered', e.model.id)
+        self.logger.debug('id=%s, brk unregistered', e.model.id)
 
-    async def visit_eqlogic(self, e: EqLogic) -> None:
-        self.logger.trace('id=%s, unregistering', e.model.id)
+    async def visit_eq(self, e: EqLogic) -> None:
+        self.logger.trace('id=%s, unregistering eq', e.model.id)
         # Append this EqLogic to the result
         self.result.append(e)
         # Call the visitor on each CmdLogic info linked directly to the Broker
@@ -145,10 +148,10 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.weakBrk = None
         # Delete the EqLogic from the registery
         del EqLogic.all[e.model.id]
-        self.logger.debug('id=%s, unregistered', e.model.id)
+        self.logger.debug('id=%s, eq unregistered', e.model.id)
 
-    async def visit_cmdlogic(self, e: CmdLogic) -> None:
-        self.logger.trace('id=%s, unregistering', e.model.id)
+    async def visit_cmd(self, e: CmdLogic) -> None:
+        self.logger.trace('id=%s, unregistering cmd', e.model.id)
         # Append this CmdLogic to the result
         self.result.append(e)
         # Handle removal from BrkLogic
@@ -177,7 +180,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.weakEq = None
         # Delete the CmdLogic from the registery
         del CmdLogic.all[e.model.id]
-        self.logger.debug('id=%s, unregistered', e.model.id)
+        self.logger.debug('id=%s, cmd unregistered', e.model.id)
 
     @classmethod
     async def do(
@@ -194,7 +197,7 @@ class PrintVisitor(LogicVisitor):
         self.logger = getLogger('jmqtt.visitor.print')
         self.level = 0
 
-    async def visit_brklogic(self, e: BrkLogic) -> None:
+    async def visit_brk(self, e: BrkLogic) -> None:
         self.logger.debug(
             '%s┌─►  BrkLogic id=%s, name=%s, enabled=%s',
             '│ ' * self.level,
@@ -219,7 +222,7 @@ class PrintVisitor(LogicVisitor):
         self.level -= 1
         self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
 
-    async def visit_eqlogic(self, e: EqLogic) -> None:
+    async def visit_eq(self, e: EqLogic) -> None:
         self.logger.debug(
             '%s┌─►  EqLogic  id=%s, name=%s, enabled=%s',
             '│ ' * self.level,
@@ -235,7 +238,7 @@ class PrintVisitor(LogicVisitor):
         self.level -= 1
         self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
 
-    async def visit_cmdlogic(self, e: CmdLogic) -> None:
+    async def visit_cmd(self, e: CmdLogic) -> None:
         if e.model.type == 'info':
             self.logger.debug(
                 '%s - CmdLogic id=%s, name=%s, type=info, topic=%s, jsonPath=%s',

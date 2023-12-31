@@ -22,7 +22,7 @@ class EqLogic(VisitableLogic):
         self.weakBrk: ref = None
 
     async def accept(self, visitor: LogicVisitor) -> None:
-        await visitor.visit_eqlogic(self)
+        await visitor.visit_eq(self)
 
     # def getBrokerId(self) -> int:
     #     return self.model.configuration.eqLogic

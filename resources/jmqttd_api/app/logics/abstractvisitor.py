@@ -5,15 +5,15 @@ from abc import ABC, abstractmethod
 # -----------------------------------------------------------------------------
 class LogicVisitor(ABC):
     @abstractmethod
-    async def visit_brklogic(self, e) -> None:
+    async def visit_brk(self, e) -> None:
         pass
 
     @abstractmethod
-    async def visit_eqlogic(self, e) -> None:
+    async def visit_eq(self, e) -> None:
         pass
 
     @abstractmethod
-    async def visit_cmdlogic(self, e) -> None:
+    async def visit_cmd(self, e) -> None:
         pass
 
 

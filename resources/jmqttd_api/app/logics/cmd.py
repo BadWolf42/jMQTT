@@ -19,7 +19,7 @@ class CmdLogic(VisitableLogic):
         self.weakBrk: ref = None
 
     async def accept(self, visitor: LogicVisitor) -> None:
-        await visitor.visit_cmdlogic(self)
+        await visitor.visit_cmd(self)
 
     # def getEqLogic(self):
     #     return self.weakEq()
