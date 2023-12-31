@@ -155,9 +155,9 @@ async def startup():
     # Display daemon informations
     logger.info('┌─► Daemon ◄─────────────────────────────')
     if settings.localonly:
-        logger.debug('│ Listening   : on localhost only (doc disabled)')
+        logger.debug('│ Listening   : on localhost only (swagger disabled)')
     else:
-        logger.debug('│ Listening   : on all interfaces (doc enabled)')
+        logger.debug('│ Listening   : on all interfaces (swagger enabled)')
     # if dynamic port, socketport is only available after setup
     logger.info('│ Socket port : %s', settings.socketport)
     logger.info('│ Log file    : %s', settings.logfile)

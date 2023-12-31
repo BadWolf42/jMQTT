@@ -127,8 +127,6 @@ class jMQTTDaemon {
                 __('Veuillez vérifier la configuration et les dépendances', __FILE__)
             );
         }
-        // Get a free port on the system
-        // $port = jMQTTDaemon::newPort();
         // Reset timers to let Daemon start
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
@@ -143,10 +141,11 @@ class jMQTTDaemon {
         }
         $shellCmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(jMQTT::class));
         $shellCmd .= ' LOGFILE=' . log::getPathToLog(jMQTT::class.'d');
-        // TODO: Remove LOCALONLY debug parameter
-        $shellCmd .= ' LOCALONLY=False';
+        if (!config::byKey('localOnly', jMQTT::class, 1))
+            $shellCmd .= ' LOCALONLY=False';
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
-        // $shellCmd .= ' SOCKETPORT=' . $port;
+        if (intval(config::byKey('forceSocket', jMQTT::class, 0)) > 1024)
+            $shellCmd .= ' SOCKETPORT=' . intval(config::byKey('forceSocket', jMQTT::class, 0));
         $shellCmd .= ' SOCKETPORT=18883'; // TODO Remove me <----------------------------------------------------------------------------------------
         $shellCmd .= ' APIKEY=' . jMQTTDaemon::getApiKey();
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid ';
