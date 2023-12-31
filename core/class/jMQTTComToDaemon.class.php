@@ -97,8 +97,8 @@ class jMQTTComToDaemon {
             return;
         }
 
-        $path = '/daemon/loglevel?newapikey=' . trim($newApiKey);
-        self::doSend('PUT', $path, null, __METHOD__, 'newApiKey=' . trim($newApiKey));
+        $path = '/daemon/api?newapikey=' . trim($newApiKey);
+        self::doSend('PUT', $path, null, __METHOD__, 'newapikey=' . trim($newApiKey));
     }
 
     // ------------------------------------------------------------------------
