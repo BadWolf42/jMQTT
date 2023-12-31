@@ -84,14 +84,14 @@ jobs:
           # php_codesniffer_dir: plugins/jMQTT
           black: true
           black_dir: plugins/jMQTT/resources/jmqttd_api
-          black_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/black.toml
+          black_args: --config plugins/jMQTT/.github/configs/black.toml
           flake8: true
           flake8_dir: plugins/jMQTT/resources/jmqttd_api
-          flake8_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/flake8.toml
+          flake8_args: --config plugins/jMQTT/.github/configs/flake8.toml
           flake8_auto_fix: false
           # eslint: true
           # eslint_dir: plugins/jMQTT/desktop/
-          # eslint_args: -c ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/eslint.json
+          # eslint_args: -c plugins/jMQTT/.github/configs/eslint.json
           # prettier: true
           # prettier_dir: plugins/jMQTT
-          # prettier_args: --config ${GITHUB_WORKSPACE}/plugins/jMQTT/.github/configs/prettier.json
+          # prettier_args: --config plugins/jMQTT/.github/configs/prettier.json
