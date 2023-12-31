@@ -192,6 +192,42 @@ class UnregisteringLogicVisitor(LogicVisitor):
 
 
 # -----------------------------------------------------------------------------
+class UpdatingLogicVisitor(LogicVisitor):
+    def __init__(self):
+        self.logger = getLogger('jmqtt.visitor.update')
+
+    async def visit_brk(self, e: BrkLogic) -> None:
+        pass
+
+    async def visit_eq(self, e: EqLogic) -> None:
+        pass
+
+    async def visit_cmd(self, e: CmdLogic) -> None:
+        pass
+
+    @classmethod
+    async def do(
+        cls,
+        existing: VisitableLogic,
+        model: Union[BrkModel, EqModel, CmdModel],
+    ) -> None:
+        # TODO Use this visitor to update the correct logic
+        # self = cls()
+        # await e.accept(self)
+
+        # Get class of existing logic
+        logic = existing.__class__
+        # Unregister existing logic
+        unreged = await UnregisteringLogicVisitor.do(existing)
+        # And replace existing logic by the created logic from model
+        unreged[0] = logic(model)
+        # Register back each unregistered logics
+        for inst in unreged:
+            # With the register class method of the logics
+            await RegisteringLogicVisitor.do(inst)
+
+
+# -----------------------------------------------------------------------------
 class PrintVisitor(LogicVisitor):
     def __init__(self):
         self.logger = getLogger('jmqtt.visitor.print')

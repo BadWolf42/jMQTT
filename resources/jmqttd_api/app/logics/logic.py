@@ -6,6 +6,7 @@ from logics.eq import EqLogic
 from logics.visitor import (
     RegisteringLogicVisitor,
     UnregisteringLogicVisitor,
+    UpdatingLogicVisitor,
     PrintVisitor,
 )
 from models.broker import BrkModel
@@ -20,18 +21,12 @@ class Logic:
         model: Union[BrkModel, EqModel, CmdModel],
         logic: Union[BrkLogic, EqLogic, CmdLogic],
     ) -> None:
-        # If Logic exists in register
         if model.id in logic.all:
-            # Unregister it
-            unreged = await UnregisteringLogicVisitor.do(logic.all[model.id])
-            # And replace it
-            unreged[0] = logic(model)
+            # If Logic exist in register, then update it
+            await UpdatingLogicVisitor.do(logic.all[model.id], model)
         else:
-            unreged = [logic(model)]
-        # Register back each unregistered object
-        for inst in unreged:
-            # With the register class method of the object
-            await RegisteringLogicVisitor.do(inst)
+            # Else register it
+            await RegisteringLogicVisitor.do(logic(model))
 
     # -----------------------------------------------------------------------------
     @classmethod
