@@ -66,7 +66,7 @@ def setLevel(level, _logger=''):
         'error': logging.ERROR,
         'critical': logging.CRITICAL,
         'none': logging.ERROR,
-        'notset': logging.NOTSET
+        'notset': logging.NOTSET,
     }.get(level, logging.ERROR)
     logging.getLogger(_logger).setLevel(newlevel)
     return newlevel
@@ -107,9 +107,7 @@ def setup():
     with open(
         dirname(realpath(__file__)) + '/../../../plugin_info/info.json'
     ) as json_file:
-        logger.info(
-            '❤ Thanks for using jMQTT v%s ❤', load(json_file)['pluginVersion']
-        )
+        logger.info('❤ Thanks for using jMQTT v%s ❤', load(json_file)['pluginVersion'])
 
     # Display loggers informations if logging at least in DEBUG
     if logger.isEnabledFor(logging.DEBUG):

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from logging import getLogger
-from typing import List, Union
-from weakref import ref, WeakValueDictionary
+from typing import Union
 
 from visitors.abstractvisitor import LogicVisitor, VisitableLogic
 from visitors.register import RegisteringLogicVisitor

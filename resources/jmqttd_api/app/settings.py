@@ -104,4 +104,5 @@ class JmqttSettings(BaseSettings):
     retry_max: int = 5  # max number of send retries
     snd_timeout: float = 135.0  # seconds before send timeout
 
+
 settings = JmqttSettings()

@@ -1,9 +1,8 @@
 from __future__ import annotations
 from logging import getLogger
 from typing import List, Union
-from weakref import ref, WeakValueDictionary
 
-from visitors.abstractvisitor import LogicVisitor, VisitableLogic
+from visitors.abstractvisitor import LogicVisitor
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
@@ -46,7 +45,7 @@ class PrintVisitor(LogicVisitor):
             '│ ' * self.level,
             e.model.id,
             e.model.name,
-            '1' if e.model.isEnable else '0'
+            '1' if e.model.isEnable else '0',
         )
         self.level += 1
         for cmd in [v for v in e.cmd_i.values()]:

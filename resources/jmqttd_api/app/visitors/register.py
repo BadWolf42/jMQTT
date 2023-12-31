@@ -1,6 +1,5 @@
 from __future__ import annotations
 from logging import getLogger
-from typing import List, Union
 from weakref import ref, WeakValueDictionary
 
 from visitors.abstractvisitor import LogicVisitor, VisitableLogic
@@ -83,7 +82,8 @@ class RegisteringLogicVisitor(LogicVisitor):
         if topic == '':
             self.logger.info(
                 'id=%s, cmd registered, but topic "%s" is not subscribable',
-                e.model.id, topic
+                e.model.id,
+                topic,
             )
             return
         brk = e.weakBrk()

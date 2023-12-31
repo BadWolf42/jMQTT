@@ -1,9 +1,9 @@
 from __future__ import annotations
 from logging import getLogger
 from typing import List, Union
-from weakref import ref, WeakValueDictionary
+from weakref import ref
 
-from visitors.abstractvisitor import LogicVisitor, VisitableLogic
+from visitors.abstractvisitor import LogicVisitor
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
