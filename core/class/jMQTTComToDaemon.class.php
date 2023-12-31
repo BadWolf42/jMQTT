@@ -121,10 +121,10 @@ class jMQTTComToDaemon {
         if (empty($topic))
             return;
         $params = array(
-            'topic' => $topic,
-            'payload' => $payload,
-            'qos' => $qos,
-            'retain' => $retain
+            'topic' => strval($topic),
+            'payload' => strval($payload),
+            'qos' => intval($qos),
+            'retain' => boolval($retain)
         );
         $data = json_encode($params, JSON_UNESCAPED_SLASHES);
         $path = '/broker/' . $id . '/publish';
