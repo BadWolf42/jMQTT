@@ -29,7 +29,7 @@ class jMQTTPlugin {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __("Dépendances en cours d'installation... (%s%%)", __FILE__),
+                    "Dependencies are being installed... (%s%%)",
                     trim(file_get_contents($depProgressFile))
                 )
             );
@@ -40,7 +40,7 @@ class jMQTTPlugin {
         if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
             jMQTT::logger(
                 'debug',
-                __('Relancez les dépendances, le package PHP JsonPath est manquant', __FILE__)
+                "Relaunch dependencies, PHP package 'JsonPath' is missing",
             );
             $return['state'] = jMQTTConst::CLIENT_NOK;
         }
@@ -48,7 +48,7 @@ class jMQTTPlugin {
         if (!file_exists(__DIR__ . '/../../resources/jmqttd_api/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd_api/venv/bin/python3')) {
             jMQTT::logger(
                 'debug',
-                __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__)
+                "Relaunch dependencies, the Python venv has not been created yet",
             );
             $return['state'] = jMQTTConst::CLIENT_NOK;
         } else {
@@ -64,7 +64,7 @@ class jMQTTPlugin {
         }
 
         if ($return['state'] == jMQTTConst::CLIENT_OK)
-            jMQTT::logger('debug', sprintf(__('Dépendances installées.', __FILE__)));
+            jMQTT::logger('debug', "Dependencies installed.");
         return $return;
     }
 
@@ -103,8 +103,8 @@ class jMQTTPlugin {
         $nextStats = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS)->getValue(0);
         if ($_reason === 'cron' && (time() < $nextStats)) { // No reason to force send stats
             // jMQTT::logger('debug', sprintf(
-            //  __("Aucune raison d'envoyer des données statistiques avant le %s", __FILE__),
-            //  date('Y-m-d H:i:s', $nextStats)
+            //     "No reason to send statistical data before %s",
+            //     date('Y-m-d H:i:s', $nextStats)
             // ));
             return;
         }
@@ -151,7 +151,7 @@ class jMQTTPlugin {
         jMQTT::logger(
             'debug',
             sprintf(
-                __('Transmission des données statistiques suivantes : %s', __FILE__),
+                "Anonymous statistical data have been sent: %s",
                 $encoded
             )
         );
@@ -163,7 +163,7 @@ class jMQTTPlugin {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__),
+                    "Unable to communicate with the statistics server (Response: %s)",
                     'false'
                 )
             );
@@ -175,7 +175,7 @@ class jMQTTPlugin {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __('Impossible de communiquer avec le serveur de statistiques (Réponse : %s)', __FILE__),
+                    "Unable to communicate with the statistics server (Response: %s)",
                     $result
                 )
             );
@@ -187,10 +187,7 @@ class jMQTTPlugin {
             } else {
                 jMQTT::logger(
                     'debug',
-                    sprintf(
-                        __('Données statistiques envoyées (Réponse : %s)', __FILE__),
-                        $result
-                    )
+                    sprintf("Statistical data sent (Response: %s)", $result)
                 );
                 // Set last sent datetime
                 cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, $data['next']);

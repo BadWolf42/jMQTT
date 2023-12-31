@@ -505,7 +505,7 @@ class jMQTT extends eqLogic {
                 self::logger(
                     'debug',
                     sprintf(
-                        __("createEqWithTemplate %1\$s: Le Broker #%2\$s# a été trouvé", __FILE__),
+                        "createEqWithTemplate %s: Broker #%s# has been found.",
                         $name,
                         $broker->getName()
                     )
@@ -532,7 +532,7 @@ class jMQTT extends eqLogic {
                     self::logger(
                         'debug',
                         sprintf(
-                            __("createEqWithTemplate %1\$s: L'Eq #%2\$s# a été trouvé", __FILE__),
+                            "createEqWithTemplate %s: Eq #%s# has been found.",
                             $name,
                             $eqpt->getHumanName()
                         )
@@ -543,7 +543,7 @@ class jMQTT extends eqLogic {
                 self::logger(
                     'debug',
                     sprintf(
-                        __("createEqWithTemplate %1\$s: L'Eq #%2\$s# a été trouvé avec cet UUID, mais sur le mauvais Broker", __FILE__),
+                        "createEqWithTemplate %s: Eq #%s# was found with this UUID, but on wrong Broker.",
                         $name,
                         $eqpt->getHumanName()
                     )
@@ -553,7 +553,7 @@ class jMQTT extends eqLogic {
                 self::logger(
                     'debug',
                     sprintf(
-                        __("createEqWithTemplate %s: Impossible de trouver un Eq correspondant à l'UUID sur ce Broker", __FILE__),
+                        "createEqWithTemplate %s: Impossible to find an Eq corresponding to the UUID on this Broker.",
                         $name
                     )
                 );
@@ -564,7 +564,7 @@ class jMQTT extends eqLogic {
             self::logger(
                 'debug',
                 sprintf(
-                    __("createEqWithTemplate %s: Nouvel équipement créé", __FILE__),
+                    "createEqWithTemplate %s: New equipment created.",
                     $name
                 )
             );
@@ -1133,7 +1133,7 @@ class jMQTT extends eqLogic {
                     $this->log(
                         'debug',
                         sprintf(
-                            __("Nettoyage de la Batterie de l'équipement #%s#", __FILE__),
+                            "Cleaning-up Battery of equipment #%s#",
                             $this->getHumanName()
                         )
                     );
@@ -1148,7 +1148,7 @@ class jMQTT extends eqLogic {
                     $this->log(
                         'debug',
                         sprintf(
-                            __("Nettoyage de la Disponibilité de l'équipement #%s#", __FILE__),
+                            "Cleaning-up Availability of equipment #%s#",
                             $this->getHumanName()
                         )
                     );
