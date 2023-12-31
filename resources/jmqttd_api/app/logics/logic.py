@@ -3,12 +3,10 @@ from typing import List, Union
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
-from logics.visitor import (
-    RegisteringLogicVisitor,
-    UnregisteringLogicVisitor,
-    UpdatingLogicVisitor,
-    PrintVisitor,
-)
+from visitors.register import RegisteringLogicVisitor
+from visitors.unregister import UnregisteringLogicVisitor
+from visitors.update import UpdatingLogicVisitor
+from visitors.print import PrintVisitor
 from models.broker import BrkModel
 from models.eq import EqModel
 from models.unions import CmdModel
