@@ -23,7 +23,7 @@ class Heartbeat:
     _task: asyncio.Task = None  # Heartbeat task initialised by daemonUp method
 
     @classmethod
-    def onReceive(cls):
+    async def onReceive(cls):
         cls._last_rcv = time()
 
     @classmethod
