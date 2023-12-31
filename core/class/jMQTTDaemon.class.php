@@ -358,7 +358,7 @@ class jMQTTDaemon {
             system::fuserk($port);
         }
         // Execute daemonDown callback anyway
-        JmqttdCallbacks::onDaemonDown();
+        jMQTTCallbacks::onDaemonDown();
     }
 
     /**
