@@ -1,10 +1,11 @@
 from __future__ import annotations
-from asyncio import run, Task
+from asyncio import Task
 from logging import getLogger  # , DEBUG
 from typing import Dict
 from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
+from heartbeat import Heartbeat
 from logics.abstractvisitor import VisitableLogic, LogicVisitor
 from models.broker import BrkModel
 # from models.cmd import (
@@ -40,14 +41,13 @@ class BrkLogic(VisitableLogic):
         # self.cmds: WeakValueDictionary[int, VisitableLogic] = {}
         self.cmd_i: WeakValueDictionary[int, VisitableLogic] = {}
         self.cmd_a: WeakValueDictionary[int, VisitableLogic] = {}
-        # -> topics = {'subtopic': {'cmdid': cmd}}
         self.topics: Dict[str, WeakValueDictionary[int, VisitableLogic]] = {}
 
         self.client: Task = None
         self.realtime: Task = None
 
-    def accept(self, visitor: LogicVisitor) -> None:
-        visitor.visit_brklogic(self)
+    async def accept(self, visitor: LogicVisitor) -> None:
+        await visitor.visit_brklogic(self)
 
     # def getBrokerId(self) -> int:
     #     return self.model.id
@@ -58,33 +58,34 @@ class BrkLogic(VisitableLogic):
     # def isEnabled(self) -> bool:
     #     return self.model.isEnable
 
-    def start(self):
+    async def start(self):
         if not self.model.isEnable:
             self.log.debug('Not enabled, Broker not started')
             return
         self.log.debug('Start requested')
         # TODO
-        run(Callbacks.brokerUp(self.model.id))
+        await Callbacks.brokerUp(self.model.id)
 
-    def stop(self):
+    async def stop(self):
         self.log.debug('Stop requested')
         # TODO
-        run(Callbacks.brokerDown(self.model.id))
+        await Callbacks.brokerDown(self.model.id)
 
-    def restart(self):
-        self.stop()
-        self.start()
+    async def restart(self):
+        await self.stop()
+        await self.start()
 
-    def publish(self, topic: str, payload: str, qos: int, retain: bool):
+    async def publish(self, topic: str, payload: str, qos: int, retain: bool):
         self.log.debug(
             f'TODO: {{"topic":"{topic}","payload":"{payload}","qos":{qos},"retain":{retain}}}'
         )
         # TODO
+        await Heartbeat.onReceive()
 
-    def subscribe(self, topic: str, qos: int) -> None:
+    async def subscribe(self, topic: str, qos: int) -> None:
         self.log.debug(f'TODO: {{"topic":"{topic}","qos":{qos}}}')
         # TODO
 
-    def unsubscribe(self, topic: str) -> None:
+    async def unsubscribe(self, topic: str) -> None:
         self.log.debug(f'TODO: {{"topic":"{topic}"}}')
         # TODO

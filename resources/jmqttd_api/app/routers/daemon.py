@@ -31,56 +31,60 @@ daemon = APIRouter(
 @daemon.post(
     "", status_code=204, summary="Initialize Brokers, Equipments and Commands in Daemon"
 )
-def daemon_post(data: DataModel):
+async def daemon_post(data: DataModel):
     for item in data:
         if isinstance(item, BrkModel):
-            broker_post(item)
+            await broker_post(item)
         elif isinstance(item, EqModel):
-            equipment_post(item)
+            await equipment_post(item)
         else:
-            command_post(item)
+            await command_post(item)
 
 
 # -----------------------------------------------------------------------------
 @daemon.get(
     "",
     response_model_exclude_defaults=True,
+    include_in_schema=False,
     summary="Return all Brokers, Equipments and Commands in Daemon",
 )
-def daemon_get():
+async def daemon_get():
     # JmqttDaemon.XXX() ### TODO SERIALIZE DAEMON STATE
-    return []
+    pass
 
 
 # -----------------------------------------------------------------------------
 @daemon.delete(
-    "", status_code=204, summary="Clear all Brokers, Equipments and Commands in Daemon"
+    "",
+    status_code=204,
+    summary="Clear all Brokers, Equipments and Commands in Daemon",
+    include_in_schema=False,
 )
-def daemon_delete():
+async def daemon_delete():
     pass
 
 
 # -----------------------------------------------------------------------------
 @daemon.put("/hb", status_code=204, summary="Receive heatbeat from Jeedom")
-def daemon_put_hb():
-    Heartbeat.onReceive()
+async def daemon_put_hb():
+    await Heartbeat.onReceive()
 
 
 # -----------------------------------------------------------------------------
 @daemon.put("/api", status_code=204, summary="Modify Daemon apikey")
-def daemon_put_api(newapikey: str):
+async def daemon_put_api(newapikey: str):
     settings.apikey = newapikey
 
 
 # -----------------------------------------------------------------------------
 @daemon.get("/loglevel", response_model_exclude_defaults=True, summary="Get a loglevel")
-def daemon_get_loglevel(name: str = '') -> str:
+async def daemon_get_loglevel(name: str = '') -> str:
     return getLevelName(getLogger(name).getEffectiveLevel())
 
 
 # -----------------------------------------------------------------------------
 @daemon.put("/loglevel", status_code=204, summary="Set a loglevel")
-def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
+async def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
     newlevel = setLevel(level, name)
     if name == '':
         settings.rootloglevel = level
@@ -96,11 +100,11 @@ def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
 @daemon.get(
     "/loglevels", response_model_exclude_defaults=True, summary="Get all loglevel"
 )
-def daemon_get_loglevels() -> dict:
+async def daemon_get_loglevels() -> dict:
     return dumpLoggers()
 
 
 # -----------------------------------------------------------------------------
 @daemon.put("/stop", status_code=204, summary="Stop the daemon")
-def daemon_put_stop():
+async def daemon_put_stop():
     kill(getpid(), SIGTERM)

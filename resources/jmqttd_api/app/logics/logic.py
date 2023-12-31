@@ -15,7 +15,7 @@ from models.unions import CmdModel
 
 class Logic:
     @classmethod
-    def registerGenericModel(
+    async def registerGenericModel(
         cls,
         model: Union[BrkModel, EqModel, CmdModel],
         logic: Union[BrkLogic, EqLogic, CmdLogic],
@@ -23,7 +23,7 @@ class Logic:
         # If Logic exists in register
         if model.id in logic.all:
             # Unregister it
-            unreged = UnregisteringLogicVisitor.do(logic.all[model.id])
+            unreged = await UnregisteringLogicVisitor.do(logic.all[model.id])
             # And replace it
             unreged[0] = logic(model)
         else:
@@ -31,70 +31,70 @@ class Logic:
         # Register back each unregistered object
         for inst in unreged:
             # With the register class method of the object
-            RegisteringLogicVisitor.do(inst)
+            await RegisteringLogicVisitor.do(inst)
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def unregisterGenericId(
+    async def unregisterGenericId(
         cls, id: int, logic: Union[BrkLogic, EqLogic, CmdLogic]
     ) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         if id not in logic.all:
             return []
-        return UnregisteringLogicVisitor.do(logic.all[id])
+        return await UnregisteringLogicVisitor.do(logic.all[id])
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def registerBrkModel(cls, model: BrkModel) -> None:
-        cls.registerGenericModel(model, BrkLogic)
+    async def registerBrkModel(cls, model: BrkModel) -> None:
+        await cls.registerGenericModel(model, BrkLogic)
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def unregisterBrkId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
-        return cls.unregisterGenericId(id, BrkLogic)
+    async def unregisterBrkId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
+        return await cls.unregisterGenericId(id, BrkLogic)
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def clear(cls) -> None:
+    async def clear(cls) -> None:
         for inst in [v for v in BrkLogic.all.values()]:
-            UnregisteringLogicVisitor.do(inst)
+            await UnregisteringLogicVisitor.do(inst)
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def registerEqModel(cls, model: EqModel) -> None:
-        cls.registerGenericModel(model, EqLogic)
+    async def registerEqModel(cls, model: EqModel) -> None:
+        await cls.registerGenericModel(model, EqLogic)
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def unregisterEqId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
-        return cls.unregisterGenericId(id, EqLogic)
+    async def unregisterEqId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
+        return await cls.unregisterGenericId(id, EqLogic)
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def registerCmdModel(cls, model: CmdModel) -> None:
-        cls.registerGenericModel(model, CmdLogic)
+    async def registerCmdModel(cls, model: CmdModel) -> None:
+        await cls.registerGenericModel(model, CmdLogic)
         # if model.id in cls.all:
-        #     UnregisteringLogicVisitor.do(cls.all[model.id])
-        # RegisteringLogicVisitor.do(CmdLogic(model))
+        #     await UnregisteringLogicVisitor.do(cls.all[model.id])
+        # await RegisteringLogicVisitor.do(CmdLogic(model))
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
-        return cls.unregisterGenericId(id, CmdLogic)
+    async def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
+        return await cls.unregisterGenericId(id, CmdLogic)
 
     # -----------------------------------------------------------------------------
     @classmethod
-    def printTree(cls) -> None:
+    async def printTree(cls) -> None:
         for b in BrkLogic.all.values():
-            PrintVisitor.do(b)
+            await PrintVisitor.do(b)
 
     """
     # On BrkLogic
     @classmethod
-    def registerBrkModel(cls, model: BrkModel) -> None:
+    async def registerBrkModel(cls, model: BrkModel) -> None:
         # If BrkLogic exists
         if model.id in cls.all:
         # Unregister it
-            unreged = UnregisteringLogicVisitor.do(cls.all[model.id])
+            unreged = await UnregisteringLogicVisitor.do(cls.all[model.id])
             # And replace it
             unreged[0] = BrkLogic(model)
         else:
@@ -102,25 +102,25 @@ class Logic:
         # Register back each unregistered object
         for inst in unreged:
             # With the register class method of the object
-            RegisteringLogicVisitor.do(inst)
+            await RegisteringLogicVisitor.do(inst)
 
     @classmethod
-    def unregisterBrkId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
-        cls.unregisterGenericId(id, BrkLogic)
+    async def unregisterBrkId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
+        await cls.unregisterGenericId(id, BrkLogic)
 
     @classmethod
-    def clear(cls) -> None:
+    async def clear(cls) -> None:
         for inst in cls.all.copy():
-            UnregisteringLogicVisitor.do(inst)
+            await UnregisteringLogicVisitor.do(inst)
 
     # -----------------------------------------------------------------------------
     # On EqLogic
     @classmethod
-    def registerEqModel(cls, model: EqModel) -> None:
+    async def registerEqModel(cls, model: EqModel) -> None:
         # If EqLogic exists
         if model.id in cls.all:
         # Unregister it
-            unreged = UnregisteringLogicVisitor.do(cls.all[model.id])
+            unreged = await UnregisteringLogicVisitor.do(cls.all[model.id])
             # And replace it
             unreged[0] = EqLogic(model)
         else:
@@ -128,27 +128,27 @@ class Logic:
         # Register back each unregistered object
         for inst in unreged:
             # With the register class method of the object
-            RegisteringLogicVisitor.do(inst)
+            await RegisteringLogicVisitor.do(inst)
 
     @classmethod
-    def unregisterEqId(cls, id: int) -> VisitableLogic:
+    async def unregisterEqId(cls, id: int) -> VisitableLogic:
         # Not registered
         if id not in cls.all:
             return []
-        return UnregisteringLogicVisitor.do(cls.all[id])
+        return await UnregisteringLogicVisitor.do(cls.all[id])
 
     # -----------------------------------------------------------------------------
     # On CmdLogic
     @classmethod
-    def registerCmdModel(cls, model: CmdModel) -> None:
+    async def registerCmdModel(cls, model: CmdModel) -> None:
         if model.id in cls.all:
-            UnregisteringLogicVisitor.do(cls.all[model.id])
-        RegisteringLogicVisitor.do(CmdLogic(model))
+            await UnregisteringLogicVisitor.do(cls.all[model.id])
+        await RegisteringLogicVisitor.do(CmdLogic(model))
 
     @classmethod
-    def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
+    async def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         # Not registered
         if id not in cls.all:
             return []
-        return UnregisteringLogicVisitor.do(cls.all[id])
+        return await UnregisteringLogicVisitor.do(cls.all[id])
     """

@@ -185,14 +185,14 @@ async def shutdown():
     logger.info('jMQTTd is stopping...')
 
     # TODO remove debug
-    Logic.printTree()
+    await Logic.printTree()
 
     # logger.debug('Running tasks:\n%s', asyncio.all_tasks())
     await Heartbeat.stop()
 
     # Stop all register BrkLogic
     for inst in BrkLogic.all.values():
-        inst.stop()
+        await inst.stop()
 
     # Inform Jeedom that daemon is going offline
     await Callbacks.daemonDown()

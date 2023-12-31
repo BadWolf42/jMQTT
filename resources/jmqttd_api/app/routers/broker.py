@@ -29,21 +29,21 @@ broker = APIRouter(
     response_model_exclude_defaults=True,
     summary="List all Brokers in Daemon",
 )
-def broker_get():
+async def broker_get():
     return [id.model for id in BrkLogic.all.values()]
 
 
 # -----------------------------------------------------------------------------
 @broker.post("", status_code=204, summary="Create or update a Broker in Daemon")
-def broker_post(broker: BrkModel):
-    Logic.registerBrkModel(broker)
+async def broker_post(broker: BrkModel):
+    await Logic.registerBrkModel(broker)
 
 
 # -----------------------------------------------------------------------------
 @broker.delete("", status_code=204, summary="Delete all Brokers in Daemon")
-def broker_delete():
+async def broker_delete():
     for k in BrkLogic.all.copy():
-        broker_delete_id(k)
+        await broker_delete_id(k)
 
 
 # -----------------------------------------------------------------------------
@@ -54,7 +54,7 @@ def broker_delete():
     response_model_exclude_defaults=True,
     summary="Get Broker properties in Daemon",
 )
-def broker_get_id(id: int):
+async def broker_get_id(id: int):
     if id in BrkLogic.all:
         return BrkLogic.all[id].model  # TODO Check if should be something else
     raise HTTPException(
@@ -68,13 +68,13 @@ def broker_get_id(id: int):
     status_code=204,
     summary="Remove Broker from Daemon",
 )
-def broker_delete_id(id: int):
+async def broker_delete_id(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Broker not found"
         )
-    Logic.unregisterBrkId(id)
+    await Logic.unregisterBrkId(id)
 
 
 # -----------------------------------------------------------------------------
@@ -83,12 +83,12 @@ def broker_delete_id(id: int):
     status_code=204,
     summary="Send an MQTT message to an existing Broker",
 )
-def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
+async def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
-    BrkLogic.all[id].publish(data.topic, data.payload, data.qos, data.retain)
+    await BrkLogic.all[id].publish(data.topic, data.payload, data.qos, data.retain)
 
 
 # -----------------------------------------------------------------------------
@@ -97,12 +97,12 @@ def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
     status_code=204,
     summary="Restart connection to the broker",
 )
-def broker_get_id_restart(id: int):
+async def broker_get_id_restart(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
-    BrkLogic.all[id].restart()
+    await BrkLogic.all[id].restart()
 
 
 ###################################################################
@@ -113,7 +113,7 @@ def broker_get_id_restart(id: int):
     summary="Enable Broker real time mode",
     # tags=['eqBroker Real Time']
 )
-def broker_put_id_rt_start(id: int, option: RealTimeModel):
+async def broker_put_id_rt_start(id: int, option: RealTimeModel):
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
@@ -128,7 +128,7 @@ def broker_put_id_rt_start(id: int, option: RealTimeModel):
     summary="Get Broker real time mode status",
     # tags=['eqBroker Real Time']
 )
-def broker_get_id_rt_status(id: int) -> RealTimeStatusModel:
+async def broker_get_id_rt_status(id: int) -> RealTimeStatusModel:
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
@@ -144,7 +144,7 @@ def broker_get_id_rt_status(id: int) -> RealTimeStatusModel:
     summary="Disable Broker real time mode",
     # tags=['eqBroker Real Time']
 )
-def broker_put_id_rt_stop(id: int):
+async def broker_put_id_rt_stop(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
@@ -159,7 +159,7 @@ def broker_put_id_rt_stop(id: int):
     summary="Get Broker real time messages",
     # tags=['eqBroker Real Time']
 )
-def broker_get_id_rt(id: int, since: int = 0) -> RealTimeStatusModel:
+async def broker_get_id_rt(id: int, since: int = 0) -> RealTimeStatusModel:
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
@@ -175,7 +175,7 @@ def broker_get_id_rt(id: int, since: int = 0) -> RealTimeStatusModel:
     summary="Empty Broker real time log",
     # tags=['eqBroker Real Time']
 )
-def broker_put_id_rt_clear(id: int):
+async def broker_put_id_rt_clear(id: int):
     if id not in BrkLogic.all:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"

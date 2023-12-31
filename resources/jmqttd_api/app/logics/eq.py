@@ -21,8 +21,8 @@ class EqLogic(VisitableLogic):
         self.cmd_a: WeakValueDictionary[int, VisitableLogic] = {}
         self.weakBrk: ref = None
 
-    def accept(self, visitor: LogicVisitor) -> None:
-        visitor.visit_eqlogic(self)
+    async def accept(self, visitor: LogicVisitor) -> None:
+        await visitor.visit_eqlogic(self)
 
     # def getBrokerId(self) -> int:
     #     return self.model.configuration.eqLogic
