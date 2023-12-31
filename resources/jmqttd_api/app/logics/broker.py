@@ -6,7 +6,7 @@ from logging import getLogger  # , DEBUG
 from typing import Dict
 from weakref import WeakValueDictionary
 
-# from callbacks import Callbacks
+from callbacks import Callbacks
 from logics.abstractvisitor import VisitableLogic, LogicVisitor
 from models.broker import BrkModel
 # from models.cmd import (
@@ -66,10 +66,12 @@ class BrkLogic(VisitableLogic):
             return
         self.log.debug('Start requested')
         # TODO
+        Callbacks.brokerUp(self.model.id)
 
     def stop(self):
         self.log.debug('Stop requested')
         # TODO
+        Callbacks.brokerDown(self.model.id)
 
     def restart(self):
         self.stop()
