@@ -160,7 +160,7 @@
 		"Démon OK": "Démon OK",
 		"Données statistiques envoyées (Réponse : %s)": "Données statistiques envoyées (Réponse : %s)",
 		"Données statistiques supprimées": "Données statistiques supprimées coté serveur",
-		"Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >45s).": "Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >45s).",
+		"Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis %ds).": "Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis %ds).",
 		"Envoi du signal SIGKILL au Démon": "Envoi du signal SIGKILL au Démon",
 		"Envoi du signal SIGTERM au Démon": "Envoi du signal SIGTERM au Démon",
 		"Impossible de communiquer avec le serveur de statistiques (Réponse : %s)": "Impossible de communiquer avec le serveur de statistiques (Réponse : %s)",
@@ -169,7 +169,7 @@
 		"Lancement du démon jMQTT": "Lancement du démon jMQTT",
 		"Lancement du démon jMQTT, commande shell: '%s'": "Lancement du démon jMQTT, commande shell: '%s'",
 		"Nettoyage du Démon": "Nettoyage du Démon",
-		"Pas de message ou de Heartbeat reçu depuis >300s, le Démon est probablement mort.": "Pas de message ou de Heartbeat reçu depuis >300s, le Démon est probablement mort.",
+		"Pas de message ou de Heartbeat reçu depuis %ds, le Démon est probablement mort.": "Pas de message ou de Heartbeat reçu depuis %ds, le Démon est probablement mort.",
 		"Transmission des données statistiques suivantes : %s": "Transmission des données statistiques (anonymes) suivantes : %s",
 		"Veuillez vérifier la configuration et les dépendances": "Veuillez vérifier la configuration et les dépendances"
 	},

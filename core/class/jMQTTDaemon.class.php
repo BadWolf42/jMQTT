@@ -53,19 +53,28 @@ class jMQTTDaemon {
             return false;
         }
         // Checking last message FROM daemon
-        if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 300) {
+        $time = time();
+        $last_rcv = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0);
+        if ($time - $last_rcv > 300) {
             jMQTT::logger(
                 'debug',
-                __('Pas de message ou de Heartbeat reçu depuis >300s, le Démon est probablement mort.', __FILE__)
+                sprintf(
+                    __('Pas de message ou de Heartbeat reçu depuis %ds, le Démon est probablement mort.', __FILE__),
+                    $time - $last_rcv
+                )
             );
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
         // Checking last message TO daemon
-        if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0)) > 45) {
+        $last_snd = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0);
+        if ($time - $last_snd > 45) {
             jMQTT::logger(
                 'debug',
-                __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >45s).", __FILE__)
+                sprintf(
+                    __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis %ds).", __FILE__),
+                    $time - $last_snd
+                )
             );
             jMQTTComToDaemon::hb();
             return true;
