@@ -6,7 +6,7 @@ from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
 from healthcheck import Healthcheck
-from logics.abstractvisitor import VisitableLogic, LogicVisitor
+from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 from models.broker import BrkModel
 # from models.cmd import (
 #     CmdInfoModel,

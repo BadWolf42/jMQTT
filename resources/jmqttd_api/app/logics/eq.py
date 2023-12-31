@@ -3,7 +3,7 @@ from logging import getLogger
 from typing import Dict
 from weakref import ref, WeakValueDictionary
 
-from logics.abstractvisitor import VisitableLogic, LogicVisitor
+from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 from models.eq import EqModel
 
 

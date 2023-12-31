@@ -3,7 +3,7 @@ from logging import getLogger
 from typing import List, Union
 from weakref import ref, WeakValueDictionary
 
-from logics.abstractvisitor import LogicVisitor, VisitableLogic
+from visitors.abstractvisitor import LogicVisitor, VisitableLogic
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
