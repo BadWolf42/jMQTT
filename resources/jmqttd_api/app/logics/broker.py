@@ -1,5 +1,5 @@
 from __future__ import annotations
-import asyncio
+from asyncio import run, Task
 # from json import load
 from logging import getLogger  # , DEBUG
 # from time import time
@@ -45,8 +45,8 @@ class BrkLogic(VisitableLogic):
         # -> topics = {'subtopic': {'cmdid': cmd}}
         self.topics: Dict[str, WeakValueDictionary[int, VisitableLogic]] = {}
 
-        self.client: asyncio.Task = None
-        self.realtime: asyncio.Task = None
+        self.client: Task = None
+        self.realtime: Task = None
 
     def accept(self, visitor: LogicVisitor) -> None:
         visitor.visit_brklogic(self)
@@ -66,12 +66,12 @@ class BrkLogic(VisitableLogic):
             return
         self.log.debug('Start requested')
         # TODO
-        Callbacks.brokerUp(self.model.id)
+        run(Callbacks.brokerUp(self.model.id))
 
     def stop(self):
         self.log.debug('Stop requested')
         # TODO
-        Callbacks.brokerDown(self.model.id)
+        run(Callbacks.brokerDown(self.model.id))
 
     def restart(self):
         self.stop()
