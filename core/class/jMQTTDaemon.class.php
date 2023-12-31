@@ -47,7 +47,7 @@ class jMQTTDaemon {
         }
         // If PID and PORT does not match
         if (!jMQTTDaemon::checkPidPortMatch($pid, $port)) {
-            jMQTT::logger('debug', __('Démon avec un mauvais port.', __FILE__));
+            jMQTT::logger('debug', 'Daemon with a bad port.');
             // Cleanup and put jmqtt in a good state
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
@@ -59,7 +59,7 @@ class jMQTTDaemon {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __('Pas de message ou de Heartbeat reçu depuis %ds, le Démon est probablement mort.', __FILE__),
+                    "No message or Heartbeat received for %ds, the Daemon is probably dead.",
                     $time - $last_rcv
                 )
             );
@@ -72,7 +72,7 @@ class jMQTTDaemon {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis %ds).", __FILE__),
+                    "Sending a Heartbeat to the Daemon (nothing has been sent for %ds).",
                     $time - $last_snd
                 )
             );
@@ -80,7 +80,7 @@ class jMQTTDaemon {
             return true;
         }
         // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
-        // jMQTT::logger('debug', __('Démon OK', __FILE__));
+        // jMQTT::logger('debug', "Daemon is OK");
         return true;
     }
 
@@ -333,7 +333,7 @@ class jMQTTDaemon {
         if ($pid != 0) {
             jMQTT::logger('info', __("Arrêt du démon jMQTT", __FILE__));
             posix_kill($pid, 15);  // Signal SIGTERM
-            jMQTT::logger('debug', __("Envoi du signal SIGTERM au Démon", __FILE__));
+            jMQTT::logger('debug', "Sending SIGTERM signal to Daemon");
             for ($i = 1; $i <= 40; $i++) { //wait max 10 seconds for python daemon stop
                 if (!jMQTTDaemon::state(false)) { // Do not use cached state here
                     jMQTT::logger('info', __("Démon jMQTT arrêté", __FILE__));
@@ -344,11 +344,11 @@ class jMQTTDaemon {
             if (jMQTTDaemon::state()) {
                 // Signal SIGKILL
                 posix_kill($pid, 9);
-                jMQTT::logger('debug', __("Envoi du signal SIGKILL au Démon", __FILE__));
+                jMQTT::logger('debug', "Sending SIGKILL signal to Daemon");
             }
         }
         // If something bad happened, clean anyway
-        jMQTT::logger('debug', __("Nettoyage du Démon", __FILE__));
+        jMQTT::logger('debug', "Cleaning-up the daemon");
         // Kill existing jMQTT process by name
         system::kill('[/]jmqttd');
         // Kill existing jMQTT process by socket port

@@ -1752,7 +1752,7 @@ class jMQTT extends eqLogic {
                         $this->log(
                             'debug',
                             sprintf(
-                                __('Cmd #%s# est de type action : ignorée', __FILE__),
+                                "Cmd #%s# is of action type: ignored",
                                 $cmd->getHumanName()
                             )
                         );
@@ -1761,7 +1761,7 @@ class jMQTT extends eqLogic {
                         $this->log(
                             'debug',
                             sprintf(
-                                __('Cmd #%s# est de type info JSON : ignorée', __FILE__),
+                                "Cmd #%s# is of info-Json type: ignored",
                                 $cmd->getHumanName()
                             )
                         );
@@ -1820,7 +1820,7 @@ class jMQTT extends eqLogic {
                             $this->log(
                                 'debug',
                                 sprintf(
-                                    __("Cmd #%1\$s# créée automatiquement pour le topic '%2\$s'", __FILE__),
+                                    "Cmd #%s# created automatically for topic '%s'.",
                                     $newCmd->getHumanName(),
                                     $msgTopic
                                 )
@@ -1856,7 +1856,7 @@ class jMQTT extends eqLogic {
                         $this->log(
                             'debug',
                             sprintf(
-                                __("Aucune commande n'a été créée pour le topic %1\$s dans l'équipement #%2\$s#", __FILE__),
+                                "No command has been created for topic %s in equipment #%s#.",
                                 $msgTopic,
                                 $eqpt->getHumanName()
                             ) .
@@ -2019,7 +2019,7 @@ class jMQTT extends eqLogic {
         $this->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
         if ($this->getType() == jMQTTConst::TYP_EQPT)
             $broker->setStatus(array('lastCommunication' => $d, 'timeout' => 0));
-        // $this->log('debug', __('Message publié', __FILE__));
+        // $this->log('debug', "Message published");
     }
 
     /**

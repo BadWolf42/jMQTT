@@ -667,20 +667,14 @@ class jMQTTCmd extends cmd {
             $listener->save();
             $eq->log(
                 'debug',
-                sprintf(
-                    __("Listener installé pour #%s#", __FILE__),
-                    $this->getHumanName()
-                )
+                sprintf("Listener installed for #%s#", $this->getHumanName())
             );
         } else { // We don't want a listener
             if (is_object($listener)) {
                 $listener->remove();
                 $eq->log(
                     'debug',
-                    sprintf(
-                        __("Listener supprimé pour #%s#", __FILE__),
-                        $this->getHumanName()
-                    )
+                    sprintf("Listener deleted for #%s#", $this->getHumanName())
                 );
             }
         }
@@ -697,18 +691,12 @@ class jMQTTCmd extends cmd {
             listener::byId($_options['listener_id'])->remove();
             $cmd->getEqLogic()->log(
                 'debug',
-                sprintf(
-                    __("Listener supprimé pour #%s#", __FILE__),
-                    $_options['cmd']
-                )
+                sprintf("Listener deleted for #%s#", $_options['cmd'])
             );
         } else {
             $cmd->getEqLogic()->log(
                 'debug',
-                sprintf(
-                    __("Publication automatique de #%s#", __FILE__),
-                    $cmd->getHumanName()
-                )
+                sprintf("Automatic publication of #%s#", $cmd->getHumanName())
             );
             $cmd->execute();
         }
@@ -732,7 +720,7 @@ class jMQTTCmd extends cmd {
                 $eqLogic->log(
                     'debug',
                     sprintf(
-                        __("Suppression de la commande de Batterie de l'équipement #%s#", __FILE__),
+                        "Deleting Battery command of equipment #%s#",
                         $eqLogic->getHumanName()
                     )
                 );
@@ -744,7 +732,7 @@ class jMQTTCmd extends cmd {
                 $eqLogic->log(
                     'debug',
                     sprintf(
-                        __("Suppression de la commande de Disponibilité de l'équipement #%s#", __FILE__),
+                        "Deleting Availability command of equipment #%s#",
                         $eqLogic->getHumanName()
                     )
                 );
@@ -755,7 +743,7 @@ class jMQTTCmd extends cmd {
             jMQTT::logger(
                 'info',
                 sprintf(
-                    __("Suppression de la commande orpheline #%s# (%s)", __FILE__),
+                    __("Suppression de la commande orpheline #%1\$s# (%2\$s)", __FILE__),
                     $this->getId(),
                     $this->getName()
                 )
@@ -769,10 +757,7 @@ class jMQTTCmd extends cmd {
         foreach ($listener as $l) {
             jMQTT::logger(
                 'debug',
-                sprintf(
-                    __("Listener supprimé pour #%s#", __FILE__),
-                    $l->getOption('cmd')
-                )
+                sprintf("Listener deleted for #%s#", $l->getOption('cmd'))
             );
             $l->remove();
         }
