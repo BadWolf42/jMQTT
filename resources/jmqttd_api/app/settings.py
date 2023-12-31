@@ -43,7 +43,7 @@ logconfig: dict = {
             # 'formatter': 'normal',
             'filename': '/tmp/jMQTTd.log',
             'filters': ['logFilter'],
-        }
+        },
     },
     'root': {
         'level': 'DEBUG',
@@ -52,27 +52,27 @@ logconfig: dict = {
     },
     # 'loggers': {
     #     'asyncio': {
-    #         'level': 'WARNING'
+    #         'level': 'WARNING',
     #     },
     #     'concurrent': {
-    #         'level': 'WARNING'
+    #         'level': 'WARNING',
     #     },
     #     'fastapi': {
-    #         'level': 'WARNING'
+    #         'level': 'WARNING',
     #     },
     #     'jmqtt': {
-    #         'level': 'DEBUG'
+    #         'level': 'DEBUG',
     #     },
     #     'uvicorn': {
-    #         'level': 'WARNING'
+    #         'level': 'WARNING',
     #     },
     #     'pydantic': {
-    #         'level': 'WARNING'
+    #         'level': 'WARNING',
     #     },
     #     'gunicorn': {
-    #         'level': 'WARNING'
-    #     }
-    # }
+    #         'level': 'WARNING',
+    #     },
+    # },
 }
 
 timeout_cancel: float = 3.0  # seconds to wait for a task to be canceled
