@@ -63,6 +63,12 @@ logconfig: dict = {
     #     'jmqtt': {
     #         'level': 'DEBUG',
     #     },
+    #     'jmqtt.brk': {
+    #         'level': 'INFO',
+    #     },
+    #     'jmqtt.visitor': {
+    #         'level': 'INFO',
+    #     },
     #     'uvicorn': {
     #         'level': 'WARNING',
     #     },
