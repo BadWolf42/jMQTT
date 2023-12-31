@@ -85,10 +85,17 @@ class JmqttSettings(BaseSettings):
     callback: str = 'http://localhost/plugins/jMQTT/core/php/callback.php'
     logfile: str = '/tmp/jMQTTd.log'
     loglevel: str = 'warning'
-    rootloglevel: str = 'warning'
-    localonly: bool = True
     pidfile: str = '/tmp/jmqttd.tmp.pid'
     socketport: int = 0
 
+    rootloglevel: str = 'warning'
+    localonly: bool = True
+
+    hb_delay: float = 45.0  # seconds between 2 heartbeat emission
+    hb_retry: float = hb_delay / 2  # seconds before retrying
+    hb_timeout: float = hb_delay * 7  # seconds before timeout
+    check_interval: int = 15  # number of seconds between HB check
+    retry_max: int = 5  # max number of send retries
+    snd_timeout: float = 135.0  # seconds before send timeout
 
 settings = JmqttSettings()
