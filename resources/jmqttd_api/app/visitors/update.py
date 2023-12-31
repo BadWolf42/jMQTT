@@ -9,6 +9,9 @@ from visitors.unregister import UnregisteringLogicVisitor
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
+from models.broker import BrkModel
+from models.eq import EqModel
+from models.unions import CmdModel
 
 
 # -----------------------------------------------------------------------------
