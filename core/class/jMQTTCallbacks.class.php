@@ -49,7 +49,7 @@ class jMQTTCallbacks {
     public static function getPayload() {
         try {
             $received = file_get_contents("php://input"); // Get page full content
-            jMQTT::logger('debug', sprintf("Payload='%1\$s'", $received));
+            // jMQTT::logger('debug', sprintf("Payload='%1\$s'", $received));
         } catch (Throwable $e) {
             http_response_code(400);
             echo 'Bad Request.';
@@ -342,7 +342,7 @@ class jMQTTCallbacks {
             }
             $id = $message['id'];
         }
-        jMQTT::logger('debug', sprintf("%1\$s: %2\$s", __METHOD__, $id));
+        jMQTT::logger('debug', sprintf("%s: %s", __METHOD__, $id));
 
         // Catch if thing do bad
         try {
@@ -353,9 +353,6 @@ class jMQTTCallbacks {
                 jMQTT::logger('debug', $e->getMessage());
                 return;
             }
-            // If Broker is already down, then return
-            if (!$broker->getCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false))
-                return;
 
             // Save in cache that Mqtt Client is disconnected
             $broker->setCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false);
