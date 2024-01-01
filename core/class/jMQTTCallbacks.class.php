@@ -182,8 +182,6 @@ class jMQTTCallbacks {
      */
     public static function onDaemonDown() {
         jMQTT::logger('debug', __METHOD__);
-        // Delete daemon PORT file in temporary folder (as it is now disconnected)
-        jMQTTDaemon::delPort();
         // Delete daemon PID file in temporary folder (as it is now disconnected)
         jMQTTDaemon::delPid();
         // Send state to WebUI
@@ -223,6 +221,8 @@ class jMQTTCallbacks {
                 }
             }
         }
+        // Delete daemon PORT file in temporary folder (as it is now disconnected)
+        jMQTTDaemon::delPort();
     }
 
     /**
@@ -343,6 +343,10 @@ class jMQTTCallbacks {
             $id = $message['id'];
         }
         jMQTT::logger('debug', sprintf("%s: %s", __METHOD__, $id));
+
+        // Skip Broker cleanup if there is no PORT file (already cleaned-up)
+        if (jMQTTDaemon::getPort() == 0)
+            return;
 
         // Catch if thing do bad
         try {

@@ -41,8 +41,7 @@ class jMQTTDaemon {
         if ($pid == 0) {
             // VERY VERBOSE (1 log every 5s or 1m): Do not activate if not needed!
             // jMQTT::logger('debug', 'Daemon PID is absent or inactive.');
-            // Delete port to trigger first fast fail next time
-            jMQTTDaemon::delPort();
+            jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
         // If PID and PORT does not match
