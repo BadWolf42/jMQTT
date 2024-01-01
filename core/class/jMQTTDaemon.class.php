@@ -174,7 +174,7 @@ class jMQTTDaemon {
         // If daemon has not correctly started
         if (!jMQTTDaemon::state()) {
             jMQTTDaemon::stop();
-            /* /!\ Use log::add() here to set 'unableStartDaemon' as logicalId /!\ */
+            // /!\ Use of log::add() here to set 'unableStartDaemon' as logicalId /!\
             log::add(
                 jMQTT::class,
                 'error',
@@ -326,37 +326,26 @@ class jMQTTDaemon {
      * Callback to stop daemon
      */
     public static function stop() {
-        // Get running PID attached to PID file
-        $pid = jMQTTDaemon::getPid();
-        // If PID is available and running
-        if ($pid != 0) {
-            jMQTT::logger('info', __("Arrêt du démon jMQTT", __FILE__));
-            posix_kill($pid, 15);  // Signal SIGTERM
-            jMQTT::logger('debug', "Sending SIGTERM signal to Daemon");
-            for ($i = 1; $i <= 40; $i++) { //wait max 10 seconds for python daemon stop
-                if (!jMQTTDaemon::state(false)) { // Do not use cached state here
-                    jMQTT::logger('info', __("Démon jMQTT arrêté", __FILE__));
-                    break;
-                }
-                usleep(250000);
+        jMQTT::logger('info', __("Arrêt du démon jMQTT", __FILE__));
+        // Send a kill (Signal SIGTERM) to all existing jmqttd processes
+        system::kill('[/]jmqttd', false);
+        // Wait max 10 seconds (40 * 250ms) for python daemon stop
+        for ($i = 1; $i <= 40; $i++) {
+            if (!system::ps('[/]jmqttd')) {
+                jMQTT::logger('info', __("Démon jMQTT arrêté", __FILE__));
+                break;
             }
-            if (jMQTTDaemon::state()) {
-                // Signal SIGKILL
-                posix_kill($pid, 9);
-                jMQTT::logger('debug', "Sending SIGKILL signal to Daemon");
-            }
+            usleep(250000);
         }
-        // If something bad happened, clean anyway
+        // There is still a jmqttd process running after 10 secondes
+        if (system::ps('[/]jmqttd')) {
+            jMQTT::logger('debug', "Sending SIGKILL signal to Daemon");
+            // Forcefully kill (Signal SIGKILL) all existing jmqttd processes
+            system::kill('[/]jmqttd');
+        }
+        // In case something bad happened, clean anyway
         jMQTT::logger('debug', "Cleaning-up the daemon");
-        // Kill existing jMQTT process by name
-        system::kill('[/]jmqttd');
-        // Kill existing jMQTT process by socket port
-        $port = jMQTTDaemon::getPort();
-        if ($port != 0) {
-            // Kill daemon using stored port
-            system::fuserk($port);
-        }
-        // Execute daemonDown callback anyway
+        // Execute daemonDown callback if
         jMQTTCallbacks::onDaemonDown();
     }
 
