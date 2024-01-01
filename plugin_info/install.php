@@ -68,17 +68,13 @@ function jMQTT_update($_direct=true) {
                 log::add(
                     'jMQTT',
                     'debug',
-                    sprintf(
-                        __("Application du fichier de migration vers la version %d...", __FILE__),
-                        $ver
-                    )
+                    sprintf("Applying migration file to version %s...", $ver)
                 );
                 include $file;
                 log::add(
                     'jMQTT',
                     'debug',
-                    sprintf(
-                        __("Migration vers la version %d réalisée avec succès", __FILE__),
+                    sprintf("Migration to version %s successfully completed",
                         $ver
                     )
                 );
