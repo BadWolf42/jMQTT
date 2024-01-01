@@ -37,7 +37,10 @@ class jMQTTPlugin {
             return $return;
         }
 
-        if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
+        $composerCheckCmd = 'cat ' . __DIR__ . '/../../resources';
+        $composerCheckCmd .= '/JsonPath-PHP/vendor/composer/installed.json ';
+        $composerCheckCmd .= '2>/dev/null | grep galbar/jsonpath | wc -l';
+        if (exec(system::getCmdSudo() . $composerCheckCmd) < 1) {
             jMQTT::logger(
                 'debug',
                 "Relaunch dependencies, PHP package 'JsonPath' is missing",
@@ -45,14 +48,20 @@ class jMQTTPlugin {
             $return['state'] = jMQTTConst::CLIENT_NOK;
         }
 
-        if (!file_exists(__DIR__ . '/../../resources/jmqttd_api/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd_api/venv/bin/python3')) {
+        $daemonDir = __DIR__ . '/../../resources/jmqttd_api';
+        if (
+            !file_exists($daemonDir . '/venv/bin/pip3')
+            || !file_exists($daemonDir . '/venv/bin/python3')
+        ) {
             jMQTT::logger(
                 'debug',
                 "Relaunch dependencies, the Python venv has not been created yet",
             );
             $return['state'] = jMQTTConst::CLIENT_NOK;
         } else {
-            exec(__DIR__ . '/../../resources/jmqttd_api/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/jmqttd_api/requirements.txt 2>&1 >/dev/null', $output);
+            $depCheckCmd = $daemonDir . '/venv/bin/pip3 freeze --no-cache-dir -r ';
+            $depCheckCmd .= $daemonDir . '/requirements.txt 2>&1 >/dev/null';
+            exec($depCheckCmd, $output);
             if (count($output) > 0) {
                 $error_msg = __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__);
                 $error_msg .= ' <br/>'.implode('<br/>', $output);
