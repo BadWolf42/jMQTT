@@ -184,6 +184,10 @@ class jMQTTCallbacks {
         jMQTT::logger('debug', __METHOD__);
         // Delete daemon PID file in temporary folder (as it is now disconnected)
         jMQTTDaemon::delPid();
+        // If PORT is KO, Then Daemon state is already OK in Jeedom (do not use cache here)
+        if (jMQTTDaemon::getPort(false) == 0) {
+            return;
+        }
         // Send state to WebUI
         jMQTTDaemon::sendMqttDaemonStateEvent(false);
         // Remove listeners
@@ -191,6 +195,10 @@ class jMQTTCallbacks {
         // Get all brokers and set them as disconnected
         foreach (jMQTT::getBrokers() as $broker) {
             try {
+                // TODO: Update JS events
+                // To avoid needing sendMqttDaemonStateEvent before sendMqttClientStateEvent
+                // Then this optimisation test can be uncommented
+                // if ($broker->getCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false))
                 self::onBrokerDown($broker->getId());
             } catch (Throwable $e) {
                 if (log::getLogLevel(jMQTT::class) > 100) {
