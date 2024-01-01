@@ -81,7 +81,7 @@ logconfig: dict = {
     # },
 }
 
-timeout_cancel: float = 3.0  # seconds to wait for a task to be canceled
+max_wait_cancel: float = 3.0  # seconds to wait for a task to be canceled
 
 
 ###############################################################################

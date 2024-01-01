@@ -6,7 +6,7 @@ from signal import SIGTERM
 from time import time
 
 from callbacks import Callbacks
-from settings import settings, timeout_cancel
+from settings import settings, max_wait_cancel
 
 
 logger = getLogger('jmqtt.healthcheck')
@@ -80,9 +80,9 @@ class Healthcheck:
         if cls._task is None:
             return
         try:
-            # Cancel tasks and join it for `timeout_cancel` seconds
+            # Cancel tasks and join it for `max_wait_cancel` seconds
             cls._task.cancel()
-            await asyncio.wait_for(cls._task, timeout=timeout_cancel)
+            await asyncio.wait_for(cls._task, timeout=max_wait_cancel)
         except asyncio.CancelledError:
             logger.debug('Healthcheck task canceled')
         except asyncio.TimeoutError:
