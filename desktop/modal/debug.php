@@ -529,76 +529,61 @@ function builder_configEqp(div)  { builder_cfgCache(div, "configGetEquipments", 
 function builder_configCmdI(div) { builder_cfgCache(div, "configGetCommandsInfo",   configCmdButtons); }
 function builder_configCmdA(div) { builder_cfgCache(div, "configGetCommandsAction", configCmdButtons); }
 
-function builder_actions(div) {
-    function add_action_event(_div, _action, _level, _icon, _msg) {
-        let elt = '<div class="col-sm-6">';
-        elt += '<a class="btn btn-' + _level + ' btn-xs ' + _action + '" style="width:100%;text-align:left;">';
-        elt += '<i class="' + _icon + '"></i> ' + _msg + '</a></div>';
-        _div.append(elt);
-        _div.off('click', 'a.' + _action).on('click', 'a.' + _action, function() {
-            callDebugAjax({
-                data: {
-                    action: _action
-                },
-                error: function(error) {
-                    $.fn.showAlert({message: error, level: 'warning'})
-                },
-                success: function(data) {
-                    $.fn.showAlert({message: _msg + ' -> Done', level: 'success'});
-                }
-            });
-        });
-    }
-
-    // div.html('<legend><i class="fas fa-hands-wash "></i> {{Nettoyage}}</legend>');
-    div.html('<div class="form-group">');
-
-    add_action_event(div, 'depCheck',         'warning', 'fas fa-check-circle icon-white',     'Force dependencies to be rechecked');
-    add_action_event(div, 'depDelete',        'danger',  'fas fa-trash',                       'Delete Python deps (venv)');
-    add_action_event(div, 'venvDelete',       'danger',  'fas fa-trash',                       'Delete PHP deps');
-
-    add_action_event(div, 'dynContentDelete', 'danger',  'fas fa-trash',                       'Delete dynamic content');
-    add_action_event(div, 'pidFileDelete',    'danger',  'fas fa-trash',                       'Delete PID file');
-    add_action_event(div, 'hbStop',           'danger',  'fas fa-stop',                        'Stop Heatbeats');
-
-    add_action_event(div, 'threadDump',       'info',    'icon kiko-zoom',                     'Ask the daemon for a "Thread Dump"');
-    add_action_event(div, 'reInstall',        'warning', 'fas fa-bicycle',                     'Reinstall jMQTT');
-    add_action_event(div, 'statsSend',        'info',    'fas fa-satellite',                   'Send stats');
-
-    add_action_event(div, 'listenersRemove',  'danger',  'fas fa-assistive-listening-systems', 'Delete all listeners');
-    add_action_event(div, 'listenersCreate',  'success', 'fas fa-assistive-listening-systems', 'Recreate the listeners');
-    add_action_event(div, 'logVerbose',       'info',    'far fa-file',                        'VERBOSE logs');
-
-    div.append('<div class="col-sm-12">&nbsp;</div>');
-    div.append('</div>');
-
-    // - List active Python daemon(s) PID (and allow to kill some/all of them)
-    // res += '<div class="col-sm-12">&nbsp;</div></div><legend><i class="fas fa-university"></i> {{Démon(s) actifs}}</legend>';
-    // res += '<div class="col-sm-12" id="actionsDeamons"></div>';
-
-/*
-    var _div = $('#actionsDeamons');
-    callDebugAjax({
-        data: { action: 'configGetInternal' },
-        error: function(error) { $.fn.showAlert({message: error, level: 'danger'}) },
-        success: function(_data) {
-            var res = '<table class="table table-bordered" style="table-layout:fixed;width:100%;">';
-            res += '<thead><tr><th style="width:180px">PID</th><th>{{Port}}</th>';
-            res += '<th style="width:85px;text-align:center"><a class="btn btn-danger btn-xs pull-right killAll" style="top:0px!important;">';
-            res += '<i class="fas fa-check-circle icon-white"></i> {{Kill All}}</a></th>';
-            res += '</tr></thead><tbody>';
-            for (var d of _data) {
-                res += '<tr><td class="key">' + d.pid + '</td><td><pre class="val">' + d.port + '</pre></td>';
-                // IF d.selected THEN add a tick -> <i class="fas fa-check-circle icon-white"></i>
-                res += '<td style="text-align:center"><a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td></tr>';
+function add_action_event(_div, _action, _level, _icon, _msg) {
+    let elt = '<div class="col-sm-6">';
+    elt += '<a class="btn btn-' + _level + ' btn-xs ' + _action + '" style="width:100%;text-align:left;">';
+    elt += '<i class="' + _icon + ' center" style="width:15px"></i> ' + _msg + '</a></div>';
+    _div.append(elt);
+    _div.off('click', 'a.' + _action).on('click', 'a.' + _action, function() {
+        callDebugAjax({
+            data: {
+                action: _action
+            },
+            error: function(error) {
+                $.fn.showAlert({message: error, level: 'warning'})
+            },
+            success: function(data) {
+                if (!data) data = 'Done';
+                $.fn.showAlert({message: _msg + ' -> ' + data, level: 'success'});
             }
-            res += '</tbody></table>';
-            _div.html(res);
-            if(typeof _buttons === 'function')
-                _buttons(_div);
-        }
+
+        });
     });
-*/
+}
+
+function builder_actions(_root_div) {
+    _root_div.html('');
+
+    _root_div.append('<legend style="margin-bottom:2px!important"><i class="mdi-harddisk"></i> Installation and files</legend>');
+    let div = $('<div class="form-group">');
+    add_action_event(div, 'depCheck',         'success', 'fas fa-check-circle icon-white',     'Force dependencies to be rechecked');
+    add_action_event(div, 'reInstall',        'warning', 'fas fa-bicycle',                     'Reinstall jMQTT');
+    add_action_event(div, 'depDelete',        'danger',  'fab fa-php',                         'Delete PHP deps');
+    add_action_event(div, 'venvDelete',       'danger',  'fab fa-python',                      'Delete Python deps (venv)');
+    add_action_event(div, 'dynContentDelete', 'info',    'fas fa-trash',                       'Delete dynamic content');
+    div.append('<div class="col-sm-6">&nbsp;</div>'); // Alignement
+    div.append('<div class="col-sm-12" style="height:15px">&nbsp;</div>'); // Spacer
+    _root_div.append(div);
+
+    _root_div.append('<legend style="margin-bottom:2px!important"><i class="kiko-heart-rate"></i> Running contents</legend>');
+    div = $('<div class="form-group">');
+    add_action_event(div, 'listenersRemove',  'warning', 'fas fa-assistive-listening-systems', 'Delete all listeners');
+    add_action_event(div, 'listenersCreate',  'success', 'fas fa-assistive-listening-systems', 'Recreate the listeners');
+    add_action_event(div, 'pidFileDelete',    'danger',  'fas fa-book-dead',                   'Delete PID file');
+    add_action_event(div, 'portFileDelete',   'danger',  'fas fa-book-dead',                   'Delete PORT file');
+    add_action_event(div, 'killAllSIGTERM',   'success', 'fas fa-skull',                       'KillAll jMQTTd (gracefully)');
+    add_action_event(div, 'killAllSIGKILL',   'warning', 'fas fa-skull-crossbones',            'KillAll jMQTTd (forcefully)');
+    div.append('<div class="col-sm-12" style="height:15px">&nbsp;</div>'); // Spacer
+    _root_div.append(div);
+
+    _root_div.append('<legend style="margin-bottom:2px!important"><i class="fas fa-tools"></i> Troubleshooting</legend>');
+    div = $('<div class="form-group">');
+    add_action_event(div, 'hbStop',           'danger',  'fas fa-stop',                        'Stop Heatbeats');
+    add_action_event(div, 'threadDump',       'info',    'kiko-zoom',                          'Ask the daemon for a "Thread Dump"');
+    add_action_event(div, 'logVerbose',       'info',    'far fa-file',                        'VERBOSE logs');
+    add_action_event(div, 'statsSend',        'info',    'fas fa-satellite',                   'Send stats');
+    div.append('<div class="col-sm-12" style="height:10px">&nbsp;</div>'); // Last spacer
+    _root_div.append(div);
 }
 
 function builder_cacheInt(div)   { builder_cfgCache(div, "cacheGetInternal",        cacheButtons); }
@@ -606,6 +591,7 @@ function builder_cacheBrk(div)   { builder_cfgCache(div, "cacheGetBrokers",     
 function builder_cacheEqp(div)   { builder_cfgCache(div, "cacheGetEquipments",      cacheButtons); }
 function builder_cacheCmdI(div)  { builder_cfgCache(div, "cacheGetCommandsInfo",    cacheButtons); }
 function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction",  cacheButtons); }
+
     </script>
     <div class="row">
         <style>td.key { line-break: anywhere; }</style>
@@ -652,14 +638,20 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
                 </div>
             </div>
 <?php
-// Simulate send to daemon
+
+// Create panels to simulate send to daemon
 panelCreator('{{Simuler une communication avec le Démon}}', 'danger', 'fas fa-exchange-alt', 'builder_daemon');
-// Config values
+
+// Create panels to edit Config values
 panelCreator('{{Valeurs de config du Démon}}',             'primary', 'fas fa-wrench', 'builder_configInt');
 panelCreator('{{Valeurs de config des Brokers}}',          'primary', 'fas fa-wrench', 'builder_configBrk');
 panelCreator('{{Valeurs de config des Equipements}}',      'primary', 'fas fa-wrench', 'builder_configEqp');
 panelCreator('{{Valeurs de config des Commandes Info}}',   'primary', 'fas fa-wrench', 'builder_configCmdI');
 panelCreator('{{Valeurs de config des Commandes Action}}', 'primary', 'fas fa-wrench', 'builder_configCmdA');
+
+// Get Jeedom plugin descriptor
+$jplugin = update::byLogicalId("jMQTT");
+
 ?>
         </div>
         <div class="col-md-6 col-sm-12"><!-- General status of jMQTT -->
@@ -670,7 +662,6 @@ panelCreator('{{Valeurs de config des Commandes Action}}', 'primary', 'fas fa-wr
                 <div class="panel-body">
                     <form class="form-horizontal">
                         <fieldset>
-<?php $jplugin = update::byLogicalId("jMQTT"); ?>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label">Source</label>
                                 <div class="col-sm-3">
@@ -700,17 +691,22 @@ panelCreator('{{Valeurs de config des Commandes Action}}', 'primary', 'fas fa-wr
                 </div>
             </div>
 <?php
-// Simulate dangerous actions on jMQTT
+
+// Create panels to edit simulate dangerous actions on jMQTT
 panelCreator('{{Actions sur jMQTT}}',                     'danger',  'fas fa-radiation-alt', 'builder_actions');
-// Cache values
+
+// Create panels to edit Cache values
 panelCreator('{{Valeurs du cache du Démon}}',             'primary', 'fas fa-book',   'builder_cacheInt');
 panelCreator('{{Valeurs du cache des Brokers}}',          'primary', 'fas fa-book',   'builder_cacheBrk');
 panelCreator('{{Valeurs du cache des Equipements}}',      'primary', 'fas fa-book',   'builder_cacheEqp');
 panelCreator('{{Valeurs du cache des Commandes Info}}',   'primary', 'fas fa-book',   'builder_cacheCmdI');
 panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-book',   'builder_cacheCmdA');
+
 ?>
         </div>
     </div>
+
+    <!-- New empty section -->
     <div class="row">
         <div class="col-md-6 col-sm-12">
 <?php
@@ -722,6 +718,7 @@ panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-boo
 ?>
         </div>
     </div>
+    <!-- /New empty section -->
 
     <script>
 // Function to hide, show and build sections content on the fly
@@ -741,6 +738,5 @@ $('a.btn.btn-info.btn-show-hide').on('click', function () {
                 builder(div);
         }
     }
-
 });
     </script>

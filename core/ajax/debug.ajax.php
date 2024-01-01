@@ -283,9 +283,35 @@ try {
     }
 
 // -------------------- Simulate dangerous actions --------------------
+    // Installation and files
     if (init('action') == 'depCheck') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         plugin::byId('jMQTT')->dependancy_info(true);
+        ajax::success();
+    }
+    if (init('action') == 'reInstall') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        log::clear('update');
+        $update = update::byId('jMQTT');
+        if (!is_object($update))
+            throw new Exception('jMQTT is not installed?!');
+        try {
+            log::add('update', 'alert', "[START UPDATE]");
+            $update->doUpdate();
+            log::add('update', 'alert', "Launch cron dependancy plugins");
+            try {
+                $cron = cron::byClassAndFunction('plugin', 'checkDeamon');
+                if (is_object($cron)) {
+                    $cron->start();
+                }
+            } catch (Exception $e) {
+                log::add('update', 'alert', "jMQTT update exception:\n" . $e->getMessage());
+            }
+            log::add('update', 'alert', "[END UPDATE SUCCESS]");
+        } catch (Exception $e) {
+            log::add('update', 'alert', $e->getMessage());
+            log::add('update', 'alert', "[END UPDATE ERROR]");
+        }
         ajax::success();
     }
     if (init('action') == 'depDelete') {
@@ -308,16 +334,59 @@ try {
         exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder('jMQTT').'/rt*.json');
         ajax::success();
     }
+    if (init('action') == 'listenersRemove') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTT::listenersRemoveAll();
+        ajax::success();
+    }
+    if (init('action') == 'listenersCreate') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTT::listenersAddAll();
+        ajax::success();
+    }
+    
+    // Running contents
+    if (init('action') == 'pidFileDelete') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTDaemon::delPid();
+        ajax::success();
+    }
+    if (init('action') == 'portFileDelete') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTDaemon::delPort();
+        ajax::success();
+    }
+    if (init('action') == 'killAllSIGTERM') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        system::kill('[/]jmqttd', false);
+        ajax::success();
+    }
+    if (init('action') == 'killAllSIGKILL') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        system::kill('[/]jmqttd', true);
+        ajax::success();
+    }
+
+    // Troubleshooting
+    if (init('action') == 'hbStop') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        config::save('functionality::cron::enable', 1, jMQTT::class);
+        ajax::success();
+    }
     if (init('action') == 'threadDump') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         // Get cached PID and PORT
         $pid = jMQTTDaemon::getPid();
         // If PID is unavailable or not running
-        if ($pid == 0 || !@posix_getsid($pid))
+        if ($pid == 0)
             throw new Exception(__("Le PID du démon n'a pas été trouvé, est-il lancé ?", __FILE__));
-
         // Else send signal SIGUSR1
         posix_kill($pid, 10);
+        ajax::success();
+    }
+    if (init('action') == 'logVerbose') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTComToDaemon::setLogLevel('trace');
         ajax::success();
     }
     if (init('action') == 'statsSend') {
@@ -325,35 +394,6 @@ try {
         cache::set('jMQTT::nextStats', time() - 300);
         jMQTTPlugin::stats();
         ajax::success();
-    }
-
-    // TODO: Debug modal: implement missing actions
-    //  pidFileDelete, hbStop, reInstall, logVerbose
-    //  listenersCreate, listenersRemove
-    //  labels: enhancement, php
-    if (init('action') == 'pidFileDelete') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'hbStop') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'reInstall') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'listenersRemove') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'listenersCreate') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'logVerbose') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
     }
 
     throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
