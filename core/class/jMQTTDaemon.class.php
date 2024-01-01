@@ -208,17 +208,12 @@ class jMQTTDaemon {
             return self::$pid;
         }
         $pid_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid';
-        if (!file_exists($pid_file)) {
-            self::$pid = 0;
-        } else {
-            $pid = intval(trim(file_get_contents($pid_file)));
-            // If PID is available and running
-            if ($pid != 0 && @posix_getsid($pid)) {
-                self::$pid = $pid;
-            } else {
-                self::$pid = 0;
-            }
-        }
+        // file_get_contents return false, if file do not exist
+        // @ mute warning, if file do not exist
+        // intval trim and convert string/bool to integer
+        $pid = intval(@file_get_contents($pid_file));
+        // If PID is available and running
+        self::$pid = ($pid != 0 && @posix_getsid($pid)) ? $pid : 0;
         return self::$pid;
     }
 
@@ -228,8 +223,8 @@ class jMQTTDaemon {
      */
     public static function delPid() {
         $pid_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid';
-        if (file_exists($pid_file))
-            unlink($pid_file);
+        // @ mute warning, if file do not exist
+        @unlink($pid_file);
         self::$pid = 0;
     }
 
@@ -254,11 +249,10 @@ class jMQTTDaemon {
             return self::$port;
         }
         $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
-        if (!file_exists($port_file)) {
-            self::$port = 0;
-        } else {
-            self::$port = intval(trim(file_get_contents($port_file)));
-        }
+        // file_get_contents return false, if file do not exist
+        // @ mute warning, if file do not exist
+        // intval trim and convert string/bool to integer
+        self::$port = intval(@file_get_contents($port_file));
         return self::$port;
     }
 
@@ -285,8 +279,8 @@ class jMQTTDaemon {
      */
     public static function delPort() {
         $port_file = jeedom::getTmpFolder(jMQTT::class) . '/daemon.port';
-        if (file_exists($port_file))
-            unlink($port_file);
+        // @ mute warning, if file do not exist
+        @unlink($port_file);
         self::$port = 0;
     }
 
