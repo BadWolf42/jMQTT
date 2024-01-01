@@ -54,24 +54,19 @@ class BrkConfigModel(BaseModel):
     _val_auto_add_cmd: classmethod = validator(
         "auto_add_cmd", allow_reuse=True, pre=True
     )(strToBool)
-    _val_mqttPort: classmethod = validator("mqttPort", allow_reuse=True, pre=True
-    )(
+    _val_mqttPort: classmethod = validator("mqttPort", allow_reuse=True, pre=True)(
         strToInt
     )
-    _val_mqttId: classmethod = validator("mqttId", allow_reuse=True, pre=True
-    )(
+    _val_mqttId: classmethod = validator("mqttId", allow_reuse=True, pre=True)(
         strToBool
     )
-    _val_mqttLwt: classmethod = validator("mqttLwt", allow_reuse=True, pre=True
-    )(
+    _val_mqttLwt: classmethod = validator("mqttLwt", allow_reuse=True, pre=True)(
         strToBool
     )
-    _val_mqttInt: classmethod = validator("mqttInt", allow_reuse=True, pre=True
-    )(
+    _val_mqttInt: classmethod = validator("mqttInt", allow_reuse=True, pre=True)(
         strToBool
     )
-    _val_mqttApi: classmethod = validator("mqttApi", allow_reuse=True, pre=True
-    )(
+    _val_mqttApi: classmethod = validator("mqttApi", allow_reuse=True, pre=True)(
         strToBool
     )
     _val_mqttTlsSecure: classmethod = validator(

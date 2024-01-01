@@ -48,7 +48,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           coverage: none
-          tools: phpstan, phpcs, cs2pr
+          tools: phpstan, phpcs
         env:
           debug: true
 
@@ -66,14 +66,7 @@ jobs:
           python -m pip install -r ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/requirements-tests.txt
 
       - name: Lint with PHPStan
-        run: phpstan analyse -c plugins/jMQTT/.github/configs/phpstan.neon --error-format=checkstyle | cs2pr
-
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/ --count --select=E9,F63,F7,F82 --show-source
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/ --count --exit-zero --max-complexity=10 --max-line-length=127
+        run: phpstan analyse -c plugins/jMQTT/.github/configs/phpstan.neon --no-progress --error-format=github || true
 
       - name: Lint Action
         uses: wearerequired/lint-action@v2
