@@ -5,6 +5,7 @@ from time import time
 from fastapi import APIRouter
 
 # from ..jmqttDaemon import JmqttDaemon
+from callbacks import Callbacks
 from healthcheck import Healthcheck
 from models.broker import BrkModel
 from models.eq import EqModel
@@ -68,8 +69,9 @@ async def daemon_delete():
 @daemon.put("/hb", status_code=204, summary="Receive heatbeat from Jeedom")
 async def daemon_put_hb():
     logger.debug(
-        "Jeedom -> Heartbeat (nothing received since %ds)",
+        "Heartbeat FROM Jeedom (last msg from/to Jeedom %ds/%ds ago)",
         time() - Healthcheck._last_rcv,
+        time() - Callbacks._last_snd,
     )
     await Healthcheck.onReceive()
 

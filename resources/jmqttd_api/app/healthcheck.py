@@ -61,8 +61,9 @@ class Healthcheck:
                 # Avoid sending heartbeats continuously
                 if now - Callbacks._last_hb > settings.hb_retry:
                     logger.debug(
-                        "Heartbeat -> Jeedom (nothing sent since %ds)",
-                        now - Callbacks._last_snd,
+                        "Heartbeat TO Jeedom (last msg from/to Jeedom %ds/%ds ago)",
+                        time() - cls._last_rcv,
+                        time() - Callbacks._last_snd,
                     )
                     await Callbacks.daemonHB()
             # logger.debug('Healthcheck-ed')
