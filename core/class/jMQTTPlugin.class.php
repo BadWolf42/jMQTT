@@ -65,14 +65,8 @@ class jMQTTPlugin {
             if (count($output) > 0) {
                 $error_msg = __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__);
                 $error_msg .= ' <br/>'.implode('<br/>', $output);
-                $last_error = cache::byKey('jMQTT::'.jMQTTConst::CACHE_LAST_DEP_ERROR)->getValue('');
-                if ($error_msg != $last_error) {
-                    jMQTT::logger('error', $error_msg);
-                    cache::set('jMQTT::'.jMQTTConst::CACHE_LAST_DEP_ERROR, $error_msg);
-                }
+                jMQTT::logger('error', $error_msg);
                 $return['state'] = jMQTTConst::CLIENT_NOK;
-            } else {
-                cache::delete('jMQTT::'.jMQTTConst::CACHE_LAST_DEP_ERROR);
             }
         }
 
