@@ -61,8 +61,8 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                 displayActionCard('{{Configuration}}', 'fa-wrench', 'gotoPluginConf');
                 displayActionCard('{{Broker}}', 'fa-plus-circle', 'addJmqttBrk');
                 displayActionCard('{{Santé}}', 'fa-medkit', 'healthMQTT');
-                if (isset($_GET['debug']) || config::byKey('debugMode', 'jMQTT', "0") === "1" /* || log::getLogLevel('jMQTT') <= 100 */)
-                    displayActionCard('{{Debug}}', 'fa-bug', 'debugJMQTT');
+                if (isset($_GET['debug']) || config::byKey('debugMode', 'jMQTT', "0") === "1")
+                    displayActionCard('Debug', 'fa-toolbox danger', 'debugJMQTT');
                 displayActionCard('{{Templates}}', 'fa-cubes', 'templatesMQTT');
                 displayActionCard('{{Équipement}}', 'fa-plus-circle', 'addJmqttEq', 'logoPrimary');
                 ?>

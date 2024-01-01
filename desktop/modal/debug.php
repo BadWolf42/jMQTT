@@ -1,7 +1,7 @@
 <?php
 
 if (!isConnect('admin')) {
-    throw new Exception('{{401 - Accès non autorisé}}');
+    throw new Exception('401 - Unauthorized access');
 }
 
 require_once __DIR__ . '/../../core/class/jMQTT.class.php';
@@ -10,7 +10,7 @@ function panelCreator($title, $type, $icon, $builder) {
     echo '            <div class="panel panel-'.$type.'">';
     echo '                <div class="panel-heading"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
     echo '                <a class="btn btn-info btn-show-hide btn-xs btn-success pull-right" builder="'.$builder.'" style="top:-2px!important">';
-    echo '                <i class="fas fa-search-plus"></i> {{Afficher}} </a></h3></div><div class="panel-body hidden"></div>';
+    echo '                <i class="fas fa-search-plus"></i> Show </a></h3></div><div class="panel-body hidden"></div>';
     echo '            </div>';
 }
 ?>
@@ -49,17 +49,17 @@ function builder_cfgCache(_div, _action, _buttons) {
         error: function(error) { $.fn.showAlert({message: error, level: 'danger'}) },
         success: function(_data) {
             var res = '<table class="table table-bordered" style="table-layout:fixed;width:100%;">';
-            res += '<thead><tr><th style="width:180px">{{Clé}}</th><th>{{Valeur (encodée en Json)}}</th>';
+            res += '<thead><tr><th style="width:180px">Key</th><th>Value (Json encoded)</th>';
             res += '<th style="width:85px;text-align:center">';
             if (_data[0] && !_data[0].id)
-                res += '<a class="btn btn-success btn-xs pull-right add" style="top:0px!important;"><i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a>';
+                res += '<a class="btn btn-success btn-xs pull-right add" style="top:0px!important;"><i class="fas fa-check-circle icon-white"></i> Add</a>';
             res += '</th></tr></thead><tbody>';
             for (var group of _data) {
                 if (group.header) {
                     if (group.id) {
                         res += '<tr eqId="' + group.id + '"><td colspan="2" style="font-weight:bolder;">' + group.header + '</td>';
                         res += '<td><a class="btn btn-success btn-xs pull-right add" style="top:0px!important;">';
-                        res += '<i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a></td></tr>';
+                        res += '<i class="fas fa-check-circle icon-white"></i> Add</a></td></tr>';
                     } else {
                         res += '<tr><td colspan="3" style="font-weight:bolder;">' + group.header + '</td></tr>';
                     }
@@ -82,10 +82,10 @@ function builder_cfgCache(_div, _action, _buttons) {
 function configIntButtons(div) {
     div.off('click', 'a.add').on('click', 'a.add', function() {
         bootbox.confirm({
-            title: '{{Ajouter un paramètre de configuration interne}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add an internal configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -99,7 +99,7 @@ function configIntButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Internal config parameter added.', level: 'success'});
                         var row = div.find('tbody').prepend('<tr />').children('tr:first');
                         row.append('<td class="key">'+$("#debugKey").val()+'</td>');
                         row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
@@ -115,10 +115,10 @@ function configIntButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre de configuration interne}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit internal configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -132,7 +132,7 @@ function configIntButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config interne modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Internal config parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -145,10 +145,10 @@ function configIntButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre de configuration interne}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Delete internal configuration setting',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -161,7 +161,7 @@ function configIntButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config interne supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Internal config parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -175,10 +175,10 @@ function configBrkEqButtons(div) {
         var tr = $(this).closest('tr');
         var debugId = tr.attr('eqId');
         bootbox.confirm({
-            title: '{{Ajouter un paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add a configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -193,7 +193,7 @@ function configBrkEqButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter added.', level: 'success'});
                         var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
                         row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
                         row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;';
@@ -211,10 +211,10 @@ function configBrkEqButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -229,7 +229,7 @@ function configBrkEqButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -243,10 +243,10 @@ function configBrkEqButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Delete configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -260,7 +260,7 @@ function configBrkEqButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -274,10 +274,10 @@ function configCmdButtons(div) {
         var tr = $(this).closest('tr');
         var debugId = tr.attr('eqId');
         bootbox.confirm({
-            title: '{{Ajouter un paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add a configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -292,7 +292,7 @@ function configCmdButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter added.', level: 'success'});
                         var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
                         row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
                         row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;';
@@ -310,10 +310,10 @@ function configCmdButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -328,7 +328,7 @@ function configCmdButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -342,10 +342,10 @@ function configCmdButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Delete configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -359,7 +359,7 @@ function configCmdButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -371,10 +371,10 @@ function configCmdButtons(div) {
 function cacheButtons(div) {
     div.off('click', 'a.add').on('click', 'a.add', function() {
         bootbox.confirm({
-            title: '{{Ajouter un paramètre au cache}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add a parameter to the cache',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -388,7 +388,7 @@ function cacheButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de cache ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Cache parameter added.', level: 'success'});
                         var row = div.find('tbody').prepend('<tr />').children('tr:first');
                         row.append('<td class="key">'+$("#debugKey").val()+'</td>');
                         row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
@@ -404,10 +404,10 @@ function cacheButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre du cache}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit cache parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result){
                 if (result) {
@@ -421,7 +421,7 @@ function cacheButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre du cache modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Cache parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -434,10 +434,10 @@ function cacheButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre du cache}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Delete cache value',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\'' + debugKey + '\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'
                     + $(this).closest('tr').find('.val').text() + '</textarea><br/><br/>',
             callback: function(result){
@@ -451,7 +451,7 @@ function cacheButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre du cache supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Cache parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -464,7 +464,7 @@ function cacheButtons(div) {
 function builder_daemon(div) {
     var res = '<form class="form-horizontal"><fieldset>';
     // Send to Daemon
-    res += '<legend><i class="fas fa-upload"></i> {{Simuler un évènement envoyé au Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
+    res += '<legend><i class="fas fa-upload"></i> Simulate an event sent to the Daemon by Jeedom (API key sent automatically)</legend><div class="form-group"><div class="col-sm-10">';
     res += '<textarea class="bootbox-input bootbox-input-text form-control toDaemon" style="min-height:65px;">';
     res += '{"cmd": "newMqttClient", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}\n';
     res += '{"cmd": "removeMqttClient", "id": ""}\n';
@@ -475,9 +475,9 @@ function builder_daemon(div) {
     res += '{"cmd": "", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}\n';
 
     res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toDaemon" style="top:0px!important;">';
-    res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div>';
+    res += '<i class="fas fa-check-circle icon-white"></i> Send</a></div></div>';
     // Send to Jeedom
-    res += '<legend><i class="fas fa-download"></i> {{Simuler un évènement reçu du Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
+    res += '<legend><i class="fas fa-download"></i> Simulate an event received from the Daemon by Jeedom (API key sent automatically)</legend><div class="form-group"><div class="col-sm-10">';
     res += '<textarea class="bootbox-input bootbox-input-text form-control toJeedom" style="min-height:65px;">';
 
     res += '[{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}]\n';
@@ -488,7 +488,7 @@ function builder_daemon(div) {
     res += '[{"cmd":"hb"}]';
 
     res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toJeedom" style="top:0px!important;">';
-    res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div><br/>';
+    res += '<i class="fas fa-check-circle icon-white"></i> Send</a></div></div><br/>';
 
     res += '</fieldset></form>';
     div.html(res);
@@ -598,7 +598,7 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
         <div class="col-md-6 col-sm-12"><!-- General status of Jeedom -->
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fas fa-circle-notch"></i> {{Etat Général de Jeedom}}</h3>
+                    <h3 class="panel-title"><i class="fas fa-circle-notch"></i> Jeedom general status</h3>
                 </div>
                 <div class="panel-body">
                     <form class="form-horizontal">
@@ -618,7 +618,7 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
                                 <div class="col-sm-3">
                                     <span><?php echo jeedom::version(); ?></span>
                                 </div>
-                                <label class="col-sm-3 control-label">Langage</label>
+                                <label class="col-sm-3 control-label">Lang</label>
                                 <div class="col-sm-3">
                                     <span><?php echo config::byKey('language'); ?></span>
                                 </div>
@@ -640,14 +640,14 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
 <?php
 
 // Create panels to simulate send to daemon
-panelCreator('{{Simuler une communication avec le Démon}}', 'danger', 'fas fa-exchange-alt', 'builder_daemon');
+panelCreator('Simulate communication with the Daemon', 'danger', 'fas fa-exchange-alt', 'builder_daemon');
 
 // Create panels to edit Config values
-panelCreator('{{Valeurs de config du Démon}}',             'primary', 'fas fa-wrench', 'builder_configInt');
-panelCreator('{{Valeurs de config des Brokers}}',          'primary', 'fas fa-wrench', 'builder_configBrk');
-panelCreator('{{Valeurs de config des Equipements}}',      'primary', 'fas fa-wrench', 'builder_configEqp');
-panelCreator('{{Valeurs de config des Commandes Info}}',   'primary', 'fas fa-wrench', 'builder_configCmdI');
-panelCreator('{{Valeurs de config des Commandes Action}}', 'primary', 'fas fa-wrench', 'builder_configCmdA');
+panelCreator('Config values for Daemon',               'primary', 'fas fa-wrench', 'builder_configInt');
+panelCreator('Config values for Brokers',              'primary', 'fas fa-wrench', 'builder_configBrk');
+panelCreator('Config values for Equipments',           'primary', 'fas fa-wrench', 'builder_configEqp');
+panelCreator('Config values for Info Commands',        'primary', 'fas fa-wrench', 'builder_configCmdI');
+panelCreator('Config values for Action Commands',      'primary', 'fas fa-wrench', 'builder_configCmdA');
 
 // Get Jeedom plugin descriptor
 $jplugin = update::byLogicalId("jMQTT");
@@ -657,7 +657,7 @@ $jplugin = update::byLogicalId("jMQTT");
         <div class="col-md-6 col-sm-12"><!-- General status of jMQTT -->
             <div class="panel panel-primary">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fas fa-certificate"></i> {{Etat Général de jMQTT}}</h3>
+                    <h3 class="panel-title"><i class="fas fa-certificate"></i> jMQTT general status</h3>
                 </div>
                 <div class="panel-body">
                     <form class="form-horizontal">
@@ -693,14 +693,14 @@ $jplugin = update::byLogicalId("jMQTT");
 <?php
 
 // Create panels to edit simulate dangerous actions on jMQTT
-panelCreator('{{Actions sur jMQTT}}',                     'danger',  'fas fa-radiation-alt', 'builder_actions');
+panelCreator('Actions on jMQTT',                 'danger',  'fas fa-radiation-alt', 'builder_actions');
 
 // Create panels to edit Cache values
-panelCreator('{{Valeurs du cache du Démon}}',             'primary', 'fas fa-book',   'builder_cacheInt');
-panelCreator('{{Valeurs du cache des Brokers}}',          'primary', 'fas fa-book',   'builder_cacheBrk');
-panelCreator('{{Valeurs du cache des Equipements}}',      'primary', 'fas fa-book',   'builder_cacheEqp');
-panelCreator('{{Valeurs du cache des Commandes Info}}',   'primary', 'fas fa-book',   'builder_cacheCmdI');
-panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-book',   'builder_cacheCmdA');
+panelCreator('Cache values for Daemon',          'primary', 'fas fa-book',          'builder_cacheInt');
+panelCreator('Cache values for Brokers',         'primary', 'fas fa-book',          'builder_cacheBrk');
+panelCreator('Cache values for Equipments',      'primary', 'fas fa-book',          'builder_cacheEqp');
+panelCreator('Cache values for Info Commands',   'primary', 'fas fa-book',          'builder_cacheCmdI');
+panelCreator('Cache values for Action Commands', 'primary', 'fas fa-book',          'builder_cacheCmdA');
 
 ?>
         </div>
@@ -725,12 +725,12 @@ panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-boo
 $('a.btn.btn-info.btn-show-hide').on('click', function () {
     var div = $(this).closest('div.panel').find('div.panel-body');
     if ($(this).hasClass('btn-warning')) {
-        $(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-search-plus"></i> {{Afficher}}');
+        $(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-search-plus"></i> Show');
         div.addClass('hidden');
         if ($(this).hasAttr('builder'))
             div.empty();
     } else {
-        $(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-search-minus"></i> {{Masquer}}');
+        $(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-search-minus"></i> Hide');
         div.removeClass('hidden');
         if ($(this).hasAttr('builder')) {
             var builder = window[$(this).attr('builder')];

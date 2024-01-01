@@ -5,7 +5,7 @@ try {
     include_file('core', 'authentification', 'php');
 
     if (!isConnect('admin')) {
-        throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        throw new Exception('401 - Unauthorized access');
     }
 
     require_once __DIR__ . '/../../core/class/jMQTT.class.php';
@@ -234,11 +234,11 @@ try {
         $data = init('data');
         $decoded = json_decode($data, true);
         if (is_null($decoded) || !is_array($decoded)) {
-            ajax::error(__('Format invalide', __FILE__));
+            ajax::error('Invalid format');
         }
         // Send to Daemon
         if (!jMQTTDaemon::state()) {
-            ajax::error(__("Le démon n'est pas démarré", __FILE__));
+            ajax::error('Daemon is not started');
         }
         $port = jMQTTDaemon::getPort();
         // TODO: Add Method+URL+key as parameters and return the error code+result?
@@ -258,7 +258,7 @@ try {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': data='.init('data'));
         $data = json_decode(init('data'), true);
         if (is_null($data) || !is_array($data)) {
-            ajax::error(__('Format invalide', __FILE__));
+            ajax::error('Invalid format');
         }
         // Prepare url
         $callbackURL = jMQTTDaemon::get_callback_url();
@@ -344,7 +344,7 @@ try {
         jMQTT::listenersAddAll();
         ajax::success();
     }
-    
+
     // Running contents
     if (init('action') == 'pidFileDelete') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
@@ -379,7 +379,7 @@ try {
         $pid = jMQTTDaemon::getPid();
         // If PID is unavailable or not running
         if ($pid == 0)
-            throw new Exception(__("Le PID du démon n'a pas été trouvé, est-il lancé ?", __FILE__));
+            throw new Exception('Daemon PID not found. Is it running?');
         // Else send signal SIGUSR1
         posix_kill($pid, 10);
         ajax::success();
@@ -396,7 +396,7 @@ try {
         ajax::success();
     }
 
-    throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
+    throw new Exception('No corresponding Ajax method: ' . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
     ajax::error(displayException($e), $e->getCode());
