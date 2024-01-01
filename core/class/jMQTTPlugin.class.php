@@ -54,17 +54,21 @@ class jMQTTPlugin {
         } else {
             exec(__DIR__ . '/../../resources/jmqttd_api/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/jmqttd_api/requirements.txt 2>&1 >/dev/null', $output);
             if (count($output) > 0) {
-                jMQTT::logger(
-                    'error',
-                    __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).
-                    ' <br/>'.implode('<br/>', $output)
-                );
+                $error_msg = __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__);
+                $error_msg .= ' <br/>'.implode('<br/>', $output);
+                $last_error = cache::byKey('jMQTT::'.jMQTTConst::CACHE_LAST_DEP_ERROR)->getValue('');
+                if ($error_msg != $last_error) {
+                    jMQTT::logger('error', $error_msg);
+                    cache::set('jMQTT::'.jMQTTConst::CACHE_LAST_DEP_ERROR, $error_msg);
+                }
                 $return['state'] = jMQTTConst::CLIENT_NOK;
+            } else {
+                cache::delete('jMQTT::'.jMQTTConst::CACHE_LAST_DEP_ERROR);
             }
         }
 
         if ($return['state'] == jMQTTConst::CLIENT_OK)
-            jMQTT::logger('debug', "Dependencies installed.");
+            jMQTT::logger('debug', "Dependencies seem correctly installed.");
         return $return;
     }
 

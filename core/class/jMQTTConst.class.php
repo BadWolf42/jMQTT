@@ -62,6 +62,7 @@ class jMQTTConst {
     const CACHE_IGNORE_TOPIC_MISMATCH   = 'ignore_topic_mismatch';
     const CACHE_JMQTT_NEXT_STATS        = 'nextStats';
     const CACHE_LAST_LAUNCH_TIME        = 'lastLaunchTime';
+    const CACHE_LAST_DEP_ERROR          = 'lastDepError';
     const CACHE_MQTTCLIENT_CONNECTED    = 'mqttClientConnected';
     const CACHE_REALTIME_MODE           = 'realtime_mode';
     const CACHE_REALTIME_INC_TOPICS     = 'mqttIncTopic';
