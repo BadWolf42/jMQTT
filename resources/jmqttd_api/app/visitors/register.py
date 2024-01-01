@@ -38,7 +38,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         EqLogic.all[e.model.id] = e
         # Add EqLogic in BrkLogic eqLogics list
         e.weakBrk().eqpts[e.model.id] = e
-        self.logger.debug('id=%s, brk registered', e.model.id)
+        self.logger.debug('id=%s, eq registered', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:
         self.logger.trace('id=%s, registering cmd', e.model.id)
