@@ -436,9 +436,10 @@ function cacheButtons(div) {
         bootbox.confirm({
             title: '{{Supprimer le paramètre du cache}}',
             message: '<label class="control-label">{{Clé :}} </label> '
-                    + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
+                    + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\'' + debugKey + '\'><br/><br/>'
                     + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-                    + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
+                    + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'
+                    + $(this).closest('tr').find('.val').text() + '</textarea><br/><br/>',
             callback: function(result){
                 if (result) {
                 callDebugAjax({
@@ -529,41 +530,51 @@ function builder_configCmdI(div) { builder_cfgCache(div, "configGetCommandsInfo"
 function builder_configCmdA(div) { builder_cfgCache(div, "configGetCommandsAction", configCmdButtons); }
 
 function builder_actions(div) {
-    var res = /*'<legend><i class="fas fa-hands-wash "></i> {{Nettoyage}}</legend>'*/'<div class="form-group">';
-    res += '<div class="col-sm-5"><a class="btn btn-warning btn-xs depCheck" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-check-circle icon-white"></i> {{Forcer la revérification des dépendances}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-danger btn-xs venvDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer déps Python (venv)}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-danger btn-xs depDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer déps PHP}}</a></div>';
+    function add_action_event(_div, _action, _level, _icon, _msg) {
+        let elt = '<div class="col-sm-6">';
+        elt += '<a class="btn btn-' + _level + ' btn-xs ' + _action + '" style="width:100%;text-align:left;">';
+        elt += '<i class="' + _icon + '"></i> ' + _msg + '</a></div>';
+        _div.append(elt);
+        _div.off('click', 'a.' + _action).on('click', 'a.' + _action, function() {
+            callDebugAjax({
+                data: {
+                    action: _action
+                },
+                error: function(error) {
+                    $.fn.showAlert({message: error, level: 'warning'})
+                },
+                success: function(data) {
+                    $.fn.showAlert({message: _msg + ' -> Done', level: 'success'});
+                }
+            });
+        });
+    }
 
-    res += '<div class="col-sm-5"><a class="btn btn-danger btn-xs dynContentDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer les contenus dynamiques}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-danger btn-xs pidFileDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer le fichier PID}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-danger btn-xs hbStop" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-stop"></i> {{Arrêter les heatbeat}}</a></div>';
+    // div.html('<legend><i class="fas fa-hands-wash "></i> {{Nettoyage}}</legend>');
+    div.html('<div class="form-group">');
 
-    res += '<div class="col-sm-5"><a class="btn btn-info btn-xs threadDump" style="width:100%;text-align:left;">';
-    res += '<i class="icon kiko-zoom"></i> {{Demander au démon un "Thread Dump"}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-warning btn-xs reInstall" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-bicycle"></i> {{Réinstaller jMQTT}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-info btn-xs statsSend" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-satellite"></i> {{Envoyer les stats}}</a></div>';
+    add_action_event(div, 'depCheck',         'warning', 'fas fa-check-circle icon-white',     'Force dependencies to be rechecked');
+    add_action_event(div, 'depDelete',        'danger',  'fas fa-trash',                       'Delete Python deps (venv)');
+    add_action_event(div, 'venvDelete',       'danger',  'fas fa-trash',                       'Delete PHP deps');
 
-    res += '<div class="col-sm-5"><a class="btn btn-danger btn-xs listenersRemove" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-assistive-listening-systems"></i> {{Supprimer tous les listeners}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-success btn-xs listenersCreate" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-assistive-listening-systems"></i> {{Re-créer les listeners}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-info btn-xs logVerbose" style="width:100%;text-align:left;">';
-    res += '<i class="far fa-file"></i> {{Logs en VERBOSE}}</a></div>';
+    add_action_event(div, 'dynContentDelete', 'danger',  'fas fa-trash',                       'Delete dynamic content');
+    add_action_event(div, 'pidFileDelete',    'danger',  'fas fa-trash',                       'Delete PID file');
+    add_action_event(div, 'hbStop',           'danger',  'fas fa-stop',                        'Stop Heatbeats');
 
-// - List active Python daemon(s) PID (and allow to kill some/all of them)
+    add_action_event(div, 'threadDump',       'info',    'icon kiko-zoom',                     'Ask the daemon for a "Thread Dump"');
+    add_action_event(div, 'reInstall',        'warning', 'fas fa-bicycle',                     'Reinstall jMQTT');
+    add_action_event(div, 'statsSend',        'info',    'fas fa-satellite',                   'Send stats');
+
+    add_action_event(div, 'listenersRemove',  'danger',  'fas fa-assistive-listening-systems', 'Delete all listeners');
+    add_action_event(div, 'listenersCreate',  'success', 'fas fa-assistive-listening-systems', 'Recreate the listeners');
+    add_action_event(div, 'logVerbose',       'info',    'far fa-file',                        'VERBOSE logs');
+
+    div.append('<div class="col-sm-12">&nbsp;</div>');
+    div.append('</div>');
+
+    // - List active Python daemon(s) PID (and allow to kill some/all of them)
     // res += '<div class="col-sm-12">&nbsp;</div></div><legend><i class="fas fa-university"></i> {{Démon(s) actifs}}</legend>';
     // res += '<div class="col-sm-12" id="actionsDeamons"></div>';
-
-    res += '<div class="col-sm-12">&nbsp;</div></div>';
-    div.html(res);
 
 /*
     var _div = $('#actionsDeamons');
@@ -588,165 +599,6 @@ function builder_actions(div) {
         }
     });
 */
-
-
-    div.off('click', 'a.depCheck').on('click', 'a.depCheck', function() {
-        callDebugAjax({
-            data: {
-                action: "depCheck"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Revérification des dépendances lancée', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.depDelete').on('click', 'a.depDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "depDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Dépendances PHP supprimées', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.venvDelete').on('click', 'a.venvDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "venvDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Dépendances Python (venv) supprimées', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.dynContentDelete').on('click', 'a.dynContentDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "dynContentDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Contenus dynamiques supprimés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.pidFileDelete').on('click', 'a.pidFileDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "pidFileDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Fichier PID supprimé', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.hbStop').on('click', 'a.hbStop', function() {
-        callDebugAjax({
-            data: {
-                action: "hbStop"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Heartbeat arrêtés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.threadDump').on('click', 'a.threadDump', function() {
-        callDebugAjax({
-            data: {
-                action: "threadDump"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Demande de dump des threads au Démon envoyée', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.reInstall').on('click', 'a.reInstall', function() {
-        callDebugAjax({
-            data: {
-                action: "reInstall"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Réinstallation des dépendances lancée', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.statsSend').on('click', 'a.statsSend', function() {
-        callDebugAjax({
-            data: {
-                action: "statsSend"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Statistiques envoyées au serveur', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.listenersRemove').on('click', 'a.listenersRemove', function() {
-        callDebugAjax({
-            data: {
-                action: "listenersRemove"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Listeners supprimés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.listenersCreate').on('click', 'a.listenersCreate', function() {
-        callDebugAjax({
-            data: {
-                action: "listenersCreate"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Listeners re-créés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.logVerbose').on('click', 'a.logVerbose', function() {
-        callDebugAjax({
-            data: {
-                action: "logVerbose"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Logs du démon à présent en niveau VERBOSE', level: 'success'});
-            }
-        });
-    });
-
 }
 
 function builder_cacheInt(div)   { builder_cfgCache(div, "cacheGetInternal",        cacheButtons); }
