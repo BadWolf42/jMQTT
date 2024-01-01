@@ -21,51 +21,55 @@ class Healthcheck:
         cls._last_rcv = time()
 
     @classmethod
+    async def __hcLoop(cls) -> bool:
+        now = time()
+        # Kill daemon if we cannot send for a total of X seconds
+        #  and/or a total of Y retries "Jeedom is no longer available"
+        if (
+            now - Callbacks._last_snd > settings.snd_timeout
+            and Callbacks._retry_snd > settings.retry_max
+        ):
+            logger.error(
+                "Nothing could be sent for %ds (max %ds) AND after %d attempts (max %d), "
+                "Jeedom/Apache is probably dead.",
+                now - Callbacks._last_snd,
+                settings.snd_timeout,
+                Callbacks._retry_snd,
+                settings.retry_max,
+            )
+            kill(getpid(), SIGTERM)
+            return False
+        if now - cls._last_rcv > settings.hb_timeout:
+            logger.error(
+                "Nothing has been received for %ds, Jeedom does not want me any longer.",
+                now - cls._last_rcv,
+            )
+            kill(getpid(), SIGTERM)
+            return False
+        elif (
+            now - cls._last_rcv > settings.hb_timeout - settings.check_interval - 1
+        ):
+            logger.warning(
+                "Nothing received for %ds, Deamon will stop if >%ds.",
+                now - cls._last_rcv,
+                settings.hb_timeout,
+            )
+
+        if now - Callbacks._last_snd > settings.hb_delay:
+            # Avoid sending heartbeats continuously
+            if now - Callbacks._last_hb > settings.hb_retry:
+                logger.debug(
+                    "Heartbeat TO Jeedom (last msg from/to Jeedom %ds/%ds ago)",
+                    time() - cls._last_rcv,
+                    time() - Callbacks._last_snd,
+                )
+                await Callbacks.daemonHB()
+        return True
+
+    @classmethod
     async def __healthcheck(cls):
         logger.debug('Healthcheck task started')
-        while True:
-            now = time()
-            # Kill daemon if we cannot send for a total of X seconds
-            #  and/or a total of Y retries "Jeedom is no longer available"
-            if (
-                now - Callbacks._last_snd > settings.snd_timeout
-                and Callbacks._retry_snd > settings.retry_max
-            ):
-                logger.error(
-                    "Nothing could be sent for %ds (max %ds) AND after %d attempts (max %d), "
-                    "Jeedom/Apache is probably dead.",
-                    now - Callbacks._last_snd,
-                    settings.snd_timeout,
-                    Callbacks._retry_snd,
-                    settings.retry_max,
-                )
-                kill(getpid(), SIGTERM)
-                return
-            if now - cls._last_rcv > settings.hb_timeout:
-                logger.error(
-                    "Nothing has been received for %ds, Jeedom does not want me any longer.",
-                    now - cls._last_rcv,
-                )
-                kill(getpid(), SIGTERM)
-                return
-            elif (
-                now - cls._last_rcv > settings.hb_timeout - settings.check_interval - 1
-            ):
-                logger.warning(
-                    "Nothing received for %ds, Deamon will stop if >%ds.",
-                    now - cls._last_rcv,
-                    settings.hb_timeout,
-                )
-
-            if now - Callbacks._last_snd > settings.hb_delay:
-                # Avoid sending heartbeats continuously
-                if now - Callbacks._last_hb > settings.hb_retry:
-                    logger.debug(
-                        "Heartbeat TO Jeedom (last msg from/to Jeedom %ds/%ds ago)",
-                        time() - cls._last_rcv,
-                        time() - Callbacks._last_snd,
-                    )
-                    await Callbacks.daemonHB()
+        while await cls.__hcLoop():
             # logger.debug('Healthcheck-ed')
             await asyncio.sleep(settings.check_interval)
         logger.debug('Healthcheck task ended unexpectidely')
