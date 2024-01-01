@@ -46,9 +46,7 @@ class Healthcheck:
             )
             kill(getpid(), SIGTERM)
             return False
-        elif (
-            now - cls._last_rcv > settings.hb_timeout - settings.check_interval - 1
-        ):
+        elif now - cls._last_rcv > settings.hb_timeout - settings.check_interval - 1:
             logger.warning(
                 "Nothing received for %ds, Deamon will stop if >%ds.",
                 now - cls._last_rcv,
