@@ -1,7 +1,7 @@
 from __future__ import annotations
 from asyncio import Task
 from logging import getLogger  # , DEBUG
-from typing import Dict
+from typing import Dict, List
 from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
@@ -97,13 +97,13 @@ class BrkLogic(VisitableLogic):
         # TODO
 
     async def realTimeStart(self, params: RealTimeModel) -> bool:
-        self.log.debug(f'TODO')
+        self.log.debug('TODO')
         # TODO
         return self.model.isEnable
         # return self.client is not None
 
     async def realTimeStatus(self) -> RealTimeStatusModel:
-        self.log.debug(f'TODO')
+        self.log.debug('TODO')
         # TODO
         return RealTimeStatusModel(
             eqLogic=self.model.id,
@@ -114,16 +114,16 @@ class BrkLogic(VisitableLogic):
         )
 
     async def realTimeStop(self) -> None:
-        self.log.debug(f'TODO')
+        self.log.debug('TODO')
         # TODO
 
     async def realTimeGet(self, since: int) -> List[MqttMessageModel]:
-        self.log.debug(f'TODO')
+        self.log.debug('TODO')
         if self.realtime is None:
             return []
         # TODO
         return []
 
     async def realTimeClear(self) -> None:
-        self.log.debug(f'TODO')
+        self.log.debug('TODO')
         # TODO
