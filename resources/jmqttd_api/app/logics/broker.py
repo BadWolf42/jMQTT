@@ -8,6 +8,11 @@ from callbacks import Callbacks
 from healthcheck import Healthcheck
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 from models.broker import BrkModel
+from models.messages import (
+    MqttMessageModel,
+    RealTimeModel,
+    RealTimeStatusModel,
+)
 
 # from models.cmd import (
 #     CmdInfoModel,
@@ -89,4 +94,36 @@ class BrkLogic(VisitableLogic):
 
     async def unsubscribe(self, topic: str) -> None:
         self.log.debug(f'TODO: {{"topic":"{topic}"}}')
+        # TODO
+
+    async def realTimeStart(self, params: RealTimeModel) -> bool:
+        self.log.debug(f'TODO')
+        # TODO
+        return self.model.isEnable
+        # return self.client is not None
+
+    async def realTimeStatus(self) -> RealTimeStatusModel:
+        self.log.debug(f'TODO')
+        # TODO
+        return RealTimeStatusModel(
+            eqLogic=self.model.id,
+            retained=False,
+            enabled=False,
+            timeleft=0,
+            count=0,
+        )
+
+    async def realTimeStop(self) -> None:
+        self.log.debug(f'TODO')
+        # TODO
+
+    async def realTimeGet(self, since: int) -> List[MqttMessageModel]:
+        self.log.debug(f'TODO')
+        if self.realtime is None:
+            return []
+        # TODO
+        return []
+
+    async def realTimeClear(self) -> None:
+        self.log.debug(f'TODO')
         # TODO

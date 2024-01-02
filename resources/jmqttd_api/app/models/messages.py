@@ -40,7 +40,6 @@ class MqttMessageModel(BaseModel):
 # -----------------------------------------------------------------------------
 class RealTimeModel(BaseModel):
     eqLogic: int
-    file: str
     # subscribe: Optional[Set[MqttSubscTopic]] = set()
     subscribe: Optional[Set[str]] = set()
     # exclude: Optional[Set[MqttTopic]] = set()
@@ -56,3 +55,5 @@ class RealTimeModel(BaseModel):
 # -----------------------------------------------------------------------------
 class RealTimeStatusModel(RealTimeModel):
     enabled: bool
+    timeleft: int
+    count: int

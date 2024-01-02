@@ -133,6 +133,15 @@ class jMQTTComToDaemon {
 
     // ------------------------------------------------------------------------
     // Real Time related function
+    /**
+     * Send a request to start Real Time Mode
+     *
+     * @param int $id Broker id on which start real time
+     * @param string[] $subscribe Topics to subscribe in real time to
+     * @param string[] $exclude Topics to exclude from real time
+     * @param bool $retained Include retained messages
+     * @param int $duration Duration of Real Time in seconds
+     */
     public static function brokerRealTimeStart(
         $id,
         $subscribe,
@@ -140,31 +149,61 @@ class jMQTTComToDaemon {
         $retained,
         $duration = 180
     ) {
-        $params['cmd'] = 'realTimeStart';
-        $params['id'] = $id;
-        $params['file'] = jeedom::getTmpFolder(jMQTT::class).'/rt' . $id . '.json';
-        $params['subscribe'] = $subscribe;
-        $params['exclude'] = $exclude;
-        $params['retained'] = $retained;
-        $params['duration'] = $duration;
-        // TODO: Implement this method
-        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
-        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . ', data=' . $payload . '): NOT IMPLEMENTED' /* . curl_errno($curl) */);
+        $params = array(
+            'eqLogic' => intval($id),
+            'subscribe' => $subscribe,
+            'exclude' => $exclude,
+            'retained' => boolval($retained),
+            'duration' => intval($duration)
+        );
+        $data = json_encode($params, JSON_UNESCAPED_SLASHES);
+        $path = '/broker/' . $id . '/realtime/start';
+        self::doSend('PUT', $path, $data, __METHOD__, 'id=' . $id . ', data=' . $data);
     }
 
+    /**
+     * Send a request to get Real Time Mode status
+     *
+     * @param int $id Broker id
+     * @return string // TODO =>json? =>obj?
+     */
+    public static function brokerRealTimeStatus($id) {
+        $path = '/broker/' . $id . '/realtime/status';
+        $res = self::doSend('GET', $path, null, __METHOD__, 'id=' . $id, true);
+        return $res;
+    }
+
+    /**
+     * Send a request to stop Real Time Mode status
+     *
+     * @param int $id Broker id
+     */
     public static function brokerRealTimeStop($id) {
-        // TODO: Implement this method
-        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): ' /* . curl_errno($curl) */);
+        $path = '/broker/' . $id . '/realtime/stop';
+        self::doSend('GET', $path, null, __METHOD__, 'id=' . $id);
     }
 
-    public static function brokerRealTimeGet($id, $since) {
-        // TODO: Implement this method
-        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . ', since=' . $since . '): NOT IMPLEMENTED' /* . curl_errno($curl) */);
+    /**
+     * Send a request to get Real Time Mode messages
+     *
+     * @param int $id Broker id
+     * @param int $since Time of the last received message (default: 0)
+     * @return string // TODO =>json? =>obj?
+     */
+    public static function brokerRealTimeGet($id, $since=0) {
+        $path = '/broker/' . $id . '/realtime?since=' . intval($since);
+        $res = self::doSend('GET', $path, null, __METHOD__, 'id=' . $id . ', since=' . $since, true);
+        return $res;
     }
 
+    /**
+     * Send a request to clear Real Time Mode cache in daemon
+     *
+     * @param int $id Broker id
+     */
     public static function brokerRealTimeClear($id) {
-        // TODO: Implement this method
-        jMQTT::logger('debug', __METHOD__ . '(id=' . $id . '): NOT IMPLEMENTED' /* . curl_errno($curl) */);
+        $path = '/broker/' . $id . '/realtime/clear';
+        self::doSend('GET', $path, null, __METHOD__, 'id=' . $id);
     }
 
 
