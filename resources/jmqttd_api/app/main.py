@@ -1,11 +1,16 @@
 from asyncio import create_task
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException, Request, Security, status
+from fastapi.exception_handlers import (
+    http_exception_handler,
+    request_validation_exception_handler,
+)
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer
 from logging import getLogger
 from pydantic import ValidationError
-
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from sys import exit
 from uvicorn import Config, Server
 
@@ -65,20 +70,34 @@ def main():
             dependencies=[Depends(getToken)],
         )
 
+    @app.exception_handler(StarletteHTTPException)
+    async def http_except_h(req: Request, exc: StarletteHTTPException):
+        base_error_message = f'{req.method} {req.url} raised: {repr(exc)}'
+        getLogger('jmqtt.exception').exception(base_error_message, exc_info=False)
+        return await http_exception_handler(req, exc)
+
+    @app.exception_handler(RequestValidationError)
+    async def req_val_except_h(req: Request, exc: RequestValidationError):
+        base_error_message = f'{req.method} {req.url} raised: {repr(exc)}'
+        getLogger('jmqtt.exception').exception(base_error_message, exc_info=False)
+        return await request_validation_exception_handler(req, exc)
+
     @app.exception_handler(ValidationError)
-    def validation_exception_handler(req: Request, err: ValidationError):
-        base_error_message = f"Failed to execute: {req.method}: {req.url}"
+    async def val_except_h(req: Request, exc: ValidationError):
+        base_error_message = f'{req.method} {req.url} raised: {repr(exc)}'
+        getLogger('jmqtt.exception').exception(base_error_message, exc_info=False)
         return JSONResponse(
             status_code=400,
-            content={"message": f"{base_error_message}. Details: {err.json()}"},
+            content={"message": f"{base_error_message}. Details: {exc}"},
         )
 
     @app.exception_handler(Exception)
-    def exception_handler(req: Request, err: Exception):
-        base_error_message = f"Failed to execute: {req.method}: {req.url}"
+    async def except_h(req: Request, exc: Exception):
+        base_error_message = f'{req.method} {req.url} raised: {repr(exc)}'
+        getLogger('jmqtt.exception').exception(base_error_message, exc_info=False)
         return JSONResponse(
             status_code=400,
-            content={"message": f"{base_error_message}. Details: {err}"},
+            content={"message": f"{base_error_message}. Details: {exc}"},
         )
 
     # Attach routers
