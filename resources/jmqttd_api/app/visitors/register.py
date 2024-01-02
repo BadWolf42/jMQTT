@@ -82,7 +82,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         # TODO Check if topic is subscribable
         # if isBadTopicFilter(e.subscription):
         if topic == '':
-            self.logger.info(
+            self.logger.notice(
                 'id=%s, cmd registered, but topic "%s" is not subscribable',
                 e.model.id,
                 topic,

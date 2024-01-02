@@ -15,6 +15,8 @@ class LogLevelModel(str, Enum):
     warning = 'warning'
     error = 'error'
     critical = 'critical'
+    alert = 'alert',
+    emergency = 'emergency',
     none = 'none'
     notset = 'notset'
 
@@ -26,6 +28,11 @@ class MqttMessageModel(BaseModel):
     qos: Optional[int] = 1
     retain: Optional[bool] = False
 
+
+# See: https://docs.pydantic.dev/2.5/concepts/models/#rootmodel-and-custom-root-types
+
+# And Wildcard/Topic
+# At: https://github.com/sbtinstruments/aiomqtt/blob/731f583e7b5d622d56dfeebf8fe96b3dba7cbbed/aiomqtt/client.py#L131
 
 # -----------------------------------------------------------------------------
 # class MqttTopic(str):

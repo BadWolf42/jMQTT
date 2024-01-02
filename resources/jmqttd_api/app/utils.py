@@ -32,11 +32,11 @@ def setupLoggers(logfile: str):
     # Add 3 new levels to logging module
     logging.TRACE = logging.DEBUG - 5
     logging.NOTICE = logging.INFO + 5
-    logging.NONE = logging.CRITICAL + 5
+    logging.ALERT = logging.CRITICAL + 5
 
     logging.addLevelName(logging.TRACE, "TRACE")
     logging.addLevelName(logging.NOTICE, "NOTICE")
-    logging.addLevelName(logging.NONE, "NONE")
+    logging.addLevelName(logging.ALERT, "ALERT")
 
     def trace(self, message, *args, **kws):
         if self.isEnabledFor(logging.TRACE):
@@ -65,8 +65,10 @@ def setLevel(level, _logger=''):
         'warning': logging.WARNING,
         'error': logging.ERROR,
         'critical': logging.CRITICAL,
-        'none': logging.ERROR,
+        'none': logging.ALERT,
         'notset': logging.NOTSET,
+        'alert': logging.ALERT,
+        'emergency': logging.ALERT,
     }.get(level, logging.ERROR)
     logging.getLogger(_logger).setLevel(newlevel)
     return newlevel
