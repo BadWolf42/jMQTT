@@ -15,8 +15,8 @@ class LogLevelModel(str, Enum):
     warning = 'warning'
     error = 'error'
     critical = 'critical'
-    alert = 'alert',
-    emergency = 'emergency',
+    alert = 'alert'
+    emergency = 'emergency'
     none = 'none'
     notset = 'notset'
 

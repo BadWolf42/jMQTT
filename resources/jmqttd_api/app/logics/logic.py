@@ -73,7 +73,6 @@ class Logic:
     async def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         return await cls.unregisterGenericId(id, CmdLogic)
 
-
     # # On BrkLogic
     # @classmethod
     # async def registerBrkModel(cls, model: BrkModel) -> None:

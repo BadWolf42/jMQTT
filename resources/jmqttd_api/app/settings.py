@@ -23,10 +23,7 @@ logconfig: dict = {
             'format': '[%(asctime)s]%(levelname)s %(name)-20s %(funcName)20s()'
             ' : %(message)s'
         },
-        'normal': {
-            'format': '[%(asctime)s]%(levelname)s %(name)-15s'
-            ' : %(message)s'
-        },
+        'normal': {'format': '[%(asctime)s]%(levelname)s %(name)-15s : %(message)s'},
     },
     'filters': {
         'logFilter': {

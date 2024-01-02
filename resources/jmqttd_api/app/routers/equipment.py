@@ -46,6 +46,7 @@ async def equipment_delete_id(id: int):
         )
     await Logic.unregisterEqId(id)
 
+
 # -----------------------------------------------------------------------------
 @equipment.get("/{id}/debug/tree", status_code=204, summary="Log this eq/cmd tree")
 async def equipment_get_debug_tree(id: int):
