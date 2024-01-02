@@ -11,7 +11,6 @@ from settings import pid, settings, logconfig
 
 from callbacks import Callbacks
 from healthcheck import Healthcheck
-from logics.logic import Logic
 from logics.broker import BrkLogic
 
 
@@ -183,9 +182,6 @@ async def startup():
 # -----------------------------------------------------------------------------
 async def shutdown():
     logger.info('jMQTTd is stopping...')
-
-    # TODO remove debug
-    await Logic.printTree()
 
     # logger.debug('Running tasks:\n%s', asyncio.all_tasks())
     await Healthcheck.stop()

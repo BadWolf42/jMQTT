@@ -10,6 +10,7 @@ from models.messages import (
     RealTimeModel,
     RealTimeStatusModel,
 )
+from visitors.print import PrintVisitor
 
 
 logger = getLogger('jmqtt.rest')
@@ -179,3 +180,14 @@ async def broker_get_id_rt_clear(id: int) -> None:
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
     await BrkLogic.all[id].realTimeClear()
+
+
+# -----------------------------------------------------------------------------
+@broker.get("/{id}/debug/tree", status_code=204, summary="Log this brk/eq/cmd tree")
+async def broker_get_debug_tree(id: int):
+    if id not in BrkLogic.all:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
+        )
+
+    await PrintVisitor.do(BrkLogic.all[id])

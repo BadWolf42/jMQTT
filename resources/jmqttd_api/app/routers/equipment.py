@@ -4,6 +4,7 @@ from typing import List
 
 from logics.logic import Logic, EqLogic
 from models.eq import EqModel
+from visitors.print import PrintVisitor
 
 
 # -----------------------------------------------------------------------------
@@ -31,7 +32,7 @@ async def equipment_get() -> List[EqModel]:
 async def equipment_get_id(id: int) -> EqModel:
     if id not in EqLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="eqLogic not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
         )
     return EqLogic.all[id].model
 
@@ -41,6 +42,15 @@ async def equipment_get_id(id: int) -> EqModel:
 async def equipment_delete_id(id: int):
     if id not in EqLogic.all:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="eqLogic not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
         )
     await Logic.unregisterEqId(id)
+
+# -----------------------------------------------------------------------------
+@equipment.get("/{id}/debug/tree", status_code=204, summary="Log this eq/cmd tree")
+async def equipment_get_debug_tree(id: int):
+    if id not in EqLogic.all:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
+        )
+    await PrintVisitor.do(EqLogic.all[id])

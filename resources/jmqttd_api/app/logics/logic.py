@@ -6,7 +6,6 @@ from logics.eq import EqLogic
 from visitors.register import RegisteringLogicVisitor
 from visitors.unregister import UnregisteringLogicVisitor
 from visitors.update import UpdatingLogicVisitor
-from visitors.print import PrintVisitor
 from models.broker import BrkModel
 from models.eq import EqModel
 from models.unions import CmdModel
@@ -74,11 +73,6 @@ class Logic:
     async def unregisterCmdId(cls, id: int) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         return await cls.unregisterGenericId(id, CmdLogic)
 
-    # -----------------------------------------------------------------------------
-    @classmethod
-    async def printTree(cls) -> None:
-        for b in BrkLogic.all.values():
-            await PrintVisitor.do(b)
 
     # # On BrkLogic
     # @classmethod

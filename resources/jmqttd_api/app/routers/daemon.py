@@ -7,6 +7,7 @@ from fastapi import APIRouter
 # from ..jmqttDaemon import JmqttDaemon
 from callbacks import Callbacks
 from healthcheck import Healthcheck
+from logics.broker import BrkLogic
 from models.broker import BrkModel
 from models.eq import EqModel
 from models.messages import LogLevelModel
@@ -16,6 +17,7 @@ from routers.command import command_post
 from routers.equipment import equipment_post
 from settings import settings
 from utils import dumpLoggers, setLevel
+from visitors.print import PrintVisitor
 
 
 logger = getLogger('jmqtt.rest')
@@ -114,3 +116,10 @@ async def daemon_get_loglevels() -> dict:
 @daemon.put("/stop", status_code=204, summary="Stop the daemon")
 async def daemon_put_stop():
     kill(getpid(), SIGTERM)
+
+
+# -----------------------------------------------------------------------------
+@daemon.get("/debug/tree", status_code=204, summary="Log the global brk/eq/cmd tree")
+async def daemon_get_debug_tree():
+    for b in BrkLogic.all.values():
+        await PrintVisitor.do(b)

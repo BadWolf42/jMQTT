@@ -5,6 +5,7 @@ from typing import List
 from logics.cmd import CmdLogic
 from logics.logic import Logic
 from models.unions import CmdModel
+from visitors.print import PrintVisitor
 
 logger = getLogger('jmqtt.rest')
 command = APIRouter(
@@ -47,6 +48,16 @@ async def command_delete_id(id: int):
             status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
     await Logic.unregisterCmdId(id)
+
+
+# -----------------------------------------------------------------------------
+@command.get("/{id}/debug/tree", status_code=204, summary="Log this cmd tree")
+async def command_get_debug_tree(id: int):
+    if id not in CmdLogic.all:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
+        )
+    await PrintVisitor.do(CmdLogic.all[id])
 
 
 # -----------------------------------------------------------------------------
