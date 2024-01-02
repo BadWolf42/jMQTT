@@ -527,13 +527,15 @@ class jMQTTCallbacks {
                     ));
                     return;
                 }
-                $cmd->getEqLogic()->getBroker()->setStatus(array(
+                /** @var jMQTT $eqLogic */
+                $eqLogic = $cmd->getEqLogic();
+                $eqLogic->getBroker()->setStatus(array(
                     'lastCommunication' => date('Y-m-d H:i:s'),
                     'timeout' => 0
                 ));
                 $cmd->updateCmdValue($val['value']);
             } catch (Throwable $e) {
-                if (log::getLogLevel(jMQTT::class) > 100)
+                if (log::getLogLevel(jMQTT::class) > 100) {
                     jMQTT::logger(
                         'error',
                         sprintf(
@@ -542,7 +544,7 @@ class jMQTTCallbacks {
                             $e->getMessage()
                         )
                     );
-                else
+                } else {
                     jMQTT::logger(
                         'error',
                         str_replace(
@@ -560,6 +562,7 @@ class jMQTTCallbacks {
                             )
                         )
                     );
+                }
             }
         }
     }

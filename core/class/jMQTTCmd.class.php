@@ -83,6 +83,7 @@ class jMQTTCmd extends cmd {
                 }
             }
         }
+        /** @var jMQTT $eqLogic */
         $eqLogic = $this->getEqLogic();
         $eqLogic->checkAndUpdateCmd($this, $value);
         $value = $this->getCache('value', 0);
@@ -128,9 +129,11 @@ class jMQTTCmd extends cmd {
      * @param array $jsonArray associative array
      */
     public function updateJsonCmdValue($jsonArray) {
+        /** @var jMQTT $eq */
+        $eq = $this->getEqLogic();
         // if dependancy is not yet installed, we avoid issue when someone create some command with JSONPath
         if (!class_exists('JsonPath\JsonObject')) {
-            $this->getEqLogic()->log(
+        $eq->log(
                 'error',
                 __("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__)
             );
@@ -144,25 +147,25 @@ class jMQTTCmd extends cmd {
             // Create JsonObject for JsonPath
             $jsonobject=new JsonPath\JsonObject($jsonArray);
             $value = $jsonobject->get($jsonPath);
-            if ($value !== false && $value !== array())
+            if ($value !== false && $value !== array()) {
                 $this->updateCmdValue(
                     json_encode(
                         (count($value) > 1) ? $value : $value[0],
                         JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
                     )
                 );
-            else
-                $this->getEqLogic()->log(
+            } else {
+                $eq->log(
                     'info',
                     sprintf(
                         __("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__),
                         $this->getHumanName()
                     )
                 );
-        }
-        catch (Throwable $e) {
-            if (log::getLogLevel(__CLASS__) > 100)
-                $this->getEqLogic()->log(
+            }
+        } catch (Throwable $e) {
+            if (log::getLogLevel(__CLASS__) > 100) {
+                $eq->log(
                     'warning',
                     sprintf(
                         __("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
@@ -171,8 +174,8 @@ class jMQTTCmd extends cmd {
                         $e->getMessage()
                     )
                 );
-            else // More info in debug mode, no big log otherwise
-                $this->getEqLogic()->log(
+            } else { // More info in debug mode, no big log otherwise
+                $eq->log(
                     'warning',
                     str_replace(
                         "\n",
@@ -187,6 +190,7 @@ class jMQTTCmd extends cmd {
                         )
                     )
                 );
+            }
         }
     }
 
@@ -200,16 +204,18 @@ class jMQTTCmd extends cmd {
         if (is_array($jsonArray) && json_last_error() == JSON_ERROR_NONE) {
             return $jsonArray;
         } else {
-            if (json_last_error() == JSON_ERROR_NONE)
-                $this->getEqLogic()->log(
+            /** @var jMQTT $eq */
+            $eq = $this->getEqLogic();
+            if (json_last_error() == JSON_ERROR_NONE) {
+                $eq->log(
                     'info',
                     sprintf(
                         __("Problème de format JSON sur la commande #%s#: Le message reçu n'est pas au format JSON.", __FILE__),
                         $this->getHumanName()
                     )
                 );
-            else
-                $this->getEqLogic()->log(
+            } else {
+                $eq->log(
                     'warning',
                     sprintf(
                         __("Problème de format JSON sur la commande #%1\$s#: %2\$s (%3\$d)", __FILE__),
@@ -218,6 +224,7 @@ class jMQTTCmd extends cmd {
                         json_last_error()
                     )
                 );
+            }
             return null;
         }
     }
@@ -241,6 +248,8 @@ class jMQTTCmd extends cmd {
         $topic = $this->getTopic();
         $qos = $this->getConfiguration(jMQTTConst::CONF_KEY_PUB_QOS, 1);
         $retain = $this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0);
+
+        /** @var jMQTT $eq */
         $eq = $this->getEqLogic();
         // Prevent error when $_options is null or accessing an unavailable $_options
         $_defaults = array(
@@ -390,11 +399,23 @@ class jMQTTCmd extends cmd {
      * preSave callback called by the core before saving this command in the DB
      */
     public function preSave() {
+        /** @var jMQTT $eqLogic */
+        $eqLogic = $this->getEqLogic();
+        // Check if attached to an existing eqLogic
+        if (!is_object($eqLogic)) {
+            throw new Exception(
+                sprintf(
+                    __("Impossible de créer la commande <b>#%1\$s#</b>, car l'équipement <b>#%2\$s#</b> n'existe pas !", __FILE__),
+                    $this->getName(),
+                    $this->getEqLogic_id()
+                )
+            );
+        }
         // Check if name is unique on the equipment for a New cmd
         if (
             $this->getId() == ''
             && is_object(jMQTTCmd::byEqLogicIdCmdName(
-                    $this->getEqLogic()->getId(),
+                    $this->getEqLogic_id(),
                     $this->getName()
             ))
         ) {
@@ -410,14 +431,14 @@ class jMQTTCmd extends cmd {
         // Saving a new command on a Broker must fail, except for the status command
         if (
             $this->getId() == ''
-            && $this->getEqLogic()->getType() == jMQTTConst::TYP_BRK
+            && $eqLogic->getType() == jMQTTConst::TYP_BRK
             && $this->getLogicalId() != jMQTTConst::CLIENT_STATUS
             && $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED
         ) {
             throw new Exception(sprintf(
                 __("Impossible de créer la commande <b>#%1\$s#</b>, seule les commandes status et connected sont autorisées sur un équipement Broker (%2\$s)", __FILE__),
                 $this->getHumanName(),
-                $this->getEqLogic()->getName()
+                $eqLogic->getName()
             ));
         }
 
@@ -464,6 +485,7 @@ class jMQTTCmd extends cmd {
      */
     public function postSave() {
         $sendUpdate = false;
+        /** @var jMQTT $eqLogic */
         $eqLogic = $this->getEqLogic();
 
         // Nothing must be done in postSave on Broker command
@@ -621,6 +643,8 @@ class jMQTTCmd extends cmd {
     // Listener for autoPub action command
     public function listenerUpdate() {
         $cmds = array();
+
+        /** @var jMQTT $eq */
         $eq = $this->getEqLogic();
         if (
             $eq->getIsEnable()
@@ -681,20 +705,30 @@ class jMQTTCmd extends cmd {
     }
 
     public static function listenerAction($_options) {
+        /** @var jMQTTCmd $cmd */
         $cmd = self::byId($_options['cmd']);
+        if (!is_object($cmd)) {
+            listener::byId($_options['listener_id'])->remove();
+            jMQTT::logger(
+                'debug',
+                sprintf("Listener deleted for #%s# (unknown cmd)", $_options['cmd'])
+            );
+            return;
+        }
+        /** @var jMQTT $eq */
+        $eq = $cmd->getEqLogic();
         if (
-            !is_object($cmd)
-            || !$cmd->getEqLogic()->getIsEnable()
+            !$eq->getIsEnable()
             || !$cmd->getType() == 'action'
             || !$cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)
         ) {
             listener::byId($_options['listener_id'])->remove();
-            $cmd->getEqLogic()->log(
+            $eq->log(
                 'debug',
                 sprintf("Listener deleted for #%s#", $_options['cmd'])
             );
         } else {
-            $cmd->getEqLogic()->log(
+            $eq->log(
                 'debug',
                 sprintf("Automatic publication of #%s#", $cmd->getHumanName())
             );
@@ -706,6 +740,7 @@ class jMQTTCmd extends cmd {
      * preRemove method to log that a command is removed
      */
     public function preRemove() {
+        /** @var jMQTT $eqLogic */
         $eqLogic = $this->getEqLogic();
         if (is_object($eqLogic)) {
             $eqLogic->log(
@@ -839,7 +874,9 @@ class jMQTTCmd extends cmd {
     public function isBattery() {
         if ($this->getType() != 'info' || $this->getSubType() == 'string')
             return false;
-        return $this->getId() == $this->getEqLogic()->getBatteryCmd();
+        /** @var jMQTT $eqLogic */
+        $eqLogic = $this->getEqLogic();
+        return $this->getId() == $eqLogic->getBatteryCmd();
     }
 
     /**
@@ -849,7 +886,9 @@ class jMQTTCmd extends cmd {
     public function isAvailability() {
         if ($this->getType() != 'info' || $this->getSubType() != 'binary')
             return false;
-        return $this->getId() == $this->getEqLogic()->getAvailabilityCmd();
+        /** @var jMQTT $eqLogic */
+        $eqLogic = $this->getEqLogic();
+        return $this->getId() == $eqLogic->getAvailabilityCmd();
     }
 
     /**
