@@ -149,8 +149,7 @@ class jMQTTDaemon {
         $shellCmd .= ' SOCKETPORT=18883'; // TODO Remove me <----------------------------------------------------------------------------------------
         $shellCmd .= ' APIKEY=' . jMQTTDaemon::getApiKey();
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid ';
-        $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py';
-        $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d_trash') . ' 2>&1 &'; // TODO Remove LOG FILE <---------------------------------------
+        $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py 2>&1 &';
         if (log::getLogLevel(jMQTT::class) > 100) {
             jMQTT::logger('info', __('Lancement du démon jMQTT', __FILE__));
         } else {

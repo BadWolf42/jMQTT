@@ -46,7 +46,7 @@ async def lifespan(app: FastAPI):
 
 
 # -----------------------------------------------------------------------------
-if __name__ == "__main__":
+def main():
     setup()
 
     # Create application
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     sock = getSocket()
     if sock is None:
         logger.error('Could not get a socket, exiting!')
-        exit(1)
+        exit(2)
 
     # Put the used port in settings
     settings.socketport = sock.getsockname()[1]
@@ -103,3 +103,11 @@ if __name__ == "__main__":
     uv.run(
         [sock],
     )
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception:
+        # just in case
+        logger.exception('Unhandled exception in main')
+        exit(1)
