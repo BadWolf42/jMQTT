@@ -71,7 +71,8 @@ class jMQTTDaemon {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    "Sending a Heartbeat to the Daemon (nothing has been sent for %ds).",
+                    "Heartbeat TO Daemon (last msg from/to Deamon %ds/%ds ago)",
+                    $time - $last_rcv,
                     $time - $last_snd
                 )
             );

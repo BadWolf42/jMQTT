@@ -107,7 +107,7 @@ class jMQTTCallbacks {
         $action = self::getAction();
 
         // Update timer
-        if ($action != 'test')
+        if ($action != 'test' && $action != 'daemonHB')
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
 
         // Execute static method corresponding to the action
@@ -172,9 +172,20 @@ class jMQTTCallbacks {
      * Daemon callback to tell Jeedom it is OK
      */
     public static function onDaemonHB() {
-        // jMQTT::logger('debug', __METHOD__);
-        jMQTT::logger('debug', __("Démon est en vie", __FILE__));
-
+        if (log::getLogLevel('jMQTT') <= 100) {
+            $time = time();
+            $last_rcv = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0);
+            $last_snd = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0);
+            jMQTT::logger(
+                'debug',
+                sprintf(
+                    "Heartbeat FROM Daemon (last msg from/to Deamon %ds/%ds ago)",
+                    $time - $last_rcv,
+                    $time - $last_snd
+                )
+            );
+        }
+        cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
     }
 
     /**
