@@ -12,19 +12,19 @@ logconfig: dict = {
     'disable_existing_loggers': False,
     'formatters': {
         'withCallTrace': {
-            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s %(name)-15s'
+            'format': '[%(asctime)s]%(levelname)s[%(process)d] %(threadName)-11s %(name)-15s'
             ' %(funcName)20s() L%(lineno)-4d %(message)s   call_trace=%(pathname)s L%(lineno)-4d'
         },
         'withThread': {
-            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(threadName)-11s'
-            ' %(name)-15s %(funcName)20s() : %(message)s'
+            'format': '[%(asctime)s]%(levelname)s %(threadName)-11s %(name)-15s'
+            ' %(funcName)20s() : %(message)s'
         },
         'withFunction': {
-            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-20s %(funcName)20s()'
+            'format': '[%(asctime)s]%(levelname)s %(name)-20s %(funcName)20s()'
             ' : %(message)s'
         },
         'normal': {
-            'format': '[%(asctime)s]%(levelname)s[%(process)d]%(name)-15s'
+            'format': '[%(asctime)s]%(levelname)s %(name)-15s'
             ' : %(message)s'
         },
     },
