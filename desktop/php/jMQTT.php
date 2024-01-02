@@ -68,25 +68,14 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                 ?>
                 </div>
             </div>
-            <?php
-            // TODO: Handle core4.3 `createCommunityPost` compatibility
-            //  Remove when Jeedom 4.3 is no longer supported
-            //  labels: enhancement, core4.3, php
-
-            // Community card, only displayed if Jeedom version 4.4+
-            if (version_compare((jeedom::version() ?? '4.3.0'), '4.4.0', '>=')) {
-            ?>
             <div class="col-sm-2">
                 <legend><i class="fas fa-comments"></i>&nbsp;Community</legend>
                 <div class="eqLogicThumbnailContainer">
                 <?php
-                displayActionCard('{{Nouveau post}}', 'fa-ambulance', 'createCommunityPost');
+                displayActionCard('{{Nouveau post}}', 'fa-ambulance', 'jMQTTCommunityPost');
                 ?>
                 </div>
             </div>
-            <?php
-            }
-            ?>
         </div>
         <div class="input-group" style="margin:5px;">
             <input class="form-control roundedLeft" placeholder="{{Rechercher}}" id="in_searchEqlogic">

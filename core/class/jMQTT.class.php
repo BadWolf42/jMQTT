@@ -668,14 +668,12 @@ class jMQTT extends eqLogic {
                     $cmdCopy->getId()
                 );
             }
-            $this->log('info',
-                sprintf(
-                    __("Copie de la commande %1\$s #%2\$s# vers la commande #%3\$s#", __FILE__),
-                    $cmd->getType(),
-                    $cmd->getHumanName(),
-                    $cmdCopy->getHumanName()
-                )
-            );
+            $this->log('info', sprintf(
+                __("Copie de la commande %1\$s #%2\$s# vers la commande #%3\$s#", __FILE__),
+                $cmd->getType(),
+                $cmd->getHumanName(),
+                $cmdCopy->getHumanName()
+            ));
         }
         if ($eqLogicCopy->getConf(jMQTTConst::CONF_KEY_BATTERY_CMD) != ""
             || $eqLogicCopy->getConf(jMQTTConst::CONF_KEY_AVAILABILITY_CMD) != "")
@@ -1358,15 +1356,6 @@ class jMQTT extends eqLogic {
     public static function dependancy_install() {
         return jMQTTPlugin::dependancy_install();
     }
-
-    /**
-     * Core callback to provide additional information for a new Community post
-     *
-     * @return string
-     */
-    public static function getConfigForCommunity() {
-        return jMQTTPlugin::getConfigForCommunity();
-     }
 
     /**
      * Create or update all autoPub listeners

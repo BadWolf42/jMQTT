@@ -202,36 +202,6 @@ class jMQTTPlugin {
         }
     }
 
-    /**
-     * Additionnal information for a new Community post
-     *
-     * @return string
-     */
-    public static function getConfigForCommunity() {
-        $hw = jeedom::getHardwareName();
-        if ($hw == 'diy')
-            $hw = trim(shell_exec('systemd-detect-virt'));
-        if ($hw == 'none')
-            $hw = 'diy';
-        $distrib = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
-        $res = 'OS: ' . $distrib . ' on ' . $hw;
-        $res .= ' ; PHP: ' . phpversion();
-        $res .= ' ; Python: ' . trim(shell_exec("python3 -V | cut -d ' ' -f 2"));
-        $res .= '<br/>jMQTT: v' . config::byKey('version', 'jMQTT', 'unknown', true);
-        $res .= ' ; Brokers: ' . count(jMQTT::getBrokers());
-        $nbEq = 0;
-        foreach (jMQTT::getNonBrokers() as $brk) {
-            $nbEq += count($brk);
-        }
-        $res .= ' ; Equipments: ' . $nbEq;
-        $res .= ' ; cmds: ' . count(cmd::searchConfiguration('', jMQTT::class));
-        $res .= '<br/>Other plugins: ';
-        foreach (plugin::listPlugin(false, false, true, true) as $p) { // use $_nameOnly=true
-            $res .= ' '.$p;
-        }
-        return $res;
-    }
-
     // Check install status of Mosquitto service
     public static function mosquittoCheck() {
         $res = array('installed' => false, 'by' => '', 'message' => '', 'service' => '', 'config' => '');
