@@ -7,11 +7,11 @@ if (!isConnect('admin')) {
 require_once __DIR__ . '/../../core/class/jMQTT.class.php';
 
 function panelCreator($title, $type, $icon, $builder) {
-    echo '            <div class="panel panel-'.$type.'">';
-    echo '                <div class="panel-heading"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
-    echo '                <a class="btn btn-info btn-show-hide btn-xs btn-success pull-right" builder="'.$builder.'" style="top:-2px!important">';
-    echo '                <i class="fas fa-search-plus"></i> Show </a></h3></div><div class="panel-body hidden"></div>';
-    echo '            </div>';
+    echo '<div class="panel panel-'.$type.'">';
+    echo '<div class="panel-heading rounded"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
+    echo '<a class="btn btn-info btn-show-hide btn-xs pull-right" builder="'.$builder.'" style="top:-2px!important">';
+    echo '<i class="fas fa-search-plus"></i> Show </a></h3></div><div class="panel-body hidden"></div>';
+    echo "</div>\n";
 }
 ?>
     <script>
@@ -596,7 +596,7 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
     <div class="row">
         <style>td.key { line-break: anywhere; }</style>
         <div class="col-md-6 col-sm-12"><!-- General status of Jeedom -->
-            <div class="panel panel-primary">
+            <div class="panel panel-success">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fas fa-circle-notch"></i> Jeedom general status</h3>
                 </div>
@@ -655,7 +655,7 @@ $jplugin = update::byLogicalId("jMQTT");
 ?>
         </div>
         <div class="col-md-6 col-sm-12"><!-- General status of jMQTT -->
-            <div class="panel panel-primary">
+            <div class="panel panel-success">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fas fa-certificate"></i> jMQTT general status</h3>
                 </div>
@@ -667,21 +667,19 @@ $jplugin = update::byLogicalId("jMQTT");
                                 <div class="col-sm-3">
                                     <span><?php echo $jplugin->getSource(); ?></span>
                                 </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="col-sm-3 control-label">LogicalId</label>
                                 <div class="col-sm-3">
                                     <span><?php echo $jplugin->getLogicalId(); ?></span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">Version installée</label>
+                                <label class="col-sm-3 control-label">Installed version</label>
                                 <div class="col-sm-9">
                                     <span><?php echo $jplugin->getLocalVersion(); ?></span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">Version distante</label>
+                                <label class="col-sm-3 control-label">Remote version</label>
                                 <div class="col-sm-9">
                                     <span><?php echo $jplugin->getRemoteVersion(); ?></span>
                                 </div>
@@ -693,7 +691,7 @@ $jplugin = update::byLogicalId("jMQTT");
 <?php
 
 // Create panels to edit simulate dangerous actions on jMQTT
-panelCreator('Actions on jMQTT',                 'danger',  'fas fa-radiation-alt', 'builder_actions');
+panelCreator('Actions on jMQTT',                 'warning', 'fas fa-radiation-alt', 'builder_actions');
 
 // Create panels to edit Cache values
 panelCreator('Cache values for Daemon',          'primary', 'fas fa-book',          'builder_cacheInt');
@@ -723,17 +721,20 @@ panelCreator('Cache values for Action Commands', 'primary', 'fas fa-book',      
     <script>
 // Function to hide, show and build sections content on the fly
 $('a.btn.btn-info.btn-show-hide').on('click', function () {
-    var div = $(this).closest('div.panel').find('div.panel-body');
-    if ($(this).hasClass('btn-warning')) {
-        $(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-search-plus"></i> Show');
+    let head = $(this).closest('div.panel');
+    let div = head.find('div.panel-body');
+    if ($(this).hasClass('closed')) {
+        head.find('div.panel-heading').addClass('rounded');
+        $(this).removeClass('closed').html('<i class="fas fa-search-plus"></i> Show');
         div.addClass('hidden');
         if ($(this).hasAttr('builder'))
             div.empty();
     } else {
-        $(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-search-minus"></i> Hide');
+        $(this).addClass('closed').html('<i class="fas fa-search-minus"></i> Hide');
+        head.find('div.panel-heading').removeClass('rounded');
         div.removeClass('hidden');
         if ($(this).hasAttr('builder')) {
-            var builder = window[$(this).attr('builder')];
+            let builder = window[$(this).attr('builder')];
             if(typeof builder === 'function')
                 builder(div);
         }
