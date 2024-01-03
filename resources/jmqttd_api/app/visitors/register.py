@@ -100,6 +100,6 @@ class RegisteringLogicVisitor(LogicVisitor):
         self.logger.debug('id=%s, cmd registered', e.model.id)
 
     @classmethod
-    async def do(cls, e: VisitableLogic) -> None:
+    async def register(cls, e: VisitableLogic) -> None:
         self = cls()
         await e.accept(self)

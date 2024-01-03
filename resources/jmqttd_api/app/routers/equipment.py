@@ -23,10 +23,10 @@ equipment = APIRouter(
 async def equipment_post(eq: EqModel):
     if eq.id in EqLogic.all:
         # If Logic exist in register, then update it
-        await UpdatingLogicVisitor.do(EqLogic.all[eq.id], eq)
+        await UpdatingLogicVisitor.update(EqLogic.all[eq.id], eq)
     else:
         # Else register it
-        await RegisteringLogicVisitor.do(EqLogic(eq))
+        await RegisteringLogicVisitor.register(EqLogic(eq))
 
 
 # -----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ async def equipment_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
         )
-    await UnregisteringLogicVisitor.do(EqLogic.all[id])
+    await UnregisteringLogicVisitor.unregister(EqLogic.all[id])
 
 
 # -----------------------------------------------------------------------------
@@ -62,4 +62,4 @@ async def equipment_get_debug_tree(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
         )
-    await PrintVisitor.do(EqLogic.all[id])
+    await PrintVisitor.visit(EqLogic.all[id])

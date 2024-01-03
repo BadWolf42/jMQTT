@@ -88,7 +88,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         self.logger.debug('id=%s, cmd unregistered', e.model.id)
 
     @classmethod
-    async def do(
+    async def unregister(
         cls, e: List[Union[BrkLogic, EqLogic, CmdLogic]]
     ) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
         self = cls()

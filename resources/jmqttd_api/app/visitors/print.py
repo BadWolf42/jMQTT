@@ -76,6 +76,6 @@ class PrintVisitor(LogicVisitor):
             )
 
     @classmethod
-    async def do(cls, e: List[Union[BrkLogic, EqLogic, CmdLogic]]) -> None:
+    async def print(cls, e: List[Union[BrkLogic, EqLogic, CmdLogic]]) -> None:
         self = cls()
         await e.accept(self)

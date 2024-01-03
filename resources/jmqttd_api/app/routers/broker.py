@@ -40,10 +40,10 @@ async def broker_get() -> List[BrkModel]:
 async def broker_post(broker: BrkModel):
     if broker.id in BrkLogic.all:
         # If Logic exist in register, then update it
-        await UpdatingLogicVisitor.do(BrkLogic.all[broker.id], broker)
+        await UpdatingLogicVisitor.update(BrkLogic.all[broker.id], broker)
     else:
         # Else register it
-        await RegisteringLogicVisitor.do(BrkLogic(broker))
+        await RegisteringLogicVisitor.register(BrkLogic(broker))
 
 
 # -----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ async def broker_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
-    await UnregisteringLogicVisitor.do(BrkLogic.all[id])
+    await UnregisteringLogicVisitor.unregister(BrkLogic.all[id])
 
 
 # -----------------------------------------------------------------------------
@@ -197,4 +197,4 @@ async def broker_get_debug_tree(id: int):
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
 
-    await PrintVisitor.do(BrkLogic.all[id])
+    await PrintVisitor.print(BrkLogic.all[id])

@@ -28,7 +28,7 @@ class UpdatingLogicVisitor(LogicVisitor):
         pass
 
     @classmethod
-    async def do(
+    async def update(
         cls,
         existing: VisitableLogic,
         model: Union[BrkModel, EqModel, CmdModel],
@@ -40,10 +40,10 @@ class UpdatingLogicVisitor(LogicVisitor):
         # Get class of existing logic
         logic = existing.__class__
         # Unregister existing logic
-        unreged = await UnregisteringLogicVisitor.do(existing)
+        unreged = await UnregisteringLogicVisitor.unregister(existing)
         # And replace existing logic by the created logic from model
         unreged[0] = logic(model)
         # Register back each unregistered logics
         for inst in unreged:
             # With the register class method of the logics
-            await RegisteringLogicVisitor.do(inst)
+            await RegisteringLogicVisitor.register(inst)

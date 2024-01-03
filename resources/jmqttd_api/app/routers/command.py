@@ -23,10 +23,10 @@ command = APIRouter(
 async def command_post(cmd: CmdModel):
     if cmd.id in CmdLogic.all:
         # If Logic exist in register, then update it
-        await UpdatingLogicVisitor.do(CmdLogic.all[cmd.id], cmd)
+        await UpdatingLogicVisitor.update(CmdLogic.all[cmd.id], cmd)
     else:
         # Else register it
-        await RegisteringLogicVisitor.do(CmdLogic(cmd))
+        await RegisteringLogicVisitor.register(CmdLogic(cmd))
 
 # -----------------------------------------------------------------------------
 # GET /command => list command
@@ -54,7 +54,7 @@ async def command_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
-    await UnregisteringLogicVisitor.do(CmdLogic.all[id])
+    await UnregisteringLogicVisitor.unregister(CmdLogic.all[id])
 
 # -----------------------------------------------------------------------------
 @command.get("/{id}/debug/tree", status_code=204, summary="Log this cmd tree")
@@ -63,7 +63,7 @@ async def command_get_debug_tree(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
-    await PrintVisitor.do(CmdLogic.all[id])
+    await PrintVisitor.print(CmdLogic.all[id])
 
 
 # -----------------------------------------------------------------------------

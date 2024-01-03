@@ -122,4 +122,4 @@ async def daemon_put_stop():
 @daemon.get("/debug/tree", status_code=204, summary="Log the global brk/eq/cmd tree")
 async def daemon_get_debug_tree():
     for b in BrkLogic.all.values():
-        await PrintVisitor.do(b)
+        await PrintVisitor.print(b)
