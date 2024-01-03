@@ -509,11 +509,11 @@ try {
         }
         $infoPost .= '<br/>';
 
-        // Nb lines in http.error
+        // TODO: Nb lines in http.error
         // wc -l /var/www/html/log/http.error | cut -d" " -f1
 
-        // Nb lines ERROR lines in the logs
-        // cat /var/www/html/log/* 2> /dev/null | grep -c ERROR
+        // TODO: Nb lines ERROR/WARNING lines in the logs
+        // cat /var/www/html/log/* 2> /dev/null | grep -c 'ERROR\|WARNING'
 
         // jMQTT version
         /** @var update $update */
@@ -526,8 +526,8 @@ try {
         // Daemon status
         $daemon_info = jMQTT::deamon_info();
         $infoPost .= '<br/>Daemon Status: ';
-        $infoPost .= ($daemon_info['state'] == 'ok' ?  'Started' :  'Stopped');
-        $infoPost .= ' - (' . config::byKey('lastDeamonLaunchTime', 'jMQTT', 'Unknown') . ')';
+        $infoPost .= (jMQTTDaemon::check() ? 'Started' :  'Stopped') . ' - (';
+        $infoPost .= config::byKey('lastDeamonLaunchTime', 'jMQTT', 'Unknown') . ')';
 
         // Brk, eq, cmds
         $nbEqAll = DB::Prepare('SELECT COUNT(*) as nb FROM `eqLogic` WHERE `eqType_name` = "jMQTT"', array());
@@ -537,11 +537,8 @@ try {
         $nbCmds = DB::Prepare('SELECT COUNT(*) as nb FROM `cmd` WHERE `eqType` = "jMQTT"', array());
         $infoPost .= '<br/>Nb cmds: ' . $nbCmds['nb'];
 
-        // Nb ERROR lines in jMQTT files
-        // cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c ERROR
-
-        // Nb WARNING lines in jMQTT files
-        // cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c WARNING
+        // TODO: Nb ERROR/WARNING lines in jMQTT files
+        // cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c 'ERROR\|WARNING'
 
         $infoPost .= '<br/>```<br/>[/details]<br/>';
 
