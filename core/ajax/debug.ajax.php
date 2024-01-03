@@ -19,7 +19,10 @@ try {
         ajax::success($res);
     }
     if (init('action') == 'configSetInternal') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val')
+        );
         config::save(init('key'), json_decode(init('val')), 'jMQTT');
         ajax::success();
     }
@@ -56,12 +59,19 @@ try {
         ajax::success($res);
     }
     if (init('action') == 'configSetBrkAndEqpt') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').' key='.init('key').' value='.init('val'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action').': id='.init('id')
+            .' key='.init('key').' value='.init('val')
+        );
         jMQTT::byId(init('id'))->setConfiguration(init('key'), json_decode(init('val')))->save();
         ajax::success();
     }
     if (init('action') == 'configDelBrkAndEqpt') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').'key='.init('key'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action').': id='.init('id').'key='.init('key')
+        );
         jMQTT::byId(init('id'))->setConfiguration(init('key'), null)->save();
         ajax::success();
     }
@@ -96,8 +106,15 @@ try {
         ajax::success($res);
     }
     if (init('action') == 'configSetCommands') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').' key='.init('key').' value='.init('val'));
-        jMQTTCmd::byId(init('id'))->setConfiguration(init('key'), json_decode(init('val')))->save();
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action')
+            .': id='.init('id').' key='.init('key').' value='.init('val')
+        );
+        jMQTTCmd::byId(init('id'))->setConfiguration(
+            init('key'),
+            json_decode(init('val'))
+        )->save();
         ajax::success();
     }
     if (init('action') == 'configDelCommands') {
@@ -218,7 +235,10 @@ try {
 
 // -------------------- Cache set / delete --------------------
     if (init('action') == 'cacheSet') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val')
+        );
         cache::set(init('key'), json_decode(init('val'), true));
         ajax::success();
     }
@@ -263,9 +283,15 @@ try {
         // Prepare url
         $callbackURL = jMQTTDaemon::get_callback_url();
         // To fix issue: https://community.jeedom.com/t/87727/39
-        if ((file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0')) && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1')
+        if (
+            (
+                file_exists('/.dockerenv')
+                || config::byKey('forceDocker', 'jMQTT', '0')
+            )
+            && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1'
+        ) {
             $callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
-
+        }
         // Send to Jeedom
         $curl = curl_init($callbackURL);
         curl_setopt($curl, CURLOPT_POST, true);
@@ -393,6 +419,33 @@ try {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         cache::set('jMQTT::nextStats', time() - 300);
         jMQTTPlugin::stats();
+        ajax::success();
+    }
+
+// -------------------- Reapply upgrade script --------------------
+    if (init('action') == 'reapplyUpdate') {
+        try {
+            jMQTT::logger(
+                'debug',
+                'debug.ajax.php: ' . init('action') . ' (' . init('name', 'NONE') . ')'
+            );
+            $name = init('name', 'NONE');
+            $ver = str_replace('.php', '', $name);
+            $file = __DIR__ . '/../../resources/update/' . $name;
+            if (!file_exists($file))
+                ajax::error("Not such a file: $name", -1);
+
+            log::add('jMQTT', 'debug', "Applying migration file to version $ver...");
+            include $file;
+            log::add('jMQTT', 'debug', "Migration to version $ver successfully completed");
+        } catch (Throwable $e) {
+            log::add('jMQTT', 'error', str_replace("\n", ' <br/> ', sprintf(
+                "Exception encountered during migration to version %s: %s,<br/>@Stack: %3\$s.",
+                $ver,
+                $e->getMessage(),
+                $e->getTraceAsString()
+            )));
+        }
         ajax::success();
     }
 

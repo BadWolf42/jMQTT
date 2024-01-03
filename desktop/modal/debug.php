@@ -474,7 +474,7 @@ function builder_daemon(div) {
     res += '\n';
     res += '{"cmd": "", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}\n';
 
-    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toDaemon" style="top:0px!important;">';
+    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-sm pull-right toDaemon" style="top:0px!important;">';
     res += '<i class="fas fa-check-circle icon-white"></i> Send</a></div></div>';
     // Send to Jeedom
     res += '<legend><i class="fas fa-download"></i> Simulate an event received from the Daemon by Jeedom (API key sent automatically)</legend><div class="form-group"><div class="col-sm-10">';
@@ -487,7 +487,7 @@ function builder_daemon(div) {
     res += '[{"cmd":"daemonDown"}]\n';
     res += '[{"cmd":"hb"}]';
 
-    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toJeedom" style="top:0px!important;">';
+    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-sm pull-right toJeedom" style="top:0px!important;">';
     res += '<i class="fas fa-check-circle icon-white"></i> Send</a></div></div><br/>';
 
     res += '</fieldset></form>';
@@ -503,7 +503,7 @@ function builder_daemon(div) {
                 $.fn.showAlert({message: error, level: 'warning'})
             },
             success: function(data) {
-                $.fn.showAlert({message: 'Evènement envoyé au Démon', level: 'success'});
+                $.fn.showAlert({message: 'Event sent to Daemon', level: 'success'});
             }
         });
     });
@@ -517,7 +517,7 @@ function builder_daemon(div) {
                 $.fn.showAlert({message: error, level: 'warning'})
             },
             success: function(data) {
-                $.fn.showAlert({message: 'Evènement envoyé au Démon', level: 'success'});
+                $.fn.showAlert({message: 'Event sent to Jeedon callback', level: 'success'});
             }
         });
     });
@@ -584,6 +584,58 @@ function builder_actions(_root_div) {
     add_action_event(div, 'statsSend',        'info',    'fas fa-satellite',                   'Send stats');
     div.append('<div class="col-sm-12" style="height:10px">&nbsp;</div>'); // Last spacer
     _root_div.append(div);
+}
+
+function builder_updates(div) {
+    let res = '<form class="form-horizontal"><fieldset><div class="form-group">';
+    res += '<div class="col-lg-4">Select the update file to apply:</div>';
+    res += '<div class="col-lg-5 input-group"><span class="input-group-btn">';
+    res += '<select class="form-control reapplyUpdate roundedLeft">';
+    <?php
+
+        // List all migration files
+        $update_dir = realpath(__DIR__ . '/../../resources/update/');
+        $files = ls($update_dir, '*.php', false, array('files'));
+
+        $migrations = array();
+        foreach ($files as $name) {
+            // Use only matching files
+            if (!preg_match_all("/^(\d+)(\.(\d+)(\.(\d+))?)?.php$/", $name, $m))
+                continue;
+            $fileVer = intval($m[1][0]).'.'.intval($m[3][0]).'.'.intval($m[5][0]);
+            $migrations[$fileVer] = $name;
+        }
+
+        // Reverse sort files by key (version number)
+        function rev_version_compare($v1, $v2) { return -version_compare($v1, $v2); }
+        uksort($migrations, 'rev_version_compare');
+
+        // Apply migration files in the right order
+        foreach ($migrations as $ver => $name) {
+            echo "        res += '<option value=\"$name\">$ver</option>';\n";
+        }
+
+    ?>
+    res += '</select></span><span class="input-group-btn">';
+    res += '<a class="btn btn-success roundedRight reapplyUpdate" style="width:75px;">';
+    res += '<i class="fas fa-arrow-circle-right"></i> Apply</a></span>';
+    res += '</div></fieldset></form>';
+    div.html(res);
+
+    div.off('click', 'a.reapplyUpdate').on('click', 'a.reapplyUpdate', function() {
+        callDebugAjax({
+            data: {
+                action: "reapplyUpdate",
+                name: $(this).closest('form').find('select.reapplyUpdate').value()
+            },
+            error: function(error) {
+                $.fn.showAlert({message: error, level: 'warning'})
+            },
+            success: function(data) {
+                $.fn.showAlert({message: 'Update applied', level: 'success'});
+            }
+        });
+    });
 }
 
 function builder_cacheInt(div)   { builder_cfgCache(div, "cacheGetInternal",        cacheButtons); }
@@ -692,6 +744,7 @@ $jplugin = update::byLogicalId("jMQTT");
 
 // Create panels to edit simulate dangerous actions on jMQTT
 panelCreator('Actions on jMQTT',                 'warning', 'fas fa-radiation-alt', 'builder_actions');
+panelCreator('Reapply upgrade script',           'danger',  'techno-fleches',       'builder_updates');
 
 // Create panels to edit Cache values
 panelCreator('Cache values for Daemon',          'primary', 'fas fa-book',          'builder_cacheInt');
