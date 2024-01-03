@@ -2,9 +2,12 @@ from fastapi import APIRouter, HTTPException, status
 from logging import getLogger
 from typing import List
 
-from logics.logic import Logic, EqLogic
+from logics.eq import EqLogic
 from models.eq import EqModel
 from visitors.print import PrintVisitor
+from visitors.register import RegisteringLogicVisitor
+from visitors.unregister import UnregisteringLogicVisitor
+from visitors.update import UpdatingLogicVisitor
 
 
 # -----------------------------------------------------------------------------
@@ -18,7 +21,12 @@ equipment = APIRouter(
 # -----------------------------------------------------------------------------
 @equipment.post("", status_code=204, summary="Create or update an Equipment in Daemon")
 async def equipment_post(eq: EqModel):
-    await Logic.registerEqModel(eq)
+    if eq.id in EqLogic.all:
+        # If Logic exist in register, then update it
+        await UpdatingLogicVisitor.do(EqLogic.all[eq.id], eq)
+    else:
+        # Else register it
+        await RegisteringLogicVisitor.do(EqLogic(eq))
 
 
 # -----------------------------------------------------------------------------
@@ -44,7 +52,7 @@ async def equipment_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
         )
-    await Logic.unregisterEqId(id)
+    await UnregisteringLogicVisitor.do(EqLogic.all[id])
 
 
 # -----------------------------------------------------------------------------

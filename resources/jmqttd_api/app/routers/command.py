@@ -3,9 +3,12 @@ from fastapi import APIRouter, HTTPException, status
 from typing import List
 
 from logics.cmd import CmdLogic
-from logics.logic import Logic
 from models.unions import CmdModel
 from visitors.print import PrintVisitor
+from visitors.register import RegisteringLogicVisitor
+from visitors.unregister import UnregisteringLogicVisitor
+from visitors.update import UpdatingLogicVisitor
+
 
 logger = getLogger('jmqtt.rest')
 command = APIRouter(
@@ -18,8 +21,12 @@ command = APIRouter(
 # POST /command => Create command
 @command.post("", status_code=204, summary="Create or update a Command in Daemon")
 async def command_post(cmd: CmdModel):
-    await Logic.registerCmdModel(cmd)
-
+    if cmd.id in CmdLogic.all:
+        # If Logic exist in register, then update it
+        await UpdatingLogicVisitor.do(CmdLogic.all[cmd.id], cmd)
+    else:
+        # Else register it
+        await RegisteringLogicVisitor.do(CmdLogic(cmd))
 
 # -----------------------------------------------------------------------------
 # GET /command => list command
@@ -47,8 +54,7 @@ async def command_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
-    await Logic.unregisterCmdId(id)
-
+    await UnregisteringLogicVisitor.do(CmdLogic.all[id])
 
 # -----------------------------------------------------------------------------
 @command.get("/{id}/debug/tree", status_code=204, summary="Log this cmd tree")

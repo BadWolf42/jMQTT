@@ -3,7 +3,6 @@ from fastapi import APIRouter, HTTPException, status
 from typing import List
 
 from logics.broker import BrkLogic
-from logics.logic import Logic
 from models.broker import BrkModel
 from models.messages import (
     MqttMessageModel,
@@ -11,6 +10,9 @@ from models.messages import (
     RealTimeStatusModel,
 )
 from visitors.print import PrintVisitor
+from visitors.register import RegisteringLogicVisitor
+from visitors.unregister import UnregisteringLogicVisitor
+from visitors.update import UpdatingLogicVisitor
 
 
 logger = getLogger('jmqtt.rest')
@@ -36,7 +38,12 @@ async def broker_get() -> List[BrkModel]:
 # -----------------------------------------------------------------------------
 @broker.post("", status_code=204, summary="Create or update a Broker in Daemon")
 async def broker_post(broker: BrkModel):
-    await Logic.registerBrkModel(broker)
+    if broker.id in BrkLogic.all:
+        # If Logic exist in register, then update it
+        await UpdatingLogicVisitor.do(BrkLogic.all[broker.id], broker)
+    else:
+        # Else register it
+        await RegisteringLogicVisitor.do(BrkLogic(broker))
 
 
 # -----------------------------------------------------------------------------
@@ -72,7 +79,7 @@ async def broker_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
-    await Logic.unregisterBrkId(id)
+    await UnregisteringLogicVisitor.do(BrkLogic.all[id])
 
 
 # -----------------------------------------------------------------------------
