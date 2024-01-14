@@ -918,7 +918,7 @@ class jMQTT extends eqLogic {
         if (is_object($eqLogic)) {
             $this->_preSaveInformations = array();
             $this->_preSaveInformations['name'] = $eqLogic->getName();
-            $this->_preSaveInformations['object'] = $eqLogic->getObject();
+            $this->_preSaveInformations['object'] = $eqLogic->getObject_id();
             $this->_preSaveInformations['isEnable'] = $eqLogic->getIsEnable();
             $saveMe = array(
                 // Broker config keys
@@ -1027,8 +1027,6 @@ class jMQTT extends eqLogic {
 
                 // Check other changes that would trigger MQTT Client update
                 $checkChanged = array(
-                    'name',
-                    'object',
                     jMQTTConst::CONF_KEY_MQTT_PROTO,
                     jMQTTConst::CONF_KEY_MQTT_ADDRESS,
                     jMQTTConst::CONF_KEY_MQTT_PORT,
@@ -1158,10 +1156,16 @@ class jMQTT extends eqLogic {
                     );
                 }
 
+                // Name or Object changed
+                if (
+                    $this->_preSaveInformations['name'] != $this->getName()
+                    || $this->_preSaveInformations['object'] != $this->getObject_id()
+                ) {
+                    $sendUpdate = true;
+                }
+
                 // Check other changes that would trigger MQTT Client update
                 $checkChanged = array(
-                    'name',
-                    'object',
                     // jMQTTConst::CONF_KEY_AUTO_ADD_CMD,
                     jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
                     jMQTTConst::CONF_KEY_QOS
