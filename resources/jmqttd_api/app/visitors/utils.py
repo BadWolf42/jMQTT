@@ -6,7 +6,8 @@ from logics.eq import EqLogic
 from logics.cmd import CmdLogic
 
 
-logger = getLogger('jmqtt.visitor.reg')
+logger = getLogger('jmqtt.visitor.utils')
+
 
 async def isNotSubscribable(topic: str) -> bool:
     # TODO Check if topic is NOT subscribable
@@ -53,7 +54,7 @@ async def addCmdInEq(cmd: CmdLogic, eq: EqLogic) -> None:
         eq.cmd_i[cmd.model.id] = cmd
     else:
         eq.cmd_a[cmd.model.id] = cmd
-        # self.logger.debug('id=%s, cmd disregarded: not an info', cmd.model.id)
+        # logger.debug('id=%s, cmd disregarded: not an info', cmd.model.id)
 
 async def delCmdInEq(cmd: CmdLogic, eq: EqLogic) -> None:
     # Remove CmdLogic ref in EqLogic/BrkLogic

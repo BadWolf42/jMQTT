@@ -8,14 +8,16 @@ from logics.cmd import CmdLogic
 from logics.eq import EqLogic
 
 
+logger = getLogger('jmqtt.visitor.print')
+
+
 # -----------------------------------------------------------------------------
 class PrintVisitor(LogicVisitor):
     def __init__(self):
-        self.logger = getLogger('jmqtt.visitor.print')
         self.level = 0
 
     async def visit_brk(self, e: BrkLogic) -> None:
-        self.logger.debug(
+        logger.debug(
             '%s┌─►  BrkLogic id=%s, name=%s, enabled=%s',
             '│ ' * self.level,
             e.model.id,
@@ -24,7 +26,7 @@ class PrintVisitor(LogicVisitor):
         )
 
         for t in e.topics:
-            self.logger.debug(
+            logger.debug(
                 '%s│      %s => %s',
                 '│ ' * self.level,
                 t,
@@ -34,10 +36,10 @@ class PrintVisitor(LogicVisitor):
         for eq in [v for v in e.eqpts.values()]:
             await eq.accept(self)
         self.level -= 1
-        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
+        logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
 
     async def visit_eq(self, e: EqLogic) -> None:
-        self.logger.debug(
+        logger.debug(
             '%s┌─►  EqLogic  id=%s, name=%s, enabled=%s',
             '│ ' * self.level,
             e.model.id,
@@ -50,11 +52,11 @@ class PrintVisitor(LogicVisitor):
         for cmd in [v for v in e.cmd_a.values()]:
             await cmd.accept(self)
         self.level -= 1
-        self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
+        logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
 
     async def visit_cmd(self, e: CmdLogic) -> None:
         if e.model.type == 'info':
-            self.logger.debug(
+            logger.debug(
                 '%s - CmdLogic id=%s, name=%s, type=info, topic=%s, jsonPath=%s',
                 '│ ' * self.level,
                 e.model.id,
@@ -63,7 +65,7 @@ class PrintVisitor(LogicVisitor):
                 e.model.configuration.jsonPath,
             )
         else:
-            self.logger.debug(
+            logger.debug(
                 '%s - CmdLogic id=%s, name=%s, type=%s, topic=%s',
                 '│ ' * self.level,
                 e.model.id,

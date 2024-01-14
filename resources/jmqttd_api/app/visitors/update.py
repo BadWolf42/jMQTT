@@ -20,6 +20,9 @@ from models.eq import EqModel
 from models.unions import CmdModel
 
 
+logger = getLogger('jmqtt.visitor.update')
+
+
 # -----------------------------------------------------------------------------
 class UpdatingLogicVisitor(LogicVisitor):
     def __init__(
@@ -27,20 +30,19 @@ class UpdatingLogicVisitor(LogicVisitor):
         currentLogic: VisitableLogic,
         targetModel: Union[BrkModel, EqModel, CmdModel],
     ):
-        self.logger = getLogger('jmqtt.visitor.update')
         self.currentLogic = currentLogic
         self.targetModel = targetModel
 
     async def visit_brk(self, e: BrkLogic) -> None:
-        self.logger.trace('id=%s, updating brk', e.model.id)
+        logger.trace('id=%s, updating brk', e.model.id)
         # Let's stop first MQTT Client (and Real Time)
         await e.stop()
         e.model = self.targetModel
         await e.start()
-        self.logger.debug('id=%s, brk updated', e.model.id)
+        logger.debug('id=%s, brk updated', e.model.id)
 
     async def visit_eq(self, e: EqLogic) -> None:
-        self.logger.trace('id=%s, updating eq', e.model.id)
+        logger.trace('id=%s, updating eq', e.model.id)
         if (
             # Handle unrecoverable change (move on another Brk)
             self.targetModel.configuration.eqLogic
@@ -50,7 +52,7 @@ class UpdatingLogicVisitor(LogicVisitor):
             unreg[0] = EqLogic(self.targetModel)
             for logic in unreg:
                 await RegisteringLogicVisitor.register(logic)
-            self.logger.debug(
+            logger.debug(
                 'id=%s, eq updated (brk change: %s->%s)',
                 e.model.id,
                 e.model.configuration.eqLogic,
@@ -73,10 +75,10 @@ class UpdatingLogicVisitor(LogicVisitor):
                 # Now Disabled unsubscribe all info cmds
                 for cmd in [v for v in e.cmd_i.values()]:
                     await delCmdInBrk(cmd, brk)
-        self.logger.debug('id=%s, eq updated', e.model.id)
+        logger.debug('id=%s, eq updated', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:
-        self.logger.trace('id=%s, updating cmd', e.model.id)
+        logger.trace('id=%s, updating cmd', e.model.id)
         if (
             # Handle an action cmd change
             self.targetModel.type != 'info'
@@ -96,9 +98,9 @@ class UpdatingLogicVisitor(LogicVisitor):
             await RegisteringLogicVisitor.register(newCmd)
 
             if self.targetModel.type != 'info':
-                self.logger.debug('id=%s, cmd updated (action cmd)', newCmd.model.id)
+                logger.debug('id=%s, cmd updated (action cmd)', newCmd.model.id)
             else:
-                self.logger.debug(
+                logger.debug(
                     'id=%s, cmd updated (brk change: %s->%s)',
                     newCmd.model.id,
                     oldBrk,
@@ -118,7 +120,7 @@ class UpdatingLogicVisitor(LogicVisitor):
         e.weakBrk = ref(e.weakEq().weakBrk())
         # Add CmdLogic in BrkLogic
         await addCmdInBrk(e, e.weakBrk())
-        self.logger.debug('id=%s, cmd updated', e.model.id)
+        logger.debug('id=%s, cmd updated', e.model.id)
 
     async def update(self) -> None:
         await self.currentLogic.accept(self)

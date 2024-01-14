@@ -9,14 +9,16 @@ from logics.cmd import CmdLogic
 from logics.eq import EqLogic
 
 
+logger = getLogger('jmqtt.visitor.unreg')
+
+
 # -----------------------------------------------------------------------------
 class UnregisteringLogicVisitor(LogicVisitor):
     def __init__(self):
-        self.logger = getLogger('jmqtt.visitor.unreg')
         self.result = []
 
     async def visit_brk(self, e: BrkLogic) -> None:
-        self.logger.trace('id=%s, unregistering brk', e.model.id)
+        logger.trace('id=%s, unregistering brk', e.model.id)
         # Let's stop first MQTT Client (and Real Time)
         await e.stop()
         # Then append the BrkLogic first to the result
@@ -28,10 +30,10 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.eqpts.clear()
         # Delete the BrkLogic from the registery
         del BrkLogic.all[e.model.id]
-        self.logger.debug('id=%s, brk unregistered', e.model.id)
+        logger.debug('id=%s, brk unregistered', e.model.id)
 
     async def visit_eq(self, e: EqLogic) -> None:
-        self.logger.trace('id=%s, unregistering eq', e.model.id)
+        logger.trace('id=%s, unregistering eq', e.model.id)
         # Append this EqLogic to the result
         self.result.append(e)
         # Call the visitor on each CmdLogic info linked directly to the Broker
@@ -49,10 +51,10 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.weakBrk = None
         # Delete the EqLogic from the registery
         del EqLogic.all[e.model.id]
-        self.logger.debug('id=%s, eq unregistered', e.model.id)
+        logger.debug('id=%s, eq unregistered', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:
-        self.logger.trace('id=%s, unregistering cmd', e.model.id)
+        logger.trace('id=%s, unregistering cmd', e.model.id)
         # Append this CmdLogic to the result
         self.result.append(e)
         # Remove topic from Broker
@@ -63,7 +65,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.weakBrk = None
         # Delete the CmdLogic from the registery
         del CmdLogic.all[e.model.id]
-        self.logger.debug('id=%s, cmd unregistered', e.model.id)
+        logger.debug('id=%s, cmd unregistered', e.model.id)
 
     @classmethod
     async def unregister(

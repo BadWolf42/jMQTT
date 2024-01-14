@@ -9,24 +9,27 @@ from logics.cmd import CmdLogic
 from logics.eq import EqLogic
 
 
+logger = getLogger('jmqtt.visitor.reg')
+
+
 # -----------------------------------------------------------------------------
 class RegisteringLogicVisitor(LogicVisitor):
     def __init__(self):
-        self.logger = getLogger('jmqtt.visitor.reg')
+        pass
 
     async def visit_brk(self, e: BrkLogic) -> None:
-        self.logger.trace('id=%s, registering brk', e.model.id)
+        logger.trace('id=%s, registering brk', e.model.id)
         # Add BrkLogic in brkLogic table
         BrkLogic.all[e.model.id] = e
         await e.start()
-        self.logger.debug('id=%s, brk registered', e.model.id)
+        logger.debug('id=%s, brk registered', e.model.id)
 
     async def visit_eq(self, e: EqLogic) -> None:
-        self.logger.trace('id=%s, registering eq', e.model.id)
+        logger.trace('id=%s, registering eq', e.model.id)
         brkId = e.model.configuration.eqLogic
         # If BrkLogic is not found
         if brkId not in BrkLogic.all:
-            self.logger.warning(
+            logger.warning(
                 'id=%s, eq disregarded: BrkId=%s not found', e.model.id, brkId
             )
             return
@@ -39,13 +42,13 @@ class RegisteringLogicVisitor(LogicVisitor):
         EqLogic.all[e.model.id] = e
         # Add EqLogic in BrkLogic eqLogics list
         e.weakBrk().eqpts[e.model.id] = e
-        self.logger.debug('id=%s, eq registered', e.model.id)
+        logger.debug('id=%s, eq registered', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:
-        self.logger.trace('id=%s, registering cmd', e.model.id)
+        logger.trace('id=%s, registering cmd', e.model.id)
         # Parent is a BrkLogic
         if e.model.eqLogic_id in BrkLogic.all:
-            self.logger.warning(
+            logger.warning(
                 'id=%s, cmd disregarded: parent EqId=%s is a brk',
                 e.model.id,
                 e.model.eqLogic_id,
@@ -53,7 +56,7 @@ class RegisteringLogicVisitor(LogicVisitor):
             return
         # Could not find a parent
         if e.model.eqLogic_id not in EqLogic.all:
-            self.logger.warning(
+            logger.warning(
                 'id=%s, cmd disregarded: parent EqId=%s not found',
                 e.model.id,
                 e.model.eqLogic_id,
@@ -69,15 +72,15 @@ class RegisteringLogicVisitor(LogicVisitor):
         e.weakBrk = ref(eq.weakBrk())
         # Finish here if eq is not enabled
         if not eq.model.isEnable:
-            self.logger.debug('id=%s, cmd registered, but is not enabled', e.model.id)
+            logger.debug('id=%s, cmd registered, but is not enabled', e.model.id)
             return
         # Insert path in info topic tree
         if e.model.type != 'info':
-            self.logger.debug('id=%s, cmd registered, but is an action', e.model.id)
+            logger.debug('id=%s, cmd registered, but is an action', e.model.id)
             return
         # Add topic to Broker
         await addCmdInBrk(e, eq.weakBrk())
-        self.logger.debug('id=%s, cmd registered', e.model.id)
+        logger.debug('id=%s, cmd registered', e.model.id)
 
     @classmethod
     async def register(cls, e: VisitableLogic) -> None:
