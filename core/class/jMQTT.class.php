@@ -704,11 +704,13 @@ class jMQTT extends eqLogic {
      */
     public static function full_export($clean=false) {
         $brks = array();
+        $brks_id = array();
         $eqpts = array();
         $cmds = array();
         foreach (eqLogic::byType(__CLASS__) as $eq) {
             /** @var jMQTT $eq */
-            $eqar = $eq->toArray();
+            $eqar = utils::o2a($eq, true);
+            // $eqar['cache'] = $eq->getCache();
             if (is_object($eq->getObject())) {
                 $obj_name = $eq->getObject()->getName();
             } else {
@@ -725,18 +727,21 @@ class jMQTT extends eqLogic {
                 unset($eqar['display']);
                 unset($eqar['isVisible']);
                 unset($eqar['object_id']);
-                unset($eqar['status']);
                 unset($eqar['tags']);
                 unset($eqar['timeout']);
             }
             if ($eqar['configuration']['type'] == jMQTTConst::TYP_BRK) {
                 $brks[] = $eqar;
+                $brks_id[] = $eq->getId();
             } else {
                 $eqpts[] = $eqar;
             }
             /** @var jMQTTCmd $cmd */
-            foreach ($eq->getCmd() as $cmd)
-                $cmds[] = $cmd->full_export($clean);
+            foreach ($eq->getCmd() as $cmd) {
+                // Do not send cmds of eqBroker, as used only inside Jeedom
+                if (!$clean || !in_array($cmd->getEqLogic_id(), $brks_id))
+                    $cmds[] = $cmd->full_export($clean);
+            }
         }
 
         return array_merge($brks, $eqpts, $cmds);

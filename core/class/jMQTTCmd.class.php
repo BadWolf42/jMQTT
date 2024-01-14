@@ -46,10 +46,8 @@ class jMQTTCmd extends cmd {
      * @return array representing the cmd
      */
     public function full_export($clean=false) {
-        $cmd = clone $this;
-        $cmdValue = $cmd->getCmdValue();
-        $cmd->setValue(is_object($cmdValue) ? $cmdValue->getName() : '');
-        $return = utils::o2a($cmd);
+        $return = utils::o2a($this, true);
+        // $return['cache'] = $this->getCache();
         if ($clean) { // Remove unneeded informations
             unset($return['alert']);
             unset($return['configuration']['prev_retain']);
@@ -488,7 +486,7 @@ class jMQTTCmd extends cmd {
         /** @var jMQTT $eqLogic */
         $eqLogic = $this->getEqLogic();
 
-        // Nothing must be done in postSave on Broker command
+        // Nothing must be done in postSave on Broker commands
         if ($eqLogic->getType() == jMQTTConst::TYP_BRK) {
             // Remove all cmd other than the status cmd
             if (
@@ -502,6 +500,7 @@ class jMQTTCmd extends cmd {
                 ));
                 $this->remove();
             }
+            // Note that no update is sent for Broker commands (as used only in Jeedom)
             return;
         }
 
@@ -625,16 +624,7 @@ class jMQTTCmd extends cmd {
 
         // In the end, does Daemon data need to be updated
         if ($sendUpdate) {
-            $data = utils::o2a($this, true);
-            $data['cache'] = $this->getCache();
-            // Do some cleanup
-            unset($data['alert']);
-            unset($data['configuration']['prev_retain']);
-            unset($data['isHistorized']);
-            unset($data['isVisible']);
-            unset($data['display']);
-            unset($data['order']);
-            unset($data['template']);
+            $data = $this->full_export(true);
             // Send update of this cmd to Daemon
             jMQTTComToDaemon::cmdSet($data);
         }

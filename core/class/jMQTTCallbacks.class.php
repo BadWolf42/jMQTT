@@ -165,7 +165,7 @@ class jMQTTCallbacks {
         // Active listeners
         jMQTT::listenersAddAll();
         // Send all the eqLogics/cmds to the daemon
-        jMQTTComToDaemon::initDaemon(jMQTT::full_export());
+        jMQTTComToDaemon::initDaemon(jMQTT::full_export(true));
     }
 
     /**
