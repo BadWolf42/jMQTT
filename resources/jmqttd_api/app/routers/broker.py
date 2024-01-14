@@ -197,4 +197,4 @@ async def broker_get_debug_tree(id: int):
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
 
-    await PrintVisitor.print(BrkLogic.all[id])
+    await PrintVisitor(BrkLogic.all[id]).print()

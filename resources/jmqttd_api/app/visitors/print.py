@@ -13,8 +13,9 @@ logger = getLogger('jmqtt.visitor.print')
 
 # -----------------------------------------------------------------------------
 class PrintVisitor(LogicVisitor):
-    def __init__(self):
+    def __init__(self, e: List[Union[BrkLogic, EqLogic, CmdLogic]]):
         self.level = 0
+        self.toPrint = e
 
     async def visit_brk(self, e: BrkLogic) -> None:
         logger.debug(
@@ -74,7 +75,5 @@ class PrintVisitor(LogicVisitor):
                 e.model.configuration.topic,
             )
 
-    @classmethod
-    async def print(cls, e: List[Union[BrkLogic, EqLogic, CmdLogic]]) -> None:
-        self = cls()
-        await e.accept(self)
+    async def print(self) -> None:
+        await self.toPrint.accept(self)

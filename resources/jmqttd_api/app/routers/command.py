@@ -63,7 +63,7 @@ async def command_get_debug_tree(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
-    await PrintVisitor.print(CmdLogic.all[id])
+    await PrintVisitor(CmdLogic.all[id]).print()
 
 
 # -----------------------------------------------------------------------------
