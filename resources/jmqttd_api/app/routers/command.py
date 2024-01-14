@@ -23,7 +23,7 @@ command = APIRouter(
 async def command_post(cmd: CmdModel):
     if cmd.id in CmdLogic.all:
         # If Logic exist in register, then update it
-        await UpdatingLogicVisitor.update(CmdLogic.all[cmd.id], cmd)
+        await UpdatingLogicVisitor(CmdLogic.all[cmd.id], cmd).update()
     else:
         # Else register it
         await RegisteringLogicVisitor.register(CmdLogic(cmd))

@@ -40,7 +40,7 @@ async def broker_get() -> List[BrkModel]:
 async def broker_post(broker: BrkModel):
     if broker.id in BrkLogic.all:
         # If Logic exist in register, then update it
-        await UpdatingLogicVisitor.update(BrkLogic.all[broker.id], broker)
+        await UpdatingLogicVisitor(BrkLogic.all[broker.id], broker).update()
     else:
         # Else register it
         await RegisteringLogicVisitor.register(BrkLogic(broker))

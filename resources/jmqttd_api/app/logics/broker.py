@@ -43,11 +43,12 @@ class BrkLogic(VisitableLogic):
         self.log = getLogger(f'jmqtt.brk.{model.id}')
         self.model = model
 
-        self.eqpts: WeakValueDictionary[int, VisitableLogic] = {}
+        self.eqpts: WeakValueDictionary[int, EqLogic] = {}
         # self.cmds: WeakValueDictionary[int, VisitableLogic] = {}
-        self.cmd_i: WeakValueDictionary[int, VisitableLogic] = {}
-        self.cmd_a: WeakValueDictionary[int, VisitableLogic] = {}
-        self.topics: Dict[str, WeakValueDictionary[int, VisitableLogic]] = {}
+        # self.cmd_i: WeakValueDictionary[int, VisitableLogic] = {}
+        # self.cmd_a: WeakValueDictionary[int, VisitableLogic] = {}
+        # TODO: Mutate self.topics in a "TopicMap" class
+        self.topics: Dict[str, WeakValueDictionary[int, CmdLogic]] = {}
 
         self.client: Task = None
         self.realtime: Task = None

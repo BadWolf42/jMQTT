@@ -23,7 +23,7 @@ equipment = APIRouter(
 async def equipment_post(eq: EqModel):
     if eq.id in EqLogic.all:
         # If Logic exist in register, then update it
-        await UpdatingLogicVisitor.update(EqLogic.all[eq.id], eq)
+        await UpdatingLogicVisitor(EqLogic.all[eq.id], eq).update()
     else:
         # Else register it
         await RegisteringLogicVisitor.register(EqLogic(eq))

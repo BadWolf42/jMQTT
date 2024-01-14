@@ -31,10 +31,7 @@ class PrintVisitor(LogicVisitor):
                 ' '.join([str(v.model.id) for v in e.topics[t].values()]),
             )
         self.level += 1
-        linked_cmd_eq = [v for v in e.cmd_i.values()]
-        linked_cmd_eq += [v for v in e.cmd_a.values()]
-        linked_cmd_eq += [v for v in e.eqpts.values()]
-        for eq in linked_cmd_eq:
+        for eq in [v for v in e.eqpts.values()]:
             await eq.accept(self)
         self.level -= 1
         self.logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))

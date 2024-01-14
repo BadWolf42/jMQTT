@@ -32,7 +32,7 @@ logconfig: dict = {
     },
     'handlers': {
         'fileHandler': {
-            'class': 'logging.FileHandler',
+            'class': 'logging.FileHandler',  # TODO: Use logging.handlers.WatchedFileHandler
             # 'level': 'DEBUG',
             # 'formatter': 'withCallTrace',
             # 'formatter': 'withThread',
@@ -43,8 +43,8 @@ logconfig: dict = {
         },
     },
     'root': {
-        'level': 'DEBUG',
-        # 'level': 'WARNING', # TODO disable DEBUG
+        'level': 'DEBUG',  # TODO: Disable DEBUG and enable WARNING
+        # 'level': 'WARNING',
         'handlers': ['fileHandler'],
     },
     # 'loggers': {
