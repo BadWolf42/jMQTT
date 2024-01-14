@@ -26,7 +26,7 @@ async def equipment_post(eq: EqModel):
         await UpdatingLogicVisitor(EqLogic.all[eq.id], eq).update()
     else:
         # Else register it
-        await RegisteringLogicVisitor.register(EqLogic(eq))
+        await RegisteringLogicVisitor(EqLogic(eq)).register()
 
 
 # -----------------------------------------------------------------------------

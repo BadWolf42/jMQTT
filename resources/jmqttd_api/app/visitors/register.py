@@ -14,8 +14,8 @@ logger = getLogger('jmqtt.visitor.reg')
 
 # -----------------------------------------------------------------------------
 class RegisteringLogicVisitor(LogicVisitor):
-    def __init__(self):
-        pass
+    def __init__(self, e: VisitableLogic):
+        self.toAdd = e
 
     async def visit_brk(self, e: BrkLogic) -> None:
         logger.trace('id=%s, registering brk', e.model.id)
@@ -82,7 +82,5 @@ class RegisteringLogicVisitor(LogicVisitor):
         await addCmdInBrk(e, eq.weakBrk())
         logger.debug('id=%s, cmd registered', e.model.id)
 
-    @classmethod
-    async def register(cls, e: VisitableLogic) -> None:
-        self = cls()
-        await e.accept(self)
+    async def register(self) -> None:
+        await self.toAdd.accept(self)

@@ -51,7 +51,7 @@ class UpdatingLogicVisitor(LogicVisitor):
             unreg = await UnregisteringLogicVisitor(e).unregister()
             unreg[0] = EqLogic(self.targetModel)
             for logic in unreg:
-                await RegisteringLogicVisitor.register(logic)
+                await RegisteringLogicVisitor(logic).register()
             logger.debug(
                 'id=%s, eq updated (brk change: %s->%s)',
                 e.model.id,
@@ -95,7 +95,7 @@ class UpdatingLogicVisitor(LogicVisitor):
             # Create new Cmd from targetModel
             newCmd = CmdLogic(self.targetModel)
             # Register newCmd
-            await RegisteringLogicVisitor.register(newCmd)
+            await RegisteringLogicVisitor(newCmd).register()
 
             if self.targetModel.type != 'info':
                 logger.debug('id=%s, cmd updated (action cmd)', newCmd.model.id)

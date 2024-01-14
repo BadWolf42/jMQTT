@@ -26,7 +26,7 @@ async def command_post(cmd: CmdModel):
         await UpdatingLogicVisitor(CmdLogic.all[cmd.id], cmd).update()
     else:
         # Else register it
-        await RegisteringLogicVisitor.register(CmdLogic(cmd))
+        await RegisteringLogicVisitor(CmdLogic(cmd)).register()
 
 # -----------------------------------------------------------------------------
 # GET /command => list command

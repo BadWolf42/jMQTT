@@ -43,7 +43,7 @@ async def broker_post(broker: BrkModel):
         await UpdatingLogicVisitor(BrkLogic.all[broker.id], broker).update()
     else:
         # Else register it
-        await RegisteringLogicVisitor.register(BrkLogic(broker))
+        await RegisteringLogicVisitor(BrkLogic(broker)).register()
 
 
 # -----------------------------------------------------------------------------
