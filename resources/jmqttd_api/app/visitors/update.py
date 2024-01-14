@@ -48,7 +48,7 @@ class UpdatingLogicVisitor(LogicVisitor):
             self.targetModel.configuration.eqLogic
             != e.model.configuration.eqLogic
         ):
-            unreg = await UnregisteringLogicVisitor.unregister(e)
+            unreg = await UnregisteringLogicVisitor(e).unregister()
             unreg[0] = EqLogic(self.targetModel)
             for logic in unreg:
                 await RegisteringLogicVisitor.register(logic)
@@ -91,7 +91,7 @@ class UpdatingLogicVisitor(LogicVisitor):
             # Backup old Broker id if needed later
             oldBrk = e.weakBrk().model.id
             # Unregiseted and forget old Cmd Completely
-            await UnregisteringLogicVisitor.unregister(e)
+            await UnregisteringLogicVisitor(e).unregister()
             # Create new Cmd from targetModel
             newCmd = CmdLogic(self.targetModel)
             # Register newCmd

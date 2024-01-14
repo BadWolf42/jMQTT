@@ -79,7 +79,7 @@ async def broker_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
-    await UnregisteringLogicVisitor.unregister(BrkLogic.all[id])
+    await UnregisteringLogicVisitor(BrkLogic.all[id]).unregister()
 
 
 # -----------------------------------------------------------------------------

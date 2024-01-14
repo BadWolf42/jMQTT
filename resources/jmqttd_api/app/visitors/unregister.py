@@ -14,7 +14,8 @@ logger = getLogger('jmqtt.visitor.unreg')
 
 # -----------------------------------------------------------------------------
 class UnregisteringLogicVisitor(LogicVisitor):
-    def __init__(self):
+    def __init__(self, e: List[Union[BrkLogic, EqLogic, CmdLogic]]):
+        self.toDel = e
         self.result = []
 
     async def visit_brk(self, e: BrkLogic) -> None:
@@ -67,10 +68,6 @@ class UnregisteringLogicVisitor(LogicVisitor):
         del CmdLogic.all[e.model.id]
         logger.debug('id=%s, cmd unregistered', e.model.id)
 
-    @classmethod
-    async def unregister(
-        cls, e: List[Union[BrkLogic, EqLogic, CmdLogic]]
-    ) -> List[Union[BrkLogic, EqLogic, CmdLogic]]:
-        self = cls()
-        await e.accept(self)
+    async def unregister(self) -> None:
+        await self.toDel.accept(self)
         return self.result

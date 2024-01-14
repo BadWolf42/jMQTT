@@ -54,7 +54,7 @@ async def command_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
-    await UnregisteringLogicVisitor.unregister(CmdLogic.all[id])
+    await UnregisteringLogicVisitor(CmdLogic.all[id]).unregister()
 
 # -----------------------------------------------------------------------------
 @command.get("/{id}/debug/tree", status_code=204, summary="Log this cmd tree")

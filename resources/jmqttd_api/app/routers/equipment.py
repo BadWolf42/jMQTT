@@ -52,7 +52,7 @@ async def equipment_delete_id(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
         )
-    await UnregisteringLogicVisitor.unregister(EqLogic.all[id])
+    await UnregisteringLogicVisitor(EqLogic.all[id]).unregister()
 
 
 # -----------------------------------------------------------------------------
