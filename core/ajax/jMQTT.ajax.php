@@ -146,21 +146,15 @@ try {
                 'stack' => $e->getTraceAsString(),
                 'value' => ''
             ));
-            if (log::getLogLevel('jMQTT') <= 100)
-                jMQTT::logger(
-                    'warning',
-                    str_replace(
-                        "\n",
-                        ' <br/> ',
-                        sprintf(
-                            __("Chemin JSON '%1\$s' dans le testeur de JsonPath a levé l'Exception: %2\$s", __FILE__).
-                            ",<br/>@Stack: %4\$s.",
-                            $jsonPath,
-                            $e->getMessage(),
-                            $e->getTraceAsString()
-                        )
-                    )
-                );
+            if (log::getLogLevel('jMQTT') <= 100) {
+                jMQTT::logger('warning', str_replace("\n", ' <br/> ', sprintf(
+                    __("Chemin JSON '%1\$s' dans le testeur de JsonPath a levé l'Exception: %2\$s", __FILE__).
+                    ",<br/>@Stack: %3\$s.",
+                    $jsonPath,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                )));
+            }
         }
     }
 

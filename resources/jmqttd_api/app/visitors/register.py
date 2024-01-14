@@ -1,6 +1,6 @@
 from __future__ import annotations
 from logging import getLogger
-from weakref import ref, WeakValueDictionary
+from weakref import ref
 
 from visitors.abstractvisitor import LogicVisitor, VisitableLogic
 from visitors.utils import addCmdInBrk, addCmdInEq

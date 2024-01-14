@@ -1657,20 +1657,13 @@ class jMQTT extends eqLogic {
                     )
                 );
             } else { // More info in debug mode, no big log otherwise
-                self::logger(
-                    'warning',
-                    str_replace(
-                        "\n",
-                        ' <br/> ',
-                        sprintf(
-                            __("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
-                            ",<br/>@Stack: %3\$s.",
-                            $query,
-                            $e->getMessage(),
-                            $e->getTraceAsString()
-                        )
-                    )
-                );
+                self::logger('warning', str_replace( "\n", ' <br/> ', sprintf(
+                    __("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
+                    ",<br/>@Stack: %3\$s.",
+                    $query,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                )));
             }
 
             // Send reply on a /reply subtopic
@@ -1739,151 +1732,129 @@ class jMQTT extends eqLogic {
         //
         $related_cmd = '';
         foreach ($elogics as $eqpt) {
-            if ($eqpt->getIsEnable()) {
-                // Looking for all cmds matching Eq and Topic in the DB
-                $cmds = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
-                if (is_null($cmds))
-                    $cmds = array();
-                $jsonCmds = array();
-                // Keep only info cmds in $cmds and put all JSON info commands in $jsonCmds
-                foreach ($cmds as $k => $cmd) {
-                    if ($cmd->getType() == 'action') {
-                        $this->log(
-                            'debug',
-                            sprintf(
-                                "Cmd #%s# is of action type: ignored",
-                                $cmd->getHumanName()
-                            )
-                        );
-                        unset($cmds[$k]);
-                    } elseif ($cmd->isJson()) {
-                        $this->log(
-                            'debug',
-                            sprintf(
-                                "Cmd #%s# is of info-Json type: ignored",
-                                $cmd->getHumanName()
-                            )
-                        );
-                        unset($cmds[$k]);
-                        $jsonCmds[] = $cmd;
+            if (!$eqpt->getIsEnable()) {
+                continue;
+            }
+            // Looking for all cmds matching Eq and Topic in the DB
+            $cmds = jMQTTCmd::byEqLogicIdAndTopic($eqpt->getId(), $msgTopic, true);
+            if (is_null($cmds))
+                $cmds = array();
+            $jsonCmds = array();
+            // Keep only info cmds in $cmds and put all JSON info commands in $jsonCmds
+            foreach ($cmds as $k => $cmd) {
+                if ($cmd->getType() == 'action') {
+                    $this->log('debug', sprintf(
+                        "Cmd #%s# is of action type: ignored",
+                        $cmd->getHumanName()
+                    ));
+                    unset($cmds[$k]);
+                } elseif ($cmd->isJson()) {
+                    $this->log('debug', sprintf(
+                        "Cmd #%s# is of info-Json type: ignored",
+                        $cmd->getHumanName()
+                    ));
+                    unset($cmds[$k]);
+                    $jsonCmds[] = $cmd;
+                }
+            }
+            // If there is no info cmd matching exactly with the topic (non JSON)
+            if (empty($cmds)) {
+                // Is automatic command creation enabled?
+                if ($eqpt->getAutoAddCmd()) {
+                    // Determine the futur name of the command.
+                    // Suppress starting topic levels that are common with the equipment suscribing topic
+                    $sbscrbTopicArray = explode("/", $eqpt->getTopic());
+                    $msgTopicArray = explode("/", $msgTopic);
+                    foreach ($sbscrbTopicArray as $s) {
+                        if ($s == '#' || $s == '+')
+                            break;
+                        else
+                            next($msgTopicArray);
                     }
+                    // @phpstan-ignore-next-line
+                    if (current($msgTopicArray) === false) {
+                        $cmdName = end($msgTopicArray);
+                    } else {
+                        $cmdName = current($msgTopicArray);
+                    }
+                    while (next($msgTopicArray) !== false) {
+                        $cmdName = $cmdName . '/' . current($msgTopicArray);
+                    }
+                    // Ensure whitespaces are treated well
+                    $cmdName = substr(trim($cmdName), 0, 120);
+                    $allCmdsNames = array();
+                    // Get all commands names for this equipment
+                    foreach (jMQTTCmd::byEqLogicId($eqpt->getId()) as $cmd)
+                        $allCmdsNames[] = strtolower(trim($cmd->getName()));
+                    // If cmdName is already used, add suffix '-<number>'
+                    if (false !== array_search($cmdName, $allCmdsNames)) {
+                        $cmdName .= '-';
+                        $increment = 1;
+                        do {
+                            $increment++;
+                        } while (
+                            false !== array_search(
+                                strtolower($cmdName . $increment),
+                                $allCmdsNames
+                            )
+                        );
+                        $cmdName .= $increment;
+                    }
+                    // Create the new cmd
+                    $newCmd = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
+                    try {
+                        $newCmd->save();
+                        $cmds[] = $newCmd;
+                        $this->log('debug', sprintf(
+                            "Cmd #%s# created automatically for topic '%s'.",
+                            $newCmd->getHumanName(),
+                            $msgTopic
+                        ));
+                    } catch (Throwable $e) {
+                        if (log::getLogLevel(__CLASS__) > 100) {
+                            $this->log('error', sprintf(
+                                __("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__),
+                                $newCmd->getHumanName(),
+                                $e->getMessage()
+                            ));
+                        } else { // More info in debug mode, no big log otherwise
+                            $this->log('error', str_replace("\n", ' <br/> ', sprintf(
+                                __("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
+                                ",<br/>@Stack: %3\$s,<br/>@Dump: %4\$s.",
+                                $newCmd->getHumanName(),
+                                $e->getMessage(),
+                                $e->getTraceAsString(),
+                                json_encode($newCmd)
+                            )));
+                        }
+                    }
+                } else {
+                    $this->log('debug', sprintf(
+                        "No command has been created for topic %s in equipment #%s# (auto cmd creation is disabled).",
+                        $msgTopic,
+                        $eqpt->getHumanName()
+                    ));
                 }
-                // If there is no info cmd matching exactly with the topic (non JSON)
-                if (empty($cmds)) {
-                    // Is automatic command creation enabled?
-                    if ($eqpt->getAutoAddCmd()) {
-                        // Determine the futur name of the command.
-                        // Suppress starting topic levels that are common with the equipment suscribing topic
-                        $sbscrbTopicArray = explode("/", $eqpt->getTopic());
-                        $msgTopicArray = explode("/", $msgTopic);
-                        foreach ($sbscrbTopicArray as $s) {
-                            if ($s == '#' || $s == '+')
-                                break;
-                            else
-                                next($msgTopicArray);
-                        }
-                        // @phpstan-ignore-next-line
-                        if (current($msgTopicArray) === false) {
-                            $cmdName = end($msgTopicArray);
-                        } else {
-                            $cmdName = current($msgTopicArray);
-                        }
-                        while (next($msgTopicArray) !== false) {
-                            $cmdName = $cmdName . '/' . current($msgTopicArray);
-                        }
-                        // Ensure whitespaces are treated well
-                        $cmdName = substr(trim($cmdName), 0, 120);
-                        $allCmdsNames = array();
-                        // Get all commands names for this equipment
-                        foreach (jMQTTCmd::byEqLogicId($eqpt->getId()) as $cmd)
-                            $allCmdsNames[] = strtolower(trim($cmd->getName()));
-                        // If cmdName is already used, add suffix '-<number>'
-                        if (false !== array_search($cmdName, $allCmdsNames)) {
-                            $cmdName .= '-';
-                            $increment = 1;
-                            do {
-                                $increment++;
-                            } while (
-                                false !== array_search(
-                                    strtolower($cmdName . $increment),
-                                    $allCmdsNames
-                                )
-                            );
-                            $cmdName .= $increment;
-                        }
-                        // Create the new cmd
-                        $newCmd = jMQTTCmd::newCmd($eqpt, $cmdName, $msgTopic);
-                        try {
-                            $newCmd->save();
-                            $cmds[] = $newCmd;
-                            $this->log(
-                                'debug',
-                                sprintf(
-                                    "Cmd #%s# created automatically for topic '%s'.",
-                                    $newCmd->getHumanName(),
-                                    $msgTopic
-                                )
-                            );
-                        } catch (Throwable $e) {
-                            if (log::getLogLevel(__CLASS__) > 100)
-                                $this->log(
-                                    'error',
-                                    sprintf(
-                                        __("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__),
-                                        $newCmd->getHumanName(),
-                                        $e->getMessage()
-                                    )
-                                );
-                            else // More info in debug mode, no big log otherwise
-                                $this->log(
-                                    'error',
-                                    str_replace(
-                                        "\n",
-                                        ' <br/> ',
-                                        sprintf(
-                                            __("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
-                                            ",<br/>@Stack: %3\$s,<br/>@Dump: %4\$s.",
-                                            $newCmd->getHumanName(),
-                                            $e->getMessage(),
-                                            $e->getTraceAsString(),
-                                            json_encode($newCmd)
-                                        )
-                                    )
-                                );
-                        }
-                    } else
-                        $this->log(
-                            'debug',
-                            sprintf(
-                                "No command has been created for topic %s in equipment #%s#.",
-                                $msgTopic,
-                                $eqpt->getHumanName()
-                            ) .
-                            ' ' . __("(création automatique de commande)", __FILE__),
-                    );
-                }
+            }
 
-                // If there is some cmd matching exactly with the topic
-                if (is_array($cmds) && count($cmds)) {
-                    foreach ($cmds as $cmd) {
-                        // Update the command value
-                        $cmd->updateCmdValue($msgValue);
+            // If there is some cmd matching exactly with the topic
+            if (is_array($cmds) && count($cmds)) {
+                foreach ($cmds as $cmd) {
+                    // Update the command value
+                    $cmd->updateCmdValue($msgValue);
+                    $related_cmd .= ', #' . $cmd->getHumanName() . '#';
+                }
+            }
+
+            // If there is some cmd matching exactly with the topic with JSON path
+            if (is_array($jsonCmds) && count($jsonCmds)) {
+                // decode JSON payload
+                $jsonArray = reset($jsonCmds)->decodeJsonMsg($msgValue);
+                if (isset($jsonArray)) {
+                    foreach ($jsonCmds as $cmd) {
+                        // Update JSON derived commands
+                        $cmd->updateJsonCmdValue($jsonArray);
                         $related_cmd .= ', #' . $cmd->getHumanName() . '#';
-                    }
-                }
-
-                // If there is some cmd matching exactly with the topic with JSON path
-                if (is_array($jsonCmds) && count($jsonCmds)) {
-
-                    // decode JSON payload
-                    $jsonArray = reset($jsonCmds)->decodeJsonMsg($msgValue);
-                    if (isset($jsonArray)) {
-
-                        foreach ($jsonCmds as $cmd) {
-                            // Update JSON derived commands
-                            $cmd->updateJsonCmdValue($jsonArray);
-                            $related_cmd .= ', #' . $cmd->getHumanName() . '#';
-                        }
                     }
                 }
             }
@@ -1896,24 +1867,18 @@ class jMQTT extends eqLogic {
             } else {
                 $related_cmd[0] = ':';
             }
-            $this->log(
-                'warning',
-                sprintf(
-                    __("Attention, ", __FILE__) .
-                    __("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
-                    __(" (très long), vérifiez les commandes affiliées %4\$s", __FILE__),
-                    $msgValue, $msgTopic, $duration_ms, $related_cmd
-                )
-            );
+            $this->log('warning', sprintf(
+                __("Attention, ", __FILE__) .
+                __("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
+                __(" (très long), vérifiez les commandes affiliées %4\$s", __FILE__),
+                $msgValue, $msgTopic, $duration_ms, $related_cmd
+            ));
         } elseif (log::getLogLevel(__CLASS__) <= 100) {
-            $this->log(
-                'debug',
-                sprintf(
-                    __("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
-                    __(", commandes affiliées %4\$s", __FILE__),
-                    $msgValue, $msgTopic, $duration_ms, $related_cmd
-                )
-            );
+            $this->log('debug', sprintf(
+                __("Payload '%1\$s' reçu sur le Topic '%2\$s' traité en %3\$dms", __FILE__) .
+                __(", commandes affiliées %4\$s", __FILE__),
+                $msgValue, $msgTopic, $duration_ms, $related_cmd
+            ));
         }
     }
 
@@ -1942,76 +1907,59 @@ class jMQTT extends eqLogic {
         $payloadLogMsg = ($payload === '') ? '\'\' (null)' : "'".$payload."'";
         if (!jMQTTDaemon::state()) {
             if (!self::getDaemonAutoMode()) {
-                $this->log(
-                    'info',
-                    sprintf(
-                        __("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT est désactivé", __FILE__),
-                        $cmdName,
-                        $payloadLogMsg
-                    )
-                );
-                return;
-            }
-            $this->log(
-                'info',
-                sprintf(
-                    __("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT n'est pas démarré", __FILE__),
+                $this->log('info', sprintf(
+                    __("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT est désactivé", __FILE__),
                     $cmdName,
                     $payloadLogMsg
-                    )
-                );
+                ));
+                return;
+            }
+            $this->log('info', sprintf(
+                __("Cmd #%1\$s# -> %2\$s Message non publié, car le démon jMQTT n'est pas démarré", __FILE__),
+                $cmdName,
+                $payloadLogMsg
+                ));
             return;
         }
 
         $broker = $this->getBroker();
         if (!$broker->getIsEnable()) {
-            $this->log(
-                'info',
-                sprintf(
-                    __("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas activé", __FILE__),
-                    $cmdName,
-                    $payloadLogMsg,
-                    $broker->getName()
-                )
-            );
+            $this->log('info', sprintf(
+                __("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas activé", __FILE__),
+                $cmdName,
+                $payloadLogMsg,
+                $broker->getName()
+            ));
             return;
         }
 
         if ($broker->getMqttClientState() != jMQTTConst::CLIENT_OK) {
-            $this->log(
-                'warning',
-                sprintf(
-                    __("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas connecté au Broker MQTT", __FILE__),
-                    $cmdName,
-                    $payloadLogMsg,
-                    $broker->getName()
-                )
-            );
+            $this->log('warning', sprintf(
+                __("Cmd #%1\$s# -> %2\$s Message non publié, car le Broker jMQTT %3\$s n'est pas connecté au Broker MQTT", __FILE__),
+                $cmdName,
+                $payloadLogMsg,
+                $broker->getName()
+            ));
             return;
         }
 
-        if (log::getLogLevel(__CLASS__) > 100)
-            $this->log(
-                'info',
-                sprintf(
-                    __("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s'", __FILE__),
-                    $cmdName,
-                    $payloadLogMsg,
-                    $topic
-                )
-            );
-        else
-            $this->log(
-                'info',
-                sprintf(
-                    __("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s' (qos=%4\$s, retain=%5\$s)", __FILE__),
-                    $cmdName,
-                    $payloadLogMsg,
-                    $topic,
-                    $qos,
-                    $retain
-                )
-            );
+        if (log::getLogLevel(__CLASS__) > 100) {
+            $this->log('info', sprintf(
+                __("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s'", __FILE__),
+                $cmdName,
+                $payloadLogMsg,
+                $topic
+            ));
+        } else {
+            $this->log('info', sprintf(
+                __("Cmd #%1\$s# -> %2\$s sur le topic '%3\$s' (qos=%4\$s, retain=%5\$s)", __FILE__),
+                $cmdName,
+                $payloadLogMsg,
+                $topic,
+                $qos,
+                $retain
+            ));
+        }
 
         jMQTTComToDaemon::brokerPublish($this->getBrkId(), $topic, $payload, $qos, $retain);
         $d = date('Y-m-d H:i:s');
@@ -2099,24 +2047,17 @@ class jMQTT extends eqLogic {
                     $e->getMessage()
                 ));
             } else {
-                self::logger(
-                    'error',
-                    str_replace(
-                        "\n",
-                        ' <br/> ',
-                        sprintf(
-                            __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                            ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s,".
-                            "<br/>@Topic: %5\$s,<br/>@Payload: %6\$s.",
-                            __METHOD__,
-                            $e->getMessage(),
-                            $e->getTraceAsString(),
-                            $this->getBrkId(),
-                            $this->getConf(jMQTTConst::CONF_KEY_MQTT_API),
-                            $msg
-                        )
-                    )
-                );
+                self::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                    __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+                    ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s,".
+                    "<br/>@Topic: %5\$s,<br/>@Payload: %6\$s.",
+                    __METHOD__,
+                    $e->getMessage(),
+                    $e->getTraceAsString(),
+                    $this->getBrkId(),
+                    $this->getConf(jMQTTConst::CONF_KEY_MQTT_API),
+                    $msg
+                )));
             }
         }
     }

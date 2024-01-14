@@ -424,14 +424,11 @@ try {
 
 // -------------------- Reapply upgrade script --------------------
     if (init('action') == 'reapplyUpdate') {
+        $name = init('name', 'NONE');
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action') . ' (' . $name . ')');
+        $ver = str_replace('.php', '', $name);
+        $file = __DIR__ . '/../../resources/update/' . $name;
         try {
-            jMQTT::logger(
-                'debug',
-                'debug.ajax.php: ' . init('action') . ' (' . init('name', 'NONE') . ')'
-            );
-            $name = init('name', 'NONE');
-            $ver = str_replace('.php', '', $name);
-            $file = __DIR__ . '/../../resources/update/' . $name;
             if (!file_exists($file))
                 ajax::error("Not such a file: $name", -1);
 

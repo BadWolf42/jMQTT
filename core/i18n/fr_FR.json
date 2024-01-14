@@ -40,7 +40,6 @@
 	"plugins/jMQTT/core/class/jMQTT.class.php": {
 		" (très long), vérifiez les commandes affiliées %4\\$s": " (très long), vérifiez les commandes affiliées %4\\$s",
 		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() a levé l'Exception: %2\\$s",
-		"(création automatique de commande)": "(création automatique de commande)",
 		", commandes affiliées %4\\$s": ", commandes affiliées %4\\$s",
 		": Aucune": ": Aucune",
 		"Accès au broker": "Accès au Broker",
@@ -651,11 +650,9 @@
 		"Certificats déplacés dans la base de donnée": "Certificats déplacés dans la base de donnée"
 	},
 	"plugins/jMQTT/resources/update/12.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() a levé l'Exception: %2\\$s",
 		"Clés de configuration des Brokers jMQTT modifiées": "Clés de configuration des Brokers jMQTT modifiées"
 	},
 	"plugins/jMQTT/resources/update/13.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() a levé l'Exception: %2\\$s",
 		"Configuration des Client-Id mises à jour": "Configuration des Client-Id mises à jour"
 	},
 	"plugins/jMQTT/resources/update/15.php": {

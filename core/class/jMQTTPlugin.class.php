@@ -232,20 +232,13 @@ class jMQTTPlugin {
                         $e->getMessage()
                     ));
                 } else {
-                    jMQTT::logger(
-                        'error',
-                        str_replace(
-                            "\n",
-                            ' <br/> ',
-                            sprintf(
-                                __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                                ",<br/>@Stack: %3\$s.",
-                                __METHOD__,
-                                $e->getMessage(),
-                                $e->getTraceAsString()
-                            )
-                        )
-                    );
+                    jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                        __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
+                        ",<br/>@Stack: %3\$s.",
+                        __METHOD__,
+                        $e->getMessage(),
+                        $e->getTraceAsString()
+                    )));
                 }
             }
             return $res;

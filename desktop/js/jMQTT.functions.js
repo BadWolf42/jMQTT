@@ -195,6 +195,7 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 
     // Add Click handler on confEq
     _card.find('.eqLogicAction[data-action=confEq]').off('click').on('click', function() {
+        // TODO: Fix dual modal bug on save from plugin main page in v4.4
         $('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + _eq.id).dialog('open');
     });
 }

@@ -65,36 +65,18 @@ function jMQTT_update($_direct=true) {
         try {
             $file = __DIR__ . '/../resources/update/' . $name;
             if (file_exists($file)) {
-                log::add(
-                    'jMQTT',
-                    'debug',
-                    sprintf("Applying migration file to version %s...", $ver)
-                );
+                log::add('jMQTT', 'debug', "Applying migration file to version " . $ver . "...");
                 include $file;
-                log::add(
-                    'jMQTT',
-                    'debug',
-                    sprintf("Migration to version %s successfully completed",
-                        $ver
-                    )
-                );
+                log::add('jMQTT', 'debug', "Migration to version " . $ver . " successful");
             }
         } catch (Throwable $e) {
-            log::add(
-                'jMQTT',
-                'error',
-                str_replace(
-                    "\n",
-                    ' <br/> ',
-                    sprintf(
-                        __("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__).
-                        ",<br/>@Stack: %3\$s.",
-                        $ver,
-                        $e->getMessage(),
-                        $e->getTraceAsString()
-                    )
-                )
-            );
+            log::add('jMQTT', 'error', str_replace("\n", ' <br/> ', sprintf(
+                __("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__).
+                ",<br/>@Stack: %3\$s.",
+                $ver,
+                $e->getMessage(),
+                $e->getTraceAsString()
+            )));
         }
     }
 

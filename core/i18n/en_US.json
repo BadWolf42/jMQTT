@@ -39,8 +39,7 @@
 	},
 	"plugins/jMQTT/core/class/jMQTT.class.php": {
 		" (très long), vérifiez les commandes affiliées %4\\$s": " (very long), check affiliated commands: %4\\$s",
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
-		"(création automatique de commande)": "(automatic command creation)",
+		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() raised Exception: %2\\$s",
 		", commandes affiliées %4\\$s": "affiliate commands %4\\$s",
 		": Aucune": ": None",
 		"Accès au broker": "Broker is reachable",
@@ -70,7 +69,7 @@
 		"Erreur lors de la lecture du Template '%s'": "Error while reading template '%s'.",
 		"Erreur sur le Broker sélectionné: %s": "Error on selected Broker: %s",
 		"Interaction demandée '%1\\$s', réponse '%2\\$s'": "Interaction request: '%1\\$s', response: '%2\\$s'.",
-		"L'enregistrement de la nouvelle commande #%1\\$s# a levé l'Exception: %2\\$s": "Registration of the new #%1\\$s# command has raised Exception: %2\\$s",
+		"L'enregistrement de la nouvelle commande #%1\\$s# a levé l'Exception: %2\\$s": "Registration of the new #%1\\$s# command raised Exception: %2\\$s",
 		"L'équipement #%1\\$s# porte déjà le même nom (#%2\\$s#)": "The #%1\\$s# equipment already has the same name (%2\\$s)",
 		"L'équipement #%1\\$s# s'inscrit au topic '%2\\$s' avec une Qos de %3\\$s": "The #%1\\$s# equipment is subscribed to topic '%2\\$s' with a Qos of %3\\$s",
 		"L'équipement #%1\\$s# se désinscrit du topic '%2\\$s'": "The #%1\\$s# equipment has unsubscribed from topic '%2\\$s'",
@@ -128,7 +127,7 @@
 		"Le démon n'est pas démarré": "Daemon not started"
 	},
 	"plugins/jMQTT/core/class/jMQTTDaemon.class.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
+		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() raised Exception: %2\\$s",
 		"Arrêt du démon jMQTT": "Stopping jMQTT daemon",
 		"Démarrage du démon jMQTT": "Starting jMQTT daemon",
 		"Démon démarré": "Daemon started",
@@ -141,7 +140,7 @@
 		"Veuillez vérifier la configuration et les dépendances": "Please check configuration and dependencies"
 	},
 	"plugins/jMQTT/core/class/jMQTTPlugin.class.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
+		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() raised Exception: %2\\$s",
 		"(en docker)": "(in Docker)",
 		"(en local)": "(local)",
 		"Aucun équipement Broker local n'a été trouvé, création en cours...": "No local Broker equipment found, creation in progress...",
@@ -165,7 +164,7 @@
 		"API: Traitement de la requête :": "API: Processing query:"
 	},
 	"plugins/jMQTT/core/php/callback.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
+		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() raised Exception: %2\\$s",
 		"Accès non autorisé depuis %1\\$s (pas de clé API)": "Unauthorized access from %1$\\s (no API key)",
 		"Accès non autorisé depuis %1\\$s, avec la clé API commençant par %2\\$.8s...": "Unauthorized access from %1\\$s, with the API key starting by %2\\$.8s...",
 		"Client MQTT connecté au Broker": "MQTT client connected to Broker",
@@ -651,11 +650,9 @@
 		"Certificats déplacés dans la base de donnée": "Certificates moved to database"
 	},
 	"plugins/jMQTT/resources/update/12.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
 		"Clés de configuration des Brokers jMQTT modifiées": "Configuration keys of jMQTT Brokers modified"
 	},
 	"plugins/jMQTT/resources/update/13.php": {
-		"%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
 		"Configuration des Client-Id mises à jour": "Configuring the updated Client-Id"
 	},
 	"plugins/jMQTT/resources/update/15.php": {
