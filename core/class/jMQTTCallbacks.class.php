@@ -157,7 +157,7 @@ class jMQTTCallbacks {
         }
         // Daemon is UP, registering PORT
         jMQTTDaemon::setPort(intval($port));
-        jMQTT::logger('debug', __("Démon a bien démarré", __FILE__));
+        jMQTT::logger('debug', __("Démon bien démarré", __FILE__));
         // Reset send daemon timer
         // cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         // Send state to WebUI

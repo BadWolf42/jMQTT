@@ -170,7 +170,7 @@
 		"Client MQTT connecté au Broker": "MQTT client connected to Broker",
 		"Client MQTT déconnecté du Broker": "MQTT client disconnected from Broker",
 		"Démon : N'a pas pu être authentifié": "Daemon: Could not be authenticated",
-		"Démon a bien démarré": "Daemon is started",
+		"Démon bien démarré": "Daemon is started",
 		"Démon est en vie": "daemon is alive",
 		"Format JSON erroné: '%1\\$s'": "Invalid Json format: '%1\\$s'.",
 		"Mode Temps Réel activé": "Real Time mode activated",
