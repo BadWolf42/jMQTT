@@ -28,6 +28,7 @@ async def command_post(cmd: CmdModel):
         # Else register it
         await RegisteringLogicVisitor(CmdLogic(cmd)).register()
 
+
 # -----------------------------------------------------------------------------
 # GET /command => list command
 @command.get("", response_model_exclude_defaults=True)
@@ -55,6 +56,7 @@ async def command_delete_id(id: int):
             status_code=status.HTTP_404_NOT_FOUND, detail="Cmd not found"
         )
     await UnregisteringLogicVisitor(CmdLogic.all[id]).unregister()
+
 
 # -----------------------------------------------------------------------------
 @command.get("/{id}/debug/tree", status_code=204, summary="Log this cmd tree")

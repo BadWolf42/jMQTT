@@ -13,6 +13,7 @@ async def isNotSubscribable(topic: str) -> bool:
     # TODO Check if topic is NOT subscribable
     return topic == ''
 
+
 async def addCmdInBrk(cmd: CmdLogic, brk: BrkLogic) -> None:
     topic = cmd.model.configuration.topic
     # If subscription is OK, just return
@@ -33,6 +34,7 @@ async def addCmdInBrk(cmd: CmdLogic, brk: BrkLogic) -> None:
         # TODO Get QoS when Qos location is in cmd
         await brk.subscribe(topic, 1)
 
+
 async def delCmdInBrk(cmd: CmdLogic, brk: BrkLogic) -> None:
     topic = cmd.model.configuration.topic
     # If subscription is OK, just return
@@ -46,6 +48,7 @@ async def delCmdInBrk(cmd: CmdLogic, brk: BrkLogic) -> None:
         await brk.unsubscribe(topic)
         del brk.topics[topic]
 
+
 async def addCmdInEq(cmd: CmdLogic, eq: EqLogic) -> None:
     # Add the reference to EqLogic
     cmd.weakEq = ref(eq)
@@ -55,6 +58,7 @@ async def addCmdInEq(cmd: CmdLogic, eq: EqLogic) -> None:
     else:
         eq.cmd_a[cmd.model.id] = cmd
         # logger.debug('id=%s, cmd disregarded: not an info', cmd.model.id)
+
 
 async def delCmdInEq(cmd: CmdLogic, eq: EqLogic) -> None:
     # Remove CmdLogic ref in EqLogic/BrkLogic

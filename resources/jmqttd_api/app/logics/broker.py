@@ -7,6 +7,8 @@ from weakref import WeakValueDictionary
 from callbacks import Callbacks
 from healthcheck import Healthcheck
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
+from logics.eq import EqLogic
+from logics.cmd import CmdLogic
 from models.broker import BrkModel
 from models.messages import (
     MqttMessageModel,
