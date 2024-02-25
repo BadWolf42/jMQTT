@@ -57,7 +57,7 @@ class jMQTTComToDaemon {
     // ------------------------------------------------------------------------
     // Daemon related function
     public static function initDaemon($params) {
-        $payload = json_encode($params, JSON_UNESCAPED_UNICODE);
+        $payload = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         self::doSend('POST', '/daemon', $payload, __METHOD__, '...');
         // jMQTT::logger(
         //     'debug',
@@ -104,7 +104,7 @@ class jMQTTComToDaemon {
     // ------------------------------------------------------------------------
     // Broker related function
     public static function brokerSet($params) {
-        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
+        $payload = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         self::doSend('POST', '/broker', $payload, __METHOD__,  $payload);
     }
 
@@ -126,7 +126,7 @@ class jMQTTComToDaemon {
             'qos' => intval($qos),
             'retain' => boolval($retain)
         );
-        $data = json_encode($params, JSON_UNESCAPED_SLASHES);
+        $data = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $path = '/broker/' . $id . '/publish';
         self::doSend('POST', $path, $data, __METHOD__, 'id=' . $id . ', data=' . $data);
     }
@@ -156,7 +156,7 @@ class jMQTTComToDaemon {
             'retained' => boolval($retained),
             'duration' => intval($duration)
         );
-        $data = json_encode($params, JSON_UNESCAPED_SLASHES);
+        $data = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $path = '/broker/' . $id . '/realtime/start';
         self::doSend('PUT', $path, $data, __METHOD__, 'id=' . $id . ', data=' . $data);
     }
@@ -210,7 +210,7 @@ class jMQTTComToDaemon {
     // ------------------------------------------------------------------------
     // Equipments related function
     public static function eqptSet($params) {
-        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
+        $payload = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         self::doSend('POST', '/equipment', $payload, __METHOD__, $payload);
     }
 
@@ -223,7 +223,7 @@ class jMQTTComToDaemon {
     // ------------------------------------------------------------------------
     // Commands related function
     public static function cmdSet($params) {
-        $payload = json_encode($params, JSON_UNESCAPED_SLASHES);
+        $payload = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         self::doSend('POST', '/command', $payload, __METHOD__, $payload);
     }
 
