@@ -511,14 +511,14 @@ $('.eqLogicAction[data-action=jsonPathTester]').off('click').on('click', functio
 
 // On addMQTTInfo click
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
-    var _cmd = {type: 'info'};
+    var _cmd = {type: 'info', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
     jmqtt.setPageModified();
 });
 
 // On addMQTTAction click
 $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
-    var _cmd = {type: 'action'};
+    var _cmd = {type: 'action', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
     jmqtt.setPageModified();
 });
@@ -853,7 +853,7 @@ function addCmdToTable(_cmd) {
         tr += '</div>';
         tr += '</td>';
         tr += '<td>';
-        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
+        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;">';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '"></span>';
         tr += '</td><td>';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" ' + disabled + '>';
@@ -865,9 +865,9 @@ function addCmdToTable(_cmd) {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:60px;display:inline-block;">';
         tr += '</td><td>';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized">{{Historiser}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible">{{Afficher}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary">{{Inverser}}</label></span><br/> ';
         tr += '</td><td align="right">';
         // TODO: Add Advanced parameters modale on each cmd
         //  The modale should include:
@@ -952,7 +952,7 @@ function addCmdToTable(_cmd) {
         tr += '</select>';
         tr += '</td>';
         tr += '<td>';
-        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;width:120px;" />';
+        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;width:120px;">';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
         tr += '</td>';
         tr += '<td>';
@@ -967,9 +967,9 @@ function addCmdToTable(_cmd) {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte}}" title="{{Liste : valeur|texte (séparées entre elles par des points-virgules)}}">';
         tr += '</td><td>';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible">{{Afficher}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain">{{Retain}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub">{{Pub. auto}}&nbsp;';
         tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br/>(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br/> ';
         tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
         tr += '</td>';
