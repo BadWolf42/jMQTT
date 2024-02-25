@@ -379,8 +379,9 @@ class jMQTTCallbacks {
 
             // Clear Real Time mode
             $broker->setCache(jMQTTConst::CACHE_REALTIME_MODE, 0);
-
-            $broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
+            if ($broker->getIsEnable()) {
+                $broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
+            }
             $broker->sendMqttClientStateEvent();
         } catch (Throwable $e) {
             if (log::getLogLevel(jMQTT::class) > 100) {
