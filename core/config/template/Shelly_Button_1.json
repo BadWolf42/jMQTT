@@ -2,14 +2,14 @@
     "Shelly Button 1": {
         "name": "Shelly Button 1",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Button 1\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/70",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-11-29 16:59:53",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "remote",
-            "commentaire": "Shelly Button 1\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/70",
             "updatetime": "2022-11-30 11:57:48"
         },
         "category": {
@@ -34,7 +34,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[wifi_sta][ip]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -71,7 +71,7 @@
                 "isHistorized": "0",
                 "unite": "v",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[bat][voltage]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -107,7 +107,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/input_event\/0",
+                    "topic": "%s/input_event/0",
                     "jsonPath": "[event]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -144,7 +144,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/sensor\/battery",
+                    "topic": "%s/sensor/battery",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -179,7 +179,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/sensor\/charger"
+                    "topic": "%s/sensor/charger"
                 },
                 "template": {
                     "dashboard": "default",
@@ -198,7 +198,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online",
+                    "topic": "%s/online",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -234,7 +234,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/input_event\/0",
+                    "topic": "%s/input_event/0",
                     "request": "{\"event\":\"S\"}",
                     "retain": "0",
                     "autoPub": "0"
@@ -253,7 +253,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/input_event\/0",
+                    "topic": "%s/input_event/0",
                     "request": "{\"event\":\"L\"}",
                     "retain": "0",
                     "autoPub": "0"
@@ -272,7 +272,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/input_event\/0",
+                    "topic": "%s/input_event/0",
                     "request": "{\"event\":\"SS\"}",
                     "retain": "0",
                     "autoPub": "0"
@@ -291,7 +291,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/input_event\/0",
+                    "topic": "%s/input_event/0",
                     "request": "{\"event\":\"SSS\"}",
                     "retain": "0",
                     "autoPub": "0"
@@ -310,7 +310,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/input_event\/0",
+                    "topic": "%s/input_event/0",
                     "jsonPath": "[event_cnt]",
                     "timeline::enable": "0",
                     "influx::enable": "0",

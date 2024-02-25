@@ -2,16 +2,16 @@
     "ZWaveJSUI Fibaro FGR-223 Roller Shutter 3": {
         "name": "ZWaveJSUI Fibaro FGR-223 Roller Shutter 3",
         "eqType_name": "jMQTT",
+        "comment": "FGR-223 Volet roulant\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/43",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-02 18:48:43",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "FGR-223 Volet roulant\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "icone": "volet",
             "updatetime": "2021-09-19 13:01:19",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -36,7 +36,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/currentValue",
+                    "topic": "%s/38/1/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -56,7 +56,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "99",
@@ -94,7 +94,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "85",
                     "retain": "0",
                     "jsonPath": ""
@@ -113,7 +113,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "69",
                     "retain": "0",
                     "jsonPath": ""
@@ -132,7 +132,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "48",
                     "retain": "0",
                     "jsonPath": ""
@@ -151,7 +151,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "25",
                     "retain": "0",
                     "jsonPath": ""
@@ -170,7 +170,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "99",
                     "retain": "0",
                     "jsonPath": ""
@@ -189,7 +189,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/Down\/set",
+                    "topic": "%s/38/1/Down/set",
                     "request": "false",
                     "retain": "0",
                     "jsonPath": ""
@@ -208,7 +208,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "0",
                     "retain": "0",
                     "jsonPath": ""
@@ -228,7 +228,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66049",
+                    "topic": "%s/50/1/value/66049",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -249,7 +249,7 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65537",
+                    "topic": "%s/50/1/value/65537",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -269,7 +269,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/local",
+                    "topic": "%s/117/0/local",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -289,7 +289,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/local\/set",
+                    "topic": "%s/117/0/local/set",
                     "request": "2",
                     "retain": "0",
                     "jsonPath": ""
@@ -308,7 +308,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/local\/set",
+                    "topic": "%s/117/0/local/set",
                     "request": "0",
                     "retain": "0",
                     "jsonPath": ""
@@ -327,7 +327,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/rf",
+                    "topic": "%s/117/0/rf",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -347,7 +347,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/rf\/set",
+                    "topic": "%s/117/0/rf/set",
                     "request": "1",
                     "retain": "0",
                     "jsonPath": ""
@@ -366,7 +366,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/117\/0\/rf\/set",
+                    "topic": "%s/117/0/rf/set",
                     "request": "0",
                     "retain": "0",
                     "jsonPath": ""
@@ -385,7 +385,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-zwavejs2mqtt\/api\/RefreshValues(46)",
+                    "topic": "zwave/_CLIENTS/ZWAVE_GATEWAY-zwavejs2mqtt/api/RefreshValues(46)",
                     "retain": "0",
                     "jsonPath": ""
                 },

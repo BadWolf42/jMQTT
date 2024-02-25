@@ -2,12 +2,12 @@
     "Shelly Plus 2pm": {
         "name": "Shelly Plus 2pm",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Plus 2pm\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/67",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-11-17 18:16:59",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
-            "commentaire": "Shelly Plus 2pm\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/67",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "updatetime": "2022-11-18 23:16:45"
         },
@@ -38,7 +38,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "jsonPath": "[method]"
                 },
                 "template": {
@@ -58,7 +58,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/mqtt",
+                    "topic": "%s/status/mqtt",
                     "jsonPath": "[connected]"
                 },
                 "template": {
@@ -85,7 +85,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/cover:0",
+                    "topic": "%s/status/cover:0",
                     "jsonPath": "[current]"
                 },
                 "template": {
@@ -112,7 +112,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/cover:0",
+                    "topic": "%s/status/cover:0",
                     "jsonPath": "[voltage]"
                 },
                 "template": {
@@ -139,7 +139,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "jsonPath": "[params][pos]",
                     "minValue": "0",
                     "maxValue": "100"
@@ -168,7 +168,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/cover:0",
+                    "topic": "%s/status/cover:0",
                     "jsonPath": "[state]"
                 },
                 "template": {
@@ -195,7 +195,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/input:1",
+                    "topic": "%s/status/input:1",
                     "jsonPath": "[state]"
                 },
                 "template": {
@@ -222,7 +222,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/input:0",
+                    "topic": "%s/status/input:0",
                     "jsonPath": "[state]"
                 },
                 "template": {
@@ -250,7 +250,7 @@
                 "isHistorized": "1",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/status\/cover:0",
+                    "topic": "%s/status/cover:0",
                     "jsonPath": "[temperature][tC]"
                 },
                 "template": {
@@ -279,7 +279,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/sys",
+                    "topic": "%s/status/sys",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -306,7 +306,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/sys",
+                    "topic": "%s/status/sys",
                     "jsonPath": "[uptime]"
                 },
                 "template": {
@@ -333,7 +333,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/cover:0",
+                    "topic": "%s/status/cover:0",
                     "jsonPath": "[current_pos]",
                     "minValue": "0",
                     "maxValue": "100"
@@ -362,7 +362,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online"
+                    "topic": "%s/online"
                 },
                 "template": {
                     "dashboard": "default",
@@ -388,7 +388,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/input:1"
+                    "topic": "%s/status/input:1"
                 },
                 "template": {
                     "dashboard": "default",
@@ -414,7 +414,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/events\/rpc"
+                    "topic": "%s/events/rpc"
                 },
                 "template": {
                     "dashboard": "default",
@@ -440,7 +440,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0"
+                    "topic": "%s/status/switch:0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -466,7 +466,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/slider"
+                    "topic": "%s/slider"
                 },
                 "template": {
                     "dashboard": "default",
@@ -492,7 +492,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc"
+                    "topic": "%s/rpc"
                 },
                 "template": {
                     "dashboard": "default",
@@ -518,7 +518,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/debug\/log"
+                    "topic": "%s/debug/log"
                 },
                 "template": {
                     "dashboard": "default",
@@ -544,7 +544,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "request": "{\"id\":1,\"src\":\"jeedom\",\"method\":\"Cover.GoToPosition\",\"params\":{\"id\":0,\"pos\":#slider#}}",
                     "retain": "0",
                     "autoPub": "1",
@@ -574,7 +574,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/cover:0"
+                    "topic": "%s/status/cover:0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -600,7 +600,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/input:0"
+                    "topic": "%s/status/input:0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -626,7 +626,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/mqtt"
+                    "topic": "%s/status/mqtt"
                 },
                 "template": {
                     "dashboard": "default",
@@ -652,7 +652,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/script:1"
+                    "topic": "%s/status/script:1"
                 },
                 "template": {
                     "dashboard": "default",
@@ -678,7 +678,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "request": "{\"id\":1,\"src\":\"jeedom\",\"method\":\"Cover.GoToPosition\",\"params\":{\"id\":0,\"pos\":20}}",
                     "retain": "0",
                     "autoPub": "0"
@@ -706,7 +706,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "request": "{\"id\":1,\"src\":\"jeedom\",\"method\":\"Cover.Open\",\"params\":{\"id\":0}}",
                     "retain": "0",
                     "autoPub": "0"
@@ -725,7 +725,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:1"
+                    "topic": "%s/status/switch:1"
                 },
                 "template": {
                     "dashboard": "default",
@@ -751,7 +751,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "request": "{\"id\":1,\"src\":\"jeedom\",\"method\":\"Cover.Close\",\"params\":{\"id\":0}}",
                     "retain": "0",
                     "autoPub": "0"
@@ -770,7 +770,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/sys"
+                    "topic": "%s/status/sys"
                 },
                 "template": {
                     "dashboard": "default",

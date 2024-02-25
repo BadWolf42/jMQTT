@@ -2,14 +2,14 @@
     "Shelly EM": {
         "name": "Shelly EM",
         "eqType_name": "jMQTT",
+        "comment": "Shelly EM\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/71",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-12-07 12:57:19",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "energie",
-            "commentaire": "Shelly EM\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/71",
             "updatetime": "2022-12-08 09:29:58"
         },
         "category": {
@@ -39,7 +39,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[wifi_sta][ip]"
                 },
                 "template": {
@@ -66,7 +66,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online",
+                    "topic": "%s/online",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -103,7 +103,7 @@
                 "isHistorized": "0",
                 "unite": "w",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/power",
+                    "topic": "%s/emeter/0/power",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -141,7 +141,7 @@
                 "isHistorized": "0",
                 "unite": "kW",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/total",
+                    "topic": "%s/emeter/0/total",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -151,7 +151,7 @@
                     "actionCheckCmd": [],
                     "jeedomPreExecCmd": [],
                     "jeedomPostExecCmd": [],
-                    "calculValueOffset": "#value#\/1000",
+                    "calculValueOffset": "#value#/1000",
                     "historizeRound": "2",
                     "historizeMode": "avg"
                 },
@@ -179,7 +179,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/pf",
+                    "topic": "%s/emeter/0/pf",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -215,7 +215,7 @@
                 "isHistorized": "0",
                 "unite": "var",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/reactive_power",
+                    "topic": "%s/emeter/0/reactive_power",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -253,7 +253,7 @@
                 "isHistorized": "0",
                 "unite": "v",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/voltage",
+                    "topic": "%s/emeter/0/voltage",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -291,7 +291,7 @@
                 "isHistorized": "0",
                 "unite": "w",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/power",
+                    "topic": "%s/emeter/1/power",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -329,11 +329,11 @@
                 "isHistorized": "0",
                 "unite": "kW",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/total",
+                    "topic": "%s/emeter/1/total",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
-                    "calculValueOffset": "#value#\/1000",
+                    "calculValueOffset": "#value#/1000",
                     "historizeRound": "2",
                     "jeedomCheckCmdOperator": "==",
                     "historizeMode": "avg",
@@ -367,7 +367,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/pf",
+                    "topic": "%s/emeter/1/pf",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -403,7 +403,7 @@
                 "isHistorized": "0",
                 "unite": "var",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/reactive_power",
+                    "topic": "%s/emeter/1/reactive_power",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -441,7 +441,7 @@
                 "isHistorized": "0",
                 "unite": "v",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/voltage",
+                    "topic": "%s/emeter/1/voltage",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -478,7 +478,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0",
+                    "topic": "%s/relay/0",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -514,7 +514,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "on",
                     "retain": "0",
                     "autoPub": "0"
@@ -543,7 +543,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "off",
                     "retain": "0",
                     "autoPub": "0",
@@ -578,7 +578,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "toggle",
                     "retain": "0",
                     "autoPub": "0",
@@ -612,7 +612,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/command",
+                    "topic": "%s/emeter/0/command",
                     "request": "reset_totals",
                     "retain": "0",
                     "autoPub": "0",
@@ -646,7 +646,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/returned_energy"
+                    "topic": "%s/emeter/0/returned_energy"
                 },
                 "template": {
                     "dashboard": "default",
@@ -672,7 +672,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/command",
+                    "topic": "%s/emeter/1/command",
                     "request": "reset_totals",
                     "retain": "0",
                     "autoPub": "0"
@@ -700,7 +700,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/returned_energy"
+                    "topic": "%s/emeter/1/returned_energy"
                 },
                 "template": {
                     "dashboard": "default",
@@ -726,7 +726,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/energy"
+                    "topic": "%s/emeter/0/energy"
                 },
                 "template": {
                     "dashboard": "default",
@@ -752,7 +752,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/total_returned"
+                    "topic": "%s/emeter/0/total_returned"
                 },
                 "template": {
                     "dashboard": "default",
@@ -778,7 +778,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/total_returned"
+                    "topic": "%s/emeter/1/total_returned"
                 },
                 "template": {
                     "dashboard": "default",
@@ -804,7 +804,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/energy"
+                    "topic": "%s/emeter/1/energy"
                 },
                 "template": {
                     "dashboard": "default",
@@ -830,7 +830,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce"
+                    "topic": "%s/announce"
                 },
                 "template": {
                     "dashboard": "default",
@@ -856,7 +856,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/0\/command"
+                    "topic": "%s/emeter/0/command"
                 },
                 "template": {
                     "dashboard": "default",
@@ -882,7 +882,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/emeter\/1\/command"
+                    "topic": "%s/emeter/1/command"
                 },
                 "template": {
                     "dashboard": "default",
@@ -908,7 +908,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info"
+                    "topic": "%s/info"
                 },
                 "template": {
                     "dashboard": "default",

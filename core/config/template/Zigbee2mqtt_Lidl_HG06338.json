@@ -2,16 +2,16 @@
     "Zigbee2mqtt Lidl HG06338": {
         "name": "Zigbee2mqtt Lidl HG06338",
         "eqType_name": "jMQTT",
+        "comment": "HG06338",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-10-28 14:42:45",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "HG06338",
             "icone": "power-plug",
             "updatetime": "2021-10-28 14:44:01",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -32,7 +32,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/get",
+                    "topic": "%s/get",
                     "jsonPath": ""
                 },
                 "template": {
@@ -152,7 +152,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l1\":\"ON\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -172,7 +172,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l1\":\"OFF\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -192,7 +192,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l1\":\"TOGGLE\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -212,7 +212,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/get",
+                    "topic": "%s/get",
                     "request": "{\"state_l1\": \"\"}",
                     "retain": "0",
                     "Qos": "1",
@@ -232,7 +232,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l2\":\"ON\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -252,7 +252,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l2\":\"OFF\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -272,7 +272,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l2\":\"TOGGLE\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -292,7 +292,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/get",
+                    "topic": "%s/get",
                     "request": "{\"state_l2\": \"\"}",
                     "retain": "0",
                     "Qos": "1",
@@ -312,7 +312,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l3\":\"ON\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -332,7 +332,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l3\":\"OFF\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -352,7 +352,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state_l3\":\"TOGGLE\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -372,7 +372,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/get",
+                    "topic": "%s/get",
                     "request": "{\"state_l3\": \"\"}",
                     "retain": "0",
                     "Qos": "1",

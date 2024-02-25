@@ -2,6 +2,7 @@
     "Shelly Flood": {
         "name": "Shelly Flood",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Flood",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-03-23 18:10:46",
@@ -14,7 +15,6 @@
             "batterytime": "2022-01-20 20:07:52",
             "auto_add_topic": "%s/#",
             "battery_cmd": "battery",
-            "commentaire": "Shelly Flood",
             "availability_cmd": "online"
         },
         "category": {

@@ -115,8 +115,7 @@
         <div class="form-group typ-std typ-brk">
             <label class="col-sm-3 control-label">{{Commentaire}}</label>
             <div class="col-sm-3">
-            <!-- TODO: Migrate eq/configuration/commentaire to eq/comment -->
-                <textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="commentaire"></textarea>
+                <textarea class="eqLogicAttr form-control" data-l1key="comment"></textarea>
             </div>
         </div>
 

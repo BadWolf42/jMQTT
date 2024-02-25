@@ -141,7 +141,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
             eq += '</div></div>';
             // Comment
             eq += '<div class="form-group"><label class="col-sm-3 control-label">{{Commentaire}}</label><div class="col-sm-8">';
-            eq += '<textarea class="eqLogicAttr form-control" style="resize:vertical!important;" data-l1key="configuration" data-l2key="commentaire" disabled>'+init(data.configuration.commentaire)+'</textarea>';
+            eq += '<textarea class="eqLogicAttr form-control" style="resize:vertical!important;" data-l1key="comment" disabled>'+init(data.comment)+'</textarea>';
             eq += '</div></div>';
             // Logo
             eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">&nbsp;</label><div class="col-sm-4">';

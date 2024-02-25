@@ -2,13 +2,13 @@
     "Zigbee2mqtt Osram AB3257001NJ Smart plus": {
         "name": "Zigbee2mqtt Osram AB3257001NJ Smart plus",
         "eqType_name": "jMQTT",
+        "comment": "Zigbee2mqtt Osram AB3257001NJ Smart plus\nGithub: https://github.com/Domochip/jMQTT/issues/212",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-05-27 23:22:06",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "battery_type": "Secteur",
-            "commentaire": "Zigbee2mqtt Osram AB3257001NJ Smart plus\nGithub: https:\/\/github.com\/Domochip\/jMQTT\/issues\/212",
             "icone": "power-plug",
             "updatetime": "2022-08-25 08:55:21"
         },
@@ -71,7 +71,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"ON\"}",
                     "retain": "0",
                     "autoPub": "0"
@@ -90,7 +90,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"OFF\"}",
                     "retain": "0",
                     "autoPub": "0"
@@ -109,7 +109,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"TOGGLE\"}",
                     "retain": "0",
                     "autoPub": "0"

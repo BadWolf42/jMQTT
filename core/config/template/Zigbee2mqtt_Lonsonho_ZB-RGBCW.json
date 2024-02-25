@@ -2,18 +2,18 @@
     "Zigbee2mqtt Lonsonho ZB-RGBCW": {
         "name": "Zigbee2mqtt Lonsonho ZB-RGBCW",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/template-recherche-lonsonho-zb-rgbcw/81350",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-03-18 19:57:13",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "lightbulb",
             "updatetime": "2022-03-20 04:10:40",
             "previousIsEnable": "1",
-            "previousIsVisible": "1",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/template-recherche-lonsonho-zb-rgbcw/81350"
+            "previousIsVisible": "1"
         },
         "category": {
             "heating": "0",
@@ -72,7 +72,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"TOGGLE\"}",
                     "retain": "0",
                     "autoPub": "0"
@@ -101,7 +101,7 @@
                 "subType": "color",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"color\":{\"hex\":\"#color#\"}}",
                     "retain": "0",
                     "autoPub": "0",
@@ -130,7 +130,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/brightness",
+                    "topic": "%s/set/brightness",
                     "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "254",
@@ -161,7 +161,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/color_temp",
+                    "topic": "%s/set/color_temp",
                     "request": "coolest",
                     "retain": "0",
                     "autoPub": "0"
@@ -189,7 +189,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"ON\"}",
                     "retain": "0",
                     "autoPub": "0",
@@ -220,7 +220,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/color_temp",
+                    "topic": "%s/set/color_temp",
                     "request": "cool",
                     "retain": "0",
                     "autoPub": "0"
@@ -248,7 +248,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/color_temp",
+                    "topic": "%s/set/color_temp",
                     "request": "neutral",
                     "retain": "0",
                     "autoPub": "0"
@@ -276,7 +276,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"OFF\"}",
                     "retain": "0",
                     "autoPub": "0",
@@ -307,7 +307,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/color_temp",
+                    "topic": "%s/set/color_temp",
                     "request": "warm",
                     "retain": "0",
                     "autoPub": "0"
@@ -335,7 +335,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/color_temp",
+                    "topic": "%s/set/color_temp",
                     "request": "warmest",
                     "retain": "0",
                     "autoPub": "0"

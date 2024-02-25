@@ -2,15 +2,15 @@
     "Dingtian 2R": {
         "name": "Dingtian 2R",
         "eqType_name": "jMQTT",
+        "comment": "Dingtian 2R\nJeedom Community: https://community.jeedom.com/t/carte-relai-entree-economique/65416",
         "configuration": {
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "createtime": "2021-09-27 22:03:15",
             "type": "eqpt",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "relay",
-            "commentaire": "Dingtian 2R\nJeedom Community: https:\/\/community.jeedom.com\/t\/carte-relai-entree-economique\/65416",
             "updatetime": "2022-06-25 16:53:50"
         },
         "category": {
@@ -35,7 +35,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/lwt_availability",
+                    "topic": "%s/relay8506/out/lwt_availability",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -69,7 +69,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/ip"
+                    "topic": "%s/relay8506/out/ip"
                 },
                 "template": {
                     "dashboard": "default",
@@ -88,7 +88,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/mac"
+                    "topic": "%s/relay8506/out/mac"
                 },
                 "template": {
                     "dashboard": "default",
@@ -107,7 +107,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/input1"
+                    "topic": "%s/relay8506/out/input1"
                 },
                 "template": {
                     "dashboard": "default",
@@ -126,7 +126,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/sn"
+                    "topic": "%s/relay8506/out/sn"
                 },
                 "template": {
                     "dashboard": "default",
@@ -145,7 +145,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/r1",
+                    "topic": "%s/relay8506/out/r1",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -179,7 +179,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/in\/r1",
+                    "topic": "%s/relay8506/in/r1",
                     "request": "ON",
                     "retain": "0",
                     "autoPub": "0"
@@ -198,7 +198,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/input2"
+                    "topic": "%s/relay8506/out/input2"
                 },
                 "template": {
                     "dashboard": "default",
@@ -217,7 +217,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/in\/r1",
+                    "topic": "%s/relay8506/in/r1",
                     "request": "OFF",
                     "retain": "0",
                     "autoPub": "0"
@@ -236,7 +236,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/r2",
+                    "topic": "%s/relay8506/out/r2",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -273,7 +273,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/r1"
+                    "topic": "%s/relay8506/out/r1"
                 },
                 "template": {
                     "dashboard": "default",
@@ -292,7 +292,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/in\/r2",
+                    "topic": "%s/relay8506/in/r2",
                     "request": "ON",
                     "retain": "0",
                     "autoPub": "0"
@@ -311,7 +311,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/in\/r2",
+                    "topic": "%s/relay8506/in/r2",
                     "request": "OFF",
                     "retain": "0",
                     "autoPub": "0"
@@ -330,7 +330,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/r2"
+                    "topic": "%s/relay8506/out/r2"
                 },
                 "template": {
                     "dashboard": "default",
@@ -349,7 +349,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/i1",
+                    "topic": "%s/out/i1",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -384,7 +384,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/i2",
+                    "topic": "%s/out/i2",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -418,7 +418,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/relay_cnt"
+                    "topic": "%s/relay8506/out/relay_cnt"
                 },
                 "template": {
                     "dashboard": "default",
@@ -437,7 +437,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/relay1"
+                    "topic": "%s/relay8506/out/relay1"
                 },
                 "template": {
                     "dashboard": "default",
@@ -456,7 +456,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay8506\/out\/relay2"
+                    "topic": "%s/relay8506/out/relay2"
                 },
                 "template": {
                     "dashboard": "default",
@@ -475,7 +475,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input1"
+                    "topic": "%s/out/input1"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -494,7 +494,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input2"
+                    "topic": "%s/out/input2"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -513,7 +513,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/input_cnt"
+                    "topic": "%s/out/input_cnt"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -532,7 +532,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay1"
+                    "topic": "%s/out/relay1"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -551,7 +551,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay2"
+                    "topic": "%s/out/relay2"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -570,7 +570,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/out\/relay_cnt"
+                    "topic": "%s/out/relay_cnt"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -589,7 +589,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r1"
+                    "topic": "%s/in/r1"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -608,7 +608,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/in\/r2"
+                    "topic": "%s/in/r2"
                 },
                 "template": {
                     "dashboard": "core::default",

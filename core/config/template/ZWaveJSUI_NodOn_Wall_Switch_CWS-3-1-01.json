@@ -2,12 +2,12 @@
     "ZWaveJSUI NodOn Wall Switch CWS-3-1-01": {
         "name": "ZWaveJSUI NodOn Wall Switch CWS-3-1-01",
         "eqType_name": "jMQTT",
+        "comment": "NodOn Wall Switch CWS-3-1-01\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/53",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-10-22 12:14:25",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
-            "commentaire": "NodOn Wall Switch CWS-3-1-01\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/53",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "zwave",
             "battery_type": "1xCR2032",
@@ -44,7 +44,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/8",
+                    "topic": "%s/112/0/8",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -64,7 +64,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "topic": "zwave/_CLIENTS/ZWAVE_GATEWAY-Zwavejs2Mqtt/api/refreshValues/set",
                     "request": "{\"args\": [#[nodeId]#]}",
                     "retain": "0",
                     "autoPub": "0"
@@ -83,7 +83,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/isLow",
+                    "topic": "%s/128/0/isLow",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -103,7 +103,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level",
+                    "topic": "%s/128/0/level",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -123,7 +123,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/91\/0\/scene\/001",
+                    "topic": "%s/91/0/scene/001",
                     "jsonPath": "[value]",
                     "minValue": "0",
                     "maxValue": "4",
@@ -161,7 +161,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/91\/0\/scene\/003",
+                    "topic": "%s/91/0/scene/003",
                     "jsonPath": "[value]",
                     "minValue": "0",
                     "maxValue": "4",
@@ -201,7 +201,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/91\/0\/scene\/002",
+                    "topic": "%s/91/0/scene/002",
                     "jsonPath": "[value]",
                     "minValue": "0",
                     "maxValue": "4",
@@ -241,7 +241,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[status]"
                 },
                 "template": {
@@ -261,7 +261,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/91\/0\/scene\/004",
+                    "topic": "%s/91/0/scene/004",
                     "jsonPath": "[value]",
                     "minValue": "0",
                     "maxValue": "4",
@@ -301,7 +301,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {

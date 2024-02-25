@@ -2,12 +2,12 @@
     "Tasmota Nous A1T": {
         "name": "Tasmota Nous A1T",
         "eqType_name": "jMQTT",
+        "comment": "Tasmota Nous A1T\nNeed to configure the Plug in MQTT tab with the topic : %topic%/%prefix% (inverted from default one define)",
         "configuration": {
             "auto_add_cmd": "0",
             "type": "eqpt",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "createtime": "2021-10-21 09:18:16",
-            "commentaire": "Tasmota Nous A1T\nNeed to configure the Plug in MQTT tab with the topic : %topic%/%prefix% (inverted from default one define)",
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "power-plug",
@@ -32,7 +32,7 @@
                 "isHistorized": "0",
                 "unite": "Va",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][ApparentPower]"
                 },
                 "template": {
@@ -52,7 +52,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO3",
+                    "topic": "%s/tele/INFO3",
                     "jsonPath": "[Info3][BootCount]"
                 },
                 "template": {
@@ -72,7 +72,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1"
+                    "topic": "%s/cmnd/POWER1"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -92,7 +92,7 @@
                 "isHistorized": "0",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Current]"
                 },
                 "template": {
@@ -112,7 +112,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Factor]"
                 },
                 "template": {
@@ -132,7 +132,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO1",
+                    "topic": "%s/tele/INFO1",
                     "jsonPath": "[Info1][FallbackTopic]"
                 },
                 "template": {
@@ -152,7 +152,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO1",
+                    "topic": "%s/tele/INFO1",
                     "jsonPath": "[Info1][GroupTopic]"
                 },
                 "template": {
@@ -172,7 +172,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Heap]"
                 },
                 "template": {
@@ -192,7 +192,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO2",
+                    "topic": "%s/tele/INFO2",
                     "jsonPath": "[Info2][Hostname]"
                 },
                 "template": {
@@ -212,7 +212,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO2",
+                    "topic": "%s/tele/INFO2",
                     "jsonPath": "[Info2][IPAddress]"
                 },
                 "template": {
@@ -232,7 +232,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[LoadAvg]"
                 },
                 "template": {
@@ -252,7 +252,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO1",
+                    "topic": "%s/tele/INFO1",
                     "jsonPath": "[Info1][Module]"
                 },
                 "template": {
@@ -272,7 +272,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[MqttCount]"
                 },
                 "template": {
@@ -292,7 +292,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Period]"
                 },
                 "template": {
@@ -313,7 +313,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Power]"
                 },
                 "template": {
@@ -333,7 +333,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/stat\/RESULT",
+                    "topic": "%s/stat/RESULT",
                     "jsonPath": "[POWER]"
                 },
                 "template": {
@@ -354,7 +354,7 @@
                 "isHistorized": "0",
                 "unite": "Var",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][ReactivePower]"
                 },
                 "template": {
@@ -374,7 +374,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO3",
+                    "topic": "%s/tele/INFO3",
                     "jsonPath": "[Info3][RestartReason]"
                 },
                 "template": {
@@ -394,7 +394,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Sleep]"
                 },
                 "template": {
@@ -414,7 +414,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[SleepMode]"
                 },
                 "template": {
@@ -434,7 +434,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Time]"
                 },
                 "template": {
@@ -454,7 +454,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Today]"
                 },
                 "template": {
@@ -474,7 +474,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Total]"
                 },
                 "template": {
@@ -494,7 +494,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][TotalStartTime]"
                 },
                 "template": {
@@ -514,7 +514,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Uptime]"
                 },
                 "template": {
@@ -534,7 +534,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[UptimeSec]"
                 },
                 "template": {
@@ -554,7 +554,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO1",
+                    "topic": "%s/tele/INFO1",
                     "jsonPath": "[Info1][Version]"
                 },
                 "template": {
@@ -575,7 +575,7 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Voltage]"
                 },
                 "template": {
@@ -595,7 +595,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO2",
+                    "topic": "%s/tele/INFO2",
                     "jsonPath": "[Info2][WebServerMode]"
                 },
                 "template": {
@@ -615,7 +615,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][AP]"
                 },
                 "template": {
@@ -635,7 +635,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][BSSId]"
                 },
                 "template": {
@@ -655,7 +655,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][Channel]"
                 },
                 "template": {
@@ -675,7 +675,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][Downtime]"
                 },
                 "template": {
@@ -695,7 +695,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][LinkCount]"
                 },
                 "template": {
@@ -715,7 +715,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][Mode]"
                 },
                 "template": {
@@ -735,7 +735,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][RSSI]"
                 },
                 "template": {
@@ -755,7 +755,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][Signal]"
                 },
                 "template": {
@@ -775,7 +775,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE",
+                    "topic": "%s/tele/STATE",
                     "jsonPath": "[Wifi][SSId]"
                 },
                 "template": {
@@ -795,7 +795,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR",
+                    "topic": "%s/tele/SENSOR",
                     "jsonPath": "[ENERGY][Yesterday]"
                 },
                 "template": {
@@ -815,7 +815,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/stat\/POWER"
+                    "topic": "%s/stat/POWER"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -834,7 +834,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/stat\/RESULT"
+                    "topic": "%s/stat/RESULT"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -853,7 +853,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/LWT"
+                    "topic": "%s/tele/LWT"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -872,7 +872,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/SENSOR"
+                    "topic": "%s/tele/SENSOR"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -891,7 +891,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/STATE"
+                    "topic": "%s/tele/STATE"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -910,7 +910,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO1"
+                    "topic": "%s/tele/INFO1"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -929,7 +929,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO2"
+                    "topic": "%s/tele/INFO2"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -948,7 +948,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/tele\/INFO3"
+                    "topic": "%s/tele/INFO3"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -967,7 +967,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER2"
+                    "topic": "%s/cmnd/POWER2"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -986,7 +986,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER3"
+                    "topic": "%s/cmnd/POWER3"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1005,7 +1005,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER4"
+                    "topic": "%s/cmnd/POWER4"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -1024,7 +1024,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
+                    "topic": "%s/cmnd/POWER1",
                     "request": "ON",
                     "retain": "0",
                     "Qos": "2",
@@ -1044,7 +1044,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
+                    "topic": "%s/cmnd/POWER1",
                     "request": "OFF",
                     "retain": "0",
                     "Qos": "2",
@@ -1064,7 +1064,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
+                    "topic": "%s/cmnd/POWER1",
                     "request": "TOGGLE",
                     "retain": "0",
                     "Qos": "1",

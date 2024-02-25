@@ -2,16 +2,16 @@
     "Zigbee2mqtt Heiman HS1CA": {
         "name": "Zigbee2mqtt Heiman HS1CA",
         "eqType_name": "jMQTT",
+        "comment": "HS1CA",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-10-28 12:37:14",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "1xCR123A",
-            "commentaire": "HS1CA",
             "icone": "molecule-co",
             "updatetime": "2021-10-28 13:08:56",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",

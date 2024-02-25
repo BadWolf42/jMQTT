@@ -2,17 +2,17 @@
     "ZWaveJSUI Philips HUE White": {
         "name": "ZWaveJSUI Philips HUE White",
         "eqType_name": "jMQTT",
+        "comment": "ZWaveJSUI Philips HUE White\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/65",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-05-17 12:11:10",
             "auto_add_cmd": "0",
             "Qos": "2",
-            "commentaire": "ZWaveJSUI Philips HUE White\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/65",
             "icone": "lightbulb",
             "updatetime": "2022-11-16 22:35:15",
             "previousIsEnable": "1",
             "previousIsVisible": "1",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -73,7 +73,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/",
+                    "topic": "%s/set/",
                     "request": "{\"state\":\"ON\"}",
                     "retain": "0",
                     "timeline::enable": "0",
@@ -105,7 +105,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/",
+                    "topic": "%s/set/",
                     "request": "{\"state\":\"OFF\"}",
                     "retain": "0",
                     "timeline::enable": "0",
@@ -175,7 +175,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/",
+                    "topic": "%s/set/",
                     "request": "{\"brightness\":\"#slider#\"}",
                     "minValue": "0",
                     "maxValue": "254",
@@ -208,9 +208,9 @@
                 "type": "info",
                 "subType": "numeric",
                 "isHistorized": "1",
-                "unite": "KW\/h",
+                "unite": "KW/h",
                 "configuration": {
-                    "topic": "%s\/conso_virtual",
+                    "topic": "%s/conso_virtual",
                     "minValue": "123.14022016825001",
                     "maxValue": "134.5472311766625",
                     "timeline::enable": "0",
@@ -250,7 +250,7 @@
                 "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/puissance_virtual",
+                    "topic": "%s/puissance_virtual",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -288,7 +288,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/",
+                    "topic": "%s/set/",
                     "request": "{\"hue_power_on_behavior\":\"on\"}",
                     "retain": "0",
                     "autoPub": "0"

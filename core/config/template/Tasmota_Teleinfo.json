@@ -2,14 +2,14 @@
     "Tasmota Teleinfo": {
         "name": "Tasmota Teleinfo",
         "eqType_name": "jMQTT",
+        "comment": "Tasmota Teleinfo\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/69",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-11-20 18:48:45",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "teleinfo",
-            "commentaire": "Tasmota Teleinfo\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/69",
             "updatetime": "2022-11-28 22:02:36"
         },
         "category": {
@@ -34,7 +34,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[TIC][ADCO]"
                 },
                 "template": {
@@ -54,7 +54,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER"
+                    "topic": "%s/cmnd/POWER"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -73,7 +73,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[TIC][PTEC]"
                 },
                 "template": {
@@ -94,7 +94,7 @@
                 "isHistorized": "0",
                 "unite": "wh",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[TIC][HCHC]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -132,7 +132,7 @@
                 "isHistorized": "0",
                 "unite": "wh",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[TIC][HCHP]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -170,7 +170,7 @@
                 "isHistorized": "0",
                 "unite": "kwh",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[ENERGY][Today]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -208,7 +208,7 @@
                 "isHistorized": "0",
                 "unite": "kwh",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[ENERGY][Yesterday]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -246,7 +246,7 @@
                 "isHistorized": "0",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[TIC][IMAX]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -284,7 +284,7 @@
                 "isHistorized": "1",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[TIC][IINST]",
                     "minValue": "0",
                     "maxValue": "48",
@@ -325,7 +325,7 @@
                 "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/SENSOR",
+                    "topic": "%s/SENSOR",
                     "jsonPath": "[TIC][PAPP]",
                     "minValue": "0",
                     "maxValue": "6000",
@@ -365,7 +365,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1"
+                    "topic": "%s/INFO1"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -384,7 +384,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2",
+                    "topic": "%s/INFO2",
                     "jsonPath": "[Info2][IPAddress]"
                 },
                 "template": {
@@ -404,7 +404,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/LWT"
+                    "topic": "%s/LWT"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -423,7 +423,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2"
+                    "topic": "%s/INFO2"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -442,7 +442,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO3"
+                    "topic": "%s/INFO3"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -461,7 +461,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][RSSI]"
                 },
                 "template": {
@@ -481,7 +481,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[UptimeSec]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -518,7 +518,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Uptime]"
                 },
                 "template": {
@@ -538,7 +538,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT"
+                    "topic": "%s/RESULT"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -557,7 +557,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/SENSOR"
+                    "topic": "%s/SENSOR"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -576,7 +576,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE"
+                    "topic": "%s/STATE"
                 },
                 "template": {
                     "dashboard": "core::default",

@@ -2,13 +2,13 @@
     "ZWaveJSUI Philips HUE White and Color": {
         "name": "Lp Alarme Couleur",
         "eqType_name": "jMQTT",
+        "comment": "ZWaveJSUI Philips HUE White and Color 8718699673147\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/65",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-12-18 16:24:01",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
-            "commentaire": "ZWaveJSUI Philips HUE White and Color 8718699673147\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/65",
             "icone": "lightbulb",
             "updatetime": "2022-11-17 10:54:19",
             "mqttUser": "admin",
@@ -50,7 +50,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/availability"
+                    "topic": "%s/availability"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -102,7 +102,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "ON",
                     "retain": "0",
                     "autoPub": "0",
@@ -139,7 +139,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "OFF",
                     "retain": "0",
                     "autoPub": "0",
@@ -175,7 +175,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"brightness\":#slider#}",
                     "minValue": "0",
                     "maxValue": "254",
@@ -197,7 +197,7 @@
                 "subType": "color",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"color\":{\"hex\":\"#color#\"}}",
                     "retain": "0",
                     "autoPub": "0",
@@ -262,7 +262,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"color_temp\":#slider#}",
                     "minValue": "153",
                     "maxValue": "555",

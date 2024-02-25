@@ -51,7 +51,6 @@ class jMQTTCmd extends cmd {
         if ($clean) { // Remove unneeded informations
             unset($return['alert']);
             unset($return['configuration']['prev_retain']);
-            unset($return['configuration']['commentaire']);
             unset($return['isHistorized']);
             unset($return['isVisible']);
             unset($return['display']);

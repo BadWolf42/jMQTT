@@ -2,20 +2,20 @@
     "ZWaveJSUI Fibaro FGS-222 Switch": {
         "name": "ZWaveJSUI Fibaro FGS-222 Switch",
         "eqType_name": "jMQTT",
+        "comment": "FGS-222 Double charge\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/43",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-02 21:33:50",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "FGS-222 Double charge\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "icone": "relay",
             "mqttPubStatus": "1",
             "mqttTls": "0",
             "mqttTlsCheck": "public",
             "api": "disable",
             "updatetime": "2022-01-13 22:23:28",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -36,7 +36,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue",
+                    "topic": "%s/37/1/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -72,7 +72,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -108,7 +108,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -144,7 +144,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue",
+                    "topic": "%s/37/2/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -180,7 +180,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -216,7 +216,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -253,7 +253,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "topic": "zwave/_CLIENTS/ZWAVE_GATEWAY-Zwavejs2Mqtt/api/refreshValues/set",
                     "request": "{\"args\": []}",
                     "retain": "0",
                     "autoPub": "0",
@@ -288,7 +288,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {
@@ -308,7 +308,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[value]"
                 },
                 "template": {

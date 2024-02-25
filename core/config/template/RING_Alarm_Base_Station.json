@@ -2,13 +2,13 @@
     "RING Alarm Base Station": {
         "name": "Ring Alarm Base Station",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-02-19 09:29:10",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
             "updatetime": "2022-03-21 20:50:21"
         },
         "category": {
@@ -33,7 +33,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[acStatus]"
                 },
                 "template": {
@@ -53,7 +53,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[batteryStatus]"
                 },
                 "template": {
@@ -74,7 +74,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[brightness]",
                     "minValue": "0",
                     "maxValue": "100"
@@ -96,7 +96,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[commStatus]"
                 },
                 "template": {
@@ -116,7 +116,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastCommTime]"
                 },
                 "template": {
@@ -136,7 +136,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastUpdate]"
                 },
                 "template": {
@@ -156,7 +156,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[serialNumber]"
                 },
                 "template": {
@@ -176,7 +176,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[tamperStatus]"
                 },
                 "template": {
@@ -196,7 +196,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/wireless\/attributes",
+                    "topic": "%s/wireless/attributes",
                     "jsonPath": "[wirelessNetwork]"
                 },
                 "template": {
@@ -217,7 +217,7 @@
                 "isHistorized": "0",
                 "unite": "dB",
                 "configuration": {
-                    "topic": "%s\/wireless\/attributes",
+                    "topic": "%s/wireless/attributes",
                     "jsonPath": "[wirelessSignal]",
                     "minValue": "-100",
                     "maxValue": "0"
@@ -240,7 +240,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/volume\/state",
+                    "topic": "%s/volume/state",
                     "minValue": "0",
                     "maxValue": "100"
                 },

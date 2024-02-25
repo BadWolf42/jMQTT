@@ -2,6 +2,7 @@
     "Frigate Camera": {
         "name": "Frigate Camera",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/117108",
         "configuration": {
             "auto_add_cmd": "0",
             "type": "eqpt",
@@ -9,7 +10,6 @@
             "createtime": "2023-11-19 18:04:47",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/117108",
             "icone": "motion-sensor",
             "updatetime": "2023-12-09 18:23:54"
         },

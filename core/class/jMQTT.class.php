@@ -214,7 +214,7 @@ class jMQTT extends eqLogic {
             // Save back template in the file
             $jsonExport = json_encode(
                 array($templateKey=>$templateValue),
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
             );
             file_put_contents(
                 __DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_PERSO . $_filename,
@@ -721,7 +721,6 @@ class jMQTT extends eqLogic {
                 unset($eqar['category']);
                 unset($eqar['configuration']['battery_type']);
                 unset($eqar['configuration']['createtime']);
-                unset($eqar['configuration']['commentaire']);
                 unset($eqar['configuration']['updatetime']);
                 unset($eqar['comment']);
                 unset($eqar['display']);
@@ -1071,7 +1070,6 @@ class jMQTT extends eqLogic {
                 unset($data['category']);
                 unset($data['configuration']['battery_type']);
                 unset($data['configuration']['createtime']);
-                unset($data['configuration']['commentaire']);
                 unset($data['configuration']['updatetime']);
                 unset($data['comment']);
                 unset($data['display']);
@@ -1192,7 +1190,6 @@ class jMQTT extends eqLogic {
                 unset($data['category']);
                 unset($data['configuration']['battery_type']);
                 unset($data['configuration']['createtime']);
-                unset($data['configuration']['commentaire']);
                 unset($data['configuration']['updatetime']);
                 unset($data['comment']);
                 unset($data['display']);

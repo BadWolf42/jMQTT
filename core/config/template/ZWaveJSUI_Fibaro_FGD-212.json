@@ -2,16 +2,16 @@
     "ZWaveJSUI Fibaro FGD-212 Dimmer 2": {
         "name": "ZWaveJSUI Fibaro FGD-212 Dimmer 2",
         "eqType_name": "jMQTT",
+        "comment": "Fibaro FGD-212 Dimmer 2\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/43",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-03 17:58:08",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Fibaro FGD-212 Dimmer 2\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "icone": "dimmer",
             "updatetime": "2021-06-05 12:12:36",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -36,7 +36,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/currentValue",
+                    "topic": "%s/38/1/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -56,7 +56,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "99",
                     "retain": "0",
                     "jsonPath": ""
@@ -76,7 +76,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "0",
                     "retain": "0",
                     "jsonPath": ""
@@ -96,7 +96,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "#slider#",
                     "retain": "0",
                     "jsonPath": ""
@@ -116,7 +116,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "10",
                     "retain": "0",
                     "jsonPath": ""
@@ -136,7 +136,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "20",
                     "retain": "0",
                     "jsonPath": ""
@@ -157,7 +157,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/66049",
+                    "topic": "%s/50/0/value/66049",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -178,7 +178,7 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65536",
+                    "topic": "%s/50/1/value/65536",
                     "jsonPath": "[value]"
                 },
                 "template": {
