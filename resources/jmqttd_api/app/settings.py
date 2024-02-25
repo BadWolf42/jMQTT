@@ -32,7 +32,7 @@ logconfig: dict = {
     },
     'handlers': {
         'fileHandler': {
-            'class': 'logging.FileHandler',  # TODO: Use logging.handlers.WatchedFileHandler
+            'class': 'logging.handlers.WatchedFileHandler',
             # 'level': 'DEBUG',
             # 'formatter': 'withCallTrace',
             # 'formatter': 'withThread',
