@@ -127,6 +127,7 @@
 $icons = array();
 $icons['']                      = __('Aucun', __FILE__);
 $icons['air-quality']           = __("Qualité de l'air", __FILE__);
+$icons['awtrix']                = "Awtrix";
 $icons['barometre']             = __('Baromètre', __FILE__);
 $icons['battery']               = __('Batterie', __FILE__);
 $icons['bell']                  = __('Sonnerie', __FILE__);
@@ -152,6 +153,7 @@ $icons['hydro']                 = __('Hydrométrie', __FILE__);
 $icons['intex']                 = 'Intex';
 $icons['ir2']                   = __('Infra Rouge', __FILE__);
 $icons['jauge']                 = __('Jauge', __FILE__);
+$icons['lift-pump']             = __('Pompe de relevage', __FILE__);
 $icons['light']                 = __('Luminosité', __FILE__);
 $icons['lightbulb']             = __('Lumière', __FILE__);
 $icons['location']              = __('Localisation', __FILE__);
