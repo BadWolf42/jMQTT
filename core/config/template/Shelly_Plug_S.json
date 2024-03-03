@@ -1,17 +1,18 @@
 {
-    "Shelly Plus Plug S": {
-        "name": "Shelly Plus Plug S",
+    "Shelly Plug S": {
+        "name": "Shelly Plug S",
         "eqType_name": "jMQTT",
-        "comment": "Shelly Plus Plug S\nJeedom Community: https://community.jeedom.com/t/template-pour-shelly-plusplugs/111694",
+        "comment": "Shelly Plug S\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/113",
         "configuration": {
-            "auto_add_cmd": "0",
             "type": "eqpt",
-            "auto_add_topic": "%s/#",
             "createtime": "2023-09-02 15:42:33",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
-            "icone": "prise",
+            "battery_type": "Secteur",
             "availability_cmd": "Online",
-            "updatetime": "2023-12-08 12:23:47"
+            "icone": "power-plug",
+            "updatetime": "2024-02-23 21:52:07"
         },
         "category": {
             "heating": "0",
@@ -24,9 +25,14 @@
             "default": "0"
         },
         "display": {
-            "width": "272px",
-            "height": "372px"
+            "width": "192px",
+            "height": "152px"
         },
+        "status": {
+            "lastCommunication": "2024-01-25 22:32:13",
+            "enableDatime": "2024-01-25 22:32:13"
+        },
+        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -35,15 +41,31 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[output]"
+                    "topic": "%s/relay/0",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "invertBinary": "0",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
                 },
                 "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
+                    "dashboard": "core::prise",
+                    "mobile": "core::prise"
                 },
                 "display": {
-                    "invertBinary": "0"
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
                 },
                 "isVisible": "1",
                 "alert": []
@@ -55,8 +77,8 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s/rpc",
-                    "request": "{\"method\":\"Switch.Set\",\"params\":{\"id\":0,\"on\":true}}",
+                    "topic": "%s/relay/0/command",
+                    "request": "on",
                     "retain": "0",
                     "autoPub": "0"
                 },
@@ -75,8 +97,8 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s/rpc",
-                    "request": "{\"method\":\"Switch.Set\",\"params\":{\"id\":0,\"on\":false}}",
+                    "topic": "%s/relay/0/command",
+                    "request": "off",
                     "retain": "0",
                     "autoPub": "0"
                 },
@@ -96,8 +118,7 @@
                 "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[apower]",
+                    "topic": "%s/relay/0/power",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -133,91 +154,10 @@
                 "name": "Consommation",
                 "type": "info",
                 "subType": "numeric",
-                "isHistorized": "1",
+                "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[aenergy][total]",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "never",
-                    "alert::messageReturnBack": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::line",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "showStatsOndashboard": "1",
-                    "showStatsOnmobile": "1",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Courant",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "1",
-                "unite": "A",
-                "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[current]",
-                    "timeline::enable": "0",
-                    "influx::enable": "0",
-                    "interact::auto::disable": "0",
-                    "jeedomCheckCmdOperator": "==",
-                    "historizeMode": "avg",
-                    "repeatEventManagement": "never",
-                    "alert::messageReturnBack": "0",
-                    "actionCheckCmd": [],
-                    "jeedomPreExecCmd": [],
-                    "jeedomPostExecCmd": []
-                },
-                "template": {
-                    "dashboard": "core::line",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0",
-                    "showNameOndashboard": "1",
-                    "showNameOnmobile": "1",
-                    "showIconAndNamedashboard": "0",
-                    "showIconAndNamemobile": "0",
-                    "showStatsOndashboard": "1",
-                    "showStatsOnmobile": "1",
-                    "forceReturnLineBefore": "0",
-                    "forceReturnLineAfter": "0",
-                    "parameters": []
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Tension",
-                "type": "info",
-                "subType": "numeric",
-                "isHistorized": "1",
-                "unite": "V",
-                "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[voltage]",
+                    "topic": "%s/relay/0/energy",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -243,25 +183,77 @@
                     "forceReturnLineAfter": "0",
                     "parameters": []
                 },
-                "isVisible": "1",
+                "isVisible": "0",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "Source",
+                "name": "OverTemperature",
                 "type": "info",
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[source]"
+                    "topic": "%s/overtemperature",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
                 },
                 "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
+                    "dashboard": "core::line",
+                    "mobile": "default"
                 },
                 "display": {
-                    "invertBinary": "0"
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "info",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/info",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
                 },
                 "isVisible": "0",
                 "alert": []
@@ -274,8 +266,7 @@
                 "isHistorized": "1",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[temperature][tC]",
+                    "topic": "%s/temperature",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -314,8 +305,7 @@
                 "isHistorized": "0",
                 "unite": "°F",
                 "configuration": {
-                    "topic": "%s/status/switch:0",
-                    "jsonPath": "[temperature][tF]",
+                    "topic": "%s/temperature_f",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -360,77 +350,17 @@
                 "display": {
                     "invertBinary": "0"
                 },
-                "isVisible": "1",
+                "isVisible": "0",
                 "alert": []
             },
             {
                 "eqType": "jMQTT",
-                "name": "Wifi Status",
+                "name": "Announce",
                 "type": "info",
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s/status/wifi",
-                    "jsonPath": "[status]"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Reboot",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s/rpc",
-                    "request": "{\"id\":0,\"src\":\"WS_in\",\"method\":\"Shelly.Reboot\"}",
-                    "retain": "0",
-                    "autoPub": "0"
-                },
-                "template": {
-                    "dashboard": "core::default",
-                    "mobile": "core::default"
-                },
-                "value": "Etat",
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Récupération Firmware",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s/command",
-                    "request": "announce",
-                    "retain": "0",
-                    "autoPub": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Firmware",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s/announce",
-                    "jsonPath": "[fw_id]"
+                    "topic": "%s/announce"
                 },
                 "template": {
                     "dashboard": "default",
@@ -439,86 +369,7 @@
                 "display": {
                     "invertBinary": "0"
                 },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Version",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s/announce",
-                    "jsonPath": "[ver]"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "New Firmware Stable",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s/status/sys",
-                    "jsonPath": "[available_updates][stable][version]"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "New Firmware Beta",
-                "type": "info",
-                "subType": "string",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "%s/status/sys",
-                    "jsonPath": "[available_updates][beta][version]"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "display": {
-                    "invertBinary": "0"
-                },
-                "isVisible": "1",
-                "alert": []
-            },
-            {
-                "eqType": "jMQTT",
-                "name": "Update ",
-                "type": "action",
-                "subType": "other",
-                "isHistorized": "0",
-                "configuration": {
-                    "topic": "shellies/ShellyPlusPlugS-MachineLaver/rpc",
-                    "request": "{\"method\":\"Shelly.Update\"}",
-                    "retain": "0",
-                    "autoPub": "0"
-                },
-                "template": {
-                    "dashboard": "default",
-                    "mobile": "default"
-                },
-                "isVisible": "1",
+                "isVisible": "0",
                 "alert": []
             }
         ]
