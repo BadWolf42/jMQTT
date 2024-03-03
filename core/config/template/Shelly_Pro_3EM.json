@@ -1,0 +1,759 @@
+{
+    "Shelly Pro 3EM": {
+        "name": "Shelly Pro 3EM",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2022-12-07 12:57:19",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
+            "Qos": "1",
+            "availability_cmd": "Online",
+            "commentaire": "Shelly Pro 3EM\nJeedom Community: https://community.jeedom.com/t/templates-shelly-pro-3em/119028",
+            "icone": "energie",
+            "updatetime": "2024-01-12 12:28:41"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "backGraph::info": "0",
+            "width": "352px",
+            "height": "592px",
+            "backGraph::color": "#4572a7",
+            "backGraph::format": "month",
+            "backGraph::type": "areaspline",
+            "parameters": []
+        },
+        "status": {
+            "lastCommunication": "2024-01-10 09:35:49",
+            "enableDatime": "2024-01-10 09:35:49"
+        },
+        "cache": [],
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "Ethernet Status",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/status/eth",
+                    "jsonPath": "[ip]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi Status",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/status/wifi",
+                    "jsonPath": "[status]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "IP",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/status/wifi",
+                    "jsonPath": "[sta_ip]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Online",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/online",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "invertBinary": "0",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "1",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Wifi",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/status/wifi"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Em0",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/status/em:0"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance Active",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[total_act_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance Apparente",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[total_aprt_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Courant",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[total_current]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase A : Voltage",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[a_voltage]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase A : Courant",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[a_current]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase A : Puissance Active",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[a_act_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase A : Puissance Apparente",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[a_aprt_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase A : Facteur de puissance",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[a_pf]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase A : Fréquence",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "Hz",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[a_freq]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase B : Voltage",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[b_voltage]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase B : Courant",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[b_current]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase B : Puissance Active",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[b_act_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase B : Puissance Apparente",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[b_aprt_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase B : Facteur de puissance",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[b_pf]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase B : Fréquence",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "Hz",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[b_freq]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase C : Voltage",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[c_voltage]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase C : Courant",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[c_current]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase C : Puissance Active",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[c_act_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase C : Puissance Apparente",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[c_aprt_power]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase C : Facteur de puissance",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[c_pf]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Phase C : Fréquence",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "HZ",
+                "configuration": {
+                    "topic": "%s/status/em:0",
+                    "jsonPath": "[c_freq]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Récupération Firmware",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/command",
+                    "request": "announce",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Firmware",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/announce",
+                    "jsonPath": "[fw_id]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Version",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/announce",
+                    "jsonPath": "[ver]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "New Firmware Stable",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/status/sys",
+                    "jsonPath": "[available_updates][stable][version]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "New Firmware Beta",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/status/sys",
+                    "jsonPath": "[available_updates][beta][version]"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Update",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/rpc",
+                    "request": "{\"method\":\"Shelly.Update\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Reboot",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/rpc",
+                    "request": "{\"method\":\"Shelly.Reboot\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}
