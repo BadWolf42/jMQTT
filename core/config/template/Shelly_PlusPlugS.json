@@ -11,7 +11,7 @@
             "icone": "prise",
             "availability_cmd": "Online",
             "commentaire": "Shelly Plus Plug S\nJeedom Community: https://community.jeedom.com/t/template-pour-shelly-plusplugs/111694",
-            "updatetime": "2023-11-29 15:26:06"
+            "updatetime": "2023-12-08 12:23:47"
         },
         "category": {
             "heating": "0",
@@ -24,8 +24,8 @@
             "default": "0"
         },
         "display": {
-            "width": "312px",
-            "height": "452px"
+            "width": "272px",
+            "height": "372px"
         },
         "status": {
             "lastCommunication": "2023-11-14 08:54:55",
@@ -342,8 +342,6 @@
                     "showNameOnmobile": "1",
                     "showIconAndNamedashboard": "0",
                     "showIconAndNamemobile": "0",
-                    "showStatsOndashboard": "1",
-                    "showStatsOnmobile": "1",
                     "forceReturnLineBefore": "0",
                     "forceReturnLineAfter": "0",
                     "parameters": []
@@ -505,6 +503,25 @@
                 },
                 "display": {
                     "invertBinary": "0"
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Update ",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "shellies/ShellyPlusPlugS-MachineLaver/rpc",
+                    "request": "{\"method\":\"Shelly.Update\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
                 },
                 "isVisible": "1",
                 "alert": []
