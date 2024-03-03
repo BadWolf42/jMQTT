@@ -3,7 +3,7 @@ import logging.config
 from json import load
 from os import kill, remove
 from os.path import isfile, dirname, realpath
-from platform import python_version, version, system
+from platform import python_version, system, version
 from socket import socket, AF_INET, SO_REUSEADDR, SOL_SOCKET
 from sys import exit
 
@@ -48,6 +48,12 @@ def setupLoggers(logfile: str):
             self._log(logging.NOTICE, message, args, **kws)
 
     logging.Logger.notice = notice
+
+    def alert(self, message, *args, **kws):
+        if self.isEnabledFor(logging.ALERT):
+            self._log(logging.ALERT, message, args, **kws)
+
+    logging.Logger.alert = alert
 
     # Load logging configuration
     logconfig['handlers']['fileHandler']['filename'] = logfile
