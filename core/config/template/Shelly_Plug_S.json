@@ -1,0 +1,378 @@
+{
+    "Shelly Plug S": {
+        "name": "Shelly Plug S",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2023-09-02 15:42:33",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
+            "Qos": "1",
+            "battery_type": "Secteur",
+            "availability_cmd": "Online",
+            "commentaire": "Shelly Plug S",
+            "icone": "power-plug",
+            "commentaire": "Shelly Plug S\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/113",
+            "updatetime": "2024-02-23 21:52:07"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "1",
+            "light": "0",
+            "opening": "0",
+            "automatism": "1",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "192px",
+            "height": "152px"
+        },
+        "status": {
+            "lastCommunication": "2024-01-25 22:32:13",
+            "enableDatime": "2024-01-25 22:32:13"
+        },
+        "cache": [],
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "Etat",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/relay/0",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "invertBinary": "0",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::prise",
+                    "mobile": "core::prise"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "On",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/relay/0/command",
+                    "request": "on",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Off",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/relay/0/command",
+                    "request": "off",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "value": "Etat",
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/relay/0/power",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "showStatsOndashboard": "1",
+                    "showStatsOnmobile": "1",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Consommation",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "kWh",
+                "configuration": {
+                    "topic": "%s/relay/0/energy",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "OverTemperature",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/overtemperature",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "info",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/info",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Temperature",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s/temperature",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "showStatsOndashboard": "1",
+                    "showStatsOnmobile": "1",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Temperature Fahrenheit",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "°F",
+                "configuration": {
+                    "topic": "%s/temperature_f",
+                    "timeline::enable": "0",
+                    "influx::enable": "0",
+                    "interact::auto::disable": "0",
+                    "jeedomCheckCmdOperator": "==",
+                    "historizeMode": "avg",
+                    "repeatEventManagement": "never",
+                    "alert::messageReturnBack": "0",
+                    "actionCheckCmd": [],
+                    "jeedomPreExecCmd": [],
+                    "jeedomPostExecCmd": []
+                },
+                "template": {
+                    "dashboard": "core::line",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Online",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/online"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Announce",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/announce"
+                },
+                "template": {
+                    "dashboard": "default",
+                    "mobile": "default"
+                },
+                "display": {
+                    "invertBinary": "0"
+                },
+                "isVisible": "0",
+                "alert": []
+            }
+        ]
+    }
+}
