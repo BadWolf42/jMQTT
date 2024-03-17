@@ -2,14 +2,14 @@
     "Shelly Plus HT": {
         "name": "Shelly Plus HT",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Plus HT\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/72",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-12-06 10:57:56",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "multisensor",
-            "commentaire": "Shelly Plus HT\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/72",
             "updatetime": "2022-12-09 19:06:26"
         },
         "category": {
@@ -31,11 +31,6 @@
             "backGraph::type": "areaspline",
             "parameters": []
         },
-        "status": {
-            "lastCommunication": "2022-12-09 18:55:55",
-            "enableDatime": "2022-12-09 18:55:55"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -44,7 +39,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/wifi",
+                    "topic": "%s/status/wifi",
                     "jsonPath": "[sta_ip]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -82,7 +77,7 @@
                 "isHistorized": "0",
                 "unite": "v",
                 "configuration": {
-                    "topic": "%s\/status\/devicepower:0",
+                    "topic": "%s/status/devicepower:0",
                     "jsonPath": "[battery][V]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -120,7 +115,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/status\/devicepower:0",
+                    "topic": "%s/status/devicepower:0",
                     "jsonPath": "[battery][percent]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -157,7 +152,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/status\/humidity:0",
+                    "topic": "%s/status/humidity:0",
                     "jsonPath": "[rh]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -196,7 +191,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/status\/temperature:0",
+                    "topic": "%s/status/temperature:0",
                     "jsonPath": "[tC]"
                 },
                 "template": {
@@ -223,7 +218,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/wifi",
+                    "topic": "%s/status/wifi",
                     "jsonPath": "[rssi]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -259,7 +254,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online",
+                    "topic": "%s/online",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -295,7 +290,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/ble"
+                    "topic": "%s/status/ble"
                 },
                 "template": {
                     "dashboard": "default",
@@ -321,7 +316,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/cloud"
+                    "topic": "%s/status/cloud"
                 },
                 "template": {
                     "dashboard": "default",
@@ -347,7 +342,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/mqtt"
+                    "topic": "%s/status/mqtt"
                 },
                 "template": {
                     "dashboard": "default",
@@ -373,7 +368,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/events\/rpc"
+                    "topic": "%s/events/rpc"
                 },
                 "template": {
                     "dashboard": "default",
@@ -399,7 +394,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/devicepower:0"
+                    "topic": "%s/status/devicepower:0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -418,7 +413,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/sys"
+                    "topic": "%s/status/sys"
                 },
                 "template": {
                     "dashboard": "default",
@@ -437,7 +432,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/humidity:0"
+                    "topic": "%s/status/humidity:0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -456,7 +451,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/ht_ui"
+                    "topic": "%s/status/ht_ui"
                 },
                 "template": {
                     "dashboard": "default",
@@ -475,7 +470,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/temperature:0"
+                    "topic": "%s/status/temperature:0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -494,7 +489,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/wifi"
+                    "topic": "%s/status/wifi"
                 },
                 "template": {
                     "dashboard": "default",
@@ -513,7 +508,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/ws"
+                    "topic": "%s/status/ws"
                 },
                 "template": {
                     "dashboard": "default",
@@ -532,7 +527,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/devicepower:0",
+                    "topic": "%s/status/devicepower:0",
                     "jsonPath": "[external]",
                     "timeline::enable": "0",
                     "influx::enable": "0",

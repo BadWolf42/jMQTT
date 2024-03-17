@@ -4,6 +4,6 @@ docs/_site/
 docs/Gemfile.lock
 docs/.sass-cache/
 data/
-resources/jmqttd/venv/
+resources/jmqttd_api/venv/
 resources/JsonPath-PHP/composer.lock
 resources/JsonPath-PHP/vendor/

@@ -2,14 +2,14 @@
     "Zigbee2mqtt Xiaomi MCCGQ11LM": {
         "name": "Zigbee2mqtt Xiaomi MCCGQ11LM",
         "eqType_name": "jMQTT",
+        "comment": "Xiaomi MCCGQ11LM\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-mccgq11lm/81898",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-03-18 13:10:06",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "1xCR1632",
-            "commentaire": "Xiaomi MCCGQ11LM\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-mccgq11lm/81898",
             "icone": "contact",
             "updatetime": "2022-03-30 01:47:05",
             "batterytime": "2022-03-29 02:26:41",
@@ -30,8 +30,6 @@
             "width": "232px",
             "height": "152px"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -251,7 +249,7 @@
                     "forceReturnLineAfter": "0",
                     "showStatsOnmobile": "0",
                     "showStatsOndashboard": "0",
-                    "icon": "<i class=\"fas fa-thermometer-empty\"><\/i>"
+                    "icon": "<i class=\"fas fa-thermometer-empty\"></i>"
                 },
                 "isVisible": "0",
                 "alert": []
@@ -312,7 +310,7 @@
                 "subType": "string",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/availability",
+                    "topic": "%s/availability",
                     "timeline::enable": "1"
                 },
                 "template": {

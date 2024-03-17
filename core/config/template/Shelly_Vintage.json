@@ -2,12 +2,12 @@
     "Shelly Vintage": {
         "name": "Shelly Vintage",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Vintage",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-12-27 21:03:10",
             "auto_add_cmd": "0",
             "auto_add_topic": "%s/#",
-            "commentaire": "Shelly Vintage",
             "Qos": "1",
             "icone": "lightbulb",
             "updatetime": "2023-07-24 07:03:00",
@@ -24,13 +24,6 @@
             "automatism": "0",
             "multimedia": "0",
             "default": "0"
-        },
-        "status": {
-            "lastCommunication": "2023-07-23 10:51:53",
-            "enableDatime": "2023-07-23 10:51:53"
-        },
-        "cache": {
-            "z2m_eq_name": "0x000d6ffffeaeb0b7"
         },
         "commands": [
             {

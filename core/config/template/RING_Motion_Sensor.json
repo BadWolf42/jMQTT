@@ -2,14 +2,14 @@
     "RING Motion Sensor": {
         "name": "Ring Motion Sensor",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-02-19 09:24:45",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "motion",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
             "updatetime": "2022-03-21 20:50:21"
         },
         "category": {
@@ -26,11 +26,6 @@
             "width": "232px",
             "height": "272px"
         },
-        "status": {
-            "lastCommunication": "2022-03-07 09:27:12",
-            "enableDatime": "2022-03-07 09:27:12"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -40,7 +35,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/battery\/attributes",
+                    "topic": "%s/battery/attributes",
                     "jsonPath": "[batteryLevel]",
                     "minValue": "0",
                     "maxValue": "100"
@@ -62,7 +57,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/battery\/attributes",
+                    "topic": "%s/battery/attributes",
                     "jsonPath": "[batteryStatus]"
                 },
                 "template": {
@@ -82,7 +77,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[commStatus]"
                 },
                 "template": {
@@ -102,7 +97,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[firmwareStatus]"
                 },
                 "template": {
@@ -122,7 +117,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastCommTime]"
                 },
                 "template": {
@@ -142,7 +137,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastUpdate]"
                 },
                 "template": {
@@ -162,7 +157,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[linkQuality]"
                 },
                 "template": {
@@ -182,7 +177,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[serialNumber]"
                 },
                 "template": {
@@ -202,7 +197,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[tamperStatus]"
                 },
                 "template": {
@@ -223,7 +218,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/motion\/state",
+                    "topic": "%s/motion/state",
                     "customValuesStatelessAllinone": "0",
                     "SINGLE": "0",
                     "DOUBLE": "1",

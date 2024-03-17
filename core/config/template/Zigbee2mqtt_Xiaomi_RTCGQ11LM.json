@@ -2,14 +2,14 @@
     "Zigbee2mqtt Xiaomi RTCGQ11LM": {
         "name": "Zigbee2mqtt Xiaomi RTCGQ11LM",
         "eqType_name": "jMQTT",
+        "comment": "Xiaomi RTCGQ11LM\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-rtcgq11lm/81825",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-01-25 18:46:24",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "1xCR2450",
-            "commentaire": "Xiaomi RTCGQ11LM\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-rtcgq11lm/81825",
             "icone": "multisensor",
             "updatetime": "2022-03-29 00:02:29",
             "batterytime": "2022-03-28 23:19:47",
@@ -30,8 +30,6 @@
             "width": "232px",
             "height": "272px"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -110,7 +108,7 @@
                 "subType": "string",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/availability",
+                    "topic": "%s/availability",
                     "timeline::enable": "1"
                 },
                 "template": {
@@ -222,7 +220,7 @@
                     "invertBinary": "0",
                     "showStatsOnmobile": "0",
                     "showStatsOndashboard": "0",
-                    "icon": "<i class=\"fas fa-thermometer-empty\"><\/i>",
+                    "icon": "<i class=\"fas fa-thermometer-empty\"></i>",
                     "showNameOndashboard": "1",
                     "showNameOnmobile": "1",
                     "showIconAndNamedashboard": "1",

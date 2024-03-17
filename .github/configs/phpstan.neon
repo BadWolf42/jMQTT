@@ -19,4 +19,4 @@ parameters:
         - '#method event::add\(\) invoked with 2 parameters,#'
 
     stubFiles:
-        - jeedom.stub
+        - phpstan.stub

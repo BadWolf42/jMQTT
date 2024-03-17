@@ -2,6 +2,7 @@
     "Shelly Flood": {
         "name": "Shelly Flood",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Flood",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-03-23 18:10:46",
@@ -14,7 +15,6 @@
             "batterytime": "2022-01-20 20:07:52",
             "auto_add_topic": "%s/#",
             "battery_cmd": "battery",
-            "commentaire": "Shelly Flood",
             "availability_cmd": "online"
         },
         "category": {
@@ -30,14 +30,6 @@
         "display": {
             "width": "232px",
             "height": "292px"
-        },
-        "status": {
-            "lastCommunication": "2023-07-03 09:57:37",
-            "enableDatime": "2023-07-03 09:57:37"
-        },
-        "cache": {
-            "z2m_eq_name": "0x385cfbfffec74bb7",
-            "mqtt_client_eqId": "1587"
         },
         "commands": [
             {

@@ -14,7 +14,7 @@
                             <tr>
                                 <th>{{Configuration}}</th>
                                 <th>{{Statut}}</th>
-                                <th>{{(Re)Démarrer}}</th>
+                                <th>{{Redémarrer}}</th>
                                 <th>{{Dernier lancement}}</th>
                             </tr>
                         </thead>
@@ -22,7 +22,7 @@
                             <tr>
                                 <td class="mqttClientLaunchable"><span class="label" style="font-size:1em;"></span><span class="state"></span></td>
                                 <td class="mqttClientState"><span class="label" style="font-size:1em;"></span><span class="state"></span></td>
-                                <td><a class="btn btn-success btn-sm eqLogicAction" data-action="startMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
+                                <td><a class="btn btn-success btn-sm eqLogicAction" data-action="restartMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
                                 <td class="mqttClientLastLaunch"></td>
                             </tr>
                         </tbody>

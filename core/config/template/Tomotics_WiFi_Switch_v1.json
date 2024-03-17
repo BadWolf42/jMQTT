@@ -2,6 +2,7 @@
     "Tomotics WiFi Switch v1": {
         "name": "Tomotics WiFi Switch v1",
         "eqType_name": "jMQTT",
+        "comment": "Tomotics WiFi Switch\nOfficial website: https://www.tomotics.com/en/pages/documentation/wifi-switch-documentation",
         "configuration": {
             "type": "eqpt",
             "createtime": "2023-10-17 12:03:03",
@@ -10,7 +11,6 @@
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "prise",
-            "commentaire": "Tomotics WiFi Switch\nOfficial website: https://www.tomotics.com/en/pages/documentation/wifi-switch-documentation",
             "updatetime": "2023-11-22 00:26:36"
         },
         "category": {
@@ -27,11 +27,6 @@
             "width": "190px",
             "height": "190px"
         },
-        "status": {
-            "lastCommunication": "2023-11-22 01:37:01",
-            "enableDatime": "2023-11-22 01:37:01"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",

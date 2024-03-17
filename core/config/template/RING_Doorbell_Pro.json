@@ -2,14 +2,14 @@
     "RING Doorbell Pro": {
         "name": "Ring Doorbell Pro",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-02-19 10:04:03",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "motion",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
             "updatetime": "2022-03-21 20:50:21"
         },
         "category": {
@@ -26,11 +26,6 @@
             "width": "232px",
             "height": "332px"
         },
-        "status": {
-            "lastCommunication": "2022-03-07 09:27:12",
-            "enableDatime": "2022-03-07 09:27:12"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -39,7 +34,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[firmwareStatus]"
                 },
                 "template": {
@@ -59,7 +54,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/ding\/attributes",
+                    "topic": "%s/ding/attributes",
                     "jsonPath": "[lastDing]"
                 },
                 "template": {
@@ -79,7 +74,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/ding\/attributes",
+                    "topic": "%s/ding/attributes",
                     "jsonPath": "[lastDingTime]"
                 },
                 "template": {
@@ -99,7 +94,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/motion\/attributes",
+                    "topic": "%s/motion/attributes",
                     "jsonPath": "[lastMotion]"
                 },
                 "template": {
@@ -119,7 +114,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/motion\/attributes",
+                    "topic": "%s/motion/attributes",
                     "jsonPath": "[lastMotionTime]"
                 },
                 "template": {
@@ -139,7 +134,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastUpdate]"
                 },
                 "template": {
@@ -159,7 +154,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/motion\/attributes",
+                    "topic": "%s/motion/attributes",
                     "jsonPath": "[motionDetectionEnabled]"
                 },
                 "template": {
@@ -179,7 +174,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/motion\/attributes",
+                    "topic": "%s/motion/attributes",
                     "jsonPath": "[personDetected]"
                 },
                 "template": {
@@ -199,7 +194,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/wireless\/attributes",
+                    "topic": "%s/wireless/attributes",
                     "jsonPath": "[wirelessNetwork]"
                 },
                 "template": {
@@ -220,7 +215,7 @@
                 "isHistorized": "0",
                 "unite": "dB",
                 "configuration": {
-                    "topic": "%s\/wireless\/attributes",
+                    "topic": "%s/wireless/attributes",
                     "jsonPath": "[wirelessSignal]",
                     "minValue": "-100",
                     "maxValue": "0"
@@ -242,7 +237,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/ding\/state"
+                    "topic": "%s/ding/state"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -262,7 +257,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/motion\/state",
+                    "topic": "%s/motion/state",
                     "customValuesStatelessAllinone": "0",
                     "SINGLE": "0",
                     "DOUBLE": "1",

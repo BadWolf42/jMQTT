@@ -1,21 +1,5 @@
 <?php
 
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 try {
     require_once __DIR__ . '/../../../../core/php/core.inc.php';
     include_file('core', 'authentification', 'php');
@@ -28,8 +12,8 @@ try {
     require_once __DIR__ . '/../../core/class/jMQTT.class.php';
     ajax::init(array('fileupload'));
 
-    ###################################################################################################################
-    # File upload
+    // ########################################################################
+    // File upload
     if (init('action') == 'fileupload') {
         if (!isset($_FILES['file'])) {
             throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
@@ -73,8 +57,7 @@ try {
             jMQTT::moveTopicToConfigurationByFile($fname);
             jMQTT::logger('info', sprintf(__("Template %s correctement téléversée", __FILE__), $fname));
             ajax::success($fname);
-        }
-        elseif (init('dir') == 'backup') {
+        } elseif (init('dir') == 'backup') {
             $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
             $files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
             sort($files);
@@ -86,8 +69,8 @@ try {
         }
     }
 
-    ###################################################################################################################
-    # Add a new command on an existing jMQTT equipment
+    // ########################################################################
+    // Add a new command on an existing jMQTT equipment
     if (init('action') == 'newCmd') {
         /** @var jMQTT $eqpt */
         $eqpt = jMQTT::byId(init('id'));
@@ -99,8 +82,8 @@ try {
         ajax::success(array('id' => $new_cmd->getId(), 'human' => $new_cmd->getHumanName()));
     }
 
-    ###################################################################################################################
-    # Test jsonPath
+    // ########################################################################
+    // Test jsonPath
     if (init('action') == 'testJsonPath') {
         $payload = init('payload');
         if ($payload == '') {
@@ -111,9 +94,21 @@ try {
         $jsonArray = json_decode($payload, true);
         if (!is_array($jsonArray) || json_last_error() != JSON_ERROR_NONE) {
             if (json_last_error() == JSON_ERROR_NONE)
-                ajax::success(array('success' => false, 'message' => __("Problème de format JSON: Le message reçu n'est pas au format JSON.", __FILE__), 'value' => ''));
+                ajax::success(array(
+                    'success' => false,
+                    'message' => __("Problème de format JSON: Le message reçu n'est pas au format JSON.", __FILE__),
+                    'value' => ''
+                ));
             else
-                ajax::success(array('success' => false, 'message' => sprintf(__("Problème de format JSON: %1\$s (%2\$d)", __FILE__), json_last_error_msg(), json_last_error()), 'value' => ''));
+                ajax::success(array(
+                    'success' => false,
+                    'message' => sprintf(
+                        __("Problème de format JSON: %1\$s (%2\$d)", __FILE__),
+                        json_last_error_msg(),
+                        json_last_error()
+                    ),
+                    'value' => ''
+                ));
         }
 
         if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
@@ -151,26 +146,20 @@ try {
                 'stack' => $e->getTraceAsString(),
                 'value' => ''
             ));
-            if (log::getLogLevel('jMQTT') <= 100)
-                jMQTT::logger(
-                    'warning',
-                    str_replace(
-                        "\n",
-                        ' <br/> ',
-                        sprintf(
-                            __("Chemin JSON '%1\$s' dans le testeur de JsonPath a levé l'Exception: %2\$s", __FILE__).
-                            ",<br/>@Stack: %4\$s.",
-                            $jsonPath,
-                            $e->getMessage(),
-                            $e->getTraceAsString()
-                        )
-                    )
-                );
+            if (log::getLogLevel('jMQTT') <= 100) {
+                jMQTT::logger('warning', str_replace("\n", ' <br/> ', sprintf(
+                    __("Chemin JSON '%1\$s' dans le testeur de JsonPath a levé l'Exception: %2\$s", __FILE__).
+                    ",<br/>@Stack: %3\$s.",
+                    $jsonPath,
+                    $e->getMessage(),
+                    $e->getTraceAsString()
+                )));
+            }
         }
     }
 
-    ###################################################################################################################
-    # Template
+    // ########################################################################
+    // Template
     if (init('action') == 'getTemplateList') {
         ajax::success(jMQTT::templateList());
     }
@@ -206,11 +195,24 @@ try {
         ajax::success();
     }
 
-    ###################################################################################################################
-    # Configuration page
-    if (init('action') == 'startMqttClient') {
-        $broker = jMQTT::getBrokerFromId(init('id'));
-        ajax::success($broker->startMqttClient());
+    // ########################################################################
+    // Configuration page
+    if (init('action') == 'restartMqttClient') {
+        // if daemon is not running, do Nothing
+        if (!jMQTTDaemon::state())
+            return;
+        $id = init('id', '-1');
+        $broker = jMQTT::getBrokerFromId($id);
+        // If MqttClient is not launchable (daemon is running),
+        // Then throw exception to get a message on WebUI
+        $info = $broker->getMqttClientInfo();
+        if ($info['launchable'] != jMQTTConst::CLIENT_OK)
+            throw new Exception(
+                __("Le client MQTT n'est pas démarrable :", __FILE__) .
+                ' ' . $info['message']
+            );
+        jMQTTComToDaemon::brokerRestart($id);
+        ajax::success();
     }
 
     if (init('action') == 'sendLoglevel') {
@@ -224,8 +226,8 @@ try {
         ajax::success();
     }
 
-    ###################################################################################################################
-    # Real Time mode
+    // ########################################################################
+    // Real Time mode
     if (init('action') == 'changeRealTimeMode') {
         $id = init('id');
         $mode = init('mode');
@@ -278,7 +280,7 @@ try {
             // Cleanup duration
             $duration = min(max(1, intval($duration)), 3600);
             // Start Real Time Mode (must be started before subscribe)
-            jMQTTComToDaemon::realTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
+            jMQTTComToDaemon::brokerRealTimeStart($id, $subscriptions, $exclusions, $retained, $duration);
             // Update cache
             $broker->setCache(jMQTTConst::CACHE_REALTIME_INC_TOPICS, implode('|', $subscriptions));
             $broker->setCache(jMQTTConst::CACHE_REALTIME_EXC_TOPICS, implode('|', $exclusions));
@@ -286,7 +288,7 @@ try {
             $broker->setCache(jMQTTConst::CACHE_REALTIME_DURATION, $duration);
         } else { // Real Time mode needs to be disabled
             // Stop Real Time mode
-            jMQTTComToDaemon::realTimeStop($id);
+            jMQTTComToDaemon::brokerRealTimeStop($id);
         }
         ajax::success();
     }
@@ -323,12 +325,12 @@ try {
     }
 
     if (init('action') == 'realTimeClear') {
-        jMQTTComToDaemon::realTimeClear(init('id'));
+        jMQTTComToDaemon::brokerRealTimeClear(init('id'));
         ajax::success();
     }
 
-    ###################################################################################################################
-    # Mosquitto
+    // ########################################################################
+    // Mosquitto
     if (init('action') == 'mosquittoInstall') {
         jMQTTPlugin::mosquittoInstall();
         ajax::success(jMQTTPlugin::mosquittoCheck());
@@ -366,8 +368,8 @@ try {
         ajax::success(jMQTTPlugin::mosquittoCheck());
     }
 
-    ###################################################################################################################
-    # Backup / Restore
+    // ########################################################################
+    // Backup / Restore
     if (init('action') == 'backupCreate') {
         jMQTT::logger('info', sprintf(__("Sauvegarde de jMQTT lancée...", __FILE__)));
         $out = null;
@@ -470,9 +472,86 @@ try {
         }
     }
 
+    // ########################################################################
+    // Community Post
+    if (init('action') == 'jMQTTCommunityPost') {
+        $infoPost = '< Ajoutez un titre puis rédigez votre question/problème ici, sans effacer les infos de config indiquées ci-dessous >';
+        $infoPost .= '<br/><br/><br/><br/>--- <br/>[details="Mes infos de config"]<br/>```';
+
+        // OS, hardware, PHP, Python
+        $hw = jeedom::getHardwareName();
+        if ($hw == 'diy')
+            $hw = trim(shell_exec('systemd-detect-virt'));
+        if ($hw == 'none')
+            $hw = 'diy';
+        $distrib = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
+        $infoPost .= '<br/>OS version: ' . $distrib . ' on ' . $hw;
+        $infoPost .= '<br/>PHP version: ' . phpversion();
+        $infoPost .= '<br/>Python version: ';
+        $infoPost .= trim(shell_exec("python3 -V | cut -d' ' -f2"));
+
+        // Jeedom core version and branch
+        $infoPost .= '<br/>Core version: ';
+        $infoPost .= config::byKey('version', 'core', 'N/A');
+        $infoPost .= ' (' . config::byKey('core::branch') . ')';
+
+        // All plugins
+        $infoPost .= '<br/>Plugins:';
+        // activateOnly, !orderByCategoryuse, !translate, nameOnly
+        foreach (plugin::listPlugin(true, false, true, true) as $p) {
+            $infoPost .= ' '.$p;
+        }
+        $infoPost .= '<br/>';
+
+        // TODO: Nb lines in http.error
+        // wc -l /var/www/html/log/http.error | cut -d" " -f1
+
+        // TODO: Nb lines ERROR/WARNING lines in the logs
+        // cat /var/www/html/log/* 2> /dev/null | grep -c 'ERROR\|WARNING'
+
+        // jMQTT version
+        /** @var update $update */
+        $update = update::byTypeAndLogicalId('plugin', 'jMQTT');
+        $infoPost .= '<br/>jMQTT: v';
+        $infoPost .= config::byKey('version', 'jMQTT', 'unknown', true);
+        $infoPost .= ' (' . $update->getLocalVersion() . ') branch: ';
+        $infoPost .= $update->getConfiguration('version');
+
+        // Daemon status
+        $daemon_info = jMQTT::deamon_info();
+        $infoPost .= '<br/>Daemon Status: ';
+        $infoPost .= (jMQTTDaemon::check() ? 'Started' :  'Stopped') . ' - (';
+        $infoPost .= config::byKey('lastDeamonLaunchTime', 'jMQTT', 'Unknown') . ')';
+
+        // Brk, eq, cmds
+        $nbEqAll = DB::Prepare('SELECT COUNT(*) as nb FROM `eqLogic` WHERE `eqType_name` = "jMQTT"', array());
+        $nbBrks = DB::Prepare('SELECT COUNT(*) as nb FROM `eqLogic` WHERE `eqType_name` = "jMQTT" AND `configuration` LIKE "%broker%"', array());
+        $infoPost .= '<br/>Nb eqBrokers: ' . $nbBrks['nb'];
+        $infoPost .= '<br/>Nb eqLogics: ' . ($nbEqAll['nb'] - $nbBrks['nb']);
+        $nbCmds = DB::Prepare('SELECT COUNT(*) as nb FROM `cmd` WHERE `eqType` = "jMQTT"', array());
+        $infoPost .= '<br/>Nb cmds: ' . $nbCmds['nb'];
+
+        // TODO: Nb ERROR/WARNING lines in jMQTT files
+        // cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c 'ERROR\|WARNING'
+
+        $infoPost .= '<br/>```<br/>[/details]<br/>';
+
+        $query = http_build_query(
+                array(
+                'category' => 'plugins/protocole-domotique',
+                'tags' => 'plugin-jmqtt',
+                'body' => br2nl($infoPost)
+            )
+        );
+        $url = 'https://community.jeedom.com/new-topic?' . $query;
+        ajax::success(array('url' => $url, 'plugin' => 'jMQTT'));
+    }
+
     throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
-    /*     * *********Catch exeption*************** */
-} catch (Exception $e) {
+
+}
+// ********* Catch exeption ***************
+catch (Exception $e) {
     ajax::error(displayException($e), $e->getCode());
 }
 ?>

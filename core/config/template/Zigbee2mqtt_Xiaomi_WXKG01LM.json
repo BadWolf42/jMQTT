@@ -2,13 +2,13 @@
     "Zigbee2mqtt Xiaomi WXKG01LM": {
         "name": "Zigbee2mqtt Xiaomi WXKG01LM",
         "eqType_name": "jMQTT",
+        "comment": "Xiaomi WXKG01LM\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-wxkg01lm/81827",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-03-29 00:40:59",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
-            "commentaire": "Xiaomi WXKG01LM\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-wxkg01lm/81827",
             "icone": "zigbee",
             "updatetime": "2022-03-29 02:13:58",
             "batterytime": "2022-03-29 02:02:45"
@@ -27,8 +27,6 @@
             "width": "232px",
             "height": "192px"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",

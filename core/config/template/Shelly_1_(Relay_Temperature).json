@@ -2,12 +2,12 @@
     "Shelly 1 (Relay & Temperature)": {
         "name": "Shelly 1 (Relay & Temperature)",
         "eqType_name": "jMQTT",
+        "comment": "Shelly 1 (Relay & Temperature)\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/51",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-10-15 13:54:58",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
-            "commentaire": "Shelly 1 (Relay & Temperature)\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/51",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "relay",
             "battery_type": "Secteur",
@@ -24,10 +24,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "status": {
-            "lastCommunication": "2022-10-15 11:21:55",
-            "enableDatime": "2022-10-15 11:21:55"
-        },
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",
@@ -38,7 +34,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/relay\/0",
+                    "topic": "%s/relay/0",
                     "minValue": "0",
                     "maxValue": "100",
                     "timeline::enable": "0",
@@ -77,7 +73,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "on",
                     "minValue": "0",
                     "maxValue": "100",
@@ -117,7 +113,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "off",
                     "retain": "0",
                     "autoPub": "0",
@@ -152,7 +148,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "toggle",
                     "retain": "0",
                     "autoPub": "0",
@@ -188,7 +184,7 @@
                 "isHistorized": "1",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/ext_temperature\/0",
+                    "topic": "%s/ext_temperature/0",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -227,7 +223,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/input\/0"
+                    "topic": "%s/input/0"
                 },
                 "template": {
                     "dashboard": "default",
@@ -253,7 +249,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online"
+                    "topic": "%s/online"
                 },
                 "template": {
                     "dashboard": "default",
@@ -279,7 +275,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[update][has_update]"
                 },
                 "template": {
@@ -306,7 +302,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce",
+                    "topic": "%s/announce",
                     "jsonPath": "[id]"
                 },
                 "template": {
@@ -333,7 +329,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce"
+                    "topic": "%s/announce"
                 },
                 "template": {
                     "dashboard": "default",
@@ -359,7 +355,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command"
+                    "topic": "%s/command"
                 },
                 "template": {
                     "dashboard": "default",
@@ -385,7 +381,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[update][old_version]"
                 },
                 "template": {
@@ -412,7 +408,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info"
+                    "topic": "%s/info"
                 },
                 "template": {
                     "dashboard": "default",
@@ -438,7 +434,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[update][new_version]"
                 },
                 "template": {
@@ -467,7 +463,7 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/voltage"
+                    "topic": "%s/voltage"
                 },
                 "template": {
                     "dashboard": "default",
@@ -493,7 +489,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "request": "announce",
                     "retain": "0",
                     "autoPub": "0"
@@ -521,7 +517,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "request": "update_fw",
                     "retain": "0",
                     "autoPub": "0"

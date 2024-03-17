@@ -2,6 +2,7 @@
     "Nuki Smart Lock": {
         "name": "Nuki Smart Lock",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/nuki-smart-lock-3-0-pro-sous-jeedom/94065/51",
         "configuration": {
             "type": "eqpt",
             "createtime": "2023-04-02 21:49:04",
@@ -10,7 +11,6 @@
             "Qos": "1",
             "battery_cmd": "Batterie",
             "availability_cmd": "Connecté",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/nuki-smart-lock-3-0-pro-sous-jeedom/94065/51",
             "icone": "door"
         },
         "category": {

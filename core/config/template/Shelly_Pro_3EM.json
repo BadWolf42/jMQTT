@@ -2,6 +2,7 @@
     "Shelly Pro 3EM": {
         "name": "Shelly Pro 3EM",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Pro 3EM\nJeedom Community: https://community.jeedom.com/t/templates-shelly-pro-3em/119028",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-12-07 12:57:19",
@@ -9,7 +10,6 @@
             "auto_add_topic": "%s/#",
             "Qos": "1",
             "availability_cmd": "Online",
-            "commentaire": "Shelly Pro 3EM\nJeedom Community: https://community.jeedom.com/t/templates-shelly-pro-3em/119028",
             "icone": "energie",
             "updatetime": "2024-01-12 12:28:41"
         },

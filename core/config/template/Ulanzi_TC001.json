@@ -2,6 +2,7 @@
     "Ulanzi TC001": {
         "name": "Ulanzi TC001",
         "eqType_name": "jMQTT",
+        "comment": "Ulanzi TC001 flashed with Awtrix Light 0.94\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/114",
         "configuration": {
             "type": "eqpt",
             "createtime": "2024-02-28 12:28:37",
@@ -9,7 +10,6 @@
             "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "awtrix",
-            "commentaire": "Ulanzi TC001 flashed with Awtrix Light 0.94\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/114",
             "updatetime": "2024-02-29 20:22:52"
         },
         "category": {

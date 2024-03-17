@@ -2,14 +2,14 @@
     "WeConnectMqtt ID3 (Light)": {
         "name": "WeConnectMqtt ID3 (Light)",
         "eqType_name": "jMQTT",
+        "comment": "Github Volkswagen WeConnect WeConnect-mqtt: https://github.com/tillsteinbach/WeConnect-mqtt\nGithub jbval template(s): https://github.com/jbval/jeedomMqttCustomTemplates",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-02-19 15:53:46",
             "auto_add_cmd": "0",
             "Qos": "1",
-            "commentaire": "Github Volkswagen WeConnect WeConnect-mqtt: https:\/\/github.com\/tillsteinbach\/WeConnect-mqtt\nGithub jbval template(s): https:\/\/github.com\/jbval\/jeedomMqttCustomTemplates",
             "updatetime": "2022-02-19 16:11:32",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -25,10 +25,6 @@
             "width": "592px",
             "height": "772px"
         },
-        "status": {
-            "lastCommunication": "2022-01-12 11:17:20"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -37,7 +33,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/controls\/charging",
+                    "topic": "%s/controls/charging",
                     "jsonPath": ""
                 },
                 "template": {
@@ -57,7 +53,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/controls\/climatisation",
+                    "topic": "%s/controls/climatisation",
                     "jsonPath": ""
                 },
                 "template": {
@@ -78,7 +74,7 @@
                 "isHistorized": "0",
                 "unite": "km",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/batteryStatus\/cruisingRangeElectric_km",
+                    "topic": "%s/domains/charging/batteryStatus/cruisingRangeElectric_km",
                     "jsonPath": ""
                 },
                 "template": {
@@ -99,7 +95,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/batteryStatus\/currentSOC_pct",
+                    "topic": "%s/domains/charging/batteryStatus/currentSOC_pct",
                     "minValue": "0",
                     "maxValue": "100",
                     "jsonPath": ""
@@ -121,7 +117,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargeMode\/preferredChargeMode",
+                    "topic": "%s/domains/charging/chargeMode/preferredChargeMode",
                     "jsonPath": ""
                 },
                 "template": {
@@ -141,7 +137,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingSettings\/autoUnlockPlugWhenCharged",
+                    "topic": "%s/domains/charging/chargingSettings/autoUnlockPlugWhenCharged",
                     "jsonPath": ""
                 },
                 "template": {
@@ -161,7 +157,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingSettings\/maxChargeCurrentAC",
+                    "topic": "%s/domains/charging/chargingSettings/maxChargeCurrentAC",
                     "jsonPath": ""
                 },
                 "template": {
@@ -182,7 +178,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingSettings\/targetSOC_pct",
+                    "topic": "%s/domains/charging/chargingSettings/targetSOC_pct",
                     "minValue": "0",
                     "maxValue": "100",
                     "jsonPath": ""
@@ -204,7 +200,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingStatus\/chargeMode",
+                    "topic": "%s/domains/charging/chargingStatus/chargeMode",
                     "jsonPath": ""
                 },
                 "template": {
@@ -225,7 +221,7 @@
                 "isHistorized": "0",
                 "unite": "kw",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingStatus\/chargePower_kW",
+                    "topic": "%s/domains/charging/chargingStatus/chargePower_kW",
                     "minValue": "0",
                     "jsonPath": ""
                 },
@@ -247,7 +243,7 @@
                 "isHistorized": "0",
                 "unite": "kmph",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingStatus\/chargeRate_kmph",
+                    "topic": "%s/domains/charging/chargingStatus/chargeRate_kmph",
                     "jsonPath": ""
                 },
                 "template": {
@@ -267,7 +263,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingStatus\/chargingState",
+                    "topic": "%s/domains/charging/chargingStatus/chargingState",
                     "jsonPath": ""
                 },
                 "template": {
@@ -288,7 +284,7 @@
                 "isHistorized": "0",
                 "unite": "min",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/chargingStatus\/remainingChargingTimeToComplete_min",
+                    "topic": "%s/domains/charging/chargingStatus/remainingChargingTimeToComplete_min",
                     "jsonPath": ""
                 },
                 "template": {
@@ -308,7 +304,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/plugStatus\/plugConnectionState",
+                    "topic": "%s/domains/charging/plugStatus/plugConnectionState",
                     "jsonPath": ""
                 },
                 "template": {
@@ -328,7 +324,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/charging\/plugStatus\/plugLockState",
+                    "topic": "%s/domains/charging/plugStatus/plugLockState",
                     "jsonPath": ""
                 },
                 "template": {
@@ -348,7 +344,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationSettings\/climatisationWithoutExternalPower",
+                    "topic": "%s/domains/climatisation/climatisationSettings/climatisationWithoutExternalPower",
                     "jsonPath": ""
                 },
                 "template": {
@@ -368,7 +364,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationSettings\/climatizationAtUnlock",
+                    "topic": "%s/domains/climatisation/climatisationSettings/climatizationAtUnlock",
                     "jsonPath": ""
                 },
                 "template": {
@@ -389,7 +385,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationSettings\/targetTemperature_C",
+                    "topic": "%s/domains/climatisation/climatisationSettings/targetTemperature_C",
                     "jsonPath": ""
                 },
                 "template": {
@@ -409,7 +405,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationSettings\/windowHeatingEnabled",
+                    "topic": "%s/domains/climatisation/climatisationSettings/windowHeatingEnabled",
                     "jsonPath": ""
                 },
                 "template": {
@@ -429,7 +425,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationSettings\/zoneFrontLeftEnabled",
+                    "topic": "%s/domains/climatisation/climatisationSettings/zoneFrontLeftEnabled",
                     "jsonPath": ""
                 },
                 "template": {
@@ -449,7 +445,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationSettings\/zoneFrontRightEnabled",
+                    "topic": "%s/domains/climatisation/climatisationSettings/zoneFrontRightEnabled",
                     "jsonPath": ""
                 },
                 "template": {
@@ -469,7 +465,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationStatus\/climatisationState",
+                    "topic": "%s/domains/climatisation/climatisationStatus/climatisationState",
                     "jsonPath": ""
                 },
                 "template": {
@@ -490,7 +486,7 @@
                 "isHistorized": "0",
                 "unite": "min",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/climatisationStatus\/remainingClimatisationTime_min",
+                    "topic": "%s/domains/climatisation/climatisationStatus/remainingClimatisationTime_min",
                     "jsonPath": ""
                 },
                 "template": {
@@ -510,7 +506,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/windowHeatingStatus\/windows\/front\/windowHeatingState",
+                    "topic": "%s/domains/climatisation/windowHeatingStatus/windows/front/windowHeatingState",
                     "jsonPath": ""
                 },
                 "template": {
@@ -530,7 +526,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/climatisation\/windowHeatingStatus\/windows\/rear\/windowHeatingState",
+                    "topic": "%s/domains/climatisation/windowHeatingStatus/windows/rear/windowHeatingState",
                     "jsonPath": ""
                 },
                 "template": {
@@ -550,7 +546,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/readiness\/readinessStatus\/connectionState\/batteryPowerLevel",
+                    "topic": "%s/domains/readiness/readinessStatus/connectionState/batteryPowerLevel",
                     "jsonPath": ""
                 },
                 "template": {
@@ -570,7 +566,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/readiness\/readinessStatus\/connectionState\/dailyPowerBudgetAvailable",
+                    "topic": "%s/domains/readiness/readinessStatus/connectionState/dailyPowerBudgetAvailable",
                     "jsonPath": ""
                 },
                 "template": {
@@ -590,7 +586,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/readiness\/readinessStatus\/connectionState\/isActive",
+                    "topic": "%s/domains/readiness/readinessStatus/connectionState/isActive",
                     "jsonPath": ""
                 },
                 "template": {
@@ -610,7 +606,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/domains\/readiness\/readinessStatus\/connectionState\/isOnline",
+                    "topic": "%s/domains/readiness/readinessStatus/connectionState/isOnline",
                     "jsonPath": ""
                 },
                 "template": {
@@ -630,7 +626,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/nickname",
+                    "topic": "%s/nickname",
                     "jsonPath": ""
                 },
                 "template": {
@@ -650,7 +646,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/vin",
+                    "topic": "%s/vin",
                     "jsonPath": ""
                 },
                 "template": {

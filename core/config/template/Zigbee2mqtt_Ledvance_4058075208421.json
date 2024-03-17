@@ -2,6 +2,7 @@
     "Zigbee2mqtt Ledvance 4058075208421": {
         "name": "Zigbee2mqtt Ledvance 4058075208421",
         "eqType_name": "jMQTT",
+        "comment": "Ledvance E14\nType Router\nModel : 4058075208421\nJeedom Community: https://community.jeedom.com/t/template-ledvance-4058075208421-ampoule-e14/81903",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-01-26 09:35:44",
@@ -11,9 +12,8 @@
             "updatetime": "2022-03-30 05:01:09",
             "previousIsEnable": "1",
             "previousIsVisible": "1",
-            "auto_add_topic": "%s\/#",
-            "battery_type": "Secteur",
-            "commentaire": "Ledvance E14\nType Router\nModel : 4058075208421\nJeedom Community: https://community.jeedom.com/t/template-ledvance-4058075208421-ampoule-e14/81903"
+            "auto_add_topic": "%s/#",
+            "battery_type": "Secteur"
         },
         "category": {
             "heating": "0",
@@ -29,8 +29,6 @@
             "width": "232px",
             "height": "392px"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -94,7 +92,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "ON",
                     "retain": "0",
                     "autoPub": "0",
@@ -146,7 +144,7 @@
                 "subType": "string",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/availability",
+                    "topic": "%s/availability",
                     "timeline::enable": "1"
                 },
                 "template": {
@@ -167,7 +165,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "OFF",
                     "retain": "0",
                     "autoPub": "0",
@@ -219,7 +217,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set\/brightness",
+                    "topic": "%s/set/brightness",
                     "request": "#slider#",
                     "retain": "0",
                     "autoPub": "0",

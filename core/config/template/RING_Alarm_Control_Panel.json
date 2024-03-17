@@ -2,13 +2,13 @@
     "RING Alarm Control Panel": {
         "name": "Ring Alarm Control Panel",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-02-19 09:00:51",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
             "updatetime": "2022-03-21 20:50:21"
         },
         "category": {
@@ -25,11 +25,6 @@
             "width": "232px",
             "height": "252px"
         },
-        "status": {
-            "lastCommunication": "2022-03-07 09:27:12",
-            "enableDatime": "2022-03-07 09:27:12"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -38,7 +33,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/alarm\/state"
+                    "topic": "%s/alarm/state"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -57,7 +52,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[alarmState]"
                 },
                 "template": {
@@ -77,7 +72,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[commStatus]"
                 },
                 "template": {
@@ -97,7 +92,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastCommTime]"
                 },
                 "template": {
@@ -117,7 +112,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastUpdate]"
                 },
                 "template": {
@@ -137,7 +132,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[tamperStatus]"
                 },
                 "template": {
@@ -157,7 +152,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/bypass\/state"
+                    "topic": "%s/bypass/state"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -176,7 +171,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/siren\/state"
+                    "topic": "%s/siren/state"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -195,7 +190,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status"
+                    "topic": "%s/status"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -214,7 +209,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/alarm\/command",
+                    "topic": "%s/alarm/command",
                     "request": "disarm",
                     "retain": "0",
                     "autoPub": "0",
@@ -235,7 +230,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/alarm\/command",
+                    "topic": "%s/alarm/command",
                     "request": "arm_home",
                     "retain": "0",
                     "autoPub": "0",
@@ -256,7 +251,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/alarm\/command",
+                    "topic": "%s/alarm/command",
                     "request": "arm_away",
                     "retain": "0",
                     "autoPub": "0",
@@ -283,7 +278,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/bypass\/command",
+                    "topic": "%s/bypass/command",
                     "request": "ON",
                     "retain": "0",
                     "autoPub": "0",
@@ -304,7 +299,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/bypass\/command",
+                    "topic": "%s/bypass/command",
                     "request": "OFF",
                     "retain": "0",
                     "autoPub": "0",

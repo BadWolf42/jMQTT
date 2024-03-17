@@ -2,14 +2,14 @@
     "RING Doorbell Chime": {
         "name": "Ring Doorbell Chime",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-02-19 10:25:57",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "motion",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/tuto-ring-avec-ring-mqtt-et-jmqtt/81595",
             "updatetime": "2022-03-21 20:50:21"
         },
         "category": {
@@ -26,11 +26,6 @@
             "width": "232px",
             "height": "232px"
         },
-        "status": {
-            "lastCommunication": "2022-03-07 09:27:12",
-            "enableDatime": "2022-03-07 09:27:12"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -39,7 +34,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[firmwareStatus]"
                 },
                 "template": {
@@ -59,7 +54,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info\/state",
+                    "topic": "%s/info/state",
                     "jsonPath": "[lastUpdate]"
                 },
                 "template": {
@@ -79,7 +74,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/snooze\/state"
+                    "topic": "%s/snooze/state"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -98,7 +93,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/volume\/state",
+                    "topic": "%s/volume/state",
                     "minValue": "0",
                     "maxValue": "10"
                 },
@@ -119,7 +114,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/wireless\/attributes",
+                    "topic": "%s/wireless/attributes",
                     "jsonPath": "[wirelessNetwork]"
                 },
                 "template": {
@@ -140,7 +135,7 @@
                 "isHistorized": "0",
                 "unite": "dB",
                 "configuration": {
-                    "topic": "%s\/wireless\/attributes",
+                    "topic": "%s/wireless/attributes",
                     "jsonPath": "[wirelessSignal]",
                     "minValue": "-100",
                     "maxValue": "0"

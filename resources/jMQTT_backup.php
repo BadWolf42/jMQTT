@@ -106,7 +106,7 @@ function export_index() {
 
     if($error) {
         print("                        [ WARNING ]\n");
-        foreach($error as $e)
+        foreach ($error as $e)
             print($e);
     } else {
         print("                             [ OK ]\n");
@@ -132,8 +132,6 @@ function export_data() {
         'dependancyjMQTT',
         'jMQTT::daemonLastRcv',
         'jMQTT::daemonLastSnd',
-        // 'jMQTT::daemonPort',
-        // 'jMQTT::daemonUid',
         'jMQTT::nextStats'
     );
     foreach ($cacheKeys as $k) {

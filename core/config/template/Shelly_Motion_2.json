@@ -2,14 +2,14 @@
     "Shelly Motion 2": {
         "name": "Shelly Motion 2",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Motion 2\nJeedom Community: https://community.jeedom.com/t/partage-template-shelly-motion-2/105629",
         "configuration": {
             "type": "eqpt",
             "createtime": "2023-04-17 14:31:34",
             "auto_add_cmd": "1",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "motion",
-            "commentaire": "Shelly Motion 2\nJeedom Community: https:\/\/community.jeedom.com\/t\/partage-template-shelly-motion-2\/105629",
             "updatetime": "2023-04-17 15:40:43"
         },
         "category": {
@@ -26,11 +26,6 @@
             "width": "230px",
             "height": "570px"
         },
-        "status": {
-            "lastCommunication": "2023-04-06 23:12:11",
-            "enableDatime": "2023-04-06 23:12:11"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -39,7 +34,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/settings",
+                    "topic": "%s/settings",
                     "jsonPath": "[tamper_sensitivity]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -76,7 +71,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/settings",
+                    "topic": "%s/settings",
                     "jsonPath": "[motion][sensitivity]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -113,7 +108,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/settings",
+                    "topic": "%s/settings",
                     "jsonPath": "[motion][blind_time_minutes]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -150,7 +145,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[wifi_sta][ip]"
                 },
                 "template": {
@@ -177,7 +172,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[wifi_sta][ssid]"
                 },
                 "template": {
@@ -204,7 +199,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[wifi_sta][rssi]"
                 },
                 "template": {
@@ -231,7 +226,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online"
+                    "topic": "%s/online"
                 },
                 "template": {
                     "dashboard": "default",
@@ -258,7 +253,7 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[bat][voltage]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -297,7 +292,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[bat][value]"
                 },
                 "template": {
@@ -324,7 +319,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[charger]"
                 },
                 "template": {
@@ -351,7 +346,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[sensor][motion]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -388,7 +383,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[sensor][vibration]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -426,7 +421,7 @@
                 "isHistorized": "0",
                 "unite": "lx",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[lux][value]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -462,7 +457,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command"
+                    "topic": "%s/command"
                 },
                 "template": {
                     "dashboard": "default",
@@ -488,7 +483,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[lux][illumination]"
                 },
                 "template": {
@@ -516,7 +511,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[tmp][value]"
                 },
                 "template": {
@@ -543,7 +538,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "request": "reboot",
                     "retain": "0",
                     "autoPub": "0"
@@ -571,7 +566,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/settings",
+                    "topic": "%s/settings",
                     "jsonPath": "[led_status_disable]"
                 },
                 "template": {
@@ -598,7 +593,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce"
+                    "topic": "%s/announce"
                 },
                 "template": {
                     "dashboard": "default",
@@ -624,7 +619,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info"
+                    "topic": "%s/info"
                 },
                 "template": {
                     "dashboard": "default",
@@ -650,7 +645,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status"
+                    "topic": "%s/status"
                 },
                 "template": {
                     "dashboard": "default",
@@ -676,7 +671,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/settings"
+                    "topic": "%s/settings"
                 },
                 "template": {
                     "dashboard": "default",

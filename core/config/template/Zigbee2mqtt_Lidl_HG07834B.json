@@ -2,13 +2,13 @@
     "Zigbee2mqtt Lidl HG07834B": {
         "name": "Zigbee2mqtt Lidl HG07834B",
         "eqType_name": "jMQTT",
+        "comment": "Zigbee2mqtt Lidl HG07834B\nAmpoule LED E14 Blanc 2000-6500K, 16M couleurs\nGithub: https://github.com/Domochip/jMQTT/pull/220",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-09-02 12:29:26",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
-            "commentaire": "Zigbee2mqtt Lidl HG07834B\nAmpoule LED E14 Blanc 2000-6500K, 16M couleurs\nGithub: https:\/\/github.com\/Domochip\/jMQTT\/pull\/220",
             "icone": "lightbulb",
             "updatetime": "2022-10-02 12:04:43"
         },
@@ -26,11 +26,6 @@
             "width": "232px",
             "height": "352px"
         },
-        "status": {
-            "lastCommunication": "2022-10-14 09:42:28",
-            "enableDatime": "2022-10-14 09:42:28"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -117,7 +112,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"ON\"}",
                     "retain": "0",
                     "autoPub": "0",
@@ -172,7 +167,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"OFF\"}",
                     "retain": "0",
                     "autoPub": "0",
@@ -206,7 +201,7 @@
                 "subType": "select",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"effect\": \"#select#\"}",
                     "listValue": "blink|Blink;breathe|Breathe;okay|Okay;channel_change|Channel_change;finish_effect|Finish_effect;stop_effect|Stop_effect",
                     "retain": "0",
@@ -246,7 +241,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"color_temp\":#slider#}",
                     "minValue": "153",
                     "maxValue": "500",
@@ -283,7 +278,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"brightness\":#slider#}",
                     "minValue": "0",
                     "maxValue": "254",
@@ -306,7 +301,7 @@
                 "subType": "select",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"color_temp\":#select#}",
                     "listValue": "153|Coolest;250|Cool;370|Neutral;454|Warm;500|Warmest",
                     "retain": "0",
@@ -327,7 +322,7 @@
                 "subType": "color",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"color\":{\"hex\":\"#color#\"}}",
                     "retain": "0",
                     "autoPub": "0",
@@ -347,7 +342,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\": \"TOGGLE\"}",
                     "retain": "0",
                     "autoPub": "0"

@@ -1,19 +1,3 @@
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 // Namespace
 jmqtt = {}
 
@@ -211,6 +195,7 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
 
     // Add Click handler on confEq
     _card.find('.eqLogicAction[data-action=confEq]').off('click').on('click', function() {
+        // TODO: Fix dual modal bug on save from plugin main page in v4.4
         $('#md_modal').dialog().load('index.php?v=d&modal=eqLogic.configure&eqLogic_id=' + _eq.id).dialog('open');
     });
 }
@@ -248,8 +233,8 @@ jmqtt.updateBrokerTabs = function(_eq) {
     $('.mqttClientState span.label').removeClass('label-success label-warning label-danger').addClass('label-' + info.color).text(info.state.toUpperCase());
     $('.mqttClientState span.state').text(' ' + info.message);
 
-    // Show / hide startMqttClient button
-    (info.la == 'ok') ? $('.eqLogicAction[data-action=startMqttClient]').show() : $('.eqLogicAction[data-action=startMqttClient]').hide();
+    // Show / hide restartMqttClient button
+    (info.la == 'ok') ? $('.eqLogicAction[data-action=restartMqttClient]').show() : $('.eqLogicAction[data-action=restartMqttClient]').hide();
 
     // Update LastLaunch span
     $('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
@@ -461,7 +446,8 @@ jmqtt.updateEqptTabs = function(_eq) {
     $('.eqLogicAttr[data-l1key=configuration][data-l2key=icone]').value(_eq.configuration.icone); // Use .value() here, instead of .val(), to trigger change event
 
     // Update Real Time tab
-    jmqtt.updateRealTimeTab(_eq.configuration.eqLogic, false);
+    if (_eq.configuration.eqLogic != undefined && _eq.configuration.eqLogic > 0)
+        jmqtt.updateRealTimeTab(_eq.configuration.eqLogic, false);
 }
 
 // Decorator for Core plugin template on save callback

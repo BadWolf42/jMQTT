@@ -2,13 +2,13 @@
     "NotifHeure V2": {
         "name": "NotifHeure V2",
         "eqType_name": "jMQTT",
+        "comment": "Notif'heure by Byfeel\nJeedom Community: https://community.jeedom.com/t/afficheur-notifheure/114424/24",
         "configuration": {
             "type": "eqpt",
             "createtime": "2023-11-08 20:10:52",
             "auto_add_cmd": "0",
             "auto_add_topic": "%s/#",
             "Qos": "0",
-            "commentaire": "Notif'heure by Byfeel\nJeedom Community: https://community.jeedom.com/t/afficheur-notifheure/114424/24",
             "icone": "custom",
             "updatetime": "2023-11-12 15:52:09"
         },

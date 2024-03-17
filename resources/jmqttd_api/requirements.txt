@@ -1,0 +1,10 @@
+aiohttp==3.8.6
+fastapi==0.103.2
+#jsonpath-ng==1.6.0
+#Jinja2==3.1.2
+#paho-mqtt==1.6.1
+pydantic-settings==2.0.3
+uvicorn==0.22.0
+#requests
+#setuptools
+#wheel

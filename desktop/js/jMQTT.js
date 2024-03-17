@@ -1,19 +1,3 @@
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 // TODO: Remove jQuery from jMQTT
 //  labels: enhancement, help wanted, javascript
 
@@ -143,6 +127,23 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
     });
 });
 
+$('.eqLogicAction[data-action=jMQTTCommunityPost]').off('click').on('click', function () {
+    jmqtt.callPluginAjax({
+        data: {
+            action: "jMQTTCommunityPost"
+        },
+        success: function (data) {
+            var element = document.createElement('a');
+            element.setAttribute('href', data.url);
+            element.setAttribute('target', '_blank');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    });
+});
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
@@ -161,11 +162,11 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
-$('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
+$('.eqLogicAction[data-action=restartMqttClient]').on('click',function(){
     var id = jmqtt.getEqId();
     if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
-    jmqtt.callPluginAjax({data: {action: 'startMqttClient', id: id}});
+    jmqtt.callPluginAjax({data: {action: 'restartMqttClient', id: id}});
 });
 
 $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
@@ -300,14 +301,14 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 
 // Button to add a new eq and cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
-    var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
+    var topic = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
     var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
     jmqtt.addEqFromRealTime(topic, jsonPath);
 })
 
 // Button to add a cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addCmd]', function() {
-    var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
+    var topic = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
     var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
     jmqtt.addCmdFromRealTime(topic, jsonPath);
 })
@@ -510,14 +511,14 @@ $('.eqLogicAction[data-action=jsonPathTester]').off('click').on('click', functio
 
 // On addMQTTInfo click
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
-    var _cmd = {type: 'info'};
+    var _cmd = {type: 'info', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
     jmqtt.setPageModified();
 });
 
 // On addMQTTAction click
 $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
-    var _cmd = {type: 'action'};
+    var _cmd = {type: 'action', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
     jmqtt.setPageModified();
 });
@@ -614,7 +615,7 @@ function printEqLogic(_eqLogic) {
          */
         function addPayload(topic, jsonPath, payload, parent_id) {
             var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
-            var c =  existingCmd(_eqLogic.cmd, topic, jsonPath);
+            var c = existingCmd(_eqLogic.cmd, topic, jsonPath);
             //console.log('addPayload: topic=' + topic + ', jsonPath=' + jsonPath + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
             if (c === undefined) {
                 return addCmd({
@@ -735,35 +736,21 @@ function printEqLogic(_eqLogic) {
     }
 
     // Show UI elements depending on the type
-    if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.eqLogic == undefined || _eqLogic.configuration.eqLogic < 0))
-            || (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
-        $('.toDisable').addClass('disabled');
+    if (_eqLogic.configuration.type != 'broker') { // jMQTT Eq or orphan
         $('.typ-brk').hide();
-        $('.typ-std').hide();
-        $('.typ-brk-select').show();
-        $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
+        $('.typ-std').show();
+        $('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
 
         // Udpate panel as if on an eqLogic
         $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val('eqpt');
         jmqtt.updateEqptTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
-        $('.toDisable').removeClass('disabled');
+    } else { // jMQTT Broker
         $('.typ-std').hide();
         $('.typ-brk').show();
         $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
         // Udpate panel on eqBroker
         jmqtt.updateBrokerTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
-        $('.toDisable').removeClass('disabled');
-        $('.typ-brk').hide();
-        $('.typ-std').show();
-        $('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
-
-        // Udpate panel on eqLogic
-        jmqtt.updateEqptTabs(_eqLogic);
     }
 }
 
@@ -779,7 +766,7 @@ function saveEqLogic(_eqLogic) {
     if (_eqLogic.configuration.type == 'broker') {
         var log_level = $('#div_broker_log').getValues('.configKey')[0];
         if (!$.isEmptyObject(log_level)) {
-            _eqLogic.loglevel =  log_level;
+            _eqLogic.loglevel = log_level;
         }
     }
 
@@ -866,7 +853,7 @@ function addCmdToTable(_cmd) {
         tr += '</div>';
         tr += '</td>';
         tr += '<td>';
-        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
+        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;">';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '"></span>';
         tr += '</td><td>';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" ' + disabled + '>';
@@ -878,9 +865,9 @@ function addCmdToTable(_cmd) {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:60px;display:inline-block;">';
         tr += '</td><td>';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized">{{Historiser}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible">{{Afficher}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary">{{Inverser}}</label></span><br/> ';
         tr += '</td><td align="right">';
         // TODO: Add Advanced parameters modale on each cmd
         //  The modale should include:
@@ -965,7 +952,7 @@ function addCmdToTable(_cmd) {
         tr += '</select>';
         tr += '</td>';
         tr += '<td>';
-        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;width:120px;" />';
+        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;width:120px;">';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
         tr += '</td>';
         tr += '<td>';
@@ -980,9 +967,9 @@ function addCmdToTable(_cmd) {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte}}" title="{{Liste : valeur|texte (séparées entre elles par des points-virgules)}}">';
         tr += '</td><td>';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible">{{Afficher}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain">{{Retain}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub">{{Pub. auto}}&nbsp;';
         tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br/>(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br/> ';
         tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
         tr += '</td>';
@@ -1116,39 +1103,6 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
             jmqtt_globals.refreshTimeout = setTimeout(function() {
                 jmqtt_globals.refreshTimeout = undefined;
                 window.location.reload();
-            }, 3000);
-        }
-    }
-});
-
-/**
- * Management of the display when an information command is added
- * Triggerred when the plugin core send a jMQTT::cmdAdded event
- * @param {string} _event event name
- * @param {string} _options['eqlogic_name'] name of the eqLogic command is added to
- * @param {int} _options['eqlogic_id'] id of the eqLogic command is added to
- * @param {string} _options['cmd_name'] name of the new command
- * @param {bool} _options['reload'] whether or not a reload of the page is requested
- */
-$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
-    var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;
-
-    // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
-    if (jmqtt.isPageModified() || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||
-            $('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
-        $.fn.showAlert({message: msg, level: 'warning'});
-    }
-    // Otherwise: display an alert message and reload the page
-    else {
-        $.fn.showAlert({
-            message: msg + ' {{La page va se réactualiser automatiquement}}.',
-            level: 'warning'
-        });
-        // Reload the page after a delay to let the user read the message
-        if (jmqtt_globals.refreshTimeout === undefined) {
-            jmqtt_globals.refreshTimeout = setTimeout(function() {
-                jmqtt_globals.refreshTimeout = undefined;
-                $('.eqLogicAction[data-action=refreshPage]').click();
             }, 3000);
         }
     }

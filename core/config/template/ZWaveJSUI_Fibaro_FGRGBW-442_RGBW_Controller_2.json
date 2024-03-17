@@ -2,14 +2,14 @@
     "ZWaveJSUI Fibaro FGRGBW-442 RGBW Controller 2": {
         "name": "ZWaveJSUI Fibaro FGRGBW-442 RGBW Controller 2",
         "eqType_name": "jMQTT",
+        "comment": "Fibaro FGRGBW-442 RGBW Controller 2\nJeedom Community: https://community.jeedom.com/t/module-fibaro-fgrgbw-442-commandes-et-template/91281/2",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-09-24 21:55:26",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Fibaro FGRGBW-442 RGBW Controller 2\nJeedom Community: https:\/\/community.jeedom.com\/t\/module-fibaro-fgrgbw-442-commandes-et-template\/91281\/2",
             "icone": "lightbulb",
             "updatetime": "2022-09-26 18:07:58"
         },
@@ -30,9 +30,6 @@
             "backGraph::format": "month",
             "backGraph::type": "areaspline"
         },
-        "status": {
-            "lastCommunication": "2022-09-25 20:17:33"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -42,7 +39,7 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65537",
+                    "topic": "%s/50/1/value/65537",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -69,7 +66,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/3\/currentValue",
+                    "topic": "%s/38/3/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -96,7 +93,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/2\/currentValue",
+                    "topic": "%s/38/2/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -123,7 +120,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/4\/currentValue",
+                    "topic": "%s/38/4/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -150,7 +147,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/5\/currentValue",
+                    "topic": "%s/38/5/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -177,7 +174,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/hexColor",
+                    "topic": "%s/51/1/hexColor",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -204,7 +201,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/currentValue",
+                    "topic": "%s/38/1/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -231,7 +228,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/currentColor\/2",
+                    "topic": "%s/51/1/currentColor/2",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -258,7 +255,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/currentColor\/3",
+                    "topic": "%s/51/1/currentColor/3",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -285,7 +282,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/currentColor\/4",
+                    "topic": "%s/51/1/currentColor/4",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -312,7 +309,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/currentColor\/0",
+                    "topic": "%s/51/1/currentColor/0",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -340,7 +337,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66049",
+                    "topic": "%s/50/1/value/66049",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -367,7 +364,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "99",
                     "retain": "0",
                     "autoPub": "0"
@@ -396,7 +393,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/1\/targetValue\/set",
+                    "topic": "%s/38/1/targetValue/set",
                     "request": "0",
                     "retain": "0",
                     "autoPub": "0"
@@ -426,7 +423,7 @@
                 "subType": "color",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/hexColor\/set",
+                    "topic": "%s/51/1/hexColor/set",
                     "request": "#color#",
                     "retain": "0",
                     "autoPub": "0",
@@ -456,7 +453,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/targetColor\/0\/set",
+                    "topic": "%s/51/1/targetColor/0/set",
                     "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "255",
@@ -488,7 +485,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/targetColor\/4\/set",
+                    "topic": "%s/51/1/targetColor/4/set",
                     "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "255",
@@ -520,7 +517,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/targetColor\/2\/set",
+                    "topic": "%s/51/1/targetColor/2/set",
                     "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "255",
@@ -552,7 +549,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/51\/1\/targetColor\/3\/set",
+                    "topic": "%s/51/1/targetColor/3/set",
                     "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "255",
@@ -584,7 +581,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/5\/targetValue\/set",
+                    "topic": "%s/38/5/targetValue/set",
                     "request": "99",
                     "retain": "0",
                     "autoPub": "0"
@@ -612,7 +609,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/5\/targetValue\/set",
+                    "topic": "%s/38/5/targetValue/set",
                     "request": "0",
                     "retain": "0",
                     "autoPub": "0"
@@ -640,7 +637,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/4\/targetValue\/set",
+                    "topic": "%s/38/4/targetValue/set",
                     "request": "99",
                     "retain": "0",
                     "autoPub": "0"
@@ -668,7 +665,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/4\/targetValue\/set",
+                    "topic": "%s/38/4/targetValue/set",
                     "request": "0",
                     "retain": "0",
                     "autoPub": "0"
@@ -696,7 +693,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/2\/targetValue\/set",
+                    "topic": "%s/38/2/targetValue/set",
                     "request": "99",
                     "retain": "0",
                     "autoPub": "0"
@@ -724,7 +721,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/2\/targetValue\/set",
+                    "topic": "%s/38/2/targetValue/set",
                     "request": "0",
                     "retain": "0",
                     "autoPub": "0"
@@ -752,7 +749,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/3\/targetValue\/set",
+                    "topic": "%s/38/3/targetValue/set",
                     "request": "99",
                     "retain": "0",
                     "autoPub": "0"
@@ -780,7 +777,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/3\/targetValue\/set",
+                    "topic": "%s/38/3/targetValue/set",
                     "request": "0",
                     "retain": "0",
                     "autoPub": "0"

@@ -2,6 +2,7 @@
     "Shelly Plus Plug S": {
         "name": "Shelly Plus Plug S",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Plus Plug S\nJeedom Community: https://community.jeedom.com/t/template-pour-shelly-plusplugs/111694",
         "configuration": {
             "auto_add_cmd": "0",
             "type": "eqpt",
@@ -10,7 +11,6 @@
             "Qos": "1",
             "icone": "prise",
             "availability_cmd": "Online",
-            "commentaire": "Shelly Plus Plug S\nJeedom Community: https://community.jeedom.com/t/template-pour-shelly-plusplugs/111694",
             "updatetime": "2023-12-08 12:23:47"
         },
         "category": {
@@ -27,11 +27,6 @@
             "width": "272px",
             "height": "372px"
         },
-        "status": {
-            "lastCommunication": "2023-11-14 08:54:55",
-            "enableDatime": "2023-11-14 08:54:55"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",

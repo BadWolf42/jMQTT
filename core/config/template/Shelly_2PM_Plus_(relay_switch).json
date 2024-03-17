@@ -2,6 +2,7 @@
     "Shelly 2PM Plus (relay switch)": {
         "name": "Shelly 2PM Plus (relay switch)",
         "eqType_name": "jMQTT",
+        "comment": "Shelly 2PM Plus (relay switch)\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/107",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-03-03 11:58:21",
@@ -9,7 +10,6 @@
             "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Shelly 2PM Plus (relay switch)\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/107",
             "icone": "lightbulb",
             "updatetime": "2023-11-08 20:25:20"
         },
@@ -27,11 +27,6 @@
             "width": "232px",
             "height": "272px"
         },
-        "status": {
-            "lastCommunication": "2023-11-07 17:23:50",
-            "enableDatime": "2023-11-07 17:23:50"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",

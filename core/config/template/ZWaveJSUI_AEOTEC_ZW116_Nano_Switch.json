@@ -2,12 +2,12 @@
     "ZWaveJSUI AEOTEC ZW116 Nano Switch": {
         "name": "ZWaveJSUI AEOTEC ZW116 Nano Switch",
         "eqType_name": "jMQTT",
+        "comment": "AEOTEC ZW116 Nano Switch\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/61",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-09-23 15:52:20",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
-            "commentaire": "AEOTEC ZW116 Nano Switch\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/61",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "updatetime": "2022-09-23 15:58:21"
         },
@@ -25,13 +25,6 @@
             "width": "232px",
             "height": "174px"
         },
-        "status": {
-            "lastCommunication": "2022-09-18 06:53:50",
-            "enableDatime": "2022-09-18 06:53:50"
-        },
-        "cache": {
-            "z2m_eq_name": "Machine_a_laver"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -40,7 +33,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/switch_binary\/endpoint_0\/currentValue",
+                    "topic": "%s/switch_binary/endpoint_0/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -60,7 +53,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/switch_binary\/endpoint_0\/targetValue\/set",
+                    "topic": "%s/switch_binary/endpoint_0/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -95,7 +88,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/switch_binary\/endpoint_0\/targetValue\/set",
+                    "topic": "%s/switch_binary/endpoint_0/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -131,7 +124,7 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/meter\/endpoint_0\/value\/66561",
+                    "topic": "%s/meter/endpoint_0/value/66561",
                     "jsonPath": "[value]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -168,7 +161,7 @@
                 "isHistorized": "0",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/meter\/endpoint_0\/value\/66817",
+                    "topic": "%s/meter/endpoint_0/value/66817",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -196,7 +189,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/meter\/endpoint_0\/value\/66049",
+                    "topic": "%s/meter/endpoint_0/value/66049",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -224,7 +217,7 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/meter\/endpoint_0\/value\/65537",
+                    "topic": "%s/meter/endpoint_0/value/65537",
                     "jsonPath": "[value]"
                 },
                 "template": {
