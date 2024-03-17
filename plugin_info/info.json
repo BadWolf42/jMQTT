@@ -25,5 +25,5 @@
     },
     "languages": ["fr_FR","en_US"],
     "compatibility": ["atlas","diy","docker","luna","miniplus","rpi","smart","v4"],
-    "pluginVersion" : "23.11.5"
+    "pluginVersion" : "23.11.6"
 }
