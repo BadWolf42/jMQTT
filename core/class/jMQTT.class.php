@@ -2345,7 +2345,7 @@ class jMQTT extends eqLogic {
      * @return jMQTT[]
      */
     public static function byBrkId($id) {
-        $brkId = json_encode(array('eqLogic' => $id));
+        $brkId = json_encode(array('eqLogic' => strval($id)));
         $returns = self::byTypeAndSearchConfiguration(__CLASS__, substr($brkId, 1, -1));
         return $returns;
     }
