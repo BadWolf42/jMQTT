@@ -31,13 +31,6 @@
             "width": "354px",
             "height": "254px"
         },
-        "status": {
-            "lastCommunication": "2023-12-03 19:08:57",
-            "enableDatime": "2023-12-03 19:08:57"
-        },
-        "cache": {
-            "z2m_eq_name": "0x7cb03eaa0a09ba8f"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",

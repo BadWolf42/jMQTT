@@ -24,10 +24,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "status": {
-            "lastCommunication": "2022-07-24 18:52:17",
-            "enableDatime": "2022-07-24 18:52:17"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",

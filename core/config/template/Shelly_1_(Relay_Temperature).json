@@ -24,10 +24,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "status": {
-            "lastCommunication": "2022-10-15 11:21:55",
-            "enableDatime": "2022-10-15 11:21:55"
-        },
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",

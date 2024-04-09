@@ -31,15 +31,6 @@
             "width": "232px",
             "height": "250px"
         },
-        "status": {
-            "lastCommunication": "2022-01-13 06:38:43",
-            "enableDatime": "2022-01-13 06:38:43"
-        },
-        "cache": {
-            "z2m_eq_name": "Lustre Table",
-            "mqtt_client_eqId": "962"
-        },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "TEMPERATURE",

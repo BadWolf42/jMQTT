@@ -27,13 +27,6 @@
             "width": "232px",
             "height": "332px"
         },
-        "status": {
-            "lastCommunication": "2022-06-25 13:55:42",
-            "enableDatime": "2022-06-25 13:55:42"
-        },
-        "cache": {
-            "z2m_eq_name": "TV led"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",

@@ -25,13 +25,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "status": {
-            "lastCommunication": "2023-07-23 10:51:53",
-            "enableDatime": "2023-07-23 10:51:53"
-        },
-        "cache": {
-            "z2m_eq_name": "0x000d6ffffeaeb0b7"
-        },
         "commands": [
             {
                 "generic_type": "ONLINE",

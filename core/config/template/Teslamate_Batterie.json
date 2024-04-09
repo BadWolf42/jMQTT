@@ -28,14 +28,6 @@
             "backGraph::type": "areaspline",
             "parameters": []
         },
-        "status": {
-            "lastCommunication": "2024-01-04 14:34:05",
-            "enableDatime": "2024-01-04 14:34:05"
-        },
-        "cache": {
-            "z2m_eq_name": "0xa4c1384c32606c10",
-            "mqtt_client_eqId": "1058"
-        },
         "commands": [
             {
                 "eqType": "jMQTT",

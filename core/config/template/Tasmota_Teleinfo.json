@@ -26,11 +26,6 @@
             "width": "232px",
             "height": "332px"
         },
-        "status": {
-            "lastCommunication": "2022-08-31 23:11:20",
-            "enableDatime": "2022-08-31 23:11:20"
-        },
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
