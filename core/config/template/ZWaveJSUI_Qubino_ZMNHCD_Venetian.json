@@ -71,10 +71,6 @@
             "layout::dashboard::table::cmd::1604::line": 1,
             "layout::dashboard::table::cmd::1604::column": 1
         },
-        "status": {
-            "lastCommunication": "2021-12-03 21:23:58"
-        },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "FLAP_BSO_STATE",

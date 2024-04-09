@@ -25,10 +25,6 @@
             "height": "112px",
             "width": "112px"
         },
-        "status": {
-            "lastCommunication": "2021-04-28 09:26:37"
-        },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "FLAP_STATE",

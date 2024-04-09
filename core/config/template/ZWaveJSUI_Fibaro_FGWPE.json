@@ -26,7 +26,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",

@@ -26,8 +26,6 @@
             "width": "192px",
             "height": "72px"
         },
-        "status": [],
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "BATTERY",

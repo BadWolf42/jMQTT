@@ -25,10 +25,6 @@
             "width": "232px",
             "height": "292px"
         },
-        "status": {
-            "lastCommunication": "2021-09-10 15:19:35"
-        },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",

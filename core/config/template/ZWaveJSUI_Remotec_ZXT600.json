@@ -26,10 +26,6 @@
             "width": "312px",
             "height": "412px"
         },
-        "status": {
-            "lastCommunication": "2021-09-10 15:19:35"
-        },
-        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",
