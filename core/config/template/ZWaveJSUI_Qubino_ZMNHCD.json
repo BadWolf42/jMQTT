@@ -25,7 +25,6 @@
             "height": "112px",
             "width": "112px"
         },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "FLAP_STATE",

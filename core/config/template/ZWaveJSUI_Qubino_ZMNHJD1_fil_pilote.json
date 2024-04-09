@@ -27,7 +27,6 @@
             "width": "232px",
             "height": "152px"
         },
-        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",

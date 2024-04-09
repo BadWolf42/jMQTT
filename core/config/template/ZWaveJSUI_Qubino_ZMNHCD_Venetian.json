@@ -71,7 +71,6 @@
             "layout::dashboard::table::cmd::1604::line": 1,
             "layout::dashboard::table::cmd::1604::column": 1
         },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "FLAP_BSO_STATE",

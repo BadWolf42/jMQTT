@@ -27,7 +27,6 @@
             "width": "152px",
             "height": "112px"
         },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "ENERGY_STATE",

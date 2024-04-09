@@ -27,7 +27,6 @@
             "width": "312px",
             "height": "152px"
         },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "LIGHT_STATE",

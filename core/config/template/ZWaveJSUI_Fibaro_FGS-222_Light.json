@@ -27,7 +27,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "LIGHT_STATE_BOOL",

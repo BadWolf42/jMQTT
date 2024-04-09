@@ -31,7 +31,6 @@
             "width": "232px",
             "height": "250px"
         },
-        "logicalId": "",
         "commands": [
             {
                 "generic_type": "TEMPERATURE",

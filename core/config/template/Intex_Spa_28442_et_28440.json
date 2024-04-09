@@ -118,7 +118,6 @@
             "layout::dashboard::table::cmd::52::line": 1,
             "layout::dashboard::table::cmd::52::column": 1
         },
-        "logicalId": "",
         "commands": [
             {
                 "eqType": "jMQTT",
