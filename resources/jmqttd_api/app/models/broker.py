@@ -43,7 +43,6 @@ class BrkConfigModel(BaseModel):
     mqttIntTopic: Optional[str] = ''
     mqttApi: Optional[bool] = False
     mqttApiTopic: Optional[str] = ''
-    mqttTlsSecure: Optional[bool] = False
     mqttTlsCheck: Optional[TlsCheckModel] = TlsCheckModel.disabled
     mqttTlsCa: Optional[str] = ''
     mqttTlsClient: Optional[bool] = False
@@ -69,9 +68,6 @@ class BrkConfigModel(BaseModel):
     _val_mqttApi: classmethod = validator("mqttApi", allow_reuse=True, pre=True)(
         strToBool
     )
-    _val_mqttTlsSecure: classmethod = validator(
-        "mqttTlsSecure", allow_reuse=True, pre=True
-    )(strToBool)
     _val_mqttTlsClient: classmethod = validator(
         "mqttTlsClient", allow_reuse=True, pre=True
     )(strToBool)
