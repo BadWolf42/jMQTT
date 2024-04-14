@@ -47,6 +47,8 @@ async def lifespan(app: FastAPI):
     await Healthcheck.start()
     task_up = create_task(Callbacks.daemonUp())
     yield
+    if not task_up.done():
+        logger.error('DaemonUp did not finish!')
     await shutdown()
 
 

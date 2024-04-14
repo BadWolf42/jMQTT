@@ -1,6 +1,6 @@
 from __future__ import annotations
 from asyncio import CancelledError, create_task, sleep, Task
-from aiomqtt import Client, Message, MqttError, Will
+from aiomqtt import Client, Message, MqttError  #, Will
 from logging import getLogger  # , DEBUG
 from typing import Dict, List
 from weakref import WeakValueDictionary
@@ -84,7 +84,11 @@ class BrkLogic(VisitableLogic):
                 async with Client(
                     hostname=cfg.mqttAddress,
                     port=cfg.mqttPort if cfg.mqttPort != 0 else 1883,
-                    transport='tcp' if cfg.mqttProto in [MqttProtoModel.mqtt, MqttProtoModel.mqtts] else 'websockets',
+                    transport=(
+                        'tcp'
+                        if cfg.mqttProto in [MqttProtoModel.mqtt, MqttProtoModel.mqtts]
+                        else 'websockets'
+                    ),
 
                     # TODO Add other mqtt params
                     # transport: Literal['tcp', 'websockets'] = 'tcp',
@@ -178,9 +182,12 @@ class BrkLogic(VisitableLogic):
                         self.__listen(message)
 
             except MqttError:
-                self.log.info(f'Connection lost; Reconnecting in {cfg.mqttRecoInterval} seconds ...')
-            except Exception as e:
-                self.log.exception(f'Client died unexpectedly; Reconnecting in {cfg.mqttRecoInterval} seconds ...', cfg.mqttRecoInterval)
+                self.log.info(f'Connection lost; Reconnecting in {cfg.mqttRecoInterval} seconds...')
+            except Exception:
+                self.log.exception(
+                    f'Client died unexpectedly; Reconnecting in {cfg.mqttRecoInterval} seconds...',
+                    cfg.mqttRecoInterval,
+                )
             finally:
                 self.mqttClient = None
                 await Callbacks.brokerDown(self.model.id)
