@@ -14,6 +14,9 @@ sendVarToJS('version', config::byKey('version', 'jMQTT', 'unknown', true));
 // Send Mosquitto installation status
 sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTTPlugin::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
+// TODO: Remove forceDocker, urlOverrideEnable & urlOverrideValue
+//  This should be automatically detected and handled accordingly
+
 $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
 sendVarToJS('dStatus', $docker);
 

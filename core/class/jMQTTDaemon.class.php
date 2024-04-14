@@ -133,6 +133,9 @@ class jMQTTDaemon {
         // Start Python daemon
         $path = realpath(__DIR__ . '/../../resources/jmqttd_api');
         $callbackURL = jMQTTDaemon::get_callback_url();
+        // TODO: Remove forceDocker, urlOverrideEnable & urlOverrideValue
+        //  This should be automatically detected and handled accordingly
+
         // To fix issue: https://community.jeedom.com/t/87727/39
         if ((file_exists('/.dockerenv')
              || config::byKey('forceDocker', jMQTT::class, '0'))

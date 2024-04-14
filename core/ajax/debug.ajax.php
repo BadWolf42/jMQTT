@@ -282,6 +282,9 @@ try {
         }
         // Prepare url
         $callbackURL = jMQTTDaemon::get_callback_url();
+        // TODO: Remove forceDocker, urlOverrideEnable & urlOverrideValue
+        //  This should be automatically detected and handled accordingly
+
         // To fix issue: https://community.jeedom.com/t/87727/39
         if (
             (
@@ -292,6 +295,7 @@ try {
         ) {
             $callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
         }
+
         // Send to Jeedom
         $curl = curl_init($callbackURL);
         curl_setopt($curl, CURLOPT_POST, true);
