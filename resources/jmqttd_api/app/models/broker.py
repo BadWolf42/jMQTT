@@ -48,6 +48,7 @@ class BrkConfigModel(BaseModel):
     mqttTlsClient: Optional[bool] = False
     mqttTlsClientCert: Optional[str] = ''
     mqttTlsClientKey: Optional[str] = ''
+    mqttRecoInterval: Optinal[int] = 5
 
     # _val_qos: classmethod = validator("qos", allow_reuse=True, pre=True)(strToInt)
     _val_auto_add_cmd: classmethod = validator(
