@@ -215,7 +215,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                 <table id="table_cmd" class="table tree table-bordered table-condensed table-striped">
                     <thead>
                         <tr>
-                            <th style="width:1px;">ID</th>
+                            <th style="width:20px;">ID</th>
                             <th style="min-width:150px;width:300px;">{{Nom}}</th>
                             <th style="width:130px;">{{Type}}</th>
                             <th style="min-width:180px;">{{Topic}}</th>
