@@ -22,7 +22,7 @@ sendVarToJS('dStatus', $docker);
 
 ?>
 <form class="form-horizontal" style="min-height: 250px;">
-    <div class="row">
+  <div class="row">
     <div class="col-lg-6 col-sm-12">
 <?php
 if (!$docker) {
@@ -110,6 +110,9 @@ if ($docker) {
         </div>
 <?php } /* $docker */ ?>
     </div>
+<?php
+// TODO: Remove backup/restore from configuration and put in Debug modal
+?>
     <div class="col-lg-6 col-sm-12">
         <legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuration de jMQTT}}</legend>
         <div class="form-group">
@@ -159,6 +162,9 @@ foreach ($backups as $backup)
             <div class="col-sm-1"></div>
         </div>
     </div>
-    </div>
+<?php
+// END TODO
+?>
+  </div>
 </form>
 <?php include_file('desktop', 'jMQTT.config', 'js', 'jMQTT'); ?>
