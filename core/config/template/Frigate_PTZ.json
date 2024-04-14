@@ -1,0 +1,364 @@
+{
+    "Frigate PTZ": {
+        "name": "Frigate PTZ",
+        "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/117108/185",
+        "configuration": {
+            "type": "eqpt",
+            "createtime": "2024-04-08 20:08:07",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
+            "Qos": "1",
+            "battery_type": "Secteur",
+            "icone": "motion-sensor",
+            "updatetime": "2024-04-08 22:55:26"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "backGraph::color": "#4572a7",
+            "backGraph::format": "month",
+            "backGraph::type": "areaspline",
+            "layout::dashboard": "table",
+            "layout::dashboard::table::parameters": {
+                "center": "0",
+                "styletable": "",
+                "styletd": "",
+                "text::td::1::1": "",
+                "style::td::1::1": "",
+                "text::td::1::2": "",
+                "style::td::1::2": "",
+                "text::td::1::3": "",
+                "style::td::1::3": "",
+                "text::td::2::1": "",
+                "style::td::2::1": "",
+                "text::td::2::2": "",
+                "style::td::2::2": "",
+                "text::td::2::3": "",
+                "style::td::2::3": "",
+                "text::td::3::1": "",
+                "style::td::3::1": "",
+                "text::td::3::2": "",
+                "style::td::3::2": "",
+                "text::td::3::3": "",
+                "style::td::3::3": ""
+            },
+            "layout::dashboard::table::nbLine": "3",
+            "layout::dashboard::table::nbColumn": "3",
+            "parameters": [],
+            "layout::dashboard::table::cmd::43496::line": 1,
+            "layout::dashboard::table::cmd::43496::column": 1,
+            "layout::dashboard::table::cmd::43513::line": 1,
+            "layout::dashboard::table::cmd::43513::column": 1,
+            "layout::dashboard::table::cmd::43504::line": 1,
+            "layout::dashboard::table::cmd::43504::column": 1,
+            "layout::dashboard::table::cmd::43503::line": 1,
+            "layout::dashboard::table::cmd::43503::column": 1,
+            "layout::dashboard::table::cmd::43497::line": 1,
+            "layout::dashboard::table::cmd::43497::column": 1,
+            "layout::dashboard::table::cmd::43490::line": "1",
+            "layout::dashboard::table::cmd::43490::column": "2",
+            "layout::dashboard::table::cmd::43499::line": 1,
+            "layout::dashboard::table::cmd::43499::column": 1,
+            "layout::dashboard::table::cmd::43502::line": 1,
+            "layout::dashboard::table::cmd::43502::column": 1,
+            "layout::dashboard::table::cmd::43501::line": 1,
+            "layout::dashboard::table::cmd::43501::column": 1,
+            "layout::dashboard::table::cmd::43498::line": 1,
+            "layout::dashboard::table::cmd::43498::column": 1,
+            "layout::dashboard::table::cmd::43505::line": 1,
+            "layout::dashboard::table::cmd::43505::column": 1,
+            "layout::dashboard::table::cmd::43500::line": 1,
+            "layout::dashboard::table::cmd::43500::column": 1,
+            "layout::dashboard::table::cmd::43494::line": 1,
+            "layout::dashboard::table::cmd::43494::column": 1,
+            "layout::dashboard::table::cmd::43495::line": 1,
+            "layout::dashboard::table::cmd::43495::column": 1,
+            "layout::dashboard::table::cmd::43491::line": "3",
+            "layout::dashboard::table::cmd::43491::column": "2",
+            "layout::dashboard::table::cmd::43492::line": "2",
+            "layout::dashboard::table::cmd::43492::column": "1",
+            "layout::dashboard::table::cmd::43493::line": "2",
+            "layout::dashboard::table::cmd::43493::column": "3",
+            "layout::dashboard::table::cmd::43512::line": "2",
+            "layout::dashboard::table::cmd::43512::column": "2",
+            "width": "164px",
+            "height": "190px",
+            "layout::dashboard::table::cmd::43514::line": 1,
+            "layout::dashboard::table::cmd::43514::column": 1,
+            "layout::dashboard::table::cmd::43515::line": "1",
+            "layout::dashboard::table::cmd::43515::column": "3",
+            "layout::dashboard::table::cmd::43516::line": "3",
+            "layout::dashboard::table::cmd::43516::column": "1",
+            "layout::dashboard::table::cmd::43517::line": "3",
+            "layout::dashboard::table::cmd::43517::column": "3"
+        },
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "1",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "preset_Preset1",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Haut",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "MOVE_UP",
+                    "retain": "0",
+                    "autoPub": "1"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "icon": "<i class=\"icon font-awesome-arrow-up\"></i>",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "2",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "preset_Preset2",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Gauche",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "MOVE_LEFT",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "icon": "<i class=\"icon font-awesome-arrow-left\"></i>",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Stop",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "STOP",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "icon": "<i class=\"icon fas fa-stop-circle\"></i>",
+                    "showNameOndashboard": "0",
+                    "showNameOnmobile": "0",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Droite",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "MOVE_RIGHT",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "icon": "<i class=\"icon font-awesome-arrow-right\"></i>",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "3",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "preset_Preset3",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Bas",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "MOVE_DOWN",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "icon": "<i class=\"icon font-awesome-arrow-down\"></i>",
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "4",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ptz",
+                    "request": "preset_Preset4",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "template": {
+                    "dashboard": "core::default",
+                    "mobile": "core::default"
+                },
+                "display": {
+                    "showNameOndashboard": "1",
+                    "showNameOnmobile": "1",
+                    "showIconAndNamedashboard": "0",
+                    "showIconAndNamemobile": "0",
+                    "forceReturnLineBefore": "0",
+                    "forceReturnLineAfter": "0",
+                    "parameters": []
+                },
+                "isVisible": "1",
+                "alert": []
+            }
+        ]
+    }
+}
