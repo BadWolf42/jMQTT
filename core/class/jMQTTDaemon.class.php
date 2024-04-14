@@ -10,10 +10,16 @@ class jMQTTDaemon {
      * jMQTT static function returning an automatically detected callback url to Jeedom for the daemon
      */
     public static function get_callback_url() {
+        // TODO: Proto should always be http, 127.0.0.1 must not be redirected to HTTPS
+
         // To fix let's encrypt issue like: https://community.jeedom.com/t/87060/26
         $proto = config::byKey('internalProtocol', 'core', 'http://');
+
+        // TODO: Also automatically detected and handle docker port if in docker env
+
         // To fix port issue like: https://community.jeedom.com/t/87060/30
         $port = config::byKey('internalPort', 'core', 80);
+
         // To fix path issue like: https://community.jeedom.com/t/87872/15
         $comp = trim(config::byKey('internalComplement', 'core', ''), '/');
         if ($comp !== '') $comp .= '/';
