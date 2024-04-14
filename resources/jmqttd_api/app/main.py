@@ -45,7 +45,7 @@ def getToken(token: str = Security(HTTPBearer())):
 async def lifespan(app: FastAPI):
     await startup()
     await Healthcheck.start()
-    create_task(Callbacks.daemonUp())
+    task_up = create_task(Callbacks.daemonUp())
     yield
     await shutdown()
 
