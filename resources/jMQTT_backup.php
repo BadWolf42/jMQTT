@@ -178,7 +178,7 @@ function export_history($_filename) {
             $first_point = true;
             foreach ($cmd->getHistory() as $h) {
                 ($first_point) ? ($first_point = false) : fwrite($fp, ',');
-                fwrite($fp, '{"datetime":"' .$h->getDatetime(). '","value":"' . json_encode($h->getValue(), JSON_UNESCAPED_UNICODE) . '"}');
+                fwrite($fp, '{"datetime":"' .$h->getDatetime(). '","value":' . json_encode($h->getValue(), JSON_UNESCAPED_UNICODE) . '}');
             }
             fwrite($fp, ']');
         }
