@@ -85,12 +85,20 @@ class BrkLogic(VisitableLogic):
                 'Got API message: "%s"',
                 message.payload,
             )
+            return
 
-        if cfg.mqttInt and message.topic.matches(cfg.mqttIntTopic):
-            self.log.debug(
-                'Got Interaction message: "%s"',
-                message.payload,
-            )
+        if cfg.mqttInt:
+            if message.topic.matches(cfg.mqttIntTopic):
+                self.log.debug(
+                    'Got Interaction message: "%s"',
+                    message.payload,
+                )
+            if message.topic.matches(cfg.mqttIntTopic + '/advanced'):
+                self.log.debug(
+                    'Got Interaction advanced message: "%s"',
+                    message.payload,
+                )
+            return
 
         for sub in self.topics:
             if message.topic.matches(sub):
