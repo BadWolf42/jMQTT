@@ -62,4 +62,4 @@ async def equipment_get_debug_tree(id: int):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Equipment not found"
         )
-    await PrintVisitor(EqLogic.all[id]).visit()
+    await PrintVisitor(EqLogic.all[id]).print()
