@@ -185,6 +185,7 @@ class BrkLogic(VisitableLogic):
         )
 
     async def __clientTask(self):
+        logger.trace('Client task started')
         while True:
             try:
                 started: bool = False
@@ -255,6 +256,9 @@ class BrkLogic(VisitableLogic):
                 if started:
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
+            except CancelledError:
+                logger.debug('Client task canceled')
+                raise
             except Exception:
                 self.log.exception(
                     'Client died unexpectedly; Reconnecting in %s seconds...',
