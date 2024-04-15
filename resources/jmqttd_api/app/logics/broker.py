@@ -93,12 +93,13 @@ class BrkLogic(VisitableLogic):
                     'Got Interaction message: "%s"',
                     message.payload,
                 )
+                return
             if message.topic.matches(cfg.mqttIntTopic + '/advanced'):
                 self.log.debug(
                     'Got Interaction advanced message: "%s"',
                     message.payload,
                 )
-            return
+                return
 
         for sub in self.topics:
             if message.topic.matches(sub):
@@ -199,7 +200,7 @@ class BrkLogic(VisitableLogic):
         )
 
     async def __clientTask(self):
-        logger.trace('Client task started')
+        self.log.trace('Client task started')
         while True:
             try:
                 started: bool = False
@@ -271,7 +272,7 @@ class BrkLogic(VisitableLogic):
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
             except CancelledError:
-                logger.debug('Client task canceled')
+                self.log.debug('Client task canceled')
                 raise
             except Exception:
                 self.log.exception(
