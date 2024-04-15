@@ -31,7 +31,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.eqpts.clear()
         # Delete the BrkLogic from the registery
         del BrkLogic.all[e.model.id]
-        logger.debug('id=%s, brk unregistered', e.model.id)
+        logger.trace('id=%s, brk unregistered', e.model.id)
 
     async def visit_eq(self, e: EqLogic) -> None:
         logger.trace('id=%s, unregistering eq', e.model.id)
@@ -52,7 +52,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.weakBrk = None
         # Delete the EqLogic from the registery
         del EqLogic.all[e.model.id]
-        logger.debug('id=%s, eq unregistered', e.model.id)
+        logger.trace('id=%s, eq unregistered', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:
         logger.trace('id=%s, unregistering cmd', e.model.id)
@@ -66,7 +66,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         e.weakBrk = None
         # Delete the CmdLogic from the registery
         del CmdLogic.all[e.model.id]
-        logger.debug('id=%s, cmd unregistered', e.model.id)
+        logger.trace('id=%s, cmd unregistered', e.model.id)
 
     async def unregister(self) -> None:
         await self.toDel.accept(self)

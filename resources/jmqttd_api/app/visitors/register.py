@@ -22,7 +22,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         # Add BrkLogic in brkLogic table
         BrkLogic.all[e.model.id] = e
         await e.start()
-        logger.debug('id=%s, brk registered', e.model.id)
+        logger.trace('id=%s, brk registered', e.model.id)
 
     async def visit_eq(self, e: EqLogic) -> None:
         logger.trace('id=%s, registering eq', e.model.id)
@@ -42,7 +42,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         EqLogic.all[e.model.id] = e
         # Add EqLogic in BrkLogic eqLogics list
         e.weakBrk().eqpts[e.model.id] = e
-        logger.debug('id=%s, eq registered', e.model.id)
+        logger.trace('id=%s, eq registered', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:
         logger.trace('id=%s, registering cmd', e.model.id)
@@ -72,15 +72,15 @@ class RegisteringLogicVisitor(LogicVisitor):
         e.weakBrk = ref(eq.weakBrk())
         # Finish here if eq is not enabled
         if not eq.model.isEnable:
-            logger.debug('id=%s, cmd registered, but is not enabled', e.model.id)
+            logger.trace('id=%s, cmd registered, but is not enabled', e.model.id)
             return
         # Insert path in info topic tree
         if e.model.type != 'info':
-            logger.debug('id=%s, cmd registered, but is an action', e.model.id)
+            logger.trace('id=%s, cmd registered, but is an action', e.model.id)
             return
         # Add topic to Broker
         await addCmdInBrk(e, eq.weakBrk())
-        logger.debug('id=%s, cmd registered', e.model.id)
+        logger.trace('id=%s, cmd registered', e.model.id)
 
     async def register(self) -> None:
         await self.toAdd.accept(self)
