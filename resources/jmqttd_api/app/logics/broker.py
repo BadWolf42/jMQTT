@@ -1,6 +1,6 @@
 from __future__ import annotations
 from asyncio import CancelledError, create_task, sleep, Task
-from aiomqtt import Client, Message, MqttError  #, Will
+from aiomqtt import Client, Message, MqttError, Will
 from logging import getLogger  # , DEBUG
 from typing import Dict, List
 from weakref import WeakValueDictionary
@@ -40,7 +40,9 @@ https://github.com/encode/httpx/discussions/2037#discussioncomment-2006795
 
 """
 
-logger = getLogger('jmqtt.brk')
+logger1 = getLogger('jmqtt.brk')
+logger2 = getLogger('jmqtt.cli')
+logger3 = getLogger('jmqtt.rt')
 
 
 class BrkLogic(VisitableLogic):
@@ -80,7 +82,9 @@ class BrkLogic(VisitableLogic):
     async def __clientTask(self):
         while True:
             try:
+                started: bool = False
                 cfg = self.model.configuration
+                self.log.debug('Connecting to: %s', cfg.mqttAddress)
                 async with Client(
                     hostname=cfg.mqttAddress,
                     port=cfg.mqttPort if cfg.mqttPort != 0 else 1883,
@@ -98,16 +102,17 @@ class BrkLogic(VisitableLogic):
 
                     # protocol: ProtocolVersion | None = None, ## ProtocolVersion.V31, ProtocolVersion.V311, ProtocolVersion.V5
 
-                    # identifier=cfg.mqttIdValue if cfg.mqttId else None
-                    # username=cfg.mqttUser if cfg.mqttUser != '' else None,
-                    # password=cfg.mqttPass if cfg.mqttPass != '' else None,
-                    # will=None if not cfg.mqttLwt else Will(
-                    #     topic = cfg.mqttLwtTopic,
-                    #     payload = cfg.mqttLwtOffline,
-                    #     # qos = 0,
-                    #     retain = True,
-                    # ),
-
+                    client_id=cfg.mqttIdValue if cfg.mqttId else None,
+                    # To use with python >=3.8
+                    # identifier=cfg.mqttIdValue if cfg.mqttId else None,
+                    username=cfg.mqttUser if cfg.mqttPass is not None else None,
+                    password=cfg.mqttPass if cfg.mqttUser is not None else None,
+                    will=None if not cfg.mqttLwt else Will(
+                        topic=cfg.mqttLwtTopic,
+                        payload=cfg.mqttLwtOffline,
+                        qos=0,  # TODO review this val
+                        retain=True,
+                    ),
 
                     # tls_insecure: bool | None = None,
                     # cfg.mqttTlsCheck ## TlsCheckModel.disabled, TlsCheckModel.private, TlsCheckModel.public
@@ -137,9 +142,8 @@ class BrkLogic(VisitableLogic):
                     # cfg.mqttTlsClientCert ## Provided Client public key
                     # cfg.mqttTlsClientKey ## Provided Client private key
 
-                    # logger: logging.Logger | None = None,
-                    # getLogger(f'jmqtt.cli.{self.model.id}')
-                    # getLogger(f'jmqtt.rtcli.{self.model.id}')
+                    logger=getLogger(f'jmqtt.cli.{self.model.id}'),
+                    # logger=getLogger(f'jmqtt.rt.{self.model.id}'),
                     # queue_type: type[asyncio.Queue[Message]] | None = None,
                     # clean_session: bool | None = None,
 
@@ -158,41 +162,63 @@ class BrkLogic(VisitableLogic):
                     # proxy: ProxySettings | None = None,
                     # socket_options: Iterable[SocketOption] | None = None,
                 ) as client:
-                    self.mqttClient = client
-                    await Callbacks.brokerUp(self.model.id)
+                    try:
+                        self.mqttClient = client
+                        await Callbacks.brokerUp(self.model.id)
+                        started = True
 
-                    # if cfg.mqttApi:
-                    #     await client.subscribe(topic=cfg.mqttApiTopic)
+                        # if cfg.mqttApi:
+                        #     await client.subscribe(topic=cfg.mqttApiTopic)
 
-                    # if cfg.mqttInt:
-                    #     await client.subscribe(topic=cfg.mqttIntTopic)
+                        # if cfg.mqttInt:
+                        #     await client.subscribe(topic=cfg.mqttIntTopic)
 
-                    for t in list(self.topics):
-                        await client.subscribe(topic=t)
-
-                    if cfg.mqttLwt:
-                        await client.publish(
-                            topic=cfg.mqttLwtTopic,
-                            payload=cfg.mqttLwtOnline,
-                            # qos=0,
-                            retain=True,
-                        )
-
-                    async for message in client.messages:
-                        self.__listen(message)
+                        for t in list(self.topics):
+                            try:
+                                await client.subscribe(topic=t)
+                            except:
+                                self.log.info('Could not subscribe to "%s"', t)
+                        if cfg.mqttLwt:
+                            await self.publish(
+                                topic=cfg.mqttLwtTopic,
+                                payload=cfg.mqttLwtOnline,
+                                qos=0,  # TODO review this val
+                                retain=True,
+                            )
+                        async with client.messages() as messages:
+                            async for message in messages:
+                                await self.__listen(message)
+                        # To use with python >=3.8
+                        # async for message in client.messages:
+                        #     self.__listen(message)
+                    except CancelledError:
+                        if cfg.mqttLwt:
+                            await self.publish(
+                                topic=cfg.mqttLwtTopic,
+                                payload=cfg.mqttLwtOffline,
+                                qos=0,  # TODO review this val
+                                retain=True,
+                            )
+                        raise
 
             except MqttError:
-                self.log.info(f'Connection lost; Reconnecting in {cfg.mqttRecoInterval} seconds...')
-            except Exception:
-                self.log.exception(
-                    f'Client died unexpectedly; Reconnecting in {cfg.mqttRecoInterval} seconds...',
+                self.log.info(
+                    'Connection lost; Reconnecting in %s seconds...',
                     cfg.mqttRecoInterval,
                 )
-            finally:
                 self.mqttClient = None
-                await Callbacks.brokerDown(self.model.id)
+                if started:
+                    await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
-
+            except Exception:
+                self.log.exception(
+                    'Client died unexpectedly; Reconnecting in %s seconds...',
+                    cfg.mqttRecoInterval,
+                )
+                self.mqttClient = None
+                if started:
+                    await Callbacks.brokerDown(self.model.id)
+                await sleep(cfg.mqttRecoInterval)
 
     async def start(self):
         if not self.model.isEnable:
@@ -223,19 +249,38 @@ class BrkLogic(VisitableLogic):
         await self.start()
 
     async def publish(self, topic: str, payload: str, qos: int, retain: bool):
-        self.log.debug(
-            f'TODO: {{"topic":"{topic}","payload":"{payload}","qos":{qos},"retain":{retain}}}'
-        )
+        try:
+            await self.mqttClient.publish(
+                topic=topic,
+                payload=payload,
+                qos=qos,
+                retain=retain,
+            )
+            self.log.debug(
+                'topic="%s", payload="%s", qos=%i, retain=%s',
+                topic,
+                payload,
+                qos,
+                'True' if retain else 'Flase',
+            )
+        except:
+            self.log.info(
+                'Could not publish "%s" on "%s" with qos=%i and retain=%s',
+                payload,
+                topic,
+                qos,
+                'True' if retain else 'Flase',
+            )
         # TODO
         await Healthcheck.onReceive()
 
     async def subscribe(self, topic: str, qos: int) -> None:
-        self.log.debug(f'DONE SUB: {{"topic":"{topic}","qos":{qos}}}')
+        self.log.debug('topic="%s", qos=%i', topic, qos)
         if self.mqttClient is not None:
             await self.mqttClient.subscribe(topic, qos)
 
     async def unsubscribe(self, topic: str) -> None:
-        self.log.debug(f'DONE UNSUB: {{"topic":"{topic}"}}')
+        self.log.debug('topic="%s"', topic)
         if self.mqttClient is not None:
             await self.mqttClient.unsubscribe(topic)
 

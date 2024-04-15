@@ -14,6 +14,7 @@ class EqConfigModel(BaseModel):
     icone: Optional[str] = ''
     auto_add_cmd: Optional[bool] = False
     auto_add_topic: Optional[str] = ''
+    # rootTopic: Optional[str] = ''
     Qos: Optional[int] = 1
     availability_cmd: Optional[int] = 0
     # availability_eq: Optional[int] = 0

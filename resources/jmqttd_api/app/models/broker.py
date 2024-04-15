@@ -24,15 +24,13 @@ class TlsCheckModel(str, Enum):
 
 class BrkConfigModel(BaseModel):
     type: Literal['broker']
-    # brkId: int
-    # qos: Optional[int]  = 1
     auto_add_cmd: Optional[bool] = False
     auto_add_topic: Optional[str] = '#'
     mqttProto: Optional[MqttProtoModel] = MqttProtoModel.mqtt
     mqttAddress: Optional[str] = 'localhost'
     mqttPort: Optional[int] = 0
-    mqttUser: Optional[str] = ''
-    mqttPass: Optional[str] = ''
+    mqttUser: Optional[str] = None
+    mqttPass: Optional[str] = None
     mqttId: Optional[bool] = False
     mqttIdValue: Optional[str] = 'jMQTT'
     mqttLwt: Optional[bool] = False
@@ -40,9 +38,9 @@ class BrkConfigModel(BaseModel):
     mqttLwtOnline: Optional[str] = 'online'
     mqttLwtOffline: Optional[str] = 'offline'
     mqttInt: Optional[bool] = False
-    mqttIntTopic: Optional[str] = ''
+    mqttIntTopic: Optional[str] = 'jeedom/interact'
     mqttApi: Optional[bool] = False
-    mqttApiTopic: Optional[str] = ''
+    mqttApiTopic: Optional[str] = 'jeedom/api'
     mqttTlsCheck: Optional[TlsCheckModel] = TlsCheckModel.disabled
     mqttTlsCa: Optional[str] = ''
     mqttTlsClient: Optional[bool] = False
@@ -54,20 +52,47 @@ class BrkConfigModel(BaseModel):
     _val_auto_add_cmd: classmethod = validator(
         "auto_add_cmd", allow_reuse=True, pre=True
     )(strToBool)
+    _val_mqttAddress: classmethod = validator("mqttAddress", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else 'localhost'
+    )
     _val_mqttPort: classmethod = validator("mqttPort", allow_reuse=True, pre=True)(
         strToInt
+    )
+    _val_mqttUser: classmethod = validator("mqttUser", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else None
+    )
+    _val_mqttPass: classmethod = validator("mqttPass", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else None
     )
     _val_mqttId: classmethod = validator("mqttId", allow_reuse=True, pre=True)(
         strToBool
     )
+    _val_mqttIdValue: classmethod = validator("mqttIdValue", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else None
+    )
     _val_mqttLwt: classmethod = validator("mqttLwt", allow_reuse=True, pre=True)(
         strToBool
+    )
+    _val_mqttLwtTopic: classmethod = validator("mqttLwtTopic", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else 'jeedom/status'
+    )
+    _val_mqttLwtOnline: classmethod = validator("mqttLwtOnline", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else 'online'
+    )
+    _val_mqttLwtOffline: classmethod = validator("mqttLwtOffline", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else 'offline'
     )
     _val_mqttInt: classmethod = validator("mqttInt", allow_reuse=True, pre=True)(
         strToBool
     )
+    _val_mqttIntTopic: classmethod = validator("mqttIntTopic", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else 'jeedom/interact'
+    )
     _val_mqttApi: classmethod = validator("mqttApi", allow_reuse=True, pre=True)(
         strToBool
+    )
+    _val_mqttApiTopic: classmethod = validator("mqttApiTopic", allow_reuse=True, pre=True)(
+        lambda v: v if v is not None and v != '' else 'jeedom/api'
     )
     _val_mqttTlsClient: classmethod = validator(
         "mqttTlsClient", allow_reuse=True, pre=True
