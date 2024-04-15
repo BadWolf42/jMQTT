@@ -10,7 +10,7 @@ from .utils import strToBool, strToInt
 # --- Eq model
 class EqConfigModel(BaseModel):
     type: Literal['eqpt']
-    eqLogic: Union[int, None] = -1  # = Field(gt=0, description="Broker id", alias='brkId')
+    eqLogic: Union[int, None] = -1
     icone: Union[str, None] = ''
     auto_add_cmd: Union[bool, None] = False
     auto_add_topic: Union[str, None] = ''

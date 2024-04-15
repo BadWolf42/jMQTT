@@ -106,10 +106,10 @@ class BrkLogic(VisitableLogic):
                 self.log.debug(
                     'Got message on topic %s for cmd(s): %s',
                     message.topic,
-                    list(self.topics[sub])
+                    list(self.topics[sub]),
                 )
 
-    def __buildClient(self):
+    def __buildClient(self) -> Client:
         cfg = self.model.configuration
         return Client(
             hostname=cfg.mqttAddress,
@@ -122,7 +122,7 @@ class BrkLogic(VisitableLogic):
             websocket_path=(
                 None
                 if cfg.mqttProto not in [MqttProtoModel.ws, MqttProtoModel.wss]
-                else ('/'+cfg.mqttWsUrl)
+                else ('/' + cfg.mqttWsUrl)
             ),
             websocket_headers=(
                 None
@@ -199,12 +199,45 @@ class BrkLogic(VisitableLogic):
             # socket_options: Iterable[SocketOption] | None = None,
         )
 
+    async def __runClient(self, client: Client) -> None:
+        cfg = self.model.configuration
+        if cfg.mqttApi:
+            self.log.debug('Subscribing to API topic: "%s"', cfg.mqttApiTopic)
+            await client.subscribe(topic=cfg.mqttApiTopic)
+
+        if cfg.mqttInt:
+            self.log.debug('Subscribing to Interact topic: "%s"', cfg.mqttIntTopic)
+            await client.subscribe(topic=cfg.mqttIntTopic)
+
+        subsList = list(self.topics)
+        self.log.debug('Mass-subscribing to: %s', subsList)
+        q = 0  # TODO review this val
+        toSub = [(t, q) for t in subsList]
+        try:
+            await client.subscribe(topic=toSub)
+        except Exception:
+            self.log.exception('Could not mass-subscribe')
+            # self.log.info('Could not subscribe to "%s"', t)
+        if cfg.mqttLwt:
+            await self.publish(
+                topic=cfg.mqttLwtTopic,
+                payload=cfg.mqttLwtOnline,
+                qos=0,  # TODO review this val
+                retain=True,
+            )
+        async with client.messages() as messages:
+            async for message in messages:
+                await self.__listen(message)
+        # To use with python >=3.8
+        # async for message in client.messages:
+        #     self.__listen(message)
+
     async def __clientTask(self):
         self.log.trace('Client task started')
+        cfg = self.model.configuration
         while True:
+            started: bool = False
             try:
-                started: bool = False
-                cfg = self.model.configuration
                 self.log.debug(
                     'Connecting to broker on: %s:%i',
                     cfg.mqttAddress,
@@ -215,43 +248,7 @@ class BrkLogic(VisitableLogic):
                         self.mqttClient = client
                         await Callbacks.brokerUp(self.model.id)
                         started = True
-
-                        if cfg.mqttApi:
-                            self.log.debug(
-                                'Subscribing to API topic: "%s"',
-                                cfg.mqttApiTopic,
-                            )
-                            await client.subscribe(topic=cfg.mqttApiTopic)
-
-                        if cfg.mqttInt:
-                            self.log.debug(
-                                'Subscribing to Interact topic: "%s"',
-                                cfg.mqttIntTopic,
-                            )
-                            await client.subscribe(topic=cfg.mqttIntTopic)
-
-                        subsList = list(self.topics)
-                        self.log.debug('Mass-subscribing to: %s', subsList)
-                        q = 0  # TODO review this val
-                        toSub = [(t, q) for t in subsList]
-                        try:
-                            await client.subscribe(topic=toSub)
-                        except Exception:
-                            self.log.exception('Could not mass-subscribe')
-                            # self.log.info('Could not subscribe to "%s"', t)
-                        if cfg.mqttLwt:
-                            await self.publish(
-                                topic=cfg.mqttLwtTopic,
-                                payload=cfg.mqttLwtOnline,
-                                qos=0,  # TODO review this val
-                                retain=True,
-                            )
-                        async with client.messages() as messages:
-                            async for message in messages:
-                                await self.__listen(message)
-                        # To use with python >=3.8
-                        # async for message in client.messages:
-                        #     self.__listen(message)
+                        await self.__runClient(client)
                     except CancelledError:
                         if cfg.mqttLwt:
                             await self.publish(

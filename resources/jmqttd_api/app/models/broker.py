@@ -63,12 +63,8 @@ class BrkConfigModel(BaseModel):
     )(strToBool)
     _val_mqttAddress: classmethod = validator(
         "mqttAddress", allow_reuse=True, pre=True
-    )(
-        lambda v: v if v is not None and v != '' else 'localhost'
-    )
-    _val_mqttWsUrl: classmethod = validator(
-        "mqttWsUrl", allow_reuse=True, pre=True
-    )(
+    )(lambda v: v if v is not None and v != '' else 'localhost')
+    _val_mqttWsUrl: classmethod = validator("mqttWsUrl", allow_reuse=True, pre=True)(
         lambda v: v if v is not None and v != '' else 'mqtt'
     )
     _val_mqttPort: classmethod = validator("mqttPort", allow_reuse=True, pre=True)(
@@ -84,7 +80,8 @@ class BrkConfigModel(BaseModel):
         strToBool
     )
     _val_mqttIdValue: classmethod = validator(
-        "mqttIdValue", allow_reuse=True, pre=True)
+        "mqttIdValue", allow_reuse=True, pre=True
+    )(lambda v: v if v is not None and v != '' else 'jMQTT')
     _val_mqttLwt: classmethod = validator("mqttLwt", allow_reuse=True, pre=True)(
         strToBool
     )
