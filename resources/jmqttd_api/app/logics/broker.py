@@ -107,11 +107,15 @@ class BrkLogic(VisitableLogic):
                     # identifier=cfg.mqttIdValue if cfg.mqttId else None,
                     username=cfg.mqttUser if cfg.mqttPass is not None else None,
                     password=cfg.mqttPass if cfg.mqttUser is not None else None,
-                    will=None if not cfg.mqttLwt else Will(
-                        topic=cfg.mqttLwtTopic,
-                        payload=cfg.mqttLwtOffline,
-                        qos=0,  # TODO review this val
-                        retain=True,
+                    will=(
+                        None
+                        if not cfg.mqttLwt
+                        else Will(
+                            topic=cfg.mqttLwtTopic,
+                            payload=cfg.mqttLwtOffline,
+                            qos=0,  # TODO review this val
+                            retain=True,
+                        )
                     ),
 
                     # tls_insecure: bool | None = None,
@@ -176,7 +180,7 @@ class BrkLogic(VisitableLogic):
                         for t in list(self.topics):
                             try:
                                 await client.subscribe(topic=t)
-                            except:
+                            except Exception:
                                 self.log.info('Could not subscribe to "%s"', t)
                         if cfg.mqttLwt:
                             await self.publish(
@@ -249,6 +253,15 @@ class BrkLogic(VisitableLogic):
         await self.start()
 
     async def publish(self, topic: str, payload: str, qos: int, retain: bool):
+        if self.mqttTask is None or self.mqttTask.done():
+            self.log.debug(
+                'CANNOT PUBLISH: topic="%s", payload="%s", qos=%i, retain=%s',
+                topic,
+                payload,
+                qos,
+                'True' if retain else 'Flase',
+            )
+            return
         try:
             await self.mqttClient.publish(
                 topic=topic,
@@ -263,7 +276,7 @@ class BrkLogic(VisitableLogic):
                 qos,
                 'True' if retain else 'Flase',
             )
-        except:
+        except Exception:
             self.log.info(
                 'Could not publish "%s" on "%s" with qos=%i and retain=%s',
                 payload,
