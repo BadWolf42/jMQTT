@@ -78,110 +78,151 @@ class BrkLogic(VisitableLogic):
 
     async def __listen(self, message: Message):
         self.log.debug('Got msg on %s: %s', message.topic, message.payload)
+        cfg = self.model.configuration
+
+        if cfg.mqttApi and message.topic.matches(cfg.mqttApiTopic):
+            self.log.debug(
+                'Got API message: "%s"',
+                message.payload,
+            )
+
+        if cfg.mqttInt and message.topic.matches(cfg.mqttIntTopic):
+            self.log.debug(
+                'Got Interaction message: "%s"',
+                message.payload,
+            )
+
+        for sub in self.topics:
+            if message.topic.matches(sub):
+                self.log.debug(
+                    'Got message on topic %s for cmd(s): %s',
+                    message.topic,
+                    list(self.topics[sub])
+                )
+
+    def __buildClient(self):
+        cfg = self.model.configuration
+        return Client(
+            hostname=cfg.mqttAddress,
+            port=cfg.mqttPort if cfg.mqttPort != 0 else 1883,
+            transport=(
+                'tcp'
+                if cfg.mqttProto in [MqttProtoModel.mqtt, MqttProtoModel.mqtts]
+                else 'websockets'
+            ),
+
+            # TODO Add other mqtt params
+            # transport: Literal['tcp', 'websockets'] = 'tcp',
+            # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss
+            # websocket_path: str | None = None,
+            # websocket_headers: WebSocketHeaders | None = None
+
+            # protocol: ProtocolVersion | None = None, ## ProtocolVersion.V31, ProtocolVersion.V311, ProtocolVersion.V5
+
+            client_id=cfg.mqttIdValue if cfg.mqttId else None,
+            # To use with python >=3.8
+            # identifier=cfg.mqttIdValue if cfg.mqttId else None,
+            username=cfg.mqttUser if cfg.mqttPass is not None else None,
+            password=cfg.mqttPass if cfg.mqttUser is not None else None,
+            will=(
+                None
+                if not cfg.mqttLwt
+                else Will(
+                    topic=cfg.mqttLwtTopic,
+                    payload=cfg.mqttLwtOffline,
+                    qos=0,  # TODO review this val
+                    retain=True,
+                )
+            ),
+
+            # tls_insecure: bool | None = None,
+            # cfg.mqttTlsCheck ## TlsCheckModel.disabled, TlsCheckModel.private, TlsCheckModel.public
+            # tls_context: ssl.SSLContext | None = None, ## ssl.CERT_NONE, ssl.CERT_OPTIONAL, ssl.CERT_REQUIRED
+            # tls_params: TLSParameters | None = None,
+            # TLSParameters(
+            #     ca_certs: str | None = None
+            #     certfile: str | None = None
+            #     keyfile: str | None = None
+            #     cert_reqs: ssl.VerifyMode | None = None
+            #     tls_version: Any | None = None
+            #     ciphers: str | None = None
+            #     keyfile_password: str | None = None
+            # )
+            # self._client.tls_set(
+            #     ca_certs=tls_params.ca_certs,
+            #     certfile=tls_params.certfile,
+            #     keyfile=tls_params.keyfile,
+            #     cert_reqs=tls_params.cert_reqs,
+            #     tls_version=tls_params.tls_version,
+            #     ciphers=tls_params.ciphers,
+            #     keyfile_password=tls_params.keyfile_password,
+            # )
+
+            # cfg.mqttTlsCa ## Expected CA cert
+            # cfg.mqttTlsClient ## bool (use client public & private keys)
+            # cfg.mqttTlsClientCert ## Provided Client public key
+            # cfg.mqttTlsClientKey ## Provided Client private key
+
+            logger=getLogger(f'jmqtt.cli.{self.model.id}'),
+            # logger=getLogger(f'jmqtt.rt.{self.model.id}'),
+            # queue_type: type[asyncio.Queue[Message]] | None = None,
+            # clean_session: bool | None = None,
+
+            # ####
+            # Other options
+            # timeout: float | None = None,
+            # keepalive: int = 60,
+            # bind_address: str = '',
+            # bind_port: int = 0,
+            # clean_start: mqtt.CleanStartOption = 3,
+            # max_queued_incoming_messages: int | None = None,
+            # max_queued_outgoing_messages: int | None = None,
+            # max_inflight_messages: int | None = None,
+            # max_concurrent_outgoing_calls: int | None = None,
+            # properties: Properties | None = None,
+            # proxy: ProxySettings | None = None,
+            # socket_options: Iterable[SocketOption] | None = None,
+        )
 
     async def __clientTask(self):
         while True:
             try:
                 started: bool = False
                 cfg = self.model.configuration
-                self.log.debug('Connecting to: %s', cfg.mqttAddress)
-                async with Client(
-                    hostname=cfg.mqttAddress,
-                    port=cfg.mqttPort if cfg.mqttPort != 0 else 1883,
-                    transport=(
-                        'tcp'
-                        if cfg.mqttProto in [MqttProtoModel.mqtt, MqttProtoModel.mqtts]
-                        else 'websockets'
-                    ),
-
-                    # TODO Add other mqtt params
-                    # transport: Literal['tcp', 'websockets'] = 'tcp',
-                    # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss
-                    # websocket_path: str | None = None,
-                    # websocket_headers: WebSocketHeaders | None = None
-
-                    # protocol: ProtocolVersion | None = None, ## ProtocolVersion.V31, ProtocolVersion.V311, ProtocolVersion.V5
-
-                    client_id=cfg.mqttIdValue if cfg.mqttId else None,
-                    # To use with python >=3.8
-                    # identifier=cfg.mqttIdValue if cfg.mqttId else None,
-                    username=cfg.mqttUser if cfg.mqttPass is not None else None,
-                    password=cfg.mqttPass if cfg.mqttUser is not None else None,
-                    will=(
-                        None
-                        if not cfg.mqttLwt
-                        else Will(
-                            topic=cfg.mqttLwtTopic,
-                            payload=cfg.mqttLwtOffline,
-                            qos=0,  # TODO review this val
-                            retain=True,
-                        )
-                    ),
-
-                    # tls_insecure: bool | None = None,
-                    # cfg.mqttTlsCheck ## TlsCheckModel.disabled, TlsCheckModel.private, TlsCheckModel.public
-                    # tls_context: ssl.SSLContext | None = None, ## ssl.CERT_NONE, ssl.CERT_OPTIONAL, ssl.CERT_REQUIRED
-                    # tls_params: TLSParameters | None = None,
-                    # TLSParameters(
-                    #     ca_certs: str | None = None
-                    #     certfile: str | None = None
-                    #     keyfile: str | None = None
-                    #     cert_reqs: ssl.VerifyMode | None = None
-                    #     tls_version: Any | None = None
-                    #     ciphers: str | None = None
-                    #     keyfile_password: str | None = None
-                    # )
-                    # self._client.tls_set(
-                    #     ca_certs=tls_params.ca_certs,
-                    #     certfile=tls_params.certfile,
-                    #     keyfile=tls_params.keyfile,
-                    #     cert_reqs=tls_params.cert_reqs,
-                    #     tls_version=tls_params.tls_version,
-                    #     ciphers=tls_params.ciphers,
-                    #     keyfile_password=tls_params.keyfile_password,
-                    # )
-
-                    # cfg.mqttTlsCa ## Expected CA cert
-                    # cfg.mqttTlsClient ## bool (use client public & private keys)
-                    # cfg.mqttTlsClientCert ## Provided Client public key
-                    # cfg.mqttTlsClientKey ## Provided Client private key
-
-                    logger=getLogger(f'jmqtt.cli.{self.model.id}'),
-                    # logger=getLogger(f'jmqtt.rt.{self.model.id}'),
-                    # queue_type: type[asyncio.Queue[Message]] | None = None,
-                    # clean_session: bool | None = None,
-
-                    # ####
-                    # Other options
-                    # timeout: float | None = None,
-                    # keepalive: int = 60,
-                    # bind_address: str = '',
-                    # bind_port: int = 0,
-                    # clean_start: mqtt.CleanStartOption = 3,
-                    # max_queued_incoming_messages: int | None = None,
-                    # max_queued_outgoing_messages: int | None = None,
-                    # max_inflight_messages: int | None = None,
-                    # max_concurrent_outgoing_calls: int | None = None,
-                    # properties: Properties | None = None,
-                    # proxy: ProxySettings | None = None,
-                    # socket_options: Iterable[SocketOption] | None = None,
-                ) as client:
+                self.log.debug(
+                    'Connecting to broker on: %s:%i',
+                    cfg.mqttAddress,
+                    cfg.mqttPort,
+                )
+                async with self.__buildClient() as client:
                     try:
                         self.mqttClient = client
                         await Callbacks.brokerUp(self.model.id)
                         started = True
 
-                        # if cfg.mqttApi:
-                        #     await client.subscribe(topic=cfg.mqttApiTopic)
+                        if cfg.mqttApi:
+                            self.log.debug(
+                                'Subscribing to API topic: "%s"',
+                                cfg.mqttApiTopic,
+                            )
+                            await client.subscribe(topic=cfg.mqttApiTopic)
 
-                        # if cfg.mqttInt:
-                        #     await client.subscribe(topic=cfg.mqttIntTopic)
+                        if cfg.mqttInt:
+                            self.log.debug(
+                                'Subscribing to Interact topic: "%s"',
+                                cfg.mqttIntTopic,
+                            )
+                            await client.subscribe(topic=cfg.mqttIntTopic)
 
-                        for t in list(self.topics):
-                            try:
-                                await client.subscribe(topic=t)
-                            except Exception:
-                                self.log.info('Could not subscribe to "%s"', t)
+                        subsList = list(self.topics)
+                        self.log.debug('Mass-subscribing to: %s', subsList)
+                        q = 0  # TODO review this val
+                        toSub = [(t, q) for t in subsList]
+                        try:
+                            await client.subscribe(topic=toSub)
+                        except Exception:
+                            self.log.exception('Could not mass-subscribe')
+                            # self.log.info('Could not subscribe to "%s"', t)
                         if cfg.mqttLwt:
                             await self.publish(
                                 topic=cfg.mqttLwtTopic,
