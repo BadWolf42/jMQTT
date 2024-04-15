@@ -1,6 +1,6 @@
 from enum import Enum
 from typing_extensions import Literal
-from typing import Optional
+from typing import Union
 from pydantic import BaseModel, validator
 
 from .bases import EqBaseModel
@@ -30,32 +30,32 @@ class TlsCheckModel(str, Enum):
 
 class BrkConfigModel(BaseModel):
     type: Literal['broker']
-    auto_add_cmd: Optional[bool] = False
-    auto_add_topic: Optional[str] = '#'
-    mqttProto: Optional[MqttProtoModel] = MqttProtoModel.mqtt
-    mqttVersion: Optional[MqttVersionModel] = None
-    mqttAddress: Optional[str] = 'localhost'
-    mqttWsHeader: Optional[dict[str, str]] = None
-    mqttWsUrl: Optional[str] = 'mqtt'
-    mqttPort: Optional[int] = 0
-    mqttUser: Optional[str] = None
-    mqttPass: Optional[str] = None
-    mqttId: Optional[bool] = False
-    mqttIdValue: Optional[str] = 'jMQTT'
-    mqttLwt: Optional[bool] = False
-    mqttLwtTopic: Optional[str] = 'jeedom/status'
-    mqttLwtOnline: Optional[str] = 'online'
-    mqttLwtOffline: Optional[str] = 'offline'
-    mqttInt: Optional[bool] = False
-    mqttIntTopic: Optional[str] = 'jeedom/interact'
-    mqttApi: Optional[bool] = False
-    mqttApiTopic: Optional[str] = 'jeedom/api'
-    mqttTlsCheck: Optional[TlsCheckModel] = TlsCheckModel.disabled
-    mqttTlsCa: Optional[str] = ''
-    mqttTlsClient: Optional[bool] = False
-    mqttTlsClientCert: Optional[str] = ''
-    mqttTlsClientKey: Optional[str] = ''
-    mqttRecoInterval: Optional[int] = 5
+    auto_add_cmd: Union[bool, None] = False
+    auto_add_topic: Union[str, None] = '#'
+    mqttProto: Union[MqttProtoModel, None] = MqttProtoModel.mqtt
+    mqttVersion: Union[MqttVersionModel, None] = None
+    mqttAddress: Union[str, None] = 'localhost'
+    mqttWsHeader: Union[dict[str, str], None] = None
+    mqttWsUrl: Union[str, None] = 'mqtt'
+    mqttPort: Union[int, None] = 0
+    mqttUser: Union[str, None] = None
+    mqttPass: Union[str, None] = None
+    mqttId: Union[bool, None] = False
+    mqttIdValue: Union[str, None] = 'jMQTT'
+    mqttLwt: Union[bool, None] = False
+    mqttLwtTopic: Union[str, None] = 'jeedom/status'
+    mqttLwtOnline: Union[str, None] = 'online'
+    mqttLwtOffline: Union[str, None] = 'offline'
+    mqttInt: Union[bool, None] = False
+    mqttIntTopic: Union[str, None] = 'jeedom/interact'
+    mqttApi: Union[bool, None] = False
+    mqttApiTopic: Union[str, None] = 'jeedom/api'
+    mqttTlsCheck: Union[TlsCheckModel, None] = TlsCheckModel.disabled
+    mqttTlsCa: Union[str, None] = ''
+    mqttTlsClient: Union[bool, None] = False
+    mqttTlsClientCert: Union[str, None] = ''
+    mqttTlsClientKey: Union[str, None] = ''
+    mqttRecoInterval: Union[int, None] = 5
 
     # _val_qos: classmethod = validator("qos", allow_reuse=True, pre=True)(strToInt)
     _val_auto_add_cmd: classmethod = validator(

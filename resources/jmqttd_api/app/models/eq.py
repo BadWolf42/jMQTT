@@ -1,5 +1,5 @@
 from typing_extensions import Literal
-from typing import Optional
+from typing import Union
 from pydantic import BaseModel, validator
 
 from .bases import EqBaseModel
@@ -10,15 +10,15 @@ from .utils import strToBool, strToInt
 # --- Eq model
 class EqConfigModel(BaseModel):
     type: Literal['eqpt']
-    eqLogic: Optional[int] = -1  # = Field(gt=0, description="Broker id", alias='brkId')
-    icone: Optional[str] = ''
-    auto_add_cmd: Optional[bool] = False
-    auto_add_topic: Optional[str] = ''
-    # rootTopic: Optional[str] = ''
-    Qos: Optional[int] = 1
-    availability_cmd: Optional[int] = 0
-    # availability_eq: Optional[int] = 0
-    battery_cmd: Optional[int] = 0
+    eqLogic: Union[int, None] = -1  # = Field(gt=0, description="Broker id", alias='brkId')
+    icone: Union[str, None] = ''
+    auto_add_cmd: Union[bool, None] = False
+    auto_add_topic: Union[str, None] = ''
+    # rootTopic: Union[str, None] = ''
+    Qos: Union[int, None] = 1
+    availability_cmd: Union[int, None] = 0
+    # availability_eq: Union[int, None] = 0
+    battery_cmd: Union[int, None] = 0
 
     _val_eqLogic: classmethod = validator("eqLogic", allow_reuse=True, pre=True)(
         strToInt

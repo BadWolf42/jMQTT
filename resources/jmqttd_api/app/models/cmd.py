@@ -1,6 +1,6 @@
 from enum import Enum
 from typing_extensions import Literal
-from typing import Optional
+from typing import Union
 from pydantic import BaseModel, validator
 
 from .bases import CmdBaseModel
@@ -10,8 +10,8 @@ from .utils import strToBool, strToInt
 # -----------------------------------------------------------------------------
 # --- Cmd Info model
 class CmdInfoConfigModel(BaseModel):
-    topic: Optional[str] = ''
-    jsonPath: Optional[str] = ''
+    topic: Union[str, None] = ''
+    jsonPath: Union[str, None] = ''
 
 
 # -----------------------------------------------------------------------------
@@ -31,11 +31,11 @@ class CmdInfoModel(CmdBaseModel):
 # -----------------------------------------------------------------------------
 # --- Cmd Action model
 class CmdActionConfigModel(BaseModel):
-    topic: Optional[str] = ''
-    request: Optional[str] = ''
-    Qos: Optional[int] = 0
-    retain: Optional[bool] = False
-    autoPub: Optional[bool] = False
+    topic: Union[str, None] = ''
+    request: Union[str, None] = ''
+    Qos: Union[int, None] = 0
+    retain: Union[bool, None] = False
+    autoPub: Union[bool, None] = False
 
     _val_Qos: classmethod = validator("Qos", allow_reuse=True, pre=True)(strToInt)
     _val_retain: classmethod = validator("retain", allow_reuse=True, pre=True)(

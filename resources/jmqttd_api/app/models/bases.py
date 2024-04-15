@@ -1,5 +1,5 @@
 from typing_extensions import Literal
-from typing import Optional
+from typing import Union
 from pydantic import BaseModel, validator
 
 from .utils import strToBool, strToInt
@@ -9,11 +9,11 @@ from .utils import strToBool, strToInt
 # --- eqLogic generic model
 class EqBaseModel(BaseModel):
     id: int
-    name: Optional[str] = None
-    logicalId: Optional[str] = None
-    # generic_type: Optional[str] = None
+    name: Union[str, None] = None
+    logicalId: Union[str, None] = None
+    # generic_type: Union[str, None] = None
     eqType_name: Literal['jMQTT']
-    # isVisible: Optional[bool] = False
+    # isVisible: Union[bool, None] = False
     isEnable: bool
 
     _val_id: classmethod = validator("id", allow_reuse=True, pre=True)(strToInt)
@@ -27,13 +27,13 @@ class EqBaseModel(BaseModel):
 # --- Cmd generic model
 class CmdBaseModel(BaseModel):
     id: int
-    name: Optional[str] = None
-    logicalId: Optional[str] = None
-    # generic_type: Optional[str] = None
+    name: Union[str, None] = None
+    logicalId: Union[str, None] = None
+    # generic_type: Union[str, None] = None
     eqType: Literal['jMQTT']
-    eqLogic_id: Optional[int] = -1
-    # isHistorized: Optional[bool] = False
-    # isVisible: Optional[bool] = False
+    eqLogic_id: Union[int, None] = -1
+    # isHistorized: Union[bool, None] = False
+    # isVisible: Union[bool, None] = False
 
     _val_id: classmethod = validator("id", allow_reuse=True, pre=True)(strToInt)
     _val_eqLogic_id: classmethod = validator("eqLogic_id", allow_reuse=True, pre=True)(
