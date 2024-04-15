@@ -110,15 +110,17 @@ class BrkLogic(VisitableLogic):
                 if cfg.mqttProto in [MqttProtoModel.mqtt, MqttProtoModel.mqtts]
                 else 'websockets'
             ),
-
-            # TODO Add other mqtt params
-            # transport: Literal['tcp', 'websockets'] = 'tcp',
-            # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss
-            # websocket_path: str | None = None,
-            # websocket_headers: WebSocketHeaders | None = None
-
-            # protocol: ProtocolVersion | None = None, ## ProtocolVersion.V31, ProtocolVersion.V311, ProtocolVersion.V5
-
+            websocket_path=(
+                None
+                if cfg.mqttProto not in [MqttProtoModel.ws, MqttProtoModel.wss]
+                else ('/'+cfg.mqttWsUrl)
+            ),
+            websocket_headers=(
+                None
+                if cfg.mqttProto not in [MqttProtoModel.ws, MqttProtoModel.wss]
+                else cfg.mqttWsHeader
+            ),
+            protocol=cfg.mqttVersion,
             client_id=cfg.mqttIdValue if cfg.mqttId else None,
             # To use with python >=3.8
             # identifier=cfg.mqttIdValue if cfg.mqttId else None,
@@ -134,6 +136,10 @@ class BrkLogic(VisitableLogic):
                     retain=True,
                 )
             ),
+
+            # TODO Add other mqtt params
+            # transport: Literal['tcp', 'websockets'] = 'tcp',
+            # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss
 
             # tls_insecure: bool | None = None,
             # cfg.mqttTlsCheck ## TlsCheckModel.disabled, TlsCheckModel.private, TlsCheckModel.public

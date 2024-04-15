@@ -16,6 +16,12 @@ class MqttProtoModel(str, Enum):
     wss = 'wss'
 
 
+class MqttVersionModel(str, Enum):
+    V31 = 'V31'
+    V311 = 'V311'
+    V5 = 'V5'
+
+
 class TlsCheckModel(str, Enum):
     disabled = 'disabled'
     private = 'private'
@@ -27,7 +33,10 @@ class BrkConfigModel(BaseModel):
     auto_add_cmd: Optional[bool] = False
     auto_add_topic: Optional[str] = '#'
     mqttProto: Optional[MqttProtoModel] = MqttProtoModel.mqtt
+    mqttVersion: Optional[MqttVersionModel] = None
     mqttAddress: Optional[str] = 'localhost'
+    mqttWsHeader: Optional[dict[str, str]] = None
+    mqttWsUrl: Optional[str] = 'mqtt'
     mqttPort: Optional[int] = 0
     mqttUser: Optional[str] = None
     mqttPass: Optional[str] = None
@@ -56,6 +65,11 @@ class BrkConfigModel(BaseModel):
         "mqttAddress", allow_reuse=True, pre=True
     )(
         lambda v: v if v is not None and v != '' else 'localhost'
+    )
+    _val_mqttWsUrl: classmethod = validator(
+        "mqttWsUrl", allow_reuse=True, pre=True
+    )(
+        lambda v: v if v is not None and v != '' else 'mqtt'
     )
     _val_mqttPort: classmethod = validator("mqttPort", allow_reuse=True, pre=True)(
         strToInt
