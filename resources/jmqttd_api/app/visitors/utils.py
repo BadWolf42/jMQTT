@@ -10,8 +10,16 @@ logger = getLogger('jmqtt.visitor.utils')
 
 
 async def isNotSubscribable(topic: str) -> bool:
-    # TODO Check if topic is NOT subscribable
-    return topic == ''
+    return (
+        len(self.value) == 0
+        or len(self.value) > 65535
+        or "#/" in self.value
+        or any(
+            "+" in level or "#" in level
+            for level in self.value.split("/")
+            if len(level) > 1
+        )
+    )
 
 
 async def addCmdInBrk(cmd: CmdLogic, brk: BrkLogic) -> None:
