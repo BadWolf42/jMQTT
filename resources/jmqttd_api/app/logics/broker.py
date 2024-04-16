@@ -6,7 +6,6 @@ from typing import Dict, List
 from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
-from healthcheck import Healthcheck
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 from logics.eq import EqLogic
 from logics.cmd import CmdLogic
@@ -27,18 +26,6 @@ from models.messages import (
 # )
 # from settings import settings
 
-
-"""
-https://github.com/sbtinstruments/aiomqtt/issues/237
-https://sbtinstruments.github.io/aiomqtt/subscribing-to-a-topic.html
-
-from aiomqtt import Client, MqttError
-
-TLS?
-https://github.com/sbtinstruments/aiomqtt/issues/15
-https://github.com/encode/httpx/discussions/2037#discussioncomment-2006795
-
-"""
 
 logger1 = getLogger('jmqtt.brk')
 logger2 = getLogger('jmqtt.cli')
@@ -76,7 +63,7 @@ class BrkLogic(VisitableLogic):
     # def isEnabled(self) -> bool:
     #     return self.model.isEnable
 
-    async def __listen(self, message: Message):
+    async def __listen(self, message: Message) -> None:
         self.log.trace('Got msg on %s: %s', message.topic, message.payload)
         cfg = self.model.configuration
 
@@ -130,18 +117,26 @@ class BrkLogic(VisitableLogic):
             # identifier=cfg.mqttIdValue if cfg.mqttId else None,
             username=cfg.mqttUser if cfg.mqttPass is not None else None,
             password=cfg.mqttPass if cfg.mqttUser is not None else None,
-            will=Will(
-                topic=cfg.mqttLwtTopic,
-                payload=cfg.mqttLwtOffline,
-                qos=0,  # TODO review this val
-                retain=True,
-            ) if cfg.mqttLwt else None,
+            will=(
+                Will(
+                    topic=cfg.mqttLwtTopic,
+                    payload=cfg.mqttLwtOffline,
+                    qos=0,  # TODO review this val
+                    retain=True,
+                )
+                if cfg.mqttLwt
+                else None
+            ),
 
             # TODO Add other mqtt params
             # transport: Literal['tcp', 'websockets'] = 'tcp',
             # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss
-
+            #
             # tls_insecure: bool | None = None,
+            # TLS?
+            # https://github.com/sbtinstruments/aiomqtt/issues/15
+            # https://github.com/encode/httpx/discussions/2037#discussioncomment-2006795
+            #
             # cfg.mqttTlsCheck ## TlsCheckModel.disabled, TlsCheckModel.private, TlsCheckModel.public
             # tls_context: ssl.SSLContext | None = None, ## ssl.CERT_NONE, ssl.CERT_OPTIONAL, ssl.CERT_REQUIRED
             # tls_params: TLSParameters | None = None,
@@ -163,17 +158,17 @@ class BrkLogic(VisitableLogic):
             #     ciphers=tls_params.ciphers,
             #     keyfile_password=tls_params.keyfile_password,
             # )
-
+            #
             # cfg.mqttTlsCa ## Expected CA cert
             # cfg.mqttTlsClient ## bool (use client public & private keys)
             # cfg.mqttTlsClientCert ## Provided Client public key
             # cfg.mqttTlsClientKey ## Provided Client private key
-
+            #
             logger=getLogger(f'jmqtt.cli.{self.model.id}'),
             # logger=getLogger(f'jmqtt.rt.{self.model.id}'),
             # queue_type: type[asyncio.Queue[Message]] | None = None,
             # clean_session: bool | None = None,
-
+            #
             # ####
             # Other options
             # timeout: float | None = None,
@@ -190,19 +185,19 @@ class BrkLogic(VisitableLogic):
             # socket_options: Iterable[SocketOption] | None = None,
         )
 
-    async def __initialSubs(self):
+    async def __initialSubs(self) -> None:
         cfg = self.model.configuration
         if cfg.mqttApi:
             try:
                 await self.mqttClient.subscribe(cfg.mqttApiTopic)
-            except MqttCodeError:
+            except MqttError:
                 self.log.exception('Could not subscribe to API topic')
                 raise
         if cfg.mqttInt:
             t = cfg.mqttIntTopic
             try:
                 await self.mqttClient.subscribe([(t, 0), (t + '/advanced', 0)])
-            except MqttCodeError:
+            except MqttError:
                 self.log.exception('Could not subscribe to Interact topic')
                 raise
         subsList = list(self.topics)
@@ -211,7 +206,7 @@ class BrkLogic(VisitableLogic):
         toSub = [(t, q) for t in subsList]
         try:
             await self.mqttClient.subscribe(toSub)
-        except MqttCodeError:
+        except MqttError:
             self.log.exception('Could not mass-subscribe')
 
     async def __runClient(self, client: Client) -> None:
@@ -243,7 +238,7 @@ class BrkLogic(VisitableLogic):
                 )
             raise
 
-    async def __clientTask(self):
+    async def __clientTask(self) -> None:
         self.log.trace('Client task started')
         cfg = self.model.configuration
         while True:
@@ -279,7 +274,7 @@ class BrkLogic(VisitableLogic):
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
 
-    async def start(self):
+    async def start(self) -> None:
         if not self.model.isEnable:
             self.log.debug('Not enabled, Broker not started')
             return
@@ -291,7 +286,7 @@ class BrkLogic(VisitableLogic):
         self.mqttTask = create_task(self.__clientTask())
         self.log.debug('Started')
 
-    async def stop(self):
+    async def stop(self) -> None:
         self.log.debug('Stop requested')
         if self.mqttTask is not None:
             if not self.mqttTask.done():
@@ -303,11 +298,12 @@ class BrkLogic(VisitableLogic):
         self.mqttTask = None
         self.log.debug('Stopped')
 
-    async def restart(self):
+    async def restart(self) -> None:
         await self.stop()
         await self.start()
 
-    async def publish(self, topic: str, payload: str, qos: int, retain: bool):
+    async def publish(self, topic: str, payload: str, qos: int, retain: bool) -> None:
+        # TODO have a return value?
         if self.mqttTask is None or self.mqttTask.done():
             self.log.debug(
                 'CANNOT PUBLISH: topic="%s", payload="%s", qos=%i, retain=%s',
@@ -339,8 +335,6 @@ class BrkLogic(VisitableLogic):
                 qos,
                 'True' if retain else 'Flase',
             )
-        # TODO
-        await Healthcheck.onReceive()
 
     async def subscribe(self, topic: str, qos: int) -> None:
         self.log.debug('topic="%s", qos=%i', topic, qos)

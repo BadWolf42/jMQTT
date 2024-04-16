@@ -2,6 +2,7 @@ from logging import getLogger
 from fastapi import APIRouter, HTTPException, status
 from typing import List
 
+from healthcheck import Healthcheck
 from logics.broker import BrkLogic
 from models.broker import BrkModel
 from models.messages import (
@@ -93,6 +94,7 @@ async def broker_post_id_sendmsg(id: int, data: MqttMessageModel):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
         )
+    await Healthcheck.onReceive()
     await BrkLogic.all[id].publish(data.topic, data.payload, data.qos, data.retain)
 
 
