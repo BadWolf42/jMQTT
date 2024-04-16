@@ -385,12 +385,14 @@ class BrkLogic(VisitableLogic):
             )
 
     async def subscribe(self, topic: str, qos: int) -> None:
-        self.log.debug('topic="%s", qos=%i', topic, qos)
+        kind = 'wildcard' if '+' in topic or '#' in topic else 'topic'
+        self.log.debug('%s="%s", qos=%i', kind, topic, qos)
         if self.mqttClient is not None:
             await self.mqttClient.subscribe(topic, qos)
 
     async def unsubscribe(self, topic: str) -> None:
-        self.log.debug('topic="%s"', topic)
+        kind = 'wildcard' if '+' in topic or '#' in topic else 'topic'
+        self.log.debug('%s="%s"', kind, topic)
         if self.mqttClient is not None:
             await self.mqttClient.unsubscribe(topic)
 
