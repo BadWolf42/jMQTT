@@ -77,28 +77,22 @@ class BrkLogic(VisitableLogic):
     #     return self.model.isEnable
 
     async def __listen(self, message: Message):
-        self.log.debug('Got msg on %s: %s', message.topic, message.payload)
+        self.log.trace('Got msg on %s: %s', message.topic, message.payload)
         cfg = self.model.configuration
 
         if cfg.mqttApi and message.topic.matches(cfg.mqttApiTopic):
-            self.log.debug(
-                'Got API message: "%s"',
-                message.payload,
-            )
+            self.log.debug('Jeedom API request: "%s"', message.payload)
+            # TODO Handle API request
             return
 
         if cfg.mqttInt:
             if message.topic.matches(cfg.mqttIntTopic):
-                self.log.debug(
-                    'Got Interaction message: "%s"',
-                    message.payload,
-                )
+                self.log.debug('Interaction: "%s"', message.payload)
+                # TODO Handle Interaction request
                 return
             if message.topic.matches(cfg.mqttIntTopic + '/advanced'):
-                self.log.debug(
-                    'Got Interaction advanced message: "%s"',
-                    message.payload,
-                )
+                self.log.debug('Advanced Interaction: "%s"', message.payload)
+                # TODO Handle Advanced Interaction request
                 return
 
         for sub in self.topics:
@@ -108,6 +102,7 @@ class BrkLogic(VisitableLogic):
                     message.topic,
                     list(self.topics[sub]),
                 )
+                # TODO Handle incomming message
 
     def __buildClient(self) -> Client:
         cfg = self.model.configuration
@@ -135,16 +130,12 @@ class BrkLogic(VisitableLogic):
             # identifier=cfg.mqttIdValue if cfg.mqttId else None,
             username=cfg.mqttUser if cfg.mqttPass is not None else None,
             password=cfg.mqttPass if cfg.mqttUser is not None else None,
-            will=(
-                None
-                if not cfg.mqttLwt
-                else Will(
-                    topic=cfg.mqttLwtTopic,
-                    payload=cfg.mqttLwtOffline,
-                    qos=0,  # TODO review this val
-                    retain=True,
-                )
-            ),
+            will=Will(
+                topic=cfg.mqttLwtTopic,
+                payload=cfg.mqttLwtOffline,
+                qos=0,  # TODO review this val
+                retain=True,
+            ) if cfg.mqttLwt else None,
 
             # TODO Add other mqtt params
             # transport: Literal['tcp', 'websockets'] = 'tcp',
@@ -199,38 +190,58 @@ class BrkLogic(VisitableLogic):
             # socket_options: Iterable[SocketOption] | None = None,
         )
 
-    async def __runClient(self, client: Client) -> None:
+    async def __initialSubs(self):
         cfg = self.model.configuration
         if cfg.mqttApi:
-            self.log.debug('Subscribing to API topic: "%s"', cfg.mqttApiTopic)
-            await client.subscribe(topic=cfg.mqttApiTopic)
-
+            try:
+                await self.mqttClient.subscribe(cfg.mqttApiTopic)
+            except MqttCodeError:
+                self.log.exception('Could not subscribe to API topic')
+                raise
         if cfg.mqttInt:
-            self.log.debug('Subscribing to Interact topic: "%s"', cfg.mqttIntTopic)
-            await client.subscribe(topic=cfg.mqttIntTopic)
-
+            t = cfg.mqttIntTopic
+            try:
+                await self.mqttClient.subscribe([(t, 0), (t + '/advanced', 0)])
+            except MqttCodeError:
+                self.log.exception('Could not subscribe to Interact topic')
+                raise
         subsList = list(self.topics)
         self.log.debug('Mass-subscribing to: %s', subsList)
         q = 0  # TODO review this val
         toSub = [(t, q) for t in subsList]
         try:
-            await client.subscribe(topic=toSub)
-        except Exception:
+            await self.mqttClient.subscribe(toSub)
+        except MqttCodeError:
             self.log.exception('Could not mass-subscribe')
-            # self.log.info('Could not subscribe to "%s"', t)
-        if cfg.mqttLwt:
-            await self.publish(
-                topic=cfg.mqttLwtTopic,
-                payload=cfg.mqttLwtOnline,
-                qos=0,  # TODO review this val
-                retain=True,
-            )
-        async with client.messages() as messages:
-            async for message in messages:
-                await self.__listen(message)
-        # To use with python >=3.8
-        # async for message in client.messages:
-        #     self.__listen(message)
+
+    async def __runClient(self, client: Client) -> None:
+        cfg = self.model.configuration
+        try:
+            self.mqttClient = client
+            await Callbacks.brokerUp(self.model.id)
+            await self.__initialSubs()
+            if cfg.mqttLwt:
+                await self.publish(
+                    topic=cfg.mqttLwtTopic,
+                    payload=cfg.mqttLwtOnline,
+                    qos=0,  # TODO review this val
+                    retain=True,
+                )
+            async with client.messages() as messages:
+                async for message in messages:
+                    await self.__listen(message)
+            # To use with python >=3.8
+            # async for message in client.messages:
+            #     self.__listen(message)
+        except CancelledError:
+            if cfg.mqttLwt:
+                await self.publish(
+                    topic=cfg.mqttLwtTopic,
+                    payload=cfg.mqttLwtOffline,
+                    qos=0,  # TODO review this val
+                    retain=True,
+                )
+            raise
 
     async def __clientTask(self):
         self.log.trace('Client task started')
@@ -241,24 +252,11 @@ class BrkLogic(VisitableLogic):
                 self.log.debug(
                     'Connecting to broker on: %s:%i',
                     cfg.mqttAddress,
-                    cfg.mqttPort,
+                    cfg.mqttPort if cfg.mqttPort != 0 else 1883,
                 )
                 async with self.__buildClient() as client:
-                    try:
-                        self.mqttClient = client
-                        await Callbacks.brokerUp(self.model.id)
-                        started = True
-                        await self.__runClient(client)
-                    except CancelledError:
-                        if cfg.mqttLwt:
-                            await self.publish(
-                                topic=cfg.mqttLwtTopic,
-                                payload=cfg.mqttLwtOffline,
-                                qos=0,  # TODO review this val
-                                retain=True,
-                            )
-                        raise
-
+                    started = True
+                    await self.__runClient(client)
             except MqttError:
                 self.log.info(
                     'Connection lost; Reconnecting in %s seconds...',
