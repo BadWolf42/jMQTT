@@ -47,7 +47,7 @@ logconfig: dict = {
         # 'level': 'WARNING',
         'handlers': ['fileHandler'],
     },
-    # 'loggers': {
+    'loggers': {
     #     'asyncio': {
     #         'level': 'WARNING',
     #     },
@@ -63,19 +63,25 @@ logconfig: dict = {
     #     'jmqtt.brk': {
     #         'level': 'INFO',
     #     },
+        'jmqtt.cli': {
+            'level': 'WARNING',
+        },
+    #     'jmqtt.rt': {
+    #         'level': 'INFO',
+    #     },
     #     'jmqtt.visitor': {
     #         'level': 'INFO',
     #     },
-    #     'uvicorn': {
-    #         'level': 'WARNING',
-    #     },
+        'uvicorn': {
+            'level': 'WARNING',
+        },
     #     'pydantic': {
     #         'level': 'WARNING',
     #     },
     #     'gunicorn': {
     #         'level': 'WARNING',
     #     },
-    # },
+    },
 }
 
 max_wait_cancel: float = 3.0  # seconds to wait for a task to be canceled
