@@ -111,6 +111,17 @@ class BrkLogic(VisitableLogic):
             del target[topic]
 
     async def __dispatch(self, message: Message) -> None:
+        cfg = self.model.configuration
+        if cfg.mqttApi and message.topic.matches(cfg.mqttApiTopic):
+            self.log.debug('Jeedom API request: "%s"', message.payload)
+            # TODO Handle API request
+        if cfg.mqttInt:
+            if message.topic.matches(cfg.mqttIntTopic):
+                self.log.debug('Interaction: "%s"', message.payload)
+                # TODO Handle Interaction request
+            if message.topic.matches(cfg.mqttIntTopic + '/advanced'):
+                self.log.debug('Interaction (advanced): "%s"', message.payload)
+                # TODO Handle Advanced Interaction request
         if str(message.topic) in self.topics:
             self.log.debug(
                 'Got message on topic %s for cmd(s): %s',
@@ -126,21 +137,6 @@ class BrkLogic(VisitableLogic):
                     list(self.wildcards[sub]),
                 )
                 # TODO Handle incomming message
-
-    async def __listen(self, message: Message) -> None:
-        self.log.trace('Got msg on %s: %s', message.topic, message.payload)
-        cfg = self.model.configuration
-        if cfg.mqttApi and message.topic.matches(cfg.mqttApiTopic):
-            self.log.debug('Jeedom API request: "%s"', message.payload)
-            # TODO Handle API request
-        if cfg.mqttInt:
-            if message.topic.matches(cfg.mqttIntTopic):
-                self.log.debug('Interaction: "%s"', message.payload)
-                # TODO Handle Interaction request
-            if message.topic.matches(cfg.mqttIntTopic + '/advanced'):
-                self.log.debug('Advanced Interaction: "%s"', message.payload)
-                # TODO Handle Advanced Interaction request
-        await self.__dispatch(message)
 
     def __buildClient(self) -> Client:
         cfg = self.model.configuration
@@ -273,12 +269,12 @@ class BrkLogic(VisitableLogic):
                     qos=0,  # TODO review this val
                     retain=True,
                 )
+            # TODO To use with python >=3.8
+            #  async for msg in client.messages:
             async with client.messages() as messages:
-                async for message in messages:
-                    await self.__listen(message)
-            # To use with python >=3.8
-            # async for message in client.messages:
-            #     self.__listen(message)
+                async for msg in messages:
+                    self.log.trace('Got msg on %s: %s', msg.topic, msg.payload)
+                    await self.__dispatch(msg)
         except CancelledError:
             if cfg.mqttLwt:
                 await self.publish(
