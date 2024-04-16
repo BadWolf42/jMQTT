@@ -3,7 +3,6 @@ from logging import getLogger
 from weakref import ref
 
 from visitors.abstractvisitor import LogicVisitor, VisitableLogic
-from visitors.utils import addCmdInBrk, addCmdInEq
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
@@ -67,7 +66,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         # Get parent eqLogic
         eq = EqLogic.all[e.model.eqLogic_id]
         # Add CmdLogic in EqLogic
-        await addCmdInEq(e, eq)
+        await eq.addCmd(e)
         # Add the reference to BrkLogic
         e.weakBrk = ref(eq.weakBrk())
         # Finish here if eq is not enabled
@@ -79,7 +78,7 @@ class RegisteringLogicVisitor(LogicVisitor):
             logger.trace('id=%s, cmd registered, but is an action', e.model.id)
             return
         # Add topic to Broker
-        await addCmdInBrk(e, eq.weakBrk())
+        await eq.weakBrk().addCmd(e)
         logger.trace('id=%s, cmd registered', e.model.id)
 
     async def register(self) -> None:

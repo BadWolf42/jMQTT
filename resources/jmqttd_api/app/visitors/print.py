@@ -28,10 +28,17 @@ class PrintVisitor(LogicVisitor):
 
         for t in e.topics:
             logger.debug(
-                '%s│      %s => %s',
+                '%s│ T:   %s => %s',
                 '│ ' * self.level,
                 t,
                 ' '.join([str(v.model.id) for v in e.topics[t].values()]),
+            )
+        for t in e.wildcards:
+            logger.debug(
+                '%s│ W:   %s => %s',
+                '│ ' * self.level,
+                t,
+                ' '.join([str(v.model.id) for v in e.wildcards[t].values()]),
             )
         self.level += 1
         for eq in [v for v in e.eqpts.values()]:

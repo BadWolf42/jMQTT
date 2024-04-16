@@ -6,12 +6,6 @@ from weakref import ref
 from visitors.abstractvisitor import LogicVisitor, VisitableLogic
 from visitors.register import RegisteringLogicVisitor
 from visitors.unregister import UnregisteringLogicVisitor
-from visitors.utils import (
-    addCmdInBrk,
-    addCmdInEq,
-    delCmdInBrk,
-    delCmdInEq,
-)
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
@@ -70,11 +64,11 @@ class UpdatingLogicVisitor(LogicVisitor):
             if self.targetModel.isEnable:
                 # Now Enabled subscribe all info cmds
                 for cmd in [v for v in e.cmd_i.values()]:
-                    await addCmdInBrk(cmd, brk)
+                    await brk.addCmd(cmd)
             else:
                 # Now Disabled unsubscribe all info cmds
                 for cmd in [v for v in e.cmd_i.values()]:
-                    await delCmdInBrk(cmd, brk)
+                    await brk.delCmd(cmd)
         logger.debug('id=%s, eq updated', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:
@@ -109,17 +103,17 @@ class UpdatingLogicVisitor(LogicVisitor):
             return
 
         # Remove CmdLogic from EqLogic
-        await delCmdInEq(e, e.weakEq())
+        await e.weakEq().delCmd(e)
         # Remove CmdLogic from BrkLogic
-        await delCmdInBrk(e, e.weakBrk())  # NEEDED ????
+        await e.weakBrk().delCmd(e)  # TODO Check if NEEDED?
         # Change model in CmdLogic
         e.model = self.targetModel
         # Add CmdLogic in EqLogic
-        await addCmdInEq(e, EqLogic.all[e.model.eqLogic_id])
+        await EqLogic.all[e.model.eqLogic_id].addCmd(e)
         # Set weakBrk in CmdLogic
         e.weakBrk = ref(e.weakEq().weakBrk())
         # Add CmdLogic in BrkLogic
-        await addCmdInBrk(e, e.weakBrk())
+        await e.weakBrk().addCmd(e)
         logger.debug('id=%s, cmd updated', e.model.id)
 
     async def update(self) -> None:

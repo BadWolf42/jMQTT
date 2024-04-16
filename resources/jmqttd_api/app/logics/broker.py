@@ -32,6 +32,19 @@ logger2 = getLogger('jmqtt.cli')
 logger3 = getLogger('jmqtt.rt')
 
 
+def isNotSubscribable(topic: str):
+    return (
+        len(topic) == 0
+        or len(topic) > 65535
+        or "#/" in topic
+        or any(
+            "+" in level or "#" in level
+            for level in topic.split("/")
+            if len(level) > 1
+        )
+    )
+
+
 class BrkLogic(VisitableLogic):
     all: Dict[int, BrkLogic] = {}
 
@@ -45,6 +58,7 @@ class BrkLogic(VisitableLogic):
         # self.cmd_a: WeakValueDictionary[int, VisitableLogic] = {}
         # TODO: Mutate self.topics in a "TopicMap" class
         self.topics: Dict[str, WeakValueDictionary[int, CmdLogic]] = {}
+        self.wildcards: Dict[str, WeakValueDictionary[int, CmdLogic]] = {}
 
         self.mqttClient: Client = None
         self.mqttTask: Task = None
@@ -54,42 +68,79 @@ class BrkLogic(VisitableLogic):
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_brk(self)
 
-    # def getBrokerId(self) -> int:
-    #     return self.model.id
+    async def addCmd(self, cmd: CmdLogic) -> None:
+        topic = cmd.model.configuration.topic
+        isWildcard = '+' in topic or '#' in topic
+        target = self.wildcards if isWildcard else self.topics
+        # If subscription is OK, just return
+        if topic in target and cmd.model.id in target[topic]:
+            self.log.debug('id=%s, cmd already subscribed', cmd.model.id)
+            return
+        if isNotSubscribable(topic):
+            self.log.notice(
+                'id=%s, cmd %s "%s" is not subscribable',
+                cmd.model.id,
+                'wildcard' if isWildcard else 'topic',
+                topic,
+            )
+            return
+        # Add topic to BrkLogic if missing
+        subNeeded = topic not in target
+        if subNeeded:
+            target[topic] = WeakValueDictionary()
+        # Add CmdLogic to topics in BrkLogic
+        target[topic][cmd.model.id] = cmd
+        # Subscribe to the topic, after putting cmd in broker
+        if subNeeded and self.model.isEnable:
+            # TODO Get QoS when Qos location is in cmd
+            await self.subscribe(topic, 1)
 
-    # def getBroker(self) -> BrkLogic:
-    #     return self
+    async def delCmd(self, cmd: CmdLogic) -> None:
+        topic = cmd.model.configuration.topic
+        isWildcard = '+' in topic or '#' in topic
+        target = self.wildcards if isWildcard else self.topics
+        # If subscription is OK, just return
+        if topic not in target or cmd.model.id not in target[topic]:
+            self.log.debug('id=%s, cmd already unsubscribed', cmd.model.id)
+            return
+        # Remove CmdLogic from Broker topics
+        del target[topic][cmd.model.id]
+        # Check if unsubscription is needed
+        if len(target[topic]) == 0:
+            await self.unsubscribe(topic)
+            del target[topic]
 
-    # def isEnabled(self) -> bool:
-    #     return self.model.isEnable
+    async def __dispatch(self, message: Message) -> None:
+        if str(message.topic) in self.topics:
+            self.log.debug(
+                'Got message on topic %s for cmd(s): %s',
+                message.topic,
+                list(self.topics[str(message.topic)]),
+            )
+            # TODO Handle incomming message
+        for sub in self.wildcards:
+            if message.topic.matches(sub):
+                self.log.debug(
+                    'Got message on wildcard %s for cmd(s): %s',
+                    message.topic,
+                    list(self.wildcards[sub]),
+                )
+                # TODO Handle incomming message
 
     async def __listen(self, message: Message) -> None:
         self.log.trace('Got msg on %s: %s', message.topic, message.payload)
         cfg = self.model.configuration
-
         if cfg.mqttApi and message.topic.matches(cfg.mqttApiTopic):
             self.log.debug('Jeedom API request: "%s"', message.payload)
             # TODO Handle API request
-            return
-
         if cfg.mqttInt:
             if message.topic.matches(cfg.mqttIntTopic):
                 self.log.debug('Interaction: "%s"', message.payload)
                 # TODO Handle Interaction request
-                return
             if message.topic.matches(cfg.mqttIntTopic + '/advanced'):
                 self.log.debug('Advanced Interaction: "%s"', message.payload)
                 # TODO Handle Advanced Interaction request
-                return
-
-        for sub in self.topics:
-            if message.topic.matches(sub):
-                self.log.debug(
-                    'Got message on topic %s for cmd(s): %s',
-                    message.topic,
-                    list(self.topics[sub]),
-                )
-                # TODO Handle incomming message
+        await self.__dispatch(message)
 
     def __buildClient(self) -> Client:
         cfg = self.model.configuration
@@ -200,7 +251,7 @@ class BrkLogic(VisitableLogic):
             except MqttError:
                 self.log.exception('Could not subscribe to Interact topic')
                 raise
-        subsList = list(self.topics)
+        subsList = list(self.topics) + list(self.wildcards)
         self.log.debug('Mass-subscribing to: %s', subsList)
         q = 0  # TODO review this val
         toSub = [(t, q) for t in subsList]

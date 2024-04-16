@@ -3,7 +3,6 @@ from logging import getLogger
 from typing import List, Union
 
 from visitors.abstractvisitor import LogicVisitor
-from visitors.utils import delCmdInBrk, delCmdInEq
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
@@ -59,9 +58,9 @@ class UnregisteringLogicVisitor(LogicVisitor):
         # Append this CmdLogic to the result
         self.result.append(e)
         # Remove topic from Broker
-        await delCmdInBrk(e, e.weakBrk())
+        await e.weakBrk().delCmd(e)
         # Remove CmdLogic from EqLogic
-        await delCmdInEq(e, e.weakEq())
+        await e.weakEq().delCmd(e)
         # Remove BrkLogic weakref
         e.weakBrk = None
         # Delete the CmdLogic from the registery
