@@ -9,7 +9,9 @@ class jMQTTCallbacks {
         'daemonUp',
         'message',
         'test',
-        'values'
+        'values',
+        'interact',
+        'jeedomApi'
     );
 
     public static function checkAuthorization() {
@@ -519,6 +521,58 @@ class jMQTTCallbacks {
                 }
             }
         }
+    }
+
+    /**
+     * Daemon callback to send interaction request to Jeedom
+     */
+    public static function onInteract() {
+        $message = self::getPayload();
+        if (
+            !isset($message['id'])
+            || !isset($message['query'])
+            || !isset($message['advanced'])
+        ) {
+            http_response_code(400);
+            echo 'Bad Request parameter.';
+            die();
+        }
+        jMQTT::logger(
+            'debug',
+            sprintf("%1\$s: %2\$s", __METHOD__, $message['id'])
+        );
+        $broker = jMQTT::getBrokerFromId(intval($message['id']));
+        if (!$message['advanced']) {
+            // If "simple" Interact topic, process the request
+            // Request Payload: string
+            $broker->interactMessage($message['query']);
+            // Reply Payload on /reply: {"query": string, "reply": string}
+        } else {
+            // If "advanced" Interact topic, process the request
+            // Request Payload on /advanced: {"query": string, "utf8": bool, "emptyReply": ???, profile": ???, "reply_cmd": <cmdId>, "force_reply_cmd": bool}
+            $param = json_decode($message['query'], true);
+            $query = isset($param['query']) ? $param['query'] : '';
+            $broker->interactMessage($query, $param);
+            // Reply Payload on /reply: $param + {"reply": string}
+        }
+    }
+
+    /**
+     * Daemon callback to send API request to Jeedom
+     */
+    public static function onJeedomApi() {
+        $message = self::getPayload();
+        if (!isset($message['id']) || !isset($message['query'])) {
+            http_response_code(400);
+            echo 'Bad Request parameter.';
+            die();
+        }
+        jMQTT::logger(
+            'debug',
+            sprintf("%1\$s: %2\$s", __METHOD__, $message['id'])
+        );
+        $broker = jMQTT::getBrokerFromId(intval($message['id']));
+        $broker->processApiRequest($message['query']);
     }
 
     /**

@@ -112,16 +112,18 @@ class BrkLogic(VisitableLogic):
 
     async def __dispatch(self, message: Message) -> None:
         cfg = self.model.configuration
-        if cfg.mqttApi and message.topic.matches(cfg.mqttApiTopic):
-            self.log.debug('Jeedom API request: "%s"', message.payload)
-            # TODO Handle API request
+        if cfg.mqttApi and str(message.topic) == cfg.mqttApiTopic:
+            payload = str(message.payload)
+            self.log.debug('Jeedom API request: "%s"', payload)
+            await Callbacks.jeedomApi(self.model.id, payload)
         if cfg.mqttInt:
-            if message.topic.matches(cfg.mqttIntTopic):
-                self.log.debug('Interaction: "%s"', message.payload)
-                # TODO Handle Interaction request
-            if message.topic.matches(cfg.mqttIntTopic + '/advanced'):
-                self.log.debug('Interaction (advanced): "%s"', message.payload)
-                # TODO Handle Advanced Interaction request
+            payload = str(message.payload)
+            if str(message.topic) == cfg.mqttIntTopic:
+                self.log.debug('Interaction: "%s"', payload)
+                await Callbacks.interact(self.model.id, payload)
+            elif str(message.topic) == (cfg.mqttIntTopic + '/advanced'):
+                self.log.debug('Interaction (advanced): "%s"', payload)
+                await Callbacks.interact(self.model.id, payload, True)
         if str(message.topic) in self.topics:
             self.log.debug(
                 'Got message on topic %s for cmd(s): %s',
@@ -174,7 +176,6 @@ class BrkLogic(VisitableLogic):
                 if cfg.mqttLwt
                 else None
             ),
-
             # TODO Add other mqtt params
             # transport: Literal['tcp', 'websockets'] = 'tcp',
             # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss

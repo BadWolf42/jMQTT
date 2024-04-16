@@ -1601,7 +1601,7 @@ class jMQTT extends eqLogic {
      * @param string $query Interaction Query message
      * @param array $param Interaction Query advanced options
      */
-    private function interactMessage($query, $param=array()) {
+    public function interactMessage($query, $param=array()) {
         try {
             // Validate query
             if (!is_string($query))
@@ -2032,7 +2032,7 @@ class jMQTT extends eqLogic {
      *
      * @param string $msg API message to process
      */
-    private function processApiRequest($msg) {
+    public function processApiRequest($msg) {
         try {
             $request = new mqttApiRequest($msg, $this);
             $request->processRequest($this->getConf(jMQTTConst::CONF_KEY_MQTT_API));
