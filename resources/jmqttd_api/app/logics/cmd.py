@@ -21,6 +21,12 @@ class CmdLogic(VisitableLogic):
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_cmd(self)
 
+    def isWildcard(self):
+        return (
+            '+' in self.model.configuration.topic
+            or '#' in self.model.configuration.topic
+        )
+
     # def getEqLogic(self):
     #     return self.weakEq()
 

@@ -38,9 +38,7 @@ def isNotSubscribable(topic: str):
         or len(topic) > 65535
         or "#/" in topic
         or any(
-            "+" in level or "#" in level
-            for level in topic.split("/")
-            if len(level) > 1
+            "+" in level or "#" in level for level in topic.split("/") if len(level) > 1
         )
     )
 
@@ -70,7 +68,7 @@ class BrkLogic(VisitableLogic):
 
     async def addCmd(self, cmd: CmdLogic) -> None:
         topic = cmd.model.configuration.topic
-        isWildcard = '+' in topic or '#' in topic
+        isWildcard = cmd.isWildcard()
         target = self.wildcards if isWildcard else self.topics
         # If subscription is OK, just return
         if topic in target and cmd.model.id in target[topic]:
@@ -97,8 +95,7 @@ class BrkLogic(VisitableLogic):
 
     async def delCmd(self, cmd: CmdLogic) -> None:
         topic = cmd.model.configuration.topic
-        isWildcard = '+' in topic or '#' in topic
-        target = self.wildcards if isWildcard else self.topics
+        target = self.wildcards if cmd.isWildcard() else self.topics
         # If subscription is OK, just return
         if topic not in target or cmd.model.id not in target[topic]:
             self.log.debug('id=%s, cmd already unsubscribed', cmd.model.id)
