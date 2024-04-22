@@ -1,3 +1,4 @@
+from aiomqtt import ProtocolVersion
 from enum import Enum
 from typing_extensions import Literal
 from typing import Union
@@ -16,10 +17,10 @@ class MqttProtoModel(str, Enum):
     wss = 'wss'
 
 
-class MqttVersionModel(str, Enum):
-    V31 = 'V31'
-    V311 = 'V311'
-    V5 = 'V5'
+class MqttVersionModel(int, Enum):
+    V31 = ProtocolVersion.V31
+    V311 = ProtocolVersion.V311
+    V5 = ProtocolVersion.V5
 
 
 class TlsCheckModel(str, Enum):
