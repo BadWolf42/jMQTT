@@ -72,8 +72,8 @@ async def daemon_delete():
 async def daemon_put_hb():
     logger.debug(
         "Heartbeat FROM Jeedom (last msg from/to Jeedom %ds/%ds ago)",
-        time() - Healthcheck._last_rcv,
-        time() - Callbacks._last_snd,
+        time() - Healthcheck._lastRcv,
+        time() - Callbacks._lastSnd,
     )
     await Healthcheck.onReceive()
 

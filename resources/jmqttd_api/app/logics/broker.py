@@ -131,7 +131,7 @@ class BrkLogic(VisitableLogic):
             )
             cmds = self.topics[str(message.topic)].values()
             for cmd in cmds:
-                await cmd.handle(message, ts)
+                await cmd.mqttMsg(message, ts)
         for sub in self.wildcards:
             if message.topic.matches(sub):
                 self.log.debug(
@@ -141,7 +141,7 @@ class BrkLogic(VisitableLogic):
                 )
                 cmds = self.wildcards[sub].values()
                 for cmd in cmds:
-                    await cmd.handle(message, ts)
+                    await cmd.mqttMsg(message, ts)
 
     def __buildClient(self) -> Client:
         cfg = self.model.configuration

@@ -13,12 +13,12 @@ logger = getLogger('jmqtt.healthcheck')
 
 
 class Healthcheck:
-    _last_rcv: int = time()  # time of the last rcv msg
+    _lastRcv: int = time()  # time of the last rcv msg
     _task: asyncio.Task = None  # Healthcheck task initialised by daemonUp method
 
     @classmethod
     async def onReceive(cls):
-        cls._last_rcv = time()
+        cls._lastRcv = time()
 
     @classmethod
     async def __hcLoop(cls) -> bool:
@@ -26,40 +26,40 @@ class Healthcheck:
         # Kill daemon if we cannot send for a total of X seconds
         #  and/or a total of Y retries "Jeedom is no longer available"
         if (
-            now - Callbacks._last_snd > settings.snd_timeout
-            and Callbacks._retry_snd > settings.retry_max
+            now - Callbacks._lastSnd > settings.snd_timeout
+            and Callbacks._retrySnd > settings.retry_max
         ):
             logger.error(
                 "Nothing could be sent for %ds (max %ds) AND after %d attempts (max %d), "
                 "Jeedom/Apache is probably dead.",
-                now - Callbacks._last_snd,
+                now - Callbacks._lastSnd,
                 settings.snd_timeout,
-                Callbacks._retry_snd,
+                Callbacks._retrySnd,
                 settings.retry_max,
             )
             kill(getpid(), SIGTERM)
             return False
-        if now - cls._last_rcv > settings.hb_timeout:
+        if now - cls._lastRcv > settings.hb_timeout:
             logger.error(
                 "Nothing has been received for %ds, Jeedom does not want me any longer.",
-                now - cls._last_rcv,
+                now - cls._lastRcv,
             )
             kill(getpid(), SIGTERM)
             return False
-        elif now - cls._last_rcv > settings.hb_timeout - settings.check_interval - 1:
+        elif now - cls._lastRcv > settings.hb_timeout - settings.check_interval - 1:
             logger.warning(
                 "Nothing received for %ds, Deamon will stop if >%ds.",
-                now - cls._last_rcv,
+                now - cls._lastRcv,
                 settings.hb_timeout,
             )
 
-        if now - Callbacks._last_snd > settings.hb_delay:
+        if now - Callbacks._lastSnd > settings.hb_delay:
             # Avoid sending heartbeats continuously
-            if now - Callbacks._last_hb > settings.hb_retry:
+            if now - Callbacks._lastHb > settings.hb_retry:
                 logger.debug(
                     "Heartbeat TO Jeedom (last msg from/to Jeedom %ds/%ds ago)",
-                    time() - cls._last_rcv,
-                    time() - Callbacks._last_snd,
+                    time() - cls._lastRcv,
+                    time() - Callbacks._lastSnd,
                 )
                 await Callbacks.daemonHB()
         return True

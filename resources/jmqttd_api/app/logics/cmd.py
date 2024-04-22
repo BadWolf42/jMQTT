@@ -83,7 +83,7 @@ class CmdLogic(VisitableLogic):
         )
         return f'{filename}?{ts}'
 
-    async def handle(self, message: Message, ts: float):
+    async def mqttMsg(self, message: Message, ts: float):
         payload = message.payload
         cfg = self.model.configuration
         if cfg.tryUnzip:

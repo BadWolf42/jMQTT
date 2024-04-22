@@ -27,9 +27,9 @@ class JmqttdValue(BaseModel):
 
 
 class Callbacks:
-    _retry_snd: int = 0  # number of send retries
-    _last_snd: int = time()  # time of the last snd msg
-    _last_hb: int = time()  # time of the last snd HB msg
+    _retrySnd: int = 0  # number of send retries
+    _lastSnd: int = time()  # time of the last snd msg
+    _lastHb: int = time()  # time of the last snd HB msg
 
     @classmethod
     async def __send(cls, action: str, data: dict = {}):
@@ -46,11 +46,11 @@ class Callbacks:
                 )
                 await resp.text()
                 if resp.status in [200, 204]:
-                    cls._last_snd = time()
-                    cls._retry_snd = 0
+                    cls._lastSnd = time()
+                    cls._retrySnd = 0
                     return True
                 logger.error('COULD NOT send TO Jeedom: %s', dumps(data))
-                cls._retry_snd += 1
+                cls._retrySnd += 1
                 return False
         # TODO Handle Exceptions on "async with", ex:
         # aiohttp.client_exceptions.ClientConnectorError:
@@ -68,7 +68,7 @@ class Callbacks:
 
     @classmethod
     async def daemonHB(cls):
-        cls._last_hb = time()
+        cls._lastHb = time()
         return await cls.__send('daemonHB')
 
     @classmethod
