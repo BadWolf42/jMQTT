@@ -129,7 +129,8 @@ class BrkLogic(VisitableLogic):
                 message.topic,
                 list(self.topics[str(message.topic)]),
             )
-            for cmd in self.topics[str(message.topic)].values():
+            cmds = self.topics[str(message.topic)].values()
+            for cmd in cmds:
                 await cmd.handle(message, ts)
         for sub in self.wildcards:
             if message.topic.matches(sub):
@@ -138,7 +139,8 @@ class BrkLogic(VisitableLogic):
                     message.topic,
                     list(self.wildcards[sub]),
                 )
-                for cmd in self.wildcards[sub].values():
+                cmds = self.wildcards[sub].values()
+                for cmd in cmds:
                     await cmd.handle(message, ts)
 
     def __buildClient(self) -> Client:
