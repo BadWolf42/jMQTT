@@ -7,7 +7,7 @@ from zlib import decompress as zlib_decompress
 
 from callbacks import Callbacks
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
-from models.cmd import CmdInfoDecoderModel
+from models.cmd import CmdInfoDecoderModel, CmdInfoHandlerModel
 from models.unions import CmdModel
 
 
@@ -72,6 +72,20 @@ class CmdLogic(VisitableLogic):
             )
         return payload
 
+    async def _handleJsonPath(self, payload, ts: float) -> str:
+        jsonPath = self.model.configuration.jsonPath
+        if jsonPath == '':
+            return payload
+        # TODO Handle json Path
+        return payload
+
+    async def _handleTemplate(self, payload, ts: float) -> str:
+        jinja = self.model.configuration.jinja
+        if jinja == '' or '{' not in jinja:
+            return payload
+        # TODO Handle Jinja template
+        return payload
+
     async def _writeToFile(self, payload, ts: float) -> str:
         filename = f'file_{self.model.id}'
         # TODO Callback to set file content = payload
@@ -90,6 +104,10 @@ class CmdLogic(VisitableLogic):
             payload = await self._decompress(payload)
         if cfg.decoder != CmdInfoDecoderModel.none:
             payload = await self._decode(payload, cfg.decoder)
+        if cfg.handler == CmdInfoHandlerModel.jsonPath:
+            payload = await self._handleJsonPath(payload, ts)
+        elif cfg.handler == CmdInfoHandlerModel.jinja:
+            payload = await self._handleTemplate(payload, ts)
         if cfg.toFile:
             payload = await self._writeToFile(payload, ts)
 

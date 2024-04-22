@@ -30,7 +30,7 @@ class CmdInfoConfigModel(BaseModel):
     decoder: CmdInfoDecoderModel = CmdInfoDecoderModel.strict
     handler: CmdInfoHandlerModel = CmdInfoHandlerModel.jsonPath
     jsonPath: str = ''
-    template: str = ''
+    jinja: str = ''
     toFile: bool = False
 
 
