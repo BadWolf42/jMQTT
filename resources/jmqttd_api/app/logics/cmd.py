@@ -1,4 +1,5 @@
 from __future__ import annotations
+from aiomqtt import Message
 from logging import getLogger
 from typing import Dict
 from weakref import ref
@@ -26,6 +27,9 @@ class CmdLogic(VisitableLogic):
             '+' in self.model.configuration.topic
             or '#' in self.model.configuration.topic
         )
+
+    async def handle(self, message: Message, ts: float):
+        pass
 
     # def getEqLogic(self):
     #     return self.weakEq()

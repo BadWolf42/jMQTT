@@ -2,6 +2,7 @@ from __future__ import annotations
 from asyncio import CancelledError, create_task, sleep, Task
 from aiomqtt import Client, Message, MqttError, Will
 from logging import getLogger  # , DEBUG
+from time import time
 from typing import Dict, List
 from weakref import WeakValueDictionary
 
@@ -121,13 +122,15 @@ class BrkLogic(VisitableLogic):
             elif str(message.topic) == (cfg.mqttIntTopic + '/advanced'):
                 self.log.debug('Interaction (advanced): "%s"', payload)
                 await Callbacks.interact(self.model.id, payload, True)
+        ts = time()
         if str(message.topic) in self.topics:
             self.log.debug(
                 'Got message on topic %s for cmd(s): %s',
                 message.topic,
                 list(self.topics[str(message.topic)]),
             )
-            # TODO Handle incomming message
+            for cmd in self.topics[str(message.topic)].values():
+                await cmd.handle(message, ts)
         for sub in self.wildcards:
             if message.topic.matches(sub):
                 self.log.debug(
@@ -135,7 +138,8 @@ class BrkLogic(VisitableLogic):
                     message.topic,
                     list(self.wildcards[sub]),
                 )
-                # TODO Handle incomming message
+                for cmd in self.wildcards[sub].values():
+                    await cmd.handle(message, ts)
 
     def __buildClient(self) -> Client:
         cfg = self.model.configuration
