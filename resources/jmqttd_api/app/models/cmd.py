@@ -9,9 +9,30 @@ from .utils import strToBool, strToInt
 
 # -----------------------------------------------------------------------------
 # --- Cmd Info model
+class CmdInfoDecoderModel(str, Enum):
+    strict = 'strict'
+    replace = 'replace'
+    ignore = 'ignore'
+    backslashreplace = 'backslashreplace'
+    none = 'none'
+
+
+# -----------------------------------------------------------------------------
+class CmdInfoHandlerModel(str, Enum):
+    literal = 'literal'
+    jsonPath = 'jsonPath'
+    jinja = 'jinja'
+
+
+# -----------------------------------------------------------------------------
 class CmdInfoConfigModel(BaseModel):
     topic: Union[str, None] = ''
+    tryUnzip: bool = False
+    decoder: CmdInfoDecoderModel = CmdInfoDecoderModel.strict
+    handler: CmdInfoHandlerModel = CmdInfoHandlerModel.jsonPath
     jsonPath: Union[str, None] = ''
+    template: str = ''
+    toFile: bool = False
 
 
 # -----------------------------------------------------------------------------
