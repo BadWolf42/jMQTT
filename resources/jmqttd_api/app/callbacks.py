@@ -1,11 +1,10 @@
-from asyncio import sleep
-
 from aiohttp import ClientSession
+from asyncio import CancelledError, create_task, sleep, Queue, Task
 from json import dumps
 from logging import getLogger
 from pydantic import BaseModel
 from time import time
-from typing import Union, List
+from typing import List, Union
 
 from models.eq import EqModel
 from models.unions import CmdModel
@@ -17,19 +16,21 @@ logger = getLogger('jmqtt.callbacks')
 
 ###############################################################################
 # --- Messages TO jeedom models -----------------------------------------------
-class JmqttdValue(BaseModel):
+class CmdValue(BaseModel):
     id: int
-    value: Union[bool, int, str]
+    value: Union[bool, int, float, str]
 
 
-# class JmqttdValueList(RootModel):
-#     root: List[JmqttdValue]
+class CmdTimedValue(CmdValue):
+    ts: float
 
 
 class Callbacks:
     _retrySnd: int = 0  # number of send retries
     _lastSnd: int = time()  # time of the last snd msg
     _lastHb: int = time()  # time of the last snd HB msg
+    _changesQueue: Queue[CmdTimedValue] = Queue()  # queue of cmd id with changes
+    _changesTask: Task = None  # task handling changes sent to Jeedom
 
     @classmethod
     async def __send(cls, action: str, data: dict = {}):
@@ -64,7 +65,15 @@ class Callbacks:
     async def daemonUp(cls):
         # Let port some time to open in main task
         await sleep(0.5)
-        return await cls.__send('daemonUp', {'port': settings.socketport})
+        # Send daemonUp signal to Jeedom
+        dUp = await cls.__send('daemonUp', {'port': settings.socketport})
+        # Start sendChangesTask task
+        if cls._changesTask is not None:
+            if not cls._changesTask.done():
+                logger.debug('Send Changes task already started')
+                return
+        cls._changesTask = create_task(cls.__changesTask())
+        return dUp
 
     @classmethod
     async def daemonHB(cls):
@@ -73,6 +82,16 @@ class Callbacks:
 
     @classmethod
     async def daemonDown(cls):
+        # Stop sendChanges task here
+        if cls._changesTask is not None:
+            if not cls._changesTask.done():
+                cls._changesTask.cancel()
+                try:
+                    await cls._changesTask
+                except CancelledError:
+                    pass
+        cls._changesTask = None
+        # Send daemonDown signal to Jeedom
         return await cls.__send('daemonDown')
 
     @classmethod
@@ -99,11 +118,29 @@ class Callbacks:
         )
 
     @classmethod
-    async def values(cls, values: List[JmqttdValue]):
+    async def __changesTask(cls):
+        logger.debug('Send Changes task started')
+        while True:
+            try:
+                while True:
+                    logger.debug('Changes queue: %r', cls._changesQueue)
+                    await sleep(10)  # TODO Remove this & Implement send mechanism to Jeedom
+            except CancelledError:
+                logger.debug('Send Changes task canceled')
+                raise
+            except Exception:
+                logger.exception('Send Changes task died unexpectedly...')
+
+    @classmethod
+    async def change(cls, cmdId: int, value: str, ts: float) -> None:
+        await cls._changesQueue.put(CmdTimedValue(id=cmdId, ts=ts, value=value))
+
+    @classmethod
+    async def values(cls, values: List[CmdValue]):
         return await cls.__send('values', [val.model_dump() for val in values])
         # data = []
         # for val in values:
-        #     if isinstance(val, JmqttdValue):
+        #     if isinstance(val, CmdValue):
         #         data.append(val.model_dump())
         # return await cls.__send('values', data))
 

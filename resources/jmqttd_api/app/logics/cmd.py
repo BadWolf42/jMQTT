@@ -1,6 +1,9 @@
 from __future__ import annotations
 from aiomqtt import Message
 from logging import getLogger
+from json import dumps, JSONDecodeError, loads
+from jsonpath_ng import parse
+from jsonpath_ng.exceptions import JsonPathParserError
 from typing import Dict
 from weakref import ref
 from zlib import decompress as zlib_decompress
@@ -21,6 +24,8 @@ class CmdLogic(VisitableLogic):
         self.model: CmdModel = model
         self.weakEq: ref = None
         self.weakBrk: ref = None
+        self.jsonPathExpr = None
+        self.jinjaExpr = None
 
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_cmd(self)
@@ -35,7 +40,7 @@ class CmdLogic(VisitableLogic):
         # jMQTT will try to decompress the payload (requested in issue #135)
         try:
             payload = zlib_decompress(payload, wbits=-15)
-            logger.debug(
+            logger.trace(
                 'id=%i: decompressed payload: "0x%s"',
                 self.model.id,
                 (
@@ -55,7 +60,7 @@ class CmdLogic(VisitableLogic):
     async def _decode(self, payload, decoder) -> str:
         try:
             payload = payload.decode('utf-8', decoder)
-            logger.debug(
+            logger.trace(
                 'id=%i: decoded (%s) payload: "%s"',
                 self.model.id,
                 decoder.name,
@@ -72,14 +77,32 @@ class CmdLogic(VisitableLogic):
             )
         return payload
 
-    async def _handleJsonPath(self, payload, ts: float) -> str:
+    async def _hJsonPath(self, payload, ts: float) -> str:
         jsonPath = self.model.configuration.jsonPath
         if jsonPath == '':
             return payload
-        # TODO Handle json Path
-        return payload
+        if self.jsonPathExpr is None:
+            # TODO Build this expression at cmd creation?
+            try:
+                self.jsonPathExpr = parse(jsonPath)
+            except JsonPathParserError:
+                raise  # TODO Handle JsonPathParserError
+        try:
+            json = loads(payload)
+        except JSONDecodeError:
+            raise  # TODO Handle JSONDecodeError
+        try:
+            found = self.jsonPathExpr.find(json)
+            if len(found) == 0:
+                raise Exception('no Match')  # TODO Handle
+            if len(found) == 1:
+                return found[0].value
+            else:
+                return [match.value for match in found]
+        except:
+            raise  # TODO Handle
 
-    async def _handleTemplate(self, payload, ts: float) -> str:
+    async def _hJinja(self, payload, ts: float) -> str:
         jinja = self.model.configuration.jinja
         if jinja == '' or '{' not in jinja:
             return payload
@@ -105,12 +128,13 @@ class CmdLogic(VisitableLogic):
         if cfg.decoder != CmdInfoDecoderModel.none:
             payload = await self._decode(payload, cfg.decoder)
         if cfg.handler == CmdInfoHandlerModel.jsonPath:
-            payload = await self._handleJsonPath(payload, ts)
+            payload = await self._hJsonPath(payload, ts)
         elif cfg.handler == CmdInfoHandlerModel.jinja:
-            payload = await self._handleTemplate(payload, ts)
+            payload = await self._hJinja(payload, ts)
+        if type(payload) not in [bool, int, float, str]:
+            payload = dumps(payload)
         if cfg.toFile:
             payload = await self._writeToFile(payload, ts)
-
         logger.info(
             'id=%i: payload="%s", QoS=%s, retain=%s, ts=%i',
             self.model.id,
@@ -119,16 +143,4 @@ class CmdLogic(VisitableLogic):
             bool(message.retain),
             ts,
         )
-        await Callbacks.message(
-            self.weakBrk().model.id,
-            str(message.topic),
-            payload,
-            message.qos,
-            message.retain,
-        )
-
-    # def getEqLogic(self):
-    #     return self.weakEq()
-
-    # def getBrkLogic(self):
-    #     return self.weakBrk()
+        await Callbacks.change(self.model.id, payload, ts)
