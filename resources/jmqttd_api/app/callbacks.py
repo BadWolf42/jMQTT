@@ -85,12 +85,12 @@ class Callbacks:
 
     @classmethod
     async def message(
-        cls, id: int, topic: str, payload: str, qos: int = 1, retain: bool = False
+        cls, brk: int, topic: str, payload: str, qos: int = 1, retain: bool = False
     ):
         return await cls.__send(
             'message',
             {
-                'id': id,
+                'brk': brk,
                 'topic': topic,
                 'payload': payload,
                 'qos': qos,

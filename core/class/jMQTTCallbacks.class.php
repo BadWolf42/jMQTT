@@ -411,7 +411,7 @@ class jMQTTCallbacks {
     public static function onMessage() {
         $message = self::getPayload();
         if (
-            !isset($message['id'])
+            !isset($message['brk'])
             || !isset($message['topic'])
             || !isset($message['payload'])
         ) {
@@ -422,8 +422,8 @@ class jMQTTCallbacks {
         jMQTT::logger(
             'debug',
             sprintf(
-                "onMessage: id='%1\$s', topic='%2\$s', payload='%3\$s', qos=%4\$s, retain=%5\$s",
-                $message['id'],
+                "onMessage: brk='%1\$s', topic='%2\$s', payload='%3\$s', qos=%4\$s, retain=%5\$s",
+                $message['brk'],
                 $message['topic'],
                 $message['payload'],
                 $message['qos'],
@@ -432,7 +432,7 @@ class jMQTTCallbacks {
         );
 
         try {
-            $broker = jMQTT::getBrokerFromId(intval($message['id']));
+            $broker = jMQTT::getBrokerFromId(intval($message['brk']));
             $broker->brokerMessageCallback(
                 $message['topic'],
                 $message['payload'],
@@ -455,7 +455,7 @@ class jMQTTCallbacks {
                     __METHOD__,
                     $e->getMessage(),
                     $e->getTraceAsString(),
-                    $message['id'],
+                    $message['brk'],
                     $message['topic'],
                     $message['payload'],
                     $message['qos'],
