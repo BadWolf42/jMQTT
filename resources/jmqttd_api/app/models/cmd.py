@@ -1,6 +1,5 @@
 from enum import Enum
 from typing_extensions import Literal
-from typing import Union
 from pydantic import BaseModel, validator
 
 from .bases import CmdBaseModel
@@ -26,11 +25,11 @@ class CmdInfoHandlerModel(str, Enum):
 
 # -----------------------------------------------------------------------------
 class CmdInfoConfigModel(BaseModel):
-    topic: Union[str, None] = ''
+    topic: str = ''
     tryUnzip: bool = False
     decoder: CmdInfoDecoderModel = CmdInfoDecoderModel.strict
     handler: CmdInfoHandlerModel = CmdInfoHandlerModel.jsonPath
-    jsonPath: Union[str, None] = ''
+    jsonPath: str = ''
     template: str = ''
     toFile: bool = False
 
@@ -52,11 +51,11 @@ class CmdInfoModel(CmdBaseModel):
 # -----------------------------------------------------------------------------
 # --- Cmd Action model
 class CmdActionConfigModel(BaseModel):
-    topic: Union[str, None] = ''
-    request: Union[str, None] = ''
-    Qos: Union[int, None] = 0
-    retain: Union[bool, None] = False
-    autoPub: Union[bool, None] = False
+    topic: str = ''
+    request: str = ''
+    Qos: int = 0
+    retain: bool = False
+    autoPub: bool = False
 
     _val_Qos: classmethod = validator("Qos", allow_reuse=True, pre=True)(strToInt)
     _val_retain: classmethod = validator("retain", allow_reuse=True, pre=True)(
