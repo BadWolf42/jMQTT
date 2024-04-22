@@ -4,6 +4,7 @@ from typing import Dict
 from weakref import ref, WeakValueDictionary
 
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
+from logics.cmd import CmdLogic
 from models.eq import EqModel
 
 

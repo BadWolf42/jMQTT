@@ -109,7 +109,9 @@ class Callbacks:
 
     @classmethod
     async def interact(cls, id: int, query: str, advanced: bool = False):
-        return await cls.__send('interact', {'id': id, 'query': query, 'advanced': advanced})
+        return await cls.__send(
+            'interact', {'id': id, 'query': query, 'advanced': advanced}
+        )
 
     @classmethod
     async def jeedomApi(cls, id: int, query: str = ''):

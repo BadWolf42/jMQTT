@@ -1,6 +1,5 @@
 from __future__ import annotations
 from aiomqtt import Message
-from binascii import b2a_base64, hexlify
 from logging import getLogger
 from typing import Dict
 from weakref import ref
@@ -40,9 +39,7 @@ class CmdLogic(VisitableLogic):
                 'id=%i: decompressed payload: "0x%s"',
                 self.model.id,
                 (
-                    bytes(payload, 'utf-8')
-                    if isinstance(payload, str)
-                    else payload
+                    bytes(payload, 'utf-8') if isinstance(payload, str) else payload
                 ).hex()
             )
         except Exception:  # If payload cannot be decompressed
@@ -50,9 +47,7 @@ class CmdLogic(VisitableLogic):
                 'id=%i: could NOT decompress payload: "0x%s"',
                 self.model.id,
                 (
-                    bytes(payload, 'utf-8')
-                    if isinstance(payload, str)
-                    else payload
+                    bytes(payload, 'utf-8') if isinstance(payload, str) else payload
                 ).hex()
             )
         return payload
@@ -64,7 +59,7 @@ class CmdLogic(VisitableLogic):
                 'id=%i: decoded (%s) payload: "%s"',
                 self.model.id,
                 decoder.name,
-                payload
+                payload,
             )
         except Exception:
             logger.info(
@@ -72,25 +67,19 @@ class CmdLogic(VisitableLogic):
                 self.model.id,
                 decoder.name,
                 (
-                    bytes(payload, 'utf-8')
-                    if isinstance(payload, str)
-                    else payload
+                    bytes(payload, 'utf-8') if isinstance(payload, str) else payload
                 ).hex()
             )
         return payload
 
-    async def _writeToFile(self, payload) -> str:
+    async def _writeToFile(self, payload, ts: float) -> str:
         filename = f'file_{self.model.id}'
         # TODO Callback to set file content = payload
         logger.debug(
             'id=%i: wrote to file "%s" payload: "0x%s"',
             self.model.id,
             filename,
-            (
-                bytes(payload, 'utf-8')
-                if isinstance(payload, str)
-                else payload
-            ).hex()
+            (bytes(payload, 'utf-8') if isinstance(payload, str) else payload).hex(),
         )
         return f'{filename}?{ts}'
 
@@ -102,14 +91,15 @@ class CmdLogic(VisitableLogic):
         if cfg.decoder != CmdInfoDecoderModel.none:
             payload = await self._decode(payload, cfg.decoder)
         if cfg.toFile:
-            payload = await self._writeToFile(payload)
+            payload = await self._writeToFile(payload, ts)
 
         logger.info(
-            'id=%i: payload="%s", QoS=%s, retain=%s',
+            'id=%i: payload="%s", QoS=%s, retain=%s, ts=%i',
             self.model.id,
             payload,
             message.qos,
-            bool(message.retain)
+            bool(message.retain),
+            ts,
         )
         await Callbacks.message(
             self.weakBrk().model.id,
