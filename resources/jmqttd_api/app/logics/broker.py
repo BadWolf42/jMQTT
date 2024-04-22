@@ -278,7 +278,12 @@ class BrkLogic(VisitableLogic):
             async with client.messages() as messages:
                 async for msg in messages:
                     self.log.trace('Got msg on %s: %s', msg.topic, msg.payload)
-                    await self.__dispatch(msg)
+                    try:
+                        await self.__dispatch(msg)
+                    except Exception:
+                        self.log.exception(
+                            'Exception on message: %s', msg
+                        )
         except CancelledError:
             if cfg.mqttLwt:
                 await self.publish(
