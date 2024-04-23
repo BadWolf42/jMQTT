@@ -1,5 +1,4 @@
-import asyncio
-
+from asyncio import CancelledError, sleep, Task, TimeoutError, wait_for
 from logging import getLogger
 from os import getpid, kill
 from signal import SIGTERM
@@ -14,7 +13,7 @@ logger = getLogger('jmqtt.healthcheck')
 
 class Healthcheck:
     _lastRcv: int = time()  # time of the last rcv msg
-    _task: asyncio.Task = None  # Healthcheck task initialised by daemonUp method
+    _task: Task = None  # Healthcheck task initialised by daemonUp method
 
     @classmethod
     async def onReceive(cls):
@@ -69,13 +68,13 @@ class Healthcheck:
         logger.debug('Healthcheck task started')
         while await cls.__hcLoop():
             # logger.debug('Healthcheck-ed')
-            await asyncio.sleep(settings.check_interval)
+            await sleep(settings.check_interval)
         logger.debug('Healthcheck task ended unexpectidely')
 
     @classmethod
     async def start(cls):
         # Start heart beat task
-        cls._task = asyncio.create_task(cls.__healthcheck())
+        cls._task = create_task(cls.__healthcheck())
         logger.debug('Healthcheck task created')
 
     @classmethod
@@ -85,8 +84,8 @@ class Healthcheck:
         try:
             # Cancel tasks and join it for `max_wait_cancel` seconds
             cls._task.cancel()
-            await asyncio.wait_for(cls._task, timeout=max_wait_cancel)
-        except asyncio.CancelledError:
+            await wait_for(cls._task, timeout=max_wait_cancel)
+        except CancelledError:
             logger.debug('Healthcheck task canceled')
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.debug('Healthcheck task timeouted')
