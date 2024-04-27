@@ -64,7 +64,13 @@ class jMQTTCmd extends cmd {
      * Update this command value, and inform all stakeholders about the new value
      * @param int|string $value new command value
      */
-    public function updateCmdValue($value) {
+    public function updateCmdValue($value, $_time = 0) {
+        /** @var jMQTT $eqLogic */
+        $eqLogic = $this->getEqLogic();
+        // Eq not enabled => end
+        if ($eqLogic->getIsEnable() == 0) {
+            return;
+        }
         if (in_array(strtolower($this->getName()), ["color", "colour", "couleur", "rgb"])
             || $this->getGeneric_type() == "LIGHT_COLOR") {
             if (is_numeric($value)) {
@@ -80,18 +86,29 @@ class jMQTTCmd extends cmd {
                 }
             }
         }
-        /** @var jMQTT $eqLogic */
-        $eqLogic = $this->getEqLogic();
-        $eqLogic->checkAndUpdateCmd($this, $value);
+        $_time = ($_time == 0) ? time() : $_time;
+        // Time before last collect => end
+        if (strtotime($this->getCollectDate()) >= $_time) {
+            return;
+        }
+        $oldValue = $this->execCmd();
+        $_sTime = date('Y-m-d H:i:s', ($_time == 0) ? null : $_time);
+        // Value changed or always repeat event
+        if (
+            $oldValue !== $this->formatValue($value)
+            || $oldValue === ''
+            || $this->getConfiguration('repeatEventManagement', 'never') == 'always'
+        ) {
+            $this->event($value, $_sTime);
+        }
+        // Set collectDate, lastCommunication & timeout
+        $this->setCache('collectDate', $_sTime);
+        $eqLogic->setStatus(array('lastCommunication' => $_sTime, 'timeout' => 0));
         $value = $this->getCache('value', 0);
-        $eqLogic->log(
-            'info',
-            sprintf(
-                __("Cmd #%1\$s# <- %2\$s", __FILE__),
-                $this->getHumanName(),
-                $value
-            )
-        );
+        $eqLogic->log('info', sprintf(
+            __("Cmd #%1\$s# <- %2\$s", __FILE__),
+            $this->getHumanName(), $value
+        ));
         if ($this->isAvailability()
             && ((!boolval($value)) != boolval($eqLogic->getStatus('warning', 0)))) {
             if (!boolval($value)) {
