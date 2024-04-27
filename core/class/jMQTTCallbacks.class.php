@@ -466,7 +466,7 @@ class jMQTTCallbacks {
     }
 
     /**
-     * Daemon callback to send values to update in Jeedom
+     * Daemon callback to send values to update info cmds in Jeedom
      */
     public static function onValues() {
         $message = self::getPayload();
@@ -474,24 +474,20 @@ class jMQTTCallbacks {
             echo 'Bad Request.';
             die();
         }
-        foreach ($message as $val) {
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    "onValues: id='%1\$s', value='%2\$s'",
-                    $val['id'],
-                    $val['value']
-                )
-            );
+        // jMQTT::logger('debug', "onValues: message='" . json_encode($message, JSON_UNESCAPED_SLASHES) . "'");
+        foreach ($message as $cmdId=>$valList) {
             try {
                 /** @var jMQTTCmd $cmd */
-                $cmd = jMQTTCmd::byId(intval($val['id']));
+                $cmd = jMQTTCmd::byId(intval($cmdId));
                 if (!is_object($cmd)) {
                     jMQTT::logger('debug', sprintf(
-                        __("Pas de commande avec l'id %s", __FILE__),
-                        $val['id']
+                        __("Pas de commande avec l'id %s", __FILE__), $cmdId
                     ));
                     return;
+                }
+                if (empty($valList)) {
+                    // Nothing to do (no value)
+                    continue;
                 }
                 /** @var jMQTT $eqLogic */
                 $eqLogic = $cmd->getEqLogic();
@@ -499,7 +495,48 @@ class jMQTTCallbacks {
                     'lastCommunication' => date('Y-m-d H:i:s'),
                     'timeout' => 0
                 ));
-                $cmd->updateCmdValue($val['value']);
+                // TODO Add config key to reduce event triggering
+                // if (
+                //     $cmd->getConfiguration(jMQTTConst::CONF_KEY_REDUCE_EVENTS, 0)
+                //     || $cmd->getConfiguration('repeatEventManagement', 'never') != 'always'
+                // ) {
+                    // // Only trigger an event on cmd for the last value
+                    // // Pop last item from valList
+                    // $lastVal = array_pop($valList);
+                    // // Save remaining val from valList as history if historised
+                    // if ($cmd->getIsHistorized()) {
+                    //     foreach ($valList as $val) {
+                    //         $dt = date('Y-m-d H:i:s', $val[0]);
+                    //         jMQTT::logger('debug', sprintf(
+                    //             "onValues: id=%s, datetime='%s', value='%s' (History)",
+                    //             $cmdId,
+                    //             $dt,
+                    //             $val[1]
+                    //         ));
+                    //         $cmd->addHistoryValue($val[1], $dt);
+                    //     }
+                    // }
+                    // // Update cmd with last val from valList
+                    // jMQTT::logger('debug', sprintf(
+                    //     "onValues: id=%s, datetime='%s', value='%s' (Event)",
+                    //     $cmdId,
+                    //     date('Y-m-d H:i:s', $lastVal[0]),
+                    //     $lastVal[1]
+                    // ));
+                    // $cmd->updateCmdValue($lastVal[1], $lastVal[0]);
+                // } else {
+                    // Always trigger an event on cmd for each value
+                    foreach ($valList as $val) {
+                        $dt = date('Y-m-d H:i:s', $val[0]);
+                        jMQTT::logger('debug', sprintf(
+                            "onValues: id=%s, datetime='%s', value='%s' (Event)",
+                            $cmdId,
+                            $dt,
+                            $val[1]
+                        ));
+                        $cmd->updateCmdValue($val[1], $dt);
+                    }
+                // }
             } catch (Throwable $e) {
                 if (log::getLogLevel(jMQTT::class) > 100) {
                     jMQTT::logger('error', sprintf(
@@ -510,13 +547,11 @@ class jMQTTCallbacks {
                 } else {
                     jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
                         __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                        ",<br/>@Stack: %3\$s,<br/>@cmdId: %4\$s,".
-                        "<br/>@value: %5\$s.",
+                        ",<br/>@Stack: %3\$s,<br/>@cmdId: %4\$s.",
                         __METHOD__,
                         $e->getMessage(),
                         $e->getTraceAsString(),
-                        $val['id'],
-                        $val['value']
+                        $cmdId
                     )));
                 }
             }

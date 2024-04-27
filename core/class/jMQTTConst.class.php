@@ -55,6 +55,7 @@ class jMQTTConst {
     const CONF_KEY_JSON_PATH            = 'jsonPath';
     const CONF_KEY_PUB_QOS              = 'Qos';
     const CONF_KEY_REQUEST              = 'request';
+    // const CONF_KEY_REDUCE_EVENTS        = 'reduceEvents';
     const CONF_KEY_RETAIN               = 'retain';
 
     const CACHE_DAEMON_LAST_SND         = 'daemonLastSnd';
