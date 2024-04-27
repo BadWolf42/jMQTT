@@ -1,4 +1,4 @@
-from asyncio import CancelledError, sleep, Task, TimeoutError, wait_for
+from asyncio import CancelledError, create_task, sleep, Task, TimeoutError, wait_for
 from logging import getLogger
 from os import getpid, kill
 from signal import SIGTERM

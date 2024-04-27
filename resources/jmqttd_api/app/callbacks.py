@@ -1,5 +1,6 @@
 from aiohttp import ClientSession
-from asyncio import CancelledError, create_task, sleep, Queue, Task
+from asyncio import CancelledError, create_task, sleep, Task
+from collections import deque
 from json import dumps
 from logging import getLogger
 from pydantic import BaseModel
@@ -29,7 +30,7 @@ class Callbacks:
     _retrySnd: int = 0  # number of send retries
     _lastSnd: int = time()  # time of the last snd msg
     _lastHb: int = time()  # time of the last snd HB msg
-    _changesQueue: Queue[CmdTimedValue] = Queue()  # queue of cmd id with changes
+    _changesQueue: deque[CmdTimedValue] = deque()  # queue of cmd id with changes
     _changesTask: Task = None  # task handling changes sent to Jeedom
 
     @classmethod
@@ -103,21 +104,6 @@ class Callbacks:
         return await cls.__send('brokerDown', {'id': id})
 
     @classmethod
-    async def message(
-        cls, brk: int, topic: str, payload: str, qos: int = 1, retain: bool = False
-    ):
-        return await cls.__send(
-            'message',
-            {
-                'brk': brk,
-                'topic': topic,
-                'payload': payload,
-                'qos': qos,
-                'retain': retain,
-            },
-        )
-
-    @classmethod
     async def __changesTask(cls):
         logger.debug('Send Changes task started')
         while True:
@@ -133,7 +119,7 @@ class Callbacks:
 
     @classmethod
     async def change(cls, cmdId: int, value: str, ts: float) -> None:
-        await cls._changesQueue.put(CmdTimedValue(id=cmdId, ts=ts, value=value))
+        cls._changesQueue.append(CmdTimedValue(id=cmdId, ts=ts, value=value))
 
     @classmethod
     async def values(cls, values: List[CmdValue]):
