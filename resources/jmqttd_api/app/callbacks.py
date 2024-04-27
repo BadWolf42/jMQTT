@@ -5,7 +5,7 @@ from json import dumps
 from logging import getLogger
 from pydantic import BaseModel
 from time import time
-from typing import List, Union
+from typing import Dict, List, Tuple, Union
 
 from models.eq import EqModel
 from models.unions import CmdModel
@@ -106,11 +106,37 @@ class Callbacks:
     @classmethod
     async def __changesTask(cls):
         logger.debug('Send Changes task started')
+        toSend: Dict[int, List[Tuple[int, Union[bool, int, float, str]]]] = {}
+        # Ensure task will restart unless Canceled
         while True:
             try:
+                # Prepare to send a list of events (<100)
                 while True:
-                    logger.debug('Changes queue: %r', cls._changesQueue)
-                    await sleep(10)  # TODO Remove this & Implement send mechanism to Jeedom
+                    toSend = {}
+                    nbVals = 1
+                    # Wait for new message in queue
+                    while True:
+                        try:
+                            val = cls._changesQueue.popleft()
+                            toSend[val.id] = list()
+                            toSend[val.id].append((int(val.ts), val.value))
+                        except IndexError:
+                            await sleep(0.1)
+                            continue
+                        break
+                    # Unload messages from queue
+                    while nbVals < 100:
+                        try:
+                            val = cls._changesQueue.popleft()
+                        except IndexError:
+                            break
+                        if val.id not in toSend:
+                            toSend[val.id] = list()
+                        toSend[val.id].append((int(val.ts), val.value))
+                        nbVals += 1
+                    # Send messages to Jeedom (blocking)
+                    logger.debug('Sending %i changes: %r', nbVals, toSend)
+                    await cls.__send('values', toSend)
             except CancelledError:
                 logger.debug('Send Changes task canceled')
                 raise
