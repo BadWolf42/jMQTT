@@ -281,9 +281,7 @@ class BrkLogic(VisitableLogic):
                     try:
                         await self.__dispatch(msg)
                     except Exception:
-                        self.log.exception(
-                            'Exception on message: %s', msg
-                        )
+                        self.log.exception('Exception on message: %s', msg)
         except CancelledError:
             if cfg.mqttLwt:
                 await self.publish(

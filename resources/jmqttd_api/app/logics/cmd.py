@@ -45,7 +45,7 @@ class CmdLogic(VisitableLogic):
                 self.model.id,
                 (
                     bytes(payload, 'utf-8') if isinstance(payload, str) else payload
-                ).hex()
+                ).hex(),
             )
         except Exception:  # If payload cannot be decompressed
             logger.debug(
@@ -53,7 +53,7 @@ class CmdLogic(VisitableLogic):
                 self.model.id,
                 (
                     bytes(payload, 'utf-8') if isinstance(payload, str) else payload
-                ).hex()
+                ).hex(),
             )
         return payload
 
@@ -73,7 +73,7 @@ class CmdLogic(VisitableLogic):
                 decoder.name,
                 (
                     bytes(payload, 'utf-8') if isinstance(payload, str) else payload
-                ).hex()
+                ).hex(),
             )
         return payload
 

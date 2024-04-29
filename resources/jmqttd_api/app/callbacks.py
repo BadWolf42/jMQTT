@@ -113,23 +113,17 @@ class Callbacks:
                 # Prepare to send a list of events (<100)
                 while True:
                     toSend = {}
-                    nbVals = 1
-                    # Wait for new message in queue
-                    while True:
-                        try:
-                            val = cls._changesQueue.popleft()
-                            toSend[val.id] = list()
-                            toSend[val.id].append((int(val.ts), val.value))
-                        except IndexError:
-                            await sleep(0.1)
-                            continue
-                        break
-                    # Unload messages from queue
+                    nbVals = 0
+                    # Wait for new message in queue, then unload messages from queue
                     while nbVals < 100:
                         try:
                             val = cls._changesQueue.popleft()
                         except IndexError:
-                            break
+                            if nbVals == 0:  # Nothing in queue (at start), then sleep and retry
+                                await sleep(0.1)
+                                continue
+                            else:  # Queue is now empty, then send the values
+                                break
                         if val.id not in toSend:
                             toSend[val.id] = list()
                         toSend[val.id].append((int(val.ts), val.value))

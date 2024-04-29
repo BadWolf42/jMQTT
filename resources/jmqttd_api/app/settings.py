@@ -48,39 +48,39 @@ logconfig: dict = {
         'handlers': ['fileHandler'],
     },
     'loggers': {
-    #     'asyncio': {
-    #         'level': 'WARNING',
-    #     },
-    #     'concurrent': {
-    #         'level': 'WARNING',
-    #     },
-    #     'fastapi': {
-    #         'level': 'WARNING',
-    #     },
-    #     'jmqtt': {
-    #         'level': 'DEBUG',
-    #     },
-    #     'jmqtt.brk': {
-    #         'level': 'INFO',
-    #     },
+        # 'asyncio': {
+        #     'level': 'WARNING',
+        # },
+        # 'concurrent': {
+        #     'level': 'WARNING',
+        # },
+        # 'fastapi': {
+        #     'level': 'WARNING',
+        # },
+        # 'jmqtt': {
+        #     'level': 'DEBUG',
+        # },
+        # 'jmqtt.brk': {
+        #     'level': 'INFO',
+        # },
         'jmqtt.cli': {
             'level': 'WARNING',
         },
-    #     'jmqtt.rt': {
-    #         'level': 'INFO',
-    #     },
-    #     'jmqtt.visitor': {
-    #         'level': 'INFO',
-    #     },
+        # 'jmqtt.rt': {
+        #     'level': 'INFO',
+        # },
+        # 'jmqtt.visitor': {
+        #     'level': 'INFO',
+        # },
         'uvicorn': {
             'level': 'WARNING',
         },
-    #     'pydantic': {
-    #         'level': 'WARNING',
-    #     },
-    #     'gunicorn': {
-    #         'level': 'WARNING',
-    #     },
+        # 'pydantic': {
+        #     'level': 'WARNING',
+        # },
+        # 'gunicorn': {
+        #     'level': 'WARNING',
+        # },
     },
 }
 
