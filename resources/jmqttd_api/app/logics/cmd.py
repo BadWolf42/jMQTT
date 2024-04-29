@@ -36,46 +36,37 @@ class CmdLogic(VisitableLogic):
             or '#' in self.model.configuration.topic
         )
 
-    async def _decompress(self, payload) -> str:
+    async def _decompress(self, pl):
         # jMQTT will try to decompress the payload (requested in issue #135)
         try:
-            payload = zlib_decompress(payload, wbits=-15)
+            pl = zlib_decompress(pl, wbits=-15)
             logger.trace(
                 'id=%i: decompressed payload: "0x%s"',
                 self.model.id,
-                (
-                    bytes(payload, 'utf-8') if isinstance(payload, str) else payload
-                ).hex(),
+                (bytes(pl, 'utf-8') if isinstance(pl, str) else pl).hex(),
             )
         except Exception:  # If payload cannot be decompressed
             logger.debug(
                 'id=%i: could NOT decompress payload: "0x%s"',
                 self.model.id,
-                (
-                    bytes(payload, 'utf-8') if isinstance(payload, str) else payload
-                ).hex(),
+                (bytes(pl, 'utf-8') if isinstance(pl, str) else pl).hex(),
             )
-        return payload
+        return pl
 
-    async def _decode(self, payload, decoder) -> str:
+    async def _decode(self, pl, decoder) -> str:
         try:
-            payload = payload.decode('utf-8', decoder)
+            pl = pl.decode('utf-8', decoder)
             logger.trace(
-                'id=%i: decoded (%s) payload: "%s"',
-                self.model.id,
-                decoder.name,
-                payload,
+                'id=%i: decoded (%s) payload: "%s"', self.model.id, decoder.name, pl
             )
         except Exception:
             logger.info(
                 'id=%i: could NOT decode (%s) payload: "0x%s"',
                 self.model.id,
                 decoder.name,
-                (
-                    bytes(payload, 'utf-8') if isinstance(payload, str) else payload
-                ).hex(),
+                (bytes(pl, 'utf-8') if isinstance(pl, str) else pl).hex(),
             )
-        return payload
+        return pl
 
     async def _handleJsonPath(self, payload, ts: float) -> str:
         jsonPath = self.model.configuration.jsonPath

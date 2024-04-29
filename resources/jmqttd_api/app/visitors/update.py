@@ -105,7 +105,7 @@ class UpdatingLogicVisitor(LogicVisitor):
         # Remove CmdLogic from EqLogic
         await e.weakEq().delCmd(e)
         # Remove CmdLogic from BrkLogic
-        await e.weakBrk().delCmd(e)  # TODO Check if NEEDED?
+        await e.weakBrk().delCmd(e)  # TODO Check if NEEDED? Done in Eq?
         # Change model in CmdLogic
         e.model = self.targetModel
         # Add CmdLogic in EqLogic

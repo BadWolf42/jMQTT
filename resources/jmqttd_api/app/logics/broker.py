@@ -403,14 +403,14 @@ class BrkLogic(VisitableLogic):
             await self.mqttClient.unsubscribe(topic)
 
     async def realTimeStart(self, params: RealTimeModel) -> bool:
-        self.log.debug('TODO')
-        # TODO
+        self.log.debug('Todo')
+        # TODO realTimeStart
         return self.model.isEnable
         # return self.client is not None
 
     async def realTimeStatus(self) -> RealTimeStatusModel:
-        self.log.debug('TODO')
-        # TODO
+        self.log.debug('Todo')
+        # TODO realTimeStatus
         return RealTimeStatusModel(
             eqLogic=self.model.id,
             retained=False,
@@ -420,16 +420,16 @@ class BrkLogic(VisitableLogic):
         )
 
     async def realTimeStop(self) -> None:
-        self.log.debug('TODO')
-        # TODO
+        self.log.debug('Todo')
+        # TODO realTimeStop
 
     async def realTimeGet(self, since: int) -> List[MqttMessageModel]:
-        self.log.debug('TODO')
+        self.log.debug('Todo')
         if self.realtimeClient is None:
             return []
-        # TODO
+        # TODO realTimeGet
         return []
 
     async def realTimeClear(self) -> None:
-        self.log.debug('TODO')
-        # TODO
+        self.log.debug('Todo')
+        # TODO realTimeClear

@@ -55,8 +55,10 @@ class Callbacks:
                 cls._retrySnd += 1
                 return False
         # TODO Handle Exceptions on "async with", ex:
-        # aiohttp.client_exceptions.ClientConnectorError:
-        #     Cannot connect to host x [No route to host]
+        #    aiohttp.client_exceptions.ClientConnectorError:
+        #        Cannot connect to host x [No route to host]
+        #    https://docs.aiohttp.org/en/latest/client_reference.html#client-exceptions
+        #    https://docs.aiohttp.org/en/latest/client_reference.html#hierarchy-of-exceptions
 
     @classmethod
     async def test(cls):
@@ -119,10 +121,10 @@ class Callbacks:
                         try:
                             val = cls._changesQueue.popleft()
                         except IndexError:
-                            if nbVals == 0:  # Nothing in queue (at start), then sleep and retry
+                            if nbVals == 0:  # Queue is empty at start, sleep and retry
                                 await sleep(0.1)
                                 continue
-                            else:  # Queue is now empty, then send the values
+                            else:  # Queue is now empty, send the values
                                 break
                         if val.id not in toSend:
                             toSend[val.id] = list()

@@ -52,7 +52,7 @@ async def daemon_post(data: DataModel):
     summary="Return all Brokers, Equipments and Commands in Daemon",
 )
 async def daemon_get():
-    # JmqttDaemon.XXX() ### TODO SERIALIZE DAEMON STATE
+    # TODO daemon_get? To get daemon state and stats?
     pass
 
 
@@ -64,6 +64,7 @@ async def daemon_get():
     include_in_schema=False,
 )
 async def daemon_delete():
+    # TODO daemon_delete?
     pass
 
 

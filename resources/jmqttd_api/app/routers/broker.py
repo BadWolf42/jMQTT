@@ -63,7 +63,7 @@ async def broker_delete():
 )
 async def broker_get_id(id: int) -> BrkModel:
     if id in BrkLogic.all:
-        return BrkLogic.all[id].model  # TODO Check if should be something else
+        return BrkLogic.all[id].model  # TODO Should return that? or BrkLogic? Stats?
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND, detail="Broker not found"
     )
