@@ -77,7 +77,7 @@ class CmdLogic(VisitableLogic):
             )
         return payload
 
-    async def _hJsonPath(self, payload, ts: float) -> str:
+    async def _handleJsonPath(self, payload, ts: float) -> str:
         jsonPath = self.model.configuration.jsonPath
         if jsonPath == '':
             return payload
@@ -102,7 +102,7 @@ class CmdLogic(VisitableLogic):
         except:
             raise  # TODO Handle
 
-    async def _hJinja(self, payload, ts: float) -> str:
+    async def _handleJinja(self, payload, ts: float) -> str:
         jinja = self.model.configuration.jinja
         if jinja == '' or '{' not in jinja:
             return payload
@@ -128,9 +128,9 @@ class CmdLogic(VisitableLogic):
         if cfg.decoder != CmdInfoDecoderModel.none:
             payload = await self._decode(payload, cfg.decoder)
         if cfg.handler == CmdInfoHandlerModel.jsonPath:
-            payload = await self._hJsonPath(payload, ts)
+            payload = await self._handleJsonPath(payload, ts)
         elif cfg.handler == CmdInfoHandlerModel.jinja:
-            payload = await self._hJinja(payload, ts)
+            payload = await self._handleJinja(payload, ts)
         if type(payload) not in [bool, int, float, str]:
             payload = dumps(payload)
         if cfg.toFile:
