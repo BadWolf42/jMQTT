@@ -36,7 +36,7 @@ class CmdLogic(VisitableLogic):
             or '#' in self.model.configuration.topic
         )
 
-    async def _decompress(self, pl):
+    def _decompress(self, pl):
         # jMQTT will try to decompress the payload (requested in issue #135)
         try:
             pl = zlib_decompress(pl, wbits=-15)
@@ -53,7 +53,7 @@ class CmdLogic(VisitableLogic):
             )
         return pl
 
-    async def _decode(self, pl, decoder) -> str:
+    def _decode(self, pl, decoder) -> str:
         try:
             pl = pl.decode('utf-8', decoder)
             logger.trace(
@@ -68,7 +68,7 @@ class CmdLogic(VisitableLogic):
             )
         return pl
 
-    async def _handleJsonPath(self, payload, ts: float) -> str:
+    def _handleJsonPath(self, payload, ts: float) -> str:
         jsonPath = self.model.configuration.jsonPath
         if jsonPath == '':
             return payload
@@ -93,14 +93,14 @@ class CmdLogic(VisitableLogic):
         except:
             raise  # TODO Handle
 
-    async def _handleJinja(self, payload, ts: float) -> str:
+    def _handleJinja(self, payload, ts: float) -> str:
         jinja = self.model.configuration.jinja
         if jinja == '' or '{' not in jinja:
             return payload
         # TODO Handle Jinja template
         return payload
 
-    async def _writeToFile(self, payload, ts: float) -> str:
+    def _writeToFile(self, payload, ts: float) -> str:
         filename = f'file_{self.model.id}'
         # TODO Callback to set file content = payload
         logger.debug(
@@ -115,17 +115,17 @@ class CmdLogic(VisitableLogic):
         payload = message.payload
         cfg = self.model.configuration
         if cfg.tryUnzip:
-            payload = await self._decompress(payload)
+            payload = self._decompress(payload)
         if cfg.decoder != CmdInfoDecoderModel.none:
-            payload = await self._decode(payload, cfg.decoder)
+            payload = self._decode(payload, cfg.decoder)
         if cfg.handler == CmdInfoHandlerModel.jsonPath:
-            payload = await self._handleJsonPath(payload, ts)
+            payload = self._handleJsonPath(payload, ts)
         elif cfg.handler == CmdInfoHandlerModel.jinja:
-            payload = await self._handleJinja(payload, ts)
+            payload = self._handleJinja(payload, ts)
         if type(payload) not in [bool, int, float, str]:
             payload = dumps(payload)
         if cfg.toFile:
-            payload = await self._writeToFile(payload, ts)
+            payload = self._writeToFile(payload, ts)
         logger.info(
             'id=%i: payload="%s", QoS=%s, retain=%s, ts=%i',
             self.model.id,

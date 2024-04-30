@@ -136,7 +136,7 @@ class Callbacks:
         # Ensure task will restart unless Canceled
         while True:
             try:
-                cls.__changesSend()
+                await cls.__changesSend()
             except CancelledError:
                 logger.debug('Send Changes task canceled')
                 raise
