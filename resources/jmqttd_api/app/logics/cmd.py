@@ -1,38 +1,19 @@
 from __future__ import annotations
 from aiomqtt import Message
-from functools import lru_cache
 from logging import getLogger
 from json import dumps, JSONDecodeError, loads
-import jsonpath_ng
-from jsonpath_ng.exceptions import JsonPathParserError
 from typing import Dict, Union
 from weakref import ref
 from zlib import decompress as zlib_decompress
 
 from callbacks import Callbacks
+from converters.jsonpath import BadJsonPath, compiledJsonPath, JsonPathDidNotMatch
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 from models.cmd import CmdInfoDecoderModel, CmdInfoHandlerModel
 from models.unions import CmdModel
 
 
 logger = getLogger('jmqtt.cmd')
-
-
-@lru_cache
-def _compiledJsonPath(jsonPath: str) -> Union[jsonpath_ng.JSONPath, None]:
-    if jsonPath == '':
-        return jsonpath_ng.Root()
-    try:
-        expr = jsonpath_ng.parse(jsonPath)
-        logger.info('Compiled and cached jsonPath "%s"', jsonPath)
-        return expr
-    except JsonPathParserError:
-        logger.exception('Exception while compiling jsonPath "%s"', jsonPath)
-        return None
-    except Exception:
-        # TODO Handle other exceptions?
-        logger.exception('Other exception')
-        return None
 
 
 class CmdLogic(VisitableLogic):
@@ -85,17 +66,14 @@ class CmdLogic(VisitableLogic):
         return pl
 
     def _handleJsonPath(self, payload, ts: float) -> str:
-        expr = _compiledJsonPath(self.model.configuration.jsonPath)
-        if expr is None:
-            raise Exception('bad jsonPath')  # TODO Handle bad jsonPath here
+        expr = compiledJsonPath(self.model.configuration.jsonPath)
         json = loads(payload)  # TODO Handle JSONDecodeError?
         found = expr.find(json)
         if len(found) == 0:
-            raise Exception('no Match')  # TODO Handle
+            raise JsonPathDidNotMatch()
         if len(found) == 1:
             return found[0].value
-        else:
-            return [match.value for match in found]
+        return [match.value for match in found]
 
     def _handleJinja(self, payload, ts: float) -> str:
         jinja = self.model.configuration.jinja
@@ -140,5 +118,14 @@ class CmdLogic(VisitableLogic):
                 ts,
             )
             await Callbacks.change(self.model.id, payload, ts)
-        except Exception:
-            logger.exception('id=%i: exception encountered', self.model.id)
+        except BadJsonPath as e:
+            logger.warning(
+                'id=%i: %s', self.model.id, e)
+        except JsonPathDidNotMatch:
+            logger.debug(
+                'id=%i: jsonPath "%s" did NOT match',
+                self.model.id,
+                self.model.configuration.jsonPath,
+            )
+        except Exception as e:
+            logger.exception('id=%i: MQTT message raised an exception:', self.model.id)
