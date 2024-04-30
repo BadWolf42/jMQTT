@@ -506,14 +506,13 @@ class jMQTTCallbacks {
                     // // Save remaining val from valList as history if historised
                     // if ($cmd->getIsHistorized()) {
                     //     foreach ($valList as $val) {
-                    //         $dt = date('Y-m-d H:i:s', $val[0]);
                     //         jMQTT::logger('debug', sprintf(
                     //             "onValues: id=%s, datetime='%s', value='%s' (History)",
                     //             $cmdId,
-                    //             $dt,
+                    //             date('Y-m-d H:i:s', $val[0]),
                     //             $val[1]
                     //         ));
-                    //         $cmd->addHistoryValue($val[1], $dt);
+                    //         $cmd->addHistoryValue($val[1], $val[0]);
                     //     }
                     // }
                     // // Update cmd with last val from valList
@@ -527,14 +526,13 @@ class jMQTTCallbacks {
                 // } else {
                     // Always trigger an event on cmd for each value
                     foreach ($valList as $val) {
-                        $dt = date('Y-m-d H:i:s', $val[0]);
                         jMQTT::logger('debug', sprintf(
                             "onValues: id=%s, datetime='%s', value='%s' (Event)",
                             $cmdId,
-                            $dt,
+                            date('Y-m-d H:i:s', $val[0]),
                             $val[1]
                         ));
-                        $cmd->updateCmdValue($val[1], $dt);
+                        $cmd->updateCmdValue($val[1], $val[0]);
                     }
                 // }
             } catch (Throwable $e) {

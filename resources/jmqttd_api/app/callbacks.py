@@ -106,33 +106,37 @@ class Callbacks:
         return await cls.__send('brokerDown', {'id': id})
 
     @classmethod
+    async def __changesSend(cls):
+        # Prepare to send a list of events (<100)
+        while True:
+            toSend = {}
+            nbVals = 0
+            # Wait for new message in queue, then unload messages from queue
+            while nbVals < 100:
+                try:
+                    val = cls._changesQueue.popleft()
+                except IndexError:
+                    if nbVals == 0:  # Queue is empty at start, then sleep and retry
+                        await sleep(0.1)
+                        continue
+                    else:  # Queue is now empty, then send the values
+                        break
+                if val.id not in toSend:
+                    toSend[val.id] = list()
+                toSend[val.id].append((int(val.ts), val.value))
+                nbVals += 1
+            # Send messages to Jeedom (blocking)
+            logger.debug('Sending %i changes: %r', nbVals, toSend)
+            await cls.__send('values', toSend)
+
+    @classmethod
     async def __changesTask(cls):
         logger.debug('Send Changes task started')
         toSend: Dict[int, List[Tuple[int, Union[bool, int, float, str]]]] = {}
         # Ensure task will restart unless Canceled
         while True:
             try:
-                # Prepare to send a list of events (<100)
-                while True:
-                    toSend = {}
-                    nbVals = 0
-                    # Wait for new message in queue, then unload messages from queue
-                    while nbVals < 100:
-                        try:
-                            val = cls._changesQueue.popleft()
-                        except IndexError:
-                            if nbVals == 0:  # Queue is empty at start, sleep and retry
-                                await sleep(0.1)
-                                continue
-                            else:  # Queue is now empty, send the values
-                                break
-                        if val.id not in toSend:
-                            toSend[val.id] = list()
-                        toSend[val.id].append((int(val.ts), val.value))
-                        nbVals += 1
-                    # Send messages to Jeedom (blocking)
-                    logger.debug('Sending %i changes: %r', nbVals, toSend)
-                    await cls.__send('values', toSend)
+                cls.__changesSend()
             except CancelledError:
                 logger.debug('Send Changes task canceled')
                 raise
