@@ -481,6 +481,7 @@ class jMQTTCmd extends cmd {
             $this->_preSaveInformations = array(
                 'name' => $cmd->getName(),
                 'topic' => $cmd->getTopic(),
+                'jsonPath' => $cmd->getJsonPath(),
                 jMQTTConst::CONF_KEY_RETAIN => $cmd->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0),
                 jMQTTConst::CONF_KEY_AUTOPUB => $cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0),
                 jMQTTConst::CONF_KEY_REQUEST => $cmd->getConfiguration(jMQTTConst::CONF_KEY_REQUEST, '')
@@ -555,10 +556,11 @@ class jMQTTCmd extends cmd {
         // Cmd has been updated
         else {
 
-            // If name or topic changed
+            // If name or topic or jsonPath changed
             if (
                 $this->_preSaveInformations['name'] != $this->getName()
                 || $this->_preSaveInformations['topic'] != $this->getTopic()
+                || $this->_preSaveInformations['jsonPath'] != $this->getJsonPath()
             ) {
                 $sendUpdate = true;
             }
