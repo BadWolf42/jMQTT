@@ -14,7 +14,8 @@ jobs:
         php-version: ['8.2']
         python-version: ['3.11']
         # node-version: ['12']
-        jeedom-branch: ['V4-stable', 'alpha']
+        jeedom-branch: ['V4-stable']
+        # jeedom-branch: ['V4-stable', 'alpha']
 
     steps:
       - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
