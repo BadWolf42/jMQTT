@@ -88,7 +88,14 @@ class jMQTTCmd extends cmd {
         }
         $_time = ($_time == 0) ? time() : $_time;
         // Time before last collect => end
-        if (strtotime($this->getCollectDate()) >= $_time) {
+        if ($_time < strtotime($this->getCollectDate())) {
+            $eqLogic->log('debug', sprintf(
+                "Cmd #%s# </- %s (time in the past: new='%s' < collect='%s')",
+                $this->getHumanName(),
+                $value,
+                date('Y-m-d H:i:s', $_time),
+                $this->getCollectDate()
+            ));
             return;
         }
         $oldValue = $this->execCmd();

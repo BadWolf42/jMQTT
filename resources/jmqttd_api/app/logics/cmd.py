@@ -112,26 +112,29 @@ class CmdLogic(VisitableLogic):
         return f'{filename}?{ts}'
 
     async def mqttMsg(self, message: Message, ts: float):
-        payload = message.payload
-        cfg = self.model.configuration
-        if cfg.tryUnzip:
-            payload = self._decompress(payload)
-        if cfg.decoder != CmdInfoDecoderModel.none:
-            payload = self._decode(payload, cfg.decoder)
-        if cfg.handler == CmdInfoHandlerModel.jsonPath:
-            payload = self._handleJsonPath(payload, ts)
-        elif cfg.handler == CmdInfoHandlerModel.jinja:
-            payload = self._handleJinja(payload, ts)
-        if type(payload) not in [bool, int, float, str]:
-            payload = dumps(payload)
-        if cfg.toFile:
-            payload = self._writeToFile(payload, ts)
-        logger.info(
-            'id=%i: payload="%s", QoS=%s, retain=%s, ts=%i',
-            self.model.id,
-            payload,
-            message.qos,
-            bool(message.retain),
-            ts,
-        )
-        await Callbacks.change(self.model.id, payload, ts)
+        try:
+            payload = message.payload
+            cfg = self.model.configuration
+            if cfg.tryUnzip:
+                payload = self._decompress(payload)
+            if cfg.decoder != CmdInfoDecoderModel.none:
+                payload = self._decode(payload, cfg.decoder)
+            if cfg.handler == CmdInfoHandlerModel.jsonPath:
+                payload = self._handleJsonPath(payload, ts)
+            elif cfg.handler == CmdInfoHandlerModel.jinja:
+                payload = self._handleJinja(payload, ts)
+            if type(payload) not in [bool, int, float, str]:
+                payload = dumps(payload)
+            if cfg.toFile:
+                payload = self._writeToFile(payload, ts)
+            logger.info(
+                'id=%i: payload="%s", QoS=%s, retain=%s, ts=%i',
+                self.model.id,
+                payload,
+                message.qos,
+                bool(message.retain),
+                ts,
+            )
+            await Callbacks.change(self.model.id, payload, ts)
+        except Exception:
+            logger.exception('id=%i: exception encountered', self.model.id)
