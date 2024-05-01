@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple, Union
 
 from models.eq import EqModel
 from models.unions import CmdModel
-from settings import pid, settings
+from settings import settings
 
 
 logger = getLogger('jmqtt.callbacks')
@@ -38,8 +38,7 @@ class Callbacks:
         async with ClientSession() as session:
             async with session.post(
                 settings.callback,
-                # TODO Remove PID from headers
-                headers={'Authorization': 'Bearer ' + settings.apikey, 'PID': pid},
+                headers={'Authorization': 'Bearer ' + settings.apikey},
                 params={'a': action},
                 json=data,
             ) as resp:
