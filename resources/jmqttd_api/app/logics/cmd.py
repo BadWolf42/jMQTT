@@ -2,7 +2,7 @@ from __future__ import annotations
 from aiomqtt import Message
 from logging import getLogger
 from json import dumps, JSONDecodeError, loads
-from typing import Dict, Union
+from typing import Dict
 from weakref import ref
 from zlib import decompress as zlib_decompress
 
@@ -18,6 +18,7 @@ logger = getLogger('jmqtt.cmd')
 
 class BadJsonPayload(Exception):
     """Exception to signal a bad json payload"""
+
     pass
 
 
@@ -71,7 +72,10 @@ class CmdLogic(VisitableLogic):
         return pl
 
     def _handleJsonPath(self, payload, ts: float) -> str:
-        expr = compiledJsonPath(self.model.configuration.jsonPath)
+        jsonPath = self.model.configuration.jsonPath
+        if jsonPath.strip() != '':
+            return payload
+        expr = compiledJsonPath(jsonPath)
         try:
             json = loads(payload)
         except JSONDecodeError as e:
@@ -85,7 +89,7 @@ class CmdLogic(VisitableLogic):
 
     def _handleJinja(self, payload, ts: float) -> str:
         jinja = self.model.configuration.jinja
-        if jinja == '' or '{' not in jinja:
+        if jinja.strip() == '' or '{' not in jinja:
             return payload
         # TODO Handle Jinja template
         return payload
@@ -109,13 +113,10 @@ class CmdLogic(VisitableLogic):
                 payload = self._decompress(payload)
             if cfg.decoder != CmdInfoDecoderModel.none:
                 payload = self._decode(payload, cfg.decoder)
-            if (
-                cfg.handler == CmdInfoHandlerModel.jsonPath
-                and cfg.jsonPath.strip() != ''
-            ):
-                payload = self._handleJsonPath(payload, ts)
-            elif cfg.handler == CmdInfoHandlerModel.jinja and cfg.jinja.strip() != '':
-                payload = self._handleJinja(payload, ts)
+            payload = {
+                CmdInfoHandlerModel.jsonPath: self._handleJsonPath,
+                CmdInfoHandlerModel.jinja: self._handleJinja
+            }.get(cfg.handler, CmdInfoHandlerModel.jsonPath)(payload, ts)
             if type(payload) not in [bool, int, float, str]:
                 payload = dumps(payload)
             if cfg.toFile:
@@ -130,13 +131,12 @@ class CmdLogic(VisitableLogic):
             )
             await Callbacks.change(self.model.id, payload, ts)
         except (BadJsonPath, BadJsonPayload) as e:
-            logger.warning(
-                'id=%i: %s', self.model.id, e)
+            logger.warning('id=%i: %s', self.model.id, e)
         except JsonPathDidNotMatch:
             logger.debug(
                 'id=%i: jsonPath "%s" did NOT match',
                 self.model.id,
                 self.model.configuration.jsonPath,
             )
-        except Exception as e:
+        except Exception:
             logger.exception('id=%i: MQTT message raised an exception:', self.model.id)

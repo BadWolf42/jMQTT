@@ -106,6 +106,7 @@ class Callbacks:
 
     @classmethod
     async def __changesSend(cls):
+        toSend: Dict[int, List[Tuple[int, Union[bool, int, float, str]]]] = {}
         # Prepare to send a list of events (<100)
         while True:
             toSend = {}
@@ -131,7 +132,6 @@ class Callbacks:
     @classmethod
     async def __changesTask(cls):
         logger.debug('Send Changes task started')
-        toSend: Dict[int, List[Tuple[int, Union[bool, int, float, str]]]] = {}
         # Ensure task will restart unless Canceled
         while True:
             try:

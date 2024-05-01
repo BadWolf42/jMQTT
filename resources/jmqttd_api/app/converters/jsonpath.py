@@ -1,9 +1,7 @@
-
 from functools import lru_cache
 # from logging import getLogger
 from jsonpath_ng import JSONPath, parse, Root
 from jsonpath_ng.exceptions import JsonPathParserError
-from typing import Union
 from weakref import WeakValueDictionary
 
 
@@ -12,11 +10,13 @@ from weakref import WeakValueDictionary
 
 class JsonPathDidNotMatch(Exception):
     """Exception to avoid sending a value if jsonPath did not match"""
+
     pass
 
 
 class BadJsonPath(Exception):
     """Exception to signal a bad jsonPath"""
+
     pass
 
 
@@ -48,8 +48,7 @@ __parserRefs: WeakValueDictionary[str, JSONPath] = WeakValueDictionary()
 
 @lru_cache(maxsize=1024)
 def compiledJsonPath(jsonPath: str) -> JSONPath:
-    """Cached function returning JSONPath objects associated with jsonPath string
-    """
+    """Cached function returning JSONPath objects associated with jsonPath string"""
     # no jsonPath is equivalent to the whold json -> Root()
     if jsonPath == '':
         expr = Root()
