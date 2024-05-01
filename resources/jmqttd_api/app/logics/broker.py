@@ -154,19 +154,19 @@ class BrkLogic(VisitableLogic):
                 else 'websockets'
             ),
             websocket_path=(
-                None
-                if cfg.mqttProto not in [MqttProtoModel.ws, MqttProtoModel.wss]
-                else ('/' + cfg.mqttWsUrl)
+                ('/' + cfg.mqttWsUrl)
+                if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
+                else None
             ),
             websocket_headers=(
-                None
-                if cfg.mqttProto not in [MqttProtoModel.ws, MqttProtoModel.wss]
-                else cfg.mqttWsHeader
+                cfg.mqttWsHeader
+                if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
+                else None
             ),
             protocol=cfg.mqttVersion,
             client_id=cfg.mqttIdValue if cfg.mqttId else None,
-            # To use with python >=3.8
-            # identifier=cfg.mqttIdValue if cfg.mqttId else None,
+            # TODO To use `identifier` instead of `client_id` with aiomqtt>=2.0.1
+            #  identifier=cfg.mqttIdValue if cfg.mqttId else None,
             username=cfg.mqttUser if cfg.mqttPass is not None else None,
             password=cfg.mqttPass if cfg.mqttUser is not None else None,
             will=(
@@ -179,6 +179,10 @@ class BrkLogic(VisitableLogic):
                 if cfg.mqttLwt
                 else None
             ),
+            # clean_session: bool | None = None,
+            #  Persistent sessions:
+            #  https://sbtinstruments.github.io/aiomqtt/connecting-to-the-broker.html#persistent-sessions
+            #
             # TODO Add other mqtt params
             # transport: Literal['tcp', 'websockets'] = 'tcp',
             # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss
@@ -217,8 +221,6 @@ class BrkLogic(VisitableLogic):
             #
             logger=getLogger(f'jmqtt.cli.{self.model.id}'),
             # logger=getLogger(f'jmqtt.rt.{self.model.id}'),
-            # queue_type: type[asyncio.Queue[Message]] | None = None,
-            # clean_session: bool | None = None,
             #
             # ####
             # Other options
@@ -233,6 +235,7 @@ class BrkLogic(VisitableLogic):
             # max_concurrent_outgoing_calls: int | None = None,
             # properties: Properties | None = None,
             # proxy: ProxySettings | None = None,
+            # queue_type: type[asyncio.Queue[Message]] | None = None,
             # socket_options: Iterable[SocketOption] | None = None,
         )
 
@@ -315,6 +318,9 @@ class BrkLogic(VisitableLogic):
                 if started:
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
+            # TODO Add retry with other MqttVersionModel if this version fail N times
+            #  cf: MqttConnectError() with _CONNECT_RC_STRINGS=1:
+            #  Connection refused - incorrect protocol version
             except CancelledError:
                 self.log.debug('Client task canceled')
                 raise
