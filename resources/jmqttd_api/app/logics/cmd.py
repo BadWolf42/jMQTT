@@ -16,6 +16,11 @@ from models.unions import CmdModel
 logger = getLogger('jmqtt.cmd')
 
 
+class BadJsonPayload(Exception):
+    """Exception to signal a bad json payload"""
+    pass
+
+
 class CmdLogic(VisitableLogic):
     all: Dict[int, CmdLogic] = {}
 
@@ -67,7 +72,10 @@ class CmdLogic(VisitableLogic):
 
     def _handleJsonPath(self, payload, ts: float) -> str:
         expr = compiledJsonPath(self.model.configuration.jsonPath)
-        json = loads(payload)  # TODO Handle JSONDecodeError?
+        try:
+            json = loads(payload)
+        except JSONDecodeError as e:
+            raise BadJsonPayload(f'invalid json {payload=}: {e}')
         found = expr.find(json)
         if len(found) == 0:
             raise JsonPathDidNotMatch()
@@ -101,9 +109,12 @@ class CmdLogic(VisitableLogic):
                 payload = self._decompress(payload)
             if cfg.decoder != CmdInfoDecoderModel.none:
                 payload = self._decode(payload, cfg.decoder)
-            if cfg.handler == CmdInfoHandlerModel.jsonPath:
+            if (
+                cfg.handler == CmdInfoHandlerModel.jsonPath
+                and cfg.jsonPath.strip() != ''
+            ):
                 payload = self._handleJsonPath(payload, ts)
-            elif cfg.handler == CmdInfoHandlerModel.jinja:
+            elif cfg.handler == CmdInfoHandlerModel.jinja and cfg.jinja.strip() != '':
                 payload = self._handleJinja(payload, ts)
             if type(payload) not in [bool, int, float, str]:
                 payload = dumps(payload)
@@ -118,7 +129,7 @@ class CmdLogic(VisitableLogic):
                 ts,
             )
             await Callbacks.change(self.model.id, payload, ts)
-        except BadJsonPath as e:
+        except (BadJsonPath, BadJsonPayload) as e:
             logger.warning(
                 'id=%i: %s', self.model.id, e)
         except JsonPathDidNotMatch:
