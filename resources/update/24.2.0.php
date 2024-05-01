@@ -56,9 +56,12 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
         );
         file_put_contents($templateFolderPath . $file, $jsonExport . "\n");
     } catch (Throwable $e) {
-        throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $file));
+        jMQTT::logger('error', sprintf(
+            __("Erreur lors de la lecture du Template '%s'", __FILE__),
+            $file
+        ));
     }
 }
-jMQTT::logger('info', __("Commentaires des équipements correctement migrés pour tous les Templates jMQTT", __FILE__));
+jMQTT::logger('info', __("Commentaires des Templates correctement migrés", __FILE__));
 
 ?>

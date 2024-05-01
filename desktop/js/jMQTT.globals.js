@@ -90,9 +90,6 @@ jmqtt_globals.refreshTimeout = null;
 jmqtt_globals.refreshRealTime = null;
 jmqtt_globals.lockRealTime = false;
 
-// To memorise current eqLogic main subscription topic
-jmqtt_globals.mainTopic = '';
-
 // Drop zone counter
 jmqtt_globals.dropzoneCpt = 0;
 

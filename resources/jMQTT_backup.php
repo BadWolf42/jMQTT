@@ -361,7 +361,6 @@ function backup_main() {
     $cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
     $cacheBrkKeys[] = 'eqLogicStatusAttr'.$brk->getId();
 
-    $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;
     // $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED;
     $cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
     $cacheEqptKeys[] = 'eqLogicStatusAttr'.$eqpt->getId();

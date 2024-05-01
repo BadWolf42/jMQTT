@@ -608,20 +608,6 @@ class jMQTTCmd extends cmd {
             }
         }
 
-        // For info commands (on Equipments), log that the topic is incompatible with the subscription command
-        if ($this->getType() == 'info'
-            && !$eqLogic->getCache(jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH, 0)
-            && !$this->topicMatchesSubscription($eqLogic->getTopic())
-        ) {
-            $eqLogic->log(
-                'warning',
-                sprintf(
-                    __("Le topic de la commande #%s# est incompatible avec le topic de souscription de l'équipement associé", __FILE__),
-                    $this->getHumanName()
-                )
-            );
-        }
-
         // In the end, does Daemon data need to be updated
         if ($sendUpdate) {
             $data = $this->full_export(true);

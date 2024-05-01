@@ -316,27 +316,6 @@ jmqtt.certUpload = function(ev1) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Used on Equipment pages
 
-// Check if a topic matches a subscription, return bool
-jmqtt.checkTopicMatch = function (subscription, topic) {
-    if (subscription == '') // Nothing matches an empty subscription topic
-        return false;
-    if (subscription == '#') // Everything matches '#' subscription topic
-        return true;
-    subscription = subscription.replace(/[-[\]{}()*?.,\\^$|\s]/g, '\\$&'); // Escape special character except + and #
-    subscription = subscription.replaceAll('+', '[^/]*').replace('/#', '(|/.*)'); // Replace all + and 1 # by a regex
-    return (new RegExp(`^${subscription}\$`)).test(topic); // Return match
-}
-
-// Action on eqLogic subscription topic field update
-jmqtt.updateGlobalMainTopic = function () {
-    var mt = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
-    jmqtt_globals.mainTopic = mt.val();
-    if (jmqtt_globals.mainTopic == '')
-        mt.addClass('topicMismatch');
-    else
-        mt.removeClass('topicMismatch');
-}
-
 /* Rebuild the page URL from the current URL
  *
  * filter: array of parameters to be removed from the URL
@@ -409,9 +388,6 @@ jmqtt.updateEqptTabs = function(_eq) {
     if (_eq.configuration.eqLogic != undefined && _eq.configuration.eqLogic > 0)
         brokers.val(_eq.configuration.eqLogic);
 
-    // Set mainTopic global
-    jmqtt_globals.mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').val();
-
     // Initialise battery and availability dropboxes
     var eqId = jmqtt.getEqId();
     var bat = $('.eqLogicAttr[data-l1key=configuration][data-l2key=battery_cmd]');
@@ -448,60 +424,6 @@ jmqtt.updateEqptTabs = function(_eq) {
     // Update Real Time tab
     if (_eq.configuration.eqLogic != undefined && _eq.configuration.eqLogic > 0)
         jmqtt.updateRealTimeTab(_eq.configuration.eqLogic, false);
-}
-
-// Decorator for Core plugin template on save callback
-jmqtt.decorateSaveEqLogic = function (_realSave) {
-    function wrapSaveEqLogic() {
-        // No mismatch or broker
-        if ($('.topicMismatch').length == 0 || $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() == 'broker') {
-            jmqtt.unsetPageModified();
-            _realSave();
-            return;
-        }
-        // Alert user that there is a mismatch before saveEqLogic (on eqLogic, not on eqBroker)
-        var dialog_message = '';
-        var no_name = false;
-        if (jmqtt_globals.mainTopic == '') {
-            dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est <b>vide</b> !}}<br/>";
-        } else {
-            dialog_message += "{{Le topic principal de l'équipement (topic de souscription MQTT) est}} \"<b>";
-            dialog_message += jmqtt_globals.mainTopic;
-            dialog_message += '</b>"<br/>{{Les commandes suivantes posent problème :}}<br/><br/>';
-            $('.topicMismatch').each(function (_, item) {
-                if ($(item).hasClass('eqLogicAttr'))
-                    return;
-                let line = $(item).closest('tr.cmd');
-                let cmd = line.find('.cmdAttr[data-l1key=name]').value();
-                let cmdType = (line.find('.cmdAttr[data-l1key=type]').value() == 'info') ? '{{Le topic de souscription}}' : '{{Le topic de publication}}';
-                // Command info has no name
-                if (cmd == '')
-                    no_name = true;
-                var topic = $(item).value();
-                // Command with a name and no topic
-                if (cmd != '' && topic == '')
-                    dialog_message += '<li>' + cmdType + ' {{est <b>vide</b> sur la commande}} "<b>' + cmd + '</b>"</li>';
-                // Command with no name and a topic
-                else if (cmd == '' && topic != '')
-                    dialog_message += '<li>' + cmdType + ' "<b>' + topic + '</b>" {{sur une <b>commande sans nom</b>}}</li>';
-                // Command with a mismatch
-                else
-                    dialog_message += '<li>' + cmdType + ' "<b>' + topic + '</b>" {{sur la commande}} "<b>' + cmd + '</b>"</li>';
-            });
-        }
-        if (no_name)
-            dialog_message += "<br/>{{(Notez que les commandes sans nom seront supprimées lors de la sauvegarde)}}";
-        dialog_message += "<br/>{{Souhaitez-vous tout de même sauvegarder l'équipement ?}}";
-        bootbox.confirm({
-            title: "<b>{{Des problèmes ont été identifiés dans la configuration}}</b>",
-            message: dialog_message,
-            callback: function (result) { if (result) { // Do save
-                jmqtt.unsetPageModified();
-                _realSave();
-            }}
-        });
-    }
-    return wrapSaveEqLogic;
 }
 
 
@@ -756,11 +678,6 @@ jmqtt.addEqCmdFromRealTime = function(topic, jsonPath) {
                 $.fn.showAlert({message: "{{Le nom de l'équipement ne peut pas être vide !}}", level: 'warning'});
                 return false;
             }
-            mainTopic = $('#addJmqttEqTopic').value();
-            if (mainTopic === undefined || mainTopic == null || mainTopic === '' || mainTopic == false) {
-                $.fn.showAlert({message: "{{Le topic de souscription du nouvel équipement ne peut pas être vide !}}", level: 'warning'});
-                return false;
-            }
             cmdName = $('#addJmqttCmdName').value();
             if (cmdName === undefined || cmdName == null || cmdName === '' || cmdName == false) {
                 $.fn.showAlert({message: "{{Le nom de la commande ne peut pas être vide !}}", level: 'warning'});
@@ -770,7 +687,7 @@ jmqtt.addEqCmdFromRealTime = function(topic, jsonPath) {
             // Create a new eqLogic
             jeedom.eqLogic.save({
                 type: 'jMQTT',
-                eqLogics: [ {name: eqName, isEnable: '1', type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
+                eqLogics: [ {name: eqName, isEnable: '1', type: 'eqpt', eqLogic: broker, topic: $('#addJmqttEqTopic').value()} ],
                 error: function (error) {
                     $.fn.showAlert({message: error.message, level: 'danger'});
                 },

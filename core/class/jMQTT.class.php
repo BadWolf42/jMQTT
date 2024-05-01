@@ -284,9 +284,6 @@ class jMQTT extends eqLogic {
             $_baseTopic = substr($_baseTopic, 0, -1);
         }
 
-        // Raise up the flag that cmd topic mismatch must be ignored
-        $this->setCache(jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH, 1);
-
         // import template
         $this->import($_template, $_keepCmd);
 
@@ -338,9 +335,6 @@ class jMQTT extends eqLogic {
             $cmd->replaceCmdIds($cmdsName, $cmdsId);
             $cmd->save();
         }
-
-        // remove topic mismatch ignore flag
-        $this->setCache(jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH, 0);
     }
 
     /**

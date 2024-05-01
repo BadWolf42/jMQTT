@@ -169,7 +169,6 @@ try {
         foreach (jMQTT::getNonBrokers() as $brk) {
             foreach ($brk as $eqpt) {
                 $cacheEqptKeys = array();
-                $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;
                 // $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED;
                 $cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
                 $cacheEqptKeys[] = 'eqLogicStatusAttr'.$eqpt->getId();

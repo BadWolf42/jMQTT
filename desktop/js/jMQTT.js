@@ -353,32 +353,11 @@ $('.nav-tabs a[href]').on('click', function() {
 });
 
 // On eqLogic subscription topic field typing
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('input', function() {
-    // Update mismatch status of this field only (cmd check will be done when leaving the field)
-    jmqtt.updateGlobalMainTopic();
-});
-
-// On eqLogic subscription topic field set (initial set and finish typing)
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('change', function() {
-    // Update mismatch status of this field
-    jmqtt.updateGlobalMainTopic();
-    // Update mismatch status of all cmd
-    $('input.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
-        if (jmqtt.checkTopicMatch(jmqtt_globals.mainTopic, $(this).value()))
-            $(this).removeClass('topicMismatch');
-        else
-            $(this).addClass('topicMismatch');
-    });
-});
-
-// On eqLogic subscription topic field typing
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
     if($(this).val() == "") {
         var objectname = $('.eqLogicAttr[data-l1key=object_id] option:selected').text();
         var eqName = $('.eqLogicAttr[data-l1key=name]').value();
         $(this).val(objectname.trim()+'/'+eqName+'/#');
-        // Update mismatch status of this field only (cmd check will be done when leaving the field)
-        jmqtt.updateGlobalMainTopic();
     }
 });
 
@@ -420,7 +399,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
             dialog_message += '</select><br/>';
 
             dialog_message += '<label class="control-label">{{Saisissez le Topic de base :}}</label> ';
-            var currentTopic = jmqtt_globals.mainTopic;
+            var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
             if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
                 currentTopic = currentTopic.substr(0,currentTopic.length-1);
             if (currentTopic.endsWith("/"))
@@ -476,7 +455,7 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 // On updateTopics click
 $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
     var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
-    var currentTopic = jmqtt_globals.mainTopic;
+    var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
     if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
         currentTopic = currentTopic.substr(0,currentTopic.length-1);
     if (currentTopic.endsWith("/"))
@@ -887,14 +866,6 @@ function addCmdToTable(_cmd) {
 
         $('#table_cmd tbody').append(tr);
 
-        // Update mismatch status of this cmd on change and input
-        $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
-            if (jmqtt.checkTopicMatch(jmqtt_globals.mainTopic, $(this).value()))
-                $(this).removeClass('topicMismatch');
-            else
-                $(this).addClass('topicMismatch');
-        });
-
         // Set cmdAttr values of cmd from json _cmd
         $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
         if (isset(_cmd.type))
@@ -983,15 +954,6 @@ function addCmdToTable(_cmd) {
         tr += '</td></tr>';
 
         $('#table_cmd tbody').append(tr);
-
-        // Update mismatch status of this cmd on change and input
-        $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
-            let topic = $(this).value();
-            if (topic == '' || topic.includes('#') || topic.includes('?'))
-                $(this).addClass('topicMismatch');
-            else
-                $(this).removeClass('topicMismatch');
-        });
 
         // $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
         var tr = $('#table_cmd [tree-id="' + _cmd.tree_id + '"]');
@@ -1164,23 +1126,5 @@ $(document).ready(function() {
         $('html').on('dragenter dragover dragleave', jmqtt.certDrag).on('drop', jmqtt.certDrop);
         $('.dropzone').on('drop', jmqtt.certDrop);
         $('.uploadzone').on('click', jmqtt.certUpload);
-    }
-
-    // Wrap plugin.template save action handler
-    if (typeof jeeFrontEnd.pluginTemplate === 'undefined') {
-        // TODO: Remove core4.3 backward compatibility `saveEqLogic` js function
-        //  Remove when Jeedom 4.3 is no longer supported
-        //  labels: workarround, core4.3, javascript
-
-        let core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
-        $('.eqLogicAction[data-action=save]').off('click').on('click', function() {
-            jmqtt.decorateSaveEqLogic(core_save)();
-        });
-    } else {
-        if (typeof jeeFrontEnd.pluginTemplate.oldSaveEqLogic === 'undefined') {
-            let core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
-            jeeFrontEnd.pluginTemplate.oldSaveEqLogic = core_save;
-            jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
-        }
     }
 });
