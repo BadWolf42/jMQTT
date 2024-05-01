@@ -154,7 +154,7 @@ class BrkLogic(VisitableLogic):
                 else 'websockets'
             ),
             websocket_path=(
-                ('/' + cfg.mqttWsUrl)
+                ('/' + cfg.mqttWsUrl.lstrip(' /'))
                 if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
                 else None
             ),
@@ -167,7 +167,7 @@ class BrkLogic(VisitableLogic):
             client_id=cfg.mqttIdValue if cfg.mqttId else None,
             # TODO To use `identifier` instead of `client_id` with aiomqtt>=2.0.1
             #  identifier=cfg.mqttIdValue if cfg.mqttId else None,
-            username=cfg.mqttUser if cfg.mqttPass is not None else None,
+            username=cfg.mqttUser,
             password=cfg.mqttPass if cfg.mqttUser is not None else None,
             will=(
                 Will(
@@ -318,9 +318,11 @@ class BrkLogic(VisitableLogic):
                 if started:
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
-            # TODO Add retry with other MqttVersionModel if this version fail N times
-            #  cf: MqttConnectError() with _CONNECT_RC_STRINGS=1:
-            #  Connection refused - incorrect protocol version
+                # TODO Add retry interval
+                #  retry 5 times every 5s, then retry every 1m?
+                # TODO Add retry with other MqttVersionModel if this version fail N times
+                #  cf: MqttConnectError() with _CONNECT_RC_STRINGS=1:
+                #  Connection refused - incorrect protocol version
             except CancelledError:
                 self.log.debug('Client task canceled')
                 raise

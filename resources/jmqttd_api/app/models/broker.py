@@ -42,7 +42,7 @@ class BrkConfigModel(BaseModel):
     mqttUser: Union[str, None] = None
     mqttPass: Union[str, None] = None
     mqttId: bool = False
-    mqttIdValue: str = 'jMQTT'
+    mqttIdValue: str = 'jeedom'
     mqttLwt: bool = False
     mqttLwtTopic: str = 'jeedom/status'
     mqttLwtOnline: str = 'online'
@@ -81,7 +81,7 @@ class BrkConfigModel(BaseModel):
     )
     _val_mqttIdValue: classmethod = validator(
         "mqttIdValue", allow_reuse=True, pre=True
-    )(lambda v: v if v != '' else 'jMQTT')
+    )(lambda v: v if v != '' else 'jeedom')
     _val_mqttLwt: classmethod = validator("mqttLwt", allow_reuse=True, pre=True)(
         strToBool
     )

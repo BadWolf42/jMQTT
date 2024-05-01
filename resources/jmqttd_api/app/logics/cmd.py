@@ -40,6 +40,8 @@ class CmdLogic(VisitableLogic):
         )
 
     def _decompress(self, pl):
+        if not self.model.configuration.tryUnzip:
+            return pl
         # jMQTT will try to decompress the payload (requested in issue #135)
         try:
             pl = zlib_decompress(pl, wbits=-15)
@@ -56,7 +58,10 @@ class CmdLogic(VisitableLogic):
             )
         return pl
 
-    def _decode(self, pl, decoder) -> str:
+    def _decode(self, pl) -> str:
+        decoder = self.model.configuration.decoder
+        if decoder == CmdInfoDecoderModel.none:
+            return pl
         try:
             pl = pl.decode('utf-8', decoder)
             logger.trace(
@@ -71,9 +76,12 @@ class CmdLogic(VisitableLogic):
             )
         return pl
 
+    def _handleLiteral(self, payload, ts: float) -> str:
+        return payload
+
     def _handleJsonPath(self, payload, ts: float) -> str:
         jsonPath = self.model.configuration.jsonPath
-        if jsonPath.strip() != '':
+        if jsonPath.strip() == '':
             return payload
         expr = compiledJsonPath(jsonPath)
         try:
@@ -94,7 +102,14 @@ class CmdLogic(VisitableLogic):
         # TODO Handle Jinja template
         return payload
 
+    def _normalize(self, payload) -> str:
+        if type(payload) not in [bool, int, float, str]:
+            return dumps(payload)
+        return payload
+
     def _writeToFile(self, payload, ts: float) -> str:
+        if not self.model.configuration.toFile:
+            return payload
         filename = f'file_{self.model.id}'
         # TODO Callback to set file content = payload
         logger.debug(
@@ -108,19 +123,15 @@ class CmdLogic(VisitableLogic):
     async def mqttMsg(self, message: Message, ts: float):
         try:
             payload = message.payload
-            cfg = self.model.configuration
-            if cfg.tryUnzip:
-                payload = self._decompress(payload)
-            if cfg.decoder != CmdInfoDecoderModel.none:
-                payload = self._decode(payload, cfg.decoder)
+            payload = self._decompress(payload)
+            payload = self._decode(payload)
             payload = {
+                CmdInfoHandlerModel.literal: self._handleLiteral,
                 CmdInfoHandlerModel.jsonPath: self._handleJsonPath,
-                CmdInfoHandlerModel.jinja: self._handleJinja
-            }.get(cfg.handler, CmdInfoHandlerModel.jsonPath)(payload, ts)
-            if type(payload) not in [bool, int, float, str]:
-                payload = dumps(payload)
-            if cfg.toFile:
-                payload = self._writeToFile(payload, ts)
+                CmdInfoHandlerModel.jinja: self._handleJinja,
+            }.get(self.model.configuration.handler)(payload, ts)
+            payload = self._normalize(payload)
+            payload = self._writeToFile(payload, ts)
             logger.info(
                 'id=%i: payload="%s", QoS=%s, retain=%s, ts=%i',
                 self.model.id,
