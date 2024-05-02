@@ -185,25 +185,23 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 // Automations on Broker tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
-    switch ($(this).val()) {
-        case 'mqtts':
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight').attr('placeholder', '8883');
-            $('.jmqttWsUrl').hide();
-            $('#jmqttTls').show();
-            break;
+    switch ($(this).val()) { // mqtt vs ws
         case 'ws':
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight').attr('placeholder', '1884');
-            $('.jmqttWsUrl').show();
-            $('#jmqttTls').hide();
-            break;
         case 'wss':
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight').attr('placeholder', '8884');
+            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight');
             $('.jmqttWsUrl').show();
+            break;
+        default: // mqtt + mqtts
+            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight');
+            $('.jmqttWsUrl').hide();
+            break;
+    }
+    switch ($(this).val()) { // unencrypted vs encrypted
+        case 'mqtts':
+        case 'wss':
             $('#jmqttTls').show();
             break;
-        default: // mqtt
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight').attr('placeholder', '1883');
-            $('.jmqttWsUrl').hide();
+        default: // mqtt + ws
             $('#jmqttTls').hide();
             break;
     }

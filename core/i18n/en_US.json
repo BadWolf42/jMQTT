@@ -483,7 +483,7 @@
 		"Paramètres d'accès au Broker.": "Broker access address.",
 		"Paramètres de Sécurité": "Security settings",
 		"Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.": "Allows access to all Json RPC API methods via the MQTT protocol.<br/>For more information, please refer to the documentation.",
-		"Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.": "Network port Broker is listening on.<br/>Value if empty, 1883 in mqtt, 8883 in mqtts, 1884 in ws and 8884 in wss.",
+		"Port réseau sur lequel écoute le Broker.<br/>Valeur si vide '1883'.": "Network port Broker is listening on.<br/>Value if empty '1883'.",
 		"Publier le statut (LWT)": "Publish status (LWT)",
 		"Redémarrer": "Restart",
 		"Statut": "Status",

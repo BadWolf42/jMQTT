@@ -94,8 +94,8 @@
                                 <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttAddress" placeholder="localhost"
                                     title="{{Adresse IP ou nom de domaine du Broker.<br/>Valeur si vide, 'localhost' (donc la machine hébergeant Jeedom).}}">
                                 <span class="input-group-addon">:</span>
-                                <input class="eqLogicAttr form-control tooltips jmqttPort roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="port"
-                                    title="{{Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
+                                <input class="eqLogicAttr form-control tooltips jmqttPort roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number"
+                                    min="1" max="65535" placeholder="1883" title="{{Port réseau sur lequel écoute le Broker.<br/>Valeur si vide '1883'.}}">
                                 <span class="input-group-addon jmqttWsUrl" style="display:none">/</span>
                                 <input class="eqLogicAttr form-control tooltips roundedRight jmqttWsUrl" data-l1key="configuration" data-l2key="mqttWsUrl" style="display:none" placeholder="mqtt"
                                     title="{{URL de la connexion Web Sockets du serveur distant, sans '/' initial.<br/>Valeur si vide, 'mqtt'. Ne pas modifier si vous ne savez pas ce que vous faites.}}">

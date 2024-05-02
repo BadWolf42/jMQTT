@@ -483,7 +483,7 @@
 		"Paramètres d'accès au Broker.": "Adresse d'accès au Broker.",
 		"Paramètres de Sécurité": "Paramètres de Sécurité",
 		"Permet d’accéder à toutes les méthodes de l’API JSON RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.": "Permet d’accéder à toutes les méthodes de l’API Json RPC au travers du protocole MQTT.<br/>Pour plus d'information, se référer à la documentation.",
-		"Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.": "Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.",
+		"Port réseau sur lequel écoute le Broker.<br/>Valeur si vide '1883'.": "Port réseau sur lequel écoute le Broker.<br/>Valeur si vide '1883'.",
 		"Publier le statut (LWT)": "Publier le statut (LWT)",
 		"Redémarrer": "Redémarrer",
 		"Statut": "Statut",

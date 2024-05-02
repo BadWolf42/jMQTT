@@ -2105,20 +2105,8 @@ class jMQTT extends eqLogic {
      * @return string|int
      */
     private function getDefaultConfiguration($_key) {
-        if ($_key == jMQTTConst::CONF_KEY_MQTT_PORT) {
-            $proto = $this->getConf(jMQTTConst::CONF_KEY_MQTT_PROTO);
-            if ($proto == 'mqtt')
-                return 1883;
-            elseif ($proto == 'mqtts')
-                return 8883;
-            elseif ($proto == 'ws')
-                return 1884;
-            elseif ($proto == 'wss')
-                return 8884;
-            else
-                return 0;
-        }
         $defValues = array(
+            jMQTTConst::CONF_KEY_MQTT_PORT => 1883,
             jMQTTConst::CONF_KEY_MQTT_PROTO => 'mqtt',
             jMQTTConst::CONF_KEY_MQTT_ADDRESS => 'localhost',
             jMQTTConst::CONF_KEY_MQTT_ID => '0',
