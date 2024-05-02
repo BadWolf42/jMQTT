@@ -1,9 +1,15 @@
 from __future__ import annotations
 from asyncio import CancelledError, create_task, sleep, Task
-from aiomqtt import Client, Message, MqttError, Will
+from aiomqtt import Client, Message, MqttError, TLSParameters, Will
 from logging import getLogger  # , DEBUG
+from ssl import (
+    CERT_NONE as ssl_CERT_NONE,
+    # CERT_OPTIONAL as ssl_CERT_OPTIONAL,
+    CERT_REQUIRED as ssl_CERT_REQUIRED,
+)
+from tempfile import NamedTemporaryFile
 from time import time
-from typing import Dict, List
+from typing import Dict, List, Union
 from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
@@ -13,7 +19,7 @@ from logics.cmd import CmdLogic
 from models.broker import (
     BrkModel,
     MqttProtoModel,
-    # TlsCheckModel,
+    TlsCheckModel,
 )
 from models.messages import (
     MqttMessageModel,
@@ -33,6 +39,23 @@ logger2 = getLogger('jmqtt.cli')
 logger3 = getLogger('jmqtt.rt')
 
 
+# -----------------------------------------------------------------------------
+# Utilitary function to export str to tmp file
+def strToTmpFile(content) -> str:
+    res = NamedTemporaryFile(delete=False)
+    res.write(str.encode(content))
+    res.close()
+    return res.name
+
+
+# -----------------------------------------------------------------------------
+# Utilitary function to delete tmp file
+def deleteTmpFile(filename: Union[str, None]) -> None:
+    if filename is not None:
+        remove(filename)
+
+
+# -----------------------------------------------------------------------------
 def isNotSubscribable(topic: str):
     return (
         len(topic) == 0
@@ -44,6 +67,7 @@ def isNotSubscribable(topic: str):
     )
 
 
+# -----------------------------------------------------------------------------
 class BrkLogic(VisitableLogic):
     all: Dict[int, BrkLogic] = {}
 
@@ -145,7 +169,47 @@ class BrkLogic(VisitableLogic):
 
     def __buildClient(self) -> Client:
         cfg = self.model.configuration
-        return Client(
+        tlsInsecure = None
+        tlsParams = None
+        tmpTlsCa = None
+        tmpTlsClientCert = None
+        tmpTlsClientKey = None
+        # Handle SSL parameters
+        if cfg.mqttProto in [MqttProtoModel.mqtts, MqttProtoModel.wss]:
+            try:
+                # Do we need to check if certificat is valid
+                tlsInsecure = cfg.mqttTlsCheck == TlsCheckModel.disabled
+                # Get CA cert if needed
+                if (
+                    cfg.mqttTlsCheck == TlsCheckModel.private
+                    and cfg.mqttTlsCa.strip() != ''
+                ):
+                    tmpTlsCa = strToTmpFile(cfg.mqttTlsCa)
+                # Get Private Cert / Key if needed
+                if (
+                    cfg.mqttTlsClient
+                    and cfg.mqttTlsClientCert.strip() != ''
+                    and cfg.mqttTlsClientKey.strip() != ''
+                ):
+                    tmpTlsClientCert = strToTmpFile(cfg.mqttTlsClientCert)
+                    tmpTlsClientKey = strToTmpFile(cfg.mqttTlsClientKey)
+                # Build TLSParameters
+                tlsParams = TLSParameters(
+                    ca_certs=tmpTlsCa,
+                    certfile=tmpTlsClientCert,
+                    keyfile=tmpTlsClientKey,
+                    cert_reqs=(ssl_CERT_NONE if tlsInsecure else ssl_CERT_REQUIRED),
+                    # tls_version: Any | None = None
+                    # ciphers: str | None = None
+                    # keyfile_password: str | None = None
+                )
+            except Exception:
+                self.log.exception(
+                    'Fatal TLS Certificate import Exception, this connection will most likely fail!'
+                )
+                raise
+        # Build client
+        client = Client(
             hostname=cfg.mqttAddress,
             port=cfg.mqttPort if cfg.mqttPort != 0 else 1883,
             transport=(
@@ -179,51 +243,13 @@ class BrkLogic(VisitableLogic):
                 if cfg.mqttLwt
                 else None
             ),
-            # clean_session: bool | None = None,
-            #  Persistent sessions:
-            #  https://sbtinstruments.github.io/aiomqtt/connecting-to-the-broker.html#persistent-sessions
-            #
-            # TODO Add other mqtt params
-            # transport: Literal['tcp', 'websockets'] = 'tcp',
-            # cfg.mqttProto ## MqttProtoModel.mqtt, MqttProtoModel.mqtts, MqttProtoModel.ws, MqttProtoModel.wss
-            #
-            # tls_insecure: bool | None = None,
-            # TLS?
-            # https://github.com/sbtinstruments/aiomqtt/issues/15
-            # https://github.com/encode/httpx/discussions/2037#discussioncomment-2006795
-            #
-            # cfg.mqttTlsCheck ## TlsCheckModel.disabled, TlsCheckModel.private, TlsCheckModel.public
-            # tls_context: ssl.SSLContext | None = None, ## ssl.CERT_NONE, ssl.CERT_OPTIONAL, ssl.CERT_REQUIRED
-            # tls_params: TLSParameters | None = None,
-            # TLSParameters(
-            #     ca_certs: str | None = None
-            #     certfile: str | None = None
-            #     keyfile: str | None = None
-            #     cert_reqs: ssl.VerifyMode | None = None
-            #     tls_version: Any | None = None
-            #     ciphers: str | None = None
-            #     keyfile_password: str | None = None
-            # )
-            # self._client.tls_set(
-            #     ca_certs=tls_params.ca_certs,
-            #     certfile=tls_params.certfile,
-            #     keyfile=tls_params.keyfile,
-            #     cert_reqs=tls_params.cert_reqs,
-            #     tls_version=tls_params.tls_version,
-            #     ciphers=tls_params.ciphers,
-            #     keyfile_password=tls_params.keyfile_password,
-            # )
-            #
-            # cfg.mqttTlsCa ## Expected CA cert
-            # cfg.mqttTlsClient ## bool (use client public & private keys)
-            # cfg.mqttTlsClientCert ## Provided Client public key
-            # cfg.mqttTlsClientKey ## Provided Client private key
-            #
+            tls_params=tlsParams,
+            tls_insecure=tlsInsecure,
             logger=getLogger(f'jmqtt.cli.{self.model.id}'),
             # logger=getLogger(f'jmqtt.rt.{self.model.id}'),
-            #
-            # ####
-            # Other options
+            clean_session=True,
+            # TODO Add other mqtt params?
+            # tls_context: ssl.SSLContext | None = None, ## ssl.CERT_NONE, ssl.CERT_OPTIONAL, ssl.CERT_REQUIRED
             # timeout: float | None = None,
             # keepalive: int = 60,
             # bind_address: str = '',
@@ -234,10 +260,13 @@ class BrkLogic(VisitableLogic):
             # max_inflight_messages: int | None = None,
             # max_concurrent_outgoing_calls: int | None = None,
             # properties: Properties | None = None,
-            # proxy: ProxySettings | None = None,
-            # queue_type: type[asyncio.Queue[Message]] | None = None,
             # socket_options: Iterable[SocketOption] | None = None,
         )
+        # Cleanup temporary files
+        deleteTmpFile(tmpTlsCa)
+        deleteTmpFile(tmpTlsClientCert)
+        deleteTmpFile(tmpTlsClientKey)
+        return client
 
     async def __initialSubs(self) -> None:
         cfg = self.model.configuration

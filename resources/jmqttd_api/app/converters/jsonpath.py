@@ -1,10 +1,10 @@
 from functools import lru_cache
-# from logging import getLogger
 from jsonpath_ng import JSONPath, parse, Root
 from jsonpath_ng.exceptions import JsonPathParserError
 from weakref import WeakValueDictionary
 
 
+# from logging import getLogger
 # logger = getLogger('jmqtt.jsonpath')
 
 
