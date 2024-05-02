@@ -752,7 +752,10 @@ class jMQTTCmd extends cmd {
             jMQTT::logger('debug', sprintf("Listener deleted for #%s#", $l->getOption('cmd')));
             $l->remove();
         }
-        jMQTTComToDaemon::cmdDel($this->getId());
+        // Send to Daemon only if the command is on an eq
+        if ($eqLogic->getType() != jMQTTConst::TYP_EQPT) {
+            jMQTTComToDaemon::cmdDel($this->getId());
+        }
     }
 
     public function setName($name) {
