@@ -299,7 +299,7 @@ class BrkLogic(VisitableLogic):
         self.log.trace('Client task started')
         cfg = self.model.configuration
         while True:
-            started: bool = False
+            running: bool = False
             try:
                 self.log.debug(
                     'Connecting to broker on: %s:%i',
@@ -307,7 +307,7 @@ class BrkLogic(VisitableLogic):
                     cfg.mqttPort if cfg.mqttPort != 0 else 1883,
                 )
                 async with self.__buildClient() as client:
-                    started = True
+                    running = True
                     await self.__runClient(client)
             except MqttError:
                 self.log.info(
@@ -315,7 +315,7 @@ class BrkLogic(VisitableLogic):
                     cfg.mqttRecoInterval,
                 )
                 self.mqttClient = None
-                if started:
+                if running:
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
                 # TODO Add retry interval
@@ -325,6 +325,8 @@ class BrkLogic(VisitableLogic):
                 #  Connection refused - incorrect protocol version
             except CancelledError:
                 self.log.debug('Client task canceled')
+                if running:
+                    await Callbacks.brokerDown(self.model.id)
                 raise
             except Exception:
                 self.log.exception(
@@ -332,18 +334,18 @@ class BrkLogic(VisitableLogic):
                     cfg.mqttRecoInterval,
                 )
                 self.mqttClient = None
-                if started:
+                if running:
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(cfg.mqttRecoInterval)
 
     async def start(self) -> None:
         if not self.model.isEnable:
-            self.log.debug('Not enabled, Broker not started')
+            self.log.debug('Not enabled, Broker task not created')
             return
         self.log.debug('Start requested')
         if self.mqttTask is not None:
             if not self.mqttTask.done():
-                self.log.debug('Already started')
+                self.log.debug('Broker task already running')
                 return
         self.mqttTask = create_task(self.__clientTask())
         self.log.debug('Started')
