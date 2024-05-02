@@ -182,7 +182,7 @@
                                 title="{{Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet corresponde à l'IP/Nom de Domaine du Broker.}}"></i></sup></label>
                                 <div class="col-lg-9">
                                     <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
-                                        <option value="public">{{Activé - Autorités Publiques}}</option>
+                                        <option value="public" selected>{{Activé - Autorités Publiques}}</option>
                                         <option value="private">{{Activé - Autorité Personnalisée}}</option>
                                         <option value="disabled">{{Désactivé - Non Recommandé}}</option>
                                     </select>

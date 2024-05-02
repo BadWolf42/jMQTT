@@ -51,7 +51,7 @@ class BrkConfigModel(BaseModel):
     mqttIntTopic: str = 'jeedom/interact'
     mqttApi: bool = False
     mqttApiTopic: str = 'jeedom/api'
-    mqttTlsCheck: TlsCheckModel = TlsCheckModel.disabled
+    mqttTlsCheck: TlsCheckModel = TlsCheckModel.public
     mqttTlsCa: str = ''
     mqttTlsClient: bool = False
     mqttTlsClientCert: str = ''
@@ -106,6 +106,9 @@ class BrkConfigModel(BaseModel):
     _val_mqttApiTopic: classmethod = validator(
         "mqttApiTopic", allow_reuse=True, pre=True
     )(lambda v: v if v != '' else 'jeedom/api')
+    _val_mqttTlsCheck: classmethod = validator(
+        "mqttTlsCheck", allow_reuse=True, pre=True
+    )(lambda v: v if v != '' else 'public')
     _val_mqttTlsClient: classmethod = validator(
         "mqttTlsClient", allow_reuse=True, pre=True
     )(strToBool)
