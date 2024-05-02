@@ -37,7 +37,7 @@ class BrkConfigModel(BaseModel):
     mqttVersion: MqttVersionModel = MqttVersionModel.V311
     mqttAddress: str = 'localhost'
     mqttWsHeader: Union[dict[str, str], None] = None
-    mqttWsUrl: str = 'mqtt'
+    mqttWsUrl: str = '/mqtt'
     mqttPort: int = 1883
     mqttUser: Union[str, None] = None
     mqttPass: Union[str, None] = None
@@ -65,7 +65,7 @@ class BrkConfigModel(BaseModel):
         "mqttAddress", allow_reuse=True, pre=True
     )(lambda v: v if v != '' else 'localhost')
     _val_mqttWsUrl: classmethod = validator("mqttWsUrl", allow_reuse=True, pre=True)(
-        lambda v: v if v != '' else 'mqtt'
+        lambda v: ('/' + v.lstrip(' /')) if v != '' else '/mqtt'
     )
     _val_mqttPort: classmethod = validator("mqttPort", allow_reuse=True, pre=True)(
         strToInt

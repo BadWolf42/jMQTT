@@ -1,12 +1,8 @@
 from __future__ import annotations
 from asyncio import CancelledError, create_task, sleep, Task
-from aiomqtt import Client, Message, MqttError, TLSParameters, Will
+from aiomqtt import Client, Message, MqttError, Will
 from logging import getLogger  # , DEBUG
-from ssl import (
-    CERT_NONE as ssl_CERT_NONE,
-    # CERT_OPTIONAL as ssl_CERT_OPTIONAL,
-    CERT_REQUIRED as ssl_CERT_REQUIRED,
-)
+import ssl
 from tempfile import NamedTemporaryFile
 from time import time
 from typing import Dict, List, Union
@@ -170,8 +166,7 @@ class BrkLogic(VisitableLogic):
     def __buildClient(self) -> Client:
         cfg = self.model.configuration
         tlsInsecure = None
-        tlsParams = None
-        tmpTlsCa = None
+        tlsContext = None
         tmpTlsClientCert = None
         tmpTlsClientKey = None
         # Handle SSL parameters
@@ -179,12 +174,18 @@ class BrkLogic(VisitableLogic):
             try:
                 # Do we need to check if certificat is valid
                 tlsInsecure = cfg.mqttTlsCheck == TlsCheckModel.disabled
+                tlsContext = ssl.create_default_context()
+                tlsContext.load_default_certs()
+                tlsContext.check_hostname = not tlsInsecure
+                tlsContext.verify_mode = (
+                    ssl.CERT_NONE if tlsInsecure else ssl.CERT_REQUIRED
+                )
                 # Get CA cert if needed
                 if (
                     cfg.mqttTlsCheck == TlsCheckModel.private
                     and cfg.mqttTlsCa.strip() != ''
                 ):
-                    tmpTlsCa = strToTmpFile(cfg.mqttTlsCa)
+                    tlsContext.load_verify_locations(cadata=cfg.mqttTlsCa)
                 # Get Private Cert / Key if needed
                 if (
                     cfg.mqttTlsClient
@@ -193,16 +194,9 @@ class BrkLogic(VisitableLogic):
                 ):
                     tmpTlsClientCert = strToTmpFile(cfg.mqttTlsClientCert)
                     tmpTlsClientKey = strToTmpFile(cfg.mqttTlsClientKey)
-                # Build TLSParameters
-                tlsParams = TLSParameters(
-                    ca_certs=tmpTlsCa,
-                    certfile=tmpTlsClientCert,
-                    keyfile=tmpTlsClientKey,
-                    cert_reqs=(ssl_CERT_NONE if tlsInsecure else ssl_CERT_REQUIRED),
-                    # tls_version: Any | None = None
-                    # ciphers: str | None = None
-                    # keyfile_password: str | None = None
-                )
+                    tlsContext.load_cert_chain(
+                        certfile=tmpTlsClientCert, keyfile=tmpTlsClientKey
+                    )
             except Exception:
                 self.log.exception(
                     'Fatal TLS Certificate import Exception, this connection will most likely fail!'
@@ -218,7 +212,7 @@ class BrkLogic(VisitableLogic):
                 else 'websockets'
             ),
             websocket_path=(
-                ('/' + cfg.mqttWsUrl.lstrip(' /'))
+                cfg.mqttWsUrl
                 if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
                 else None
             ),
@@ -243,13 +237,12 @@ class BrkLogic(VisitableLogic):
                 if cfg.mqttLwt
                 else None
             ),
-            tls_params=tlsParams,
+            tls_context=tlsContext,
             tls_insecure=tlsInsecure,
             logger=getLogger(f'jmqtt.cli.{self.model.id}'),
             # logger=getLogger(f'jmqtt.rt.{self.model.id}'),
             clean_session=True,
             # TODO Add other mqtt params?
-            # tls_context: ssl.SSLContext | None = None, ## ssl.CERT_NONE, ssl.CERT_OPTIONAL, ssl.CERT_REQUIRED
             # timeout: float | None = None,
             # keepalive: int = 60,
             # bind_address: str = '',
@@ -263,7 +256,6 @@ class BrkLogic(VisitableLogic):
             # socket_options: Iterable[SocketOption] | None = None,
         )
         # Cleanup temporary files
-        deleteTmpFile(tmpTlsCa)
         deleteTmpFile(tmpTlsClientCert)
         deleteTmpFile(tmpTlsClientKey)
         return client
@@ -332,16 +324,23 @@ class BrkLogic(VisitableLogic):
             running: bool = False
             try:
                 self.log.debug(
-                    'Connecting to broker on: %s:%i',
+                    'Connecting to %s broker: %s:%i%s',
+                    cfg.mqttProto.name,
                     cfg.mqttAddress,
                     cfg.mqttPort if cfg.mqttPort != 0 else 1883,
+                    (
+                        cfg.mqttWsUrl
+                        if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
+                        else ''
+                    ),
                 )
                 async with self.__buildClient() as client:
                     running = True
                     await self.__runClient(client)
-            except MqttError:
-                self.log.info(
-                    'Connection lost; Reconnecting in %s seconds...',
+            except MqttError as e:
+                self.log.warning(
+                    '%s; Reconnecting in %s seconds...',
+                    e,
                     cfg.mqttRecoInterval,
                 )
                 self.mqttClient = None
