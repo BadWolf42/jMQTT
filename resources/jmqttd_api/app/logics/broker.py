@@ -2,6 +2,7 @@ from __future__ import annotations
 from asyncio import CancelledError, create_task, sleep, Task
 from aiomqtt import Client, Message, MqttError, Will
 from logging import getLogger  # , DEBUG
+from os import remove
 import ssl
 from tempfile import NamedTemporaryFile
 from time import time
