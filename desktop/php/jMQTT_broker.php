@@ -15,7 +15,7 @@
                                 <th>{{Configuration}}</th>
                                 <th>{{Statut}}</th>
                                 <th>{{Redémarrer}}</th>
-                                <th>{{Dernier lancement}}</th>
+                                <th>{{Dernière connexion}}</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -465,7 +465,7 @@
 		"Configuration": "Configuration",
 		"Debug": "Debug",
 		"Defaut": "Defaut",
-		"Dernier lancement": "Dernier lancement",
+		"Dernière connexion": "Dernière connexion",
 		"Déposez ici la clé privée du client MQTT": "Déposez ici la Clé Privée du client MQTT",
 		"Déposez ici le certificat CA du Broker": "Déposez ici le certificat CA du Broker",
 		"Déposez ici le certificat publique du client MQTT": "Déposez ici le Certificat publique du client MQTT",

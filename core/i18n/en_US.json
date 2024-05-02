@@ -465,7 +465,7 @@
 		"Configuration": "Configuration",
 		"Debug": "Debug",
 		"Defaut": "Default",
-		"Dernier lancement": "Last launch",
+		"Dernière connexion": "Last connection",
 		"Déposez ici la clé privée du client MQTT": "Drag & drop MQTT Private Key of the client here",
 		"Déposez ici le certificat CA du Broker": "Drag & drop CA certificate of the Broker here",
 		"Déposez ici le certificat publique du client MQTT": "Drag & drop MQTT public Certificate of the client here",
