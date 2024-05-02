@@ -258,10 +258,11 @@ class BrkLogic(VisitableLogic):
         self.log.debug('Mass-subscribing to: %s', subsList)
         q = 0  # TODO review this val
         toSub = [(t, q) for t in subsList]
-        try:
-            await self.mqttClient.subscribe(toSub)
-        except MqttError:
-            self.log.exception('Could not mass-subscribe')
+        if len(toSub) > 0:
+            try:
+                await self.mqttClient.subscribe(toSub)
+            except MqttError:
+                self.log.exception('Could not mass-subscribe')
 
     async def __runClient(self, client: Client) -> None:
         cfg = self.model.configuration
