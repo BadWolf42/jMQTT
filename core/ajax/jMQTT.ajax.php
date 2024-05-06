@@ -501,13 +501,9 @@ try {
         foreach (plugin::listPlugin(true, false, true, true) as $p) {
             $infoPost .= ' '.$p;
         }
+        $infoPost .= '<br/>Lines in http.error: ';
+        $infoPost .= trim(shell_exec("wc -l /var/www/html/log/http.error | cut -d' ' -f1"));
         $infoPost .= '<br/>';
-
-        // TODO: Nb lines in http.error
-        // wc -l /var/www/html/log/http.error | cut -d" " -f1
-
-        // TODO: Nb lines ERROR/WARNING lines in the logs
-        // cat /var/www/html/log/* 2> /dev/null | grep -c 'ERROR\|WARNING'
 
         // jMQTT version
         /** @var update $update */
@@ -517,22 +513,24 @@ try {
         $infoPost .= ' (' . $update->getLocalVersion() . ') branch: ';
         $infoPost .= $update->getConfiguration('version');
 
+        // jMQTT logs stats
+        $infoPost .= '<br/>Errors/Warnings in logs: ';
+        $infoPost .= trim(shell_exec("cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c 'ERROR\|WARNING'"));
+        $infoPost .= ' (level is ' . log::convertLogLevel(log::getLogLevel(jMQTT::class)) . ')';
+
         // Daemon status
         $daemon_info = jMQTT::deamon_info();
         $infoPost .= '<br/>Daemon Status: ';
-        $infoPost .= (jMQTTDaemon::check() ? 'Started' :  'Stopped') . ' - (';
+        $infoPost .= (jMQTTDaemon::check() ? 'Started' :  'Stopped') . ' (';
         $infoPost .= config::byKey('lastDeamonLaunchTime', 'jMQTT', 'Unknown') . ')';
 
         // Brk, eq, cmds
         $nbEqAll = DB::Prepare('SELECT COUNT(*) as nb FROM `eqLogic` WHERE `eqType_name` = "jMQTT"', array());
         $nbBrks = DB::Prepare('SELECT COUNT(*) as nb FROM `eqLogic` WHERE `eqType_name` = "jMQTT" AND `configuration` LIKE "%broker%"', array());
         $infoPost .= '<br/>Nb eqBrokers: ' . $nbBrks['nb'];
-        $infoPost .= '<br/>Nb eqLogics: ' . ($nbEqAll['nb'] - $nbBrks['nb']);
+        $infoPost .= ' / eqLogics: ' . ($nbEqAll['nb'] - $nbBrks['nb']);
         $nbCmds = DB::Prepare('SELECT COUNT(*) as nb FROM `cmd` WHERE `eqType` = "jMQTT"', array());
-        $infoPost .= '<br/>Nb cmds: ' . $nbCmds['nb'];
-
-        // TODO: Nb ERROR/WARNING lines in jMQTT files
-        // cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c 'ERROR\|WARNING'
+        $infoPost .= ' / cmds: ' . $nbCmds['nb'];
 
         $infoPost .= '<br/>```<br/>[/details]<br/>';
 

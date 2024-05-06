@@ -473,6 +473,24 @@ $(document).ready(function() {
     // Add a link to the plugin rating
     $('.bt_refreshPluginInfo').after('<a class="btn btn-success btn-sm" target="_blank" href="https://market.jeedom.com/index.php?v=d&p=market_display&id=3166"><i class="fas fa-comment-dots "></i> {{Avis}}</a>');
 
+    // Update link for Community Post
+    $('#createCommunityPost')?.attr('id', null).off('click').on('click', function () {
+        jmqtt.callPluginAjax({
+            data: {
+                action: "jMQTTCommunityPost"
+            },
+            success: function (data) {
+                let element = document.createElement('a');
+                element.setAttribute('href', data.url);
+                element.setAttribute('target', '_blank');
+                element.style.display = 'none';
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+            }
+        });
+    });
+
     if (!dStatus) {
         // Set Mosquitto status
         jmqtt_config.mosquittoStatus(mStatus);

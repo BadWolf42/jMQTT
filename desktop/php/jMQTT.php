@@ -72,7 +72,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                 <legend><i class="fas fa-comments"></i>&nbsp;Community</legend>
                 <div class="eqLogicThumbnailContainer">
                 <?php
-                displayActionCard('{{Nouveau post}}', 'fa-ambulance', 'jMQTTCommunityPost');
+                displayActionCard('{{Nouveau sujet}}', 'fa-ambulance', 'jMQTTCommunityPost');
                 ?>
                 </div>
             </div>
