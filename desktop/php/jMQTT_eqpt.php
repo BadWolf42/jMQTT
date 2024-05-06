@@ -62,9 +62,9 @@
         </div>
 
         <div class="form-group typ-std">
-            <label class="col-sm-3 control-label">{{Inscrit au Topic}}</label>
+            <label class="col-sm-3 control-label">{{Topic racine}}</label>
             <div class="col-sm-3">
-                <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" placeholder="{{Topic principal de l'équipement jMQTT}}" />
+                <input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" placeholder="{{Topic racine de l'équipement jMQTT}}" />
             </div>
         </div>
 

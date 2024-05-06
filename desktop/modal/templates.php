@@ -111,7 +111,7 @@ $('#ul_jmqttTemplateList').on('click', '.li_jmqttTemplate', function(event) {
             eq += '<input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" '+((init(data.configuration.auto_add_cmd)=="1")?'checked ':'')+'disabled />';
             eq += '</div></div>';
             // Topic
-            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">{{Inscrit au Topic}}</label><div class="col-sm-4">';
+            eq += '<div class="form-group typ-std"><label class="col-sm-3 control-label">{{Topic racine}}</label><div class="col-sm-4">';
             eq += '<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="auto_add_topic" value="'+init(data.configuration.auto_add_topic)+'" disabled />';
             eq += '</div></div>';
             // Qos

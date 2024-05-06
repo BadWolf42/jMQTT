@@ -50,7 +50,7 @@ foreach ($eqBrokers as $eqB) { // For each Broker
         <tr>
             <th class="col-md-3">{{Module}}</th>
             <th class="col-md-1 center">{{ID}}</th>
-            <th class="col-md-4">{{Inscrit au Topic}}</th>
+            <th class="col-md-4">{{Topic racine}}</th>
             <th class="col-md-1 center">{{Commandes}}</th>
             <th class="col-md-1 center">{{Dernière comm.}}</th>
             <th class="col-md-1 center">{{Date de création}}</th>

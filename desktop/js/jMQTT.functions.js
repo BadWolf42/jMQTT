@@ -612,7 +612,7 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
 
     var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br/><br/>';
-    dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> ';
+    dialog_message += '<label class="control-label">{{Topic racine du nouvel équipement :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br/><br/>';
     dialog_message += '<label class="control-label checkbox-inline"><input type="checkbox" class="bootbox-input bootbox-checkbox-inline" id="addJmqttAuto"  checked/> ';
     dialog_message += '{{Ajout automatique des nouvelles commandes sur cet équipement}}</label><br/><br/>';
@@ -628,16 +628,11 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
                 return false;
             }
             mainTopic = $('#addJmqttEqTopic').value();
-            if (mainTopic === undefined || mainTopic == null || mainTopic === '' || mainTopic == false) {
-                $.fn.showAlert({message: "{{Le topic de souscription du nouvel équipement ne peut pas être vide !}}", level: 'warning'});
-                return false;
-            }
-            var autoAdd = $('#addJmqttAuto').value();
 
             // Create a new eqLogic
             jeedom.eqLogic.save({
                 type: 'jMQTT',
-                eqLogics: [ {name: eqName, isEnable: '1', autoAddCmd: autoAdd, type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
+                eqLogics: [ {name: eqName, isEnable: '1', autoAddCmd: $('#addJmqttAuto').value(), type: 'eqpt', eqLogic: broker, topic: mainTopic} ],
                 error: function (error) {
                     $.fn.showAlert({message: error.message, level: 'danger'});
                 },
@@ -663,7 +658,7 @@ jmqtt.addEqCmdFromRealTime = function(topic, jsonPath) {
 
     var dialog_message = '<label class="control-label">{{Nom du nouvel équipement :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br/><br/>';
-    dialog_message += '<label class="control-label">{{Topic de souscription du nouvel équipement :}}</label> '
+    dialog_message += '<label class="control-label">{{Topic racine du nouvel équipement :}}</label> '
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br/><br/>'
     dialog_message += '<label class="control-label">{{Nom de la nouvelle commande :}}</label> '
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttCmdName" value="' + cmdName + '"><br/><br/>'

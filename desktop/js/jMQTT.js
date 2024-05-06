@@ -49,7 +49,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
     dialog_message += '<label class="control-label">{{Utiliser un template :}}</label> ';
     dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttTplSelector">';
     dialog_message += '</select><br/>';
-    dialog_message += '<label class="control-label" style="display:none;" id="addJmqttTplText">{{Saisissez le Topic de base :}}</label> ';
+    dialog_message += '<label class="control-label" style="display:none;" id="addJmqttTplText">{{Saisissez le topic racine :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" style="display:none;" autocomplete="nope" type="text" id="addJmqttTplTopic"><br/>';
     bootbox.confirm({
         title: "{{Ajouter un nouvel équipement}}",
@@ -68,7 +68,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
             var eqTemplate = $('#addJmqttTplSelector').val();
             var eqTopic = $('#addJmqttTplTopic').val();
             if (eqTemplate != '' && eqTopic == '') {
-                $.fn.showAlert({message: "{{Si vous souhaitez appliquer un template, le Topic de base ne peut pas être vide !}}", level: 'warning'});
+                $.fn.showAlert({message: "{{Si vous souhaitez appliquer un template, le topic racine ne peut pas être vide !}}", level: 'warning'});
                 return false;
             }
             jeedom.eqLogic.save({
@@ -396,7 +396,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
             for(var i in dataresult){ dialog_message += '<option value="'+dataresult[i][0]+'">'+dataresult[i][0]+'</option>'; }
             dialog_message += '</select><br/>';
 
-            dialog_message += '<label class="control-label">{{Saisissez le Topic de base :}}</label> ';
+            dialog_message += '<label class="control-label">{{Saisissez le topic racine :}}</label> ';
             var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
             if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
                 currentTopic = currentTopic.substr(0,currentTopic.length-1);
