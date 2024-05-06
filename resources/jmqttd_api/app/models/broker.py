@@ -47,6 +47,8 @@ class BrkConfigModel(BaseModel):
     mqttLwtTopic: str = 'jeedom/status'
     mqttLwtOnline: str = 'online'
     mqttLwtOffline: str = 'offline'
+    mqttLwtQos: int = 0
+    mqttLwtRetain: bool = True
     mqttInt: bool = False
     mqttIntTopic: str = 'jeedom/interact'
     mqttApi: bool = False

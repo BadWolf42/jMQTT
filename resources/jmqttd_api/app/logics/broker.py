@@ -232,8 +232,8 @@ class BrkLogic(VisitableLogic):
                 Will(
                     topic=cfg.mqttLwtTopic,
                     payload=cfg.mqttLwtOffline,
-                    qos=0,  # TODO review this val
-                    retain=True,
+                    qos=cfg.mqttLwtQos,
+                    retain=cfg.mqttLwtRetain,
                 )
                 if cfg.mqttLwt
                 else None
@@ -296,8 +296,8 @@ class BrkLogic(VisitableLogic):
                 await self.publish(
                     topic=cfg.mqttLwtTopic,
                     payload=cfg.mqttLwtOnline,
-                    qos=0,  # TODO review this val
-                    retain=True,
+                    qos=cfg.mqttLwtQos,
+                    retain=cfg.mqttLwtRetain,
                 )
             # TODO To use with python >=3.8
             #  async for msg in client.messages:
@@ -313,8 +313,8 @@ class BrkLogic(VisitableLogic):
                 await self.publish(
                     topic=cfg.mqttLwtTopic,
                     payload=cfg.mqttLwtOffline,
-                    qos=0,  # TODO review this val
-                    retain=True,
+                    qos=cfg.mqttLwtQos,
+                    retain=cfg.mqttLwtRetain,
                 )
             raise
 
