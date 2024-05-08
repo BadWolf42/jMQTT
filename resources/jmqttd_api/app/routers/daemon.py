@@ -1,14 +1,16 @@
+from json import dumps, JSONDecodeError, loads
 from logging import getLevelName, getLogger
 from os import getpid, kill
 from signal import SIGTERM
 from time import time
 from fastapi import APIRouter
 
-# from ..jmqttDaemon import JmqttDaemon
 from callbacks import Callbacks
+from converters.jsonpath import compiledJsonPath
 from healthcheck import Healthcheck
 from logics.broker import BrkLogic
 from models.broker import BrkModel
+from models.daemon import TestRequest, TestResult
 from models.eq import EqModel
 from models.messages import LogLevelModel
 from models.unions import DataModel
@@ -117,6 +119,38 @@ async def daemon_get_loglevels() -> dict:
 @daemon.put("/stop", status_code=204, summary="Stop the daemon")
 async def daemon_put_stop():
     kill(getpid(), SIGTERM)
+
+
+# -----------------------------------------------------------------------------
+@daemon.post(
+    "/test/jsonpath",
+    summary="Evaluate a payload against a jsonPath",
+)
+async def daemon_test_jsonpath(d: TestRequest) -> TestResult:
+    try:
+        if d.filter.strip() == '':
+            logger.info('payload="%s", jsonPath="%s" => NO path', d.payload, d.filter)
+            return TestJsonPathRes(success=True, value='no path')
+        expr = compiledJsonPath(d.filter)
+        try:
+            json = loads(d.payload)
+        except JSONDecodeError as e:
+            res = f'invalid json payload="{d.payload}": {e}'
+            return TestJsonPathRes(value=res)
+        found = expr.find(json)
+        if len(found) == 0:
+            logger.info('payload="%s", jsonPath="%s" => NO match', d.payload, d.filter)
+            return TestJsonPathRes(success=True, value='no match')
+        if len(found) == 1:
+            res = found[0].value
+        else:
+            res = dumps([match.value for match in found])
+        logger.info('payload="%s", jsonPath="%s" => "%s"', d.payload, d.filter, res)
+        return TestJsonPathRes(success=True, match=True, value=res)
+    except Exception as e:
+        res = f'exception: {e}'
+        logger.info('payload="%s", jsonPath="%s" => %s', d.payload, d.filter, res)
+        return TestJsonPathRes(value=res)
 
 
 # -----------------------------------------------------------------------------
