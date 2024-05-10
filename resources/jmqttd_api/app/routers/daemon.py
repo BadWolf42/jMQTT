@@ -130,27 +130,33 @@ async def daemon_test_jsonpath(d: TestRequest) -> TestResult:
     try:
         if d.filter.strip() == '':
             logger.info('payload="%s", jsonPath="%s" => NO path', d.payload, d.filter)
-            return TestJsonPathRes(success=True, value='no path')
+            return TestResult(success=True, value=d.payload)
         expr = compiledJsonPath(d.filter)
         try:
             json = loads(d.payload)
         except JSONDecodeError as e:
             res = f'invalid json payload="{d.payload}": {e}'
-            return TestJsonPathRes(value=res)
+            return TestResult(value=res)
         found = expr.find(json)
         if len(found) == 0:
             logger.info('payload="%s", jsonPath="%s" => NO match', d.payload, d.filter)
-            return TestJsonPathRes(success=True, value='no match')
-        if len(found) == 1:
-            res = found[0].value
-        else:
-            res = dumps([match.value for match in found])
+            return TestResult(success=True, value='no match')
+        res = (
+            found[0].value
+            if len(found) == 1
+            else [match.value for match in found]
+        )
+        res = (
+            dumps(res)
+            if type(res) not in [bool, int, float, str]
+            else str(res)
+        )
         logger.info('payload="%s", jsonPath="%s" => "%s"', d.payload, d.filter, res)
-        return TestJsonPathRes(success=True, match=True, value=res)
+        return TestResult(success=True, match=True, value=res)
     except Exception as e:
-        res = f'exception: {e}'
+        res = f'{e}'
         logger.info('payload="%s", jsonPath="%s" => %s', d.payload, d.filter, res)
-        return TestJsonPathRes(value=res)
+        return TestResult(value=res)
 
 
 # -----------------------------------------------------------------------------
