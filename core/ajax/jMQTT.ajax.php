@@ -483,7 +483,7 @@ try {
     // Community Post
     if (init('action') == 'jMQTTCommunityPost') {
         $infoPost = '< Ajoutez un titre puis rédigez votre question/problème ici, sans effacer les infos de config indiquées ci-dessous >';
-        $infoPost .= '<br/><br/><br/><br/>--- <br/>[details="Mes infos de config"]<br/>```';
+        $infoPost .= '<br/><br/><br/><br/>--- <br/>[details="Mes infos de config"]<br/>```json';
 
         // OS, hardware, PHP, Python
         $hw = jeedom::getHardwareName();
@@ -501,6 +501,8 @@ try {
         $infoPost .= '<br/>Core version: ';
         $infoPost .= config::byKey('version', 'core', 'N/A');
         $infoPost .= ' (' . config::byKey('core::branch') . ')';
+        $infoPost .= '<br/>Nb lines in http.error: ';
+        $infoPost .= trim(shell_exec("wc -l /var/www/html/log/http.error | cut -d' ' -f1"));
 
         // All plugins
         $infoPost .= '<br/>Plugins:';
@@ -508,20 +510,18 @@ try {
         foreach (plugin::listPlugin(true, false, true, true) as $p) {
             $infoPost .= ' '.$p;
         }
-        $infoPost .= '<br/>Lines in http.error: ';
-        $infoPost .= trim(shell_exec("wc -l /var/www/html/log/http.error | cut -d' ' -f1"));
         $infoPost .= '<br/>';
 
         // jMQTT version
         /** @var update $update */
         $update = update::byTypeAndLogicalId('plugin', 'jMQTT');
-        $infoPost .= '<br/>jMQTT: v';
+        $infoPost .= '<br/>jMQTT: ';
         $infoPost .= config::byKey('version', 'jMQTT', 'unknown', true);
         $infoPost .= ' (' . $update->getLocalVersion() . ') branch: ';
         $infoPost .= $update->getConfiguration('version');
 
         // jMQTT logs stats
-        $infoPost .= '<br/>Errors/Warnings in logs: ';
+        $infoPost .= '<br/>Nb Errors or Warnings in jMQTT logs: ';
         $infoPost .= trim(shell_exec("cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c 'ERROR\|WARNING'"));
         $infoPost .= ' (level is ' . log::convertLogLevel(log::getLogLevel(jMQTT::class)) . ')';
 
@@ -539,7 +539,7 @@ try {
         $nbCmds = DB::Prepare('SELECT COUNT(*) as nb FROM `cmd` WHERE `eqType` = "jMQTT"', array());
         $infoPost .= ' / cmds: ' . $nbCmds['nb'];
 
-        $infoPost .= '<br/>```<br/>[/details]<br/>';
+        $infoPost .= '<br/>```<br/>[/details]';
 
         $query = http_build_query(
                 array(

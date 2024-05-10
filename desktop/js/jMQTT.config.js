@@ -474,14 +474,15 @@ $(document).ready(function() {
     $('.bt_refreshPluginInfo').after('<a class="btn btn-success btn-sm" target="_blank" href="https://market.jeedom.com/index.php?v=d&p=market_display&id=3166"><i class="fas fa-comment-dots "></i> {{Avis}}</a>');
 
     // Update link for Community Post
-    $('#createCommunityPost')?.attr('id', null).off('click').on('click', function () {
-        jmqtt.callPluginAjax({
+    $('#createCommunityPost')?.removeAttr('id').off('click').on('click', function () {
+        jmqtt_config.jmqttAjax({
             data: {
                 action: "jMQTTCommunityPost"
             },
             success: function (data) {
+                if (data.state != 'ok') return;
                 let element = document.createElement('a');
-                element.setAttribute('href', data.url);
+                element.setAttribute('href', data.result.url);
                 element.setAttribute('target', '_blank');
                 element.style.display = 'none';
                 document.body.appendChild(element);
