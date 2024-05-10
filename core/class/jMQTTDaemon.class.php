@@ -155,7 +155,6 @@ class jMQTTDaemon {
         $shellCmd .= ' CALLBACK="'.$callbackURL.'"';
         if (intval(config::byKey('forceSocket', jMQTT::class, 0)) > 1024)
             $shellCmd .= ' SOCKETPORT=' . intval(config::byKey('forceSocket', jMQTT::class, 0));
-        $shellCmd .= ' SOCKETPORT=18883'; // TODO Remove me <----------------------------------------------------------------------------------------
         $shellCmd .= ' APIKEY=' . jMQTTDaemon::getApiKey();
         $shellCmd .= ' PIDFILE=' . jeedom::getTmpFolder(jMQTT::class) . '/daemon.pid ';
         $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/app/main.py > /dev/null 2>&1 &';
