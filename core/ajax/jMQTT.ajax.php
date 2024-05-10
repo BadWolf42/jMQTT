@@ -111,39 +111,46 @@ try {
                 ));
         }
 
-        if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
-            require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
-        if (!class_exists('JsonPath\JsonObject'))
-            throw new Exception(__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
+        if (!jMQTTDaemon::state()) {
+            ajax::success(array(
+                'success' => false,
+                'message' => __("Le démon n'est pas démarré", __FILE__),
+                'value' => ''
+            ));
+        }
 
         $jsonPath = trim(init('jsonPath'));
         if (strlen($jsonPath) == 0 || $jsonPath[0] != '$')
             $jsonPath = '$' . $jsonPath;
 
-        // Create JsonObject for JsonPath
         try {
-            $jsonobject = new JsonPath\JsonObject($jsonArray);
-            $value = $jsonobject->get($jsonPath);
-                if ($value !== false && $value !== array())
-                ajax::success(array(
-                    'success' => true,
-                    'message' => 'OK',
-                    'value' => json_encode(
-                        (count($value) > 1) ? $value : $value[0],
-                        JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-                    )
-                ));
-            else
+            $result = jMQTTComToDaemon::testJsonPath($payload, $jsonPath);
+            // {"success":true,"match":true,"value":"47.576039"}
+            if ($result['success']) {
+                if ($result['match']) {
+                    ajax::success(array(
+                        'success' => true,
+                        'message' => 'OK',
+                        'value' => $result['value']
+                    ));
+                } else {
+                    ajax::success(array(
+                        'success' => false,
+                        'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__),
+                        'value' => ''
+                    ));
+                }
+            } else {
                 ajax::success(array(
                     'success' => false,
-                    'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__),
+                    'message' => $result['value'],
                     'value' => ''
                 ));
+            }
         } catch (Throwable $e) {
             ajax::success(array(
                 'success' => false,
                 'message' => __("Exception: ", __FILE__) . $e->getMessage(),
-                'stack' => $e->getTraceAsString(),
                 'value' => ''
             ));
             if (log::getLogLevel('jMQTT') <= 100) {

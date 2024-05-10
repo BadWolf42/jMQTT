@@ -101,6 +101,26 @@ class jMQTTComToDaemon {
         self::doSend('PUT', $path, null, __METHOD__, 'newapikey=' . trim($newApiKey));
     }
 
+    public static function testJsonPath($payload, $jsonPath) {
+        if (is_null($payload)) {
+            $payload = '';
+        }
+        if (is_null($jsonPath)) {
+            $jsonPath = '';
+        }
+
+        if (!jMQTTDaemon::state()) {
+            jMQTT::logger('debug', __METHOD__ . ': Daemon not started');
+            throw new Exception(__("Le démon n'est pas démarré", __FILE__));
+        }
+
+        $path = '/daemon/test/jsonpath';
+        $params = array('payload' => strval($payload), 'filter' => strval($jsonPath));
+        $data = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $result = self::doSend('POST', $path, $data, __METHOD__, 'data=' . $data, true);
+        return json_decode($result, true);
+    }
+
     // ------------------------------------------------------------------------
     // Broker related function
     public static function brokerSet($params) {
