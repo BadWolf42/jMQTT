@@ -93,6 +93,7 @@ class jMQTTComToDaemon {
         if (
             is_null($newApiKey)
             || strlen(trim($newApiKey)) == 0
+            || !jMQTTDaemon::state()
         ) {
             return;
         }
