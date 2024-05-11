@@ -614,7 +614,7 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqName" value="' + eqName + '"><br/><br/>';
     dialog_message += '<label class="control-label">{{Topic racine du nouvel équipement :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="addJmqttEqTopic" value="' + mainTopic + '"><br/><br/>';
-    dialog_message += '<label class="control-label checkbox-inline"><input type="checkbox" class="bootbox-input bootbox-checkbox-inline" id="addJmqttAuto"  checked/> ';
+    dialog_message += '<label class="control-label checkbox-inline"><input type="checkbox" class="bootbox-input bootbox-checkbox-inline" id="addJmqttAuto" /> ';
     dialog_message += '{{Ajout automatique des nouvelles commandes sur cet équipement}}</label><br/><br/>';
 
     // Display new EqLogic modal

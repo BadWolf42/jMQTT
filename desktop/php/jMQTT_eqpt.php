@@ -57,7 +57,7 @@
         <div class="form-group typ-std">
             <label class="col-sm-3 control-label">{{Ajout automatique des commandes}}</label>
             <div class="col-sm-3">
-                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" checked />
+                <input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="auto_add_cmd" />
             </div>
         </div>
 
