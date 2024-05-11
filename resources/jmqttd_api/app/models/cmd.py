@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Union
 from typing_extensions import Literal
 from pydantic import BaseModel, validator
 
@@ -80,3 +81,15 @@ class CmdActionModel(CmdBaseModel):
     type: Literal['action']
     subType: CmdActionSubTypeModel
     configuration: CmdActionConfigModel
+
+
+# -----------------------------------------------------------------------------
+# --- Cmd Messages TO jeedom Models
+class CmdValue(BaseModel):
+    id: int
+    value: Union[bool, int, float, str]
+
+
+# -----------------------------------------------------------------------------
+class CmdTimedValue(CmdValue):
+    ts: float

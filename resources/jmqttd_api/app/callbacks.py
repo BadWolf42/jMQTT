@@ -3,27 +3,16 @@ from asyncio import CancelledError, create_task, sleep, Task
 from collections import deque
 from json import dumps
 from logging import getLogger
-from pydantic import BaseModel
 from time import time
 from typing import Dict, List, Tuple, Union
 
+from models.cmd import CmdValue, CmdTimedValue
 from models.eq import EqModel
 from models.unions import CmdModel
 from settings import settings
 
 
 logger = getLogger('jmqtt.callbacks')
-
-
-###############################################################################
-# --- Messages TO jeedom models -----------------------------------------------
-class CmdValue(BaseModel):
-    id: int
-    value: Union[bool, int, float, str]
-
-
-class CmdTimedValue(CmdValue):
-    ts: float
 
 
 class Callbacks:
