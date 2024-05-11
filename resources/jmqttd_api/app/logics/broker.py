@@ -17,6 +17,7 @@ from models.broker import (
     BrkModel,
     MqttProtoModel,
     TlsCheckModel,
+    MqttVersionModel,
 )
 from models.messages import (
     MqttMessageModel,
