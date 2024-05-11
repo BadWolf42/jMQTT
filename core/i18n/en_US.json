@@ -17,10 +17,10 @@
 		"Impossible de téléverser le fichier (limite du serveur web ?)": "Unable to upload this file (web server limit?)",
 		"Impossible de téléverser le fichier car il existe déjà. Par sécurité, il faut supprimer le fichier existant avant de le remplacer.": "Unable to upload this file as it already exists. To be on the safe side, delete the existing file before replacing it.",
 		"L'extension de fichier '%s' n'est pas autorisée": "File extension '%s' is not allowed",
-		"La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances": "JsonPath-PHP library not found, restart dependencies",
 		"Lancement du Mode Temps Réel...": "Starting Real Time mode...",
 		"Le Chemin JSON n'a pas retourné de résultat sur ce message json": "The JsonPath returned no result on this Json payload",
 		"Le client MQTT n'est pas démarrable :": "MQTT client is not startable:",
+		"Le démon n'est pas démarré": "Daemon not started",
 		"Le fichier est trop gros (maximum %s)": "The file is too large (maximum %s)",
 		"Merci de fournir le fichier à restaurer": "Please provide the file to restore",
 		"Merci de fournir le fichier à supprimer": "Please provide the file to delete",
@@ -99,8 +99,6 @@
 		"Vérifiez les paramètres de connexion réseau": "Check network connection settings"
 	},
 	"plugins/jMQTT/core/class/jMQTTCmd.class.php": {
-		"Chemin JSON '%1\\$s' de la commande #%2\\$s# a levé l'Exception: %3\\$s": "JsonPath '%1\\$s' of command #%2\\$s# raised Exception: %3\\$s",
-		"Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json": "JsonPath of #%s# command returned no result on this Json message",
 		"Cmd #%1\\$s# <- %2\\$s": "Cmd #%1\\$s# <- %2\\$s",
 		"Commande %1\\$s #%2\\$s# ajoutée": "Command %1\\$s #%2\\$s# added",
 		"Eq #%1\\$s# <- Batterie à %2\\$s%%": "Eq #%1\\$s# <- Battery at %2\\$s%%.",
@@ -112,7 +110,6 @@
 		"Impossible de créer la commande <b>#%1\\$s#</b>, car l'équipement <b>#%2\\$s#</b> n'existe pas !": "Impossible to create the <b>#%1\\$s#</b> command, because equipement <b>#%2\\$s#</b> does not exist!",
 		"Impossible de créer la commande <b>#%1\\$s#</b>, seules les commandes status et connected sont autorisées sur un équipement Broker (%2\\$s)": "Impossible to create <b>#%1\\$s#</b> command, as only the status and connected commands are allowed on a Broker equipment (%2\\$s).",
 		"Impossible de créer la commande <b>#%s#</b>, car une commande avec le même nom existe déjà !": "Impossible to create the <b>#%s#</b> command, because a command with the same name already exists!",
-		"La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances": "JsonPath-PHP library not found, restart dependencies installation",
 		"La commande <b>#%1\\$s#</b> a été supprimée du Broker %2\\$s, car seule les commandes status et connected sont autorisées sur un équipement Broker.": "The <b>#%1\\$s#</b> command has been deleted from the %2\\$s Broker, as only the status and connected commands are allowed on a Broker equipment.",
 		"Mode retain activé sur la commande #%s#": "Retain mode activated on command #%s#",
 		"Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker": "Retain mode disabled on command #%s#, deleting last value stored in the Broker",

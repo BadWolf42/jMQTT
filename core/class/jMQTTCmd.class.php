@@ -159,7 +159,7 @@ class jMQTTCmd extends cmd {
         if (!class_exists('JsonPath\JsonObject')) {
         $eq->log(
                 'error',
-                __("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__)
+                "La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances"
             );
             return;
         }
@@ -182,7 +182,7 @@ class jMQTTCmd extends cmd {
                 $eq->log(
                     'info',
                     sprintf(
-                        __("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__),
+                        "Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json",
                         $this->getHumanName()
                     )
                 );
@@ -190,14 +190,14 @@ class jMQTTCmd extends cmd {
         } catch (Throwable $e) {
             if (log::getLogLevel(__CLASS__) > 100) {
                 $eq->log('warning', sprintf(
-                    __("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__),
+                    "Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s",
                     $this->getJsonPath(),
                     $this->getHumanName(),
                     $e->getMessage()
                 ));
             } else { // More info in debug mode, no big log otherwise
                 $eq->log('warning', str_replace("\n", ' <br/> ', sprintf(
-                    __("Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s", __FILE__).
+                    "Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s".
                     ",<br/>@Stack: %4\$s.",
                     $this->getJsonPath(),
                     $this->getHumanName(),

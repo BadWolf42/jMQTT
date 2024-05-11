@@ -141,16 +141,8 @@ async def daemon_test_jsonpath(d: TestRequest) -> TestResult:
         if len(found) == 0:
             logger.info('payload="%s", jsonPath="%s" => NO match', d.payload, d.filter)
             return TestResult(success=True, value='no match')
-        res = (
-            found[0].value
-            if len(found) == 1
-            else [match.value for match in found]
-        )
-        res = (
-            dumps(res)
-            if type(res) not in [bool, int, float, str]
-            else str(res)
-        )
+        res = found[0].value if len(found) == 1 else [match.value for match in found]
+        res = dumps(res) if type(res) not in [bool, int, float, str] else str(res)
         logger.info('payload="%s", jsonPath="%s" => "%s"', d.payload, d.filter, res)
         return TestResult(success=True, match=True, value=res)
     except Exception as e:
