@@ -23,12 +23,7 @@ from models.messages import (
     RealTimeModel,
     RealTimeStatusModel,
 )
-
-# from models.cmd import (
-#     CmdInfoModel,
-#     CmdActionModel
-# )
-# from settings import settings
+from settings import settings
 
 
 logger1 = getLogger('jmqtt.brk')
@@ -323,12 +318,30 @@ class BrkLogic(VisitableLogic):
     async def __clientTask(self) -> None:
         self.log.trace('Client task started')
         cfg = self.model.configuration
+        failures: int = 0
         while True:
             running: bool = False
             try:
+                # Retry N times with short timer, then use long timer
+                interval: int = (
+                    settings.mqtt_short_reco_interval
+                    if failures < settings.mqtt_short_reco_number
+                    else settings.mqtt_long_reco_interval
+                )
+                # Retry using MQTTv5 if MQTTv3.11 fails
+                version: MqttVersionModel = (
+                    cfg.mqttVersion
+                    if failures % 2 == 0
+                    else (
+                        MqttVersionModel.V5
+                        if cfg.mqttVersion == MqttVersionModel.V311
+                        else MqttVersionModel.V311
+                    )
+                )
                 self.log.debug(
-                    'Connecting to %s broker: %s:%i%s',
+                    'Connecting to %s (%s) broker: %s:%i%s',
                     cfg.mqttProto.name,
+                    version.name,
                     cfg.mqttAddress,
                     cfg.mqttPort if cfg.mqttPort != 0 else 1883,
                     (
@@ -339,36 +352,31 @@ class BrkLogic(VisitableLogic):
                 )
                 async with self.__buildClient() as client:
                     running = True
+                    # TODO if failures > 0 and version != cfg.mqttVersion: udpate MQTT version in eqBroker
+                    failures = 0
                     await self.__runClient(client)
             except MqttError as e:
-                self.log.warning(
-                    '%s; Reconnecting in %s seconds...',
-                    e,
-                    cfg.mqttRecoInterval,
-                )
+                failures += 1
+                self.log.warning('%s; Reconnecting in %s seconds...', e, interval)
                 self.mqttClient = None
                 if running:
                     await Callbacks.brokerDown(self.model.id)
-                await sleep(cfg.mqttRecoInterval)
-                # TODO Add retry interval
-                #  retry 5 times every 5s, then retry every 1m?
-                # TODO Add retry with other MqttVersionModel if this version fail N times
-                #  cf: MqttConnectError() with _CONNECT_RC_STRINGS=1:
-                #  Connection refused - incorrect protocol version
+                await sleep(interval)
             except CancelledError:
                 self.log.debug('Client task canceled')
                 if running:
                     await Callbacks.brokerDown(self.model.id)
                 raise
             except Exception:
+                failures += 1
                 self.log.exception(
                     'Client died unexpectedly; Reconnecting in %s seconds...',
-                    cfg.mqttRecoInterval,
+                    interval,
                 )
                 self.mqttClient = None
                 if running:
                     await Callbacks.brokerDown(self.model.id)
-                await sleep(cfg.mqttRecoInterval)
+                await sleep(interval)
 
     async def start(self) -> None:
         if not self.model.isEnable:

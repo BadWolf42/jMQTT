@@ -107,5 +107,9 @@ class JmqttSettings(BaseSettings):
     retry_max: int = 5  # max number of send retries
     snd_timeout: float = 135.0  # seconds before send timeout
 
+    mqtt_short_reco_interval: int = 5  # short timer to reco to broker (seconds)
+    mqtt_short_reco_number: int = 6  # number of reco failure to use long timer
+    mqtt_long_reco_interval: int = 60  # long timer to reco to broker (seconds)
+
 
 settings = JmqttSettings()
