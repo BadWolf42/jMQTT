@@ -57,14 +57,12 @@ class Callbacks:
         # Let port some time to open in main task
         await sleep(0.5)
         # Send daemonUp signal to Jeedom
-        dUp = await cls.__send('daemonUp', {'port': settings.socketport})
+        await cls.__send('daemonUp', {'port': settings.socketport})
         # Start sendChangesTask task
-        if cls._changesTask is not None:
-            if not cls._changesTask.done():
-                logger.debug('Send Changes task already started')
-                return
-        cls._changesTask = create_task(cls.__changesTask())
-        return dUp
+        if cls._changesTask is not None and not cls._changesTask.done():
+            logger.debug('Send Changes task already started')
+        else:
+            cls._changesTask = create_task(cls.__changesTask())
 
     @classmethod
     async def daemonHB(cls):
