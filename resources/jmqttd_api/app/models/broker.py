@@ -18,7 +18,7 @@ class MqttProtoModel(str, Enum):
 
 
 class MqttVersionModel(int, Enum):
-    V31 = ProtocolVersion.V31
+    # V31 = ProtocolVersion.V31
     V311 = ProtocolVersion.V311
     V5 = ProtocolVersion.V5
 
