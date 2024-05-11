@@ -9,7 +9,9 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
         if (result !== null) {
             jeedom.eqLogic.save({
                 type: 'jMQTT',
-                eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1, configuration: {Qos:"1", mqttProto:"mqtt"}}) ],
+                eqLogics: [ $.extend({name: result}, {
+                    type: 'broker', eqLogic: -1, configuration: {Qos:"1", mqttProto:"mqtt"}
+                }) ],
                 error: function (error) {
                     $.fn.showAlert({message: error.message, level: 'danger'});
                 },
@@ -152,7 +154,9 @@ $('.eqLogicAction[data-action=jMQTTCommunityPost]').off('click').on('click', fun
 $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     var el = $(this);
     jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
-        var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
+        var calcul = el.closest('tr').find(
+            '.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']'
+        );
         calcul.atCaret('insert', result.human);
         jeeFrontEnd.modifyWithoutSave = true;
     });
@@ -164,19 +168,28 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 //
 $('.eqLogicAction[data-action=restartMqttClient]').on('click',function(){
     var id = jmqtt.getEqId();
-    if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
-        return;
+    if (
+        id == undefined
+        || id == ""
+        || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker'
+    ) return;
     jmqtt.callPluginAjax({data: {action: 'restartMqttClient', id: id}});
 });
 
 $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
     if($('#md_modal').is(':visible')){
         $('#md_modal2').dialog({title: "{{Log du plugin}}"});
-        $("#md_modal2").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
+        $("#md_modal2").load(
+            'index.php?v=d&modal=log.display&log=' + $(this).attr('data-log')
+            + '&slaveId=' + $(this).attr('data-slaveId')
+        ).dialog('open');
     }
     else{
         $('#md_modal').dialog({title: "{{Log du plugin}}"});
-        $("#md_modal").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
+        $("#md_modal").load(
+            'index.php?v=d&modal=log.display&log=' + $(this).attr('data-log')
+            + '&slaveId=' + $(this).attr('data-slaveId')
+        ).dialog('open');
     }
 });
 
@@ -324,7 +337,13 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
     var qos = tr.find('.cmdAttr[data-l1key=qos]').value();
 
     for (item in json) {
-        var _data = {id: id, topic: topic, payload: JSON.stringify(json[item]), qos: qos, retain: false};
+        var _data = {
+            id: id,
+            topic: topic,
+            payload: JSON.stringify(json[item]),
+            qos: qos,
+            retain: false
+        };
         if (item.match(/[^\w-]/)) // Escape if a special character is found
             item = '\'' + item.replace(/'/g,"\\'") + '\'';
         _data.jsonPath = jsonPath + '[' + item + ']';
@@ -551,7 +570,9 @@ function printEqLogic(_eqLogic) {
                 //and find higher existing number
                 new_cmds.forEach(function (c) {
                     if (c.tree_parent_id === parent_id) {
-                        var id_number = parseInt(c.tree_id.substring(parent_id.length + 1)); // keep only end part of id and parse it
+                        var id_number = parseInt(
+                            c.tree_id.substring(parent_id.length + 1)
+                        ); // keep only end part of id and parse it
                         if (id_number > m_cmd) m_cmd = id_number;
                     }
                 });
@@ -578,7 +599,13 @@ function printEqLogic(_eqLogic) {
          */
         function existingCmd(cmds, topic, jsonPath) {
             // try to find cmd that match with topic and jsonPath (or jsonPath with dollar sign in front)
-            var exist_cmds = cmds.filter(function (c) { return c.configuration.topic == topic && (c.configuration.jsonPath == jsonPath || c.configuration.jsonPath == '$' + jsonPath); });
+            var exist_cmds = cmds.filter(function (c) { return (
+                c.configuration.topic == topic
+                && (
+                    c.configuration.jsonPath == jsonPath
+                    || c.configuration.jsonPath == '$' + jsonPath
+                )
+            ); } );
             if (exist_cmds.length > 0)
                 return exist_cmds[0];
             else
@@ -626,7 +653,12 @@ function printEqLogic(_eqLogic) {
                     escapedi = '\'' + escapedi.replace(/'/g,"\\'") + '\'';
                 }
                 if (typeof payload[i] === 'object') {
-                    recursiveAddJsonPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
+                    recursiveAddJsonPayload(
+                        topic,
+                        jsonPath + '[' + escapedi + ']',
+                        payload[i],
+                        this_id
+                    );
                 }
                 else {
                     addPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
@@ -674,7 +706,11 @@ function printEqLogic(_eqLogic) {
                     // Add the command: in case of JSON payload, call recursiveAddJsonPayload to add
                     // also the derived commands
                     if (typeof parsed_json_value === 'object') {
-                        recursiveAddJsonPayload(c.configuration.topic, c.configuration.jsonPath, parsed_json_value, parent_id);
+                        recursiveAddJsonPayload(
+                            c.configuration.topic,
+                            c.configuration.jsonPath,
+                            parsed_json_value, parent_id
+                        );
                     }
                     else {
                         addCmd(c, parent_id);
@@ -749,7 +785,10 @@ function saveEqLogic(_eqLogic) {
 
     // remove non existing commands added for the JSON view and add new commands at the end
     for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
-        if ((_eqLogic.cmd[i].id == "" || _eqLogic.cmd[i].id === null) && _eqLogic.cmd[i].name == "") {
+        if (
+            (_eqLogic.cmd[i].id == "" || _eqLogic.cmd[i].id === null)
+            && _eqLogic.cmd[i].name == ""
+        ) {
             _eqLogic.cmd.splice(i, 1);
         }
     }
@@ -782,11 +821,13 @@ function addCmdToTable(_cmd) {
 
     if (!isset(_cmd.tree_id)) {
         //looking for all tree-id, keep part before the first dot, convert to Int
-        var root_tree_ids = $('[tree-id]').map((pos,e) => parseInt(e.getAttribute("tree-id").split('.')[0]))
+        var root_tree_ids = $('[tree-id]').map(
+            (pos,e) => parseInt(e.getAttribute("tree-id").split('.')[0])
+        )
 
         //if some tree-id has been found
         if (root_tree_ids.length > 0) {
-            _cmd.tree_id = (Math.max.apply(null, root_tree_ids) + 1).toString(); //use the highest one plus one
+            _cmd.tree_id = (Math.max.apply(null, root_tree_ids) + 1).toString(); // use the highest one plus one
         } else {
             _cmd.tree_id = '1'; // else this is the first one
         }
@@ -867,26 +908,38 @@ function addCmdToTable(_cmd) {
         // Set cmdAttr values of cmd from json _cmd
         $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
         if (isset(_cmd.type))
-            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]').value(init(_cmd.type));
+            $(
+                '#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]'
+            ).value(init(_cmd.type));
         jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
         // Fill in value of current cmd. Efficient in JSON view only as _cmd.state was set in JSON view only in printEqLogic.
         if (is_json_view) {
-            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.state);
+            $(
+                '#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]'
+            ).value(_cmd.state);
         }
 
         // Get and display the value in CLASSIC view (for JSON view, see few lines above)
         if (_cmd.id != undefined) {
             if (! is_json_view) {
                 if (_cmd.state != undefined) {
-                    $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(_cmd.state);
+                    $(
+                        '#table_cmd [tree-id="'
+                        + _cmd.tree_id + '"][data-cmd_id="'
+                        + _cmd.id + '"] .form-control[data-key=value]'
+                    ).value(_cmd.state);
                 } else {
                     jeedom.cmd.execute({
                         id: _cmd.id,
                         cache: 0,
                         notify: false,
                         success: function(result) {
-                            $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(result);
+                            $(
+                                '#table_cmd [tree-id="'
+                                + _cmd.tree_id + '"][data-cmd_id="'
+                                + _cmd.id + '"] .form-control[data-key=value]'
+                            ).value(result);
                     }});
                 }
             }
@@ -1095,10 +1148,12 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 //
 $(document).ready(function() {
     // Done here, otherwise the refresh button remains selected
-    $('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
-        event.stopPropagation();
-        jmqtt.refreshEqLogicPage();
-    });
+    $('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on(
+            'click', function(event) {
+            event.stopPropagation();
+            jmqtt.refreshEqLogicPage();
+        }
+    );
 
     //
     // update DisplayCards on main page at load
@@ -1110,8 +1165,12 @@ $(document).ready(function() {
             $.fn.showAlert({message: error.message, level: 'warning'});
         },
         success: function(_eqLogics) {
-            for (var i in _eqLogics)
-                jmqtt.updateDisplayCard($('.eqLogicDisplayCard[data-eqlogic_id=' + _eqLogics[i].id + ']'), _eqLogics[i]);
+            for (var i in _eqLogics) {
+                jmqtt.updateDisplayCard(
+                    $('.eqLogicDisplayCard[data-eqlogic_id=' + _eqLogics[i].id + ']'),
+                    _eqLogics[i]
+                );
+            }
         }
     });
 
