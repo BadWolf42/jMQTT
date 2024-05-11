@@ -15,7 +15,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
                 },
                 success: function (data) {
                     var url = jmqtt.initPluginUrl();
-                    jmqtt.unsetPageModified();
+                    jeeFrontEnd.modifyWithoutSave = false;
                     url += '&id=' + data.id + '&saveSuccessFull=1';
                     jeedomUtils.loadPage(url);
                 }
@@ -89,14 +89,14 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
                             },
                             success: function (dataresult) {
                                 var url = jmqtt.initPluginUrl();
-                                jmqtt.unsetPageModified();
+                                jeeFrontEnd.modifyWithoutSave = false;
                                 url += '&id=' + savedEq.id + '&saveSuccessFull=1';
                                 jeedomUtils.loadPage(url);
                             }
                         });
                     } else {
                         var url = jmqtt.initPluginUrl();
-                        jmqtt.unsetPageModified();
+                        jeeFrontEnd.modifyWithoutSave = false;
                         url += '&id=' + savedEq.id + '&saveSuccessFull=1';
                         jeedomUtils.loadPage(url);
                     }
@@ -154,7 +154,7 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
         var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
         calcul.atCaret('insert', result.human);
-        jmqtt.setPageModified();
+        jeeFrontEnd.modifyWithoutSave = true;
     });
 });
 
@@ -475,7 +475,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
                 if ($(this).val().startsWith(oldTopic))
                     $(this).val($(this).val().replace(oldTopic, newTopic));
             });
-            jmqtt.setPageModified();
+            jeeFrontEnd.modifyWithoutSave = true;
         }}
     });
 });
@@ -490,14 +490,14 @@ $('.eqLogicAction[data-action=jsonPathTester]').off('click').on('click', functio
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
     var _cmd = {type: 'info', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
-    jmqtt.setPageModified();
+    jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On addMQTTAction click
 $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
     var _cmd = {type: 'action', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
-    jmqtt.setPageModified();
+    jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On classicView click
@@ -701,7 +701,7 @@ function printEqLogic(_eqLogic) {
         _eqLogic.cmd = new_cmds;
 
         // JSON view: disable the sortable functionality
-        jmqtt.setCmdsSortable(false);
+        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true;
     } else {
         // CLASSIC view button is active
         for (var c of _eqLogic.cmd) {
@@ -709,7 +709,7 @@ function printEqLogic(_eqLogic) {
         }
 
         // Classical view: enable the sortable functionality
-        jmqtt.setCmdsSortable(true);
+        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false;
     }
 
     // Show UI elements depending on the type
@@ -1050,7 +1050,11 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 
     // If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
     // Otherwise: display an alert message and reload the page
-    if (jmqtt.isPageModified() || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
+    if (
+        jeeFrontEnd.modifyWithoutSave
+        || $('.eqLogic').is(":visible")
+        || $('div[role="dialog"]').filter(':visible').length != 0
+    ) {
         $.fn.showAlert({message: msg + '.', level: 'warning'});
     }
     else {

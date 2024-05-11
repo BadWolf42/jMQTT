@@ -357,17 +357,6 @@ class jMQTT extends eqLogic {
         // Remove brkId from eqpt configuration
         unset($exportedTemplate[$_tName]['configuration'][jMQTTConst::CONF_KEY_BRK_ID]);
 
-        // TODO: Remove core4.2 backward compatibility for `cmd` in templates
-        //  Remove when Jeedom 4.2 is no longer supported
-        //  Older version of Jeedom (4.2.6 and bellow) export commands in 'cmd'
-        //  Fixed here : https://github.com/jeedom/core/commit/05b8ecf34b405d5a0a0bb7356f8e3ecb1cf7fa91
-        //  labels: workarround, core4.2, php
-        if (isset($exportedTemplate[$_tName]['cmd'])) {
-            // Rename 'cmd' to 'commands' for Jeedom import ...
-            $exportedTemplate[$_tName]['commands'] = $exportedTemplate[$_tName]['cmd'];
-            unset($exportedTemplate[$_tName]['cmd']);
-        }
-
         // Create a replacement array with cmd names & id for further use
         $cmdsId = array();
         $cmdsName = array();
