@@ -248,14 +248,8 @@ class jMQTTPlugin {
         $res['installed'] = true;
         // Get service active status
         $res['service'] = ucfirst(shell_exec('systemctl status mosquitto.service | grep "Active:" | sed -r "s/^[^:]*: (.*)$/\1/"'));
-        // Get service config file (***unused for now***)
-        // $res['config'] = shell_exec('systemctl status mosquitto.service | grep -- " -c " | sed -r "s/^.* -c (.*)$/\1/"');
-
-        // Read in Core config who is supposed to have installed Mosquitto
-        $res['core'] = config::byKey('mosquitto::installedBy', '', 'Unknown');
-        // TODO: Decide if `mosquitto::installedBy` is usefull
-        //  When config key will be widely used, resolve Mosquitto installer here
-        //  labels: quality, php
+        // Get service config file
+        // $res['config'] = shell_exec('systemctl show mosquitto.service -p ExecStart | sed -r "s/^.* -c ([^ ]*) .*$/\1/"');
 
         // Check if mosquitto.service has been changed by mqtt2
         if (file_exists('/lib/systemd/system/mosquitto.service')
@@ -304,7 +298,7 @@ class jMQTTPlugin {
         // Apt-get mosquitto
         jMQTT::logger(
             'info',
-            __("Mosquitto : Démarrage de l'installation, merci de patienter...", __FILE__)
+            __("Mosquitto : Installation en cours, merci de patienter...", __FILE__)
         );
         shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confask,confnew,confmiss" mosquitto');
 
@@ -321,9 +315,6 @@ class jMQTTPlugin {
         shell_exec(system::getCmdSudo() . ' systemctl enable mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl start mosquitto');
-
-        // Write in Core config that jMQTT has installed Mosquitto
-        config::save('mosquitto::installedBy', 'jMQTT');
         jMQTT::logger('info', __("Mosquitto : Fin de l'installation.", __FILE__));
 
         // Looking for eqBroker pointing to local mosquitto
@@ -394,6 +385,10 @@ class jMQTTPlugin {
 
     // Reinstall Mosquitto service over previous install
     public static function mosquittoRepare() {
+        jMQTT::logger(
+            'info',
+            __("Mosquitto : Réparation en cours, merci de patienter...", __FILE__)
+        );
         // Stop service
         shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
         // Ensure no config is remaining
@@ -407,8 +402,7 @@ class jMQTTPlugin {
         shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl enable mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl start mosquitto');
-        // Write in Core config that jMQTT has installed Mosquitto
-        config::save('mosquitto::installedBy', 'jMQTT');
+        jMQTT::logger('info', __("Mosquitto : Fin de la réparation.", __FILE__));
     }
 
     // Purge Mosquitto service and all related config files
@@ -428,11 +422,14 @@ class jMQTTPlugin {
             );
             return;
         }
+        jMQTT::logger(
+            'info',
+            __("Mosquitto : Désinstallation en cours, merci de patienter...", __FILE__)
+        );
         // Remove package and /etc folder
         shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive apt-get purge -y mosquitto');
         shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive rm -rf /etc/mosquitto');
-        // Remove from Core config that Mosquitto is installed
-        config::remove('mosquitto::installedBy');
+        jMQTT::logger('info', __("Mosquitto : Fin de la désinstallation.", __FILE__));
     }
 
 }
