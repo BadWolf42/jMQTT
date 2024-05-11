@@ -14,9 +14,7 @@ sendVarToJS('version', config::byKey('version', 'jMQTT', 'unknown', true));
 // Send Mosquitto installation status
 sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTTPlugin::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
-// TODO: Remove forceDocker, urlOverrideEnable & urlOverrideValue
-//  This should be automatically detected and handled accordingly
-
+// To hide Mosquitto install and control
 $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
 sendVarToJS('dStatus', $docker);
 
@@ -76,39 +74,7 @@ if (!$docker) {
                 <i class="fas fa-pen"></i></a>
             </div>
         </div>
-<?php
-} /* !$docker */
-
-if ($docker) {
-    // To fix issue: https://community.jeedom.com/t/87727/39
-    $regularVal = jMQTTDaemon::get_callback_url();
-    $overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
-    $overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
-    $curVal = ($overrideEn) ? $overrideVal : $regularVal;
-?>
-        <legend><i class="fab fa-docker "></i>{{Paramètres spécifiques Docker}}</legend>
-        <div class="form-group">
-            <label class="col-sm-4 control-label">{{URL de Callback du Démon}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br/>Dans ce cas uniquement, il peut être nécessaire de personnaliser cette url, car elle est mal détectée par jMQTT.<br/><b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>
-            <div class="col-sm-7">
-                <div class="row">
-                    <div class="col-sm-1">
-                        <input type="checkbox" class="form-control" <?php if ($overrideEn) echo 'checked'; ?> id="jmqttUrlOverrideEnable" />
-                    </div>
-                    <div class="col-sm-10">
-                        <input class="form-control<?php if (!$overrideEn) echo ' disabled'; ?>" id="jmqttUrlOverrideValue"
-                            value="<?php echo $curVal; ?>" valOver="<?php echo $overrideVal; ?>" valStd="<?php echo $regularVal; ?>" />
-                    </div>
-                    <div class="col-sm-1">
-                        <span class="btn btn-success btn-sm" id="bt_jmqttUrlOverride" style="position:relative;margin-top: 2px;" title="{{Appliquer}}">
-                            <i class="fas fa-check"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-1"></div>
-        </div>
-<?php } /* $docker */ ?>
+<?php } /* !$docker */ ?>
     </div>
 <?php
 // TODO: Remove backup/restore from configuration and put in Debug modal

@@ -10,20 +10,13 @@ class jMQTTDaemon {
      * jMQTT static function returning an automatically detected callback url to Jeedom for the daemon
      */
     public static function get_callback_url() {
-        // TODO: Proto should always be http, 127.0.0.1 must not be redirected to HTTPS
-
-        // To fix let's encrypt issue like: https://community.jeedom.com/t/87060/26
-        $proto = config::byKey('internalProtocol', 'core', 'http://');
-
-        // TODO: Also automatically detected and handle docker port if in docker env
-
-        // To fix port issue like: https://community.jeedom.com/t/87060/30
-        $port = config::byKey('internalPort', 'core', 80);
-
         // To fix path issue like: https://community.jeedom.com/t/87872/15
         $comp = trim(config::byKey('internalComplement', 'core', ''), '/');
         if ($comp !== '') $comp .= '/';
-        return $proto.'127.0.0.1:'.$port.'/'.$comp.'plugins/jMQTT/core/php/callback.php';
+        // Apache MUST always listen on port 80 on localhost, an do not redirect
+        // NO MORE fix for let's encrypt issue like: https://community.jeedom.com/t/87060/26
+        // NO MORE fix for port issue like: https://community.jeedom.com/t/87060/30
+        return 'http:/127.0.0.1:80/'.$comp.'plugins/jMQTT/core/php/callback.php';
     }
 
     /**
@@ -138,16 +131,8 @@ class jMQTTDaemon {
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
         // Start Python daemon
         $path = realpath(__DIR__ . '/../../resources/jmqttd_api');
+        // NO MORE fix Docker for issue like: https://community.jeedom.com/t/87727/39
         $callbackURL = jMQTTDaemon::get_callback_url();
-        // TODO: Remove forceDocker, urlOverrideEnable & urlOverrideValue
-        //  This should be automatically detected and handled accordingly
-
-        // To fix issue: https://community.jeedom.com/t/87727/39
-        if ((file_exists('/.dockerenv')
-             || config::byKey('forceDocker', jMQTT::class, '0'))
-            && config::byKey('urlOverrideEnable', jMQTT::class, '0') == '1') {
-            $callbackURL = config::byKey('urlOverrideValue', jMQTT::class, $callbackURL);
-        }
         $shellCmd  = 'LOGLEVEL=' . log::convertLogLevel(log::getLogLevel(jMQTT::class));
         $shellCmd .= ' LOGFILE=' . log::getPathToLog(jMQTT::class.'d');
         if (!config::byKey('localOnly', jMQTT::class, 1))

@@ -255,21 +255,8 @@ try {
             ajax::error('Invalid format');
         }
         // Prepare url
+        // NO MORE fix Docker for issue like: https://community.jeedom.com/t/87727/39
         $callbackURL = jMQTTDaemon::get_callback_url();
-        // TODO: Remove forceDocker, urlOverrideEnable & urlOverrideValue
-        //  This should be automatically detected and handled accordingly
-
-        // To fix issue: https://community.jeedom.com/t/87727/39
-        if (
-            (
-                file_exists('/.dockerenv')
-                || config::byKey('forceDocker', 'jMQTT', '0')
-            )
-            && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1'
-        ) {
-            $callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
-        }
-
         // Send to Jeedom
         $curl = curl_init($callbackURL);
         curl_setopt($curl, CURLOPT_POST, true);

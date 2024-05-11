@@ -198,7 +198,6 @@
 		"Le service Mosquitto a bien été installé et configuré.": "Le service Mosquitto a bien été installé et configuré.",
 		"Le service Mosquitto a bien été réparé.": "Le service Mosquitto a bien été réparé.",
 		"les changements sur ce système (SINON mode \"Dry Run\")": "les changements sur ce système (sinon restauration en mode \"Dry Run\")",
-		"Modification effectuée. Relancez le Démon.": "Modification effectuée, merci de relancez le Démon.",
 		"Modifier le fichier jMQTT.conf du service Mosquitto": "Modifier le fichier jMQTT.conf du service Mosquitto",
 		"Ne pas restaurer le cache précédent (conserver le cache actuel)": "Ne pas restaurer le cache précédent (conserver le cache actuel)",
 		"Ne pas restaurer le répertoire de jMQTT depuis la sauvegarde": "Ne pas restaurer le répertoire de jMQTT depuis la sauvegarde",
@@ -575,7 +574,6 @@
 	"plugins/jMQTT/plugin_info/configuration.php": {
 		"(Re)Démarrer": "(Re)Démarrer",
 		"Ajouter une sauvegarde": "Téléverser une sauvegarde",
-		"Appliquer": "Appliquer",
 		"Arrête le service Mosquitto local.": "Arrête le service Mosquitto local.",
 		"Arrêter": "Arrêter",
 		"Broker MQTT en local (Service Mosquitto)": "Broker MQTT en local (Service Mosquitto)",
@@ -596,7 +594,6 @@
 		"Sauvegarder les équipements et la configuration de jMQTT": "Sauvegarder les équipements et la configuration de jMQTT",
 		"Sauvegardes disponibles": "Sauvegardes disponibles",
 		"Service Mosquitto": "Service Mosquitto",
-		"Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br/>Dans ce cas uniquement, il peut être nécessaire de personnaliser cette url, car elle est mal détectée par jMQTT.<br/><b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>": "Si Jeedom tourne en Docker, il peut être difficile de détecter l'url de callback, car le port interne de Jeedom (utilisé en dehors du container) peut être différent du port réel d'écoute d'Apache (à l'intérieur du container).<br/>Dans ce cas uniquement, il est nécessaire de personnaliser cette url, car elle ne peut pas être détectée automatiquement par jMQTT.<br/><b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>",
 		"Si Mosquitto est installé en local, jMQTT essaye de détecter par quel plugin.": "Si Mosquitto est installé en local, jMQTT essaye de détecter par quel plugin.",
 		"Si Mosquitto est installé en local, jMQTT remonte ici l'état du service (systemd).": "Si Mosquitto est installé en local, jMQTT remonte ici l'état du service (systemd).",
 		"Supprime complètement Mosquitto du système, par exemple dans le cas où vous voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.": "Supprime complètement Mosquitto du système, par exemple dans le cas où vous voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.",

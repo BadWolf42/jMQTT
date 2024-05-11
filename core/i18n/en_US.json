@@ -198,7 +198,6 @@
 		"Le service Mosquitto a bien été installé et configuré.": "Mosquitto has been installed and configured.",
 		"Le service Mosquitto a bien été réparé.": "Mosquitto service has been repaired.",
 		"les changements sur ce système (SINON mode \"Dry Run\")": "the changes on this system (otherwise restore in \"Dry Run\" mode)",
-		"Modification effectuée. Relancez le Démon.": "Change saved, please restart the Daemon.",
 		"Modifier le fichier jMQTT.conf du service Mosquitto": "Edit the jMQTT.conf file of the Mosquitto service",
 		"Ne pas restaurer le cache précédent (conserver le cache actuel)": "Do not restore previous cache (keep current cache)",
 		"Ne pas restaurer le répertoire de jMQTT depuis la sauvegarde": "Do not restore jMQTT directory from backup",
@@ -575,7 +574,6 @@
 	"plugins/jMQTT/plugin_info/configuration.php": {
 		"(Re)Démarrer": "(Re)Start",
 		"Ajouter une sauvegarde": "Upload a backup",
-		"Appliquer": "Apply",
 		"Arrête le service Mosquitto local.": "Stop the local Mosquitto service.",
 		"Arrêter": "Stop",
 		"Broker MQTT en local (Service Mosquitto)": "Local MQTT Broker (Mosquitto service)",
@@ -596,7 +594,6 @@
 		"Sauvegarder les équipements et la configuration de jMQTT": "Backing up jMQTT equipment and configuration",
 		"Sauvegardes disponibles": "Available backups",
 		"Service Mosquitto": "Mosquitto service",
-		"Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br/>Dans ce cas uniquement, il peut être nécessaire de personnaliser cette url, car elle est mal détectée par jMQTT.<br/><b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>": "If Jeedom runs in Docker it can be difficult to detect callback url, as Jeedom internal port (used outside the container) may be different than real Apache listening port (inside the container).<br/>In this case only, it may be necessary to customize this url, because it cannot be detected automatically by jMQTT.<br/><b>Only enable this field and edit the value if you know what you're doing!</b>",
 		"Si Mosquitto est installé en local, jMQTT essaye de détecter par quel plugin.": "If Mosquitto is installed locally, jMQTT tries to detect by which plugin.",
 		"Si Mosquitto est installé en local, jMQTT remonte ici l'état du service (systemd).": "If Mosquitto is installed locally, jMQTT displays the service status (systemd) here.",
 		"Supprime complètement Mosquitto du système, par exemple dans le cas où vous voulez arrêter d'utiliser Mosquitto en local, ou pour le réinstaller avec un autre plugin.": "Completely delete Mosquitto from the system, for example if you want to stop using Mosquitto locally, or reinstall it with another plugin.",

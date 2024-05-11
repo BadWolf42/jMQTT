@@ -227,12 +227,6 @@ try {
         ajax::success();
     }
 
-    if (init('action') == 'updateUrlOverride') {
-        config::save('urlOverrideEnable', init('valEn'), 'jMQTT');
-        config::save('urlOverrideValue', init('valUrl'), 'jMQTT');
-        ajax::success();
-    }
-
     // ########################################################################
     // Real Time mode
     if (init('action') == 'changeRealTimeMode') {

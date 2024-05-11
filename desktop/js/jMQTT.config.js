@@ -249,42 +249,6 @@ $('#bt_mosquittoEdit').on('click', function () {
 
 
 //////////////////////////////////////////////////////////////////////////////
-// Docker callback URL override
-
-// On enable/disable jMqtt callback url override
-$('#jmqttUrlOverrideEnable').change(function() {
-    $oVal = $('#jmqttUrlOverrideValue');
-    if ($(this).value() == '1') {
-        if ($oVal.attr('valOver') != "")
-            $oVal.value($oVal.attr('valOver'));
-        $oVal.removeClass('disabled');
-    } else {
-        $oVal.attr('valOver', $oVal.value());
-        $oVal.value($oVal.attr('valStd'));
-        $oVal.addClass('disabled');
-    }
-});
-
-// On jMqtt callback url override apply
-$('#bt_jmqttUrlOverride').on('click', function () {
-    var $valEn = $('#jmqttUrlOverrideEnable').value()
-    jmqtt_config.jmqttAjax({
-        data: {
-            action: "updateUrlOverride",
-            valEn: $valEn,
-            valUrl: (($valEn == '1') ? $('#jmqttUrlOverrideValue').value() : $('#jmqttUrlOverrideValue').attr('valOver'))
-        },
-        success: function(data) {
-            if (data.state != 'ok')
-                $.fn.showAlert({message: data.result,level: 'danger'});
-            else
-                $.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}', level: 'success'});
-        }
-    });
-});
-
-
-//////////////////////////////////////////////////////////////////////////////
 // Backups
 
 // Launch jMQTT backup and wait for it to end
