@@ -1,4 +1,4 @@
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientError
 from asyncio import CancelledError, create_task, sleep, Task
 from collections import deque
 from json import dumps
@@ -24,29 +24,29 @@ class Callbacks:
 
     @classmethod
     async def __send(cls, action: str, data: dict = {}):
-        async with ClientSession() as session:
-            async with session.post(
-                settings.callback,
-                headers={'Authorization': 'Bearer ' + settings.apikey},
-                params={'a': action},
-                json=data,
-            ) as resp:
-                logger.trace(
-                    '%s: Status=%i, Body="%s"', action, resp.status, await resp.text()
-                )
-                await resp.text()
-                if resp.status in [200, 204]:
-                    cls._lastSnd = time()
-                    cls._retrySnd = 0
-                    return True
-                logger.error('COULD NOT send TO Jeedom: %s', dumps(data))
-                cls._retrySnd += 1
-                return False
-        # TODO Handle Exceptions on "async with", ex:
-        #    aiohttp.client_exceptions.ClientConnectorError:
-        #        Cannot connect to host x [No route to host]
-        #    https://docs.aiohttp.org/en/latest/client_reference.html#client-exceptions
-        #    https://docs.aiohttp.org/en/latest/client_reference.html#hierarchy-of-exceptions
+        try:
+            async with ClientSession() as session:
+                async with session.post(
+                    settings.callback,
+                    headers={'Authorization': 'Bearer ' + settings.apikey},
+                    params={'a': action},
+                    json=data,
+                    timeout=10,  # use a 10s timeout
+                ) as resp:
+                    text = await resp.text()
+                    status = resp.status
+                    logger.trace(
+                        '%s: Status=%i, Body="%s"', action, status, text
+                    )
+                    if status == 200:
+                        cls._lastSnd = time()
+                        cls._retrySnd = 0
+                        return True
+        except ClientError:
+            pass # TODO Retry to connect?
+        logger.error('COULD NOT send TO Jeedom: %s', dumps(data))
+        cls._retrySnd += 1
+        return False
 
     @classmethod
     async def test(cls):
