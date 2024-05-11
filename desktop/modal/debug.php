@@ -461,23 +461,10 @@ function cacheButtons(div) {
     });
 }
 
-function builder_daemon(div) {
+function builder_toJeedom(div) {
     var res = '<form class="form-horizontal"><fieldset>';
-    // Send to Daemon
-    res += '<legend><i class="fas fa-upload"></i> Simulate an event sent to the Daemon by Jeedom (API key sent automatically)</legend><div class="form-group"><div class="col-sm-10">';
-    res += '<textarea class="bootbox-input bootbox-input-text form-control toDaemon" style="min-height:65px;">';
-    res += '{"cmd": "newMqttClient", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}\n';
-    res += '{"cmd": "removeMqttClient", "id": ""}\n';
-    res += '{"cmd": "messageOut", "id": "", "topic": "", "payload": "", "qos": "", "retain": ""}\n';
-    res += '{"cmd": "hb", "id": ""}\n';
-    res += '{"cmd": "loglevel", "id": "", "level": ""}';
-    res += '\n';
-    res += '{"cmd": "", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}\n';
-
-    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-sm pull-right toDaemon" style="top:0px!important;">';
-    res += '<i class="fas fa-check-circle icon-white"></i> Send</a></div></div>';
     // Send to Jeedom
-    res += '<legend><i class="fas fa-download"></i> Simulate an event received from the Daemon by Jeedom (API key sent automatically)</legend><div class="form-group"><div class="col-sm-10">';
+    res += '<legend><i class="fas fa-download"></i> Simulate an event from Daemon (API key sent automatically)</legend><div class="form-group"><div class="col-sm-10">';
     res += '<textarea class="bootbox-input bootbox-input-text form-control toJeedom" style="min-height:65px;">';
 
     res += '[{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}]\n';
@@ -493,20 +480,6 @@ function builder_daemon(div) {
     res += '</fieldset></form>';
     div.html(res);
 
-    div.off('click', 'a.toDaemon').on('click', 'a.toDaemon', function() {
-        callDebugAjax({
-            data: {
-                action: "sendToDaemon",
-                data : $(this).closest('form').find('textarea.toDaemon').value()
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Event sent to Daemon', level: 'success'});
-            }
-        });
-    });
     div.off('click', 'a.toJeedom').on('click', 'a.toJeedom', function() {
         callDebugAjax({
             data: {
@@ -691,15 +664,15 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
             </div>
 <?php
 
-// Create panels to simulate send to daemon
-panelCreator('Simulate communication with the Daemon', 'danger', 'fas fa-exchange-alt', 'builder_daemon');
+// Create panels to edit simulate dangerous actions on jMQTT
+panelCreator('Simulate internal actions',      'warning', 'fas fa-radiation-alt', 'builder_actions');
 
 // Create panels to edit Config values
-panelCreator('Config values for Daemon',               'primary', 'fas fa-wrench', 'builder_configInt');
-panelCreator('Config values for Brokers',              'primary', 'fas fa-wrench', 'builder_configBrk');
-panelCreator('Config values for Equipments',           'primary', 'fas fa-wrench', 'builder_configEqp');
-panelCreator('Config values for Info Commands',        'primary', 'fas fa-wrench', 'builder_configCmdI');
-panelCreator('Config values for Action Commands',      'primary', 'fas fa-wrench', 'builder_configCmdA');
+panelCreator('Daemon config values',           'primary', 'fas fa-wrench',        'builder_configInt');
+panelCreator('Brokers config values',          'primary', 'fas fa-wrench',        'builder_configBrk');
+panelCreator('Equipments config values',       'primary', 'fas fa-wrench',        'builder_configEqp');
+panelCreator('Info Commands config values',    'primary', 'fas fa-wrench',        'builder_configCmdI');
+panelCreator('Action Commands config values',  'primary', 'fas fa-wrench',        'builder_configCmdA');
 
 // Get Jeedom plugin descriptor
 $jplugin = update::byLogicalId("jMQTT");
@@ -742,16 +715,16 @@ $jplugin = update::byLogicalId("jMQTT");
             </div>
 <?php
 
-// Create panels to edit simulate dangerous actions on jMQTT
-panelCreator('Actions on jMQTT',                 'warning', 'fas fa-radiation-alt', 'builder_actions');
-panelCreator('Reapply upgrade script',           'danger',  'techno-fleches',       'builder_updates');
+// Create panels to simulate send to daemon
+panelCreator('Simulate comm. from Daemon',     'danger',  'fas fa-exchange-alt',  'builder_toJeedom');
+panelCreator('Reapply upgrade script',         'danger',  'techno-fleches',       'builder_updates');
 
 // Create panels to edit Cache values
-panelCreator('Cache values for Daemon',          'primary', 'fas fa-book',          'builder_cacheInt');
-panelCreator('Cache values for Brokers',         'primary', 'fas fa-book',          'builder_cacheBrk');
-panelCreator('Cache values for Equipments',      'primary', 'fas fa-book',          'builder_cacheEqp');
-panelCreator('Cache values for Info Commands',   'primary', 'fas fa-book',          'builder_cacheCmdI');
-panelCreator('Cache values for Action Commands', 'primary', 'fas fa-book',          'builder_cacheCmdA');
+panelCreator('Daemon cache values',            'primary', 'fas fa-book',          'builder_cacheInt');
+panelCreator('Brokers cache values',           'primary', 'fas fa-book',          'builder_cacheBrk');
+panelCreator('Equipments cache values',        'primary', 'fas fa-book',          'builder_cacheEqp');
+panelCreator('Info Commands cache values',     'primary', 'fas fa-book',          'builder_cacheCmdI');
+panelCreator('Action Commands cache values',   'primary', 'fas fa-book',          'builder_cacheCmdA');
 
 ?>
         </div>
