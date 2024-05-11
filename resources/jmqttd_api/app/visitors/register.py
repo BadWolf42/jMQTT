@@ -41,6 +41,7 @@ class RegisteringLogicVisitor(LogicVisitor):
         EqLogic.all[e.model.id] = e
         # Add EqLogic in BrkLogic eqLogics list
         e.weakBrk().eqpts[e.model.id] = e
+        # TODO Add eq to brk topics/wildcards if auto_add_cmd is enable
         logger.trace('id=%s, eq registered', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:

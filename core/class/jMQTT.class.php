@@ -1674,8 +1674,8 @@ class jMQTT extends eqLogic {
         }
     }
 
-    // TODO: Split `jMQTT::brokerMessageCallback()` in smaller functions
-    //  labels: quality, php
+    // TODO REMOVE THIS -------------------------------------------------------
+    //  When auto_add_cmd flag is reimplemented in Daemon
     /**
      * Callback called each time a message matching subscribed topic is received from the broker.
      *
@@ -1688,29 +1688,6 @@ class jMQTT extends eqLogic {
 
         $start_t = microtime(true);
         $this->setStatus(array('lastCommunication' => date('Y-m-d H:i:s'), 'timeout' => 0));
-
-        // Is Interact topic enabled ?
-        if ($this->getConf(jMQTTConst::CONF_KEY_MQTT_INT)) {
-            // If "simple" Interact topic, process the request
-            if ($msgTopic == $this->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC)) {
-                // Request Payload: string
-                $this->interactMessage($msgValue);
-                // Reply Payload on /reply: {"query": string, "reply": string}
-            }
-            // If "advanced" Interact topic, process the request
-            if ($msgTopic == $this->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC) . '/advanced') {
-                // Request Payload on /advanced: {"query": string, "utf8": bool, "emptyReply": ???, profile": ???, "reply_cmd": <cmdId>, "force_reply_cmd": bool}
-                $param = json_decode($msgValue, true);
-                $this->interactMessage($param['query'], $param);
-                // Reply Payload on /reply: $param + {"reply": string}
-            }
-        }
-
-        // If this is the API topic, process the request
-        if ($this->getConf(jMQTTConst::CONF_KEY_MQTT_API)
-            && $msgTopic == $this->getConf(jMQTTConst::CONF_KEY_MQTT_API_TOPIC)) {
-            $this->processApiRequest($msgValue);
-        }
 
         // Loop on jMQTT equipments and get ones that subscribed to the current message
         $elogics = array();
@@ -1872,6 +1849,7 @@ class jMQTT extends eqLogic {
             ));
         }
     }
+    // END OF TODO ------------------------------------------------------------
 
     /**
      * Publish a given message to the MQTT broker attached to this object

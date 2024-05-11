@@ -406,66 +406,6 @@ class jMQTTCallbacks {
     }
 
     /**
-     * Daemon callback to send a MQTT payload to Jeedom
-     */
-    public static function onMessage() {
-        $message = self::getPayload();
-        if (
-            !isset($message['brk'])
-            || !isset($message['topic'])
-            || !isset($message['payload'])
-        ) {
-            http_response_code(400);
-            echo 'Bad Request parameter.';
-            die();
-        }
-        jMQTT::logger(
-            'debug',
-            sprintf(
-                "onMessage: brk='%1\$s', topic='%2\$s', payload='%3\$s', qos=%4\$s, retain=%5\$s",
-                $message['brk'],
-                $message['topic'],
-                $message['payload'],
-                $message['qos'],
-                $message['retain'] ? 'True' : 'False'
-            )
-        );
-
-        try {
-            $broker = jMQTT::getBrokerFromId(intval($message['brk']));
-            $broker->brokerMessageCallback(
-                $message['topic'],
-                $message['payload'],
-                $message['qos'],
-                $message['retain']
-            );
-        } catch (Throwable $e) {
-            if (log::getLogLevel(jMQTT::class) > 100) {
-                jMQTT::logger('error', sprintf(
-                    __("%1\$s() a levé l'Exception: %2\$s", __FILE__),
-                    __METHOD__,
-                    $e->getMessage()
-                ));
-            } else {
-                jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
-                    __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                    ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s,".
-                    "<br/>@Topic: %5\$s,<br/>@Payload: %6\$s,".
-                    "<br/>@Qos: %7\$s,<br/>@Retain: %8\$s.",
-                    __METHOD__,
-                    $e->getMessage(),
-                    $e->getTraceAsString(),
-                    $message['brk'],
-                    $message['topic'],
-                    $message['payload'],
-                    $message['qos'],
-                    $message['retain'] ? 'True' : 'False'
-                )));
-            }
-        }
-    }
-
-    /**
      * Daemon callback to send values to update info cmds in Jeedom
      */
     public static function onValues() {

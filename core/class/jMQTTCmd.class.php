@@ -518,6 +518,8 @@ class jMQTTCmd extends cmd {
         // If _preSaveInformations is null, It's a fresh new cmd.
         if (is_null($this->_preSaveInformations)) {
 
+            // TODO REMOVE THIS -----------------------------------------------
+            //   When no need of updateJsonCmdValue & init new cmd in daemon is OK
             // Type Info and deriving from a JSON payload :
             // Initializing value from "root" cmd
             if ($this->getType() == 'info' && $this->isJson()) {
@@ -540,6 +542,7 @@ class jMQTTCmd extends cmd {
                     }
                 }
             }
+            // END OF TODO ----------------------------------------------------
 
             // Update listener on Eq (not Broker) at creation
             $this->listenerUpdate();

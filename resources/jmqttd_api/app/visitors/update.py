@@ -58,6 +58,7 @@ class UpdatingLogicVisitor(LogicVisitor):
         # Backup current model and set new in place
         oldModel = e.model
         e.model = self.targetModel
+        # TODO Add/Del eq to brk topics/wildcards if auto_add_cmd has changed and isEnable
         # If isEnable has changed
         if oldModel.isEnable != self.targetModel.isEnable:
             brk = e.weakBrk()
@@ -65,10 +66,12 @@ class UpdatingLogicVisitor(LogicVisitor):
                 # Now Enabled subscribe all info cmds
                 for cmd in [v for v in e.cmd_i.values()]:
                     await brk.addCmd(cmd)
+                # TODO Add eq to brk topics/wildcards if auto_add_cmd is now enabled
             else:
                 # Now Disabled unsubscribe all info cmds
                 for cmd in [v for v in e.cmd_i.values()]:
                     await brk.delCmd(cmd)
+                # TODO Del eq to brk topics/wildcards if auto_add_cmd is now disabled
         logger.debug('id=%s, eq updated', e.model.id)
 
     async def visit_cmd(self, e: CmdLogic) -> None:

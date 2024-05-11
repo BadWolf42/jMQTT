@@ -45,6 +45,7 @@ class UnregisteringLogicVisitor(LogicVisitor):
         # Cleanup just in case
         e.cmd_i.clear()
         e.cmd_a.clear()
+        # TODO Del eq to brk topics/wildcards if auto_add_cmd is enable
         # Remove this EqLogic from the BrkLogic
         del e.weakBrk().eqpts[e.model.id]
         # Remove BrkLogic weakref

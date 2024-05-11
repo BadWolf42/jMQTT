@@ -130,6 +130,7 @@ class BrkLogic(VisitableLogic):
             del target[topic]
 
     async def __dispatch(self, message: Message) -> None:
+        ts = time()
         cfg = self.model.configuration
         if cfg.mqttApi and str(message.topic) == cfg.mqttApiTopic:
             payload = str(message.payload)
@@ -143,7 +144,8 @@ class BrkLogic(VisitableLogic):
             elif str(message.topic) == (cfg.mqttIntTopic + '/advanced'):
                 self.log.debug('Interaction (advanced): "%s"', payload)
                 await Callbacks.interact(self.model.id, payload, True)
-        ts = time()
+        # TODO Create new commands here for eqLogic if cfg.auto_add_cmd
+        #  Add a 'dummy' Cmd in targeted Eq to avoid multiple commands creation
         if str(message.topic) in self.topics:
             self.log.debug(
                 'Got message on topic %s for cmd(s): %s',
