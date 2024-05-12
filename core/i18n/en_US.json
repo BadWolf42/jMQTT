@@ -662,7 +662,8 @@
 		"Erreur lors de la lecture du Template '%s'": "Error while reading Template '%s'"
 	},
 	"plugins/jMQTT/resources/update/24.3.0.php": {
-		"Cache des équipements correctement nettoyés": "Successfully cleaned equipments caches",
+		"Cache des équipements correctement nettoyés": "Equipments caches successfully cleaned-up",
+		"Clés de configuration du démon correctement nettoyées": "Daemon configuration keys successfully cleaned-up",
 		"Erreur lors du nettoyage du cache de l'équipement #%s#": "Error while clearing equipment cache #%s#"
 	}
 }

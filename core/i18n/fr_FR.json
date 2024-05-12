@@ -663,6 +663,7 @@
 	},
 	"plugins/jMQTT/resources/update/24.3.0.php": {
 		"Cache des équipements correctement nettoyés": "Cache des équipements correctement nettoyés",
+		"Clés de configuration du démon correctement nettoyées": "Clés de configuration du démon correctement nettoyées",
 		"Erreur lors du nettoyage du cache de l'équipement #%s#": "Erreur lors du nettoyage du cache de l'équipement #%s#"
 	}
 }

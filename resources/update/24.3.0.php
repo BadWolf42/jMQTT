@@ -13,3 +13,8 @@ foreach (jMQTT::byType('jMQTT') as $eqLogic) {
 }
 
 jMQTT::logger('info', __("Cache des équipements correctement nettoyés", __FILE__));
+
+config::remove('urlOverrideEnable', 'jMQTT');
+config::remove('urlOverrideValue', 'jMQTT');
+
+jMQTT::logger('info', __("Clés de configuration des Brokers jMQTT nettoyées", __FILE__));
