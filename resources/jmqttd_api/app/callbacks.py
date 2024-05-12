@@ -31,19 +31,17 @@ class Callbacks:
                     headers={'Authorization': 'Bearer ' + settings.apikey},
                     params={'a': action},
                     json=data,
-                    timeout=10,  # use a 10s timeout
+                    timeout=10,
                 ) as resp:
                     text = await resp.text()
                     status = resp.status
-                    logger.trace(
-                        '%s: Status=%i, Body="%s"', action, status, text
-                    )
+                    logger.trace('%s: Status=%i, Body="%s"', action, status, text)
                     if status == 200:
                         cls._lastSnd = time()
                         cls._retrySnd = 0
                         return True
         except ClientError:
-            pass # TODO Retry to connect?
+            pass  # TODO Should this method try to reconnect?
         logger.error('COULD NOT send TO Jeedom: %s', dumps(data))
         cls._retrySnd += 1
         return False
