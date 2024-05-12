@@ -107,9 +107,10 @@ class BrkLogic(VisitableLogic):
         # Add CmdLogic to topics in BrkLogic
         target[topic][cmd.model.id] = cmd
         # Subscribe to the topic, after putting cmd in broker
-        if subNeeded and self.model.isEnable:
+        if subNeeded and self.mqttClient is not None:
             # TODO Get QoS when Qos location is in cmd
-            await self.subscribe(topic, 1)
+            qos = 1
+            await self.subscribe(topic, qos)
 
     async def delCmd(self, cmd: CmdLogic) -> None:
         topic = cmd.model.configuration.topic
@@ -122,7 +123,8 @@ class BrkLogic(VisitableLogic):
         del target[topic][cmd.model.id]
         # Check if unsubscription is needed
         if len(target[topic]) == 0:
-            await self.unsubscribe(topic)
+            if self.mqttClient is not None:
+                await self.unsubscribe(topic)
             del target[topic]
 
     async def __dispatch(self, message: Message) -> None:
@@ -155,7 +157,7 @@ class BrkLogic(VisitableLogic):
             if message.topic.matches(sub):
                 self.log.debug(
                     'Got message on wildcard %s for cmd(s): %s',
-                    message.topic,
+                    sub,
                     list(self.wildcards[sub]),
                 )
                 cmds = self.wildcards[sub].values()
@@ -289,17 +291,19 @@ class BrkLogic(VisitableLogic):
         try:
             self.mqttClient = client
             await Callbacks.brokerUp(self.model.id)
-            await self.__initialSubs()
-            if cfg.mqttLwt:
-                await self.publish(
-                    topic=cfg.mqttLwtTopic,
-                    payload=cfg.mqttLwtOnline,
-                    qos=cfg.mqttLwtQos,
-                    retain=cfg.mqttLwtRetain,
-                )
             # TODO To use with python >=3.8
-            #  async for msg in client.messages:
+            #  remove `async with client.messages() as messages:`
             async with client.messages() as messages:
+                await self.__initialSubs()
+                if cfg.mqttLwt:
+                    await self.publish(
+                        topic=cfg.mqttLwtTopic,
+                        payload=cfg.mqttLwtOnline,
+                        qos=cfg.mqttLwtQos,
+                        retain=cfg.mqttLwtRetain,
+                    )
+                # TODO To use with python >=3.8
+                #  async for msg in client.messages:
                 async for msg in messages:
                     self.log.trace('Got msg on %s: %s', msg.topic, msg.payload)
                     try:
