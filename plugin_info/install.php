@@ -79,13 +79,13 @@ function jMQTT_update($_direct=true) {
     // Apply migration files in the right order
     foreach ($migrations as $ver => $name) {
         try {
-            $file = __DIR__ . '/../resources/update/' . $name . '.php';
+            $file = __DIR__ . '/../resources/update/' . $name;
             if (file_exists($file)) {
                 log::add(
                     'jMQTT',
                     'debug',
                     sprintf(
-                        __("Application du fichier de migration vers la version %d...", __FILE__),
+                        __("Application du fichier de migration vers la version %s...", __FILE__),
                         $ver
                     )
                 );
@@ -94,7 +94,7 @@ function jMQTT_update($_direct=true) {
                     'jMQTT',
                     'debug',
                     sprintf(
-                        __("Migration vers la version %d réalisée avec succès", __FILE__),
+                        __("Migration vers la version %s réalisée avec succès", __FILE__),
                         $ver
                     )
                 );
