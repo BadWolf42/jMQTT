@@ -1470,7 +1470,14 @@ class jMQTT extends eqLogic {
      * Core callback to stop the daemon
      */
     public static function deamon_stop() {
-        jMQTTDaemon::stop();
+        try {
+            jMQTTDaemon::stop();
+        } catch (Throwable $e) {
+            jMQTT::logger('debug', sprintf(
+                "---> stop() Exception: %s,\n@Stack: %s",
+                $e->getMessage(), $e->getTraceAsString()
+            ));
+        }
     }
 
     /**
