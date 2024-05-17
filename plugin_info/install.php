@@ -59,7 +59,7 @@ function jMQTT_update($_direct=true) {
     // List all migration files
     $files = ls(__DIR__ . '/../resources/update/', '*.php', false, array('files'));
     $migrations = array();
-    foreach($files as $name) {
+    foreach ($files as $name) {
         // Use only matching files
         if (!preg_match_all("/^(\d+)(\.(\d+)(\.(\d+))?)?.php$/", $name, $m))
             continue;
@@ -77,7 +77,7 @@ function jMQTT_update($_direct=true) {
     uksort($migrations, 'version_compare');
 
     // Apply migration files in the right order
-    foreach($migrations as $ver => $name) {
+    foreach ($migrations as $ver => $name) {
         try {
             $file = __DIR__ . '/../resources/update/' . $name . '.php';
             if (file_exists($file)) {

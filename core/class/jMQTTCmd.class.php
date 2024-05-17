@@ -136,8 +136,11 @@ class jMQTTCmd extends cmd {
                 $value
             )
         );
-        if ($this->isAvailability()
-            && ((!boolval($value)) != boolval($eqLogic->getStatus('warning', 0)))) {
+        if (
+            $this->isAvailability()
+            && boolval($value) == boolval($eqLogic->getStatus('warning', 0))
+            // => warning is ON (resp. OFF) and eq is Available (resp. Unavailable)
+        ) {
             if (!boolval($value)) {
                 $eqLogic->setStatus('warning', 1);
                 $eqLogic->log('info', sprintf(
