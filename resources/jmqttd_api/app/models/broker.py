@@ -76,6 +76,9 @@ class BrkConfigModel(BaseModel):
     )(
         strToInt
     )
+    _val_mqttProto: classmethod = validator(
+        "mqttProto", allow_reuse=True, pre=True
+    )(lambda v: v if v != '' else 'mqtt')
     _val_mqttAddress: classmethod = validator(
         "mqttAddress", allow_reuse=True, pre=True
     )(lambda v: v if v != '' else 'localhost')
