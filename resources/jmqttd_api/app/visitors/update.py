@@ -77,7 +77,7 @@ class UpdatingLogicVisitor(LogicVisitor):
     async def visit_cmd(self, e: CmdLogic) -> None:
         logger.trace('id=%s, updating cmd', e.model.id)
         if (
-            # Handle an action cmd change
+            # Handle cmd type changed to action
             self.targetModel.type != 'info'
             # Handle unrecoverable changes (move on another Brk)
             or (

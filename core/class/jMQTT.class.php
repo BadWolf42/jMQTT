@@ -1329,8 +1329,8 @@ class jMQTT extends eqLogic {
             jMQTTDaemon::stop();
         } catch (Throwable $e) {
             jMQTT::logger('debug', sprintf(
-                "---> stop() Exception: %s,\n@Stack: %s",
-                $e->getMessage(), $e->getTraceAsString()
+                __("%1\$s() a levé l'Exception: %2\$s", __FILE__) . "\n@Stack: %s",
+                __METHOD__, $e->getMessage(), $e->getTraceAsString()
             ));
         }
     }
@@ -1644,13 +1644,10 @@ class jMQTT extends eqLogic {
                     )
                 );
             } else { // More info in debug mode, no big log otherwise
-                self::logger('warning', str_replace( "\n", ' <br/> ', sprintf(
-                    __("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__).
-                    ",<br/>@Stack: %3\$s.",
-                    $query,
-                    $e->getMessage(),
-                    $e->getTraceAsString()
-                )));
+                self::logger('warning', sprintf(
+                    __("L'Interaction '%1\$s' a levé l'Exception: %2\$s", __FILE__) . "\n@Stack: %3\$s",
+                    $query, $e->getMessage(), $e->getTraceAsString()
+                ));
             }
 
             // Send reply on a /reply subtopic
@@ -1782,14 +1779,14 @@ class jMQTT extends eqLogic {
                                 $e->getMessage()
                             ));
                         } else { // More info in debug mode, no big log otherwise
-                            $this->log('error', str_replace("\n", ' <br/> ', sprintf(
-                                __("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__).
-                                ",<br/>@Stack: %3\$s,<br/>@Dump: %4\$s.",
+                            $this->log('error', sprintf(
+                                __("L'enregistrement de la nouvelle commande #%1\$s# a levé l'Exception: %2\$s", __FILE__)
+                                . "\n@Stack: %3\$s\n@Dump: %4\$s",
                                 $newCmd->getHumanName(),
                                 $e->getMessage(),
                                 $e->getTraceAsString(),
                                 json_encode($newCmd)
-                            )));
+                            ));
                         }
                     }
                 } else {
@@ -2012,17 +2009,17 @@ class jMQTT extends eqLogic {
                     $e->getMessage()
                 ));
             } else {
-                self::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                self::logger('error', sprintf(
                     __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                    ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s,".
-                    "<br/>@Topic: %5\$s,<br/>@Payload: %6\$s.",
+                    "\n@Stack: %3\$s\n@BrkId: %4\$s".
+                    "\n@Topic: %5\$s\n@Payload: %6\$s",
                     __METHOD__,
                     $e->getMessage(),
                     $e->getTraceAsString(),
                     $this->getBrkId(),
                     $this->getConf(jMQTTConst::CONF_KEY_MQTT_API),
                     $msg
-                )));
+                ));
             }
         }
     }

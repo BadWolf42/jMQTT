@@ -196,14 +196,14 @@ class jMQTTCmd extends cmd {
                     $e->getMessage()
                 ));
             } else { // More info in debug mode, no big log otherwise
-                $eq->log('warning', str_replace("\n", ' <br/> ', sprintf(
-                    "Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s".
-                    ",<br/>@Stack: %4\$s.",
+                $eq->log('warning', sprintf(
+                    "Chemin JSON '%1\$s' de la commande #%2\$s# a levé l'Exception: %3\$s"
+                    . "\n@Stack: %4\$s",
                     $this->getJsonPath(),
                     $this->getHumanName(),
                     $e->getMessage(),
                     $e->getTraceAsString()
-                )));
+                ));
             }
         }
     }

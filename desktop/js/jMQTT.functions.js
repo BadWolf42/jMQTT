@@ -280,12 +280,12 @@ jmqtt.certUpload = function(ev1) {
  * hash:   if provided, it is appended at the end of the URL (shall contain the # character). If a hash was already
  *         present, it is replaced by that one.
  */
-jmqtt.initPluginUrl = function(filter=['id', 'saveSuccessFull','removeSuccessFull', 'hash'], id='', hash='') {
+jmqtt.initPluginUrl = function(filter=['id', 'saveSuccessFull', 'removeSuccessFull', 'hash'], id='', hash='') {
     var vars = getUrlVars();
     var url = 'index.php?';
     for (var i in vars) {
-        if ($.inArray(i,filter) < 0) {
-            if (url.substr(-1) != '?')
+        if ($.inArray(i, filter) < 0) {
+            if (url.substring(url.length - 1) != '?')
                 url += '&';
             url += i + '=' + vars[i].replace('#', '');
         }
@@ -597,7 +597,6 @@ jmqtt.addEqFromRealTime = function(topic, jsonPath) {
                     $.fn.showAlert({message: `{{Le nouvel équipement <b>${dataEq.name}</b> a bien été ajoutée.}}`, level: 'success'});
                 }
             });
-
         }}
     });
 }

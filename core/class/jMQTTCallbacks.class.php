@@ -221,14 +221,14 @@ class jMQTTCallbacks {
                         $e->getMessage()
                     ));
                 } else {
-                    jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                    jMQTT::logger('error', sprintf(
                         __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                        ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
+                        "\n@Stack: %3\$s\n@BrkId: %4\$s",
                         __METHOD__,
                         $e->getMessage(),
                         $e->getTraceAsString(),
                         $broker->getId()
-                    )));
+                    ));
                 }
             }
         }
@@ -318,14 +318,14 @@ class jMQTTCallbacks {
                     $e->getMessage()
                 ));
             } else {
-                jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                jMQTT::logger('error', sprintf(
                     __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                    ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
+                    "\n@Stack: %3\$s\n@BrkId: %4\$s",
                     __METHOD__,
                     $e->getMessage(),
                     $e->getTraceAsString(),
                     $id
-                )));
+                ));
             }
         }
     }
@@ -393,14 +393,14 @@ class jMQTTCallbacks {
                     $e->getMessage()
                 ));
             } else {
-                jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                jMQTT::logger('error', sprintf(
                     __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                    ",<br/>@Stack: %3\$s,<br/>@BrkId: %4\$s.",
+                    "\n@Stack: %3\$s\n@BrkId: %4\$s",
                     __METHOD__,
                     $e->getMessage(),
                     $e->getTraceAsString(),
                     $id
-                )));
+                ));
             }
         }
     }
@@ -483,14 +483,14 @@ class jMQTTCallbacks {
                         $e->getMessage()
                     ));
                 } else {
-                    jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                    jMQTT::logger('error', sprintf(
                         __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                        ",<br/>@Stack: %3\$s,<br/>@cmdId: %4\$s.",
+                        "\n@Stack: %3\$s\n@cmdId: %4\$s",
                         __METHOD__,
                         $e->getMessage(),
                         $e->getTraceAsString(),
                         $cmdId
-                    )));
+                    ));
                 }
             }
         }

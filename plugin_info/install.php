@@ -70,13 +70,13 @@ function jMQTT_update($_direct=true) {
                 log::add('jMQTT', 'debug', "Migration to version " . $ver . " successful");
             }
         } catch (Throwable $e) {
-            log::add('jMQTT', 'error', str_replace("\n", ' <br/> ', sprintf(
-                __("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__).
-                ",<br/>@Stack: %3\$s.",
+            log::add('jMQTT', 'error', sprintf(
+                __("Exception rencontrée lors de la migration vers la version %1\$d : %2\$s", __FILE__)
+                . "\n@Stack: %3\$s",
                 $ver,
                 $e->getMessage(),
                 $e->getTraceAsString()
-            )));
+            ));
         }
     }
 

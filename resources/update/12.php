@@ -33,13 +33,13 @@ foreach ((jMQTT::getBrokers()) as $broker) {
         if (log::getLogLevel(jMQTT::class) > 100) {
             jMQTT::logger('error', sprintf("%s raised Exception: %s", __FILE__, $e->getMessage()));
         } else {
-            jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
-                "%s raised Exception: %s,<br/>@Stack: %s,<br/>@BrokerId: %s.",
+            jMQTT::logger('error', sprintf(
+                "%s raised Exception: %s\n@Stack: %s\n@BrokerId: %s",
                 __FILE__,
                 $e->getMessage(),
                 $e->getTraceAsString(),
                 $broker->getId()
-            )));
+            ));
         }
     }
 }
@@ -66,13 +66,13 @@ foreach (jMQTT::byType(jMQTT::class) as $eqLogic) {
         if (log::getLogLevel(jMQTT::class) > 100) {
             jMQTT::logger('error', sprintf("%s raised Exception: %s", __FILE__, $e->getMessage()));
         } else {
-            jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
-                "%s raised Exception: %s,<br/>@Stack: %s,<br/>@EqlogicId: %s.",
+            jMQTT::logger('error', sprintf(
+                "%s raised Exception: %s\n@Stack: %s\n@EqlogicId: %s",
                 __FILE__,
                 $e->getMessage(),
                 $e->getTraceAsString(),
                 $eqLogic->getId()
-            )));
+            ));
         }
     }
 }

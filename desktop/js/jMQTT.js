@@ -418,9 +418,9 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
             dialog_message += '<label class="control-label">{{Saisissez le topic racine :}}</label> ';
             var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
             if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
-                currentTopic = currentTopic.substr(0,currentTopic.length-1);
+                currentTopic = currentTopic.substring(0, currentTopic.length - 1);
             if (currentTopic.endsWith("/"))
-                currentTopic = currentTopic.substr(0,currentTopic.length-1);
+                currentTopic = currentTopic.substring(0, currentTopic.length - 1);
             dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br/><br/>'
             dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ';
             dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label></div>';
@@ -474,9 +474,9 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
     var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
     var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
     if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
-        currentTopic = currentTopic.substr(0,currentTopic.length-1);
+        currentTopic = currentTopic.substring(0, currentTopic.length - 1);
     if (currentTopic.endsWith("/"))
-        currentTopic = currentTopic.substr(0,currentTopic.length-1);
+        currentTopic = currentTopic.substring(0, currentTopic.length - 1);
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="oldTopic" value="'+currentTopic+'"><br/><br/>';
     dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="newTopic"><br/><br/>';
