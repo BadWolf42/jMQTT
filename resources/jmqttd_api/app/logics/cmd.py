@@ -2,7 +2,7 @@ from __future__ import annotations
 from aiomqtt import Message
 from logging import getLogger
 from json import dumps, JSONDecodeError, loads
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, Union
 from weakref import ref
 from zlib import decompress as zlib_decompress
 

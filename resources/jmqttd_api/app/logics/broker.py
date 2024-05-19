@@ -5,7 +5,6 @@ from logging import getLogger  # , DEBUG
 from os import remove
 import ssl
 from tempfile import NamedTemporaryFile
-from time import time
 from typing import Dict, List, TYPE_CHECKING, Union
 from weakref import WeakValueDictionary
 
@@ -101,7 +100,6 @@ class BrkLogic(VisitableLogic, Dispatcher):
 
     # -----------------------------------------------------------------------------
     async def dispatch(self, message: Message, ts: float) -> Union[int, None]:
-        ts = time()
         cfg = self.model.configuration
         topic = str(message.topic)
         if cfg.mqttApi and topic == cfg.mqttApiTopic:

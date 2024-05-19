@@ -1,6 +1,7 @@
 from __future__ import annotations
 from logging import getLogger
-from typing import Dict, TYPE_CHECKING
+from aiomqtt import Message
+from typing import Dict, TYPE_CHECKING, Union
 from weakref import ref, WeakValueDictionary
 
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor

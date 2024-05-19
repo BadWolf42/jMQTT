@@ -56,7 +56,7 @@ class TopicMap(VisitableLogic):
         self,
         brokerId: int,
         subscribe: Callable[[str, int], Awaitable[None]],
-        unsubscribe: Callable[[str], Awaitable[None]]
+        unsubscribe: Callable[[str], Awaitable[None]],
     ):
         self.log = getLogger(f'jmqtt.topicmap.{brokerId}')
         self.__subscribe = subscribe
