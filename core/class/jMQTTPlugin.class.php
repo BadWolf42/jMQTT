@@ -88,15 +88,15 @@ class jMQTTPlugin {
 
         $update = update::byLogicalId('jMQTT');
         shell_exec(
-            'echo "\n\n================================================================================\n'.
-            '== Jeedom '.jeedom::version().' '.jeedom::getHardwareName().
-            ' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'.
-            '$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'.
-            '== $(python3 -VV | xargs echo -n)\n'.
-            '== jMQTT v'.config::byKey('version', 'jMQTT', 'unknown', true).
-            ' ('.$update->getLocalVersion().') branch:'.$update->getConfiguration()['version'].
-            ' previously:v'.config::byKey('previousVersion', 'jMQTT', 'unknown', true).
-            '" >> '.log::getPathToLog($depLogFile)
+            'echo "\n\n================================================================================\n'
+            . '== Jeedom ' . jeedom::version() . ' ' . jeedom::getHardwareName()
+            . ' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'
+            . '$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'
+            . '== $(python3 -VV | xargs echo -n)\n'
+            . '== jMQTT v' . config::byKey('version', 'jMQTT', 'unknown', true)
+            . ' (' . $update->getLocalVersion() . ') branch:' . $update->getConfiguration()['version']
+            . ' previously:v' . config::byKey('previousVersion', 'jMQTT', 'unknown', true)
+            . '" >> ' . log::getPathToLog($depLogFile)
         );
 
         return array(

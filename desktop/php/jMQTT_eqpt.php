@@ -17,7 +17,9 @@
                     <option value="">{{Aucun}}</option>
                     <?php
                     foreach ((jeeObject::buildTree(null, false)) as $object) {
-                        echo '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber')) . $object->getName() . '</option>';
+                        echo '<option value="' . $object->getId() . '">';
+                        echo str_repeat('&nbsp;&nbsp;', $object->getConfiguration('parentNumber'));
+                        echo $object->getName() . '</option>';
                     }
                     ?>
                 </select>
@@ -29,10 +31,9 @@
             <div class="col-sm-8">
                 <?php
                 foreach (jeedom::getConfiguration('eqLogic:category') as $key => $value) {
-                    echo '<label class="checkbox-inline">';
-                    echo '<input type="checkbox" class="eqLogicAttr" data-l1key="category" data-l2key="' . $key . '" />' .
-                        $value['name'];
-                    echo '</label>';
+                    echo '<label class="checkbox-inline"><input type="checkbox" ';
+                    echo 'class="eqLogicAttr" data-l1key="category" ';
+                    echo 'data-l2key="' . $key . '" />' . $value['name'] . '</label>';
                 }
                 ?>
 

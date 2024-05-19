@@ -112,9 +112,6 @@ class BrkConfigModel(BaseModel):
     _val_mqttTlsCheck: classmethod = validator(
         "mqttTlsCheck", allow_reuse=True, pre=True
     )(lambda v: v if v != '' else 'public')
-    _val_mqttTlsClient: classmethod = validator(
-        "mqttTlsClient", allow_reuse=True, pre=True
-    )(strToBool)
 
 
 class BrkModel(EqBaseModel):
