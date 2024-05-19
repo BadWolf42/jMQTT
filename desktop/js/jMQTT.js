@@ -737,7 +737,8 @@ function printEqLogic(_eqLogic) {
         _eqLogic.cmd = new_cmds;
 
         // JSON view: disable the sortable functionality
-        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true;
+        if (jeeFrontEnd.pluginTemplate.cmdSortable)
+            jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true;
     } else {
         // CLASSIC view button is active
         for (var c of _eqLogic.cmd) {
@@ -745,7 +746,8 @@ function printEqLogic(_eqLogic) {
         }
 
         // Classical view: enable the sortable functionality
-        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false;
+        if (jeeFrontEnd.pluginTemplate.cmdSortable)
+            jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false;
     }
 
     // Show UI elements depending on the type
