@@ -34,6 +34,15 @@ class CmdInfoConfigModel(BaseModel):
     jinja: str = ''
     toFile: bool = False
 
+    @model_validator(mode='after')
+    def check_handler(self) -> 'CmdInfoConfigModel':
+        if (
+            self.handler == CmdInfoHandlerEnum.jsonPath
+            and self.jsonPath.strip() == ''
+        ):
+            self.handler = CmdInfoHandlerEnum.literal
+        return self
+
 
 # -----------------------------------------------------------------------------
 class CmdInfoSubTypeEnum(str, Enum):
