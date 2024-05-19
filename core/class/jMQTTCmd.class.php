@@ -756,7 +756,7 @@ class jMQTTCmd extends cmd {
             $l->remove();
         }
         // Send to Daemon only if the command is on an eq
-        if ($eqLogic->getType() != jMQTTConst::TYP_EQPT) {
+        if ($eqLogic->getType() == jMQTTConst::TYP_EQPT) {
             jMQTTComToDaemon::cmdDel($this->getId());
         }
     }
