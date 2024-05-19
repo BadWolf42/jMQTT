@@ -1,5 +1,5 @@
 from __future__ import annotations
-from logging import getLogger
+from logging import DEBUG, getLogger
 from typing import List, Union
 
 from visitors.abstractvisitor import LogicVisitor
@@ -21,10 +21,8 @@ class PrintVisitor(LogicVisitor):
     async def visit_topicmap(self, e: TopicMap) -> None:
         for tab, char in [(e.topics, 'T'), (e.wildcards, 'W'), (e.defaults, 'D')]:
             for topic in tab:
-                logger.debug(
-                    f'{"│ " * self.level}│ {char}:   {topic} => {{%s}}',
-                    ', '.join([str(v.model.id) for v in l[topic]]),
-                )
+                ids = '{' + ', '.join([str(v.model.id) for v in tab[topic]]) + '}'
+                logger.debug(f'{"│ " * self.level}│ {char}:   {topic} => {ids}')
 
     async def visit_brk(self, e: BrkLogic) -> None:
         logger.debug(
@@ -78,4 +76,5 @@ class PrintVisitor(LogicVisitor):
             )
 
     async def print(self) -> None:
-        await self.toPrint.accept(self)
+        if logger.isEnabledFor(DEBUG):
+            await self.toPrint.accept(self)
