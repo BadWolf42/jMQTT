@@ -9,7 +9,7 @@
     "utilization_en_US": "Mosquitto Broker installation ; Multiple Broker support ; Automatic MQTT devices creation, automatic information commands creation, options to disable these automatisms ; Add MQTT equipment manually ; Equipment duplication ; Complex JSON payload decoding and creation of associated information commands ; Display in Jeedom Classic view or JSON view ;  Added manual commands (for publishing), Retain mode support ; Template manager ; Emulation and raising the battery level of equipment in Jeedom ; Emulation and feedback of equipment availability and alarming in Jeedom ; and many more...",
     "licence": "AGPL",
     "author": "Bad",
-    "require": "4.3.11",
+    "require": "4.3.12",
     "category": "automation protocol",
     "hasDependency": true,
     "hasOwnDeamon": true,
@@ -25,5 +25,5 @@
     },
     "languages": ["fr_FR","en_US"],
     "compatibility": ["atlas","diy","docker","luna","miniplus","rpi","smart","v4"],
-    "pluginVersion" : "24.3.1"
+    "pluginVersion" : "24.3.2"
 }
