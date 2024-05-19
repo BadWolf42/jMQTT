@@ -546,12 +546,13 @@ function builder_actions(_root_div) {
     add_action_event(div, 'portFileDelete',   'danger',  'fas fa-book-dead',                   'Delete PORT file');
     add_action_event(div, 'killAllSIGTERM',   'success', 'fas fa-skull',                       'KillAll jMQTTd (gracefully)');
     add_action_event(div, 'killAllSIGKILL',   'warning', 'fas fa-skull-crossbones',            'KillAll jMQTTd (forcefully)');
+    add_action_event(div, 'hbStop',           'danger',  'fas fa-stop',                        'Stop Heatbeats');
+    div.append('<div class="col-sm-6">&nbsp;</div>'); // Alignement
     div.append('<div class="col-sm-12" style="height:15px">&nbsp;</div>'); // Spacer
     _root_div.append(div);
 
     _root_div.append('<legend style="margin-bottom:2px!important"><i class="fas fa-tools"></i> Troubleshooting</legend>');
     div = $('<div class="form-group">');
-    add_action_event(div, 'hbStop',           'danger',  'fas fa-stop',                        'Stop Heatbeats');
     add_action_event(div, 'printTree',        'info',    'kiko-fingerprint',                   'Ask the daemon for a "Print Tree"');
     add_action_event(div, 'threadDump',       'info',    'kiko-zoom',                          'Ask the daemon for a "Thread Dump"');
     add_action_event(div, 'logVerbose',       'info',    'far fa-file',                        'VERBOSE logs');
