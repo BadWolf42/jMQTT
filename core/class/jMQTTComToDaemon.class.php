@@ -171,7 +171,6 @@ class jMQTTComToDaemon {
         $duration = 180
     ) {
         $params = array(
-            'eqLogic' => intval($id),
             'subscribe' => $subscribe,
             'exclude' => $exclude,
             'retained' => boolval($retained),

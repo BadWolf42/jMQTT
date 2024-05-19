@@ -2,15 +2,19 @@ from __future__ import annotations
 from aiomqtt import Message
 from logging import getLogger
 from json import dumps, JSONDecodeError, loads
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 from weakref import ref
 from zlib import decompress as zlib_decompress
 
 from callbacks import Callbacks
 from converters.jsonpath import BadJsonPath, compiledJsonPath, JsonPathDidNotMatch
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
+if TYPE_CHECKING:
+    from logics.broker import BrkLogic
+    from logics.eq import EqLogic
 from models.cmd import CmdInfoDecoderModel, CmdInfoHandlerModel
-from models.unions import CmdModel
+if TYPE_CHECKING:
+    from models.unions import CmdModel
 
 
 logger = getLogger('jmqtt.cmd')
@@ -22,23 +26,28 @@ class BadJsonPayload(Exception):
     pass
 
 
+# -----------------------------------------------------------------------------
 class CmdLogic(VisitableLogic):
     all: Dict[int, CmdLogic] = {}
 
+    # -----------------------------------------------------------------------------
     def __init__(self, model: CmdModel):
         self.model: CmdModel = model
-        self.weakEq: ref = None
-        self.weakBrk: ref = None
+        self.weakEq: ref[EqLogic] = None
+        self.weakBrk: ref[BrkLogic] = None
 
+    # -----------------------------------------------------------------------------
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_cmd(self)
 
+    # -----------------------------------------------------------------------------
     def isWildcard(self):
         return (
             '+' in self.model.configuration.topic
             or '#' in self.model.configuration.topic
         )
 
+    # -----------------------------------------------------------------------------
     def _decompress(self, pl):
         if not self.model.configuration.tryUnzip:
             return pl
@@ -58,6 +67,7 @@ class CmdLogic(VisitableLogic):
             )
         return pl
 
+    # -----------------------------------------------------------------------------
     def _decode(self, pl) -> str:
         decoder = self.model.configuration.decoder
         if decoder == CmdInfoDecoderModel.none:
@@ -76,9 +86,11 @@ class CmdLogic(VisitableLogic):
             )
         return pl
 
+    # -----------------------------------------------------------------------------
     def _handleLiteral(self, payload, ts: float) -> str:
         return payload
 
+    # -----------------------------------------------------------------------------
     def _handleJsonPath(self, payload, ts: float) -> str:
         jsonPath = self.model.configuration.jsonPath
         if jsonPath.strip() == '':
@@ -95,6 +107,7 @@ class CmdLogic(VisitableLogic):
             return found[0].value
         return [match.value for match in found]
 
+    # -----------------------------------------------------------------------------
     def _handleJinja(self, payload, ts: float) -> str:
         jinja = self.model.configuration.jinja
         if jinja.strip() == '' or '{' not in jinja:
@@ -102,11 +115,13 @@ class CmdLogic(VisitableLogic):
         # TODO Handle Jinja template
         return payload
 
+    # -----------------------------------------------------------------------------
     def _normalize(self, payload) -> str:
         if type(payload) not in [bool, int, float, str]:
             return dumps(payload)
         return payload
 
+    # -----------------------------------------------------------------------------
     def _writeToFile(self, payload, ts: float) -> str:
         if not self.model.configuration.toFile:
             return payload
@@ -120,6 +135,7 @@ class CmdLogic(VisitableLogic):
         )
         return f'{filename}?{ts}'
 
+    # -----------------------------------------------------------------------------
     async def mqttMsg(self, message: Message, ts: float):
         try:
             payload = message.payload
@@ -133,7 +149,7 @@ class CmdLogic(VisitableLogic):
             payload = self._normalize(payload)
             payload = self._writeToFile(payload, ts)
             logger.info(
-                'id=%i: payload="%s", QoS=%s, retain=%s, ts=%i',
+                'id=%i: payload="%s", qos=%s, retain=%s, ts=%i',
                 self.model.id,
                 payload,
                 message.qos,

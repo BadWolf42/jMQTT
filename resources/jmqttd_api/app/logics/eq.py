@@ -1,30 +1,37 @@
 from __future__ import annotations
 from logging import getLogger
-from typing import Dict
+from typing import Dict, TYPE_CHECKING
 from weakref import ref, WeakValueDictionary
 
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
-from logics.cmd import CmdLogic
-from models.eq import EqModel
+if TYPE_CHECKING:
+    from logics.broker import BrkLogic
+    from logics.cmd import CmdLogic
+if TYPE_CHECKING:
+    from models.eq import EqModel
 
 
 logger = getLogger('jmqtt.eq')
 
 
+# -----------------------------------------------------------------------------
 class EqLogic(VisitableLogic):
     all: Dict[int, EqLogic] = {}
 
+    # -----------------------------------------------------------------------------
     def __init__(self, model: EqModel):
         self.model = model
         # self.cmds: List[int] = []
         # self.cmds: WeakValueDictionary[int, VisitableLogic] = {}
         self.cmd_i: WeakValueDictionary[int, VisitableLogic] = {}
         self.cmd_a: WeakValueDictionary[int, VisitableLogic] = {}
-        self.weakBrk: ref = None
+        self.weakBrk: ref[BrkLogic] = None
 
+    # -----------------------------------------------------------------------------
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_eq(self)
 
+    # -----------------------------------------------------------------------------
     async def addCmd(self, cmd: CmdLogic) -> None:
         # Add the reference to EqLogic
         cmd.weakEq = ref(self)
@@ -35,6 +42,7 @@ class EqLogic(VisitableLogic):
             self.cmd_a[cmd.model.id] = cmd
             # logger.debug('id=%s, cmd disregarded: not an info', cmd.model.id)
 
+    # -----------------------------------------------------------------------------
     async def delCmd(self, cmd: CmdLogic) -> None:
         # Remove CmdLogic ref in EqLogic/BrkLogic
         if cmd.model.type == 'info':

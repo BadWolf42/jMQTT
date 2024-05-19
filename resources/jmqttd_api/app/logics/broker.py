@@ -6,15 +6,17 @@ from os import remove
 import ssl
 from tempfile import NamedTemporaryFile
 from time import time
-from typing import Dict, List, Union
+from typing import Dict, List, TYPE_CHECKING, Union
 from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
-from logics.eq import EqLogic
-from logics.cmd import CmdLogic
+if TYPE_CHECKING:
+    from logics.eq import EqLogic
+    from logics.cmd import CmdLogic
+if TYPE_CHECKING:
+    from models.broker import BrkModel
 from models.broker import (
-    BrkModel,
     MqttProtoModel,
     TlsCheckModel,
     MqttVersionModel,
@@ -64,6 +66,7 @@ def isNotSubscribable(topic: str):
 class BrkLogic(VisitableLogic):
     all: Dict[int, BrkLogic] = {}
 
+    # -----------------------------------------------------------------------------
     def __init__(self, model: BrkModel):
         self.log = getLogger(f'jmqtt.brk.{model.id}')
         self.model = model
@@ -79,11 +82,12 @@ class BrkLogic(VisitableLogic):
         self.mqttClient: Client = None
         self.mqttTask: Task = None
         self.realtimeClient: Task = None
-        self.realtimeTask: Task = None
 
+    # -----------------------------------------------------------------------------
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_brk(self)
 
+    # -----------------------------------------------------------------------------
     async def addCmd(self, cmd: CmdLogic) -> None:
         topic = cmd.model.configuration.topic
         isWildcard = cmd.isWildcard()
@@ -112,6 +116,7 @@ class BrkLogic(VisitableLogic):
             qos = 1
             await self.subscribe(topic, qos)
 
+    # -----------------------------------------------------------------------------
     async def delCmd(self, cmd: CmdLogic) -> None:
         topic = cmd.model.configuration.topic
         target = self.wildcards if cmd.isWildcard() else self.topics
@@ -127,6 +132,7 @@ class BrkLogic(VisitableLogic):
                 await self.unsubscribe(topic)
             del target[topic]
 
+    # -----------------------------------------------------------------------------
     async def __dispatch(self, message: Message) -> None:
         ts = time()
         cfg = self.model.configuration
@@ -164,6 +170,7 @@ class BrkLogic(VisitableLogic):
                 for cmd in cmds:
                     await cmd.mqttMsg(message, ts)
 
+    # -----------------------------------------------------------------------------
     def __buildClient(self) -> Client:
         cfg = self.model.configuration
         tlsInsecure = None
@@ -286,6 +293,7 @@ class BrkLogic(VisitableLogic):
             except MqttError:
                 self.log.exception('Could not mass-subscribe')
 
+    # -----------------------------------------------------------------------------
     async def __runClient(self, client: Client) -> None:
         cfg = self.model.configuration
         try:
@@ -320,6 +328,7 @@ class BrkLogic(VisitableLogic):
                 )
             raise
 
+    # -----------------------------------------------------------------------------
     async def __clientTask(self) -> None:
         self.log.trace('Client task started')
         cfg = self.model.configuration
@@ -383,6 +392,7 @@ class BrkLogic(VisitableLogic):
                     await Callbacks.brokerDown(self.model.id)
                 await sleep(interval)
 
+    # -----------------------------------------------------------------------------
     async def start(self) -> None:
         if not self.model.isEnable:
             self.log.debug('Not enabled, Broker task not created')
@@ -395,6 +405,7 @@ class BrkLogic(VisitableLogic):
         self.mqttTask = create_task(self.__clientTask())
         self.log.debug('Started')
 
+    # -----------------------------------------------------------------------------
     async def stop(self) -> None:
         self.log.debug('Stop requested')
         if self.mqttTask is not None:
@@ -407,10 +418,12 @@ class BrkLogic(VisitableLogic):
         self.mqttTask = None
         self.log.debug('Stopped')
 
+    # -----------------------------------------------------------------------------
     async def restart(self) -> None:
         await self.stop()
         await self.start()
 
+    # -----------------------------------------------------------------------------
     async def publish(self, topic: str, payload: str, qos: int, retain: bool) -> None:
         # TODO have a return value?
         if self.mqttTask is None or self.mqttTask.done():
@@ -445,39 +458,51 @@ class BrkLogic(VisitableLogic):
                 'True' if retain else 'Flase',
             )
 
+    # -----------------------------------------------------------------------------
     async def subscribe(self, topic: str, qos: int) -> None:
         kind = 'wildcard' if '+' in topic or '#' in topic else 'topic'
         self.log.debug('%s="%s", qos=%i', kind, topic, qos)
         if self.mqttClient is not None:
             await self.mqttClient.subscribe(topic, qos)
 
+    # -----------------------------------------------------------------------------
     async def unsubscribe(self, topic: str) -> None:
         kind = 'wildcard' if '+' in topic or '#' in topic else 'topic'
         self.log.debug('%s="%s"', kind, topic)
         if self.mqttClient is not None:
             await self.mqttClient.unsubscribe(topic)
 
+    # -----------------------------------------------------------------------------
     async def realTimeStart(self, params: RealTimeModel) -> bool:
-        self.log.debug('Todo')
-        # TODO realTimeStart
-        return self.model.isEnable
-        # return self.client is not None
+        # Do nothing if Broker is disabled
+        if not self.model.isEnable:
+            return False
 
+        # TODO realTimeStart
+        self.log.debug('Todo')
+        # Store params
+        # Add self to topicmap for params.subscribe topics
+        # Start timer of params.duration for realTimeStop
+        return self.model.isEnable
+        # return self.mqttClient is not None
+
+    # -----------------------------------------------------------------------------
     async def realTimeStatus(self) -> RealTimeStatusModel:
         self.log.debug('Todo')
         # TODO realTimeStatus
         return RealTimeStatusModel(
-            eqLogic=self.model.id,
             retained=False,
             enabled=False,
             timeleft=0,
             count=0,
         )
 
+    # -----------------------------------------------------------------------------
     async def realTimeStop(self) -> None:
         self.log.debug('Todo')
         # TODO realTimeStop
 
+    # -----------------------------------------------------------------------------
     async def realTimeGet(self, since: int) -> List[MqttMessageModel]:
         self.log.debug('Todo')
         if self.realtimeClient is None:
@@ -485,6 +510,7 @@ class BrkLogic(VisitableLogic):
         # TODO realTimeGet
         return []
 
+    # -----------------------------------------------------------------------------
     async def realTimeClear(self) -> None:
         self.log.debug('Todo')
         # TODO realTimeClear

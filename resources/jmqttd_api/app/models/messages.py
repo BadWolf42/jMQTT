@@ -1,8 +1,6 @@
 from enum import Enum
-from typing import Set, Union
-from pydantic import BaseModel, validator
-
-from .utils import strToInt
+from typing import Set
+from pydantic import BaseModel
 
 
 ###############################################################################
@@ -25,8 +23,8 @@ class LogLevelModel(str, Enum):
 class MqttMessageModel(BaseModel):
     topic: str
     payload: str
-    qos: Union[int, None] = 1
-    retain: Union[bool, None] = False
+    qos: int = 0
+    retain: bool = False
 
 
 # See: https://docs.pydantic.dev/2.5/concepts/models/#rootmodel-and-custom-root-types
@@ -46,17 +44,12 @@ class MqttMessageModel(BaseModel):
 
 # -----------------------------------------------------------------------------
 class RealTimeModel(BaseModel):
-    eqLogic: int
-    # subscribe: Union[Set[MqttSubscTopic], None] = set()
-    subscribe: Union[Set[str], None] = set()
-    # exclude: Union[Set[MqttTopic], None] = set()
-    exclude: Union[Set[str], None] = set()
-    retained: Union[bool, None] = True
-    duration: Union[int, None] = 180
-
-    _val_eqLogic: classmethod = validator("eqLogic", allow_reuse=True, pre=True)(
-        strToInt
-    )
+    # subscribe: Set[MqttSubscTopic] = set()
+    subscribe: Set[str] = set()
+    # exclude: Set[MqttTopic] = set()
+    exclude: Set[str] = set()
+    retained: bool = True
+    duration: int = 180
 
 
 # -----------------------------------------------------------------------------
