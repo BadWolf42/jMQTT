@@ -7,6 +7,7 @@ from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
 from logics.topicmap import TopicMap
+from models.cmd import CmdInfoHandlerEnum
 
 
 logger = getLogger('jmqtt.visitor.print')
@@ -56,24 +57,18 @@ class PrintVisitor(LogicVisitor):
         logger.debug('%s└%s', '│ ' * self.level, '─' * (50 - 2 * self.level - 1))
 
     async def visit_cmd(self, e: CmdLogic) -> None:
-        if e.model.type == 'info':
-            logger.debug(
-                '%s - CmdLogic id=%s, name=%s, type=info, topic=%s, jsonPath=%s',
-                '│ ' * self.level,
-                e.model.id,
-                e.model.name,
-                e.model.configuration.topic,
-                e.model.configuration.jsonPath,
-            )
-        else:
-            logger.debug(
-                '%s - CmdLogic id=%s, name=%s, type=%s, topic=%s',
-                '│ ' * self.level,
-                e.model.id,
-                e.model.name,
-                e.model.type,
-                e.model.configuration.topic,
-            )
+        cfg = e.model.configuration
+        base = f'{"│ " * self.level} - CmdLogic id={e.model.id}, name={e.model.name}'
+        handler = (
+            {
+                CmdInfoHandlerEnum.literal: '',
+                CmdInfoHandlerEnum.jsonPath: f', jsonPath={cfg.jsonPath}',
+                CmdInfoHandlerEnum.jinja: f', jinja={cfg.jinja}',
+            }.get(cfg.handler)
+            if e.model.type == 'info'
+            else f', payload={cfg.request}'
+        )
+        logger.debug(f'{base}, type={e.model.type}, topic={cfg.topic}{handler}')
 
     async def print(self) -> None:
         if logger.isEnabledFor(DEBUG):
