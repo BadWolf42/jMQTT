@@ -102,12 +102,11 @@ class BrkLogic(VisitableLogic, Dispatcher):
     async def dispatch(self, message: Message, ts: float) -> Union[int, None]:
         cfg = self.model.configuration
         topic = str(message.topic)
+        payload = message.payload.decode('utf-8')
         if cfg.mqttApi and topic == cfg.mqttApiTopic:
-            payload = str(message.payload)
             self.log.debug('Jeedom API request: "%s"', payload)
             await Callbacks.jeedomApi(self.model.id, payload)
         if cfg.mqttInt:
-            payload = str(message.payload)
             if topic == cfg.mqttIntTopic:
                 self.log.debug('Interaction: "%s"', payload)
                 await Callbacks.interact(self.model.id, payload)

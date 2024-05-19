@@ -1999,17 +1999,18 @@ class jMQTT extends eqLogic {
      */
     public function processApiRequest($msg) {
         try {
+            require_once __DIR__ . '/mqttApiRequest.class.php';
             $request = new mqttApiRequest($msg, $this);
             $request->processRequest($this->getConf(jMQTTConst::CONF_KEY_MQTT_API));
         } catch (Throwable $e) {
             if (log::getLogLevel(__CLASS__) > 100) {
-                self::logger('error', sprintf(
+                self::logger('warning', sprintf(
                     __("%1\$s() a levé l'Exception: %2\$s", __FILE__),
                     __METHOD__,
                     $e->getMessage()
                 ));
             } else {
-                self::logger('error', sprintf(
+                self::logger('warning', sprintf(
                     __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
                     "\n@Stack: %3\$s\n@BrkId: %4\$s".
                     "\n@Topic: %5\$s\n@Payload: %6\$s",
