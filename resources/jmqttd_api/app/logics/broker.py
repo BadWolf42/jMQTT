@@ -11,10 +11,12 @@ from weakref import WeakValueDictionary
 
 from callbacks import Callbacks
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
+
 if TYPE_CHECKING:
     from logics.eq import EqLogic
     from logics.cmd import CmdLogic
 from logics.topicmap import Dispatcher, TopicMap
+
 if TYPE_CHECKING:
     from models.broker import BrkModel
 from models.broker import (
@@ -214,7 +216,6 @@ class BrkLogic(VisitableLogic, Dispatcher):
         deleteTmpFile(tmpTlsClientCert)
         deleteTmpFile(tmpTlsClientKey)
         return client
-
 
     # -----------------------------------------------------------------------------
     async def __runClient(self, client: Client) -> None:

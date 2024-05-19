@@ -9,11 +9,13 @@ from zlib import decompress as zlib_decompress
 from callbacks import Callbacks
 from converters.jsonpath import BadJsonPath, compiledJsonPath, JsonPathDidNotMatch
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
+
 if TYPE_CHECKING:
     from logics.broker import BrkLogic
     from logics.eq import EqLogic
 from logics.topicmap import Dispatcher
 from models.cmd import CmdInfoDecoderModel, CmdInfoHandlerModel
+
 if TYPE_CHECKING:
     from models.unions import CmdModel
 

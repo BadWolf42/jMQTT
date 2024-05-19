@@ -4,10 +4,12 @@ from typing import Dict, TYPE_CHECKING
 from weakref import ref, WeakValueDictionary
 
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
+
 if TYPE_CHECKING:
     from logics.broker import BrkLogic
     from logics.cmd import CmdLogic
 from logics.topicmap import Dispatcher
+
 if TYPE_CHECKING:
     from models.eq import EqModel
 

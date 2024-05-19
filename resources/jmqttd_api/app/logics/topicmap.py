@@ -24,7 +24,7 @@ logger = getLogger('jmqtt.topicmap')
 
 # -----------------------------------------------------------------------------
 class Dispatcher(ABC):
-    """Abstract dispatcher class to handle """
+    """Abstract dispatcher class to handle incomming messages"""
 
     @abstractmethod
     def getDispatcherId(self) -> str:
@@ -33,6 +33,7 @@ class Dispatcher(ABC):
     @abstractmethod
     async def dispatch(self, message: Message, ts: float) -> Union[int, None]:
         pass
+
 
 # -----------------------------------------------------------------------------
 def isNotSubscribable(topic: str):
@@ -197,7 +198,9 @@ class TopicMap(VisitableLogic):
                 topic,
                 list(self.topics[topic]),
             )
-            dispatchedToCmd |= await self._dispatchToCmd(self.topics[topic], message, ts)
+            dispatchedToCmd |= await self._dispatchToCmd(
+                self.topics[topic], message, ts
+            )
         for sub in self.wildcards:
             if message.topic.matches(sub):
                 self.log.debug(
@@ -205,7 +208,9 @@ class TopicMap(VisitableLogic):
                     sub,
                     list(self.wildcards[sub]),
                 )
-                dispatchedToCmd |= await self._dispatchToCmd(self.wildcards[sub], message, ts)
+                dispatchedToCmd |= await self._dispatchToCmd(
+                    self.wildcards[sub], message, ts
+                )
         for sub in self.defaults:
             if message.topic.matches(sub):
                 self.log.debug(

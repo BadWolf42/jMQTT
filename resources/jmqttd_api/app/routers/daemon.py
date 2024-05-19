@@ -127,6 +127,7 @@ async def daemon_put_stop():
     summary="Evaluate a payload against a jsonPath",
 )
 async def daemon_test_jsonpath(d: TestRequest) -> TestResult:
+    logger.debug(f'Test jsonPath: {d.payload=} {d.filter=}')
     try:
         if d.filter.strip() == '':
             logger.info('payload="%s", jsonPath="%s" => NO path', d.payload, d.filter)
