@@ -12,7 +12,7 @@ from logics.broker import BrkLogic
 from models.broker import BrkModel
 from models.daemon import TestRequest, TestResult
 from models.eq import EqModel
-from models.messages import LogLevelModel
+from models.messages import LogLevelEnum
 from models.unions import DataModel
 from routers.broker import broker_post
 from routers.command import command_post
@@ -95,7 +95,7 @@ async def daemon_get_loglevel(name: str = '') -> str:
 
 # -----------------------------------------------------------------------------
 @daemon.put("/loglevel", status_code=204, summary="Set a loglevel")
-async def daemon_put_loglevel(level: LogLevelModel, name: str = ''):
+async def daemon_put_loglevel(level: LogLevelEnum, name: str = ''):
     newlevel = setLevel(level, name)
     if name == '':
         settings.rootloglevel = level

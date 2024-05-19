@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from logics.broker import BrkLogic
     from logics.eq import EqLogic
 from logics.topicmap import Dispatcher
-from models.cmd import CmdInfoDecoderModel, CmdInfoHandlerModel
+from models.cmd import CmdInfoDecoderEnum, CmdInfoHandlerEnum
 
 if TYPE_CHECKING:
     from models.unions import CmdModel
@@ -77,7 +77,7 @@ class CmdLogic(VisitableLogic, Dispatcher):
     # -----------------------------------------------------------------------------
     def _decode(self, pl) -> str:
         decoder = self.model.configuration.decoder
-        if decoder == CmdInfoDecoderModel.none:
+        if decoder == CmdInfoDecoderEnum.none:
             return pl
         try:
             pl = pl.decode('utf-8', decoder)
@@ -149,9 +149,9 @@ class CmdLogic(VisitableLogic, Dispatcher):
             payload = self._decompress(payload)
             payload = self._decode(payload)
             payload = {
-                CmdInfoHandlerModel.literal: self._handleLiteral,
-                CmdInfoHandlerModel.jsonPath: self._handleJsonPath,
-                CmdInfoHandlerModel.jinja: self._handleJinja,
+                CmdInfoHandlerEnum.literal: self._handleLiteral,
+                CmdInfoHandlerEnum.jsonPath: self._handleJsonPath,
+                CmdInfoHandlerEnum.jinja: self._handleJinja,
             }.get(self.model.configuration.handler)(payload, ts)
             payload = self._normalize(payload)
             payload = self._writeToFile(payload, ts)

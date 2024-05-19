@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 ###############################################################################
 # --- Messages FROM Jeedom model-
-class LogLevelModel(str, Enum):
+class LogLevelEnum(str, Enum):
     trace = 'trace'
     debug = 'debug'
     info = 'info'

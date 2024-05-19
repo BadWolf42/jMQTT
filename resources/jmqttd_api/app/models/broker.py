@@ -10,20 +10,20 @@ from .utils import strToBool, strToInt
 
 # -----------------------------------------------------------------------------
 # --- Broker model
-class MqttProtoModel(str, Enum):
+class MqttProtoEnum(str, Enum):
     mqtt = 'mqtt'
     mqtts = 'mqtts'
     ws = 'ws'
     wss = 'wss'
 
 
-class MqttVersionModel(int, Enum):
+class MqttVersionEnum(int, Enum):
     # V31 = ProtocolVersion.V31
     V311 = ProtocolVersion.V311
     V5 = ProtocolVersion.V5
 
 
-class TlsCheckModel(str, Enum):
+class TlsCheckEnum(str, Enum):
     disabled = 'disabled'
     private = 'private'
     public = 'public'
@@ -33,8 +33,8 @@ class BrkConfigModel(BaseModel):
     type: Literal['broker']
     # auto_add_cmd: bool = False
     # auto_add_topic: str = '#'
-    mqttProto: MqttProtoModel = MqttProtoModel.mqtt
-    mqttVersion: MqttVersionModel = MqttVersionModel.V311
+    mqttProto: MqttProtoEnum = MqttProtoEnum.mqtt
+    mqttVersion: MqttVersionEnum = MqttVersionEnum.V311
     mqttAddress: str = 'localhost'
     mqttWsHeader: Union[dict[str, str], None] = None
     mqttWsUrl: str = '/mqtt'
@@ -53,7 +53,7 @@ class BrkConfigModel(BaseModel):
     mqttIntTopic: str = 'jeedom/interact'
     mqttApi: bool = False
     mqttApiTopic: str = 'jeedom/api'
-    mqttTlsCheck: TlsCheckModel = TlsCheckModel.public
+    mqttTlsCheck: TlsCheckEnum = TlsCheckEnum.public
     mqttTlsCa: str = ''
     mqttTlsClient: bool = False
     mqttTlsClientCert: str = ''

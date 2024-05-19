@@ -19,9 +19,9 @@ from logics.topicmap import Dispatcher, TopicMap
 if TYPE_CHECKING:
     from models.broker import BrkModel
 from models.broker import (
-    MqttProtoModel,
-    TlsCheckModel,
-    MqttVersionModel,
+    MqttProtoEnum,
+    TlsCheckEnum,
+    MqttVersionEnum,
 )
 from models.messages import (
     MqttMessageModel,
@@ -125,10 +125,10 @@ class BrkLogic(VisitableLogic, Dispatcher):
         tmpTlsClientCert = None
         tmpTlsClientKey = None
         # Handle SSL parameters
-        if cfg.mqttProto in [MqttProtoModel.mqtts, MqttProtoModel.wss]:
+        if cfg.mqttProto in [MqttProtoEnum.mqtts, MqttProtoEnum.wss]:
             try:
                 # Do we need to check if certificat is valid
-                tlsInsecure = cfg.mqttTlsCheck == TlsCheckModel.disabled
+                tlsInsecure = cfg.mqttTlsCheck == TlsCheckEnum.disabled
                 tlsContext = ssl.create_default_context()
                 tlsContext.load_default_certs()
                 tlsContext.check_hostname = not tlsInsecure
@@ -137,7 +137,7 @@ class BrkLogic(VisitableLogic, Dispatcher):
                 )
                 # Get CA cert if needed
                 if (
-                    cfg.mqttTlsCheck == TlsCheckModel.private
+                    cfg.mqttTlsCheck == TlsCheckEnum.private
                     and cfg.mqttTlsCa.strip() != ''
                 ):
                     tlsContext.load_verify_locations(cadata=cfg.mqttTlsCa)
@@ -163,17 +163,17 @@ class BrkLogic(VisitableLogic, Dispatcher):
             port=cfg.mqttPort if cfg.mqttPort != 0 else 1883,
             transport=(
                 'tcp'
-                if cfg.mqttProto in [MqttProtoModel.mqtt, MqttProtoModel.mqtts]
+                if cfg.mqttProto in [MqttProtoEnum.mqtt, MqttProtoEnum.mqtts]
                 else 'websockets'
             ),
             websocket_path=(
                 cfg.mqttWsUrl
-                if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
+                if cfg.mqttProto in [MqttProtoEnum.ws, MqttProtoEnum.wss]
                 else None
             ),
             websocket_headers=(
                 cfg.mqttWsHeader
-                if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
+                if cfg.mqttProto in [MqttProtoEnum.ws, MqttProtoEnum.wss]
                 else None
             ),
             protocol=cfg.mqttVersion,
@@ -271,13 +271,13 @@ class BrkLogic(VisitableLogic, Dispatcher):
                     else settings.mqtt_long_reco_interval
                 )
                 # Retry using MQTTv5 if MQTTv3.11 fails
-                version: MqttVersionModel = (
+                version: MqttVersionEnum = (
                     cfg.mqttVersion
                     if failures % 2 == 0
                     else (
-                        MqttVersionModel.V5
-                        if cfg.mqttVersion == MqttVersionModel.V311
-                        else MqttVersionModel.V311
+                        MqttVersionEnum.V5
+                        if cfg.mqttVersion == MqttVersionEnum.V311
+                        else MqttVersionEnum.V311
                     )
                 )
                 self.log.debug(
@@ -288,7 +288,7 @@ class BrkLogic(VisitableLogic, Dispatcher):
                     cfg.mqttPort if cfg.mqttPort != 0 else 1883,
                     (
                         cfg.mqttWsUrl
-                        if cfg.mqttProto in [MqttProtoModel.ws, MqttProtoModel.wss]
+                        if cfg.mqttProto in [MqttProtoEnum.ws, MqttProtoEnum.wss]
                         else ''
                     ),
                 )

@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Union
 from typing_extensions import Literal
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, model_validator, validator
 
 from .bases import CmdBaseModel
 from .utils import strToBool, strToInt
@@ -9,7 +9,7 @@ from .utils import strToBool, strToInt
 
 # -----------------------------------------------------------------------------
 # --- Cmd Info model
-class CmdInfoDecoderModel(str, Enum):
+class CmdInfoDecoderEnum(str, Enum):
     strict = 'strict'
     replace = 'replace'
     ignore = 'ignore'
@@ -18,7 +18,7 @@ class CmdInfoDecoderModel(str, Enum):
 
 
 # -----------------------------------------------------------------------------
-class CmdInfoHandlerModel(str, Enum):
+class CmdInfoHandlerEnum(str, Enum):
     literal = 'literal'
     jsonPath = 'jsonPath'
     jinja = 'jinja'
@@ -28,15 +28,15 @@ class CmdInfoHandlerModel(str, Enum):
 class CmdInfoConfigModel(BaseModel):
     topic: str = ''
     tryUnzip: bool = False
-    decoder: CmdInfoDecoderModel = CmdInfoDecoderModel.strict
-    handler: CmdInfoHandlerModel = CmdInfoHandlerModel.jsonPath
+    decoder: CmdInfoDecoderEnum = CmdInfoDecoderEnum.strict
+    handler: CmdInfoHandlerEnum = CmdInfoHandlerEnum.jsonPath
     jsonPath: str = ''
     jinja: str = ''
     toFile: bool = False
 
 
 # -----------------------------------------------------------------------------
-class CmdInfoSubTypeModel(str, Enum):
+class CmdInfoSubTypeEnum(str, Enum):
     binary = 'binary'
     numeric = 'numeric'
     string = 'string'
@@ -45,7 +45,7 @@ class CmdInfoSubTypeModel(str, Enum):
 # -----------------------------------------------------------------------------
 class CmdInfoModel(CmdBaseModel):
     type: Literal['info']
-    subType: CmdInfoSubTypeModel
+    subType: CmdInfoSubTypeEnum
     configuration: CmdInfoConfigModel
 
 
@@ -68,7 +68,7 @@ class CmdActionConfigModel(BaseModel):
 
 
 # -----------------------------------------------------------------------------
-class CmdActionSubTypeModel(str, Enum):
+class CmdActionSubTypeEnum(str, Enum):
     color = 'color'
     message = 'message'
     select = 'select'
@@ -79,7 +79,7 @@ class CmdActionSubTypeModel(str, Enum):
 # -----------------------------------------------------------------------------
 class CmdActionModel(CmdBaseModel):
     type: Literal['action']
-    subType: CmdActionSubTypeModel
+    subType: CmdActionSubTypeEnum
     configuration: CmdActionConfigModel
 
 
