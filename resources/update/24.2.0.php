@@ -15,7 +15,7 @@ foreach (jMQTT::byType('jMQTT') as $eqLogic) {
 jMQTT::logger('info', __("Commentaires des équipements correctement migrés", __FILE__));
 
 
-$templateFolderPath = __DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_JMQTT;
+$templateFolderPath = __DIR__ . '/../../core/config/template/';
 foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $file) {
     try {
         [$templateKey, $templateContent] = jMQTT::templateRead(

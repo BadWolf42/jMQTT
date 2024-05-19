@@ -188,49 +188,6 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Split topic and jsonPath of all commands for the template file.
-     *
-     * @param string $_filename template name to look for.
-     * @throws Exception if template in not readable
-     */
-    public static function moveTopicToConfigurationByFile($_filename = '') {
-
-        try {
-            [$templateKey, $templateValue] = self::templateRead(
-                __DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_PERSO . $_filename
-            );
-
-            // if 'configuration' key exists in this template
-            if (isset($templateValue['configuration'])) {
-
-                // if auto_add_cmd doesn't exists in configuration, we need to move topic from logicalId to configuration
-                if (!isset($templateValue['configuration'][jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC])) {
-                    $topic = $templateValue['logicalId'];
-                    $templateValue['configuration'][jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC] = $topic;
-                    $templateValue['logicalId'] = '';
-                }
-            }
-
-            // Save back template in the file
-            $jsonExport = json_encode(
-                array($templateKey=>$templateValue),
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-            );
-            file_put_contents(
-                __DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_PERSO . $_filename,
-                $jsonExport
-            );
-        } catch (Throwable $e) {
-            throw new Exception(
-                sprintf(
-                    __("Erreur lors de la lecture du Template '%s'", __FILE__),
-                    $_filename
-                )
-            );
-        }
-    }
-
-    /**
      * Delete user defined template by filename.
      *
      * @param string $_filename template file name to look for.
@@ -2131,23 +2088,6 @@ class jMQTT extends eqLogic {
      */
     public function setTopic($topic) {
         $this->setConfiguration(jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC, $topic);
-    }
-
-    /**
-     * Move this jMQTT object auto_add_topic to configuration
-     */
-    public function moveTopicToConfiguration() {
-        // Detect presence of auto_add_topic
-        $keyPresence = $this->getConfiguration(
-            jMQTTConst::CONF_KEY_AUTO_ADD_TOPIC,
-            'ThereIsNoKeyHere'
-        );
-        if ($keyPresence == 'ThereIsNoKeyHere') {
-            $this->setTopic($this->getLogicalId());
-            $this->setLogicalId('');
-            // Direct save to avoid daemon notification and Exception that daemon is not Up
-            $this->save(true);
-        }
     }
 
     /**
