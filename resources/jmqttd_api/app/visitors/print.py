@@ -6,6 +6,7 @@ from visitors.abstractvisitor import LogicVisitor
 from logics.broker import BrkLogic
 from logics.cmd import CmdLogic
 from logics.eq import EqLogic
+from logics.topicmap import TopicMap
 
 
 logger = getLogger('jmqtt.visitor.print')
@@ -17,6 +18,14 @@ class PrintVisitor(LogicVisitor):
         self.level = 0
         self.toPrint = e
 
+    async def visit_topicmap(self, e: TopicMap) -> None:
+        for l, c in [(e.topics, 'T'), (e.wildcards, 'W'), (e.defaults, 'D')]:
+            for t in l:
+                logger.debug(
+                    f'{"│ " * self.level}│ {c}:   {t} => {{%s}}',
+                    ', '.join([str(v.model.id) for v in l[t]]),
+                )
+
     async def visit_brk(self, e: BrkLogic) -> None:
         logger.debug(
             '%s┌─►  BrkLogic id=%s, name=%s, enabled=%s',
@@ -25,21 +34,7 @@ class PrintVisitor(LogicVisitor):
             e.model.name,
             '1' if e.model.isEnable else '0',
         )
-
-        for t in e.topics:
-            logger.debug(
-                '%s│ T:   %s => %s',
-                '│ ' * self.level,
-                t,
-                ' '.join([str(v.model.id) for v in e.topics[t].values()]),
-            )
-        for t in e.wildcards:
-            logger.debug(
-                '%s│ W:   %s => %s',
-                '│ ' * self.level,
-                t,
-                ' '.join([str(v.model.id) for v in e.wildcards[t].values()]),
-            )
+        await e.map.accept(self)
         self.level += 1
         for eq in [v for v in e.eqpts.values()]:
             await eq.accept(self)

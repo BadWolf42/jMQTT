@@ -12,6 +12,7 @@ from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 if TYPE_CHECKING:
     from logics.broker import BrkLogic
     from logics.eq import EqLogic
+from logics.topicmap import Dispatcher
 from models.cmd import CmdInfoDecoderModel, CmdInfoHandlerModel
 if TYPE_CHECKING:
     from models.unions import CmdModel
@@ -27,7 +28,7 @@ class BadJsonPayload(Exception):
 
 
 # -----------------------------------------------------------------------------
-class CmdLogic(VisitableLogic):
+class CmdLogic(VisitableLogic, Dispatcher):
     all: Dict[int, CmdLogic] = {}
 
     # -----------------------------------------------------------------------------
@@ -39,6 +40,10 @@ class CmdLogic(VisitableLogic):
     # -----------------------------------------------------------------------------
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_cmd(self)
+
+    # -----------------------------------------------------------------------------
+    def getDispatcherId(self) -> str:
+        return f'cmd={self.model.id}'
 
     # -----------------------------------------------------------------------------
     def isWildcard(self):
@@ -136,7 +141,7 @@ class CmdLogic(VisitableLogic):
         return f'{filename}?{ts}'
 
     # -----------------------------------------------------------------------------
-    async def mqttMsg(self, message: Message, ts: float):
+    async def dispatch(self, message: Message, ts: float) -> Union[int, None]:
         try:
             payload = message.payload
             payload = self._decompress(payload)
@@ -167,3 +172,4 @@ class CmdLogic(VisitableLogic):
             )
         except Exception:
             logger.exception('id=%i: MQTT message raised an exception:', self.model.id)
+        return self.model.id

@@ -7,6 +7,7 @@ from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 if TYPE_CHECKING:
     from logics.broker import BrkLogic
     from logics.cmd import CmdLogic
+from logics.topicmap import Dispatcher
 if TYPE_CHECKING:
     from models.eq import EqModel
 
@@ -15,7 +16,7 @@ logger = getLogger('jmqtt.eq')
 
 
 # -----------------------------------------------------------------------------
-class EqLogic(VisitableLogic):
+class EqLogic(VisitableLogic, Dispatcher):
     all: Dict[int, EqLogic] = {}
 
     # -----------------------------------------------------------------------------
@@ -30,6 +31,15 @@ class EqLogic(VisitableLogic):
     # -----------------------------------------------------------------------------
     async def accept(self, visitor: LogicVisitor) -> None:
         await visitor.visit_eq(self)
+
+    # -----------------------------------------------------------------------------
+    def getDispatcherId(self) -> str:
+        return f'eq={self.model.id}'
+
+    # -----------------------------------------------------------------------------
+    async def dispatch(self, message: Message, ts: float) -> Union[int, None]:
+        # TODO Walk through info cmd to check if one exactly matches
+        return self.model.id
 
     # -----------------------------------------------------------------------------
     async def addCmd(self, cmd: CmdLogic) -> None:
