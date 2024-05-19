@@ -126,7 +126,7 @@ class TopicMap(VisitableLogic):
         # If subscription is OK, just return
         inTarget = topic in target
         if not inTarget or dispatcher not in target[topic]:
-            self.log.debug('%s, already unsubscribed', dispatcher.getDispatcherId())
+            self.log.trace('%s, already unsubscribed', dispatcher.getDispatcherId())
             return
         # Remove Dispatcher from Broker topics
         target[topic].remove(dispatcher)
@@ -174,14 +174,17 @@ class TopicMap(VisitableLogic):
                 self.log.exception('Could not subscribe to %s', topic)
 
     # -----------------------------------------------------------------------------
-    async def _dispatchToCmd(
-        self, cmds: WeakSet[Dispatcher], message: Message, ts: float
+    async def _subDispatch(
+        self, dispatchers: WeakSet[Dispatcher], message: Message, ts: float
     ) -> set:
         res: set = set()
-        for cmd in cmds:
-            cmdId = await cmd.dispatch(message, ts)
-            if cmdId is not None:
-                res.add(cmdId)
+        for dispatcher in dispatchers:
+            try:
+                cmdId = await dispatcher.dispatch(message, ts)
+                if cmdId is not None:
+                    res.add(cmdId)
+            except Exception:
+                self.log.exception('%s, exception: ', dispatcher.getDispatcherId())
         return res
 
     # -----------------------------------------------------------------------------
@@ -198,7 +201,7 @@ class TopicMap(VisitableLogic):
                 topic,
                 list(self.topics[topic]),
             )
-            dispatchedToCmd |= await self._dispatchToCmd(
+            dispatchedToCmd |= await self._subDispatch(
                 self.topics[topic], message, ts
             )
         for sub in self.wildcards:
@@ -208,7 +211,7 @@ class TopicMap(VisitableLogic):
                     sub,
                     list(self.wildcards[sub]),
                 )
-                dispatchedToCmd |= await self._dispatchToCmd(
+                dispatchedToCmd |= await self._subDispatch(
                     self.wildcards[sub], message, ts
                 )
         for sub in self.defaults:
