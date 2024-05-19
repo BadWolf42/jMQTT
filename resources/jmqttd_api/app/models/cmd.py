@@ -36,10 +36,7 @@ class CmdInfoConfigModel(BaseModel):
 
     @model_validator(mode='after')
     def check_handler(self) -> 'CmdInfoConfigModel':
-        if (
-            self.handler == CmdInfoHandlerEnum.jsonPath
-            and self.jsonPath.strip() == ''
-        ):
+        if self.handler == CmdInfoHandlerEnum.jsonPath and self.jsonPath.strip() == '':
             self.handler = CmdInfoHandlerEnum.literal
         return self
 

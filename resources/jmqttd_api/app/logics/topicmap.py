@@ -201,9 +201,7 @@ class TopicMap(VisitableLogic):
                 topic,
                 list(self.topics[topic]),
             )
-            dispatchedToCmd |= await self._subDispatch(
-                self.topics[topic], message, ts
-            )
+            dispatchedToCmd |= await self._subDispatch(self.topics[topic], message, ts)
         for sub in self.wildcards:
             if message.topic.matches(sub):
                 self.log.debug(

@@ -231,7 +231,10 @@ class BrkLogic(VisitableLogic, Dispatcher):
                 async for msg in messages:
                     self.log.trace(
                         'Got msg topic=%s, payload=%s, qos=%i, retain=%s',
-                        msg.topic, msg.payload, msg.qos, msg.retain
+                        msg.topic,
+                        msg.payload,
+                        msg.qos,
+                        msg.retain,
                     )
                     try:
                         await self.map.dispatch(msg)
