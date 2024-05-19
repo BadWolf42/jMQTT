@@ -364,6 +364,11 @@ try {
         config::save('functionality::cron::enable', 1, jMQTT::class);
         ajax::success();
     }
+    if (init('action') == 'printTree') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTComToDaemon::printTree();
+        ajax::success();
+    }
     if (init('action') == 'threadDump') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         // Get cached PID and PORT

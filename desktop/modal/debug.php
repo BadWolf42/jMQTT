@@ -552,6 +552,7 @@ function builder_actions(_root_div) {
     _root_div.append('<legend style="margin-bottom:2px!important"><i class="fas fa-tools"></i> Troubleshooting</legend>');
     div = $('<div class="form-group">');
     add_action_event(div, 'hbStop',           'danger',  'fas fa-stop',                        'Stop Heatbeats');
+    add_action_event(div, 'printTree',        'info',    'kiko-fingerprint',                   'Ask the daemon for a "Print Tree"');
     add_action_event(div, 'threadDump',       'info',    'kiko-zoom',                          'Ask the daemon for a "Thread Dump"');
     add_action_event(div, 'logVerbose',       'info',    'far fa-file',                        'VERBOSE logs');
     add_action_event(div, 'statsSend',        'info',    'fas fa-satellite',                   'Send stats');

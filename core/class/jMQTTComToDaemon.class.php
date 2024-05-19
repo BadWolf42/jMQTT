@@ -122,6 +122,10 @@ class jMQTTComToDaemon {
         return json_decode($result, true);
     }
 
+    public static function printTree() {
+        self::doSend('GET', '/daemon/debug/tree', null, __METHOD__, '');
+    }
+
     // ------------------------------------------------------------------------
     // Broker related function
     public static function brokerSet($params) {
