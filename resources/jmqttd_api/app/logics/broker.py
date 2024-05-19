@@ -158,24 +158,13 @@ class BrkLogic(VisitableLogic, Dispatcher):
                 )
                 raise
         # Build client
+        useWS = cfg.mqttProto in [MqttProtoEnum.ws, MqttProtoEnum.wss]
         client = Client(
             hostname=cfg.mqttAddress,
             port=cfg.mqttPort if cfg.mqttPort != 0 else 1883,
-            transport=(
-                'tcp'
-                if cfg.mqttProto in [MqttProtoEnum.mqtt, MqttProtoEnum.mqtts]
-                else 'websockets'
-            ),
-            websocket_path=(
-                cfg.mqttWsUrl
-                if cfg.mqttProto in [MqttProtoEnum.ws, MqttProtoEnum.wss]
-                else None
-            ),
-            websocket_headers=(
-                cfg.mqttWsHeader
-                if cfg.mqttProto in [MqttProtoEnum.ws, MqttProtoEnum.wss]
-                else None
-            ),
+            transport='websockets' if useWS else 'tcp',
+            websocket_path=cfg.mqttWsUrl if useWS else None,
+            websocket_headers=cfg.mqttWsHeader if useWS else None,
             protocol=cfg.mqttVersion,
             client_id=cfg.mqttIdValue if cfg.mqttId else None,
             # TODO To use `identifier` instead of `client_id` with aiomqtt>=2.0.1
