@@ -22,7 +22,7 @@ class PrintVisitor(LogicVisitor):
     async def visit_topicmap(self, e: TopicMap) -> None:
         for tab, char in [(e.topics, 'T'), (e.wildcards, 'W'), (e.defaults, 'D')]:
             for topic in tab:
-                ids = '{' + ', '.join([str(v.model.id) for v in tab[topic]]) + '}'
+                ids = '{' + ', '.join([v.getDispatcherId() for v in tab[topic]]) + '}'
                 logger.debug(f'{"│ " * self.level}│ {char}:   {topic} => {ids}')
 
     async def visit_brk(self, e: BrkLogic) -> None:
