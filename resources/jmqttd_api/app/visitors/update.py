@@ -116,8 +116,11 @@ class UpdatingLogicVisitor(LogicVisitor):
         # Set weakBrk in CmdLogic
         e.weakBrk = ref(e.weakEq().weakBrk())
         # Add CmdLogic in BrkLogic
-        await e.weakBrk().addCmd(e)
-        logger.debug('id=%s, cmd updated', e.model.id)
+        if e.weakEq().model.isEnable:
+            await e.weakBrk().addCmd(e)
+            logger.debug('id=%s, cmd updated', e.model.id)
+            return
+        logger.debug('id=%s, cmd updated, but is not enabled', e.model.id)
 
     async def update(self) -> None:
         await self.currentLogic.accept(self)
