@@ -16,7 +16,7 @@ class jMQTTDaemon {
         // Apache MUST always listen on port 80 on localhost, an do not redirect
         // NO MORE fix for let's encrypt issue like: https://community.jeedom.com/t/87060/26
         // NO MORE fix for port issue like: https://community.jeedom.com/t/87060/30
-        return 'http:/127.0.0.1:80/'.$comp.'plugins/jMQTT/core/php/callback.php';
+        return 'http://127.0.0.1:80/'.$comp.'plugins/jMQTT/core/php/callback.php';
     }
 
     /**
