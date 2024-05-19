@@ -6,7 +6,7 @@ from typing import Dict, TYPE_CHECKING, Union
 from weakref import ref
 from zlib import decompress as zlib_decompress
 
-from callbacks import Callbacks
+from comm.callbacks import Callbacks
 from converters.jsonpath import BadJsonPath, compiledJsonPath, JsonPathDidNotMatch
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 

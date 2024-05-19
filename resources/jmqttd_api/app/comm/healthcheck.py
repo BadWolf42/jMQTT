@@ -4,7 +4,7 @@ from os import getpid, kill
 from signal import SIGTERM
 from time import time
 
-from callbacks import Callbacks
+from comm.callbacks import Callbacks
 from settings import settings, max_wait_cancel
 
 

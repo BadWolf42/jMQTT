@@ -9,8 +9,8 @@ from sys import exit
 
 from settings import pid, settings, logconfig
 
-from callbacks import Callbacks
-from healthcheck import Healthcheck
+from comm.callbacks import Callbacks
+from comm.healthcheck import Healthcheck
 from logics.broker import BrkLogic
 
 

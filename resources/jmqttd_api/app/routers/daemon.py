@@ -5,9 +5,9 @@ from signal import SIGTERM
 from time import time
 from fastapi import APIRouter
 
-from callbacks import Callbacks
+from comm.callbacks import Callbacks
+from comm.healthcheck import Healthcheck
 from converters.jsonpath import compiledJsonPath
-from healthcheck import Healthcheck
 from logics.broker import BrkLogic
 from models.broker import BrkModel
 from models.daemon import TestRequest, TestResult

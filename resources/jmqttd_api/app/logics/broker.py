@@ -8,7 +8,7 @@ from tempfile import NamedTemporaryFile
 from typing import Dict, List, TYPE_CHECKING, Union
 from weakref import WeakValueDictionary
 
-from callbacks import Callbacks
+from comm.callbacks import Callbacks
 from visitors.abstractvisitor import VisitableLogic, LogicVisitor
 
 if TYPE_CHECKING:

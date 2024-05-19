@@ -2,7 +2,7 @@ from logging import getLogger
 from fastapi import APIRouter, HTTPException, status
 from typing import List
 
-from healthcheck import Healthcheck
+from comm.healthcheck import Healthcheck
 from logics.broker import BrkLogic
 from models.broker import BrkModel
 from models.messages import (

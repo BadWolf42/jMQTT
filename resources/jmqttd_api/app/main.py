@@ -14,8 +14,8 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from sys import exit
 from uvicorn import Config, Server
 
-from callbacks import Callbacks
-from healthcheck import Healthcheck
+from comm.callbacks import Callbacks
+from comm.healthcheck import Healthcheck
 from routers.broker import broker
 from routers.command import command
 from routers.daemon import daemon
