@@ -106,10 +106,18 @@ class Callbacks:
                         continue
                     else:  # Queue is now empty, then send the values
                         break
+                payload = tuple([int(val.ts), val.value])
                 if val.id not in toSend:
                     toSend[val.id] = list()
-                toSend[val.id].append((int(val.ts), val.value))
-                nbVals += 1
+                    toSend[val.id].append(payload)
+                    nbVals += 1
+                # TODO Check if this fix is still needed (bug in aiomqtt?)
+                #  TO FIX duplicated messages when 2 retained subs overlap
+                elif payload not in toSend[val.id]:
+                    toSend[val.id].append(payload)
+                    nbVals += 1
+                else:
+                    logger.debug('Deduplication on %i of %r', val.id, payload)
             # Send messages to Jeedom (blocking)
             logger.debug('Sending %i changes: %r', nbVals, toSend)
             await cls.__send('values', toSend)
