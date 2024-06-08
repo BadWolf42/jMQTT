@@ -143,6 +143,22 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
     });
 });
 
+$('.eqLogicAction[data-action=jMQTTCommunityPost]').off('click').on('click', function () {
+    jmqtt.callPluginAjax({
+        data: {
+            action: "jMQTTCommunityPost"
+        },
+        success: function (data) {
+            var element = document.createElement('a');
+            element.setAttribute('href', data.url);
+            element.setAttribute('target', '_blank');
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+    });
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd

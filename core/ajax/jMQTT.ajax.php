@@ -470,6 +470,79 @@ try {
         }
     }
 
+    // ########################################################################
+    // Community Post
+    if (init('action') == 'jMQTTCommunityPost') {
+        $infoPost = '< Ajoutez un titre puis rédigez votre question/problème ici, sans effacer les infos de config indiquées ci-dessous >';
+        $infoPost .= '<br/><br/><br/><br/>--- <br/>[details="Mes infos de config"]<br/>```json';
+
+        // OS, hardware, PHP, Python
+        $hw = jeedom::getHardwareName();
+        if ($hw == 'diy')
+            $hw = trim(shell_exec('systemd-detect-virt'));
+        if ($hw == 'none')
+            $hw = 'diy';
+        $distrib = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
+        $infoPost .= '<br/>OS version: ' . $distrib . ' on ' . $hw;
+        $infoPost .= '<br/>PHP version: ' . phpversion();
+        $infoPost .= '<br/>Python version: ';
+        $infoPost .= trim(shell_exec("python3 -V | cut -d' ' -f2"));
+
+        // Jeedom core version and branch
+        $infoPost .= '<br/>Core version: ';
+        $infoPost .= config::byKey('version', 'core', 'N/A');
+        $infoPost .= ' (' . config::byKey('core::branch') . ')';
+        $infoPost .= '<br/>Nb lines in http.error: ';
+        $infoPost .= trim(shell_exec("wc -l /var/www/html/log/http.error | cut -d' ' -f1"));
+
+        // All plugins
+        $infoPost .= '<br/>Plugins:';
+        // activateOnly, !orderByCategoryuse, !translate, nameOnly
+        foreach (plugin::listPlugin(true, false, true, true) as $p) {
+            $infoPost .= ' '.$p;
+        }
+        $infoPost .= '<br/>';
+
+        // jMQTT version
+        /** @var update $update */
+        $update = update::byTypeAndLogicalId('plugin', 'jMQTT');
+        $infoPost .= '<br/>jMQTT: ';
+        $infoPost .= config::byKey('version', 'jMQTT', 'unknown', true);
+        $infoPost .= ' (' . $update->getLocalVersion() . ') branch: ';
+        $infoPost .= $update->getConfiguration('version');
+
+        // jMQTT logs stats
+        $infoPost .= '<br/>Nb Errors or Warnings in jMQTT logs: ';
+        $infoPost .= trim(shell_exec("cat /var/www/html/log/jMQTT* 2> /dev/null | grep -c 'ERROR\|WARNING'"));
+        $infoPost .= ' (level is ' . log::convertLogLevel(log::getLogLevel(jMQTT::class)) . ')';
+
+        // Daemon status
+        $daemon_info = jMQTT::deamon_info();
+        $infoPost .= '<br/>Daemon Status: ';
+        $infoPost .= (jMQTTDaemon::check() ? 'Started' :  'Stopped') . ' (';
+        $infoPost .= config::byKey('lastDeamonLaunchTime', 'jMQTT', 'Unknown') . ')';
+
+        // Brk, eq, cmds
+        $nbEqAll = DB::Prepare('SELECT COUNT(*) as nb FROM `eqLogic` WHERE `eqType_name` = "jMQTT"', array());
+        $nbBrks = DB::Prepare('SELECT COUNT(*) as nb FROM `eqLogic` WHERE `eqType_name` = "jMQTT" AND `configuration` LIKE "%broker%"', array());
+        $infoPost .= '<br/>Nb eqBrokers: ' . $nbBrks['nb'];
+        $infoPost .= ' / eqLogics: ' . ($nbEqAll['nb'] - $nbBrks['nb']);
+        $nbCmds = DB::Prepare('SELECT COUNT(*) as nb FROM `cmd` WHERE `eqType` = "jMQTT"', array());
+        $infoPost .= ' / cmds: ' . $nbCmds['nb'];
+
+        $infoPost .= '<br/>```<br/>[/details]';
+
+        $query = http_build_query(
+                array(
+                'category' => 'plugins/protocole-domotique',
+                'tags' => 'plugin-jmqtt',
+                'body' => br2nl($infoPost)
+            )
+        );
+        $url = 'https://community.jeedom.com/new-topic?' . $query;
+        ajax::success(array('url' => $url, 'plugin' => 'jMQTT'));
+    }
+
     throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
