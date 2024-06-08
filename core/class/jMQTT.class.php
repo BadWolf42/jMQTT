@@ -2303,6 +2303,7 @@ class jMQTT extends eqLogic {
      */
     private function processApiRequest($msg) {
         try {
+            require_once __DIR__ . '/mqttApiRequest.class.php';
             $request = new mqttApiRequest($msg, $this);
             $request->processRequest($this->getConf(jMQTTConst::CONF_KEY_MQTT_API));
         } catch (Throwable $e) {
