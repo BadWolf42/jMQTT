@@ -437,8 +437,14 @@ $(document).ready(function() {
     // Add a link to the plugin rating
     $('.bt_refreshPluginInfo').after('<a class="btn btn-success btn-sm" target="_blank" href="https://market.jeedom.com/index.php?v=d&p=market_display&id=3166"><i class="fas fa-comment-dots "></i> {{Avis}}</a>');
 
+    // TODO: Remove core4.3 backward compatibility for createCommunityPost
+    // Add Community Post if missing
+    if ($('#createCommunityPost[data-plugin_id=jMQTT]').length == 0) {
+        $('.removePlugin[data-market_logicalid=jMQTT]')?.before('<a class="btn btn-warning btn-sm" id="createCommunityPost" data-plugin_id="jMQTT" title="{{Ouvrir une demande d\'aide sur le forum communautaire}}"><i class="fas fa-ambulance"></i><span class="hidden-768"> {{Assistance}}</span></a>');
+    }
+
     // Update link for Community Post
-    $('#createCommunityPost')?.removeAttr('id').off('click').on('click', function () {
+    $('#createCommunityPost[data-plugin_id=jMQTT]')?.removeAttr('id').off('click').on('click', function () {
         jmqtt_config.jmqttAjax({
             data: {
                 action: "jMQTTCommunityPost"
