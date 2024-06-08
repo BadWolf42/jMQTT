@@ -126,7 +126,7 @@ class jMQTTDaemon {
     /**
      * Validates that a daemon is connected, running and is communicating
      */
-    private static function check() {
+    public static function check() {
         // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
         // jMQTT::logger('debug', 'check() ['.getmypid().']: ref='.$_SERVER['HTTP_REFERER']);
 
