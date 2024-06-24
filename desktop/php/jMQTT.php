@@ -7,13 +7,13 @@ sendVarToJS('eqType', 'jMQTT');
 include_file('desktop', 'jMQTT.globals', 'js', 'jMQTT');
 include_file('desktop', 'jMQTT.functions', 'js', 'jMQTT');
 
-// Send daemon current state
-sendVarToJS('jmqtt_globals.daemonState', jMQTTDaemon::state());
-
 /** @var jMQTT[][] $eqNonBrokers */
 $eqNonBrokers = jMQTT::getNonBrokers();
 /** @var jMQTT[] $eqBrokers */
 $eqBrokers = jMQTT::getBrokers();
+
+// Send daemon current state
+sendVarToJS('jmqtt_globals.daemonState', jMQTTDaemon::state());
 
 $eqBrokersName = array();
 foreach ($eqBrokers as $id => $eqL) {
