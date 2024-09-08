@@ -1,0 +1,1069 @@
+{
+    "TICMeter Standard Mode": {
+        "name": "TICMeter Standard Mode",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
+            "commentaire": "TICMeter Standard Mode\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/117",
+            "icone": "teleinfo"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "1",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "Identifiant",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ADSC"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Version de la TIC",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/VTIC"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Date",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/DATE"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Date et heure Compteur",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/date_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Nom du calendrier tarifaire",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/NGTF"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Libellé tarif en cours",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/LTARF"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index Total Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EAST"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 1 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF01"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 2 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF02"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 3 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF03"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 4 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF04"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 5 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF05"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 6 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF06"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 7 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF07"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 8 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF08"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 9 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF09"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 10 Energie soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASF10"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 1 Energie soutirée Distr",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASD01"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 2 Energie soutirée Distr",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASD02"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index3 Energie soutirée Distr",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASD03"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index 4 Energie soutirée Distr",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EASD04"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Energie injectée totale",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EAIT"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Energie réactive Q1 totale",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/ERQ1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Energie réactive Q2 totale",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/ERQ2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Energie réactive Q3 totale",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/ERQ3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Courant efficace Phase 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IRMS1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Courant efficace Phase 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IRMS2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Courant efficace Phase 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IRMS3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Tension efficace Phase 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/URMS1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Tension efficace Phase 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/URMS2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Tension efficace Phase 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/URMS3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance app. de référence",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "kVA",
+                "configuration": {
+                    "topic": "%s/PREF"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance app. de coupure",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "kVA",
+                "configuration": {
+                    "topic": "%s/PCOUP"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SINSTS"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance soutirée Phase 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SINSTS1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance soutirée Phase 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SINSTS2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance soutirée Phase 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SINSTS3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Auj.",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Auj. 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Auj. 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Auj. 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Auj",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/smaxsn_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Auj. 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/SMAXSN1.time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Auj. 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/SMAXSN2.time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Auj. 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/SMAXSN3.time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Hier",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN-1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Hier 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN1-1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Hier 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN1-2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max soutirée Hier 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXSN1-3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Hier",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/maxs-1_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Hier 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/maxs1-1_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Hier 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/maxs2-1_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max soutirée Hier 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/maxs3-1_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance injectée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SINSTI"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max injectée Auj.",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXIN"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance max injectée Hier",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/SMAXIN-1",
+                    "maxValue": "9999"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max injectée Auj.",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/smaxin_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heure Puissance max injectée Hier",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/maxin-1_time"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Point n courbe soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/CCASN"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Point n-1 courbe soutirée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/CCASN-1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Point n courbe injectée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/CCAIN"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Point n-1 courbe injectée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/CCAIN-1",
+                    "minValue": "0"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Tension moyenne Phase 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/UMOY1",
+                    "minValue": "0",
+                    "maxValue": "9999"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Tension moyenne Phase 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/UMOY2",
+                    "minValue": "0",
+                    "maxValue": "9999"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Tension moyenne Phase 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "V",
+                "configuration": {
+                    "topic": "%s/UMOY3",
+                    "minValue": "0",
+                    "maxValue": "9999"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Registre de Statuts",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/STGE"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Couleur aujourdhui",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/aujour"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Couleur du lendemain",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/demain"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Début Pointe Mobile 1",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/DPM1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Fin Pointe Mobile 1",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/FPM1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Début Pointe Mobile 2",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/DPM2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Fin Pointe Mobile 2",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/FPM2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Début Pointe Mobile 3",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/DPM3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Fin Pointe Mobile 3",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/FPM3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Message court",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/MSG1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Message Ultra court",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/MSG2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Point Référence Mesure",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/PRM"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Relais",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/RELAIS"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index tarifaire en cours",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/NTARF"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "N° jours en cours fournisseur",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/NJOURF"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "N° prochain jour fournisseur",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/NJOURF_1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Profil du prochain jour",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/PJOURF_1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Profil du prochain jour pointe",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/PPOINTE"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Temps actualisation",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "s",
+                "configuration": {
+                    "topic": "%s/now-refresh"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Modifier Temps actualisation (en sec)",
+                "type": "action",
+                "subType": "select",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/set-refresh",
+                    "listValue": "30;60;90;120",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "value": "Temps actualisation",
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mode TIC",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/mode-tic"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mode Electrique",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/mode-elec"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Temps de fonctionnement",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/uptime"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mise à jour disponible",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "unite": "s",
+                "configuration": {
+                    "topic": "%s/update",
+                    "minValue": "0",
+                    "maxValue": "500"
+                },
+                "isVisible": "1"
+            }
+        ]
+    }
+}

@@ -1,0 +1,525 @@
+{
+    "TICMeter Historique Mode": {
+        "name": "TICMeter Historique Mode",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
+            "commentaire": "TICMeter Historique Mode\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/117",
+            "icone": "teleinfo"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "1",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "Identifiant",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/ADCO"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Type de contrat",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/OPTARIF"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité souscrite",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/ISOUSC",
+                    "minValue": "0",
+                    "maxValue": "99"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance Max contrat",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/PREF "
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index Total",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/TOTAL"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index Base",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/BASE"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index Heures Creuses",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/HCHC"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index Heures Pleines",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EJPHN"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Index Heures de Pointe Mobile",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/EJPHPM"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Préavis Début EJP",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "min",
+                "configuration": {
+                    "topic": "%s/PEJP"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heures Creuses Jours Bleus",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/BBRHCJB"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heures Pleines Jours Bleus",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/BBRHPJB"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heures Creuses Jours Blancs",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/BBRHCJW"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heures Pleines Jours Blancs",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/BBRHPJW"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heures Creuses Jours Rouges",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/BBRHCJR"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Heures Pleines Jours Rouges",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "Wh",
+                "configuration": {
+                    "topic": "%s/BBRHPJR"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Période tarifaire en cours",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "1",
+                "configuration": {
+                    "topic": "%s/PTEC"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Couleur aujourdhui",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/aujour"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Couleur du lendemain",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/demain"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité instantanée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IINST"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité instantanée Phase 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IINST1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité instantanée Phase 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IINST2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité instantanée Phase 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IINST3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité maximale",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IMAX"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité maximale Phase 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IMAX1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité maximale Phase 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IMAX2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Intensité maximale Phase 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/IMAX3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Dépassement Puissance",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/ADPS"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Dépassement Intensité Phase 1",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/ADIR1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Dépassement Intensité Phase 2",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/ADIR2"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Dépassement Intensité Phase 3",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "A",
+                "configuration": {
+                    "topic": "%s/ADIR3"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance apparente",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "VA",
+                "configuration": {
+                    "topic": "%s/PAPP"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Puissance maximale triphasée",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "1",
+                "unite": "W",
+                "configuration": {
+                    "topic": "%s/PMAX"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Présence des potentiels",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/PPOT"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Horaire Heures Creuses",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/HHPHC"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mot détat du compteur",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/MOTDETAT"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Temps actualisation",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "s",
+                "configuration": {
+                    "topic": "%s/now-refresh"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Modifier Temps actualisation (en sec)",
+                "type": "action",
+                "subType": "select",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/set-refresh",
+                    "listValue": "30;60;90;120",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "value": "Temps actualisation",
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mode TIC",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/mode-tic"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mode Electrique",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/mode-elec"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Temps de fonctionnement",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/uptime"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Mise à jour disponible",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "unite": "s",
+                "configuration": {
+                    "topic": "%s/update",
+                    "minValue": "0",
+                    "maxValue": "500"
+                },
+                "isVisible": "1"
+            }
+        ]
+    }
+}

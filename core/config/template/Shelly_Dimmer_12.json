@@ -1,0 +1,277 @@
+{
+    "Shelly Dimmer 12": {
+        "name": "Shelly Dimmer 12",
+        "eqType_name": "jMQTT",
+        "configuration": {
+            "type": "eqpt",
+            "auto_add_cmd": "0",
+            "auto_add_topic": "%s/#",
+            "Qos": "1",
+            "commentaire": "Shelly Dimmer 12\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/116",
+            "icone": "dimmer"
+        },
+        "category": {
+            "heating": "0",
+            "security": "0",
+            "energy": "0",
+            "light": "0",
+            "opening": "0",
+            "automatism": "0",
+            "multimedia": "0",
+            "default": "0"
+        },
+        "display": {
+            "width": "254px",
+            "height": "942px"
+        },
+        "commands": [
+            {
+                "eqType": "jMQTT",
+                "name": "input:0",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/input/0"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "input:1",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/input/1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "light:0",
+                "type": "info",
+                "subType": "binary",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/light/0"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "online",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/online"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "longpush:0",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/longpush/0"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "luminosite",
+                "type": "info",
+                "subType": "numeric",
+                "isHistorized": "0",
+                "unite": "%",
+                "configuration": {
+                    "topic": "%s/info",
+                    "jsonPath": "[lights][0][brightness]"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "light:0:power",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/light/0/power"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "light:0:energy",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/light/0/energy"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "announce",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/announce"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "info",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/info"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "input_event:0",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/input_event/0"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "input_event:1",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/input_event/1"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "light:0:status",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/light/0/status"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "loaderror",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/loaderror"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "overpower",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/overpower"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "overtemperature",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/overtemperature"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "temperature",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "°C",
+                "configuration": {
+                    "topic": "%s/temperature"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "temperature_f",
+                "type": "info",
+                "subType": "string",
+                "isHistorized": "0",
+                "unite": "°F",
+                "configuration": {
+                    "topic": "%s/temperature_f"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "INTER-On",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/light/0/set",
+                    "request": "{\"turn\":\"on\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "INTER-Off",
+                "type": "action",
+                "subType": "other",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/light/0/set",
+                    "request": "{\"turn\":\"off\"}",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "isVisible": "1"
+            },
+            {
+                "eqType": "jMQTT",
+                "name": "Lumi",
+                "type": "action",
+                "subType": "slider",
+                "isHistorized": "0",
+                "configuration": {
+                    "topic": "%s/light/0/set",
+                    "request": "{\"brightness\":#slider#}",
+                    "minValue": "0",
+                    "maxValue": "100",
+                    "retain": "0",
+                    "autoPub": "0"
+                },
+                "value": "luminosite",
+                "isVisible": "1"
+            }
+        ]
+    }
+}
