@@ -2,12 +2,12 @@
     "ZWaveJSUI Fibaro Motion Sensor FGMS-001-ZW5": {
         "name": "ZWaveJSUI Fibaro Motion Sensor FGMS-001-ZW5",
         "eqType_name": "jMQTT",
+        "comment": "Fibaro Motion Sensor FGMS-001-ZW5\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template-discussions/72902/48",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-07-21 00:36:46",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
-            "commentaire": "Fibaro Motion Sensor FGMS-001-ZW5\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template-discussions\/72902\/48",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "motion-sensor",
             "updatetime": "2022-07-23 15:53:24",
@@ -32,7 +32,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature",
+                    "topic": "%s/49/0/Air_temperature",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -52,7 +52,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level",
+                    "topic": "%s/128/0/level",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -72,7 +72,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/0",
+                    "topic": "%s/156/0/state/0",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -92,7 +92,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/48\/0\/Any",
+                    "topic": "%s/48/0/Any",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -112,7 +112,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Illuminance",
+                    "topic": "%s/49/0/Illuminance",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -132,7 +132,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/0",
+                    "topic": "%s/156/0/state/0",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -152,7 +152,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/isLow",
+                    "topic": "%s/128/0/isLow",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -172,7 +172,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[status]"
                 },
                 "template": {
@@ -192,7 +192,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {

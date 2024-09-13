@@ -14,15 +14,15 @@
                             <tr>
                                 <th>{{Configuration}}</th>
                                 <th>{{Statut}}</th>
-                                <th>{{(Re)Démarrer}}</th>
-                                <th>{{Dernier lancement}}</th>
+                                <th>{{Redémarrer}}</th>
+                                <th>{{Dernière connexion}}</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td class="mqttClientLaunchable"><span class="label" style="font-size:1em;"></span><span class="state"></span></td>
                                 <td class="mqttClientState"><span class="label" style="font-size:1em;"></span><span class="state"></span></td>
-                                <td><a class="btn btn-success btn-sm eqLogicAction" data-action="startMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
+                                <td><a class="btn btn-success btn-sm eqLogicAction" data-action="restartMqttClient" style="position:relative;top:-5px;"><i class="fa fa-play"></i></a></td>
                                 <td class="mqttClientLastLaunch"></td>
                             </tr>
                         </tbody>
@@ -94,8 +94,8 @@
                                 <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttAddress" placeholder="localhost"
                                     title="{{Adresse IP ou nom de domaine du Broker.<br/>Valeur si vide, 'localhost' (donc la machine hébergeant Jeedom).}}">
                                 <span class="input-group-addon">:</span>
-                                <input class="eqLogicAttr form-control tooltips jmqttPort roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number" min="1" max="65535" placeholder="port"
-                                    title="{{Port réseau sur lequel écoute le Broker.<br/>Valeur si vide, 1883 en mqtt, 8883 en mqtts, 1884 en ws et 8884 en wss.}}">
+                                <input class="eqLogicAttr form-control tooltips jmqttPort roundedRight" data-l1key="configuration" data-l2key="mqttPort" type="number"
+                                    min="1" max="65535" placeholder="1883" title="{{Port réseau sur lequel écoute le Broker.<br/>Valeur si vide '1883'.}}">
                                 <span class="input-group-addon jmqttWsUrl" style="display:none">/</span>
                                 <input class="eqLogicAttr form-control tooltips roundedRight jmqttWsUrl" data-l1key="configuration" data-l2key="mqttWsUrl" style="display:none" placeholder="mqtt"
                                     title="{{URL de la connexion Web Sockets du serveur distant, sans '/' initial.<br/>Valeur si vide, 'mqtt'. Ne pas modifier si vous ne savez pas ce que vous faites.}}">
@@ -182,7 +182,7 @@
                                 title="{{Vérifie la chaîne d'approbation du certificat présenté par le Broker et que son sujet corresponde à l'IP/Nom de Domaine du Broker.}}"></i></sup></label>
                                 <div class="col-lg-9">
                                     <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
-                                        <option value="public">{{Activé - Autorités Publiques}}</option>
+                                        <option value="public" selected>{{Activé - Autorités Publiques}}</option>
                                         <option value="private">{{Activé - Autorité Personnalisée}}</option>
                                         <option value="disabled">{{Désactivé - Non Recommandé}}</option>
                                     </select>

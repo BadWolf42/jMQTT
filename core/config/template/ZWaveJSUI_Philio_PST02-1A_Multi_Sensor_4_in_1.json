@@ -2,15 +2,15 @@
     "ZWaveJSUI Philio PST02-1A Multi Sensor 4 in 1": {
         "name": "ZWaveJSUI Philio PST02-1A Multi Sensor 4 in 1",
         "eqType_name": "jMQTT",
+        "comment": "ZWaveJSUI Philio PST02-1A Multi Sensor 4 in 1 (Ouverture, Luminosité, Mouvement, Temprature)\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/61",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-09-23 10:48:50",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_cmd": "Pile",
             "icone": "door",
-            "commentaire": "ZWaveJSUI Philio PST02-1A Multi Sensor 4 in 1 (Ouverture, Luminosité, Mouvement, Temprature)\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/61",
             "updatetime": "2022-09-23 10:55:25",
             "batterytime": "2022-09-22 20:28:38"
         },
@@ -36,7 +36,7 @@
                 "subType": "numeric",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/notification\/endpoint_0\/Access_Control\/Door_state",
+                    "topic": "%s/notification/endpoint_0/Access_Control/Door_state",
                     "jsonPath": "[value]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -75,7 +75,7 @@
                 "subType": "string",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/notification\/endpoint_0\/Home_Security\/Cover_status",
+                    "topic": "%s/notification/endpoint_0/Home_Security/Cover_status",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -96,7 +96,7 @@
                 "isHistorized": "1",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/battery\/endpoint_0\/level",
+                    "topic": "%s/battery/endpoint_0/level",
                     "jsonPath": "[value]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -134,7 +134,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/battery\/endpoint_0\/isLow"
+                    "topic": "%s/battery/endpoint_0/isLow"
                 },
                 "template": {
                     "dashboard": "default",
@@ -153,7 +153,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/sensor_multilevel\/endpoint_0\/Air_temperature",
+                    "topic": "%s/sensor_multilevel/endpoint_0/Air_temperature",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -173,7 +173,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/sensor_multilevel\/endpoint_0\/Illuminance",
+                    "topic": "%s/sensor_multilevel/endpoint_0/Illuminance",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -193,7 +193,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/sensor_binary\/endpoint_0\/Motion",
+                    "topic": "%s/sensor_binary/endpoint_0/Motion",
                     "jsonPath": "[value]"
                 },
                 "template": {

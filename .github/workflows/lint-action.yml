@@ -1,0 +1,91 @@
+name: Lint Action
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2']
+        python-version: ['3.11']
+        # node-version: ['12']
+        jeedom-branch: ['V4-stable']
+        # jeedom-branch: ['V4-stable', 'alpha']
+
+    steps:
+      - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
+        uses: actions/checkout@v4
+        with:
+          repository: jeedom/core
+          ref: ${{ matrix.jeedom-branch }}
+          show-progress: false
+
+      - name: Create plugins folder
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/plugins/jMQTT
+
+      - name: Checkout jMQTT
+        uses: actions/checkout@v4
+        with:
+          path: plugins/jMQTT
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        # with:
+        #   node-version: ${{ matrix.node-version }}
+
+      - name: Install Node.js dependencies
+        # run: npm ci
+        run: npm install eslint prettier --save-dev --save-exact
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+          tools: phpstan, phpcs
+        env:
+          debug: true
+
+      - name: Install PHP dependencies
+        run: composer update --working-dir=${GITHUB_WORKSPACE}/plugins/jMQTT/resources/JsonPath-PHP
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ${GITHUB_WORKSPACE}/plugins/jMQTT/resources/jmqttd_api/requirements-tests.txt
+
+      - name: Lint with PHPStan
+        run: phpstan analyse -c plugins/jMQTT/.github/configs/phpstan.neon --no-progress --error-format=github || true
+
+      - name: Lint Action
+        uses: wearerequired/lint-action@v2
+        with:
+          auto_fix: false
+          check_name: ${linter} (${{ matrix.php-version }}, ${{ matrix.python-version }}, ${{ matrix.jeedom-branch }})
+          # php_codesniffer: true
+          # php_codesniffer_dir: plugins/jMQTT
+          black: true
+          black_dir: plugins/jMQTT/resources/jmqttd_api
+          black_args: --config ../../.github/configs/black.toml
+          flake8: true
+          flake8_dir: plugins/jMQTT/resources/jmqttd_api
+          flake8_args: --config ../../.github/configs/flake8.toml
+          flake8_auto_fix: false
+          # eslint: true
+          # eslint_dir: plugins/jMQTT/desktop/
+          # eslint_args: -c ../../.github/configs/eslint.json
+          # prettier: true
+          # prettier_dir: plugins/jMQTT
+          # prettier_args: --config ../../.github/configs/prettier.json

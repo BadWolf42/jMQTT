@@ -2,16 +2,16 @@
     "ZWaveJSUI Coolcam Light Switch 3 CH": {
         "name": "ZWaveJSUI Coolcam Light Switch 3 CH",
         "eqType_name": "jMQTT",
+        "comment": "Interrupteur mural 3 channels",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-02 21:33:50",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Interrupteur mural 3 channels",
             "icone": "relay",
             "updatetime": "2021-12-09 22:42:42",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -36,7 +36,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue",
+                    "topic": "%s/37/1/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -72,7 +72,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "1",
@@ -109,7 +109,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "1",
@@ -146,7 +146,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue",
+                    "topic": "%s/37/2/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -182,7 +182,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "1",
@@ -219,7 +219,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "1",
@@ -256,7 +256,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/currentValue",
+                    "topic": "%s/37/3/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -292,7 +292,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/targetValue\/set",
+                    "topic": "%s/37/3/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "1",
@@ -329,7 +329,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/targetValue\/set",
+                    "topic": "%s/37/3/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "1",

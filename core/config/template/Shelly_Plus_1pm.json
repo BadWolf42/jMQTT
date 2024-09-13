@@ -2,15 +2,15 @@
     "Shelly Plus 1pm": {
         "name": "Shelly Plus 1pm",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Plus 1pm\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/44",
         "configuration": {
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "createtime": "2022-03-03 11:58:21",
             "type": "eqpt",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
             "icone": "lightbulb",
-            "commentaire": "Shelly Plus 1pm\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/44",
             "updatetime": "2022-03-07 15:42:26"
         },
         "category": {
@@ -70,7 +70,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/events\/rpc"
+                    "topic": "%s/events/rpc"
                 },
                 "template": {
                     "dashboard": "default",
@@ -96,7 +96,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "request": "{method:'Switch.Set', params:{id:0,on:true}}",
                     "retain": "0",
                     "autoPub": "0"
@@ -124,7 +124,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/rpc",
+                    "topic": "%s/rpc",
                     "request": "{method:'Switch.Set', params:{id:0,on:false}}",
                     "retain": "0",
                     "autoPub": "0"
@@ -152,7 +152,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online"
+                    "topic": "%s/online"
                 },
                 "template": {
                     "dashboard": "default",
@@ -179,7 +179,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[apower]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -216,7 +216,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[temperature][tC]"
                 },
                 "template": {
@@ -243,7 +243,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[output]"
                 },
                 "template": {
@@ -270,7 +270,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[timer_started_at]"
                 },
                 "template": {
@@ -290,7 +290,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[timer_duration]"
                 },
                 "template": {
@@ -311,7 +311,7 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[voltage]"
                 },
                 "template": {
@@ -332,7 +332,7 @@
                 "isHistorized": "0",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[current]"
                 },
                 "template": {
@@ -352,7 +352,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[pf]"
                 },
                 "template": {
@@ -372,7 +372,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[aenergy][total]"
                 },
                 "template": {
@@ -392,7 +392,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[aenergy][by_minute]"
                 },
                 "template": {
@@ -412,7 +412,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[aenergy][minute_ts]"
                 },
                 "template": {
@@ -432,7 +432,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status\/switch:0",
+                    "topic": "%s/status/switch:0",
                     "jsonPath": "[errors]"
                 },
                 "template": {

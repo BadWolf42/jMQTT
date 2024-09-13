@@ -1,31 +1,17 @@
 <?php
 
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 if (!isConnect('admin')) {
-    throw new Exception('{{401 - Accès non autorisé}}');
+    throw new Exception('401 - Unauthorized access');
 }
 
+require_once __DIR__ . '/../../core/class/jMQTT.class.php';
+
 function panelCreator($title, $type, $icon, $builder) {
-    echo '            <div class="panel panel-'.$type.'">';
-    echo '                <div class="panel-heading"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
-    echo '                <a class="btn btn-info btn-show-hide btn-xs btn-success pull-right" builder="'.$builder.'" style="top:-2px!important">';
-    echo '                <i class="fas fa-search-plus"></i> {{Afficher}} </a></h3></div><div class="panel-body hidden"></div>';
-    echo '            </div>';
+    echo '<div class="panel panel-'.$type.'">';
+    echo '<div class="panel-heading rounded"><h3 class="panel-title"><i class="'.$icon.'"></i> '.$title;
+    echo '<a class="btn btn-info btn-show-hide btn-xs pull-right" builder="'.$builder.'" style="top:-2px!important">';
+    echo '<i class="fas fa-search-plus"></i> Show </a></h3></div><div class="panel-body hidden"></div>';
+    echo "</div>\n";
 }
 ?>
     <script>
@@ -63,17 +49,17 @@ function builder_cfgCache(_div, _action, _buttons) {
         error: function(error) { $.fn.showAlert({message: error, level: 'danger'}) },
         success: function(_data) {
             var res = '<table class="table table-bordered" style="table-layout:fixed;width:100%;">';
-            res += '<thead><tr><th style="width:180px">{{Clé}}</th><th>{{Valeur (encodée en Json)}}</th>';
+            res += '<thead><tr><th style="width:180px">Key</th><th>Value (Json encoded)</th>';
             res += '<th style="width:85px;text-align:center">';
             if (_data[0] && !_data[0].id)
-                res += '<a class="btn btn-success btn-xs pull-right add" style="top:0px!important;"><i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a>';
+                res += '<a class="btn btn-success btn-xs pull-right add" style="top:0px!important;"><i class="fas fa-check-circle icon-white"></i> Add</a>';
             res += '</th></tr></thead><tbody>';
             for (var group of _data) {
                 if (group.header) {
                     if (group.id) {
                         res += '<tr eqId="' + group.id + '"><td colspan="2" style="font-weight:bolder;">' + group.header + '</td>';
                         res += '<td><a class="btn btn-success btn-xs pull-right add" style="top:0px!important;">';
-                        res += '<i class="fas fa-check-circle icon-white"></i> {{Ajouter}}</a></td></tr>';
+                        res += '<i class="fas fa-check-circle icon-white"></i> Add</a></td></tr>';
                     } else {
                         res += '<tr><td colspan="3" style="font-weight:bolder;">' + group.header + '</td></tr>';
                     }
@@ -96,10 +82,10 @@ function builder_cfgCache(_div, _action, _buttons) {
 function configIntButtons(div) {
     div.off('click', 'a.add').on('click', 'a.add', function() {
         bootbox.confirm({
-            title: '{{Ajouter un paramètre de configuration interne}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add an internal configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -113,7 +99,7 @@ function configIntButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config interne ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Internal config parameter added.', level: 'success'});
                         var row = div.find('tbody').prepend('<tr />').children('tr:first');
                         row.append('<td class="key">'+$("#debugKey").val()+'</td>');
                         row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
@@ -129,10 +115,10 @@ function configIntButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre de configuration interne}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit internal configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -146,7 +132,7 @@ function configIntButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config interne modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Internal config parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -159,10 +145,10 @@ function configIntButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre de configuration interne}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Delete internal configuration setting',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -175,7 +161,7 @@ function configIntButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config interne supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Internal config parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -189,10 +175,10 @@ function configBrkEqButtons(div) {
         var tr = $(this).closest('tr');
         var debugId = tr.attr('eqId');
         bootbox.confirm({
-            title: '{{Ajouter un paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add a configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -207,7 +193,7 @@ function configBrkEqButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter added.', level: 'success'});
                         var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
                         row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
                         row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;';
@@ -225,10 +211,10 @@ function configBrkEqButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -243,7 +229,7 @@ function configBrkEqButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -257,10 +243,10 @@ function configBrkEqButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Delete configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -274,7 +260,7 @@ function configBrkEqButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -288,10 +274,10 @@ function configCmdButtons(div) {
         var tr = $(this).closest('tr');
         var debugId = tr.attr('eqId');
         bootbox.confirm({
-            title: '{{Ajouter un paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add a configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -306,7 +292,7 @@ function configCmdButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter added.', level: 'success'});
                         var row = '<tr eqId=' + debugId + '><td class="key">'+$("#debugKey").val()+'</td>';
                         row += '<td><pre class="val">'+$("#debugVal").val()+'</pre></td>';
                         row += '<td style="text-align:center"><a class="btn btn-warning btn-sm edit"><i class="fas fa-pen"></i></a>&nbsp;';
@@ -324,10 +310,10 @@ function configCmdButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -342,7 +328,7 @@ function configCmdButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -356,10 +342,10 @@ function configCmdButtons(div) {
         var debugId = tr.attr('eqId');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre de configuration}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Delete configuration parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -373,7 +359,7 @@ function configCmdButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de config supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Config parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -385,10 +371,10 @@ function configCmdButtons(div) {
 function cacheButtons(div) {
     div.off('click', 'a.add').on('click', 'a.add', function() {
         bootbox.confirm({
-            title: '{{Ajouter un paramètre au cache}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Add a parameter to the cache',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
                 if (result) {
@@ -402,7 +388,7 @@ function cacheButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre de cache ajouté.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Cache parameter added.', level: 'success'});
                         var row = div.find('tbody').prepend('<tr />').children('tr:first');
                         row.append('<td class="key">'+$("#debugKey").val()+'</td>');
                         row.append('<td><pre class="val">'+$("#debugVal").val()+'</pre></td>');
@@ -418,10 +404,10 @@ function cacheButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Modifier le paramètre du cache}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
+            title: 'Edit cache parameter',
+            message: '<label class="control-label">Key: </label> '
                     + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
+                    + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result){
                 if (result) {
@@ -435,7 +421,7 @@ function cacheButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre du cache modifié.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Cache parameter modified.', level: 'success'});
                         tr.find('.val').text($("#debugVal").val());
                     }
                 });
@@ -448,11 +434,12 @@ function cacheButtons(div) {
         var tr = $(this).closest('tr');
         var debugKey = tr.find('.key').text();
         bootbox.confirm({
-            title: '{{Supprimer le paramètre du cache}}',
-            message: '<label class="control-label">{{Clé :}} </label> '
-                    + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\''+debugKey+'\'><br/><br/>'
-                    + '<label class="control-label">{{Valeur (encodée en Json) :}} </label> '
-                    + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
+            title: 'Delete cache value',
+            message: '<label class="control-label">Key: </label> '
+                    + '<input class="bootbox-input bootbox-input-text form-control" disabled type="text" value=\'' + debugKey + '\'><br/><br/>'
+                    + '<label class="control-label">Value (Json encoded): </label> '
+                    + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" disabled readonly=true>'
+                    + $(this).closest('tr').find('.val').text() + '</textarea><br/><br/>',
             callback: function(result){
                 if (result) {
                 callDebugAjax({
@@ -464,7 +451,7 @@ function cacheButtons(div) {
                         $.fn.showAlert({message: error, level: 'danger'})
                     },
                     success: function(data) {
-                        $.fn.showAlert({message: '{{Paramètre du cache supprimé.}}', level: 'success'});
+                        $.fn.showAlert({message: 'Cache parameter deleted.', level: 'success'});
                         tr.remove();
                     }
                 });
@@ -474,25 +461,10 @@ function cacheButtons(div) {
     });
 }
 
-function builder_daemon(div) {
+function builder_toJeedom(div) {
     var res = '<form class="form-horizontal"><fieldset>';
-    // Send to Daemon
-    res += '<legend><i class="fas fa-upload"></i> {{Simuler un évènement envoyé au Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
-    res += '<textarea class="bootbox-input bootbox-input-text form-control toDaemon" style="min-height:65px;">';
-    res += '{"cmd": "newMqttClient", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": ""}\n';
-    res += '{"cmd": "removeMqttClient", "id": ""}\n';
-    res += '{"cmd": "subscribeTopic", "id": "", "topic": "", "qos": ""}\n';
-    res += '{"cmd": "unsubscribeTopic", "id": "", "topic": ""}\n';
-    res += '{"cmd": "messageOut", "id": "", "topic": "", "payload": "", "qos": "", "retain": ""}\n';
-    res += '{"cmd": "hb", "id": ""}\n';
-    res += '{"cmd": "loglevel", "id": "", "level": ""}';
-    res += '\n';
-    res += '{"cmd": "", "id": "", "hostname": "", "port": "", "mqttId": "", "mqttIdValue": "", "lwt": "", "lwtTopic": "", "lwtOnline": "", "lwtOffline": "", "username": "", "password": "", "paholog": "", "tls": "", "tlsinsecure": "", "tlscafile": "", "tlsclicertfile": "", "tlsclikeyfile": "", "payload": "", "qos": "", "retain": "", "topic": ""}\n';
-
-    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toDaemon" style="top:0px!important;">';
-    res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div>';
     // Send to Jeedom
-    res += '<legend><i class="fas fa-download"></i> {{Simuler un évènement reçu du Démon par Jeedom (clé API envoyée en auto)}}</legend><div class="form-group"><div class="col-sm-10">';
+    res += '<legend><i class="fas fa-download"></i> Simulate an event from Daemon (API key sent automatically)</legend><div class="form-group"><div class="col-sm-10">';
     res += '<textarea class="bootbox-input bootbox-input-text form-control toJeedom" style="min-height:65px;">';
 
     res += '[{"cmd":"messageIn", "id":string, "topic":string, "payload":string, "qos":string, "retain":string}]\n';
@@ -502,26 +474,12 @@ function builder_daemon(div) {
     res += '[{"cmd":"daemonDown"}]\n';
     res += '[{"cmd":"hb"}]';
 
-    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-xs pull-right toJeedom" style="top:0px!important;">';
-    res += '<i class="fas fa-check-circle icon-white"></i> {{Envoyer}}</a></div></div><br/>';
+    res += '</textarea></div><div class="col-sm-2"><a class="btn btn-success btn-sm pull-right toJeedom" style="top:0px!important;">';
+    res += '<i class="fas fa-check-circle icon-white"></i> Send</a></div></div><br/>';
 
     res += '</fieldset></form>';
     div.html(res);
 
-    div.off('click', 'a.toDaemon').on('click', 'a.toDaemon', function() {
-        callDebugAjax({
-            data: {
-                action: "sendToDaemon",
-                data : $(this).closest('form').find('textarea.toDaemon').value()
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Evènement envoyé au Démon', level: 'success'});
-            }
-        });
-    });
     div.off('click', 'a.toJeedom').on('click', 'a.toJeedom', function() {
         callDebugAjax({
             data: {
@@ -532,7 +490,7 @@ function builder_daemon(div) {
                 $.fn.showAlert({message: error, level: 'warning'})
             },
             success: function(data) {
-                $.fn.showAlert({message: 'Evènement envoyé au Démon', level: 'success'});
+                $.fn.showAlert({message: 'Event sent to Jeedon callback', level: 'success'});
             }
         });
     });
@@ -544,225 +502,115 @@ function builder_configEqp(div)  { builder_cfgCache(div, "configGetEquipments", 
 function builder_configCmdI(div) { builder_cfgCache(div, "configGetCommandsInfo",   configCmdButtons); }
 function builder_configCmdA(div) { builder_cfgCache(div, "configGetCommandsAction", configCmdButtons); }
 
-function builder_actions(div) {
-    var res = /*'<legend><i class="fas fa-hands-wash "></i> {{Nettoyage}}</legend>'*/'<div class="form-group">';
-    res += '<div class="col-sm-5"><a class="btn btn-warning btn-xs depCheck" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-check-circle icon-white"></i> {{Forcer la revérification des dépendances}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-danger btn-xs venvDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer déps Python (venv)}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-danger btn-xs depDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer déps PHP}}</a></div>';
+function add_action_event(_div, _action, _level, _icon, _msg) {
+    let elt = '<div class="col-sm-6">';
+    elt += '<a class="btn btn-' + _level + ' btn-xs ' + _action + '" style="width:100%;text-align:left;">';
+    elt += '<i class="' + _icon + ' center" style="width:15px"></i> ' + _msg + '</a></div>';
+    _div.append(elt);
+    _div.off('click', 'a.' + _action).on('click', 'a.' + _action, function() {
+        callDebugAjax({
+            data: {
+                action: _action
+            },
+            error: function(error) {
+                $.fn.showAlert({message: error, level: 'warning'})
+            },
+            success: function(data) {
+                if (!data) data = 'Done';
+                $.fn.showAlert({message: _msg + ' -> ' + data, level: 'success'});
+            }
 
-    res += '<div class="col-sm-5"><a class="btn btn-danger btn-xs dynContentDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer les contenus dynamiques}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-danger btn-xs pidFileDelete" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-trash"></i> {{Supprimer le fichier PID}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-danger btn-xs hbStop" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-stop"></i> {{Arrêter les heatbeat}}</a></div>';
+        });
+    });
+}
 
-    res += '<div class="col-sm-5"><a class="btn btn-info btn-xs threadDump" style="width:100%;text-align:left;">';
-    res += '<i class="icon kiko-zoom"></i> {{Demander au démon un "Thread Dump"}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-warning btn-xs reInstall" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-bicycle"></i> {{Réinstaller jMQTT}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-info btn-xs statsSend" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-satellite"></i> {{Envoyer les stats}}</a></div>';
+function builder_actions(_root_div) {
+    _root_div.html('');
 
-    res += '<div class="col-sm-5"><a class="btn btn-danger btn-xs listenersRemove" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-assistive-listening-systems"></i> {{Supprimer tous les listeners}}</a></div>';
-    res += '<div class="col-sm-4"><a class="btn btn-success btn-xs listenersCreate" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-assistive-listening-systems"></i> {{Re-créer les listeners}}</a></div>';
-    res += '<div class="col-sm-3"><a class="btn btn-info btn-xs logVerbose" style="width:100%;text-align:left;">';
-    res += '<i class="far fa-file"></i> {{Logs en VERBOSE}}</a></div>';
+    _root_div.append('<legend style="margin-bottom:2px!important"><i class="mdi-harddisk"></i> Installation and files</legend>');
+    let div = $('<div class="form-group">');
+    add_action_event(div, 'depCheck',         'success', 'fas fa-check-circle icon-white',     'Force dependencies to be rechecked');
+    add_action_event(div, 'reInstall',        'warning', 'fas fa-bicycle',                     'Reinstall jMQTT');
+    add_action_event(div, 'depDelete',        'danger',  'fab fa-php',                         'Delete PHP deps');
+    add_action_event(div, 'venvDelete',       'danger',  'fab fa-python',                      'Delete Python deps (venv)');
+    add_action_event(div, 'dynContentDelete', 'info',    'fas fa-trash',                       'Delete dynamic content');
+    div.append('<div class="col-sm-6">&nbsp;</div>'); // Alignement
+    div.append('<div class="col-sm-12" style="height:15px">&nbsp;</div>'); // Spacer
+    _root_div.append(div);
 
-// - List active Python daemon(s) PID (and allow to kill some/all of them)
-    // res += '<div class="col-sm-12">&nbsp;</div></div><legend><i class="fas fa-university"></i> {{Démon(s) actifs}}</legend>';
-    // res += '<div class="col-sm-12" id="actionsDeamons"></div>';
+    _root_div.append('<legend style="margin-bottom:2px!important"><i class="kiko-heart-rate"></i> Running contents</legend>');
+    div = $('<div class="form-group">');
+    add_action_event(div, 'listenersRemove',  'warning', 'fas fa-assistive-listening-systems', 'Delete all listeners');
+    add_action_event(div, 'listenersCreate',  'success', 'fas fa-assistive-listening-systems', 'Recreate the listeners');
+    add_action_event(div, 'pidFileDelete',    'danger',  'fas fa-book-dead',                   'Delete PID file');
+    add_action_event(div, 'portFileDelete',   'danger',  'fas fa-book-dead',                   'Delete PORT file');
+    add_action_event(div, 'killAllSIGTERM',   'success', 'fas fa-skull',                       'KillAll jMQTTd (gracefully)');
+    add_action_event(div, 'killAllSIGKILL',   'warning', 'fas fa-skull-crossbones',            'KillAll jMQTTd (forcefully)');
+    add_action_event(div, 'hbStop',           'danger',  'fas fa-stop',                        'Stop Heatbeats');
+    div.append('<div class="col-sm-6">&nbsp;</div>'); // Alignement
+    div.append('<div class="col-sm-12" style="height:15px">&nbsp;</div>'); // Spacer
+    _root_div.append(div);
 
-    res += '<div class="col-sm-12">&nbsp;</div></div>';
+    _root_div.append('<legend style="margin-bottom:2px!important"><i class="fas fa-tools"></i> Troubleshooting</legend>');
+    div = $('<div class="form-group">');
+    add_action_event(div, 'printTree',        'info',    'kiko-fingerprint',                   'Ask the daemon for a "Print Tree"');
+    add_action_event(div, 'threadDump',       'info',    'kiko-zoom',                          'Ask the daemon for a "Thread Dump"');
+    add_action_event(div, 'logVerbose',       'info',    'far fa-file',                        'VERBOSE logs');
+    add_action_event(div, 'statsSend',        'info',    'fas fa-satellite',                   'Send stats');
+    div.append('<div class="col-sm-12" style="height:10px">&nbsp;</div>'); // Last spacer
+    _root_div.append(div);
+}
+
+function builder_updates(div) {
+    let res = '<form class="form-horizontal"><fieldset><div class="form-group">';
+    res += '<div class="col-lg-4">Select the update file to apply:</div>';
+    res += '<div class="col-lg-5 input-group"><span class="input-group-btn">';
+    res += '<select class="form-control reapplyUpdate roundedLeft">';
+    <?php
+
+        // List all migration files
+        $update_dir = realpath(__DIR__ . '/../../resources/update/');
+        $files = ls($update_dir, '*.php', false, array('files'));
+
+        $migrations = array();
+        foreach ($files as $name) {
+            // Use only matching files
+            if (!preg_match_all("/^(\d+)(\.(\d+)(\.(\d+))?)?.php$/", $name, $m))
+                continue;
+            $fileVer = intval($m[1][0]).'.'.intval($m[3][0]).'.'.intval($m[5][0]);
+            $migrations[$fileVer] = $name;
+        }
+
+        // Reverse sort files by key (version number)
+        function rev_version_compare($v1, $v2) { return -version_compare($v1, $v2); }
+        uksort($migrations, 'rev_version_compare');
+
+        // Apply migration files in the right order
+        foreach ($migrations as $ver => $name) {
+            echo "        res += '<option value=\"$name\">$ver</option>';\n";
+        }
+
+    ?>
+    res += '</select></span><span class="input-group-btn">';
+    res += '<a class="btn btn-success roundedRight reapplyUpdate" style="width:75px;">';
+    res += '<i class="fas fa-arrow-circle-right"></i> Apply</a></span>';
+    res += '</div></fieldset></form>';
     div.html(res);
 
-/*
-    var _div = $('#actionsDeamons');
-    callDebugAjax({
-        data: { action: 'configGetInternal' },
-        error: function(error) { $.fn.showAlert({message: error, level: 'danger'}) },
-        success: function(_data) {
-            var res = '<table class="table table-bordered" style="table-layout:fixed;width:100%;">';
-            res += '<thead><tr><th style="width:180px">PID</th><th>{{Port}}</th>';
-            res += '<th style="width:85px;text-align:center"><a class="btn btn-danger btn-xs pull-right killAll" style="top:0px!important;">';
-            res += '<i class="fas fa-check-circle icon-white"></i> {{Kill All}}</a></th>';
-            res += '</tr></thead><tbody>';
-            for (var d of _data) {
-                res += '<tr><td class="key">' + d.pid + '</td><td><pre class="val">' + d.port + '</pre></td>';
-                // IF d.selected THEN add a tick -> <i class="fas fa-check-circle icon-white"></i>
-                res += '<td style="text-align:center"><a class="btn btn-danger btn-sm del"><i class="fas fa-trash"></i></a></td></tr>';
-            }
-            res += '</tbody></table>';
-            _div.html(res);
-            if(typeof _buttons === 'function')
-                _buttons(_div);
-        }
-    });
-*/
-
-
-    div.off('click', 'a.depCheck').on('click', 'a.depCheck', function() {
+    div.off('click', 'a.reapplyUpdate').on('click', 'a.reapplyUpdate', function() {
         callDebugAjax({
             data: {
-                action: "depCheck"
+                action: "reapplyUpdate",
+                name: $(this).closest('form').find('select.reapplyUpdate').value()
             },
             error: function(error) {
                 $.fn.showAlert({message: error, level: 'warning'})
             },
             success: function(data) {
-                $.fn.showAlert({message: 'Revérification des dépendances lancée', level: 'success'});
+                $.fn.showAlert({message: 'Update applied', level: 'success'});
             }
         });
     });
-    div.off('click', 'a.depDelete').on('click', 'a.depDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "depDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Dépendances PHP supprimées', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.venvDelete').on('click', 'a.venvDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "venvDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Dépendances Python (venv) supprimées', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.dynContentDelete').on('click', 'a.dynContentDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "dynContentDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Contenus dynamiques supprimés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.pidFileDelete').on('click', 'a.pidFileDelete', function() {
-        callDebugAjax({
-            data: {
-                action: "pidFileDelete"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Fichier PID supprimé', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.hbStop').on('click', 'a.hbStop', function() {
-        callDebugAjax({
-            data: {
-                action: "hbStop"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Heartbeat arrêtés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.threadDump').on('click', 'a.threadDump', function() {
-        callDebugAjax({
-            data: {
-                action: "threadDump"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Demande de dump des threads au Démon envoyée', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.reInstall').on('click', 'a.reInstall', function() {
-        callDebugAjax({
-            data: {
-                action: "reInstall"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Réinstallation des dépendances lancée', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.statsSend').on('click', 'a.statsSend', function() {
-        callDebugAjax({
-            data: {
-                action: "statsSend"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Statistiques envoyées au serveur', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.listenersRemove').on('click', 'a.listenersRemove', function() {
-        callDebugAjax({
-            data: {
-                action: "listenersRemove"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Listeners supprimés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.listenersCreate').on('click', 'a.listenersCreate', function() {
-        callDebugAjax({
-            data: {
-                action: "listenersCreate"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Listeners re-créés', level: 'success'});
-            }
-        });
-    });
-    div.off('click', 'a.logVerbose').on('click', 'a.logVerbose', function() {
-        callDebugAjax({
-            data: {
-                action: "logVerbose"
-            },
-            error: function(error) {
-                $.fn.showAlert({message: error, level: 'warning'})
-            },
-            success: function(data) {
-                $.fn.showAlert({message: 'Logs du démon à présent en niveau VERBOSE', level: 'success'});
-            }
-        });
-    });
-
 }
 
 function builder_cacheInt(div)   { builder_cfgCache(div, "cacheGetInternal",        cacheButtons); }
@@ -770,13 +618,14 @@ function builder_cacheBrk(div)   { builder_cfgCache(div, "cacheGetBrokers",     
 function builder_cacheEqp(div)   { builder_cfgCache(div, "cacheGetEquipments",      cacheButtons); }
 function builder_cacheCmdI(div)  { builder_cfgCache(div, "cacheGetCommandsInfo",    cacheButtons); }
 function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction",  cacheButtons); }
+
     </script>
     <div class="row">
         <style>td.key { line-break: anywhere; }</style>
         <div class="col-md-6 col-sm-12"><!-- General status of Jeedom -->
-            <div class="panel panel-primary">
+            <div class="panel panel-success">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fas fa-circle-notch"></i> {{Etat Général de Jeedom}}</h3>
+                    <h3 class="panel-title"><i class="fas fa-circle-notch"></i> Jeedom general status</h3>
                 </div>
                 <div class="panel-body">
                     <form class="form-horizontal">
@@ -796,20 +645,19 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
                                 <div class="col-sm-3">
                                     <span><?php echo jeedom::version(); ?></span>
                                 </div>
-                                <label class="col-sm-3 control-label">Langage</label>
+                                <label class="col-sm-3 control-label">Lang</label>
                                 <div class="col-sm-3">
                                     <span><?php echo config::byKey('language'); ?></span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">Plugins installées</label>
-                                <div class="col-sm-9">
-<?php
-$all_plugins = "";
-foreach (plugin::listPlugin(false, false, true, true) as $p) // use $_nameOnly=true
-    $all_plugins .= ' '.$p;
-?>
-                                    <span><?php echo $all_plugins; ?></span>
+                                <label class="col-sm-3 control-label">PID</label>
+                                <div class="col-sm-3">
+                                    <span><?php echo jMQTTDaemon::getPid(); ?></span>
+                                </div>
+                                <label class="col-sm-3 control-label">Port</label>
+                                <div class="col-sm-3">
+                                    <span><?php echo jMQTTDaemon::getPort(); ?></span>
                                 </div>
                             </div>
                         </fieldset>
@@ -817,45 +665,48 @@ foreach (plugin::listPlugin(false, false, true, true) as $p) // use $_nameOnly=t
                 </div>
             </div>
 <?php
-// Simulate send to daemon
-panelCreator('{{Simuler une communication avec le Démon}}', 'danger', 'fas fa-exchange-alt', 'builder_daemon');
-// Config values
-panelCreator('{{Valeurs de config du Démon}}',             'primary', 'fas fa-wrench', 'builder_configInt');
-panelCreator('{{Valeurs de config des Brokers}}',          'primary', 'fas fa-wrench', 'builder_configBrk');
-panelCreator('{{Valeurs de config des Equipements}}',      'primary', 'fas fa-wrench', 'builder_configEqp');
-panelCreator('{{Valeurs de config des Commandes Info}}',   'primary', 'fas fa-wrench', 'builder_configCmdI');
-panelCreator('{{Valeurs de config des Commandes Action}}', 'primary', 'fas fa-wrench', 'builder_configCmdA');
+
+// Create panels to edit simulate dangerous actions on jMQTT
+panelCreator('Simulate internal actions',      'warning', 'fas fa-radiation-alt', 'builder_actions');
+
+// Create panels to edit Config values
+panelCreator('Daemon config values',           'primary', 'fas fa-wrench',        'builder_configInt');
+panelCreator('Brokers config values',          'primary', 'fas fa-wrench',        'builder_configBrk');
+panelCreator('Equipments config values',       'primary', 'fas fa-wrench',        'builder_configEqp');
+panelCreator('Info Commands config values',    'primary', 'fas fa-wrench',        'builder_configCmdI');
+panelCreator('Action Commands config values',  'primary', 'fas fa-wrench',        'builder_configCmdA');
+
+// Get Jeedom plugin descriptor
+$jplugin = update::byLogicalId("jMQTT");
+
 ?>
         </div>
         <div class="col-md-6 col-sm-12"><!-- General status of jMQTT -->
-            <div class="panel panel-primary">
+            <div class="panel panel-success">
                 <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fas fa-certificate"></i> {{Etat Général de jMQTT}}</h3>
+                    <h3 class="panel-title"><i class="fas fa-certificate"></i> jMQTT general status</h3>
                 </div>
                 <div class="panel-body">
                     <form class="form-horizontal">
                         <fieldset>
-<?php $jplugin = update::byLogicalId("jMQTT"); ?>
                             <div class="form-group">
                                 <label class="col-sm-3 control-label">Source</label>
                                 <div class="col-sm-3">
                                     <span><?php echo $jplugin->getSource(); ?></span>
                                 </div>
-                            </div>
-                            <div class="form-group">
                                 <label class="col-sm-3 control-label">LogicalId</label>
                                 <div class="col-sm-3">
                                     <span><?php echo $jplugin->getLogicalId(); ?></span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">Version installée</label>
+                                <label class="col-sm-3 control-label">Installed version</label>
                                 <div class="col-sm-9">
                                     <span><?php echo $jplugin->getLocalVersion(); ?></span>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="col-sm-3 control-label">Version distante</label>
+                                <label class="col-sm-3 control-label">Remote version</label>
                                 <div class="col-sm-9">
                                     <span><?php echo $jplugin->getRemoteVersion(); ?></span>
                                 </div>
@@ -865,17 +716,23 @@ panelCreator('{{Valeurs de config des Commandes Action}}', 'primary', 'fas fa-wr
                 </div>
             </div>
 <?php
-// Simulate dangerous actions on jMQTT
-panelCreator('{{Actions sur jMQTT}}',                     'danger',  'fas fa-radiation-alt', 'builder_actions');
-// Cache values
-panelCreator('{{Valeurs du cache du Démon}}',             'primary', 'fas fa-book',   'builder_cacheInt');
-panelCreator('{{Valeurs du cache des Brokers}}',          'primary', 'fas fa-book',   'builder_cacheBrk');
-panelCreator('{{Valeurs du cache des Equipements}}',      'primary', 'fas fa-book',   'builder_cacheEqp');
-panelCreator('{{Valeurs du cache des Commandes Info}}',   'primary', 'fas fa-book',   'builder_cacheCmdI');
-panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-book',   'builder_cacheCmdA');
+
+// Create panels to simulate send to daemon
+panelCreator('Simulate comm. from Daemon',     'danger',  'fas fa-exchange-alt',  'builder_toJeedom');
+panelCreator('Reapply upgrade script',         'danger',  'techno-fleches',       'builder_updates');
+
+// Create panels to edit Cache values
+panelCreator('Daemon cache values',            'primary', 'fas fa-book',          'builder_cacheInt');
+panelCreator('Brokers cache values',           'primary', 'fas fa-book',          'builder_cacheBrk');
+panelCreator('Equipments cache values',        'primary', 'fas fa-book',          'builder_cacheEqp');
+panelCreator('Info Commands cache values',     'primary', 'fas fa-book',          'builder_cacheCmdI');
+panelCreator('Action Commands cache values',   'primary', 'fas fa-book',          'builder_cacheCmdA');
+
 ?>
         </div>
     </div>
+
+    <!-- New empty section -->
     <div class="row">
         <div class="col-md-6 col-sm-12">
 <?php
@@ -887,25 +744,28 @@ panelCreator('{{Valeurs du cache des Commandes Action}}', 'primary', 'fas fa-boo
 ?>
         </div>
     </div>
+    <!-- /New empty section -->
 
     <script>
 // Function to hide, show and build sections content on the fly
 $('a.btn.btn-info.btn-show-hide').on('click', function () {
-    var div = $(this).closest('div.panel').find('div.panel-body');
-    if ($(this).hasClass('btn-warning')) {
-        $(this).removeClass('btn-warning').addClass('btn-success').html('<i class="fas fa-search-plus"></i> {{Afficher}}');
+    let head = $(this).closest('div.panel');
+    let div = head.find('div.panel-body');
+    if ($(this).hasClass('closed')) {
+        head.find('div.panel-heading').addClass('rounded');
+        $(this).removeClass('closed').html('<i class="fas fa-search-plus"></i> Show');
         div.addClass('hidden');
         if ($(this).hasAttr('builder'))
             div.empty();
     } else {
-        $(this).addClass('btn-warning').removeClass('btn-success').html('<i class="fas fa-search-minus"></i> {{Masquer}}');
+        $(this).addClass('closed').html('<i class="fas fa-search-minus"></i> Hide');
+        head.find('div.panel-heading').removeClass('rounded');
         div.removeClass('hidden');
         if ($(this).hasAttr('builder')) {
-            var builder = window[$(this).attr('builder')];
+            let builder = window[$(this).attr('builder')];
             if(typeof builder === 'function')
                 builder(div);
         }
     }
-
 });
     </script>

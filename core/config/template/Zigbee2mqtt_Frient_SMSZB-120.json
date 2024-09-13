@@ -2,14 +2,14 @@
     "Zigbee2mqtt Frient SMSZB-120": {
         "name": "Zigbee2mqtt Frient SMSZB-120",
         "eqType_name": "jMQTT",
+        "comment": "Frient SMSZB-120\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/45",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-04-04 17:54:03",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "1xCR123",
-            "commentaire": "Frient SMSZB-120\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/45",
             "icone": "fire",
             "updatetime": "2022-04-05 11:54:12",
             "batterytime": "2022-04-05 11:30:33"
@@ -24,8 +24,6 @@
             "multimedia": "0",
             "default": "0"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -393,7 +391,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/get",
+                    "topic": "%s/get",
                     "request": "{\"max_duration\": \"\"}",
                     "retain": "0",
                     "autoPub": "0",
@@ -413,7 +411,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"max_duration\": #slider#}",
                     "minValue": "0",
                     "maxValue": "600",
@@ -435,7 +433,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"alarm\": \"START\"}",
                     "retain": "0",
                     "autoPub": "0",
@@ -455,7 +453,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"alarm\": \"OFF\"}",
                     "retain": "0",
                     "autoPub": "0",
@@ -475,7 +473,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"temperature_precision\": #slider#}",
                     "minValue": "0",
                     "maxValue": "3",
@@ -497,7 +495,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"temperature_calibration\": #slider#}",
                     "minValue": "-15",
                     "maxValue": "15",

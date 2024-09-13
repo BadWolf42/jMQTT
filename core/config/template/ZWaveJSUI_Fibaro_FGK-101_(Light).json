@@ -2,14 +2,14 @@
     "ZWaveJSUI Fibaro FGK-101 (Light)": {
         "name": "ZWaveJSUI Fibaro FGK-101 (Light)",
         "eqType_name": "jMQTT",
+        "comment": "Fibaro FGK-101\nJeedom Community: https://community.jeedom.com/u/mikael/",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-04-13 19:31:22",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "door",
-            "commentaire": "Fibaro FGK-101\nJeedom Community: https://community.jeedom.com/u/mikael/",
             "updatetime": "2022-04-13 20:13:27"
         },
         "category": {
@@ -35,7 +35,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level",
+                    "topic": "%s/128/0/level",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -55,7 +55,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/48\/0\/Any",
+                    "topic": "%s/48/0/Any",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -75,7 +75,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[status]"
                 },
                 "template": {
@@ -95,7 +95,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {

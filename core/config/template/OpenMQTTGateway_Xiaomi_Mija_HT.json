@@ -2,6 +2,7 @@
     "OpenMQTTGateway Xiaomi Mija HT": {
         "name": "OpenMQTTGateway Xiaomi Mija HT",
         "eqType_name": "jMQTT",
+        "comment": "OpenMQTTGateway Xiaomi Mija HT\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/61",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-09-25 19:53:31",
@@ -9,7 +10,6 @@
             "auto_add_topic": "%s",
             "Qos": "1",
             "icone": "temp",
-            "commentaire": "OpenMQTTGateway Xiaomi Mija HT\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/61",
             "updatetime": "2022-09-25 20:11:17"
         },
         "category": {

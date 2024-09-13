@@ -13,7 +13,7 @@ updates:
       - ${GITHUB_REPOSITORY_OWNER}
 
   - package-ecosystem: "pip"
-    directory: "/resources/python-requirements"
+    directory: "/resources/jmqttd_api"
     schedule:
       interval: "daily"
     assignees:

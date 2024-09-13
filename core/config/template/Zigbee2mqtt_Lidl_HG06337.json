@@ -2,16 +2,16 @@
     "Zigbee2mqtt Lidl HG06337": {
         "name": "Zigbee2mqtt Lidl HG06337",
         "eqType_name": "jMQTT",
+        "comment": "HG06337",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-10-28 14:56:24",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "HG06337",
             "icone": "prise",
             "updatetime": "2021-10-28 14:57:07",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -93,7 +93,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\":\"ON\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -113,7 +113,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\":\"OFF\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -133,7 +133,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\":\"TOGGLE\"}",
                     "retain": "0",
                     "Qos": "2",
@@ -153,7 +153,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/set",
+                    "topic": "%s/set",
                     "request": "{\"state\":\"\"}",
                     "retain": "0",
                     "Qos": "1",

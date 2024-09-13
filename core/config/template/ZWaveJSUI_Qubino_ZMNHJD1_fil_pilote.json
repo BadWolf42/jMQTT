@@ -2,16 +2,16 @@
     "ZWaveJSUI Qubino ZMNHJD1 Fil Pilote": {
         "name": "ZWaveJSUI Qubino ZMNHJD1 Fil Pilote",
         "eqType_name": "jMQTT",
+        "comment": "ZMNHJD1 qubino fil pilote",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-11-28 22:57:30",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "ZMNHJD1 qubino fil pilote",
             "icone": "chauffage",
             "updatetime": "2021-12-11 15:35:13",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "1",
@@ -35,7 +35,7 @@
                 "subType": "numeric",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/38\/0\/currentValue",
+                    "topic": "%s/38/0/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -55,7 +55,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/Down",
+                    "topic": "%s/38/0/Down",
                     "jsonPath": ""
                 },
                 "template": {
@@ -75,7 +75,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "topic": "%s/38/0/targetValue/set",
                     "request": "0",
                     "minValue": "0",
                     "maxValue": "255",
@@ -89,7 +89,7 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "icon": "<i class=\"icon jeedom-off\"><\/i>"
+                    "icon": "<i class=\"icon jeedom-off\"></i>"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -101,7 +101,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "topic": "%s/38/0/targetValue/set",
                     "request": "20",
                     "minValue": "0",
                     "maxValue": "255",
@@ -115,7 +115,7 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "icon": "<i class=\"icon jeedomapp-weather\"><\/i>"
+                    "icon": "<i class=\"icon jeedomapp-weather\"></i>"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -127,7 +127,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/Up",
+                    "topic": "%s/38/0/Up",
                     "jsonPath": ""
                 },
                 "template": {
@@ -147,7 +147,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "topic": "%s/38/0/targetValue/set",
                     "request": "30",
                     "minValue": "0",
                     "maxValue": "255",
@@ -161,7 +161,7 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "icon": "<i class=\"icon divers-triangular42\"><\/i>"
+                    "icon": "<i class=\"icon divers-triangular42\"></i>"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -173,7 +173,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "topic": "%s/38/0/targetValue/set",
                     "request": "40",
                     "minValue": "0",
                     "maxValue": "255",
@@ -187,7 +187,7 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "icon": "<i class=\"icon jeedom-thermo-froid\"><\/i>"
+                    "icon": "<i class=\"icon jeedom-thermo-froid\"></i>"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -199,7 +199,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "topic": "%s/38/0/targetValue/set",
                     "request": "50",
                     "minValue": "0",
                     "maxValue": "255",
@@ -213,7 +213,7 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "icon": "<i class=\"icon jeedom-thermo-moyen\"><\/i>"
+                    "icon": "<i class=\"icon jeedom-thermo-moyen\"></i>"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -225,7 +225,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "topic": "%s/38/0/targetValue/set",
                     "request": "255",
                     "minValue": "0",
                     "maxValue": "255",
@@ -239,7 +239,7 @@
                     "mobile": "default"
                 },
                 "display": {
-                    "icon": "<i class=\"icon jeedom-thermo-chaud\"><\/i>"
+                    "icon": "<i class=\"icon jeedom-thermo-chaud\"></i>"
                 },
                 "isVisible": "1",
                 "alert": []
@@ -251,7 +251,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[status]"
                 },
                 "template": {
@@ -273,7 +273,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature",
+                    "topic": "%s/49/0/Air_temperature",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",

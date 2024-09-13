@@ -1,19 +1,3 @@
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 // TODO: Remove jQuery from jMQTT
 //  labels: enhancement, help wanted, javascript
 
@@ -25,13 +9,15 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
         if (result !== null) {
             jeedom.eqLogic.save({
                 type: 'jMQTT',
-                eqLogics: [ $.extend({name: result}, {type: 'broker', eqLogic: -1, configuration: {Qos:"1", mqttProto:"mqtt"}}) ],
+                eqLogics: [ $.extend({name: result}, {
+                    type: 'broker', eqLogic: -1, configuration: {Qos:"1", mqttProto:"mqtt"}
+                }) ],
                 error: function (error) {
                     $.fn.showAlert({message: error.message, level: 'danger'});
                 },
                 success: function (data) {
                     var url = jmqtt.initPluginUrl();
-                    jmqtt.unsetPageModified();
+                    jeeFrontEnd.modifyWithoutSave = false;
                     url += '&id=' + data.id + '&saveSuccessFull=1';
                     jeedomUtils.loadPage(url);
                 }
@@ -65,7 +51,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
     dialog_message += '<label class="control-label">{{Utiliser un template :}}</label> ';
     dialog_message += '<select class="bootbox-input bootbox-input-select form-control" id="addJmqttTplSelector">';
     dialog_message += '</select><br/>';
-    dialog_message += '<label class="control-label" style="display:none;" id="addJmqttTplText">{{Saisissez le Topic de base :}}</label> ';
+    dialog_message += '<label class="control-label" style="display:none;" id="addJmqttTplText">{{Saisissez le topic racine :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" style="display:none;" autocomplete="nope" type="text" id="addJmqttTplTopic"><br/>';
     bootbox.confirm({
         title: "{{Ajouter un nouvel équipement}}",
@@ -84,7 +70,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
             var eqTemplate = $('#addJmqttTplSelector').val();
             var eqTopic = $('#addJmqttTplTopic').val();
             if (eqTemplate != '' && eqTopic == '') {
-                $.fn.showAlert({message: "{{Si vous souhaitez appliquer un template, le Topic de base ne peut pas être vide !}}", level: 'warning'});
+                $.fn.showAlert({message: "{{Si vous souhaitez appliquer un template, le topic racine ne peut pas être vide !}}", level: 'warning'});
                 return false;
             }
             jeedom.eqLogic.save({
@@ -105,14 +91,14 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
                             },
                             success: function (dataresult) {
                                 var url = jmqtt.initPluginUrl();
-                                jmqtt.unsetPageModified();
+                                jeeFrontEnd.modifyWithoutSave = false;
                                 url += '&id=' + savedEq.id + '&saveSuccessFull=1';
                                 jeedomUtils.loadPage(url);
                             }
                         });
                     } else {
                         var url = jmqtt.initPluginUrl();
-                        jmqtt.unsetPageModified();
+                        jeeFrontEnd.modifyWithoutSave = false;
                         url += '&id=' + savedEq.id + '&saveSuccessFull=1';
                         jeedomUtils.loadPage(url);
                     }
@@ -160,6 +146,7 @@ $('.eqLogicAction[data-action=jMQTTCommunityPost]').off('click').on('click', fun
     });
 });
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Modals associated to buttons "Rechercher équipement" for Action and Info Cmd
 //
@@ -167,9 +154,11 @@ $('.eqLogicAction[data-action=jMQTTCommunityPost]').off('click').on('click', fun
 $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     var el = $(this);
     jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
-        var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
+        var calcul = el.closest('tr').find(
+            '.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']'
+        );
         calcul.atCaret('insert', result.human);
-        jmqtt.setPageModified();
+        jeeFrontEnd.modifyWithoutSave = true;
     });
 });
 
@@ -177,21 +166,30 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
-$('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
+$('.eqLogicAction[data-action=restartMqttClient]').on('click',function(){
     var id = jmqtt.getEqId();
-    if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
-        return;
-    jmqtt.callPluginAjax({data: {action: 'startMqttClient', id: id}});
+    if (
+        id == undefined
+        || id == ""
+        || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker'
+    ) return;
+    jmqtt.callPluginAjax({data: {action: 'restartMqttClient', id: id}});
 });
 
 $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
     if($('#md_modal').is(':visible')){
         $('#md_modal2').dialog({title: "{{Log du plugin}}"});
-        $("#md_modal2").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
+        $("#md_modal2").load(
+            'index.php?v=d&modal=log.display&log=' + $(this).attr('data-log')
+            + '&slaveId=' + $(this).attr('data-slaveId')
+        ).dialog('open');
     }
     else{
         $('#md_modal').dialog({title: "{{Log du plugin}}"});
-        $("#md_modal").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
+        $("#md_modal").load(
+            'index.php?v=d&modal=log.display&log=' + $(this).attr('data-log')
+            + '&slaveId=' + $(this).attr('data-slaveId')
+        ).dialog('open');
     }
 });
 
@@ -200,25 +198,23 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 // Automations on Broker tab attributes
 //
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
-    switch ($(this).val()) {
-        case 'mqtts':
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight').attr('placeholder', '8883');
-            $('.jmqttWsUrl').hide();
-            $('#jmqttTls').show();
-            break;
+    switch ($(this).val()) { // mqtt vs ws
         case 'ws':
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight').attr('placeholder', '1884');
-            $('.jmqttWsUrl').show();
-            $('#jmqttTls').hide();
-            break;
         case 'wss':
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight').attr('placeholder', '8884');
+            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').removeClass('roundedRight');
             $('.jmqttWsUrl').show();
+            break;
+        default: // mqtt + mqtts
+            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight');
+            $('.jmqttWsUrl').hide();
+            break;
+    }
+    switch ($(this).val()) { // unencrypted vs encrypted
+        case 'mqtts':
+        case 'wss':
             $('#jmqttTls').show();
             break;
-        default: // mqtt
-            $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight').attr('placeholder', '1883');
-            $('.jmqttWsUrl').hide();
+        default: // mqtt + ws
             $('#jmqttTls').hide();
             break;
     }
@@ -316,14 +312,14 @@ $('#table_realtime').on('click', '.eqLogicAction[data-action=emptyRealTime]', fu
 
 // Button to add a new eq and cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addEq]', function() {
-    var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
+    var topic = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
     var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
     jmqtt.addEqFromRealTime(topic, jsonPath);
 })
 
 // Button to add a cmd from Real Time tab
 $('#table_realtime').on('click', '.cmdAction[data-action=addCmd]', function() {
-    var topic    = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
+    var topic = $(this).closest('tr').find('.cmdAttr[data-l1key=topic]').val();
     var jsonPath = $(this).closest('tr').find('.cmdAttr[data-l1key=jsonPath]').val();
     jmqtt.addCmdFromRealTime(topic, jsonPath);
 })
@@ -341,7 +337,13 @@ $('#table_realtime').on('click', '.cmdAction[data-action=splitJson]', function()
     var qos = tr.find('.cmdAttr[data-l1key=qos]').value();
 
     for (item in json) {
-        var _data = {id: id, topic: topic, payload: JSON.stringify(json[item]), qos: qos, retain: false};
+        var _data = {
+            id: id,
+            topic: topic,
+            payload: JSON.stringify(json[item]),
+            qos: qos,
+            retain: false
+        };
         if (item.match(/[^\w-]/)) // Escape if a special character is found
             item = '\'' + item.replace(/'/g,"\\'") + '\'';
         _data.jsonPath = jsonPath + '[' + item + ']';
@@ -368,32 +370,11 @@ $('.nav-tabs a[href]').on('click', function() {
 });
 
 // On eqLogic subscription topic field typing
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('input', function() {
-    // Update mismatch status of this field only (cmd check will be done when leaving the field)
-    jmqtt.updateGlobalMainTopic();
-});
-
-// On eqLogic subscription topic field set (initial set and finish typing)
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('change', function() {
-    // Update mismatch status of this field
-    jmqtt.updateGlobalMainTopic();
-    // Update mismatch status of all cmd
-    $('input.cmdAttr[data-l1key=configuration][data-l2key=topic]').each(function() {
-        if (jmqtt.checkTopicMatch(jmqtt_globals.mainTopic, $(this).value()))
-            $(this).removeClass('topicMismatch');
-        else
-            $(this).addClass('topicMismatch');
-    });
-});
-
-// On eqLogic subscription topic field typing
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
     if($(this).val() == "") {
         var objectname = $('.eqLogicAttr[data-l1key=object_id] option:selected').text();
         var eqName = $('.eqLogicAttr[data-l1key=name]').value();
         $(this).val(objectname.trim()+'/'+eqName+'/#');
-        // Update mismatch status of this field only (cmd check will be done when leaving the field)
-        jmqtt.updateGlobalMainTopic();
     }
 });
 
@@ -434,12 +415,12 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
             for(var i in dataresult){ dialog_message += '<option value="'+dataresult[i][0]+'">'+dataresult[i][0]+'</option>'; }
             dialog_message += '</select><br/>';
 
-            dialog_message += '<label class="control-label">{{Saisissez le Topic de base :}}</label> ';
-            var currentTopic = jmqtt_globals.mainTopic;
+            dialog_message += '<label class="control-label">{{Saisissez le topic racine :}}</label> ';
+            var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
             if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
-                currentTopic = currentTopic.substr(0,currentTopic.length-1);
+                currentTopic = currentTopic.substring(0, currentTopic.length - 1);
             if (currentTopic.endsWith("/"))
-                currentTopic = currentTopic.substr(0,currentTopic.length-1);
+                currentTopic = currentTopic.substring(0, currentTopic.length - 1);
             dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="applyTemplateTopic" value="'+currentTopic+'"><br/><br/>'
             dialog_message += '<label class="control-label">{{Que voulez-vous faire des commandes existantes ?}}</label> ';
             dialog_message += '<div class="radio"><label><input type="radio" name="applyTemplateCommand" value="1" checked="checked">{{Les conserver / Mettre à jour}}</label></div>';
@@ -491,11 +472,11 @@ $('.eqLogicAction[data-action=createTemplate]').off('click').on('click', functio
 // On updateTopics click
 $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function () {
     var dialog_message = '<label class="control-label">{{Rechercher :}}</label> ';
-    var currentTopic = jmqtt_globals.mainTopic;
+    var currentTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').value();
     if (currentTopic.endsWith("#") || currentTopic.endsWith("+"))
-        currentTopic = currentTopic.substr(0,currentTopic.length-1);
+        currentTopic = currentTopic.substring(0, currentTopic.length - 1);
     if (currentTopic.endsWith("/"))
-        currentTopic = currentTopic.substr(0,currentTopic.length-1);
+        currentTopic = currentTopic.substring(0, currentTopic.length - 1);
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="oldTopic" value="'+currentTopic+'"><br/><br/>';
     dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="newTopic"><br/><br/>';
@@ -513,7 +494,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
                 if ($(this).val().startsWith(oldTopic))
                     $(this).val($(this).val().replace(oldTopic, newTopic));
             });
-            jmqtt.setPageModified();
+            jeeFrontEnd.modifyWithoutSave = true;
         }}
     });
 });
@@ -526,16 +507,16 @@ $('.eqLogicAction[data-action=jsonPathTester]').off('click').on('click', functio
 
 // On addMQTTInfo click
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
-    var _cmd = {type: 'info'};
+    var _cmd = {type: 'info', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
-    jmqtt.setPageModified();
+    jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On addMQTTAction click
 $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
-    var _cmd = {type: 'action'};
+    var _cmd = {type: 'action', isHistorized: "0", isVisible: "1"};
     addCmdToTable(_cmd);
-    jmqtt.setPageModified();
+    jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On classicView click
@@ -589,7 +570,9 @@ function printEqLogic(_eqLogic) {
                 //and find higher existing number
                 new_cmds.forEach(function (c) {
                     if (c.tree_parent_id === parent_id) {
-                        var id_number = parseInt(c.tree_id.substring(parent_id.length + 1)); // keep only end part of id and parse it
+                        var id_number = parseInt(
+                            c.tree_id.substring(parent_id.length + 1)
+                        ); // keep only end part of id and parse it
                         if (id_number > m_cmd) m_cmd = id_number;
                     }
                 });
@@ -616,7 +599,13 @@ function printEqLogic(_eqLogic) {
          */
         function existingCmd(cmds, topic, jsonPath) {
             // try to find cmd that match with topic and jsonPath (or jsonPath with dollar sign in front)
-            var exist_cmds = cmds.filter(function (c) { return c.configuration.topic == topic && (c.configuration.jsonPath == jsonPath || c.configuration.jsonPath == '$' + jsonPath); });
+            var exist_cmds = cmds.filter(function (c) { return (
+                c.configuration.topic == topic
+                && (
+                    c.configuration.jsonPath == jsonPath
+                    || c.configuration.jsonPath == '$' + jsonPath
+                )
+            ); } );
             if (exist_cmds.length > 0)
                 return exist_cmds[0];
             else
@@ -630,7 +619,7 @@ function printEqLogic(_eqLogic) {
          */
         function addPayload(topic, jsonPath, payload, parent_id) {
             var val = (typeof payload === 'object') ? JSON.stringify(payload) : payload;
-            var c =  existingCmd(_eqLogic.cmd, topic, jsonPath);
+            var c = existingCmd(_eqLogic.cmd, topic, jsonPath);
             //console.log('addPayload: topic=' + topic + ', jsonPath=' + jsonPath + ', payload=' + val + ', parent_id=' + parent_id + ', exist=' + (c == undefined ? false : true));
             if (c === undefined) {
                 return addCmd({
@@ -664,7 +653,12 @@ function printEqLogic(_eqLogic) {
                     escapedi = '\'' + escapedi.replace(/'/g,"\\'") + '\'';
                 }
                 if (typeof payload[i] === 'object') {
-                    recursiveAddJsonPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
+                    recursiveAddJsonPayload(
+                        topic,
+                        jsonPath + '[' + escapedi + ']',
+                        payload[i],
+                        this_id
+                    );
                 }
                 else {
                     addPayload(topic, jsonPath + '[' + escapedi + ']', payload[i], this_id);
@@ -712,7 +706,11 @@ function printEqLogic(_eqLogic) {
                     // Add the command: in case of JSON payload, call recursiveAddJsonPayload to add
                     // also the derived commands
                     if (typeof parsed_json_value === 'object') {
-                        recursiveAddJsonPayload(c.configuration.topic, c.configuration.jsonPath, parsed_json_value, parent_id);
+                        recursiveAddJsonPayload(
+                            c.configuration.topic,
+                            c.configuration.jsonPath,
+                            parsed_json_value, parent_id
+                        );
                     }
                     else {
                         addCmd(c, parent_id);
@@ -739,7 +737,8 @@ function printEqLogic(_eqLogic) {
         _eqLogic.cmd = new_cmds;
 
         // JSON view: disable the sortable functionality
-        jmqtt.setCmdsSortable(false);
+        if (jeeFrontEnd.pluginTemplate.cmdSortable)
+            jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true;
     } else {
         // CLASSIC view button is active
         for (var c of _eqLogic.cmd) {
@@ -747,39 +746,26 @@ function printEqLogic(_eqLogic) {
         }
 
         // Classical view: enable the sortable functionality
-        jmqtt.setCmdsSortable(true);
+        if (jeeFrontEnd.pluginTemplate.cmdSortable)
+            jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false;
     }
 
     // Show UI elements depending on the type
-    if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.eqLogic == undefined || _eqLogic.configuration.eqLogic < 0))
-            || (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
-        $('.toDisable').addClass('disabled');
+    if (_eqLogic.configuration.type != 'broker') { // jMQTT Eq or orphan
         $('.typ-brk').hide();
-        $('.typ-std').hide();
-        $('.typ-brk-select').show();
-        $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
+        $('.typ-std').show();
+        $('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
 
         // Udpate panel as if on an eqLogic
         $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val('eqpt');
         jmqtt.updateEqptTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
-        $('.toDisable').removeClass('disabled');
+    } else { // jMQTT Broker
         $('.typ-std').hide();
         $('.typ-brk').show();
         $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
         // Udpate panel on eqBroker
         jmqtt.updateBrokerTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
-        $('.toDisable').removeClass('disabled');
-        $('.typ-brk').hide();
-        $('.typ-std').show();
-        $('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');
-
-        // Udpate panel on eqLogic
-        jmqtt.updateEqptTabs(_eqLogic);
     }
 }
 
@@ -795,13 +781,16 @@ function saveEqLogic(_eqLogic) {
     if (_eqLogic.configuration.type == 'broker') {
         var log_level = $('#div_broker_log').getValues('.configKey')[0];
         if (!$.isEmptyObject(log_level)) {
-            _eqLogic.loglevel =  log_level;
+            _eqLogic.loglevel = log_level;
         }
     }
 
     // remove non existing commands added for the JSON view and add new commands at the end
     for(var i = _eqLogic.cmd.length - 1; i >= 0; i--) {
-        if ((_eqLogic.cmd[i].id == "" || _eqLogic.cmd[i].id === null) && _eqLogic.cmd[i].name == "") {
+        if (
+            (_eqLogic.cmd[i].id == "" || _eqLogic.cmd[i].id === null)
+            && _eqLogic.cmd[i].name == ""
+        ) {
             _eqLogic.cmd.splice(i, 1);
         }
     }
@@ -834,11 +823,13 @@ function addCmdToTable(_cmd) {
 
     if (!isset(_cmd.tree_id)) {
         //looking for all tree-id, keep part before the first dot, convert to Int
-        var root_tree_ids = $('[tree-id]').map((pos,e) => parseInt(e.getAttribute("tree-id").split('.')[0]))
+        var root_tree_ids = $('[tree-id]').map(
+            (pos,e) => parseInt(e.getAttribute("tree-id").split('.')[0])
+        )
 
         //if some tree-id has been found
         if (root_tree_ids.length > 0) {
-            _cmd.tree_id = (Math.max.apply(null, root_tree_ids) + 1).toString(); //use the highest one plus one
+            _cmd.tree_id = (Math.max.apply(null, root_tree_ids) + 1).toString(); // use the highest one plus one
         } else {
             _cmd.tree_id = '1'; // else this is the first one
         }
@@ -882,7 +873,7 @@ function addCmdToTable(_cmd) {
         tr += '</div>';
         tr += '</td>';
         tr += '<td>';
-        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;" />';
+        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;width:120px;">';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '"></span>';
         tr += '</td><td>';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="topic" placeholder="{{Topic}}" style="margin-bottom:5px;" ' + disabled + '>';
@@ -894,9 +885,9 @@ function addCmdToTable(_cmd) {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
         tr += '<input class="cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:60px;display:inline-block;">';
         tr += '</td><td>';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized" checked/>{{Historiser}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isHistorized">{{Historiser}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible">{{Afficher}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="display" data-l2key="invertBinary">{{Inverser}}</label></span><br/> ';
         tr += '</td><td align="right">';
         // TODO: Add Advanced parameters modale on each cmd
         //  The modale should include:
@@ -916,37 +907,41 @@ function addCmdToTable(_cmd) {
 
         $('#table_cmd tbody').append(tr);
 
-        // Update mismatch status of this cmd on change and input
-        $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
-            if (jmqtt.checkTopicMatch(jmqtt_globals.mainTopic, $(this).value()))
-                $(this).removeClass('topicMismatch');
-            else
-                $(this).addClass('topicMismatch');
-        });
-
         // Set cmdAttr values of cmd from json _cmd
         $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
         if (isset(_cmd.type))
-            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]').value(init(_cmd.type));
+            $(
+                '#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=type]'
+            ).value(init(_cmd.type));
         jeedom.cmd.changeType($('#table_cmd [tree-id="' + _cmd.tree_id + '"]'), init(_cmd.subType));
 
         // Fill in value of current cmd. Efficient in JSON view only as _cmd.state was set in JSON view only in printEqLogic.
         if (is_json_view) {
-            $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]').value(_cmd.state);
+            $(
+                '#table_cmd [tree-id="' + _cmd.tree_id + '"] .form-control[data-key=value]'
+            ).value(_cmd.state);
         }
 
         // Get and display the value in CLASSIC view (for JSON view, see few lines above)
         if (_cmd.id != undefined) {
             if (! is_json_view) {
                 if (_cmd.state != undefined) {
-                    $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(_cmd.state);
+                    $(
+                        '#table_cmd [tree-id="'
+                        + _cmd.tree_id + '"][data-cmd_id="'
+                        + _cmd.id + '"] .form-control[data-key=value]'
+                    ).value(_cmd.state);
                 } else {
                     jeedom.cmd.execute({
                         id: _cmd.id,
                         cache: 0,
                         notify: false,
                         success: function(result) {
-                            $('#table_cmd [tree-id="' + _cmd.tree_id + '"][data-cmd_id="' + _cmd.id + '"] .form-control[data-key=value]').value(result);
+                            $(
+                                '#table_cmd [tree-id="'
+                                + _cmd.tree_id + '"][data-cmd_id="'
+                                + _cmd.id + '"] .form-control[data-key=value]'
+                            ).value(result);
                     }});
                 }
             }
@@ -981,7 +976,7 @@ function addCmdToTable(_cmd) {
         tr += '</select>';
         tr += '</td>';
         tr += '<td>';
-        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;width:120px;" />';
+        tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;width:120px;">';
         tr += '<span class="cmdAttr subType" subType="' + init(_cmd.subType) + '" style=""></span>';
         tr += '</td>';
         tr += '<td>';
@@ -996,9 +991,9 @@ function addCmdToTable(_cmd) {
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:60px;display:inline-block;">';
         tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte}}" title="{{Liste : valeur|texte (séparées entre elles par des points-virgules)}}">';
         tr += '</td><td>';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain"/>{{Retain}}</label></span><br/> ';
-        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub"/>{{Pub. auto}}&nbsp;';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible">{{Afficher}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="retain">{{Retain}}</label></span><br/> ';
+        tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="configuration" data-l2key="autoPub">{{Pub. auto}}&nbsp;';
         tr += '<sup><i class="fas fa-question-circle tooltips" title="' + "{{Publication automatique en MQTT lors d'un changement <br/>(A utiliser avec au moins une commande info dans Valeur).}}" + '"></i></sup></label></span><br/> ';
         tr += '<span class="checkbox-inline">{{Qos}}: <input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="Qos" placeholder="{{Qos}}" title="{{Qos}}" style="width:50px;display:inline-block;"></span> ';
         tr += '</td>';
@@ -1012,15 +1007,6 @@ function addCmdToTable(_cmd) {
         tr += '</td></tr>';
 
         $('#table_cmd tbody').append(tr);
-
-        // Update mismatch status of this cmd on change and input
-        $('#table_cmd [tree-id="' + _cmd.tree_id + '"] .cmdAttr[data-l1key=configuration][data-l2key=topic]').on('change input', function(e) {
-            let topic = $(this).value();
-            if (topic == '' || topic.includes('#') || topic.includes('?'))
-                $(this).addClass('topicMismatch');
-            else
-                $(this).removeClass('topicMismatch');
-        });
 
         // $('#table_cmd [tree-id="' + _cmd.tree_id + '"]').setValues(_cmd, '.cmdAttr');
         var tr = $('#table_cmd [tree-id="' + _cmd.tree_id + '"]');
@@ -1119,7 +1105,11 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 
     // If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
     // Otherwise: display an alert message and reload the page
-    if (jmqtt.isPageModified() || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
+    if (
+        jeeFrontEnd.modifyWithoutSave
+        || $('.eqLogic').is(":visible")
+        || $('div[role="dialog"]').filter(':visible').length != 0
+    ) {
         $.fn.showAlert({message: msg + '.', level: 'warning'});
     }
     else {
@@ -1132,39 +1122,6 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
             jmqtt_globals.refreshTimeout = setTimeout(function() {
                 jmqtt_globals.refreshTimeout = undefined;
                 window.location.reload();
-            }, 3000);
-        }
-    }
-});
-
-/**
- * Management of the display when an information command is added
- * Triggerred when the plugin core send a jMQTT::cmdAdded event
- * @param {string} _event event name
- * @param {string} _options['eqlogic_name'] name of the eqLogic command is added to
- * @param {int} _options['eqlogic_id'] id of the eqLogic command is added to
- * @param {string} _options['cmd_name'] name of the new command
- * @param {bool} _options['reload'] whether or not a reload of the page is requested
- */
-$('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options) {
-    var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;
-
-    // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
-    if (jmqtt.isPageModified() || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||
-            $('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
-        $.fn.showAlert({message: msg, level: 'warning'});
-    }
-    // Otherwise: display an alert message and reload the page
-    else {
-        $.fn.showAlert({
-            message: msg + ' {{La page va se réactualiser automatiquement}}.',
-            level: 'warning'
-        });
-        // Reload the page after a delay to let the user read the message
-        if (jmqtt_globals.refreshTimeout === undefined) {
-            jmqtt_globals.refreshTimeout = setTimeout(function() {
-                jmqtt_globals.refreshTimeout = undefined;
-                $('.eqLogicAction[data-action=refreshPage]').click();
             }, 3000);
         }
     }
@@ -1193,10 +1150,12 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
 //
 $(document).ready(function() {
     // Done here, otherwise the refresh button remains selected
-    $('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on('click', function(event) {
-        event.stopPropagation();
-        jmqtt.refreshEqLogicPage();
-    });
+    $('.eqLogicAction[data-action=refreshPage]').removeAttr('href').off('click').on(
+            'click', function(event) {
+            event.stopPropagation();
+            jmqtt.refreshEqLogicPage();
+        }
+    );
 
     //
     // update DisplayCards on main page at load
@@ -1208,8 +1167,12 @@ $(document).ready(function() {
             $.fn.showAlert({message: error.message, level: 'warning'});
         },
         success: function(_eqLogics) {
-            for (var i in _eqLogics)
-                jmqtt.updateDisplayCard($('.eqLogicDisplayCard[data-eqlogic_id=' + _eqLogics[i].id + ']'), _eqLogics[i]);
+            for (var i in _eqLogics) {
+                jmqtt.updateDisplayCard(
+                    $('.eqLogicDisplayCard[data-eqlogic_id=' + _eqLogics[i].id + ']'),
+                    _eqLogics[i]
+                );
+            }
         }
     });
 
@@ -1226,23 +1189,5 @@ $(document).ready(function() {
         $('html').on('dragenter dragover dragleave', jmqtt.certDrag).on('drop', jmqtt.certDrop);
         $('.dropzone').on('drop', jmqtt.certDrop);
         $('.uploadzone').on('click', jmqtt.certUpload);
-    }
-
-    // Wrap plugin.template save action handler
-    if (typeof jeeFrontEnd.pluginTemplate === 'undefined') {
-        // TODO: Remove core4.3 backward compatibility `saveEqLogic` js function
-        //  Remove when Jeedom 4.3 is no longer supported
-        //  labels: workarround, core4.3, javascript
-
-        let core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
-        $('.eqLogicAction[data-action=save]').off('click').on('click', function() {
-            jmqtt.decorateSaveEqLogic(core_save)();
-        });
-    } else {
-        if (typeof jeeFrontEnd.pluginTemplate.oldSaveEqLogic === 'undefined') {
-            let core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
-            jeeFrontEnd.pluginTemplate.oldSaveEqLogic = core_save;
-            jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
-        }
     }
 });

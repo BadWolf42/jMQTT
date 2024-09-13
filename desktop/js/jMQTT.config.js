@@ -1,19 +1,3 @@
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 // Namespace
 jmqtt_config = {};
 
@@ -261,42 +245,6 @@ $('#bt_mosquittoEdit').on('click', function () {
         }
     });
 
-});
-
-
-//////////////////////////////////////////////////////////////////////////////
-// Docker callback URL override
-
-// On enable/disable jMqtt callback url override
-$('#jmqttUrlOverrideEnable').change(function() {
-    $oVal = $('#jmqttUrlOverrideValue');
-    if ($(this).value() == '1') {
-        if ($oVal.attr('valOver') != "")
-            $oVal.value($oVal.attr('valOver'));
-        $oVal.removeClass('disabled');
-    } else {
-        $oVal.attr('valOver', $oVal.value());
-        $oVal.value($oVal.attr('valStd'));
-        $oVal.addClass('disabled');
-    }
-});
-
-// On jMqtt callback url override apply
-$('#bt_jmqttUrlOverride').on('click', function () {
-    var $valEn = $('#jmqttUrlOverrideEnable').value()
-    jmqtt_config.jmqttAjax({
-        data: {
-            action: "updateUrlOverride",
-            valEn: $valEn,
-            valUrl: (($valEn == '1') ? $('#jmqttUrlOverrideValue').value() : $('#jmqttUrlOverrideValue').attr('valOver'))
-        },
-        success: function(data) {
-            if (data.state != 'ok')
-                $.fn.showAlert({message: data.result,level: 'danger'});
-            else
-                $.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}', level: 'success'});
-        }
-    });
 });
 
 

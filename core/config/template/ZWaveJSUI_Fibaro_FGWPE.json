@@ -2,6 +2,7 @@
     "ZWaveJSUI Fibaro FGWPE": {
         "name": "ZWaveJSUI Fibaro FGWPE",
         "eqType_name": "jMQTT",
+        "comment": "Fibaro FGWPE\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/43",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-03 16:19:06",
@@ -9,12 +10,11 @@
             "Qos": "1",
             "icone": "prise",
             "mqttPubStatus": "1",
-            "commentaire": "Fibaro FGWPE\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "mqttTls": "0",
             "mqttTlsCheck": "public",
             "api": "disable",
             "updatetime": "2022-01-13 12:21:29",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -35,7 +35,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/0\/currentValue",
+                    "topic": "%s/37/0/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -56,7 +56,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/0\/targetValue\/set",
+                    "topic": "%s/37/0/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -93,7 +93,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/0\/targetValue\/set",
+                    "topic": "%s/37/0/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -131,7 +131,7 @@
                 "isHistorized": "0",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Power",
+                    "topic": "%s/49/0/Power",
                     "minValue": "0",
                     "maxValue": "2500",
                     "jsonPath": "[value]"
@@ -155,7 +155,7 @@
                 "isHistorized": "0",
                 "unite": "kWh",
                 "configuration": {
-                    "topic": "%s\/50\/0\/value\/65537",
+                    "topic": "%s/50/0/value/65537",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -192,7 +192,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "topic": "zwave/_CLIENTS/ZWAVE_GATEWAY-Zwavejs2Mqtt/api/refreshValues/set",
                     "request": "{\"args\": []}",
                     "retain": "0",
                     "autoPub": "0",
@@ -227,7 +227,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {
@@ -247,7 +247,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[value]"
                 },
                 "template": {

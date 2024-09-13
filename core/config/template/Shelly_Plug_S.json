@@ -2,6 +2,7 @@
     "Shelly Plug S": {
         "name": "Shelly Plug S",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Plug S\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/113",
         "configuration": {
             "type": "eqpt",
             "createtime": "2023-09-02 15:42:33",
@@ -11,7 +12,6 @@
             "battery_type": "Secteur",
             "availability_cmd": "Online",
             "icone": "power-plug",
-            "commentaire": "Shelly Plug S\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/113",
             "updatetime": "2024-02-23 21:52:07"
         },
         "category": {

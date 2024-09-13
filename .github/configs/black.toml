@@ -1,0 +1,5 @@
+[tool.black]
+line-length = 88
+skip-string-normalization = true
+# target-version = ['py311']
+# include = '\.pyi?$'

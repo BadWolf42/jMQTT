@@ -2,14 +2,14 @@
     "ZWaveJSUI Fibaro FGK-101": {
         "name": "ZWaveJSUI Fibaro FGK-101",
         "eqType_name": "jMQTT",
+        "comment": "Fibaro FGK-101\nJeedom Community: https://community.jeedom.com/u/mikael/",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-04-13 19:31:22",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "door",
-            "commentaire": "Fibaro FGK-101\nJeedom Community: https://community.jeedom.com/u/mikael/",
             "updatetime": "2022-04-13 19:55:39"
         },
         "category": {
@@ -34,7 +34,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/1",
+                    "topic": "%s/112/0/1",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -54,7 +54,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/1",
+                    "topic": "%s/112/0/1",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -74,7 +74,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/12",
+                    "topic": "%s/112/0/12",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -94,7 +94,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/12",
+                    "topic": "%s/112/0/12",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -114,7 +114,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/13",
+                    "topic": "%s/112/0/13",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -134,7 +134,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/13",
+                    "topic": "%s/112/0/13",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -154,7 +154,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/14",
+                    "topic": "%s/112/0/14",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -174,7 +174,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/14",
+                    "topic": "%s/112/0/14",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -194,7 +194,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/2",
+                    "topic": "%s/112/0/2",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -214,7 +214,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/2",
+                    "topic": "%s/112/0/2",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -234,7 +234,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/3",
+                    "topic": "%s/112/0/3",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -254,7 +254,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/3",
+                    "topic": "%s/112/0/3",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -274,7 +274,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/5",
+                    "topic": "%s/112/0/5",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -294,7 +294,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/5",
+                    "topic": "%s/112/0/5",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -314,7 +314,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/7",
+                    "topic": "%s/112/0/7",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -334,7 +334,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/7",
+                    "topic": "%s/112/0/7",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -354,7 +354,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/9",
+                    "topic": "%s/112/0/9",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -374,7 +374,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/9",
+                    "topic": "%s/112/0/9",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -394,7 +394,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/manufacturerId",
+                    "topic": "%s/114/0/manufacturerId",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -414,7 +414,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/manufacturerId",
+                    "topic": "%s/114/0/manufacturerId",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -434,7 +434,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/productId",
+                    "topic": "%s/114/0/productId",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -454,7 +454,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/productId",
+                    "topic": "%s/114/0/productId",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -474,7 +474,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/productType",
+                    "topic": "%s/114/0/productType",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -494,7 +494,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/productType",
+                    "topic": "%s/114/0/productType",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -514,7 +514,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/isLow",
+                    "topic": "%s/128/0/isLow",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -534,7 +534,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/isLow",
+                    "topic": "%s/128/0/isLow",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -554,7 +554,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level",
+                    "topic": "%s/128/0/level",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -574,7 +574,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level",
+                    "topic": "%s/128/0/level",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -594,7 +594,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/132\/0\/controllerNodeId",
+                    "topic": "%s/132/0/controllerNodeId",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -614,7 +614,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/132\/0\/controllerNodeId",
+                    "topic": "%s/132/0/controllerNodeId",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -634,7 +634,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/132\/0\/wakeUpInterval",
+                    "topic": "%s/132/0/wakeUpInterval",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -654,7 +654,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/132\/0\/wakeUpInterval",
+                    "topic": "%s/132/0/wakeUpInterval",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -674,7 +674,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/firmwareVersions",
+                    "topic": "%s/134/0/firmwareVersions",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -694,7 +694,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/firmwareVersions",
+                    "topic": "%s/134/0/firmwareVersions",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -714,7 +714,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/firmwareVersions",
+                    "topic": "%s/134/0/firmwareVersions",
                     "jsonPath": "[value][0]"
                 },
                 "template": {
@@ -734,7 +734,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/libraryType",
+                    "topic": "%s/134/0/libraryType",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -754,7 +754,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/libraryType",
+                    "topic": "%s/134/0/libraryType",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -774,7 +774,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/protocolVersion",
+                    "topic": "%s/134/0/protocolVersion",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -794,7 +794,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/protocolVersion",
+                    "topic": "%s/134/0/protocolVersion",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -814,7 +814,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/17",
+                    "topic": "%s/156/0/duration/17",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -834,7 +834,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/24",
+                    "topic": "%s/156/0/duration/24",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -854,7 +854,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/32",
+                    "topic": "%s/156/0/duration/32",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -874,7 +874,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/34",
+                    "topic": "%s/156/0/duration/34",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -894,7 +894,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/42",
+                    "topic": "%s/156/0/duration/42",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -914,7 +914,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/8",
+                    "topic": "%s/156/0/duration/8",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -934,7 +934,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/9",
+                    "topic": "%s/156/0/duration/9",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -954,7 +954,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/17",
+                    "topic": "%s/156/0/severity/17",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -974,7 +974,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/24",
+                    "topic": "%s/156/0/severity/24",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -994,7 +994,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/32",
+                    "topic": "%s/156/0/severity/32",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1014,7 +1014,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/34",
+                    "topic": "%s/156/0/severity/34",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1034,7 +1034,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/42",
+                    "topic": "%s/156/0/severity/42",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1054,7 +1054,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/8",
+                    "topic": "%s/156/0/severity/8",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1074,7 +1074,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/9",
+                    "topic": "%s/156/0/severity/9",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1094,7 +1094,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/17",
+                    "topic": "%s/156/0/state/17",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1114,7 +1114,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/24",
+                    "topic": "%s/156/0/state/24",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1134,7 +1134,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/32",
+                    "topic": "%s/156/0/state/32",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1154,7 +1154,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/34",
+                    "topic": "%s/156/0/state/34",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1174,7 +1174,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/42",
+                    "topic": "%s/156/0/state/42",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1194,7 +1194,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/8",
+                    "topic": "%s/156/0/state/8",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1214,7 +1214,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/9",
+                    "topic": "%s/156/0/state/9",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1234,7 +1234,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/43\/0\/dimmingDuration",
+                    "topic": "%s/43/0/dimmingDuration",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1254,7 +1254,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/43\/0\/sceneId",
+                    "topic": "%s/43/0/sceneId",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1274,7 +1274,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/48\/0\/Any",
+                    "topic": "%s/48/0/Any",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1294,7 +1294,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/48\/0\/Any",
+                    "topic": "%s/48/0/Any",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -1314,7 +1314,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[status]"
                 },
                 "template": {
@@ -1334,7 +1334,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[time]"
                 },
                 "template": {
@@ -1354,7 +1354,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -1374,7 +1374,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {
@@ -1394,7 +1394,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/1"
+                    "topic": "%s/112/0/1"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1413,7 +1413,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/12"
+                    "topic": "%s/112/0/12"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1432,7 +1432,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/13"
+                    "topic": "%s/112/0/13"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1451,7 +1451,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/14"
+                    "topic": "%s/112/0/14"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1470,7 +1470,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/2"
+                    "topic": "%s/112/0/2"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1489,7 +1489,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/3"
+                    "topic": "%s/112/0/3"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1508,7 +1508,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/5"
+                    "topic": "%s/112/0/5"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1527,7 +1527,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/7"
+                    "topic": "%s/112/0/7"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1546,7 +1546,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/9"
+                    "topic": "%s/112/0/9"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1565,7 +1565,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/manufacturerId"
+                    "topic": "%s/114/0/manufacturerId"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1584,7 +1584,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/productId"
+                    "topic": "%s/114/0/productId"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1603,7 +1603,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/114\/0\/productType"
+                    "topic": "%s/114/0/productType"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1622,7 +1622,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/isLow"
+                    "topic": "%s/128/0/isLow"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1641,7 +1641,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level"
+                    "topic": "%s/128/0/level"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1660,7 +1660,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/132\/0\/controllerNodeId"
+                    "topic": "%s/132/0/controllerNodeId"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1679,7 +1679,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/132\/0\/wakeUpInterval"
+                    "topic": "%s/132/0/wakeUpInterval"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1698,7 +1698,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/firmwareVersions"
+                    "topic": "%s/134/0/firmwareVersions"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1717,7 +1717,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/libraryType"
+                    "topic": "%s/134/0/libraryType"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1736,7 +1736,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/134\/0\/protocolVersion"
+                    "topic": "%s/134/0/protocolVersion"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1755,7 +1755,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/17"
+                    "topic": "%s/156/0/duration/17"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1774,7 +1774,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/24"
+                    "topic": "%s/156/0/duration/24"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1793,7 +1793,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/32"
+                    "topic": "%s/156/0/duration/32"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1812,7 +1812,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/34"
+                    "topic": "%s/156/0/duration/34"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1831,7 +1831,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/42"
+                    "topic": "%s/156/0/duration/42"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1850,7 +1850,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/8"
+                    "topic": "%s/156/0/duration/8"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1869,7 +1869,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/duration\/9"
+                    "topic": "%s/156/0/duration/9"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1888,7 +1888,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/17"
+                    "topic": "%s/156/0/severity/17"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1907,7 +1907,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/24"
+                    "topic": "%s/156/0/severity/24"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1926,7 +1926,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/32"
+                    "topic": "%s/156/0/severity/32"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1945,7 +1945,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/34"
+                    "topic": "%s/156/0/severity/34"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1964,7 +1964,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/42"
+                    "topic": "%s/156/0/severity/42"
                 },
                 "template": {
                     "dashboard": "default",
@@ -1983,7 +1983,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/8"
+                    "topic": "%s/156/0/severity/8"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2002,7 +2002,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/severity\/9"
+                    "topic": "%s/156/0/severity/9"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2021,7 +2021,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/17"
+                    "topic": "%s/156/0/state/17"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2040,7 +2040,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/24"
+                    "topic": "%s/156/0/state/24"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2059,7 +2059,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/32"
+                    "topic": "%s/156/0/state/32"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2078,7 +2078,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/34"
+                    "topic": "%s/156/0/state/34"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2097,7 +2097,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/42"
+                    "topic": "%s/156/0/state/42"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2116,7 +2116,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/8"
+                    "topic": "%s/156/0/state/8"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2135,7 +2135,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/156\/0\/state\/9"
+                    "topic": "%s/156/0/state/9"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2154,7 +2154,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/43\/0\/dimmingDuration"
+                    "topic": "%s/43/0/dimmingDuration"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2173,7 +2173,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/43\/0\/sceneId"
+                    "topic": "%s/43/0/sceneId"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2192,7 +2192,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/48\/0\/Any"
+                    "topic": "%s/48/0/Any"
                 },
                 "template": {
                     "dashboard": "default",
@@ -2211,7 +2211,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status"
+                    "topic": "%s/status"
                 },
                 "template": {
                     "dashboard": "default",

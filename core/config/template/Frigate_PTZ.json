@@ -2,6 +2,7 @@
     "Frigate PTZ": {
         "name": "Frigate PTZ",
         "eqType_name": "jMQTT",
+        "comment": "Jeedom Community: https://community.jeedom.com/t/117108/185",
         "configuration": {
             "type": "eqpt",
             "createtime": "2024-04-08 20:08:07",
@@ -9,7 +10,6 @@
             "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Jeedom Community: https://community.jeedom.com/t/117108/185",
             "icone": "motion-sensor",
             "updatetime": "2024-04-08 22:55:26"
         },

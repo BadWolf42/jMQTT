@@ -2,16 +2,16 @@
     "ZWaveJSUI Qubino ZMNHTD Smartmeter": {
         "name": "ZWaveJSUI Qubino ZMNHTD Smartmeter",
         "eqType_name": "jMQTT",
+        "comment": "ON1: chauffages\nON2: Salle de bain & autres...",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-02 21:33:50",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "ON1: chauffages\nON2: Salle de bain & autres...",
             "icone": "energie",
             "updatetime": "2021-12-12 14:18:03",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -36,7 +36,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue",
+                    "topic": "%s/37/1/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -72,7 +72,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -109,7 +109,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -146,7 +146,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue",
+                    "topic": "%s/37/2/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -182,7 +182,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -219,7 +219,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -256,7 +256,7 @@
                 "isHistorized": "1",
                 "unite": "kWh.",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65537",
+                    "topic": "%s/50/1/value/65537",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -293,7 +293,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/currentValue",
+                    "topic": "%s/37/3/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -329,7 +329,7 @@
                 "isHistorized": "1",
                 "unite": "kWh.",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65538",
+                    "topic": "%s/50/1/value/65538",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -366,7 +366,7 @@
                 "isHistorized": "1",
                 "unite": "kVAh.",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/65793",
+                    "topic": "%s/50/1/value/65793",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -386,7 +386,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/duration",
+                    "topic": "%s/37/1/duration",
                     "jsonPath": ""
                 },
                 "template": {
@@ -408,7 +408,7 @@
                 "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66049",
+                    "topic": "%s/50/1/value/66049",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -446,7 +446,7 @@
                 "isHistorized": "1",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66561",
+                    "topic": "%s/50/1/value/66561",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -483,7 +483,7 @@
                 "isHistorized": "0",
                 "unite": "A",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/66817",
+                    "topic": "%s/50/1/value/66817",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -503,7 +503,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/duration",
+                    "topic": "%s/37/2/duration",
                     "jsonPath": ""
                 },
                 "template": {
@@ -525,11 +525,11 @@
                 "isHistorized": "1",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/67073",
+                    "topic": "%s/50/1/value/67073",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
-                    "calculValueOffset": "#value#\/10",
+                    "calculValueOffset": "#value#/10",
                     "jeedomCheckCmdOperator": "==",
                     "historizeMode": "avg",
                     "repeatEventManagement": "never",
@@ -563,7 +563,7 @@
                 "isHistorized": "0",
                 "unite": "kVar",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/67329",
+                    "topic": "%s/50/1/value/67329",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -584,7 +584,7 @@
                 "isHistorized": "0",
                 "unite": "kVar",
                 "configuration": {
-                    "topic": "%s\/50\/1\/value\/67330",
+                    "topic": "%s/50/1/value/67330",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -605,7 +605,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/targetValue\/set",
+                    "topic": "%s/37/3/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -641,7 +641,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/duration",
+                    "topic": "%s/37/3/duration",
                     "jsonPath": ""
                 },
                 "template": {
@@ -662,7 +662,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/3\/targetValue\/set",
+                    "topic": "%s/37/3/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -698,7 +698,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/50\/1\/reset",
+                    "topic": "%s/50/1/reset",
                     "jsonPath": ""
                 },
                 "template": {

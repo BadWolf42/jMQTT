@@ -106,7 +106,7 @@ function export_index() {
 
     if($error) {
         print("                        [ WARNING ]\n");
-        foreach($error as $e)
+        foreach ($error as $e)
             print($e);
     } else {
         print("                             [ OK ]\n");
@@ -132,8 +132,6 @@ function export_data() {
         'dependancyjMQTT',
         'jMQTT::daemonLastRcv',
         'jMQTT::daemonLastSnd',
-        // 'jMQTT::daemonPort',
-        // 'jMQTT::daemonUid',
         'jMQTT::nextStats'
     );
     foreach ($cacheKeys as $k) {
@@ -363,7 +361,6 @@ function backup_main() {
     $cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
     $cacheBrkKeys[] = 'eqLogicStatusAttr'.$brk->getId();
 
-    $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;
     // $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED;
     $cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
     $cacheEqptKeys[] = 'eqLogicStatusAttr'.$eqpt->getId();

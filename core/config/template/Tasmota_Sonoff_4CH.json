@@ -2,16 +2,16 @@
     "Tasmota Sonoff 4CH": {
         "name": "Tasmota Sonoff 4CH",
         "eqType_name": "jMQTT",
+        "comment": "Tasmota Sonoff 4CH\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/15",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-10-21 09:18:16",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Tasmota Sonoff 4CH\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/15",
             "icone": "lightbulb",
             "updatetime": "2021-11-19 14:57:50",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -31,7 +31,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER",
+                    "topic": "%s/cmnd/POWER",
                     "jsonPath": ""
                 },
                 "template": {
@@ -51,7 +51,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
+                    "topic": "%s/cmnd/POWER1",
                     "jsonPath": ""
                 },
                 "template": {
@@ -71,7 +71,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER2",
+                    "topic": "%s/cmnd/POWER2",
                     "jsonPath": ""
                 },
                 "template": {
@@ -91,7 +91,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER3",
+                    "topic": "%s/cmnd/POWER3",
                     "jsonPath": ""
                 },
                 "template": {
@@ -111,7 +111,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER4",
+                    "topic": "%s/cmnd/POWER4",
                     "jsonPath": ""
                 },
                 "template": {
@@ -131,7 +131,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1",
+                    "topic": "%s/INFO1",
                     "jsonPath": "[FallbackTopic]"
                 },
                 "template": {
@@ -151,7 +151,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1",
+                    "topic": "%s/INFO1",
                     "jsonPath": "[GroupTopic]"
                 },
                 "template": {
@@ -171,7 +171,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Heap]"
                 },
                 "template": {
@@ -191,7 +191,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2",
+                    "topic": "%s/INFO2",
                     "jsonPath": "[Hostname]"
                 },
                 "template": {
@@ -211,7 +211,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1",
+                    "topic": "%s/INFO1",
                     "jsonPath": ""
                 },
                 "template": {
@@ -231,7 +231,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2",
+                    "topic": "%s/INFO2",
                     "jsonPath": ""
                 },
                 "template": {
@@ -251,7 +251,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO3",
+                    "topic": "%s/INFO3",
                     "jsonPath": ""
                 },
                 "template": {
@@ -271,7 +271,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2",
+                    "topic": "%s/INFO2",
                     "jsonPath": "[IPAddress]"
                 },
                 "template": {
@@ -291,7 +291,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[LoadAvg]"
                 },
                 "template": {
@@ -311,7 +311,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/LWT",
+                    "topic": "%s/LWT",
                     "jsonPath": ""
                 },
                 "template": {
@@ -331,7 +331,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1",
+                    "topic": "%s/INFO1",
                     "jsonPath": "[Module]"
                 },
                 "template": {
@@ -351,7 +351,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[MqttCount]"
                 },
                 "template": {
@@ -371,7 +371,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER1",
+                    "topic": "%s/POWER1",
                     "jsonPath": ""
                 },
                 "template": {
@@ -391,7 +391,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT",
+                    "topic": "%s/RESULT",
                     "jsonPath": "[POWER1]"
                 },
                 "template": {
@@ -411,7 +411,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[POWER1]"
                 },
                 "template": {
@@ -431,7 +431,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER2",
+                    "topic": "%s/POWER2",
                     "jsonPath": ""
                 },
                 "template": {
@@ -451,7 +451,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT",
+                    "topic": "%s/RESULT",
                     "jsonPath": "[POWER2]"
                 },
                 "template": {
@@ -471,7 +471,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[POWER2]"
                 },
                 "template": {
@@ -491,7 +491,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER3",
+                    "topic": "%s/POWER3",
                     "jsonPath": ""
                 },
                 "template": {
@@ -511,7 +511,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT",
+                    "topic": "%s/RESULT",
                     "jsonPath": "[POWER3]"
                 },
                 "template": {
@@ -531,7 +531,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[POWER3]"
                 },
                 "template": {
@@ -551,7 +551,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/POWER4",
+                    "topic": "%s/POWER4",
                     "jsonPath": ""
                 },
                 "template": {
@@ -571,7 +571,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT",
+                    "topic": "%s/RESULT",
                     "jsonPath": "[POWER4]"
                 },
                 "template": {
@@ -591,7 +591,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[POWER4]"
                 },
                 "template": {
@@ -611,7 +611,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO3",
+                    "topic": "%s/INFO3",
                     "jsonPath": "[RestartReason]"
                 },
                 "template": {
@@ -631,7 +631,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/RESULT",
+                    "topic": "%s/RESULT",
                     "jsonPath": ""
                 },
                 "template": {
@@ -651,7 +651,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Sleep]"
                 },
                 "template": {
@@ -671,7 +671,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[SleepMode]"
                 },
                 "template": {
@@ -691,7 +691,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": ""
                 },
                 "template": {
@@ -711,7 +711,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Time]"
                 },
                 "template": {
@@ -731,7 +731,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Uptime]"
                 },
                 "template": {
@@ -751,7 +751,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[UptimeSec]"
                 },
                 "template": {
@@ -771,7 +771,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Vcc]"
                 },
                 "template": {
@@ -791,7 +791,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO1",
+                    "topic": "%s/INFO1",
                     "jsonPath": "[Version]"
                 },
                 "template": {
@@ -811,7 +811,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/INFO2",
+                    "topic": "%s/INFO2",
                     "jsonPath": "[WebServerMode]"
                 },
                 "template": {
@@ -831,7 +831,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][AP]"
                 },
                 "template": {
@@ -851,7 +851,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][BSSId]"
                 },
                 "template": {
@@ -871,7 +871,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][Channel]"
                 },
                 "template": {
@@ -891,7 +891,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][Downtime]"
                 },
                 "template": {
@@ -911,7 +911,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][LinkCount]"
                 },
                 "template": {
@@ -931,7 +931,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][RSSI]"
                 },
                 "template": {
@@ -951,7 +951,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][Signal]"
                 },
                 "template": {
@@ -971,7 +971,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/STATE",
+                    "topic": "%s/STATE",
                     "jsonPath": "[Wifi][SSId]"
                 },
                 "template": {
@@ -991,7 +991,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
+                    "topic": "%s/cmnd/POWER1",
                     "request": "ON",
                     "retain": "0",
                     "Qos": "2",
@@ -1011,7 +1011,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
+                    "topic": "%s/cmnd/POWER1",
                     "request": "OFF",
                     "retain": "0",
                     "Qos": "2",
@@ -1031,7 +1031,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER1",
+                    "topic": "%s/cmnd/POWER1",
                     "request": "TOGGLE",
                     "retain": "0",
                     "Qos": "1",
@@ -1051,7 +1051,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER2",
+                    "topic": "%s/cmnd/POWER2",
                     "request": "ON",
                     "retain": "0",
                     "Qos": "2",
@@ -1071,7 +1071,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER2",
+                    "topic": "%s/cmnd/POWER2",
                     "request": "OFF",
                     "retain": "0",
                     "Qos": "2",
@@ -1091,7 +1091,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER2",
+                    "topic": "%s/cmnd/POWER2",
                     "request": "TOGGLE",
                     "retain": "0",
                     "Qos": "1",
@@ -1111,7 +1111,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER3",
+                    "topic": "%s/cmnd/POWER3",
                     "request": "ON",
                     "retain": "0",
                     "Qos": "2",
@@ -1131,7 +1131,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER3",
+                    "topic": "%s/cmnd/POWER3",
                     "request": "OFF",
                     "retain": "0",
                     "Qos": "2",
@@ -1151,7 +1151,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER3",
+                    "topic": "%s/cmnd/POWER3",
                     "request": "TOGGLE",
                     "retain": "0",
                     "Qos": "1",
@@ -1171,7 +1171,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER4",
+                    "topic": "%s/cmnd/POWER4",
                     "request": "ON",
                     "retain": "0",
                     "Qos": "2",
@@ -1191,7 +1191,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER4",
+                    "topic": "%s/cmnd/POWER4",
                     "request": "OFF",
                     "retain": "0",
                     "Qos": "2",
@@ -1211,7 +1211,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/cmnd\/POWER4",
+                    "topic": "%s/cmnd/POWER4",
                     "request": "TOGGLE",
                     "retain": "0",
                     "Qos": "1",

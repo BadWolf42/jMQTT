@@ -2,14 +2,14 @@
     "Zigbee2mqtt Xiaomi WXKG02LM rev1": {
         "name": "Zigbee2mqtt Xiaomi WXKG02LM rev1",
         "eqType_name": "jMQTT",
+        "comment": "Xiaomi WXKG02LM_rev1\nlumi.sensor_86sw2\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-wxkg02lm-rev1/81922",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-01-26 19:42:28",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_type": "1xCR2032",
-            "commentaire": "Xiaomi WXKG02LM_rev1\nlumi.sensor_86sw2\nJeedom Community: https://community.jeedom.com/t/template-xiaomi-wxkg02lm-rev1/81922",
             "icone": "zigbee",
             "updatetime": "2022-03-30 11:19:13",
             "batterytime": "2022-03-30 06:08:42",
@@ -30,8 +30,6 @@
             "width": "232px",
             "height": "224px"
         },
-        "status": [],
-        "cache": [],
         "commands": [
             {
                 "eqType": "jMQTT",
@@ -40,7 +38,7 @@
                 "subType": "string",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/availability",
+                    "topic": "%s/availability",
                     "timeline::enable": "1",
                     "jsonPath": "[value]"
                 },

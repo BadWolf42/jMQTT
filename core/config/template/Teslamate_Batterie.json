@@ -2,12 +2,12 @@
     "Teslamate - Batterie": {
         "name": "Teslamate - Batterie",
         "eqType_name": "jMQTT",
+        "comment": "Teslamate - Batterie\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/108",
         "configuration": {
             "type": "eqpt",
             "createtime": "2024-01-08 23:19:24",
             "auto_add_cmd": "0",
             "auto_add_topic": "%s/#",
-            "commentaire": "Teslamate - Batterie\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/108",
             "updatetime": "2024-01-08 23:35:42"
         },
         "category": {

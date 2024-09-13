@@ -7,8 +7,8 @@ class jMQTTPlugin {
      * check MQTT Clients are up and connected
      */
     public static function cron() {
-        jMQTTDaemon::checkAllMqttClients();
-        jMQTTDaemon::pluginStats();
+        jMQTTPlugin::stats();
+        jMQTTDaemon::check();
     }
 
     /**
@@ -29,7 +29,7 @@ class jMQTTPlugin {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __("Dépendances en cours d'installation... (%s%%)", __FILE__),
+                    "Dependencies are being installed... (%s%%)",
                     trim(file_get_contents($depProgressFile))
                 )
             );
@@ -37,34 +37,41 @@ class jMQTTPlugin {
             return $return;
         }
 
-        if (exec(system::getCmdSudo() . "cat " . __DIR__ . "/../../resources/JsonPath-PHP/vendor/composer/installed.json 2>/dev/null | grep galbar/jsonpath | wc -l") < 1) {
+        $composerCheckCmd = 'cat ' . __DIR__ . '/../../resources';
+        $composerCheckCmd .= '/JsonPath-PHP/vendor/composer/installed.json ';
+        $composerCheckCmd .= '2>/dev/null | grep galbar/jsonpath | wc -l';
+        if (exec(system::getCmdSudo() . $composerCheckCmd) < 1) {
             jMQTT::logger(
                 'debug',
-                __('Relancez les dépendances, le package PHP JsonPath est manquant', __FILE__)
+                "Relaunch dependencies, PHP package 'JsonPath' is missing",
             );
             $return['state'] = jMQTTConst::CLIENT_NOK;
         }
 
-        if (!file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3') || !file_exists(__DIR__ . '/../../resources/jmqttd/venv/bin/python3')) {
+        $daemonDir = __DIR__ . '/../../resources/jmqttd_api';
+        if (
+            !file_exists($daemonDir . '/venv/bin/pip3')
+            || !file_exists($daemonDir . '/venv/bin/python3')
+        ) {
             jMQTT::logger(
                 'debug',
-                __("Relancez les dépendances, le venv Python n'a pas encore été créé", __FILE__)
+                "Relaunch dependencies, the Python venv has not been created yet",
             );
             $return['state'] = jMQTTConst::CLIENT_NOK;
         } else {
-            exec(__DIR__ . '/../../resources/jmqttd/venv/bin/pip3 freeze --no-cache-dir -r '.__DIR__ . '/../../resources/python-requirements/requirements.txt 2>&1 >/dev/null', $output);
+            $depCheckCmd = $daemonDir . '/venv/bin/pip3 freeze --no-cache-dir -r ';
+            $depCheckCmd .= $daemonDir . '/requirements.txt 2>&1 >/dev/null';
+            exec($depCheckCmd, $output);
             if (count($output) > 0) {
-                jMQTT::logger(
-                    'error',
-                    __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__).
-                    ' <br/>'.implode('<br/>', $output)
-                );
+                $error_msg = __('Relancez les dépendances, au moins une bibliothèque Python requise est manquante dans le venv :', __FILE__);
+                $error_msg .= ' <br/>'.implode('<br/>', $output);
+                jMQTT::logger('error', $error_msg);
                 $return['state'] = jMQTTConst::CLIENT_NOK;
             }
         }
 
         if ($return['state'] == jMQTTConst::CLIENT_OK)
-            jMQTT::logger('debug', sprintf(__('Dépendances installées.', __FILE__)));
+            jMQTT::logger('debug', "Dependencies seem correctly installed.");
         return $return;
     }
 
@@ -81,15 +88,15 @@ class jMQTTPlugin {
 
         $update = update::byLogicalId('jMQTT');
         shell_exec(
-            'echo "\n\n================================================================================\n'.
-            '== Jeedom '.jeedom::version().' '.jeedom::getHardwareName().
-            ' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'.
-            '$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'.
-            '== $(python3 -VV | xargs echo -n)\n'.
-            '== jMQTT v'.config::byKey('version', 'jMQTT', 'unknown', true).
-            ' ('.$update->getLocalVersion().') branch:'.$update->getConfiguration()['version'].
-            ' previously:v'.config::byKey('previousVersion', 'jMQTT', 'unknown', true).
-            '" >> '.log::getPathToLog($depLogFile)
+            'echo "\n\n================================================================================\n'
+            . '== Jeedom ' . jeedom::version() . ' ' . jeedom::getHardwareName()
+            . ' in $(lsb_release -d -s | xargs echo -n) on $(arch | xargs echo -n)/'
+            . '$(dpkg --print-architecture | xargs echo -n)/$(getconf LONG_BIT | xargs echo -n)bits\n'
+            . '== $(python3 -VV | xargs echo -n)\n'
+            . '== jMQTT v' . config::byKey('version', 'jMQTT', 'unknown', true)
+            . ' (' . $update->getLocalVersion() . ') branch:' . $update->getConfiguration()['version']
+            . ' previously:v' . config::byKey('previousVersion', 'jMQTT', 'unknown', true)
+            . '" >> ' . log::getPathToLog($depLogFile)
         );
 
         return array(
@@ -98,30 +105,101 @@ class jMQTTPlugin {
         );
     }
 
-    /**
-     * Additionnal information for a new Community post
-     *
-     * @return string
-     */
-    public static function getConfigForCommunity() {
-        $hw = jeedom::getHardwareName();
-        if ($hw == 'diy')
-            $hw = trim(shell_exec('systemd-detect-virt'));
-        if ($hw == 'none')
-            $hw = 'diy';
-        $distrib = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
-        $res = 'OS: ' . $distrib . ' on ' . $hw;
-        $res .= ' ; PHP: ' . phpversion();
-        $res .= ' ; Python: ' . trim(shell_exec("python3 -V | cut -d ' ' -f 2"));
-        $res .= '<br/>jMQTT: v' . config::byKey('version', 'jMQTT', 'unknown', true);
-        $res .= ' ; Brokers: ' . count(jMQTT::getBrokers());
-        $nbEq = 0;
-        foreach (jMQTT::getNonBrokers() as $brk) {
-            $nbEq += count($brk);
+    public static function stats($_reason = 'cron') {
+        // Check last reporting (or if forced)
+        $nextStats = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS)->getValue(0);
+        if ($_reason === 'cron' && (time() < $nextStats)) { // No reason to force send stats
+            // jMQTT::logger('debug', sprintf(
+            //     "No reason to send statistical data before %s",
+            //     date('Y-m-d H:i:s', $nextStats)
+            // ));
+            return;
         }
-        $res .= ' ; Equipments: ' . $nbEq;
-        $res .= ' ; cmds: ' . count(cmd::searchConfiguration('', jMQTT::class));
-        return $res;
+        // Ensure between 5 and 10 minutes before next attempt
+        cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, time() + 300 + rand(0, 300));
+        // Avoid getting all stats exactly at the same time
+        sleep(rand(0, 10));
+
+        $url = 'https://stats.bad.wf/v1/query';
+        $data = array();
+        $data['plugin'] = 'jmqtt';
+        $data['hardwareKey'] = jeedom::getHardwareKey();
+        // Ensure system unicity using a rotating UUID
+        $data['lastUUID'] = config::byKey(jMQTTConst::CONF_KEY_JMQTT_UUID, jMQTT::class, $data['hardwareKey']);
+        $data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes(107), true));
+        $data['hardwareName'] = jeedom::getHardwareName();
+        if ($data['hardwareName'] == 'diy')
+            $data['hardwareName'] = trim(shell_exec('systemd-detect-virt'));
+        if ($data['hardwareName'] == 'none')
+            $data['hardwareName'] = 'diy';
+        $data['distrib'] = trim(shell_exec('. /etc/*-release && echo $ID $VERSION_ID'));
+        $data['phpVersion'] = phpversion();
+        $data['pythonVersion'] = trim(shell_exec("python3 -V | cut -d ' ' -f 2"));
+        $data['jeedom'] = jeedom::version();
+        $data['lang'] = config::byKey('language', 'core', 'fr_FR');
+        $data['lang'] = ($data['lang'] != '') ? $data['lang'] : 'fr_FR';
+        $jplugin = update::byLogicalId(jMQTT::class);
+        $data['source'] = $jplugin->getSource();
+        $data['branch'] = $jplugin->getConfiguration('version', 'unknown');
+        $data['configVersion'] = config::byKey('version', jMQTT::class, -1);
+        $data['reason'] = $_reason;
+        if ($_reason == 'uninstall' || $_reason == 'noStats')
+            $data['next'] = 0;
+        else
+            $data['next'] = time() + 432000 + rand(0, 172800); // Next stats in 5-7 days
+        $encoded = json_encode($data);
+        $options = array(
+            'http' => array(
+                'method'  => 'POST',
+                'header'  => "Content-Type: application/json\r\n",
+                'content' => $encoded
+            )
+        );
+        jMQTT::logger(
+            'debug',
+            sprintf(
+                "Anonymous statistical data have been sent: %s",
+                $encoded
+            )
+        );
+        $context = stream_context_create($options);
+        $result = @file_get_contents($url, false, $context);
+
+        if ($result === false) {
+            // Could not send or invalid data
+            jMQTT::logger(
+                'debug',
+                sprintf(
+                    "Unable to communicate with the statistics server (Response: %s)",
+                    'false'
+                )
+            );
+            return;
+        }
+        $response = @json_decode($result, true);
+        if (!isset($response['status']) || $response['status'] != 'success') {
+            // Could not send or invalid data
+            jMQTT::logger(
+                'debug',
+                sprintf(
+                    "Unable to communicate with the statistics server (Response: %s)",
+                    $result
+                )
+            );
+        } else {
+            config::save(jMQTTConst::CONF_KEY_JMQTT_UUID, $data['UUID'], jMQTT::class);
+            if ($data['next'] == 0) {
+                jMQTT::logger('info', __('Données statistiques supprimées', __FILE__));
+                cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, PHP_INT_MAX);
+            } else {
+                jMQTT::logger(
+                    'debug',
+                    sprintf("Statistical data sent (Response: %s)", $result)
+                );
+                // Set last sent datetime
+                cache::set('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS, $data['next']);
+            }
+        }
     }
 
     // Check install status of Mosquitto service
@@ -154,20 +232,12 @@ class jMQTTPlugin {
                         $e->getMessage()
                     ));
                 } else {
-                    jMQTT::logger(
-                        'error',
-                        str_replace(
-                            "\n",
-                            ' <br/> ',
-                            sprintf(
-                                __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                                ",<br/>@Stack: %3\$s.",
-                                __METHOD__,
-                                $e->getMessage(),
-                                $e->getTraceAsString()
-                            )
-                        )
-                    );
+                    jMQTT::logger('error', sprintf(
+                        __("%1\$s() a levé l'Exception: %2\$s", __FILE__) . "\n@Stack: %3\$s",
+                        __METHOD__,
+                        $e->getMessage(),
+                        $e->getTraceAsString()
+                    ));
                 }
             }
             return $res;
@@ -177,14 +247,8 @@ class jMQTTPlugin {
         $res['installed'] = true;
         // Get service active status
         $res['service'] = ucfirst(shell_exec('systemctl status mosquitto.service | grep "Active:" | sed -r "s/^[^:]*: (.*)$/\1/"'));
-        // Get service config file (***unused for now***)
-        // $res['config'] = shell_exec('systemctl status mosquitto.service | grep -- " -c " | sed -r "s/^.* -c (.*)$/\1/"');
-
-        // Read in Core config who is supposed to have installed Mosquitto
-        $res['core'] = config::byKey('mosquitto::installedBy', '', 'Unknown');
-        // TODO: Decide if `mosquitto::installedBy` is usefull
-        //  When config key will be widely used, resolve Mosquitto installer here
-        //  labels: quality, php
+        // Get service config file
+        // $res['config'] = shell_exec('systemctl show mosquitto.service -p ExecStart | sed -r "s/^.* -c ([^ ]*) .*$/\1/"');
 
         // Check if mosquitto.service has been changed by mqtt2
         if (file_exists('/lib/systemd/system/mosquitto.service')
@@ -193,24 +257,25 @@ class jMQTTPlugin {
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=mqtt2">';
             $res['message'] .= 'MQTT Manager</a> (mqtt2).';
-        }
-        // Check if ZigbeeLinker has modified Mosquitto config
-        elseif (file_exists('/etc/mosquitto/mosquitto.conf')
-                && preg_match('#^include_dir.*zigbee2mqtt/data/mosquitto/include#m',
-                    file_get_contents('/etc/mosquitto/mosquitto.conf'))) {
+        } elseif (
+            file_exists('/etc/mosquitto/mosquitto.conf')
+            && preg_match(
+                '#^include_dir.*zigbee2mqtt/data/mosquitto/include#m',
+                file_get_contents('/etc/mosquitto/mosquitto.conf')
+            )
+        ) {
+            // Check if ZigbeeLinker has modified Mosquitto config
             $res['by'] = 'ZigbeeLinker';
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label danger" target="_blank" href="index.php?v=d&p=plugin&id=zigbee2mqtt">';
             $res['message'] .= 'ZigbeeLinker</a> (zigbee2mqtt).';
-        }
-        // Check if jMQTT config file is in place
-        elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
+        } elseif (file_exists('/etc/mosquitto/conf.d/jMQTT.conf')) {
+            // Check if jMQTT config file is in place
             $res['by'] = 'jMQTT';
             $res['message'] = __('Mosquitto est installé par', __FILE__);
             $res['message'] .= ' <a class="control-label success disabled">jMQTT</a>.';
-        }
-        // Otherwise its considered to be a custom install
-        else {
+        } else {
+            // Otherwise its considered to be a custom install
             $res['by'] = __("Inconnu", __FILE__);
             $res['message'] = __("Mosquitto n'a pas été installé par un plugin connu.", __FILE__);
         }
@@ -232,7 +297,7 @@ class jMQTTPlugin {
         // Apt-get mosquitto
         jMQTT::logger(
             'info',
-            __("Mosquitto : Démarrage de l'installation, merci de patienter...", __FILE__)
+            __("Mosquitto : Installation en cours, merci de patienter...", __FILE__)
         );
         shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confask,confnew,confmiss" mosquitto');
 
@@ -249,14 +314,11 @@ class jMQTTPlugin {
         shell_exec(system::getCmdSudo() . ' systemctl enable mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl start mosquitto');
-
-        // Write in Core config that jMQTT has installed Mosquitto
-        config::save('mosquitto::installedBy', 'jMQTT');
         jMQTT::logger('info', __("Mosquitto : Fin de l'installation.", __FILE__));
 
         // Looking for eqBroker pointing to local mosquitto
         $brokerexists = false;
-        foreach(jMQTT::getBrokers() as $broker) {
+        foreach (jMQTT::getBrokers() as $broker) {
             $hn = $broker->getConf(jMQTTConst::CONF_KEY_MQTT_ADDRESS);
             $ip = gethostbyname($hn);
             $localips = explode(' ', exec(system::getCmdSudo() . 'hostname -I'));
@@ -283,7 +345,7 @@ class jMQTTPlugin {
 
             // Looking for a conflict with eqBroker name
             $brokernameconflict = false;
-            foreach(jMQTT::getBrokers() as $broker) {
+            foreach (jMQTT::getBrokers() as $broker) {
                 if ($broker->getName() == $brokername) {
                     $brokernameconflict = true;
                     break;
@@ -295,7 +357,7 @@ class jMQTTPlugin {
                     $i++;
                     $brokernameconflict = false;
                     $brokername = 'local'.$i;
-                    foreach(jMQTT::getBrokers() as $broker) {
+                    foreach (jMQTT::getBrokers() as $broker) {
                         if ($broker->getName() == $brokername) {
                             $brokernameconflict = true;
                             break;
@@ -322,6 +384,10 @@ class jMQTTPlugin {
 
     // Reinstall Mosquitto service over previous install
     public static function mosquittoRepare() {
+        jMQTT::logger(
+            'info',
+            __("Mosquitto : Réparation en cours, merci de patienter...", __FILE__)
+        );
         // Stop service
         shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
         // Ensure no config is remaining
@@ -335,8 +401,7 @@ class jMQTTPlugin {
         shell_exec(system::getCmdSudo() . ' systemctl stop mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl enable mosquitto');
         shell_exec(system::getCmdSudo() . ' systemctl start mosquitto');
-        // Write in Core config that jMQTT has installed Mosquitto
-        config::save('mosquitto::installedBy', 'jMQTT');
+        jMQTT::logger('info', __("Mosquitto : Fin de la réparation.", __FILE__));
     }
 
     // Purge Mosquitto service and all related config files
@@ -356,11 +421,14 @@ class jMQTTPlugin {
             );
             return;
         }
+        jMQTT::logger(
+            'info',
+            __("Mosquitto : Désinstallation en cours, merci de patienter...", __FILE__)
+        );
         // Remove package and /etc folder
         shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive apt-get purge -y mosquitto');
         shell_exec(system::getCmdSudo() . ' DEBIAN_FRONTEND=noninteractive rm -rf /etc/mosquitto');
-        // Remove from Core config that Mosquitto is installed
-        config::remove('mosquitto::installedBy');
+        jMQTT::logger('info', __("Mosquitto : Fin de la désinstallation.", __FILE__));
     }
 
 }

@@ -1,19 +1,4 @@
 <?php
-/* This file is part of Jeedom.
-*
-* Jeedom is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*
-* Jeedom is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
-*/
 
 if (!isConnect('admin')) {
     throw new Exception('{{401 - Accès non autorisé}}');
@@ -65,7 +50,7 @@ foreach ($eqBrokers as $eqB) { // For each Broker
         <tr>
             <th class="col-md-3">{{Module}}</th>
             <th class="col-md-1 center">{{ID}}</th>
-            <th class="col-md-4">{{Inscrit au Topic}}</th>
+            <th class="col-md-4">{{Topic racine}}</th>
             <th class="col-md-1 center">{{Commandes}}</th>
             <th class="col-md-1 center">{{Dernière comm.}}</th>
             <th class="col-md-1 center">{{Date de création}}</th>

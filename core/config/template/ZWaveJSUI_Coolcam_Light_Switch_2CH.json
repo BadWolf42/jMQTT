@@ -2,16 +2,16 @@
     "ZWaveJSUI Coolcam Light Switch 2CH": {
         "name": "ZWaveJSUI Coolcam Light Switch 2CH",
         "eqType_name": "jMQTT",
+        "comment": "ON1 : contact sec 2 vantails\nON2 : contact sec 1 vantail",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-02 21:33:50",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "ON1 : contact sec 2 vantails\nON2 : contact sec 1 vantail",
             "icone": "relay",
             "updatetime": "2021-12-11 15:35:24",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -36,7 +36,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue",
+                    "topic": "%s/37/1/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -72,7 +72,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -109,7 +109,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",
@@ -146,7 +146,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue",
+                    "topic": "%s/37/2/currentValue",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -182,7 +182,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "autoPub": "0",
@@ -219,7 +219,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "autoPub": "0",

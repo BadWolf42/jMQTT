@@ -1,21 +1,5 @@
 <?php
 
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 include_file('core', 'authentification', 'php');
 if (!isConnect()) {
@@ -30,12 +14,13 @@ sendVarToJS('version', config::byKey('version', 'jMQTT', 'unknown', true));
 // Send Mosquitto installation status
 sendVarToJS('mStatus', class_exists('jMQTT') ? jMQTTPlugin::mosquittoCheck() : array('installed' => false, 'message' => __("Etat inconnu", __FILE__), 'service' => ''));
 
+// To hide Mosquitto install and control
 $docker = file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0') == '1';
 sendVarToJS('dStatus', $docker);
 
 ?>
 <form class="form-horizontal" style="min-height: 250px;">
-    <div class="row">
+  <div class="row">
     <div class="col-lg-6 col-sm-12">
 <?php
 if (!$docker) {
@@ -89,40 +74,11 @@ if (!$docker) {
                 <i class="fas fa-pen"></i></a>
             </div>
         </div>
-<?php
-} /* !$docker */
-
-if ($docker) {
-    // To fix issue: https://community.jeedom.com/t/87727/39
-    $regularVal = jMQTTDaemon::get_callback_url();
-    $overrideEn = config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1';
-    $overrideVal = config::byKey('urlOverrideValue', 'jMQTT', $regularVal);
-    $curVal = ($overrideEn) ? $overrideVal : $regularVal;
-?>
-        <legend><i class="fab fa-docker "></i>{{Paramètres spécifiques Docker}}</legend>
-        <div class="form-group">
-            <label class="col-sm-4 control-label">{{URL de Callback du Démon}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                title="{{Si Jeedom tourne en Docker, des problèmes d'identification entre ports internes et externes peuvent survenir.<br/>Dans ce cas uniquement, il peut être nécessaire de personnaliser cette url, car elle est mal détectée par jMQTT.<br/><b>N'activez ce champ et ne touchez à cette valeur que si vous savez ce que vous faites !</b>}}"></i></sup></label>
-            <div class="col-sm-7">
-                <div class="row">
-                    <div class="col-sm-1">
-                        <input type="checkbox" class="form-control" <?php if ($overrideEn) echo 'checked'; ?> id="jmqttUrlOverrideEnable" />
-                    </div>
-                    <div class="col-sm-10">
-                        <input class="form-control<?php if (!$overrideEn) echo ' disabled'; ?>" id="jmqttUrlOverrideValue"
-                            value="<?php echo $curVal; ?>" valOver="<?php echo $overrideVal; ?>" valStd="<?php echo $regularVal; ?>" />
-                    </div>
-                    <div class="col-sm-1">
-                        <span class="btn btn-success btn-sm" id="bt_jmqttUrlOverride" style="position:relative;margin-top: 2px;" title="{{Appliquer}}">
-                            <i class="fas fa-check"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-1"></div>
-        </div>
-<?php } /* $docker */ ?>
+<?php } /* !$docker */ ?>
     </div>
+<?php
+// TODO: Remove backup/restore from configuration and put in Debug modal
+?>
     <div class="col-lg-6 col-sm-12">
         <legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuration de jMQTT}}</legend>
         <div class="form-group">
@@ -172,6 +128,9 @@ foreach ($backups as $backup)
             <div class="col-sm-1"></div>
         </div>
     </div>
-    </div>
+<?php
+// END TODO
+?>
+  </div>
 </form>
 <?php include_file('desktop', 'jMQTT.config', 'js', 'jMQTT'); ?>

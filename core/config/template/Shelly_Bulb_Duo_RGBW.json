@@ -2,12 +2,12 @@
     "Shelly Bulb Duo RGBW": {
         "name": "Shelly Bulb Duo RGBW",
         "eqType_name": "jMQTT",
+        "comment": "Shelly Bulb Duo RGBW\nhttps://community.jeedom.com/t/shelly-colorbulb-rgbw-jmqtt/70745/9 (UPDATED)\nhttps://community.jeedom.com/t/jmqtt-partage-de-template/71743/54",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-12-27 21:03:10",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
-            "commentaire": "Shelly Bulb Duo RGBW\nhttps:\/\/community.jeedom.com\/t\/shelly-colorbulb-rgbw-jmqtt\/70745\/9 (UPDATED)\nhttps:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/54",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "lightbulb",
             "updatetime": "2022-11-04 17:53:18"
@@ -34,7 +34,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce"
+                    "topic": "%s/announce"
                 },
                 "template": {
                     "dashboard": "core::default",
@@ -53,7 +53,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0",
+                    "topic": "%s/color/0",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -73,7 +73,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online",
+                    "topic": "%s/online",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -104,7 +104,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/command",
+                    "topic": "%s/color/0/command",
                     "request": "on",
                     "retain": "0",
                     "autoPub": "0",
@@ -135,7 +135,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -155,7 +155,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/command",
+                    "topic": "%s/color/0/command",
                     "request": "off",
                     "retain": "0",
                     "autoPub": "0",
@@ -187,7 +187,7 @@
                 "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/light\/0\/power",
+                    "topic": "%s/light/0/power",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -220,7 +220,7 @@
                 "isHistorized": "1",
                 "unite": "Wmin",
                 "configuration": {
-                    "topic": "%s\/light\/0\/energy",
+                    "topic": "%s/light/0/energy",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -254,7 +254,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/light\/0\/energy",
+                    "topic": "%s/light/0/energy",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -274,7 +274,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "jsonPath": "[mode]",
                     "historyPurge": "-3 years"
                 },
@@ -301,7 +301,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/light\/0\/power",
+                    "topic": "%s/light/0/power",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -321,7 +321,7 @@
                 "subType": "color",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"color\",\"red\":hexdec(substr(#color#,1,2)),\"green\":hexdec(substr(#color#,3,2)),\"blue\":hexdec(substr(#color#,5,2))}",
                     "retain": "0",
                     "autoPub": "0",
@@ -353,7 +353,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"color\",\"white\":#slider#}",
                     "minValue": "0",
                     "maxValue": "255",
@@ -390,7 +390,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "minValue": "0",
                     "maxValue": "255",
                     "jsonPath": "[white]",
@@ -420,7 +420,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"color\",\"gain\":#slider#}",
                     "retain": "0",
                     "autoPub": "0",
@@ -457,7 +457,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"white\",\"temp\":3000}",
                     "retain": "0",
                     "autoPub": "0"
@@ -484,7 +484,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"white\",\"temp\":4750}",
                     "retain": "0",
                     "autoPub": "0"
@@ -511,7 +511,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -537,7 +537,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"white\",\"temp\":6500}",
                     "retain": "0",
                     "autoPub": "0"
@@ -564,7 +564,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"white\",\"temp\":#slider#}",
                     "minValue": "3000",
                     "maxValue": "6500",
@@ -594,7 +594,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "request": "{\"mode\":\"white\",\"brightness\":#slider#}",
                     "retain": "0",
                     "autoPub": "0",
@@ -627,7 +627,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "request": "announce",
                     "retain": "0",
                     "autoPub": "0"
@@ -654,7 +654,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce",
+                    "topic": "%s/announce",
                     "jsonPath": "[id]",
                     "historyPurge": "-3 years"
                 },
@@ -681,7 +681,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce",
+                    "topic": "%s/announce",
                     "jsonPath": "[mac]",
                     "historyPurge": "-3 years"
                 },
@@ -708,7 +708,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/command",
+                    "topic": "%s/color/0/command",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -734,7 +734,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce",
+                    "topic": "%s/announce",
                     "jsonPath": "[ip]",
                     "historyPurge": "-3 years"
                 },
@@ -761,7 +761,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0",
+                    "topic": "%s/color/0",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -792,7 +792,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "request": "update_fw",
                     "retain": "0",
                     "autoPub": "0"
@@ -819,7 +819,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/set",
+                    "topic": "%s/color/0/set",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -845,7 +845,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -871,7 +871,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -897,7 +897,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -932,7 +932,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -967,7 +967,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -1002,7 +1002,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/hexColor",
+                    "topic": "%s/hexColor",
                     "request": "sprintf(\"#%02x%02x%02x\", #[red]#, #[green]#, #[blue]#)",
                     "retain": "0",
                     "autoPub": "1"
@@ -1029,7 +1029,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/hexColor",
+                    "topic": "%s/hexColor",
                     "historyPurge": "-3 years"
                 },
                 "template": {
@@ -1055,7 +1055,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -1090,7 +1090,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -1125,7 +1125,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0\/status",
+                    "topic": "%s/color/0/status",
                     "minValue": "3000",
                     "maxValue": "6500",
                     "jsonPath": "[temp]",
@@ -1155,7 +1155,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/color\/0"
+                    "topic": "%s/color/0"
                 },
                 "template": {
                     "dashboard": "default",

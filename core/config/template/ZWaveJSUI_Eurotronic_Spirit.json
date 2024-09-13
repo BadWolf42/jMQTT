@@ -2,20 +2,20 @@
     "ZWaveJSUI Eurotronic Spirit": {
         "name": "ZWaveJSUI Eurotronic Spirit",
         "eqType_name": "jMQTT",
+        "comment": "Eurotronic Spirit\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/43",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-01-13 03:14:37",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "2xAA",
-            "commentaire": "Eurotronic Spirit\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "icone": "chauffage",
             "mqttPubStatus": "1",
             "mqttTls": "0",
             "mqttTlsCheck": "public",
             "api": "disable",
             "updatetime": "2022-01-13 05:10:39",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "1",
@@ -36,7 +36,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/67\/0\/setpoint\/11\/set",
+                    "topic": "%s/67/0/setpoint/11/set",
                     "request": "#slider#",
                     "minValue": "4",
                     "maxValue": "28",
@@ -76,7 +76,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/67\/0\/setpoint\/11",
+                    "topic": "%s/67/0/setpoint/11",
                     "minValue": "4",
                     "maxValue": "28",
                     "timeline::enable": "0",
@@ -115,7 +115,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/67\/0\/setpoint\/1\/set",
+                    "topic": "%s/67/0/setpoint/1/set",
                     "request": "#slider#",
                     "minValue": "4",
                     "maxValue": "28",
@@ -155,7 +155,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/67\/0\/setpoint\/1",
+                    "topic": "%s/67/0/setpoint/1",
                     "minValue": "4",
                     "maxValue": "28",
                     "timeline::enable": "0",
@@ -193,7 +193,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/38\/0\/targetValue\/set",
+                    "topic": "%s/38/0/targetValue/set",
                     "request": "#slider#",
                     "minValue": "0",
                     "maxValue": "99",
@@ -218,7 +218,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature",
+                    "topic": "%s/49/0/Air_temperature",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -255,7 +255,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/38\/0\/currentValue",
+                    "topic": "%s/38/0/currentValue",
                     "minValue": "0",
                     "maxValue": "99",
                     "jsonPath": "[value]"
@@ -278,7 +278,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/64\/0\/mode",
+                    "topic": "%s/64/0/mode",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -315,7 +315,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/64\/0\/mode\/set",
+                    "topic": "%s/64/0/mode/set",
                     "request": "0",
                     "retain": "0",
                     "autoPub": "0",
@@ -352,7 +352,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/64\/0\/mode\/set",
+                    "topic": "%s/64/0/mode/set",
                     "request": "31",
                     "retain": "0",
                     "autoPub": "0",
@@ -389,7 +389,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/64\/0\/mode\/set",
+                    "topic": "%s/64/0/mode/set",
                     "request": "1",
                     "retain": "0",
                     "autoPub": "0",
@@ -426,7 +426,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/64\/0\/mode\/set",
+                    "topic": "%s/64/0/mode/set",
                     "request": "15",
                     "retain": "0",
                     "autoPub": "0",
@@ -463,7 +463,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/64\/0\/mode\/set",
+                    "topic": "%s/64/0/mode/set",
                     "request": "11",
                     "retain": "0",
                     "autoPub": "0",
@@ -499,7 +499,7 @@
                 "subType": "slider",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/8\/set",
+                    "topic": "%s/112/0/8/set",
                     "request": "#slider#",
                     "retain": "0",
                     "autoPub": "0",
@@ -539,7 +539,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/128\/0\/level",
+                    "topic": "%s/128/0/level",
                     "minValue": "0",
                     "maxValue": "100",
                     "timeline::enable": "0",
@@ -577,7 +577,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/128\/0\/isLow",
+                    "topic": "%s/128/0/isLow",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -597,7 +597,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/112\/0\/8",
+                    "topic": "%s/112/0/8",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -618,7 +618,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "topic": "zwave/_CLIENTS/ZWAVE_GATEWAY-Zwavejs2Mqtt/api/refreshValues/set",
                     "request": "{\"args\": []}",
                     "retain": "0",
                     "autoPub": "0",
@@ -653,7 +653,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {
@@ -673,7 +673,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[value]"
                 },
                 "template": {

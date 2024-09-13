@@ -1,27 +1,11 @@
 <?php
 
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
 try {
     require_once __DIR__ . '/../../../../core/php/core.inc.php';
     include_file('core', 'authentification', 'php');
 
     if (!isConnect('admin')) {
-        throw new Exception(__('401 - Accès non autorisé', __FILE__));
+        throw new Exception('401 - Unauthorized access');
     }
 
     require_once __DIR__ . '/../../core/class/jMQTT.class.php';
@@ -35,12 +19,15 @@ try {
         ajax::success($res);
     }
     if (init('action') == 'configSetInternal') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action') . ': key=' . init('key') . ' value=' . init('val')
+        );
         config::save(init('key'), json_decode(init('val')), 'jMQTT');
         ajax::success();
     }
     if (init('action') == 'configDelInternal') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key'));
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action') . ': key=' . init('key'));
         config::remove(init('key'), 'jMQTT');
         ajax::success();
     }
@@ -53,7 +40,7 @@ try {
             $data = array();
             foreach (utils::o2a($eqBroker)['configuration'] as $k => $val)
                 $data[] = array('key' => $k, 'value' => $val);
-            $header = $eqBroker->getHumanName().' (id: '.$eqBroker->getId().')';
+            $header = $eqBroker->getHumanName() . ' (id: ' . $eqBroker->getId() . ')';
             $res[] = array('header' => $header, 'id' => $eqBroker->getId(), 'data' => $data);
         }
         ajax::success($res);
@@ -66,18 +53,25 @@ try {
                 $data = array();
                 foreach (utils::o2a($eqLogic)['configuration'] as $k => $val)
                     $data[] = array('key' => $k, 'value' => $val);
-                $header = $eqLogic->getHumanName().' (id: '.$eqLogic->getId().')';
+                $header = $eqLogic->getHumanName() . ' (id: ' . $eqLogic->getId() . ')';
                 $res[] = array('header' => $header, 'id' => $eqLogic->getId(), 'data' => $data);
             }
         ajax::success($res);
     }
     if (init('action') == 'configSetBrkAndEqpt') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').' key='.init('key').' value='.init('val'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action') . ': id=' . init('id')
+            .' key=' . init('key') . ' value=' . init('val')
+        );
         jMQTT::byId(init('id'))->setConfiguration(init('key'), json_decode(init('val')))->save();
         ajax::success();
     }
     if (init('action') == 'configDelBrkAndEqpt') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').'key='.init('key'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action') . ': id=' . init('id') . ' key=' . init('key')
+        );
         jMQTT::byId(init('id'))->setConfiguration(init('key'), null)->save();
         ajax::success();
     }
@@ -92,7 +86,7 @@ try {
             $data = array();
             foreach (utils::o2a($cmd)['configuration'] as $k => $val)
                 $data[] = array('key' => $k, 'value' => $val);
-            $header = $cmd->getHumanName().' (id: '.$cmd->getId().')';
+            $header = $cmd->getHumanName() . ' (id: ' . $cmd->getId() . ')';
             $res[] = array('header' => $header, 'id' => $cmd->getId(), 'data' => $data);
         }
         ajax::success($res);
@@ -106,18 +100,29 @@ try {
             $data = array();
             foreach (utils::o2a($cmd)['configuration'] as $k => $val)
                 $data[] = array('key' => $k, 'value' => $val);
-            $header = $cmd->getHumanName().' (id: '.$cmd->getId().')';
+            $header = $cmd->getHumanName() . ' (id: ' . $cmd->getId() . ')';
             $res[] = array('header' => $header, 'id' => $cmd->getId(), 'data' => $data);
         }
         ajax::success($res);
     }
     if (init('action') == 'configSetCommands') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').' key='.init('key').' value='.init('val'));
-        jMQTTCmd::byId(init('id'))->setConfiguration(init('key'), json_decode(init('val')))->save();
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action')
+            . ': id=' . init('id') . ' key=' . init('key') . ' value=' . init('val')
+        );
+        jMQTTCmd::byId(init('id'))->setConfiguration(
+            init('key'),
+            json_decode(init('val'))
+        )->save();
         ajax::success();
     }
     if (init('action') == 'configDelCommands') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': id='.init('id').'key='.init('key'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action')
+            . ': id=' . init('id') . ' key=' . init('key')
+        );
         jMQTTCmd::byId(init('id'))->setConfiguration(init('key'), null)->save();
         ajax::success();
     }
@@ -126,11 +131,10 @@ try {
     if (init('action') == 'cacheGetInternal') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         $cacheKeys = array();
+        $cacheKeys[] = 'deamonStartjMQTTinprogress';
         $cacheKeys[] = 'dependancyjMQTT';
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_RCV;
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_LAST_SND;
-        $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_PORT;
-        $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_DAEMON_UID;
         $cacheKeys[] = 'jMQTT::' . jMQTTConst::CACHE_JMQTT_NEXT_STATS;
         // $cacheKeys[] = 'jMQTT::dummy';
         // $cacheKeys[] = ;
@@ -147,8 +151,8 @@ try {
         $res = array();
         foreach (jMQTT::getBrokers() as $brk) {
             $cacheBrkKeys = array();
-            $cacheBrkKeys[] = 'eqLogicCacheAttr'.$brk->getId();
-            $cacheBrkKeys[] = 'eqLogicStatusAttr'.$brk->getId();
+            $cacheBrkKeys[] = 'eqLogicCacheAttr' . $brk->getId();
+            $cacheBrkKeys[] = 'eqLogicStatusAttr' . $brk->getId();
             $data = array();
             foreach ($cacheBrkKeys as $k) {
                 $val = cache::byKey($k)->getValue(null);
@@ -156,7 +160,7 @@ try {
                     $data[] = array('key' => $k, 'value' => $val);
             }
             if ($data !== array()) {
-                $header = $brk->getHumanName().' (id: '.$brk->getId().')';
+                $header = $brk->getHumanName() . ' (id: ' . $brk->getId() . ')';
                 $res[] = array('header' => $header, 'data' => $data);
             }
         }
@@ -166,13 +170,12 @@ try {
     if (init('action') == 'cacheGetEquipments') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         $res = array();
-        foreach(jMQTT::getNonBrokers() as $brk) {
+        foreach (jMQTT::getNonBrokers() as $brk) {
             foreach ($brk as $eqpt) {
                 $cacheEqptKeys = array();
-                $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_IGNORE_TOPIC_MISMATCH;
                 // $cacheEqptKeys[] = 'jMQTT::' . $eqpt->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED;
-                $cacheEqptKeys[] = 'eqLogicCacheAttr'.$eqpt->getId();
-                $cacheEqptKeys[] = 'eqLogicStatusAttr'.$eqpt->getId();
+                $cacheEqptKeys[] = 'eqLogicCacheAttr' . $eqpt->getId();
+                $cacheEqptKeys[] = 'eqLogicStatusAttr' . $eqpt->getId();
                 $data = array();
                 foreach ($cacheEqptKeys as $k) {
                     $val = cache::byKey($k)->getValue(null);
@@ -180,7 +183,7 @@ try {
                         $data[] = array('key' => $k, 'value' => $val);
                 }
                 if ($data !== array()) {
-                    $header = $eqpt->getHumanName().' (id: '.$eqpt->getId().')';
+                    $header = $eqpt->getHumanName() . ' (id: ' . $eqpt->getId() . ')';
                     $res[] = array('header' => $header, 'data' => $data);
                 }
             }
@@ -195,8 +198,8 @@ try {
             if ($cmd->getType() != 'info')
                 continue;
             $cacheCmdKeys = array();
-            $cacheCmdKeys[] = 'cmdCacheAttr'.$cmd->getId();
-            $cacheCmdKeys[] = 'cmd'.$cmd->getId();
+            $cacheCmdKeys[] = 'cmdCacheAttr' . $cmd->getId();
+            $cacheCmdKeys[] = 'cmd' . $cmd->getId();
             $data = array();
             foreach ($cacheCmdKeys as $k) {
                 $val = cache::byKey($k)->getValue(null);
@@ -204,7 +207,7 @@ try {
                     $data[] = array('key' => $k, 'value' => $val);
             }
             if ($data !== array()) {
-                $header = $cmd->getHumanName().' (id:'.$cmd->getId().')';
+                $header = $cmd->getHumanName() . ' (id:' . $cmd->getId() . ')';
                 $res[] = array('header' => $header, 'data' => $data);
             }
         }
@@ -217,8 +220,8 @@ try {
             if ($cmd->getType() != 'action')
                 continue;
             $cacheCmdKeys = array();
-            $cacheCmdKeys[] = 'cmdCacheAttr'.$cmd->getId();
-            $cacheCmdKeys[] = 'cmd'.$cmd->getId();
+            $cacheCmdKeys[] = 'cmdCacheAttr' . $cmd->getId();
+            $cacheCmdKeys[] = 'cmd' . $cmd->getId();
             $data = array();
             foreach ($cacheCmdKeys as $k) {
                 $val = cache::byKey($k)->getValue(null);
@@ -226,7 +229,7 @@ try {
                     $data[] = array('key' => $k, 'value' => $val);
             }
             if ($data !== array()) {
-                $header = $cmd->getHumanName().' (id:'.$cmd->getId().')';
+                $header = $cmd->getHumanName() . ' (id:' . $cmd->getId() . ')';
                 $res[] = array('header' => $header, 'data' => $data);
             }
         }
@@ -235,44 +238,37 @@ try {
 
 // -------------------- Cache set / delete --------------------
     if (init('action') == 'cacheSet') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key').' value='.init('val'));
+        jMQTT::logger(
+            'debug',
+            'debug.ajax.php: ' . init('action') . ': key=' . init('key') . ' value=' . init('val')
+        );
         cache::set(init('key'), json_decode(init('val'), true));
         ajax::success();
     }
     if (init('action') == 'cacheDel') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': key='.init('key'));
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action') . ': key=' . init('key'));
         cache::delete(init('key'));
         ajax::success();
     }
 
-// -------------------- Send raw data to Daemon --------------------
-    if (init('action') == 'sendToDaemon') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': data='.init('data'));
-        $data = json_decode(init('data'), true);
-        if (is_null($data) || !is_array($data)) {
-            ajax::error(__('Format invalide', __FILE__));
-        }
-        // Send to Daemon
-        jMQTTComToDaemon::send($data);
-        ajax::success();
-    }
+// -------------------- Simulate raw data from Daemon to Jeedom --------------------
     if (init('action') == 'sendToJeedom') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action').': data='.init('data'));
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action') . ': data=' . init('data'));
         $data = json_decode(init('data'), true);
         if (is_null($data) || !is_array($data)) {
-            ajax::error(__('Format invalide', __FILE__));
+            ajax::error('Invalid format');
         }
         // Prepare url
+        // NO MORE fix Docker for issue like: https://community.jeedom.com/t/87727/39
         $callbackURL = jMQTTDaemon::get_callback_url();
-        // To fix issue: https://community.jeedom.com/t/87727/39
-        if ((file_exists('/.dockerenv') || config::byKey('forceDocker', 'jMQTT', '0')) && config::byKey('urlOverrideEnable', 'jMQTT', '0') == '1')
-            $callbackURL = config::byKey('urlOverrideValue', 'jMQTT', $callbackURL);
-        $url = $callbackURL . '?apikey=' . jeedom::getApiKey('jMQTT') . '&uid=' . (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0"));
-
         // Send to Jeedom
-        $curl = curl_init($url);
+        $curl = curl_init($callbackURL);
         curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . jMQTTDaemon::getApiKey(),
+            'PID: ' . jMQTTDaemon::getPid()
+        ));
         curl_setopt($curl, CURLOPT_POSTFIELDS, init('data'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($curl);
@@ -282,81 +278,149 @@ try {
     }
 
 // -------------------- Simulate dangerous actions --------------------
+    // Installation and files
     if (init('action') == 'depCheck') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         plugin::byId('jMQTT')->dependancy_info(true);
         ajax::success();
     }
+    if (init('action') == 'reInstall') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        log::clear('update');
+        $update = update::byId('jMQTT');
+        if (!is_object($update))
+            throw new Exception('jMQTT is not installed?!');
+        try {
+            log::add('update', 'alert', "[START UPDATE]");
+            $update->doUpdate();
+            log::add('update', 'alert', "Launch cron dependancy plugins");
+            try {
+                $cron = cron::byClassAndFunction('plugin', 'checkDeamon');
+                if (is_object($cron)) {
+                    $cron->start();
+                }
+            } catch (Exception $e) {
+                log::add('update', 'alert', "jMQTT update exception:\n" . $e->getMessage());
+            }
+            log::add('update', 'alert', "[END UPDATE SUCCESS]");
+        } catch (Exception $e) {
+            log::add('update', 'alert', $e->getMessage());
+            log::add('update', 'alert', "[END UPDATE ERROR]");
+        }
+        ajax::success();
+    }
     if (init('action') == 'depDelete') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         jMQTTDaemon::stop();
-        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/composer.lock');
-        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/JsonPath-PHP/vendor');
+        exec(system::getCmdSudo() . 'rm -rf ' . __DIR__ . '/../../resources/JsonPath-PHP/composer.lock');
+        exec(system::getCmdSudo() . 'rm -rf ' . __DIR__ . '/../../resources/JsonPath-PHP/vendor');
         ajax::success();
     }
     if (init('action') == 'venvDelete') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         jMQTTDaemon::stop();
-        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/venv');
+        exec(system::getCmdSudo() . 'rm -rf ' . __DIR__ . '/../../resources/jmqttd_api/venv');
         ajax::success();
     }
     if (init('action') == 'dynContentDelete') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         jMQTTDaemon::stop();
-        exec(system::getCmdSudo() . 'rm -rf '.__DIR__.'/../../resources/jmqttd/__pycache__');
-        exec(system::getCmdSudo() . 'rm -rf '.jeedom::getTmpFolder('jMQTT').'/rt*.json');
+        exec(system::getCmdSudo() . 'rm -rf ' . __DIR__ . '/../../resources/jmqttd_api/__pycache__');
+        exec(system::getCmdSudo() . 'rm -rf ' . jeedom::getTmpFolder('jMQTT') . '/rt*.json');
+        ajax::success();
+    }
+    if (init('action') == 'listenersRemove') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTT::listenersRemoveAll();
+        ajax::success();
+    }
+    if (init('action') == 'listenersCreate') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTT::listenersAddAll();
+        ajax::success();
+    }
+
+    // Running contents
+    if (init('action') == 'pidFileDelete') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTDaemon::delPid();
+        ajax::success();
+    }
+    if (init('action') == 'portFileDelete') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTDaemon::delPort();
+        ajax::success();
+    }
+    if (init('action') == 'killAllSIGTERM') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        system::kill('[/]jmqttd', false);
+        ajax::success();
+    }
+    if (init('action') == 'killAllSIGKILL') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        system::kill('[/]jmqttd', true);
+        ajax::success();
+    }
+
+    // Troubleshooting
+    if (init('action') == 'hbStop') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        config::save('functionality::cron::enable', 1, jMQTT::class);
+        ajax::success();
+    }
+    if (init('action') == 'printTree') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTComToDaemon::printTree();
         ajax::success();
     }
     if (init('action') == 'threadDump') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         // Get cached PID and PORT
-        $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
-        list($cpid, $cport) = array_map('intval', explode(":", $cuid));
+        $pid = jMQTTDaemon::getPid();
         // If PID is unavailable or not running
-        if ($cpid == 0 || !@posix_getsid($cpid))
-            throw new Exception(__("Le PID du démon n'a pas été trouvé, est-il lancé ?", __FILE__));
-
+        if ($pid == 0)
+            throw new Exception('Daemon PID not found. Is it running?');
         // Else send signal SIGUSR1
-        posix_kill($cpid, 10);
+        posix_kill($pid, 10);
+        ajax::success();
+    }
+    if (init('action') == 'logVerbose') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
+        jMQTTComToDaemon::setLogLevel('trace');
         ajax::success();
     }
     if (init('action') == 'statsSend') {
         jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
         cache::set('jMQTT::nextStats', time() - 300);
-        jMQTTDaemon::pluginStats();
+        jMQTTPlugin::stats();
         ajax::success();
     }
 
-    // TODO: Debug modal: implement missing actions
-    //  pidFileDelete, hbStop, reInstall, logVerbose
-    //  listenersCreate, listenersRemove
-    //  labels: enhancement, php
-    if (init('action') == 'pidFileDelete') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'hbStop') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'reInstall') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'listenersRemove') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'listenersCreate') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
-    }
-    if (init('action') == 'logVerbose') {
-        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action'));
-        throw new Exception('TODO, not implemented');
+// -------------------- Reapply upgrade script --------------------
+    if (init('action') == 'reapplyUpdate') {
+        $name = init('name', 'NONE');
+        jMQTT::logger('debug', 'debug.ajax.php: ' . init('action') . ' (' . $name . ')');
+        $ver = str_replace('.php', '', $name);
+        $file = __DIR__ . '/../../resources/update/' . $name;
+        try {
+            if (!file_exists($file))
+                ajax::error("Not such a file: $name", -1);
+
+            log::add('jMQTT', 'debug', "Applying migration file to version $ver...");
+            include $file;
+            log::add('jMQTT', 'debug', "Migration to version $ver successfully completed");
+        } catch (Throwable $e) {
+            log::add('jMQTT', 'error', sprintf(
+                "Exception encountered during migration to version %s: %s\n@Stack: %3\$s",
+                $ver,
+                $e->getMessage(),
+                $e->getTraceAsString()
+            ));
+        }
+        ajax::success();
     }
 
-    throw new Exception(__('Aucune méthode Ajax ne correspond à :', __FILE__) . ' ' . init('action'));
+    throw new Exception('No corresponding Ajax method: ' . init('action'));
     /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
     ajax::error(displayException($e), $e->getCode());

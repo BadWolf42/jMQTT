@@ -2,20 +2,20 @@
     "ZWaveJSUI Eurotronic Air Quality Sensor": {
         "name": "ZWaveJSUI Eurotronic Air Quality Sensor",
         "eqType_name": "jMQTT",
+        "comment": "Eurotronic Air Quality Sensor\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/43",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-01-14 09:03:07",
             "auto_add_cmd": "0",
             "Qos": "1",
             "battery_type": "Secteur",
-            "commentaire": "Eurotronic Air Quality Sensor\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/43",
             "icone": "humiditytemp",
             "mqttPubStatus": "1",
             "mqttTls": "0",
             "mqttTlsCheck": "public",
             "api": "disable",
             "updatetime": "2022-01-14 10:36:31",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "1",
@@ -41,7 +41,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Air_temperature",
+                    "topic": "%s/49/0/Air_temperature",
                     "minValue": "-40",
                     "maxValue": "125",
                     "timeline::enable": "0",
@@ -81,7 +81,7 @@
                 "isHistorized": "0",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Humidity",
+                    "topic": "%s/49/0/Humidity",
                     "minValue": "0",
                     "maxValue": "100",
                     "timeline::enable": "0",
@@ -120,7 +120,7 @@
                 "isHistorized": "0",
                 "unite": "°C",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Dew_point",
+                    "topic": "%s/49/0/Dew_point",
                     "minValue": "-40",
                     "maxValue": "125",
                     "timeline::enable": "0",
@@ -160,7 +160,7 @@
                 "isHistorized": "0",
                 "unite": "ppm",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Carbon_dioxide_CO_level",
+                    "topic": "%s/49/0/Carbon_dioxide_CO_level",
                     "minValue": "0",
                     "maxValue": "3000",
                     "timeline::enable": "0",
@@ -199,7 +199,7 @@
                 "isHistorized": "0",
                 "unite": "ppm",
                 "configuration": {
-                    "topic": "%s\/49\/0\/Volatile_Organic_Compound_level",
+                    "topic": "%s/49/0/Volatile_Organic_Compound_level",
                     "minValue": "0",
                     "maxValue": "1",
                     "timeline::enable": "0",
@@ -238,7 +238,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "zwave\/_CLIENTS\/ZWAVE_GATEWAY-Zwavejs2Mqtt\/api\/refreshValues\/set",
+                    "topic": "zwave/_CLIENTS/ZWAVE_GATEWAY-Zwavejs2Mqtt/api/refreshValues/set",
                     "request": "{\"args\": []}",
                     "retain": "0",
                     "autoPub": "0",
@@ -273,7 +273,7 @@
                 "subType": "numeric",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[nodeId]"
                 },
                 "template": {
@@ -293,7 +293,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/status",
+                    "topic": "%s/status",
                     "jsonPath": "[value]"
                 },
                 "template": {

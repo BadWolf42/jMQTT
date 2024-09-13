@@ -1,16 +1,16 @@
 {
-    "ZWaveJSUI Hank DWS01 Door\/Window Sensor": {
-        "name": "ZWaveJSUI Hank DWS01 Door\/Window Sensor",
+    "ZWaveJSUI Hank DWS01 Door/Window Sensor": {
+        "name": "ZWaveJSUI Hank DWS01 Door/Window Sensor",
         "eqType_name": "jMQTT",
+        "comment": "ZWaveJSUI Hank DWS01 Door/Window Sensor\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/61",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-09-22 19:17:34",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "battery_cmd": "Pile",
             "icone": "door",
-            "commentaire": "ZWaveJSUI Hank DWS01 Door\/Window Sensor\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/61",
             "updatetime": "2022-09-23 14:08:07",
             "batterytime": "2022-09-23 14:08:07"
         },
@@ -36,7 +36,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/notification\/endpoint_0\/Access_Control\/Door_state",
+                    "topic": "%s/notification/endpoint_0/Access_Control/Door_state",
                     "jsonPath": "[value]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -76,7 +76,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/notification\/endpoint_0\/Home_Security\/Cover_status",
+                    "topic": "%s/notification/endpoint_0/Home_Security/Cover_status",
                     "jsonPath": "[value]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -116,7 +116,7 @@
                 "isHistorized": "1",
                 "unite": "%",
                 "configuration": {
-                    "topic": "%s\/battery\/endpoint_0\/level",
+                    "topic": "%s/battery/endpoint_0/level",
                     "jsonPath": "[value]",
                     "timeline::enable": "0",
                     "influx::enable": "0",
@@ -154,7 +154,7 @@
                 "subType": "binary",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/battery\/endpoint_0\/isLow"
+                    "topic": "%s/battery/endpoint_0/isLow"
                 },
                 "template": {
                     "dashboard": "default",

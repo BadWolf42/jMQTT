@@ -2,12 +2,12 @@
     "Shelly 2.5 (Relay)": {
         "name": "Shelly 2.5 (Relay)",
         "eqType_name": "jMQTT",
+        "comment": "Shelly 2.5 (Relay)\nJeedom Community: https://community.jeedom.com/t/jmqtt-partage-de-template/71743/51",
         "configuration": {
             "type": "eqpt",
             "createtime": "2022-10-15 13:54:58",
             "auto_add_cmd": "0",
-            "auto_add_topic": "%s\/#",
-            "commentaire": "Shelly 2.5 (Relay)\nJeedom Community: https:\/\/community.jeedom.com\/t\/jmqtt-partage-de-template\/71743\/51",
+            "auto_add_topic": "%s/#",
             "Qos": "1",
             "icone": "relay",
             "battery_type": "Secteur",
@@ -37,7 +37,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/online"
+                    "topic": "%s/online"
                 },
                 "template": {
                     "dashboard": "default",
@@ -63,7 +63,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[update][has_update]"
                 },
                 "template": {
@@ -90,7 +90,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce",
+                    "topic": "%s/announce",
                     "jsonPath": "[id]"
                 },
                 "template": {
@@ -117,7 +117,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/announce"
+                    "topic": "%s/announce"
                 },
                 "template": {
                     "dashboard": "default",
@@ -143,7 +143,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command"
+                    "topic": "%s/command"
                 },
                 "template": {
                     "dashboard": "default",
@@ -169,7 +169,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[update][old_version]"
                 },
                 "template": {
@@ -196,7 +196,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info"
+                    "topic": "%s/info"
                 },
                 "template": {
                     "dashboard": "default",
@@ -222,7 +222,7 @@
                 "subType": "string",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/info",
+                    "topic": "%s/info",
                     "jsonPath": "[update][new_version]"
                 },
                 "template": {
@@ -251,7 +251,7 @@
                 "isHistorized": "0",
                 "unite": "V",
                 "configuration": {
-                    "topic": "%s\/voltage"
+                    "topic": "%s/voltage"
                 },
                 "template": {
                     "dashboard": "default",
@@ -277,7 +277,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "request": "announce",
                     "retain": "0",
                     "autoPub": "0"
@@ -305,7 +305,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/command",
+                    "topic": "%s/command",
                     "request": "update_fw",
                     "retain": "0",
                     "autoPub": "0"
@@ -334,7 +334,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "on",
                     "retain": "0",
                     "autoPub": "0",
@@ -370,7 +370,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "off",
                     "retain": "0",
                     "autoPub": "0",
@@ -405,7 +405,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/command",
+                    "topic": "%s/relay/0/command",
                     "request": "toggle",
                     "retain": "0",
                     "autoPub": "0"
@@ -425,7 +425,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/0",
+                    "topic": "%s/relay/0",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -462,7 +462,7 @@
                 "isHistorized": "1",
                 "unite": "W",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/power"
+                    "topic": "%s/relay/0/power"
                 },
                 "template": {
                     "dashboard": "default",
@@ -482,7 +482,7 @@
                 "isHistorized": "1",
                 "unite": "Wh",
                 "configuration": {
-                    "topic": "%s\/relay\/0\/energy"
+                    "topic": "%s/relay/0/energy"
                 },
                 "template": {
                     "dashboard": "default",
@@ -502,7 +502,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/1\/command",
+                    "topic": "%s/relay/1/command",
                     "request": "on",
                     "retain": "0",
                     "autoPub": "0",
@@ -538,7 +538,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/1\/command",
+                    "topic": "%s/relay/1/command",
                     "request": "off",
                     "retain": "0",
                     "autoPub": "0",
@@ -573,7 +573,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/1\/command",
+                    "topic": "%s/relay/1/command",
                     "request": "toggle",
                     "retain": "0",
                     "autoPub": "0"
@@ -593,7 +593,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/relay\/1",
+                    "topic": "%s/relay/1",
                     "timeline::enable": "0",
                     "influx::enable": "0",
                     "interact::auto::disable": "0",
@@ -629,7 +629,7 @@
                 "subType": "numeric",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/relay\/1\/power"
+                    "topic": "%s/relay/1/power"
                 },
                 "template": {
                     "dashboard": "default",
@@ -648,7 +648,7 @@
                 "subType": "numeric",
                 "isHistorized": "1",
                 "configuration": {
-                    "topic": "%s\/relay\/1\/energy"
+                    "topic": "%s/relay/1/energy"
                 },
                 "template": {
                     "dashboard": "default",

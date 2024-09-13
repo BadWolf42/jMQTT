@@ -2,6 +2,7 @@
     "ZWaveJSUI Fibaro FGS-222 Switch 2x1": {
         "name": "ZWaveJSUI Fibaro FGS-222 Switch 2x1",
         "eqType_name": "jMQTT",
+        "comment": "ON1 : contact sec 2 vantails\nON2 : contact sec 1 vantail",
         "configuration": {
             "type": "eqpt",
             "createtime": "2021-06-02 21:33:50",
@@ -10,8 +11,7 @@
             "battery_type": "Secteur",
             "icone": "relay",
             "updatetime": "2021-06-05 12:12:36",
-            "commentaire": "ON1 : contact sec 2 vantails\nON2 : contact sec 1 vantail",
-            "auto_add_topic": "%s\/#"
+            "auto_add_topic": "%s/#"
         },
         "category": {
             "heating": "0",
@@ -35,7 +35,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/currentValue",
+                    "topic": "%s/37/1/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -55,7 +55,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "jsonPath": ""
@@ -75,7 +75,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/1\/targetValue\/set",
+                    "topic": "%s/37/1/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "jsonPath": ""
@@ -95,7 +95,7 @@
                 "subType": "binary",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/currentValue",
+                    "topic": "%s/37/2/currentValue",
                     "jsonPath": "[value]"
                 },
                 "template": {
@@ -115,7 +115,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "true",
                     "retain": "0",
                     "jsonPath": ""
@@ -135,7 +135,7 @@
                 "subType": "other",
                 "isHistorized": "0",
                 "configuration": {
-                    "topic": "%s\/37\/2\/targetValue\/set",
+                    "topic": "%s/37/2/targetValue/set",
                     "request": "false",
                     "retain": "0",
                     "jsonPath": ""

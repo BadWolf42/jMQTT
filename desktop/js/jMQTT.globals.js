@@ -1,40 +1,3 @@
-/* This file is part of Jeedom.
- *
- * Jeedom is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Jeedom is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
- */
-
-// TODO: Remove core4.2 backward compatibility `jeeFrontEnd` js function
-//  Remove when Jeedom 4.2 is no longer supported
-//  labels: workarround, core4.2, javascript
-
-// Handle retrocompatibility of jeeFrontEnd namespace in Jeedom 4.2
-if (typeof jeeFrontEnd === 'undefined') {
-    jeeFrontEnd = window;
-}
-
-// TODO: Remove core4.2 backward compatibility `addUpdateFunction` js function
-//  Remove when Jeedom 4.2 is no longer supported
-//  labels: workarround, core4.2, javascript
-
-// Handle retrocompatibility of addUpdateFunction function in Jeedom 4.2
-if (typeof jeedom.cmd.addUpdateFunction !== 'function') {
-    jeedom.cmd.addUpdateFunction = function(id, func) {
-        jeedom.cmd.update[id] = func;
-    }
-}
-
-
 // Namespace
 jmqtt_globals = {};
 
@@ -105,9 +68,6 @@ jmqtt_globals.refreshTimeout = null;
 // To reload Real Time view
 jmqtt_globals.refreshRealTime = null;
 jmqtt_globals.lockRealTime = false;
-
-// To memorise current eqLogic main subscription topic
-jmqtt_globals.mainTopic = '';
 
 // Drop zone counter
 jmqtt_globals.dropzoneCpt = 0;
