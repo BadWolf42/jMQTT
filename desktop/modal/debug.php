@@ -558,7 +558,7 @@ function builder_actions(div) {
     res += '<div class="col-sm-4"><a class="btn btn-danger btn-xs pidFileDelete" style="width:100%;text-align:left;">';
     res += '<i class="fas fa-trash"></i> {{Supprimer le fichier PID}}</a></div>';
     res += '<div class="col-sm-3"><a class="btn btn-danger btn-xs hbStop" style="width:100%;text-align:left;">';
-    res += '<i class="fas fa-stop"></i> {{Arrêter les heatbeat}}</a></div>';
+    res += '<i class="fas fa-stop"></i> {{Arrêter les heartbeats}}</a></div>';
 
     res += '<div class="col-sm-5"><a class="btn btn-info btn-xs threadDump" style="width:100%;text-align:left;">';
     res += '<i class="icon kiko-zoom"></i> {{Demander au démon un "Thread Dump"}}</a></div>';
