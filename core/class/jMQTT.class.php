@@ -1800,7 +1800,16 @@ class jMQTT extends eqLogic {
      * Send a jMQTT::EventState event to the UI containing eqLogic
      */
     public function sendMqttClientStateEvent() {
-        event::add('jMQTT::EventState', $this->toArray());
+        $data = $this->toArray();
+        unset($data['category']);
+        unset($data['display']);
+        unset($data['status']);
+        foreach($data['configuration'] as $key => &$value) {
+            // If $key starts with 'mqtt' remove it
+            if (substr_compare($key, 'mqtt', 0, 4) === 0)
+                unset($data['configuration'][$key]);
+        }
+        event::add('jMQTT::EventState', $data);
     }
 
 
