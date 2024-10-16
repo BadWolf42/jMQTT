@@ -85,14 +85,11 @@ foreach($messages as $message) {
     // Check if daemon is in a correct state or deny the message
     if (!$authorized && ($message['cmd'] != 'daemonUp')) {
         if (is_null($authorized))
-            jMQTT::logger(
-                'debug',
-                $head . sprintf
-                (__("Impossible d'autoriser la cmd '%2\$s' avant la commande 'daemonUp': '%3\$s'", __FILE__),
+            jMQTT::logger('debug', $head . sprintf(
+                __("Impossible d'autoriser la cmd '%1\$s' avant la commande 'daemonUp': '%2\$s'", __FILE__),
                 $message['cmd'],
                 json_encode($message)
-            )
-        );
+            ));
         else
             jMQTT::logger(
                 'debug',
@@ -103,7 +100,7 @@ foreach($messages as $message) {
             );
         continue;
     }
-    
+
     // Handle commands from daemon
     switch ($message['cmd']) {
         case 'messageIn':
