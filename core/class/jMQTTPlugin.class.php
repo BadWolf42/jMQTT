@@ -104,7 +104,7 @@ class jMQTTPlugin {
             'script' => __DIR__ . '/../../resources/install_#stype#.sh',
             'log' => $depLogFullPath
         );
-      }
+    }
 
     /**
      * Provides anonymous statistics
@@ -112,7 +112,7 @@ class jMQTTPlugin {
      * @param string $_reason Reason to send stats
      * @return void
      */
-      public static function stats($_reason = 'cron') {
+    public static function stats($_reason = 'cron') {
         // Check last reporting (or if forced)
         $nextStats = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS)->getValue(0);
         if ($_reason === 'cron' && (time() < $nextStats)) { // No reason to force send stats
