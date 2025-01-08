@@ -89,7 +89,7 @@ function builder_cfgCache(_div, _action, _buttons) {
             }
             res += '</tbody></table>';
             _div.html(res);
-            if(typeof _buttons === 'function')
+            if (typeof _buttons === 'function')
                 _buttons(_div);
         }
     });
@@ -812,7 +812,7 @@ $('a.btn.btn-info.btn-show-hide').on('click', function () {
         div.removeClass('hidden');
         if ($(this).hasAttr('builder')) {
             let builder = window[$(this).attr('builder')];
-            if(typeof builder === 'function')
+            if (typeof builder === 'function')
                 builder(div);
         }
     }

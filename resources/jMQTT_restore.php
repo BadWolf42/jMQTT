@@ -260,7 +260,7 @@ function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
     foreach ($diff_indexes['eqLogic'] as $id=>&$state) {
         if ($state != DiffType::Deleted)
             continue;
-        if(!createEqWithId($id)) {
+        if (!createEqWithId($id)) {
             $state = DiffType::Invalid;
             $logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be created!\n";
         } elseif ($verbose) {
@@ -271,7 +271,7 @@ function restore_createMissingEqAndCmd(&$diff_indexes, $verbose = false) {
     foreach ($diff_indexes['cmd'] as $id=>&$state) {
         if ($state != DiffType::Deleted)
             continue;
-        if(!createCmdWithId($id)) {
+        if (!createCmdWithId($id)) {
             $state = DiffType::Invalid;
             $logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> cmd:' . $id . " could NOT be created!\n";
         } elseif ($verbose) {
@@ -293,7 +293,7 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
     if ($type == DiffType::Deleted) print(' ');
     foreach ($data['eqLogic'] as $eq) {
         $id = $eq['id'];
-        if(!isset($diff_indexes['eqLogic'][$id])) {
+        if (!isset($diff_indexes['eqLogic'][$id])) {
             $logs[] = "\n" . date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> eqLogic:' . $id . " could NOT be found in diff!\n";
             $errorE = true;
             continue;
@@ -314,7 +314,7 @@ function restore_replaceEqAndCmd(&$diff_indexes, &$data, $type, $verbose = false
     if ($type == DiffType::Deleted) print(' ');
     foreach ($data['cmd'] as $eq) {
         $id = $eq['id'];
-        if(!isset($diff_indexes['cmd'][$id])) {
+        if (!isset($diff_indexes['cmd'][$id])) {
             $logs[] = date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . '    -> cmd:' . $id . " could NOT be found in diff!\n";
             $errorC = true;
             continue;

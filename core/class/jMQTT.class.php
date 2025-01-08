@@ -845,7 +845,7 @@ class jMQTT extends eqLogic {
         $broker = $this->getBroker();
 
         // If broker eqpt is disabled, don't need to send subscribe
-        if(!$broker->getIsEnable()) {
+        if (!$broker->getIsEnable()) {
             $this->log(
                 'debug',
                 sprintf(
@@ -911,7 +911,7 @@ class jMQTT extends eqLogic {
         }
         $broker = is_null($brkId) ? $this->getBroker() : self::getBrokerFromId($brkId);
         // If broker eqpt is disabled, don't need to send unsubscribe
-        if(!$broker->getIsEnable())
+        if (!$broker->getIsEnable())
             return;
         // Find eqLogic using the same topic AND the same Broker
         $topicConfiguration = array(
@@ -1166,20 +1166,20 @@ class jMQTT extends eqLogic {
                 }
 
                 // In the end, does MqttClient need to be Started
-                if($startRequested && $this->getIsEnable()){
+                if($startRequested && $this->getIsEnable()) {
                     $this->startMqttClient();
                 }
             }
         }
         // ------------------------ Normal eqpt ------------------------
-        else{
+        else {
 
             // --- New eqpt ---
             if (is_null($this->_preSaveInformations)) {
-
                 // Enabled => subscribe
-                if ($this->getIsEnable())
+                if ($this->getIsEnable()) {
                     $this->subscribeTopic($this->getTopic(), $this->getQos());
+                }
             }
             // --- Existing eqpt ---
             else {
@@ -1207,35 +1207,26 @@ class jMQTT extends eqLogic {
                     $new_broker = self::getBrokerFromId($this->getBrkId());
                     // Orphan
                     if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_BRK_ID] <= 0) {
-                        $new_broker->log(
-                            'info',
-                            sprintf(
-                                __("Ajout de l'Equipement orphelin #%1\$s#", __FILE__),
-                                $this->getHumanName()
-                            )
-                        );
+                        $new_broker->log('info', sprintf(
+                            __("Ajout de l'Equipement orphelin #%1\$s#", __FILE__),
+                            $this->getHumanName()
+                        ));
                     } else {
                         // Get old Broker
                         $old_broker = self::getBrokerFromId(
                             $this->_preSaveInformations[jMQTTConst::CONF_KEY_BRK_ID]
                         );
                         // Log on old and new Broker
-                        $old_broker->log(
-                            'info',
-                            sprintf(
-                                __("Déplacement de l'Equipement #%1\$s# vers le broker %2\$s", __FILE__),
-                                $this->getHumanName(),
-                                $new_broker->getName()
-                            )
-                        );
-                        $new_broker->log(
-                            'info',
-                            sprintf(
-                                __("Déplacement de l'Equipement #%1\$s# depuis le broker %2\$s", __FILE__),
-                                $this->getHumanName(),
-                                $old_broker->getName()
-                            )
-                        );
+                        $old_broker->log('info', sprintf(
+                            __("Déplacement de l'Equipement #%1\$s# vers le broker %2\$s", __FILE__),
+                            $this->getHumanName(),
+                            $new_broker->getName()
+                        ));
+                        $new_broker->log('info', sprintf(
+                            __("Déplacement de l'Equipement #%1\$s# depuis le broker %2\$s", __FILE__),
+                            $this->getHumanName(),
+                            $old_broker->getName()
+                        ));
                         //need to unsubscribe the PREVIOUS topic on the PREVIOUS Broker
                         $this->unsubscribeTopic(
                             $this->_preSaveInformations['topic'],
@@ -1250,7 +1241,7 @@ class jMQTT extends eqLogic {
 
                 // topic changed
                 if ($this->_preSaveInformations['topic'] != $this->getTopic()) {
-                    if(!$unsubscribed){
+                    if (!$unsubscribed){
                         // Unsubscribed previous topic
                         $this->unsubscribeTopic($this->_preSaveInformations['topic']);
                         $unsubscribed = true;
@@ -1270,30 +1261,24 @@ class jMQTT extends eqLogic {
                     && $this->getConf(jMQTTConst::CONF_KEY_BATTERY_CMD) == '') {
                     $this->setStatus('battery', null);
                     $this->setStatus('batteryDatetime', null);
-                    $this->log(
-                        'debug',
-                        sprintf(
-                            __("Nettoyage de la Batterie de l'équipement #%s#", __FILE__),
-                            $this->getHumanName()
-                        )
-                    );
+                    $this->log('debug', sprintf(
+                        __("Nettoyage de la Batterie de l'équipement #%s#", __FILE__),
+                        $this->getHumanName()
+                    ));
                 }
 
                 // Availability removed -> Clear Availability (Timeout) status
                 if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_AVAILABILITY_CMD] != ''
                     && $this->getConf(jMQTTConst::CONF_KEY_AVAILABILITY_CMD) == '') {
                     $this->setStatus('warning', null);
-                    $this->log(
-                        'debug',
-                        sprintf(
-                            __("Nettoyage de la Disponibilité de l'équipement #%s#", __FILE__),
-                            $this->getHumanName()
-                        )
-                    );
+                    $this->log('debug', sprintf(
+                        __("Nettoyage de la Disponibilité de l'équipement #%s#", __FILE__),
+                        $this->getHumanName()
+                    ));
                 }
 
                 // In the end, does topic need to be subscribed
-                if($subscribeRequested && $this->getIsEnable()){
+                if ($subscribeRequested && $this->getIsEnable()) {
                     $this->subscribeTopic($this->getTopic(), $this->getQos());
                 }
             }
@@ -1308,13 +1293,10 @@ class jMQTT extends eqLogic {
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == jMQTTConst::TYP_BRK) {
 
-            $this->log(
-                'info',
-                sprintf(
-                    __("Suppression du Broker %s", __FILE__),
-                    $this->getName()
-                )
-            );
+            $this->log('info', sprintf(
+                __("Suppression du Broker %s", __FILE__),
+                $this->getName()
+            ));
 
             // Disable first the broker to Stop MqttClient
             if ($this->getIsEnable()) {
@@ -1339,15 +1321,11 @@ class jMQTT extends eqLogic {
         }
         // ------------------------ Normal eqpt ------------------------
         else {
-            $this->log(
-                'info',
-                sprintf(
-                    __("Suppression de l'équipement #%s#", __FILE__),
-                    $this->getHumanName()
-                )
-            );
+            $this->log('info', sprintf(
+                __("Suppression de l'équipement #%s#", __FILE__),
+                $this->getHumanName()
+            ));
         }
-
 
         // load eqLogic from DB
         $this->_preRemoveInformations = array(
@@ -1361,7 +1339,6 @@ class jMQTT extends eqLogic {
     public function postRemove() {
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == jMQTTConst::TYP_BRK) {
-
             // Suppress the log file
             $log = $this->getMqttClientLogFile();
             if (file_exists(log::getPathToLog($log))) {
@@ -1380,9 +1357,10 @@ class jMQTT extends eqLogic {
         }
         // ------------------------ Normal eqpt ------------------------
         else {
-            //If eqpt were enabled, just need to unsubscribe
-            if($this->getIsEnable())
+            // If eqpt was enabled, just need to unsubscribe
+            if ($this->getIsEnable()) {
                 $this->unsubscribeTopic($this->getTopic());
+            }
         }
     }
 
@@ -1394,7 +1372,7 @@ class jMQTT extends eqLogic {
     public static function health() {
         $return = array();
         foreach (self::getBrokers() as $broker) {
-            if(!$broker->getIsEnable()) {
+            if (!$broker->getIsEnable()) {
                 $return[] = array(
                     'test' => __('Accès au broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
                     'result' => __('Client jMQTT désactivé', __FILE__),
@@ -1510,7 +1488,7 @@ class jMQTT extends eqLogic {
      */
     public static function getConfigForCommunity() {
         return jMQTTPlugin::getConfigForCommunity();
-     }
+    }
 
     /**
      * Avoid backing-up "resources/venv" folder

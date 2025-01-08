@@ -246,7 +246,7 @@ try {
         //                               $id, $mode, $subscribe, $exclude, $retained, $duration));
 
         // If Real Time mode needs to be enabled
-        if($mode) {
+        if ($mode) {
             // Check if a subscription topic is provided
             if (trim($subscribe) == '') {
                 throw new Exception(

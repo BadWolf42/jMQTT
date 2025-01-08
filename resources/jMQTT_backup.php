@@ -104,7 +104,7 @@ function export_index() {
     }
     // sort($res['cmd']);
 
-    if($error) {
+    if ($error) {
         print("                        [ WARNING ]\n");
         foreach ($error as $e)
             print($e);

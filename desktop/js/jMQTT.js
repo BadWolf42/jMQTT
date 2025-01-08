@@ -177,7 +177,7 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Actions on Broker tab
 //
-$('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
+$('.eqLogicAction[data-action=startMqttClient]').on('click',function() {
     var id = jmqtt.getEqId();
     if (id == undefined || id == "" || $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val() != 'broker')
         return;
@@ -185,11 +185,10 @@ $('.eqLogicAction[data-action=startMqttClient]').on('click',function(){
 });
 
 $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
-    if($('#md_modal').is(':visible')){
+    if ($('#md_modal').is(':visible')) {
         $('#md_modal2').dialog({title: "{{Log du plugin}}"});
         $("#md_modal2").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
-    }
-    else{
+    } else {
         $('#md_modal').dialog({title: "{{Log du plugin}}"});
         $("#md_modal").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
     }
@@ -199,7 +198,7 @@ $('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Automations on Broker tab attributes
 //
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(function() {
     switch ($(this).val()) {
         case 'mqtts':
             $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttPort]').addClass('roundedRight').attr('placeholder', '8883');
@@ -224,7 +223,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttProto]').change(functio
     }
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(function() {
     switch ($(this).val()) {
         case 'public':
             $('#jmqttTlsCa').hide();
@@ -237,35 +236,35 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsCheck]').change(func
     }
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClient]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttTlsClient]').change(function() {
     if ($(this).value() == '1')
         $('.jmqttTlsClient').show();
     else
         $('.jmqttTlsClient').hide();
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttId]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttId]').change(function() {
     if ($(this).value() == '1')
         $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttIdValue]').show();
     else
         $('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttIdValue]').hide();
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttLwt]').change(function() {
     if ($(this).value() == '1')
         $('.jmqttLwt').show();
     else
         $('.jmqttLwt').hide();
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttInt]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttInt]').change(function() {
     if ($(this).value() == '1')
         $('.jmqttInt').show();
     else
         $('.jmqttInt').hide();
 });
 
-$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function(){
+$('.eqLogicAttr[data-l1key=configuration][data-l2key=mqttApi]').change(function() {
     if ($(this).value() == '1')
         $('.jmqttApi').show();
     else
@@ -388,7 +387,7 @@ $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').on('chang
 
 // On eqLogic subscription topic field typing
 $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]').off('dblclick').on('dblclick', function() {
-    if($(this).val() == "") {
+    if ($(this).val() == "") {
         var objectname = $('.eqLogicAttr[data-l1key=object_id] option:selected').text();
         var eqName = $('.eqLogicAttr[data-l1key=name]').value();
         $(this).val(objectname.trim()+'/'+eqName+'/#');
@@ -448,7 +447,7 @@ $('.eqLogicAction[data-action=applyTemplate]').off('click').on('click', function
             bootbox.confirm({
                 title: '{{Appliquer un Template}}',
                 message: dialog_message,
-                callback: function (result){ if (result) {
+                callback: function (result) { if (result) {
                     jmqtt.callPluginAjax({
                         data: {
                             action: "applyTemplate",
@@ -503,7 +502,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
     bootbox.confirm({
         title: "{{Modifier en masse les Topics de tout l'équipement}}",
         message: dialog_message,
-        callback: function (valid){ if (valid) {
+        callback: function (valid) { if (valid) {
             var oldTopic = $("#oldTopic").val();
             var newTopic = $("#newTopic").val();
             var mainTopic = $('.eqLogicAttr[data-l1key=configuration][data-l2key=auto_add_topic]');
@@ -1075,7 +1074,7 @@ function addCmdToTable(_cmd) {
         });
 
         //if there is a parent_id, we need to enable his expander
-        if(_cmd.tree_parent_id !== undefined){
+        if (_cmd.tree_parent_id !== undefined) {
             $('#table_cmd [tree-id="' + _cmd.tree_parent_id + '"] .tree-expander').addClass(expander_expanded_class);
         }
     }
