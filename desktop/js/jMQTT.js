@@ -497,7 +497,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
     if (currentTopic.endsWith("/"))
         currentTopic = currentTopic.substr(0,currentTopic.length-1);
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="oldTopic" value="'+currentTopic+'"><br/><br/>';
-    dialog_message += '<label class="control-label">{{Replacer par :}}</label> ';
+    dialog_message += '<label class="control-label">{{Remplacer par :}}</label> ';
     dialog_message += '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" type="text" id="newTopic"><br/><br/>';
     dialog_message += '<label class="control-label">(' + "{{Pensez à sauvegarder l'équipement pour appliquer les modifications}}" + ')</label>';
     bootbox.confirm({
