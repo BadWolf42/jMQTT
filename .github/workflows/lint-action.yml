@@ -8,11 +8,12 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    # runs-on: ubuntu-latest # avoid latest to support Python 3.7.2
     strategy:
       matrix:
         php-version: ['7.4', '8.2', '8.4']
-        python-version: ['3.7', '3.9', '3.11', '3.13']
+        python-version: ['3.7.3', '3.9.2', '3.11', '3.13']
         # node-version: ['12']
         # jeedom-branch: ['V4-stable']
         jeedom-branch: ['master', 'alpha']
