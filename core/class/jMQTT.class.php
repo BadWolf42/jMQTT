@@ -1541,7 +1541,7 @@ class jMQTT extends eqLogic {
         $listener = listener::searchClassFunctionOption(
             'jMQTTCmd',
             'listenerAction',
-            '"eqLogic":"'.$this->getId().'"'
+            '"eqLogic":'.strval($this->getId())
         );
         foreach ($listener as $l)
             $l->remove();

@@ -609,7 +609,7 @@ class jMQTTCmd extends cmd {
         $listener = listener::searchClassFunctionOption(
             __CLASS__,
             'listenerAction',
-            '"cmd":"'.$this->getId().'"'
+            '"cmd":'.strval($this->getId())
         );
         if (empty($listener)) { // No listener found
             $listener = null;
@@ -631,10 +631,10 @@ class jMQTTCmd extends cmd {
             foreach ($cmds as $cmd_id) {
                 $cmd = cmd::byId($cmd_id);
                 if (is_object($cmd) && $cmd->getType() == 'info')
-                    $listener->addEvent($cmd_id);
+                    $listener->addEvent(intval($cmd_id));
             }
-            $listener->setOption('cmd', $this->getId());
-            $listener->setOption('eqLogic', $this->getEqLogic_id());
+            $listener->setOption('cmd', intval($this->getId()));
+            $listener->setOption('eqLogic', intval($this->getEqLogic_id()));
             $listener->setOption('background', true);
             $listener->save();
             $eq->log(
@@ -740,7 +740,7 @@ class jMQTTCmd extends cmd {
         $listener = listener::searchClassFunctionOption(
             __CLASS__,
             'listenerAction',
-            '"cmd":"'.$this->getId().'"'
+            '"cmd":'.strval($this->getId())
         );
         foreach ($listener as $l) {
             jMQTT::logger(
