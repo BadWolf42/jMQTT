@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: ['8.2']
-        python-version: ['3.11']
+        php-version: ['7.4', '8.2', '8.4']
+        python-version: ['3.7.3', '3.9.2', '3.11', '3.13']
         # node-version: ['12']
         # jeedom-branch: ['V4-stable']
-        jeedom-branch: ['V4-stable', 'alpha']
+        jeedom-branch: ['master', 'alpha']
 
     steps:
       - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
