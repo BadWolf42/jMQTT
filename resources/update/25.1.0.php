@@ -17,7 +17,7 @@ jMQTT::logger('info', __("Commentaires des équipements correctement migrés", _
 
 $jeedomRoot = getRootPath();
 $existing_files = self::templateList();
-foreach ($existing_files as list($templateName, $file))
+foreach ($existing_files as list($templateName, $file)) {
     try {
         [$templateKey, $templateContent] = jMQTT::templateRead($jeedomRoot . $file);
 
