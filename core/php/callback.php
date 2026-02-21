@@ -94,7 +94,7 @@ foreach ($messages as $message) {
             jMQTT::logger(
                 'debug',
                 $head . sprintf(
-                    __("Message refusé (démon invalide) : '%2\$s'", __FILE__),
+                    __("Message refusé (démon invalide) : '%1\$s'", __FILE__),
                     json_encode($message)
                 )
             );
