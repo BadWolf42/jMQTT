@@ -8,8 +8,10 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-22.04
-    # runs-on: ubuntu-latest # avoid latest to support Python 3.7.2
+    # Python 3.7.3 & 3.9.2 reqires Ubuntu <=20.04
+    # Ubuntu supports Python <=3.13.3
+    runs-on: ubuntu-20.04
+    # runs-on: ubuntu-latest
     strategy:
       matrix:
         php-version: ['7.4', '8.2', '8.4']
