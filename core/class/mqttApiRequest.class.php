@@ -163,7 +163,7 @@ class mqttApiRequest {
             $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $nbRetry++;
             if (curl_errno($ch) && $nbRetry < $_maxRetry) {
-                curl_close($ch);
+                curl_close($ch); // TODO: curl_close() is deprecated in PHP8.0
                 usleep(500000);
             } else {
                 break;
@@ -187,7 +187,7 @@ class mqttApiRequest {
                 'Erreur curl sur : ' . $this->apiAddr . '. Détail :' . curl_error($ch)
             );
         }
-        curl_close($ch);
+        curl_close($ch); // TODO: curl_close() is deprecated in PHP8.0
         return $response;
     }
 

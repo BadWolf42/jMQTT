@@ -285,7 +285,7 @@ try {
         curl_setopt($curl, CURLOPT_POSTFIELDS, init('data'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($curl);
-        curl_close($curl);
+        curl_close($curl); // TODO: curl_close() is deprecated in PHP8.0
 
         ajax::success($response);
     }
