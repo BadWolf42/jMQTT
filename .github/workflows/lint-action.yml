@@ -17,19 +17,22 @@ jobs:
         jeedom-branch: ['master', 'alpha']
         debian-version: ['Debian 10', 'Debian 11', 'Debian 12', 'Debian 12 future']
         include:
-          - name: 'Debian 10'
+          - debian-version: 'Debian 10'
             php-version: '7.4'
             python-version: '3.7.3'
             os-version: 'ubuntu-20.04'
-          - name: 'Debian 11'
+
+          - debian-version: 'Debian 11'
             php-version: '8.2'
             python-version: '3.9.2'
             os-version: 'ubuntu-22.04'
-          - name: 'Debian 12'
+
+          - debian-version: 'Debian 12'
             php-version: '8.2'
             python-version: '3.11'
             os-version: 'ubuntu-24.04'
-          - name: 'Debian 12 future'
+
+          - debian-version: 'Debian 12 future'
             php-version: '8.4'
             python-version: '3.13'
             os-version: 'ubuntu-24.04'
