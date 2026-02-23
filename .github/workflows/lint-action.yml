@@ -7,32 +7,32 @@ on:
     branches: [ dev ]
 
 jobs:
-  strategy:
-    matrix:
-      # Python 3.7.3 & 3.9.2 reqires Ubuntu <=20.04
-      # Ubuntu supports Python <=3.13.3
-      # node-version: ['12']
-      # runs-on: ubuntu-latest
-      jeedom-branch: ['master', 'alpha']
-      include:
-        - name: 'Debian 10'
-          php-version: '7.4'
-          python-version: '3.7.3'
-          os-version: 'ubuntu-20.04'
-        - name: 'Debian 11'
-          php-version: '8.2'
-          python-version: '3.9.2'
-          os-version: 'ubuntu-22.04'
-        - name: 'Debian 12'
-          php-version: '8.2'
-          python-version: '3.11'
-          os-version: 'ubuntu-24.04'
-        - name: 'Debian 12 future'
-          php-version: '8.4'
-          python-version: '3.13'
-          os-version: 'ubuntu-24.04'
-
   check:
+    strategy:
+      matrix:
+        # Python 3.7.3 & 3.9.2 reqires Ubuntu <=20.04
+        # Ubuntu supports Python <=3.13.3
+        # node-version: ['12']
+        # runs-on: ubuntu-latest
+        jeedom-branch: ['master', 'alpha']
+        include:
+          - name: 'Debian 10'
+            php-version: '7.4'
+            python-version: '3.7.3'
+            os-version: 'ubuntu-20.04'
+          - name: 'Debian 11'
+            php-version: '8.2'
+            python-version: '3.9.2'
+            os-version: 'ubuntu-22.04'
+          - name: 'Debian 12'
+            php-version: '8.2'
+            python-version: '3.11'
+            os-version: 'ubuntu-24.04'
+          - name: 'Debian 12 future'
+            php-version: '8.4'
+            python-version: '3.13'
+            os-version: 'ubuntu-24.04'
+
     runs-on: ${{ matrix.os-version }}
     steps:
       - name: Checkout Jeedom ${{ matrix.jeedom-branch }}
