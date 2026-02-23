@@ -72,7 +72,7 @@ class listener {
      * @param string $_option
      * @return listener[]
      */
-    public static function searchClassFunctionOption(string: $_class, string: $_function, string: $_option = ''): mixed {}
+    public static function searchClassFunctionOption($_class, $_function, $_option = '') {}
 }
 
 class message {
