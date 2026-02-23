@@ -1,0 +1,28 @@
+###############################################################################
+SETUP:
+python3 -m venv venv
+venv/bin/pip install aiomqtt
+venv/bin/python mqtt_recorder.py -h
+
+###############################################################################
+usage: mqtt_recorder.py [-h] [--server server] [--mode mode]
+                        [--input filename] [--output filename] [--realtime]
+                        [--speed factor] [--delay milliseconds] [--debug]
+
+MQTT recorder
+
+options:                                                            DEFAULTS
+  -h, --help            show this help message and exit
+  --server server       MQTT broker                                 [127.0.0.1]
+  --mode mode           Mode of operation (record/replay)           [record]
+  --input filename      Input file                                  [stdin]
+  --output filename     Output file                                 [stdout]
+  --realtime            Enable realtime replay                      [false]
+  --speed factor        Realtime speed factor for replay (10=10x)   [1]
+  --delay milliseconds  Delay between replayed events               [0]
+  --debug               Enable debugging                            [false]
+
+###############################################################################
+source: https://github.com/rpdswtk/mqtt_recorder
+version 2025-06-29 from commit: c8aebc0d877f481c40a0c34d893f2affa4a686b2
+thanks to author: rpdswtk
