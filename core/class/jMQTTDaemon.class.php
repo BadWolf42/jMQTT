@@ -263,7 +263,7 @@ class jMQTTDaemon {
      * @param bool $_state true if Daemon is running and connected
      */
     public static function sendMqttDaemonStateEvent($_state) {
-        event::add('jMQTT::EventDaemonState', $_state);
+        event::add('jMQTT::EventDaemonState', array("state" => $_state));
     }
 
 }
