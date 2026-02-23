@@ -19,7 +19,7 @@ $jeedomRoot = getRootPath();
 $existing_files = jMQTT::templateList();
 foreach ($existing_files as list($templateName, $file)) {
     try {
-        [$templateKey, $templateContent] = jMQTT::templateRead($jeedomRoot . $file);
+        [$templateKey, $templateContent] = jMQTT::templateRead($jeedomRoot . '/' . $file);
 
         // Get comment from Core field
         $coreComment = (isset($templateContent['comment'])) ? trim($templateContent['comment']) : '';
@@ -53,11 +53,11 @@ foreach ($existing_files as list($templateName, $file)) {
             array($templateKey => $templateRes),
             JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );
-        file_put_contents($jeedomRoot . $file, $jsonExport . "\n");
+        file_put_contents($jeedomRoot . '/' . $file, $jsonExport . "\n");
     } catch (Throwable $e) {
         jMQTT::logger('error', sprintf(
             __("Erreur lors de la lecture du Template '%s'", __FILE__),
-            $file
+            $jeedomRoot . '/' . $file
         ));
     }
 }
