@@ -15,6 +15,7 @@ jobs:
         # node-version: ['12']
         # runs-on: ubuntu-latest
         jeedom-branch: ['master', 'alpha']
+        debian-version: ['Debian 10', 'Debian 11', 'Debian 12', 'Debian 12 future']
         include:
           - name: 'Debian 10'
             php-version: '7.4'
