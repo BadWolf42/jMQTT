@@ -25,12 +25,12 @@ jobs:
           - debian-version: 'Debian 11'
             php-version: '8.2'
             python-version: '3.9.2'
-            os-version: 'ubuntu-22.04'
+            os-version: 'ubuntu-20.04'
 
           - debian-version: 'Debian 12'
             php-version: '8.2'
             python-version: '3.11'
-            os-version: 'ubuntu-24.04'
+            os-version: 'ubuntu-22.04'
 
           - debian-version: 'Debian 12 future'
             php-version: '8.4'
