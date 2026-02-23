@@ -13,6 +13,7 @@
     "category": "automation protocol",
     "hasDependency": true,
     "hasOwnDeamon": true,
+    "maxDependancyInstallTime": 60,
     "issue": "https://github.com/BadWolf42/jMQTT/issues",
     "changelog": "https://docs.bad.wf/#language#/jmqtt/changelog",
     "changelog_beta": "https://docs.bad.wf/#language#/jmqtt/changelog",
@@ -25,5 +26,5 @@
     },
     "languages": ["fr_FR","en_US"],
     "compatibility": ["atlas","diy","docker","luna","miniplus","rpi","smart","v4"],
-    "pluginVersion" : "25.1.0"
+    "pluginVersion" : "26.1.0"
 }
