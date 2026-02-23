@@ -1201,8 +1201,10 @@ class jMQTT extends eqLogic {
                 }
 
                 // brkId changed
-                if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_BRK_ID]
-                     != $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)) {
+                if (
+                    $this->_preSaveInformations[jMQTTConst::CONF_KEY_BRK_ID]
+                    != $this->getConf(jMQTTConst::CONF_KEY_BRK_ID)
+                ) {
                     // Get new Broker
                     $new_broker = self::getBrokerFromId($this->getBrkId());
                     // Orphan
@@ -1250,15 +1252,19 @@ class jMQTT extends eqLogic {
                 }
 
                 // QoS changed
-                if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_QOS]
-                     != $this->getConf(jMQTTConst::CONF_KEY_QOS)) {
+                if (
+                    $this->_preSaveInformations[jMQTTConst::CONF_KEY_QOS]
+                    != $this->getConf(jMQTTConst::CONF_KEY_QOS)
+                ) {
                     // resubscribe will take new QoS over
                     $subscribeRequested = true;
                 }
 
                 // Battery removed -> Clear Battery status
-                if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_BATTERY_CMD] != ''
-                    && $this->getConf(jMQTTConst::CONF_KEY_BATTERY_CMD) == '') {
+                if (
+                    $this->_preSaveInformations[jMQTTConst::CONF_KEY_BATTERY_CMD] != ''
+                    && $this->getConf(jMQTTConst::CONF_KEY_BATTERY_CMD) == ''
+                ) {
                     $this->setStatus('battery', null);
                     $this->setStatus('batteryDatetime', null);
                     $this->log('debug', sprintf(
@@ -1268,8 +1274,10 @@ class jMQTT extends eqLogic {
                 }
 
                 // Availability removed -> Clear Availability (Timeout) status
-                if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_AVAILABILITY_CMD] != ''
-                    && $this->getConf(jMQTTConst::CONF_KEY_AVAILABILITY_CMD) == '') {
+                if (
+                    $this->_preSaveInformations[jMQTTConst::CONF_KEY_AVAILABILITY_CMD] != ''
+                    && $this->getConf(jMQTTConst::CONF_KEY_AVAILABILITY_CMD) == ''
+                ) {
                     $this->setStatus('warning', null);
                     $this->log('debug', sprintf(
                         __("Nettoyage de la Disponibilité de l'équipement #%s#", __FILE__),

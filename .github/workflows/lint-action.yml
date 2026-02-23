@@ -15,26 +15,27 @@ jobs:
         # node-version: ['12']
         # runs-on: ubuntu-latest
         jeedom-branch: ['master', 'alpha']
+        python-version: ['3.11']
         debian-version: ['Debian 10', 'Debian 11', 'Debian 12', 'Debian 12 future']
         include:
           - debian-version: 'Debian 10'
             php-version: '7.4'
-            python-version: '3.7.3'
+            # python-version: '3.7.3'
             os-version: 'ubuntu-20.04'
 
           - debian-version: 'Debian 11'
             php-version: '8.2'
-            python-version: '3.9.2'
+            # python-version: '3.9.2'
             os-version: 'ubuntu-20.04'
 
           - debian-version: 'Debian 12'
             php-version: '8.2'
-            python-version: '3.11'
+            # python-version: '3.11'
             os-version: 'ubuntu-22.04'
 
           - debian-version: 'Debian 12 future'
             php-version: '8.4'
-            python-version: '3.13'
+            # python-version: '3.13'
             os-version: 'ubuntu-24.04'
 
     runs-on: ${{ matrix.os-version }}
