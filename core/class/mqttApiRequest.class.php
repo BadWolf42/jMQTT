@@ -45,7 +45,7 @@ class mqttApiRequest {
      */
     function __construct($request, $broker) {
         $this->broker = $broker;
-        $broker->log('info', __('API: Traitement de la requête :', __FILE__) . ' ' . $request);
+        $broker->log('info', 'API: Processing query: ' . $request);
 
         $this->apiAddr = network::getNetworkAccess('internal', 'http:127.0.0.1:port:comp') . '/core/api/jeeApi.php';
 
@@ -78,7 +78,7 @@ class mqttApiRequest {
 
         if (isset($errArr)) {
             $this->publishError($errArr);
-            throw new Exception(__("API: Exception", __FILE__));
+            throw new Exception('API: Exception');
         }
     }
 
@@ -226,7 +226,7 @@ class mqttApiRequest {
         else
             $this->broker->log(
                 'warning',
-                __("API: La réponse n'a pas pu être publiée car il n'y avait pas de topic de réponse dans la requête.", __FILE__)
+                'API: The response could not be published because there was no response topic in the request'
             );
     }
 

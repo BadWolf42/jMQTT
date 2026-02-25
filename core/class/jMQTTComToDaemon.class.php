@@ -17,9 +17,8 @@ class jMQTTComToDaemon {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __("Impossible de se connecter du Démon sur le port %1\$s, erreur %2\$s", __FILE__),
-                    $port,
-                    socket_strerror(socket_last_error($socket))
+                    'Cannot connect to Daemon on port %s, error %s',
+                    $port, socket_strerror(socket_last_error($socket))
                 )
             );
             return;
@@ -28,9 +27,8 @@ class jMQTTComToDaemon {
             jMQTT::logger(
                 'debug',
                 sprintf(
-                    __("Impossible d'envoyer un message au Démon sur le port %1\$s, erreur %2\$s", __FILE__),
-                    $port,
-                    socket_strerror(socket_last_error($socket))
+                    'Unable to send a message to Daemon on port %s, error %s',
+                    $port, socket_strerror(socket_last_error($socket))
                 )
             );
             return;

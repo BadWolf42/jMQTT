@@ -81,7 +81,7 @@ class jMQTTPlugin {
         $depLogFile = 'jMQTT_dep';
         $depLogFullPath = log::getPathToLog($depLogFile);
         jMQTT::logger('info', sprintf(
-            __('Installation des dépendances, voir log dédié (%s)', __FILE__),
+            'Dependency installation, see dedicated log (%s)',
             $depLogFile
         ));
         $update = update::byLogicalId('jMQTT');
@@ -317,10 +317,7 @@ class jMQTTPlugin {
         }
 
         // Apt-get mosquitto
-        jMQTT::logger(
-            'info',
-            __("Mosquitto : Démarrage de l'installation, merci de patienter...", __FILE__)
-        );
+        jMQTT::logger('info', 'Mosquitto: Starting installation, please wait...');
         shell_exec('sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -o Dpkg::Options::="--force-confask,confnew,confmiss" mosquitto');
 
         $retval = 255;
@@ -339,7 +336,7 @@ class jMQTTPlugin {
 
         // Write in Core config that jMQTT has installed Mosquitto
         config::save('mosquitto::installedBy', 'jMQTT');
-        jMQTT::logger('info', __("Mosquitto : Fin de l'installation.", __FILE__));
+        jMQTT::logger('info', 'Mosquitto: End of installation');
 
         // Looking for eqBroker pointing to local mosquitto
         $brokerexists = false;
@@ -349,13 +346,10 @@ class jMQTTPlugin {
             $localips = explode(' ', exec('sudo hostname -I'));
             if ($hn == '' || substr($ip, 0, 4) == '127.' || in_array($ip, $localips)) {
                 $brokerexists = true;
-                jMQTT::logger(
-                    'info',
-                    sprintf(
-                        __("L'équipement Broker local #%s# existe déjà, pas besoin d'en créer un.", __FILE__),
-                        $broker->getHumanName()
-                    )
-                );
+                jMQTT::logger('info', sprintf(
+                    'A local Broker equipment #%s# already exists, no need to create one',
+                    $broker->getHumanName()
+                ));
                 break;
             }
         }
@@ -364,7 +358,7 @@ class jMQTTPlugin {
         if (!$brokerexists) {
             jMQTT::logger(
                 'info',
-                __("Aucun équipement Broker local n'a été trouvé, création en cours...", __FILE__)
+                'No local Broker equipment found, creation in progress...'
             );
             $brokername = 'local';
 
@@ -399,10 +393,7 @@ class jMQTTPlugin {
             $broker->save();
             jMQTT::logger(
                 'info',
-                sprintf(
-                    __("L'équipement Broker #%s# a été créé.", __FILE__),
-                    $broker->getHumanName()
-                )
+                sprintf('Broker #%s# has been created', $broker->getHumanName())
             );
         }
     }

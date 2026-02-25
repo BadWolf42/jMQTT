@@ -34,24 +34,24 @@ class jMQTTDaemon {
         $cuid = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_UID)->getValue("0:0");
         if ($cuid == "0:0") { // If UID nul -> not running
             // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
-            // jMQTT::logger('debug', __('Démon avec un UID nul.', __FILE__));
+            // jMQTT::logger('debug', 'Daemon with a null UID');
             return false;
         }
         list($cpid, $cport) = array_map('intval', explode(":", $cuid));
         if (!@posix_getsid($cpid)) { // PID IS NOT alive
-            jMQTT::logger('debug', __('Démon avec un PID mort.', __FILE__));
+            jMQTT::logger('debug', 'Daemon with a dead PID');
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
         if ((@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_PORT)->getValue(0)) != $cport) {
-            jMQTT::logger('debug', __('Démon avec un mauvais port.', __FILE__));
+            jMQTT::logger('debug', 'Daemon with a bad port');
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
         if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 300) {
             jMQTT::logger(
                 'debug',
-                __('Pas de message ou de Heartbeat reçu depuis >300s, le Démon est probablement mort.', __FILE__)
+                'No message or Heartbeat received for >300s, the Daemon is probably dead'
             );
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
@@ -59,13 +59,13 @@ class jMQTTDaemon {
         if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0)) > 45) {
             jMQTT::logger(
                 'debug',
-                __("Envoi d'un Heartbeat au Démon (rien n'a été envoyé depuis >45s).", __FILE__)
+                'Sending a Heartbeat to the Daemon (nothing has been sent for >45s)'
             );
             jMQTTComToDaemon::hb();
             return true;
         }
         // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
-        // jMQTT::logger('debug', __('Démon OK', __FILE__));
+        // jMQTT::logger('debug', 'Daemon OK');
         return true;
     }
 
@@ -98,7 +98,7 @@ class jMQTTDaemon {
         if (config::byKey(jMQTTConst::FORCE_DEPENDANCY_INSTALL, jMQTT::class, 0) == 1) {
             jMQTT::logger(
                 'info',
-                __("Installation/Vérification forcée des dépendances, le démon jMQTT démarrera au prochain essai", __FILE__)
+                'Forced dependencies install/check, jMQTT daemon should start on the next try'
             );
             $plugin = plugin::byId(jMQTT::class);
             //clean dependancy state cache
@@ -110,7 +110,7 @@ class jMQTTDaemon {
             // Installation of the dependancies occures in another process, this one must end.
             return;
         }
-        jMQTT::logger('info', __('Démarrage du démon jMQTT', __FILE__));
+        jMQTT::logger('info', 'Starting jMQTT daemon');
         // Always stop first.
         jMQTTDaemon::stop();
         // Ensure cron is enabled
@@ -139,20 +139,17 @@ class jMQTTDaemon {
         $shellCmd .= $path.'/venv/bin/python3 ' . $path . '/jmqttd.py';
         $shellCmd .= ' >> ' . log::getPathToLog(jMQTT::class.'d') . ' 2>&1 &';
         if (log::getLogLevel(jMQTT::class) > 100)
-            jMQTT::logger('info', __('Lancement du démon jMQTT', __FILE__));
+            jMQTT::logger('info', 'Launching jMQTT daemon');
         else
             jMQTT::logger(
                 'info',
-                sprintf(
-                    __("Lancement du démon jMQTT, commande shell: '%s'", __FILE__),
-                    $shellCmd
-                )
+                sprintf('Launching jMQTT daemon, shell command: %s', $shellCmd)
             );
         exec($shellCmd);
         // Wait up to 10 seconds for daemon to start
         for ($i = 1; $i <= 40; $i++) {
             if (jMQTTDaemon::state()) {
-                jMQTT::logger('info', __('Démon démarré', __FILE__));
+                jMQTT::logger('info', 'Daemon started');
                 break;
             }
             usleep(250000);
@@ -182,12 +179,12 @@ class jMQTTDaemon {
         list($cpid, $cport) = array_map('intval', explode(":", $cuid));
         // If PID is available and running
         if ($cpid != 0 && @posix_getsid($cpid)) {
-            jMQTT::logger('info', __("Arrêt du démon jMQTT", __FILE__));
+            jMQTT::logger('info', 'Stopping jMQTT daemon');
             posix_kill($cpid, 15);  // Signal SIGTERM
-            jMQTT::logger('debug', __("Envoi du signal SIGTERM au Démon", __FILE__));
+            jMQTT::logger('debug', 'Sending SIGTERM signal to jMQTT Daemon');
             for ($i = 1; $i <= 40; $i++) { //wait max 10 seconds for python daemon stop
                 if (!jMQTTDaemon::state()) {
-                    jMQTT::logger('info', __("Démon jMQTT arrêté", __FILE__));
+                    jMQTT::logger('info', 'Daemon jMQTT stopped');
                     break;
                 }
                 usleep(250000);
@@ -195,11 +192,11 @@ class jMQTTDaemon {
             if (jMQTTDaemon::state()) {
                 // Signal SIGKILL
                 posix_kill($cpid, 9);
-                jMQTT::logger('debug', __("Envoi du signal SIGKILL au Démon", __FILE__));
+                jMQTT::logger('debug', 'Sending SIGKILL signal to jMQTT Daemon');
             }
         }
         // If something bad happened, clean anyway
-        jMQTT::logger('debug', __("Nettoyage du Démon", __FILE__));
+        jMQTT::logger('debug', 'Cleaning up jMQTT Daemon');
         // TODO: Kill all jMQTT daemon(s) when daemon is stopped
         //  Use `realpath(__DIR__ . '/../../resources/jmqttd').'/venv/bin/python3'`
         //  labels: enhancement, php

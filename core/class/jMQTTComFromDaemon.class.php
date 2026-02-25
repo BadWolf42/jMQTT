@@ -239,7 +239,7 @@ class jMQTTComFromDaemon {
             );
             $broker->setStatus('warning', null);
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
-            $broker->log('info', __('Client MQTT connecté au Broker', __FILE__));
+            $broker->log('info', 'MQTT client connected to Broker');
             $broker->sendMqttClientStateEvent();
             // Subscribe to topics
             foreach (jMQTT::byBrkId($id) as $eq) {
@@ -253,27 +253,27 @@ class jMQTTComFromDaemon {
                 $broker->log(
                     'info',
                     sprintf(
-                        __("Souscription au topic d'Interaction '%s'", __FILE__),
+                        'Subscribing to Interaction topic \'%s\'',
                         $broker->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC)
                     )
                 );
                 $broker->subscribeTopic($broker->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC), '1');
                 $broker->subscribeTopic($broker->getConf(jMQTTConst::CONF_KEY_MQTT_INT_TOPIC) . '/advanced', '1');
             } else
-                $broker->log('debug', __("L'accès aux Interactions est désactivé", __FILE__));
+                $broker->log('debug', 'Interactions are disabled');
 
             // Enable API
             if ($broker->getConf(jMQTTConst::CONF_KEY_MQTT_API)) {
                 $broker->log(
                     'info',
                     sprintf(
-                        __("Souscription au topic API '%s'", __FILE__),
+                        'Subscribing to API topic \'%s\'',
                         $broker->getConf(jMQTTConst::CONF_KEY_MQTT_API_TOPIC)
                     )
                 );
                 $broker->subscribeTopic($broker->getConf(jMQTTConst::CONF_KEY_MQTT_API_TOPIC), '1');
             } else
-                $broker->log('debug', __("L'accès à l'API est désactivé", __FILE__));
+                $broker->log('debug', 'API is disabled');
 
             // Active listeners
             jMQTT::listenersAddAll();
@@ -312,19 +312,16 @@ class jMQTTComFromDaemon {
             $broker = jMQTT::byId($id); // Don't use getBrokerFromId here!
             if (!is_object($broker)) {
                 jMQTT::logger('debug',sprintf(
-                    __("Pas d'équipement avec l'id %s (il vient probablement d'être supprimé)", __FILE__),
+                    'No equipment with id %s (it probably just has been deleted)',
                     $id
                 ));
                 return;
             }
             if ($broker->getType() != jMQTTConst::TYP_BRK) {
-                jMQTT::logger(
-                    'error',
-                    sprintf(
-                        __("L'équipement %s n'est pas de type Broker", __FILE__),
-                        $id
-                    )
-                );
+                jMQTT::logger('error', sprintf(
+                    'Equipment %s is not a Broker',
+                    $id
+                ));
                 return;
             }
             // Save in cache that Mqtt Client is disconnected
@@ -348,7 +345,7 @@ class jMQTTComFromDaemon {
             $broker->setCache(jMQTTConst::CACHE_REALTIME_MODE, 0);
 
             cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
-            $broker->log('info', __('Client MQTT déconnecté du Broker', __FILE__));
+            $broker->log('info', 'MQTT client disconnected from Broker');
             $broker->sendMqttClientStateEvent();
         } catch (Throwable $e) {
             if (log::getLogLevel(jMQTT::class) > 100)
@@ -420,10 +417,7 @@ class jMQTTComFromDaemon {
             /** @var void|jMQTTCmd $cmd */
             $cmd = jMQTTCmd::byId(intval($cmdId));
             if (!is_object($cmd)) {
-                jMQTT::logger('debug', sprintf(
-                    __("Pas de commande avec l'id %s", __FILE__),
-                    $cmdId
-                ));
+                jMQTT::logger('debug', sprintf('No command with id %s', $cmdId));
                 return;
             }
             /** @var jMQTT $eqLogic */
@@ -470,7 +464,7 @@ class jMQTTComFromDaemon {
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
         $brk->setCache(jMQTTConst::CACHE_REALTIME_MODE, 1);
         // Send event to WebUI
-        $brk->log('info', __("Mode Temps Réel activé", __FILE__));
+        $brk->log('info', 'Real Time mode enabled');
         $brk->sendMqttClientStateEvent();
     }
 
@@ -480,13 +474,10 @@ class jMQTTComFromDaemon {
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
         $brk->setCache(jMQTTConst::CACHE_REALTIME_MODE, 0);
         // Send event to WebUI
-        $brk->log(
-            'info',
-            sprintf(
-                __("Mode Temps Réel désactivé, %s messages disponibles", __FILE__),
-                $nbMsgs
-            )
-        );
+        $brk->log('info', sprintf(
+            'Real Time mode disabled, %s messages available',
+            $nbMsgs
+        ));
         $brk->sendMqttClientStateEvent();
     }
 

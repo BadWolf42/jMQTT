@@ -64,7 +64,7 @@ class jMQTTCmd extends cmd {
         /** @var jMQTT $eqLogic */
         $eqLogic = $this->getEqLogic();
         $eqLogic->log('info', sprintf(
-            __("Commande %1\$s #%2\$s# ajoutée", __FILE__),
+            'Command %s #%s# added',
             $this->getType(), $this->getHumanName()
         ));
         // Advise the desktop page (jMQTT.js) that a new command has been added
@@ -128,7 +128,7 @@ class jMQTTCmd extends cmd {
         $eqLogic->checkAndUpdateCmd($this, $value);
         $value = $this->getCache('value', 0);
         $eqLogic->log('info', sprintf(
-            __("Cmd #%1\$s# <- %2\$s", __FILE__),
+            'Cmd #%s# <- %s',
             $this->getHumanName(), $value
         ));
         if (
@@ -139,13 +139,13 @@ class jMQTTCmd extends cmd {
             if (!boolval($value)) {
                 $eqLogic->setStatus('warning', 1);
                 $eqLogic->log('info', sprintf(
-                    __("Eq #%s# <- Est Indisponible", __FILE__),
+                    'Eq #%s# <- Is Unavailable',
                     $eqLogic->getHumanName()
                 ));
             } else {
                 $eqLogic->setStatus('warning', 0);
                 $eqLogic->log('info', sprintf(
-                    __("Eq #%s# <- Est Disponible", __FILE__),
+                    'Eq #%s# <- Is Available',
                     $eqLogic->getHumanName()
                 ));
             }
@@ -155,7 +155,7 @@ class jMQTTCmd extends cmd {
             if ($eqLogic->getStatus('battery') != $value) {
                 $eqLogic->batteryStatus($value);
                 $eqLogic->log('info', sprintf(
-                    __("Eq #%1\$s# <- Batterie à %2\$s%%", __FILE__),
+                    'Eq #%s# <- Battery at %s%%.',
                     $eqLogic->getHumanName(), $value
                 ));
             }
@@ -193,7 +193,7 @@ class jMQTTCmd extends cmd {
                 ));
             } else {
                 $eqLogic->log('info', sprintf(
-                    __("Chemin JSON de la commande #%s# n'a pas retourné de résultat sur ce message json", __FILE__),
+                    'JsonPath of #%s# command returned no result on this Json message',
                     $this->getHumanName()
                 ));
             }
@@ -238,12 +238,12 @@ class jMQTTCmd extends cmd {
             $eqLogic = $this->getEqLogic();
             if (json_last_error() == JSON_ERROR_NONE) {
                 $eqLogic->log('info', sprintf(
-                    __("Problème de format JSON sur la commande #%s#: Le message reçu n'est pas au format JSON.", __FILE__),
+                    'Json format issue on command #%s#: The payload received is not in Json format.',
                     $this->getHumanName()
                 ));
             } else {
                 $eqLogic->log('warning', sprintf(
-                    __("Problème de format JSON sur la commande #%1\$s#: %2\$s (%3\$d)", __FILE__),
+                    'Json format issue on command #%s#: %s (%d)',
                     $this->getHumanName(), json_last_error_msg(), json_last_error()
                 ));
             }
@@ -379,8 +379,12 @@ class jMQTTCmd extends cmd {
             && $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED
             && $this->getId() == ''
         ) {
-            $err = __("Impossible de créer la commande <b>#%1\$s#</b>, seule les commandes de status sont autorisées sur un équipement Broker (%2\$s)", __FILE__);
-            throw new Exception(sprintf($err, $this->getHumanName(), $eqLogic->getName()));
+            throw new Exception(
+                sprintf(
+                    __("Impossible de créer la commande <b>#%1\$s#</b>, seules les commandes de status sont autorisées sur un équipement Broker (%2\$s)", __FILE__),
+                    $this->getHumanName(), $eqLogic->getName()
+                )
+            );
         }
 
         $conf = $this->getConfiguration(jMQTTConst::CONF_KEY_REQUEST);
@@ -476,9 +480,9 @@ class jMQTTCmd extends cmd {
                 && $this->getLogicalId() != jMQTTConst::CLIENT_CONNECTED
             ) {
                 $eqLogic->log(
-                    'warning',
+                    'info',
                     sprintf(
-                        __("La commande <b>#%1\$s#</b> a été supprimée du Broker %2\$s, car seule les commandes status et connected sont autorisées sur un équipement Broker.", __FILE__),
+                        'The <b>#%s#</b> command has been deleted from the %s Broker, as only `status` and `connected` commands are allowed on a Broker equipment.',
                         $this->getHumanName(),
                         $eqLogic->getName()
                     )
@@ -529,25 +533,19 @@ class jMQTTCmd extends cmd {
             ) {
                 // It's enabled now
                 if ($this->getConfiguration(jMQTTConst::CONF_KEY_RETAIN, 0)) {
-                    $eqLogic->log(
-                        'info',
-                        sprintf(
-                            __("Mode retain activé sur la commande #%s#", __FILE__),
-                            $this->getHumanName()
-                        )
-                    );
+                    $eqLogic->log('debug', sprintf(
+                        'Retain mode activated on command #%s#',
+                        $this->getHumanName()
+                    ));
                 } else {
                     //If broker eqpt is enabled
                     if ($eqLogic->getBroker()->getIsEnable()) {
                         // A null payload should be sent to the broker to erase the last retained value
                         // Otherwise, this last value remains retained at broker level
-                        $eqLogic->log(
-                            'info',
-                            sprintf(
-                                __("Mode retain désactivé sur la commande #%s#, effacement de la dernière valeur dans le Broker", __FILE__),
-                                $this->getHumanName()
-                            )
-                        );
+                        $eqLogic->log('debug', sprintf(
+                            'Retain mode disabled on command #%s#, deleting last value stored in the Broker',
+                            $this->getHumanName()
+                        ));
                         $eqLogic->publish(
                             $this->getHumanName(),
                             $this->getTopic(),
@@ -637,23 +635,17 @@ class jMQTTCmd extends cmd {
             $listener->setOption('eqLogic', intval($this->getEqLogic_id()));
             $listener->setOption('background', true);
             $listener->save();
-            $eq->log(
-                'debug',
-                sprintf(
-                    __("Listener installé pour #%s#", __FILE__),
-                    $this->getHumanName()
-                )
-            );
+            $eq->log('debug', sprintf(
+                'Listener installed for #%s#',
+                $this->getHumanName()
+            ));
         } else { // We don't want a listener
             if (is_object($listener)) {
                 $listener->remove();
-                $eq->log(
-                    'debug',
-                    sprintf(
-                        __("Listener supprimé pour #%s#", __FILE__),
-                        $this->getHumanName()
-                    )
-                );
+                $eq->log('debug', sprintf(
+                    'Listener deleted for #%s#',
+                    $this->getHumanName()
+                ));
             }
         }
     }
@@ -670,21 +662,15 @@ class jMQTTCmd extends cmd {
             || !$cmd->getConfiguration(jMQTTConst::CONF_KEY_AUTOPUB, 0)
         ) {
             listener::byId($_options['listener_id'])->remove();
-            $eqLogic->log(
-                'debug',
-                sprintf(
-                    __("Listener supprimé pour #%s#", __FILE__),
-                    $_options['cmd']
-                )
-            );
+            $eqLogic->log('debug', sprintf(
+                'Listener deleted for #%s#',
+                $_options['cmd']
+            ));
         } else {
-            $eqLogic->log(
-                'debug',
-                sprintf(
-                    __("Publication automatique de #%s#", __FILE__),
-                    $cmd->getHumanName()
-                )
-            );
+            $eqLogic->log('debug', sprintf(
+                'Automatic publication of #%s#',
+                $cmd->getHumanName()
+            ));
             $cmd->execute();
         }
     }
@@ -696,46 +682,33 @@ class jMQTTCmd extends cmd {
         /** @var void|jMQTT $eqLogic */
         $eqLogic = $this->getEqLogic();
         if (is_object($eqLogic)) {
-            $eqLogic->log(
-                'info',
-                sprintf(
-                    __("Suppression de la commande #%s#", __FILE__),
-                    $this->getHumanName()
-                )
-            );
+            $eqLogic->log('info', sprintf(
+                'Deleting the #%s# command',
+                $this->getHumanName()
+            ));
             // Remove battery status from eqLogic on delete
             if ($this->isBattery()) {
-                $eqLogic->log(
-                    'debug',
-                    sprintf(
-                        __("Suppression de la commande de Batterie de l'équipement #%s#", __FILE__),
-                        $eqLogic->getHumanName()
-                    )
-                );
+                $eqLogic->log('debug', sprintf(
+                    'Deleting Battery command of equipment #%s#',
+                    $eqLogic->getHumanName()
+                ));
                 $eqLogic->setConfiguration(jMQTTConst::CONF_KEY_BATTERY_CMD, '');
                 $eqLogic->save();
             }
             // Remove availability status from eqLogic on delete
             if ($this->isAvailability()) {
-                $eqLogic->log(
-                    'debug',
-                    sprintf(
-                        __("Suppression de la commande de Disponibilité de l'équipement #%s#", __FILE__),
-                        $eqLogic->getHumanName()
-                    )
-                );
+                $eqLogic->log('debug', sprintf(
+                    'Deleting Availability command of equipment #%s#',
+                    $eqLogic->getHumanName()
+                ));
                 $eqLogic->setConfiguration(jMQTTConst::CONF_KEY_AVAILABILITY_CMD, '');
                 $eqLogic->save();
             }
         } else {
-            jMQTT::logger(
-                'info',
-                sprintf(
-                    __("Suppression de la commande orpheline #%s# (%s)", __FILE__),
-                    $this->getId(),
-                    $this->getName()
-                )
-            );
+            jMQTT::logger('info', sprintf(
+                'Delete orphan command #%s# (%s)',
+                $this->getId(), $this->getName()
+            ));
         }
         $listener = listener::searchClassFunctionOption(
             __CLASS__,
@@ -743,13 +716,10 @@ class jMQTTCmd extends cmd {
             '"cmd":'.strval($this->getId())
         );
         foreach ($listener as $l) {
-            jMQTT::logger(
-                'debug',
-                sprintf(
-                    __("Listener supprimé pour #%s#", __FILE__),
-                    $l->getOption('cmd')
-                )
-            );
+            jMQTT::logger('debug', sprintf(
+                'Listener deleted for #%s#',
+                $l->getOption('cmd')
+            ));
             $l->remove();
         }
     }
