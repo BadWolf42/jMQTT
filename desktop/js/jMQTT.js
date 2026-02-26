@@ -738,7 +738,7 @@ function printEqLogic(_eqLogic) {
         _eqLogic.cmd = new_cmds;
 
         // JSON view: disable the sortable functionality
-        jmqtt.setCmdsSortable(false);
+        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true;
     } else {
         // CLASSIC view button is active
         for (var c of _eqLogic.cmd) {
@@ -746,7 +746,7 @@ function printEqLogic(_eqLogic) {
         }
 
         // Classical view: enable the sortable functionality
-        jmqtt.setCmdsSortable(true);
+        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false;
     }
 
     // Show UI elements depending on the type
@@ -1228,20 +1228,10 @@ $(document).ready(function() {
     }
 
     // Wrap plugin.template save action handler
-    if (typeof jeeFrontEnd.pluginTemplate === 'undefined') {
-        // TODO: Remove core4.3 backward compatibility `saveEqLogic` js function
-        //  Remove when Jeedom 4.3 is no longer supported
-        //  labels: workarround, core4.3, javascript
-
-        let core_save = $._data($('.eqLogicAction[data-action=save]')[0], 'events')['click'][0]['handler'];
-        $('.eqLogicAction[data-action=save]').off('click').on('click', function() {
-            jmqtt.decorateSaveEqLogic(core_save)();
-        });
-    } else {
-        if (typeof jeeFrontEnd.pluginTemplate.oldSaveEqLogic === 'undefined') {
-            let core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
-            jeeFrontEnd.pluginTemplate.oldSaveEqLogic = core_save;
-            jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
-        }
+    if (typeof jeeFrontEnd.pluginTemplate.oldSaveEqLogic === 'undefined') {
+        let core_save = jeeFrontEnd.pluginTemplate.saveEqLogic;
+        jeeFrontEnd.pluginTemplate.oldSaveEqLogic = core_save;
+        jeeFrontEnd.pluginTemplate.saveEqLogic = jmqtt.decorateSaveEqLogic(core_save);
     }
+
 });

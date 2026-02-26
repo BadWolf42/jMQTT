@@ -22,21 +22,6 @@ jmqtt = {}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Backward compatibility functions
 
-// TODO: Remove core4.3 backward compatibility `CmdsSortable` js function
-//  Remove when Jeedom 4.3 is no longer supported
-//  `jmqtt.setCmdsSortable(true)` -> `jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false`
-//  `jmqtt.setCmdsSortable(false)` -> `jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true`
-//  labels: workarround, core4.3, javascript
-
-// Handle sortability of table "table_cmd"
-jmqtt.setCmdsSortable = function(_status) {
-    if ($('#table_cmd').sortable('instance')) {
-        $('#table_cmd').sortable(_status ? 'enable' : 'disable');
-    } else if (document.getElementById('table_cmd')._sortable) {
-        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = (_status ? false : true);
-    }
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // General utility functions
