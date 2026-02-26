@@ -100,7 +100,7 @@ function configIntButtons(div) {
         bootbox.confirm({
             title: 'Add an internal configuration parameter',
             message: '<label class="control-label">Key: </label> '
-                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
+                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" autofill="off" type="text" id="debugKey"><br/><br/>'
                     + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
@@ -193,7 +193,7 @@ function configBrkEqButtons(div) {
         bootbox.confirm({
             title: 'Add a configuration parameter',
             message: '<label class="control-label">Key: </label> '
-                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
+                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" autofill="off" type="text" id="debugKey"><br/><br/>'
                     + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
@@ -292,7 +292,7 @@ function configCmdButtons(div) {
         bootbox.confirm({
             title: 'Add a configuration parameter',
             message: '<label class="control-label">Key: </label> '
-                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
+                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" autofill="off" type="text" id="debugKey"><br/><br/>'
                     + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
@@ -389,7 +389,7 @@ function cacheButtons(div) {
         bootbox.confirm({
             title: 'Add a parameter to the cache',
             message: '<label class="control-label">Key: </label> '
-                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="nope" autofill="off" type="text" id="debugKey"><br/><br/>'
+                    + '<input class="bootbox-input bootbox-input-text form-control" autocomplete="off" autofill="off" type="text" id="debugKey"><br/><br/>'
                     + '<label class="control-label">Value (Json encoded): </label> '
                     + '<textarea class="bootbox-input bootbox-input-text form-control" style="min-height:65px;" id="debugVal">'+$(this).closest('tr').find('.val').text()+'</textarea><br/><br/>',
             callback: function(result) {
