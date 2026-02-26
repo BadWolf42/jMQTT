@@ -22,30 +22,6 @@ jmqtt = {}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Backward compatibility functions
 
-// TODO: Remove core4.2 backward compatibility `PageModified` js function
-//  Remove when Jeedom 4.2 is no longer supported
-//  `jmqtt.isPageModified` -> `jeeFrontEnd.modifyWithoutSave`
-//  `jmqtt.setPageModified` -> `jeeFrontEnd.modifyWithoutSave = true`
-//  `jmqtt.unsetPageModified` -> `jeeFrontEnd.modifyWithoutSave = false`
-//  labels: workarround, core4.2, javascript
-
-// Handle get modifyWithoutSave flag in jeeFrontEnd or window
-jmqtt.isPageModified = function() {
-    return jeeFrontEnd.modifyWithoutSave || window.modifyWithoutSave;
-}
-
-// Handle set modifyWithoutSave flag in jeeFrontEnd and window
-jmqtt.setPageModified = function() {
-    jeeFrontEnd.modifyWithoutSave = true;
-    window.modifyWithoutSave = true;
-}
-
-// Handle clear modifyWithoutSave flag in jeeFrontEnd and window
-jmqtt.unsetPageModified = function() {
-    jeeFrontEnd.modifyWithoutSave = false;
-    window.modifyWithoutSave = false;
-}
-
 // TODO: Remove core4.3 backward compatibility `CmdsSortable` js function
 //  Remove when Jeedom 4.3 is no longer supported
 //  `jmqtt.setCmdsSortable(true)` -> `jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false`
@@ -403,7 +379,7 @@ jmqtt.refreshEqLogicPage = function() {
             $('.eqLogicAction[data-action=returnToThumbnailDisplay]').click();
         }
     }
-    if (jmqtt.isPageModified()) {
+    if (jeeFrontEnd.modifyWithoutSave) {
         bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
             if (result)
                 refreshPage();
@@ -469,7 +445,7 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
     function wrapSaveEqLogic() {
         // No mismatch or broker
         if ($('.topicMismatch').length == 0 || $('.eqLogicAttr[data-l1key="configuration"][data-l2key="type"]').value() == 'broker') {
-            jmqtt.unsetPageModified();
+            jeeFrontEnd.modifyWithoutSave = false;
             _realSave();
             return;
         }
@@ -510,7 +486,7 @@ jmqtt.decorateSaveEqLogic = function (_realSave) {
             title: "<b>{{Des problèmes ont été identifiés dans la configuration}}</b>",
             message: dialog_message,
             callback: function (result) { if (result) { // Do save
-                jmqtt.unsetPageModified();
+                jeeFrontEnd.modifyWithoutSave = false;
                 _realSave();
             }}
         });

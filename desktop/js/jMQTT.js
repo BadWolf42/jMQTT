@@ -31,7 +31,7 @@ $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function (
                 },
                 success: function (data) {
                     var url = jmqtt.initPluginUrl();
-                    jmqtt.unsetPageModified();
+                    jeeFrontEnd.modifyWithoutSave = false;
                     url += '&id=' + data.id + '&saveSuccessFull=1';
                     jeedomUtils.loadPage(url);
                 }
@@ -105,14 +105,14 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
                             },
                             success: function (dataresult) {
                                 var url = jmqtt.initPluginUrl();
-                                jmqtt.unsetPageModified();
+                                jeeFrontEnd.modifyWithoutSave = false;
                                 url += '&id=' + savedEq.id + '&saveSuccessFull=1';
                                 jeedomUtils.loadPage(url);
                             }
                         });
                     } else {
                         var url = jmqtt.initPluginUrl();
-                        jmqtt.unsetPageModified();
+                        jeeFrontEnd.modifyWithoutSave = false;
                         url += '&id=' + savedEq.id + '&saveSuccessFull=1';
                         jeedomUtils.loadPage(url);
                     }
@@ -169,7 +169,7 @@ $("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
     jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
         var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']');
         calcul.atCaret('insert', result.human);
-        jmqtt.setPageModified();
+        jeeFrontEnd.modifyWithoutSave = true;
     });
 });
 
@@ -512,7 +512,7 @@ $('.eqLogicAction[data-action=updateTopics]').off('click').on('click', function 
                 if ($(this).val().startsWith(oldTopic))
                     $(this).val($(this).val().replace(oldTopic, newTopic));
             });
-            jmqtt.setPageModified();
+            jeeFrontEnd.modifyWithoutSave = true;
         }}
     });
 });
@@ -527,14 +527,14 @@ $('.eqLogicAction[data-action=jsonPathTester]').off('click').on('click', functio
 $('.eqLogicAction[data-action=addMQTTInfo]').on('click', function() {
     var _cmd = {type: 'info'};
     addCmdToTable(_cmd);
-    jmqtt.setPageModified();
+    jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On addMQTTAction click
 $('.eqLogicAction[data-action=addMQTTAction]').on('click', function() {
     var _cmd = {type: 'action'};
     addCmdToTable(_cmd);
-    jmqtt.setPageModified();
+    jeeFrontEnd.modifyWithoutSave = true;
 });
 
 // On classicView click
@@ -1118,7 +1118,7 @@ $('body').off('jMQTT::eqptAdded').on('jMQTT::eqptAdded', function (_event, _opti
 
     // If the page is being modified or an equipment is being consulted or a dialog box is shown: display a simple alert message
     // Otherwise: display an alert message and reload the page
-    if (jmqtt.isPageModified() || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
+    if (jeeFrontEnd.modifyWithoutSave || $('.eqLogic').is(":visible") || $('div[role="dialog"]').filter(':visible').length != 0) {
         $.fn.showAlert({message: msg + '.', level: 'warning'});
     }
     else {
@@ -1149,7 +1149,7 @@ $('body').off('jMQTT::cmdAdded').on('jMQTT::cmdAdded', function(_event, _options
     var msg = `{{La commande <b>${_options.cmd_name}</b> est ajoutée à l'équipement <b>${_options.eqlogic_name}</b>.}}`;
 
     // If the page is being modified or another equipment is being consulted or a dialog box is shown: display a simple alert message
-    if (jmqtt.isPageModified() || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||
+    if (jeeFrontEnd.modifyWithoutSave || ( $('.eqLogic').is(":visible") && jmqtt.getEqId() != _options['eqlogic_id'] ) ||
             $('div[role="dialog"]').filter(':visible').length != 0 || !_options['reload']) {
         $.fn.showAlert({message: msg, level: 'warning'});
     }
