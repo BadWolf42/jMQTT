@@ -615,65 +615,61 @@ function builder_actions(_root_div) {
 
 function builder_backups(_root_div) {
     let res = '';
-    res += '<div class="col-lg-6 col-sm-12">';
+    res += '<form class="form-horizontal"><fieldset>';
 
     res += '<legend><i class="fas fa-folder-open"></i>Backup jMQTT equipment and configuration</legend>';
     res += '<div class="form-group">';
-    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
-    res += '<div class="col-sm-5">';
+    res += '<div class="col-sm-6">';
     res += '<a class="btn btn-success backupJMqttStart" style="width:100%;">';
     res += '<i class="fas fa-sync fa-spin" style="display:none;"></i>';
     res += ' <i class="fas fa-save"></i> Start a backup</a>';
     res += '</div>';
-    res += '<div class="col-sm-6"></div>';
+    res += '<div class="col-sm-6">&nbsp;</div>';
     res += '</div>';
 
     res += '<legend><i class="fas fa-tape"></i>Available backups</legend>';
     // Backup list
     res += '<div class="form-group">';
-    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
-    res += '<div class="col-sm-10">';
+    res += '<div class="col-sm-12">';
     res += '<select class="form-control" id="sel_backupJMqtt"></select>';
     res += '</div>';
-    res += '<div class="col-sm-1"></div>';
+    res += '<div class="col-sm-12" style="height:10px">&nbsp;</div>';
     res += '</div>';
 
     res += '<div class="form-group">';
-    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
     // BT Remove backup
-    res += '<div class="col-sm-5">';
+    res += '<div class="col-sm-6">';
     res += '<a class="btn btn-danger backupJMqttRemove" style="width:100%;"><i class="fas fa-trash"></i> Delete the backup</a>';
     res += '</div>';
     // BT Restore backup
-    res += '<div class="col-sm-5">';
+    res += '<div class="col-sm-6">';
     res += '<a class="btn btn-warning backupJMqttRestore" style="width:100%;">';
     res += '<i class="fas fa-sync fa-spin" style="display:none;"></i>&nbsp;';
     res += '<i class="far fa-file"></i> Restore a backup <span class="danger">(BETA)</span>';
     res += '</a>';
     res += '</div>';
-    res += '<div class="col-sm-1"></div>';
     res += '</div>';
 
     res += '<div class="form-group">';
-    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
     // BT Download backup
-    res += '<div class="col-sm-5">';
+    res += '<div class="col-sm-6">';
     res += '<a class="btn btn-success backupJMqttDownload" id="bt_" style="width:100%;">';
     res += '<i class="fas fa-cloud-download-alt"></i> Download the backup</a>';
     res += '</div>';
     // BT Upload backup
-    res += '<div class="col-sm-5">';
+    res += '<div class="col-sm-6">';
     res += '<span class="btn btn-info btn-file" style="width:100%;">';
     res += '<i class="fas fa-cloud-upload-alt"></i> Upload a backup';
     res += '<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file"';
     res += ' data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&amp;dir=backup">';
     res += '</span>';
     res += '</div>';
-    res += '<div class="col-sm-1"></div>';
+    res += '<div class="col-sm-12" style="height:10px">&nbsp;</div>';
     res += '</div>';
 
-    res += '</div>';
+    res += '</fieldset></form>';
     _root_div.html(res);
+    let jq_div = $(_root_div);
 
     // Init list of backups
     callDebugAjax({
@@ -698,7 +694,7 @@ function builder_backups(_root_div) {
     });
 
     // Launch jMQTT backup and wait for it to end
-    _root_div.off('click', 'a.backupJMqttStart').on('click', 'a.backupJMqttStart', function() {
+    jq_div.off('click', 'a.backupJMqttStart').on('click', 'a.backupJMqttStart', function() {
         var btn = $(this)
         bootbox.confirm("Are you sure you want to do a backup of jMQTT?<br/>(It will NOT be possible to cancel the operation once launched.)", function(result) {
             if (!result)
@@ -732,7 +728,7 @@ function builder_backups(_root_div) {
     });
 
     // Remove selected jMQTT backup
-    _root_div.off('click', 'a.backupJMqttRemove').on('click', 'a.backupJMqttRemove', function() {
+    jq_div.off('click', 'a.backupJMqttRemove').on('click', 'a.backupJMqttRemove', function() {
         if (!$('#sel_backupJMqtt option:selected').length)
             return;
         bootbox.confirm('Are you sure you want to delete <b>' + $('#sel_backupJMqtt option:selected').text() + '</b>?', function(result) {
@@ -759,7 +755,7 @@ function builder_backups(_root_div) {
     });
 
     // Launch jMQTT restoration and wait for it to end
-    _root_div.off('click', 'a.backupJMqttRestore').on('click', 'a.backupJMqttRestore', function() {
+    jq_div.off('click', 'a.backupJMqttRestore').on('click', 'a.backupJMqttRestore', function() {
         if (!$('#sel_backupJMqtt option:selected').length)
             return;
         var btn = $(this)
@@ -843,7 +839,7 @@ function builder_backups(_root_div) {
     });
 
     // Download the selected jMQTT backup
-    _root_div.off('click', 'a.backupJMqttDownload').on('click', 'a.backupJMqttDownload', function() {
+    jq_div.off('click', 'a.backupJMqttDownload').on('click', 'a.backupJMqttDownload', function() {
         if (!$('#sel_backupJMqtt option:selected').length)
             return;
         window.open('core/php/downloadFile.php?pathfile=plugins/jMQTT/data/backup/' + $('#sel_backupJMqtt').value(), "_blank", null);
