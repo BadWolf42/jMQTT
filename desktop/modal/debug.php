@@ -59,6 +59,14 @@ function callDebugAjax(_params) {
     });
 }
 
+// Toggle spinner icon on button click
+function debugToggleIco(_this) {
+    var h = _this.find('i.fas:hidden');
+    var v = _this.find('i.fas:visible');
+    v.hide();
+    h.show();
+}
+
 function builder_cfgCache(_div, _action, _buttons) {
     callDebugAjax({
         data: { action: _action },
@@ -564,7 +572,6 @@ function add_action_event(_div, _action, _level, _icon, _msg) {
                 if (!data) data = 'Done';
                 $.fn.showAlert({message: _msg + ' -> ' + data, level: 'success'});
             }
-
         });
     });
 }
@@ -604,6 +611,263 @@ function builder_actions(_root_div) {
     add_action_event(div, 'statsSend',        'info',    'fas fa-satellite',                   'Send stats');
     div.append('<div class="col-sm-12" style="height:10px">&nbsp;</div>'); // Last spacer
     _root_div.append(div);
+}
+
+function builder_backups(_root_div) {
+    let res = '';
+    res += '<div class="col-lg-6 col-sm-12">';
+
+    res += '<legend><i class="fas fa-folder-open"></i>Backup jMQTT equipment and configuration</legend>';
+    res += '<div class="form-group">';
+    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
+    res += '<div class="col-sm-5">';
+    res += '<a class="btn btn-success backupJMqttStart" style="width:100%;">';
+    res += '<i class="fas fa-sync fa-spin" style="display:none;"></i>';
+    res += ' <i class="fas fa-save"></i> Start a backup</a>';
+    res += '</div>';
+    res += '<div class="col-sm-6"></div>';
+    res += '</div>';
+
+    res += '<legend><i class="fas fa-tape"></i>Available backups</legend>';
+    // Backup list
+    res += '<div class="form-group">';
+    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
+    res += '<div class="col-sm-10">';
+    res += '<select class="form-control" id="sel_backupJMqtt"></select>';
+    res += '</div>';
+    res += '<div class="col-sm-1"></div>';
+    res += '</div>';
+
+    res += '<div class="form-group">';
+    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
+    // BT Remove backup
+    res += '<div class="col-sm-5">';
+    res += '<a class="btn btn-danger backupJMqttRemove" style="width:100%;"><i class="fas fa-trash"></i> Delete the backup</a>';
+    res += '</div>';
+    // BT Restore backup
+    res += '<div class="col-sm-5">';
+    res += '<a class="btn btn-warning backupJMqttRestore" style="width:100%;">';
+    res += '<i class="fas fa-sync fa-spin" style="display:none;"></i>&nbsp;';
+    res += '<i class="far fa-file"></i> Restore a backup <span class="danger">(BETA)</span>';
+    res += '</a>';
+    res += '</div>';
+    res += '<div class="col-sm-1"></div>';
+    res += '</div>';
+
+    res += '<div class="form-group">';
+    res += '<label class="col-sm-1 control-label">&nbsp;</label>';
+    // BT Download backup
+    res += '<div class="col-sm-5">';
+    res += '<a class="btn btn-success backupJMqttDownload" id="bt_" style="width:100%;">';
+    res += '<i class="fas fa-cloud-download-alt"></i> Download the backup</a>';
+    res += '</div>';
+    // BT Upload backup
+    res += '<div class="col-sm-5">';
+    res += '<span class="btn btn-info btn-file" style="width:100%;">';
+    res += '<i class="fas fa-cloud-upload-alt"></i> Upload a backup';
+    res += '<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file"';
+    res += ' data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&amp;dir=backup">';
+    res += '</span>';
+    res += '</div>';
+    res += '<div class="col-sm-1"></div>';
+    res += '</div>';
+
+    res += '</div>';
+    _root_div.html(res);
+
+    // Init list of backups
+    callDebugAjax({
+        data: {
+            action: "backupList"
+        },
+        error: function (request, status, error) {
+            handleAjaxError(request, status, error);
+        },
+        success: function(data) {
+            if (data.state == 'ok') {
+                $('#sel_backupJMqtt').empty();
+                for (var i in data.result) {
+                    var oVal = data.result[i].name;
+                    var oSize = ' (' + data.result[i].size +')';
+                    $('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+                }
+            } else {
+                $.fn.showAlert({message: data.result, level: 'danger'});
+            }
+        }
+    });
+
+    // Launch jMQTT backup and wait for it to end
+    _root_div.off('click', 'a.backupJMqttStart').on('click', 'a.backupJMqttStart', function() {
+        var btn = $(this)
+        bootbox.confirm("Are you sure you want to do a backup of jMQTT?<br/>(It will NOT be possible to cancel the operation once launched.)", function(result) {
+            if (!result)
+                return;
+            // $('a.bt_plugin_conf_view_log[data-log=jMQTT]').click();
+            debugToggleIco(btn);
+            callDebugAjax({
+                data: {
+                    action: "backupCreate"
+                },
+                error: function (request, status, error) {
+                    handleAjaxError(request, status, error);
+                    debugToggleIco(btn);
+                },
+                success: function(data) {
+                    if (data.state == 'ok') {
+                        $('#sel_backupJMqtt').empty();
+                        for (var i in data.result) {
+                            var oVal = data.result[i].name;
+                            var oSize = ' (' + data.result[i].size +')';
+                            $('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+                        }
+                        $.fn.showAlert({message: 'Backup performed successfully.', level: 'success'});
+                    } else {
+                        $.fn.showAlert({message: data.result, level: 'danger'});
+                    }
+                    debugToggleIco(btn);
+                }
+            });
+        });
+    });
+
+    // Remove selected jMQTT backup
+    _root_div.off('click', 'a.backupJMqttRemove').on('click', 'a.backupJMqttRemove', function() {
+        if (!$('#sel_backupJMqtt option:selected').length)
+            return;
+        bootbox.confirm('Are you sure you want to delete <b>' + $('#sel_backupJMqtt option:selected').text() + '</b>?', function(result) {
+            if (!result)
+                return;
+            callDebugAjax({
+                data: {
+                    action: "backupRemove",
+                    file: $('#sel_backupJMqtt').value()
+                },
+                error: function (request, status, error) {
+                    handleAjaxError(request, status, error);
+                },
+                success: function(data) {
+                    if (data.state == 'ok') {
+                        $.fn.showAlert({message: 'Backup deleted.', level: 'success'});
+                        $('#sel_backupJMqtt option:selected').remove();
+                    } else {
+                        $.fn.showAlert({message: data.result, level: 'danger'});
+                    }
+                }
+            });
+        });
+    });
+
+    // Launch jMQTT restoration and wait for it to end
+    _root_div.off('click', 'a.backupJMqttRestore').on('click', 'a.backupJMqttRestore', function() {
+        if (!$('#sel_backupJMqtt option:selected').length)
+            return;
+        var btn = $(this)
+        var dialog_message = '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotfolder">'
+        dialog_message += 'Do not restore jMQTT directory from backup</label><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnoteqcmd">'
+        dialog_message += 'Do not restore egLogics and commands</label><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdodelete">'
+        dialog_message += 'Delete jMQTT eqLogics and cmds created since the backup</label><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnotcache">'
+        dialog_message += 'Do not restore previous cache (keep current cache)</label><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnothistory">'
+        dialog_message += 'Delete recent history (keep only history from the backup)</label><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdologs">'
+        dialog_message += 'Restore previous logs (do not keep recent logs)</label><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttdomosquitto">'
+        dialog_message += 'Restore Mosquitto configuration files</label><br/><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttnohwcheck">';
+        dialog_message += 'Do not check if this system is the same as the saved one';
+        dialog_message += '&nbsp;<i class="fas fa-exclamation-triangle danger tooltips" title="Only if you know EXACTLY what you\'re doing and have an EXTERNALIZED BACKUP of Jeedom."></i>';
+        dialog_message += '<sup><i class="fa fa-question-circle danger tooltips" title="Only if you know EXACTLY what you\'re doing and have an EXTERNALIZED BACKUP of Jeedom."></i></sup>';
+        dialog_message += '</label><br/>';
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttverbose">'
+        dialog_message += "Display more information during restoration</label><br/>";
+
+        dialog_message += '<label class="checkbox-inline"><input type="checkbox" class="bootbox-input form-control" id="restoreJMqttapply">'
+        dialog_message += '<a class="success disabled">APPLY</a> the changes on this system (otherwise restore in "Dry Run" mode)</label><br/>';
+
+        bootbox.confirm({
+            title: '<b>jMQTT backup restore settings</b>',
+            message: dialog_message,
+            callback: function (result){ if (result) {
+                // Var recuperation MUST be done here, they don't exist after this point
+                var data_to_send = {
+                    action: "backupRestore",
+                    file: $('#sel_backupJMqtt').value(),
+                    nohwcheck: $('#restoreJMqttnohwcheck').value(),
+                    notfolder: $('#restoreJMqttnotfolder').value(),
+                    noteqcmd: $('#restoreJMqttnoteqcmd').value(),
+                    byname: $('#restoreJMqttbyname').value(),
+                    dodelete: $('#restoreJMqttdodelete').value(),
+                    notcache: $('#restoreJMqttnotcache').value(),
+                    nothistory: $('#restoreJMqttnothistory').value(),
+                    dologs: $('#restoreJMqttdologs').value(),
+                    domosquitto: $('#restoreJMqttdomosquitto').value(),
+                    verbose: $('#restoreJMqttverbose').value(),
+                    apply: $('#restoreJMqttapplyapply').value()
+                };
+                bootbox.confirm('Are you sure you want to restore <b>' + $('#sel_backupJMqtt option:selected').text() + "</b>?<br/>"
+                                + "(It will NOT be possible to cancel it, and the Daemon will be stopped for the duration of the operation.)"
+                                + "<br/><span class=\"danger\">Warning, this feature is still in BETA, use it at your own risk!</span>", function(result) {
+                    if (!result)
+                        return;
+                    debugToggleIco(btn);
+                    callDebugAjax({
+                        data: data_to_send,
+                        error: function (request, status, error) {
+                            handleAjaxError(request, status, error);
+                            debugToggleIco(btn);
+                        },
+                        success: function(data) {
+                            if (data.state == 'ok') {
+                                $.fn.showAlert({message: 'Backup restored successfully.', level: 'success'});
+                            } else {
+                                $.fn.showAlert({message: data.result, level: 'danger'});
+                            }
+                            debugToggleIco(btn);
+                        }
+                    });
+                });
+            }}
+        });
+    });
+
+    // Download the selected jMQTT backup
+    _root_div.off('click', 'a.backupJMqttDownload').on('click', 'a.backupJMqttDownload', function() {
+        if (!$('#sel_backupJMqtt option:selected').length)
+            return;
+        window.open('core/php/downloadFile.php?pathfile=plugins/jMQTT/data/backup/' + $('#sel_backupJMqtt').value(), "_blank", null);
+    });
+
+    // Add a new jMQTT backup file by upload to the list
+    $('#bt_backupJMqttUpload').fileupload({
+        dataType: 'json',
+        replaceFileInput: false,
+        done: function(e, data) {
+            if (data.result.state != 'ok') {
+                $.fn.showAlert({message: data.result.result, level: 'danger'});
+            } else {
+                $('#sel_backupJMqtt').empty();
+                for (var i in data.result.result) {
+                    var oVal = data.result.result[i].name;
+                    var oSize = ' (' + data.result.result[i].size +')';
+                    $('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
+                }
+                $.fn.showAlert({message: 'File(s) successfully added', level: 'success'})
+            }
+            $('#bt_backupJMqttUpload').val(null);
+        }
+    });
 }
 
 function builder_updates(div) {
@@ -717,6 +981,9 @@ function builder_cacheCmdA(div)  { builder_cfgCache(div, "cacheGetCommandsAction
 
 // Create panels to edit simulate dangerous actions on jMQTT
 panelCreator('Simulate internal actions',      'warning', 'fas fa-radiation-alt', 'builder_actions');
+
+// Create panels to backup/restore jMQTT devices and configuration
+panelCreator('Backup/Restore jMQTT',           'warning', 'fas fa-save',          'builder_backups');
 
 // Create panels to edit Config values
 panelCreator('Daemon config values',           'primary', 'fas fa-wrench',        'builder_configInt');
