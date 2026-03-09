@@ -301,9 +301,11 @@ try {
                 'name' => $backup,
                 'size' => sizeFormat(filesize($backup_dir.'/'.$backup))
             );
+        // jMQTT::logger('debug', 'listBackup: ' . json_encode($backups, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
         return $backups;
     }
     if ($action == 'backupList') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . $action);
         ajax::success(listBackup());
     }
     if ($action == 'backupCreate') {
@@ -319,6 +321,7 @@ try {
     if ($action == 'backupRemove') {
         /** @var string $_backup */
         $_backup = init('file');
+        jMQTT::logger('debug', 'debug.ajax.php: ' . $action . ': file=' . $_backup);
         if ($_backup == '') {
             throw new Exception("Please provide the file to delete");
         }
@@ -333,6 +336,7 @@ try {
     if ($action == 'backupRestore') {
         /** @var string $_backup */
         $_backup = init('file');
+        jMQTT::logger('debug', 'debug.ajax.php: ' . $action . ': file=' . $_backup);
         if ($_backup == ''){
             throw new Exception("Please provide the file to restore");
         }

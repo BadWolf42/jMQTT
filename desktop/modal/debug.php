@@ -669,32 +669,24 @@ function builder_backups(_root_div) {
 
     res += '</fieldset></form>';
     _root_div.html(res);
-    let jq_div = $(_root_div);
 
     // Init list of backups
     callDebugAjax({
         data: {
             action: "backupList"
         },
-        error: function (request, status, error) {
-            handleAjaxError(request, status, error);
-        },
-        success: function(data) {
-            if (data.state == 'ok') {
-                $('#sel_backupJMqtt').empty();
-                for (var i in data.result) {
-                    var oVal = data.result[i].name;
-                    var oSize = ' (' + data.result[i].size +')';
-                    $('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
-                }
-            } else {
-                $.fn.showAlert({message: data.result, level: 'danger'});
+        success: function(result) {
+            $('#sel_backupJMqtt').empty();
+            for (var i in result) {
+                var oVal = result[i].name;
+                var oSize = ' (' + result[i].size +')';
+                $('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
             }
         }
     });
 
     // Launch jMQTT backup and wait for it to end
-    jq_div.off('click', 'a.backupJMqttStart').on('click', 'a.backupJMqttStart', function() {
+    _root_div.off('click', 'a.backupJMqttStart').on('click', 'a.backupJMqttStart', function() {
         var btn = $(this)
         bootbox.confirm("Are you sure you want to do a backup of jMQTT?<br/>(It will NOT be possible to cancel the operation once launched.)", function(result) {
             if (!result)
@@ -709,18 +701,14 @@ function builder_backups(_root_div) {
                     handleAjaxError(request, status, error);
                     debugToggleIco(btn);
                 },
-                success: function(data) {
-                    if (data.state == 'ok') {
-                        $('#sel_backupJMqtt').empty();
-                        for (var i in data.result) {
-                            var oVal = data.result[i].name;
-                            var oSize = ' (' + data.result[i].size +')';
-                            $('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
-                        }
-                        $.fn.showAlert({message: 'Backup performed successfully.', level: 'success'});
-                    } else {
-                        $.fn.showAlert({message: data.result, level: 'danger'});
+                success: function(result) {
+                    $('#sel_backupJMqtt').empty();
+                    for (var i in result) {
+                        var oVal = result[i].name;
+                        var oSize = ' (' + result[i].size +')';
+                        $('#sel_backupJMqtt').prepend('<option selected value="' + oVal + '">' + oVal + oSize + '</option>');
                     }
+                    $.fn.showAlert({message: 'Backup performed successfully.', level: 'success'});
                     debugToggleIco(btn);
                 }
             });
@@ -728,7 +716,7 @@ function builder_backups(_root_div) {
     });
 
     // Remove selected jMQTT backup
-    jq_div.off('click', 'a.backupJMqttRemove').on('click', 'a.backupJMqttRemove', function() {
+    _root_div.off('click', 'a.backupJMqttRemove').on('click', 'a.backupJMqttRemove', function() {
         if (!$('#sel_backupJMqtt option:selected').length)
             return;
         bootbox.confirm('Are you sure you want to delete <b>' + $('#sel_backupJMqtt option:selected').text() + '</b>?', function(result) {
@@ -739,23 +727,16 @@ function builder_backups(_root_div) {
                     action: "backupRemove",
                     file: $('#sel_backupJMqtt').value()
                 },
-                error: function (request, status, error) {
-                    handleAjaxError(request, status, error);
-                },
                 success: function(data) {
-                    if (data.state == 'ok') {
-                        $.fn.showAlert({message: 'Backup deleted.', level: 'success'});
-                        $('#sel_backupJMqtt option:selected').remove();
-                    } else {
-                        $.fn.showAlert({message: data.result, level: 'danger'});
-                    }
+                    $.fn.showAlert({message: 'Backup deleted.', level: 'success'});
+                    $('#sel_backupJMqtt option:selected').remove();
                 }
             });
         });
     });
 
     // Launch jMQTT restoration and wait for it to end
-    jq_div.off('click', 'a.backupJMqttRestore').on('click', 'a.backupJMqttRestore', function() {
+    _root_div.off('click', 'a.backupJMqttRestore').on('click', 'a.backupJMqttRestore', function() {
         if (!$('#sel_backupJMqtt option:selected').length)
             return;
         var btn = $(this)
@@ -825,11 +806,7 @@ function builder_backups(_root_div) {
                             debugToggleIco(btn);
                         },
                         success: function(data) {
-                            if (data.state == 'ok') {
-                                $.fn.showAlert({message: 'Backup restored successfully.', level: 'success'});
-                            } else {
-                                $.fn.showAlert({message: data.result, level: 'danger'});
-                            }
+                            $.fn.showAlert({message: 'Backup restored successfully.', level: 'success'});
                             debugToggleIco(btn);
                         }
                     });
@@ -839,7 +816,7 @@ function builder_backups(_root_div) {
     });
 
     // Download the selected jMQTT backup
-    jq_div.off('click', 'a.backupJMqttDownload').on('click', 'a.backupJMqttDownload', function() {
+    _root_div.off('click', 'a.backupJMqttDownload').on('click', 'a.backupJMqttDownload', function() {
         if (!$('#sel_backupJMqtt option:selected').length)
             return;
         window.open('core/php/downloadFile.php?pathfile=plugins/jMQTT/data/backup/' + $('#sel_backupJMqtt').value(), "_blank", null);
