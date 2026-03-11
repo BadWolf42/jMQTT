@@ -25,7 +25,8 @@
         "Répertoire de téléversement non trouvé :": "Upload directory not found:",
         "Sauvegarde %s correctement téléversée": "Backup file %s successfully uploaded",
         "Template %s correctement téléversée": "Template file %s successfully uploaded.",
-        "Téléversement non valide": "Invalid upload"
+        "Téléversement non valide": "Invalid upload",
+        "Valeur manquante": "Missing value"
     },
     "plugins\/jMQTT\/core\/class\/jMQTT.class.php": {
         "%1\\$s() a levé l'Exception: %2\\$s": "%1\\$s() has raised Exception: %2\\$s",
@@ -124,6 +125,8 @@
         "Modification effectuée, merci de relancez le Démon.": "Change saved, please restart the Daemon.",
         "Modifier le fichier jMQTT.conf du service Mosquitto": "Edit the jMQTT.conf file of the Mosquitto service",
         "Niveau de log du démon modifié, il n'est pas nécessaire de le redémarrer.": "Daemon log level changed, no need to restart it.",
+        "Panneau de débogage activé. Rafraîchissez la page principale.": "Debug panel enabled. Refresh the main page.",
+        "Panneau de débogage désactivé.": "Debug panel disabled.",
         "Êtes-vous sûr de vouloir installer le service Mosquitto en local ?": "Are you sure you want to install Mosquitto locally?",
         "Êtes-vous sûr de vouloir réparer le service Mosquitto local ?": "Are you sure you want to repair your local Mosquitto service?",
         "Êtes-vous sûr de vouloir supprimer le service Mosquitto local ?": "Are you sure you want to delete the local Mosquitto service?"
@@ -495,12 +498,14 @@
     },
     "plugins\/jMQTT\/plugin_info\/configuration.php": {
         "(Re)Démarrer": "(Re)Start",
+        "Afficher le panneau de débogage": "Display the debug panel",
         "Appliquer": "Apply",
         "Arrête le service Mosquitto local.": "Stop the local Mosquitto service.",
         "Arrêter": "Stop",
         "Broker MQTT en local (Service Mosquitto)": "Local MQTT Broker (Mosquitto service)",
         "Ces boutons permettent de gérer l'installation de Mosquitto en tant que service local sur ce système Jeedom.": "These buttons are used to manage the installation of Mosquitto as a local service on this Jeedom system.",
         "Ces boutons permettent de gérer l'état de Mosquitto en tant que service local sur ce système Jeedom.": "These buttons manage the status of Mosquitto as a local service on this Jeedom system.",
+        "Débogage": "Debugging",
         "Démarre (ou redémarre) le service Mosquitto local.": "Starts (or restarts) the local Mosquitto service.",
         "Edition du fichier de configuration jMQTT.conf du service Mosquitto local.": "Edit the jMQTT.conf configuration file for the local Mosquitto service.",
         "Etat d'installation": "Installation status",
