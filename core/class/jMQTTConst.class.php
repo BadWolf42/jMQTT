@@ -42,7 +42,6 @@ class jMQTTConst {
     const CONF_KEY_BATTERY_CMD          = 'battery_cmd';
     const CONF_KEY_AVAILABILITY_CMD     = 'availability_cmd';
     const CONF_KEY_TEMPLATE_UUID        = 'templateUUID';
-    const CONF_KEY_LOGLEVEL             = 'loglevel';
 
     const CONF_KEY_AUTOPUB              = 'autoPub';
     const CONF_KEY_JSON_PATH            = 'jsonPath';

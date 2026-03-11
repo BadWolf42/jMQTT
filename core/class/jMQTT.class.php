@@ -975,7 +975,6 @@ class jMQTT extends eqLogic {
 
             // load eqLogic from DB
             $this->_preSaveInformations = array(
-                'name'                        => $eqLogic->getName(),
                 'isEnable'                    => $eqLogic->getIsEnable(),
                 'topic'                       => $eqLogic->getTopic(),
                 jMQTTConst::CONF_KEY_BRK_ID   => $eqLogic->getBrkId()
@@ -983,7 +982,6 @@ class jMQTT extends eqLogic {
 
             // load trivials eqLogic from DB
             $backupVal = array(
-                jMQTTConst::CONF_KEY_LOGLEVEL,
                 jMQTTConst::CONF_KEY_MQTT_PROTO,
                 jMQTTConst::CONF_KEY_MQTT_ADDRESS,
                 jMQTTConst::CONF_KEY_MQTT_PORT,
@@ -1024,13 +1022,6 @@ class jMQTT extends eqLogic {
             // --- New broker ---
             if (is_null($this->_preSaveInformations)) {
 
-                // Create log of this broker
-                config::save(
-                    'log::level::' . $this->getMqttClientLogFile(),
-                    '{"100":"0","200":"0","300":"0","400":"0","1000":"0","default":"1"}',
-                    __CLASS__
-                );
-
                 // Create status and connected cmds
                 $this->getMqttClientStatusCmd(true);
                 $this->getMqttClientConnectedCmd(true);
@@ -1058,30 +1049,6 @@ class jMQTT extends eqLogic {
                         // Note that $stopped is always true here
                         $this->stopMqttClient();
                     }
-                }
-
-                // LogLevel change
-                if ($this->_preSaveInformations[jMQTTConst::CONF_KEY_LOGLEVEL]
-                    != $this->getConf(jMQTTConst::CONF_KEY_LOGLEVEL)) {
-                    config::save(
-                        'log::level::' . $this->getMqttClientLogFile(),
-                        $this->getConf(jMQTTConst::CONF_KEY_LOGLEVEL),
-                        __CLASS__
-                    );
-                }
-
-                // Name changed
-                if ($this->_preSaveInformations['name'] != $this->getName()) {
-                    $old_log = __CLASS__ . '_' . str_replace(' ', '_', $this->_preSaveInformations['name']);
-                    $new_log = $this->getMqttClientLogFile();
-                    if (file_exists(log::getPathToLog($old_log)))
-                        rename(log::getPathToLog($old_log), log::getPathToLog($new_log));
-                    config::save(
-                        'log::level::' . $new_log,
-                        config::byKey('log::level::' . $old_log, __CLASS__),
-                        __CLASS__
-                    );
-                    config::remove('log::level::' . $old_log, __CLASS__);
                 }
 
                 // Check changes that would trigger MQTT Client reload
@@ -1308,12 +1275,7 @@ class jMQTT extends eqLogic {
     public function postRemove() {
         // ------------------------ Broker eqpt ------------------------
         if ($this->getType() == jMQTTConst::TYP_BRK) {
-            // Suppress the log file
-            $log = $this->getMqttClientLogFile();
-            if (file_exists(log::getPathToLog($log))) {
-                unlink(log::getPathToLog($log));
-            }
-            config::remove('log::level::' . $log, __CLASS__);
+            // Remove eqBroker cache
             try {
                 cache::delete('jMQTT::' . $this->getId() . '::' . jMQTTConst::CACHE_MQTTCLIENT_CONNECTED);
             } catch (Exception $e) {
@@ -2239,17 +2201,6 @@ class jMQTT extends eqLogic {
     }
 
     /**
-     * Return the name of the log file attached to this jMQTT object.
-     * The log file is cached for optimization.
-     *
-     * @return string MQTT Client log filename.
-     */
-    public function getMqttClientLogFile() {
-        return __CLASS__ . '_' .
-            str_replace(' ', '_', $this->getBroker()->getName());
-    }
-
-    /**
      * Log messages to eqBroker log file
      *
      * @param string $level
@@ -2259,8 +2210,7 @@ class jMQTT extends eqLogic {
         // log can't be written during removal of an eqLogic next to his broker eqLogic removal
         // the name of the broker can't be found (and log file has already been deleted)
         try {
-            $log = $this->getMqttClientLogFile();
-            log::add($log, $level, $msg);
+            log::add(__CLASS__, $level, $this->getBroker()->getName() . ': ' . $msg);
         } catch (Throwable $e) {
             // nothing to do in that particular case?
         }
@@ -2323,21 +2273,6 @@ class jMQTT extends eqLogic {
         );
         // If not in list, default value is ''
         return isset($defValues[$_key]) ? $defValues[$_key] : '';
-    }
-
-    /**
-     * Set the log level
-     * Called when saving a broker eqLogic
-     * If log level is changed, save the new value and restart the MQTT Client
-     *
-     * @param string $log_level
-     */
-    public function setLogLevel($log_level) {
-        $decodedLogLevel = json_decode($log_level, true);
-        $this->setConfiguration(
-            jMQTTConst::CONF_KEY_LOGLEVEL,
-            reset($decodedLogLevel)
-        );
     }
 
     /**

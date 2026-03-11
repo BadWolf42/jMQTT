@@ -1,6 +1,6 @@
 <br/>
 <div class="row">
-    <div class="col-md-6 col-sm-12">
+    <div class="col-md-12 col-sm-12">
         <div class="panel panel-success mqttClientPanel">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -27,38 +27,6 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-sm-12">
-        <div class="panel panel-primary" id="div_brokerLog">
-            <div class="panel-heading">
-                <h3 class="panel-title">
-                    <i class="far fa-file"></i> {{Log}}
-                </h3>
-            </div>
-            <div class="panel-body">
-                <div id="div_broker_log">
-                    <form class="form-horizontal">
-                        <fieldset>
-                            <label class="col-sm-3 control-label">{{Niveau log}}</label>
-                            <div class="col-sm-9">
-                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="1000" /> {{Aucun}}</label>
-                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="default" /> {{Defaut}}</label>
-                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="100" /> {{Debug}}</label>
-                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="200" /> {{Info}}</label>
-                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="300" /> {{Warning}}</label>
-                                <label class="radio-inline"><input type="radio" class="configKey" name="rd_logupdate" data-l1key="" data-l2key="400" /> {{Error}}</label>
-                            </div>
-                        </fieldset>
-                        <fieldset>
-                            <label class="col-sm-3 control-label">{{Logs}}</label>
-                            <div class="col-sm-9">
-                                <a class="btn btn-info eqLogicAction" data-action="modalViewLog" data-slaveId="-1" data-log=""></a>
-                            </div>
-                        </fieldset>
-                    </form><br/>
                 </div>
             </div>
         </div>

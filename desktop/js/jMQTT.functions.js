@@ -215,16 +215,6 @@ jmqtt.updateBrokerTabs = function(_eq) {
     // Update LastLaunch span
     $('.mqttClientLastLaunch').empty().append((_eq.cache.lastLaunchTime == undefined || _eq.cache.lastLaunchTime == '') ? '{{Inconnue}}' : _eq.cache.lastLaunchTime);
 
-    // Set logs file
-    var log = 'jMQTT_' + (_eq.name.replace(' ', '_') || 'jeedom');
-    $('input[name=rd_logupdate]').attr('data-l1key', 'log::level::' + log);
-    $('.eqLogicAction[data-action=modalViewLog]').attr('data-log', log);
-    $('.eqLogicAction[data-action=modalViewLog]').html('<i class="fas fa-file-text-o"></i> ' + log);
-
-    // Set logs level
-    var levels = {}; levels['log::level::' + log] = _eq.configuration.loglevel; // Hack to build the array
-    $('#div_broker_log').setValues(levels, '.configKey');
-
     // Update Real Time tab
     jmqtt.updateRealTimeTab(_eq.id, false);
 }

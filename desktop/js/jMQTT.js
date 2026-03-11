@@ -184,16 +184,6 @@ $('.eqLogicAction[data-action=startMqttClient]').on('click',function() {
     jmqtt.callPluginAjax({data: {action: 'startMqttClient', id: id}});
 });
 
-$('.eqLogicAction[data-action=modalViewLog]').on('click', function() {
-    if ($('#md_modal').is(':visible')) {
-        $('#md_modal2').dialog({title: "{{Log du plugin}}"});
-        $("#md_modal2").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
-    } else {
-        $('#md_modal').dialog({title: "{{Log du plugin}}"});
-        $("#md_modal").load('index.php?v=d&modal=log.display&log='+$(this).attr('data-log')+'&slaveId='+$(this).attr('data-slaveId')).dialog('open');
-    }
-});
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Automations on Broker tab attributes
@@ -789,13 +779,6 @@ function saveEqLogic(_eqLogic) {
     if (_eqLogic.configuration.type != 'broker' && _eqLogic.configuration.type != 'eqpt') {
         // not on an jMQTT eqLogic, to fix issue #153
         return _eqLogic;
-    }
-    // pass the log level when defined for a broker object
-    if (_eqLogic.configuration.type == 'broker') {
-        var log_level = $('#div_broker_log').getValues('.configKey')[0];
-        if (!$.isEmptyObject(log_level)) {
-            _eqLogic.loglevel =  log_level;
-        }
     }
 
     // remove non existing commands added for the JSON view and add new commands at the end
