@@ -843,7 +843,7 @@ class jMQTT extends eqLogic {
             $this->log(
                 'info',
                 sprintf(
-                    'The #%s# equipment is subscribed to topic \'%s\' with a Qos of %s',
+                    'Equipment #%s# subscribed to topic \'%s\' with a Qos of %s',
                     $this->getHumanName(), $topic, $qos
                 )
             );
@@ -851,7 +851,7 @@ class jMQTT extends eqLogic {
             $this->log(
                 'info',
                 sprintf(
-                    'Broker %s has subscribed to topic \'%s\' with a Qos of %s',
+                    'Broker %s subscribed to topic \'%s\' with a Qos of %s',
                     $this->getName(), $topic, $qos
                 )
             );
@@ -913,12 +913,12 @@ class jMQTT extends eqLogic {
         // If there is no other eqLogic using the same topic, we can unsubscribe
         if ($this->getType() == jMQTTConst::TYP_EQPT) {
             $this->log('info', sprintf(
-                'Equipment #%s# has unsubscribed from topic \'%s\'',
+                'Equipment #%s# unsubscribed from topic \'%s\'',
                 $this->getHumanName(), $topic
             ));
         } else {
             $this->log('info', sprintf(
-                'Broker %s has unsubscribed from topic \'%s\'.',
+                'Broker %s unsubscribed from topic \'%s\'.',
                 $this->getName(), $topic
             ));
         }
@@ -1510,7 +1510,7 @@ class jMQTT extends eqLogic {
         $listener = listener::searchClassFunctionOption(
             'jMQTTCmd',
             'listenerAction',
-            '"eqLogic":'.strval($this->getId())
+            '"eqLogic":' . strval($this->getId())
         );
         foreach ($listener as $l)
             $l->remove();

@@ -607,7 +607,7 @@ class jMQTTCmd extends cmd {
         $listener = listener::searchClassFunctionOption(
             __CLASS__,
             'listenerAction',
-            '"cmd":'.strval($this->getId())
+            '"cmd":' . strval($this->getId())
         );
         if (empty($listener)) { // No listener found
             $listener = null;
@@ -713,7 +713,7 @@ class jMQTTCmd extends cmd {
         $listener = listener::searchClassFunctionOption(
             __CLASS__,
             'listenerAction',
-            '"cmd":'.strval($this->getId())
+            '"cmd":' . strval($this->getId())
         );
         foreach ($listener as $l) {
             jMQTT::logger('debug', sprintf(
