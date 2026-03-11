@@ -24,9 +24,9 @@ jmqtt_globals.icons = {
         status: {
             selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt_globals.daemonState) ? 'disabled' : info.color; },
             success:  { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connexion au Broker active}}' },
-            warning:  { icon: 'fas fa-minus-circle', color: 'warning', msg: '{{Connexion au Broker en échec}}' },
-            danger:   { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker désactivée}}' },
-            disabled: { icon: '',                    color: 'warning', msg: '{{Démon non démarré}}' }
+            danger:   { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker en échec}}' },
+            warning:  { icon: '',                    color: 'warning', msg: '{{Connexion au Broker désactivée}}' },
+            down:     { icon: '',                    color: 'danger',  msg: '{{Démon non démarré}}' }
         },
         visible: {
             selector: function(_eq) { return _eq.isVisible == '1'; },
