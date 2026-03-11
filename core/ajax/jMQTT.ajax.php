@@ -164,7 +164,7 @@ try {
             }
             ajax::success(array(
                 'success' => false,
-                'message' => __("Exception: ", __FILE__) . $e->getMessage(),
+                'message' => __("Exception : ", __FILE__) . $e->getMessage(),
                 'stack' => $e->getTraceAsString(),
                 'value' => ''
             ));
