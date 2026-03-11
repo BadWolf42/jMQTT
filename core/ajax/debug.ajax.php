@@ -290,6 +290,108 @@ try {
         ajax::success($response);
     }
 
+// ----------------------- Backup / Restore ------------------------
+    function listBackup() {
+        $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
+        $files = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
+        sort($files);
+        $backups = array();
+        foreach ($files as $backup)
+            $backups[] = array(
+                'name' => $backup,
+                'size' => sizeFormat(filesize($backup_dir.'/'.$backup))
+            );
+        // jMQTT::logger('debug', 'listBackup: ' . json_encode($backups, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+        return $backups;
+    }
+    if ($action == 'backupList') {
+        jMQTT::logger('debug', 'debug.ajax.php: ' . $action);
+        ajax::success(listBackup());
+    }
+    if ($action == 'backupCreate') {
+        jMQTT::logger('info', "JMQTT backup launched...");
+        $out = null;
+        $code = null;
+        exec('php ' . __DIR__ . '/../../resources/jMQTT_backup.php --all >> ' . log::getPathToLog('jMQTT') . ' 2>&1', $out, $code);
+        if ($code)
+            throw new Exception("JMQTT backup failed, see jMQTT log");
+        jMQTT::logger('info', "JMQTT backup successful");
+        ajax::success(listBackup());
+    }
+    if ($action == 'backupRemove') {
+        /** @var string $_backup */
+        $_backup = init('file');
+        jMQTT::logger('debug', 'debug.ajax.php: ' . $action . ': file=' . $_backup);
+        if ($_backup == '') {
+            throw new Exception("Please provide the file to delete");
+        }
+
+        $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
+        if (in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))) && file_exists($backup_dir.'/'.$_backup))
+            unlink($backup_dir . '/' . $_backup);
+        else
+            throw new Exception("Unable to delete this file");
+        ajax::success();
+    }
+    if ($action == 'backupRestore') {
+        /** @var string $_backup */
+        $_backup = init('file');
+        jMQTT::logger('debug', 'debug.ajax.php: ' . $action . ': file=' . $_backup);
+        if ($_backup == ''){
+            throw new Exception("Please provide the file to restore");
+        }
+
+        $backup_dir = realpath(__DIR__ . '/../../' . jMQTTConst::PATH_BACKUP);
+        if (!in_array($_backup, ls($backup_dir, '*.tgz', false, array('files', 'quiet'))))
+            throw new Exception("Unable to restore the supplied file");
+
+        $msg = sprintf("Restoring backup %s...", $_backup);
+        @message::removeAll('jMQTT', 'backupRestoreEnded');
+        @message::add('jMQTT', $msg, '', 'backupRestoreStarted');
+        jMQTT::logger('warning', $msg);
+        // Use a temporary log file for restoration
+        file_put_contents(log::getPathToLog('tmp_jMQTT'), date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "\n");
+        // exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . );
+
+        // Flags
+        $flags = '';
+        if (init('nohwcheck') == '1') $flags .= '--no-hw-check ';
+        if (init('notfolder') == '1') $flags .= '--not-folder ';
+        if (init('noteqcmd') == '1') $flags .= '--not-eq-cmd ';
+        if (init('byname') == '1') $flags .= '--by-name ';
+        if (init('dodelete') == '1') $flags .= '--do-delete ';
+        if (init('notcache') == '1') $flags .= '--not-cache ';
+        if (init('nothistory') == '1') $flags .= '--not-history ';
+        if (init('dologs') == '1') $flags .= '--do-logs ';
+        if (init('domosquitto') == '1') $flags .= '--do-mosquitto ';
+        if (init('verbose') == '1') $flags .= '--verbose ';
+        if (init('apply') == '1') $flags .= '--apply ';
+
+        // Launch restoration
+        $out = null;
+        $res = null;
+        exec('php ' . __DIR__ . '/../../resources/jMQTT_restore.php ' . $flags . '--file ' . $backup_dir.'/'.$_backup . ' >> ' . log::getPathToLog('tmp_jMQTT') . ' 2>&1', $out, $res);
+
+        // Append temporary log to jMQTT log
+        file_put_contents(log::getPathToLog('jMQTT'), file_get_contents(log::getPathToLog('tmp_jMQTT')), FILE_APPEND);
+        // exec('cat ' . log::getPathToLog('tmp_jMQTT') . ' >> ' . log::getPathToLog('jMQTT'));
+        unlink(log::getPathToLog('tmp_jMQTT'));
+        // exec('rm ' . log::getPathToLog('tmp_jMQTT'));
+        @message::removeAll('jMQTT', 'backupRestoreStarted');
+        if (!$res) {
+            $msg = sprintf("Backup %s restored successfully", $_backup);
+            file_put_contents(log::getPathToLog('jMQTT'), date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "\n", FILE_APPEND);
+            // exec("echo '" . date('[Y-m-d H:i:s][\I\N\F\O] : ') . $msg . "' >> " . log::getPathToLog('jMQTT'));
+            ajax::success();
+        } else {
+            $msg = sprintf("Backup %s restoration failed, see jMQTT log", $_backup);
+            file_put_contents(log::getPathToLog('jMQTT'), date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $msg . "\n", FILE_APPEND);
+            // exec("echo '" . date('[Y-m-d H:i:s][\E\R\R\O\R] : ') . $msg . "' >> " . log::getPathToLog('jMQTT'));
+            @message::add('jMQTT', $msg, '', 'backupRestoreEnded');
+            throw new Exception($msg);
+        }
+    }
+
 // -------------------- Simulate dangerous actions --------------------
     // Installation and files
     if ($action == 'depCheck') {

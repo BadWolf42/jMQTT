@@ -36,7 +36,7 @@ sendVarToJS('dStatus', $docker);
 ?>
 <form class="form-horizontal" style="min-height: 250px;">
     <div class="row">
-    <div class="col-lg-6 col-sm-12">
+    <div class="col-lg-12 col-sm-12">
 <?php
 if (!$docker) {
 ?>
@@ -122,55 +122,6 @@ if ($docker) {
             <div class="col-sm-1"></div>
         </div>
 <?php } /* $docker */ ?>
-    </div>
-    <div class="col-lg-6 col-sm-12">
-        <legend><i class="fas fa-folder-open"></i>{{Sauvegarder les équipements et la configuration de jMQTT}}</legend>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">&nbsp;</label>
-            <div class="col-sm-5">
-                <a class="btn btn-success" id="bt_backupJMqttStart" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i> <i class="fas fa-save"></i> {{Lancer une sauvegarde}}</a>
-            </div>
-            <div class="col-sm-6"></div>
-        </div>
-        <legend><i class="fas fa-tape"></i>{{Sauvegardes disponibles}}</legend>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">&nbsp;</label>
-            <div class="col-sm-10">
-                <select class="form-control" id="sel_backupJMqtt">
-<?php
-// List all jMQTT backup files
-$backup_dir = realpath(__DIR__ . '/../' . jMQTTConst::PATH_BACKUP);
-$backups = ls($backup_dir, '*.tgz', false, array('files', 'quiet'));
-rsort($backups);
-foreach ($backups as $backup)
-    echo '<option value="'.$backup.'">'.$backup.' ('.sizeFormat(filesize($backup_dir.'/'.$backup)).")</option>\n";
-?>
-                </select>
-            </div>
-            <div class="col-sm-1"></div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">&nbsp;</label>
-            <div class="col-sm-5">
-                <a class="btn btn-danger" id="bt_backupJMqttRemove" style="width:100%;"><i class="fas fa-trash"></i> {{Supprimer la sauvegarde}}</a>
-            </div>
-            <div class="col-sm-5">
-                <a class="btn btn-warning" id="bt_backupJMqttRestore" style="width:100%;"><i class="fas fa-sync fa-spin" style="display:none;"></i>&nbsp;<i class="far fa-file"></i> {{Restaurer la sauvegarde}} <span class="danger">(BETA)</span></a>
-            </div>
-            <div class="col-sm-1"></div>
-        </div>
-        <div class="form-group">
-            <label class="col-sm-1 control-label">&nbsp;</label>
-            <div class="col-sm-5">
-                    <a class="btn btn-success" id="bt_backupJMqttDownload" style="width:100%;"><i class="fas fa-cloud-download-alt"></i> {{Télécharger la sauvegarde}}</a>
-            </div>
-            <div class="col-sm-5">
-                <span class="btn btn-info btn-file" style="width:100%;">
-                    <i class="fas fa-cloud-upload-alt"></i> {{Ajouter une sauvegarde}}<input id="bt_backupJMqttUpload" type="file" accept=".tgz" name="file" data-url="plugins/jMQTT/core/ajax/jMQTT.ajax.php?action=fileupload&amp;dir=backup">
-                </span>
-            </div>
-            <div class="col-sm-1"></div>
-        </div>
     </div>
     </div>
 </form>
