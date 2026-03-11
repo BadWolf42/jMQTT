@@ -1425,7 +1425,7 @@ class jMQTT extends eqLogic {
      * Avoid backing-up "resources/venv" folder
      */
     public static function backupExclude() {
-        return ['resources/jmqttd/venv'];
+        return ['resources/jmqttd/venv', 'data/backup'];
     }
 
     /**
