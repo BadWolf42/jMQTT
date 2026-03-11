@@ -122,6 +122,15 @@ if ($docker) {
             <div class="col-sm-1"></div>
         </div>
 <?php } /* $docker */ ?>
+
+        <legend><i class="fas fa-bug"></i>{{Débogage}}</legend>
+        <div class="form-group">
+            <label class="col-sm-4 control-label">{{Afficher le panneau de débogage}}</label>
+            <div class="col-sm-8">
+                <input type="checkbox" class="configKey form-control" id="box_debugToggle" data-l1key="debugMode" />
+            </div>
+        </div>
+
     </div>
     </div>
 </form>

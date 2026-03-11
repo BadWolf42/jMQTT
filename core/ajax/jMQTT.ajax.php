@@ -368,6 +368,13 @@ try {
         ajax::success(jMQTTPlugin::mosquittoCheck());
     }
 
+    if ($action == 'debugModaleToggle') {
+        if (init('status') == '')
+            throw new Exception(__('Valeur manquante', __FILE__));
+        config::save('debugMode', init('status'), 'jMQTT');
+        ajax::success();
+    }
+
     // ########################################################################
     // Community Post
     if ($action == 'jMQTTCommunityPost') {

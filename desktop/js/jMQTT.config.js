@@ -299,6 +299,29 @@ $('#bt_jmqttUrlOverride').on('click', function () {
     });
 });
 
+//////////////////////////////////////////////////////////////////////////////
+// Debugging modale visibility
+
+// Toggle debug modale
+$('#box_debugToggle').on('click', function () {
+    if (!$(this).hasClass('disabled')) {
+        jmqtt_config.jmqttAjax({
+            data: { action: "debugModaleToggle", status: $(this).value() },
+            success: function(data) {
+                if (data.state == 'ok') {
+                    if ($('#box_debugToggle').value()) {
+                        $.fn.showAlert({message: '{{Panneau de débogage activé. Rafraîchissez la page principale.}}', level: 'success'});
+                    } else {
+                        $.fn.showAlert({message: '{{Panneau de débogage désactivé.}}', level: 'success'});
+                    }
+                } else {
+                    $.fn.showAlert({message: data.result, level: 'danger'});
+                }
+            }
+        });
+    }
+});
+
 
 $(document).ready(function() {
     // Remove unneeded Save button
