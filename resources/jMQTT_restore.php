@@ -15,9 +15,6 @@ Backup tar.gz structure:
 require_once __DIR__ . '/../../../core/php/core.inc.php';
 require_once __DIR__ . '/jMQTT_backup.php';
 
-// TODO: Documentation of jMQTT_backup.php and jMQTT_restore.php
-//  labels: documentation, quality
-
 
 class DiffType {
     const Created = 'created';
