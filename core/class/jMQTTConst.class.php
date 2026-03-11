@@ -9,7 +9,6 @@ class jMQTTConst {
     const CLIENT_CONNECTED              = 'connected';
 
     const CLIENT_OK                     = 'ok';
-    const CLIENT_POK                    = 'pok';
     const CLIENT_NOK                    = 'nok';
 
     const CONF_KEY_TYPE                 = 'type';

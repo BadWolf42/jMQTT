@@ -1599,7 +1599,7 @@ class jMQTT extends eqLogic {
         if ($this->getIsEnable())
             return array(
                 'launchable' => jMQTTConst::CLIENT_OK,
-                'state' => jMQTTConst::CLIENT_POK,
+                'state' => jMQTTConst::CLIENT_NOK,
                 'message' => __("Le Démon jMQTT n'arrive pas à se connecter à ce Broker", __FILE__)
             );
 
@@ -1613,9 +1613,8 @@ class jMQTT extends eqLogic {
 
     /**
      * Return MQTT Client state
-     *   - jMQTTConst::CLIENT_OK: MQTT Client is running and mqtt broker is online
-     *   - jMQTTConst::CLIENT_POK: MQTT Client is running but mqtt broker is offline
-     *   - jMQTTConst::CLIENT_NOK: daemon is not running or Eq is disabled
+     *   - OK: MQTT Client is running and mqtt broker is online
+     *   - NOK: daemon is not running or Eq is disabled or cannot connect to Broker
      *
      * @return string ok or nok
      */
@@ -1625,7 +1624,7 @@ class jMQTT extends eqLogic {
         if ($this->getCache(jMQTTConst::CACHE_MQTTCLIENT_CONNECTED, false))
             return jMQTTConst::CLIENT_OK;
         if ($this->getIsEnable())
-            return jMQTTConst::CLIENT_POK;
+            return jMQTTConst::CLIENT_NOK;
         return jMQTTConst::CLIENT_NOK;
     }
 

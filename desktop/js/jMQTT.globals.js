@@ -22,11 +22,11 @@ jmqtt_globals = {};
 jmqtt_globals.icons = {
     broker: {
         status: {
-            selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt_globals.daemonState) ? false : info.state; },
-            ok:       { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connexion au Broker active}}' },
-            pok:      { icon: 'fas fa-minus-circle', color: 'warning', msg: '{{Connexion au Broker en échec}}' },
-            nok:      { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker désactivée}}' },
-            false:    { icon: 'fas fa-times-circle', color: 'danger',  msg: "{{Démon non démarré}}" }
+            selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt_globals.daemonState) ? 'disabled' : info.color; },
+            success:  { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connexion au Broker active}}' },
+            warning:  { icon: 'fas fa-minus-circle', color: 'warning', msg: '{{Connexion au Broker en échec}}' },
+            danger:   { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker désactivée}}' },
+            disabled: { icon: '',                    color: 'warning', msg: '{{Démon non démarré}}' }
         },
         visible: {
             selector: function(_eq) { return _eq.isVisible == '1'; },
@@ -64,11 +64,11 @@ jmqtt_globals.icons = {
             false:    { icon: 'far fa-square',                   color: 'success', msg: '{{Ajout auto. de commandes désactivé}}' }
         },
         battery: {
-            selector: function(_eq) { return (_eq.configuration.battery_cmd == '') ? 'none' : (_eq.status.batterydanger ? 'nok' : (_eq.status.batterywarning ? 'pok' : 'ok')); },
+            selector: function(_eq) { return (_eq.configuration.battery_cmd == '') ? 'none' : (_eq.status.batterydanger ? 'empty' : (_eq.status.batterywarning ? 'quarter' : 'full')); },
             none:     { icon: 'fas fa-plug',            color: '',        msg: '' },
-            ok:       { icon: 'fas fa-battery-full',    color: 'success', msg: '{{Batterie OK}}' },
-            pok:      { icon: 'fas fa-battery-quarter', color: 'warning', msg: '{{Batterie en alarme}}' },
-            nok:      { icon: 'fas fa-battery-empty',   color: 'danger',  msg: '{{Batterie en fin de vie}}' }
+            full:     { icon: 'fas fa-battery-full',    color: 'success', msg: '{{Batterie OK}}' },
+            quarter:  { icon: 'fas fa-battery-quarter', color: 'warning', msg: '{{Batterie en alarme}}' },
+            empty:    { icon: 'fas fa-battery-empty',   color: 'danger',  msg: '{{Batterie en fin de vie}}' }
         },
         availability: {
             selector: function(_eq) { return (_eq.configuration.availability_cmd == '') ? 'none' : (_eq.status.warning ? 'nok' : 'ok'); },

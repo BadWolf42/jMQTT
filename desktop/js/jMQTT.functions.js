@@ -190,7 +190,7 @@ jmqtt.getMqttClientInfo = function(_eq) {
         return {la: 'ok',  lacolor: 'success', state: 'ok',  message: "{{Le Démon jMQTT est correctement connecté à ce Broker}}",   color:'success'};
     // Client is disconnected from the Broker
     if (_eq.isEnable == '1')
-        return {la: 'ok',  lacolor: 'success', state: 'pok', message: "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}", color:'warning'};
+        return {la: 'ok',  lacolor: 'success', state: 'nok', message: "{{Le Démon jMQTT n'arrive pas à se connecter à ce Broker}}", color:'warning'};
     // Client is disabled
     return     {la: 'nok', lacolor: 'danger',  state: 'nok', message: "{{La connexion à ce Broker est désactivée}}",                color:'danger'};
 }
