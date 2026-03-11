@@ -16,5 +16,5 @@ jobs:
           # target_languages: "en_US,es_ES,de_DE,it_IT,pt_PT"
           deepl_api_key: ${{ secrets.DEEPL_API_KEY }}
           # include_empty_translation: true
-          # generate_source_language_translations: true
+          generate_source_language_translations: true
           # debug: true
