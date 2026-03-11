@@ -8,6 +8,6 @@ while ($cron = cron::byClassAndFunction('jMQTT', 'disableIncludeMode')) {
 }
 
 // @phpstan-ignore-next-line
-jMQTT::logger('info', __("Crons orphelins supprimés", __FILE__));
+jMQTT::logger('info', "Orphaned crons deleted");
 
 ?>

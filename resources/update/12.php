@@ -25,7 +25,7 @@ foreach ((jMQTT::getBrokers()) as $broker) {
         $broker->save();
     } catch (Throwable $e) {
         if (log::getLogLevel(jMQTT::class) > 100)
-            jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), 'update_12_0_0_a', $e->getMessage()));
+            jMQTT::logger('error', sprintf("%1\$s() has raised Exception: %2\$s", 'update_12_0_0_a', $e->getMessage()));
         else
             jMQTT::logger(
                 'error',
@@ -33,8 +33,7 @@ foreach ((jMQTT::getBrokers()) as $broker) {
                     "\n",
                     ' <br/> ',
                     sprintf(
-                        __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                        ",<br/>@Stack: %3\$s,<br/>@BrokerId: %4\$s.",
+                        "%1\$s() has raised Exception: %2\$s,<br/>@Stack: %3\$s,<br/>@BrokerId: %4\$s.",
                         'update_12_0_0_a',
                         $e->getMessage(),
                         $e->getTraceAsString(),
@@ -62,7 +61,7 @@ foreach (jMQTT::byType(jMQTT::class) as $eqLogic) {
         }
     } catch (Throwable $e) {
         if (log::getLogLevel(jMQTT::class) > 100)
-            jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), 'update_12_0_0_b', $e->getMessage()));
+            jMQTT::logger('error', sprintf("%1\$s() has raised Exception: %2\$s", 'update_12_0_0_b', $e->getMessage()));
         else
             jMQTT::logger(
                 'error',
@@ -70,8 +69,7 @@ foreach (jMQTT::byType(jMQTT::class) as $eqLogic) {
                     "\n",
                     ' <br/> ',
                     sprintf(
-                        __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                        ",<br/>@Stack: %3\$s,<br/>@EqlogicId: %4\$s.",
+                        "%1\$s() has raised Exception: %2\$s,<br/>@Stack: %3\$s,<br/>@EqlogicId: %4\$s.",
                         'update_12_0_0_b',
                         $e->getMessage(),
                         $e->getTraceAsString(),
@@ -82,6 +80,6 @@ foreach (jMQTT::byType(jMQTT::class) as $eqLogic) {
     }
 }
 
-jMQTT::logger('info', __("Clés de configuration des Brokers jMQTT modifiées", __FILE__));
+jMQTT::logger('info', "Configuration keys of jMQTT Brokers modified");
 
 ?>

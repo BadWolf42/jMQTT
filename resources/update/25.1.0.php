@@ -12,7 +12,7 @@ foreach (jMQTT::byType('jMQTT') as $eqLogic) {
     $eqLogic->setComment($confComment);
     $eqLogic->save();
 }
-jMQTT::logger('info', __("Commentaires des équipements correctement migrés", __FILE__));
+jMQTT::logger('info', "Comments on equipements successfully migrated");
 
 
 $jeedomRoot = getRootPath();
@@ -56,11 +56,11 @@ foreach ($existing_files as list($templateName, $file)) {
         file_put_contents($jeedomRoot . '/' . $file, $jsonExport . "\n");
     } catch (Throwable $e) {
         jMQTT::logger('error', sprintf(
-            __("Erreur lors de la lecture du Template '%s'", __FILE__),
+            __("Error reading template '%s'", __FILE__),
             $jeedomRoot . '/' . $file
         ));
     }
 }
-jMQTT::logger('info', __("Commentaires des templates correctement migrés", __FILE__));
+jMQTT::logger('info', "Comments on templates successfully migrated");
 
 ?>

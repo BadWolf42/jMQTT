@@ -11,6 +11,6 @@ foreach ((jMQTT::getBrokers()) as $broker) {
     $broker->save();
 }
 
-jMQTT::logger('info', __("Désactivation de l'ajout automatique de commandes sur les Broker", __FILE__));
+jMQTT::logger('info', "Disabling automatic command creation on Brokers");
 
 ?>

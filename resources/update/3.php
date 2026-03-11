@@ -13,7 +13,7 @@ do {
 }
 while (true);
 
-jMQTT::logger('info', __("Suppression du démon cron précédent", __FILE__));
+jMQTT::logger('info', "Deleting the cron of previous daemon");
 
 
 /**

@@ -7,7 +7,7 @@ foreach ($eqLogics as $eqLogic) {
     $eqLogic->moveTopicToConfiguration();
 }
 
-jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les équipements jMQTT", __FILE__));
+jMQTT::logger('info', "Topics moved to configuration for all jMQTT equipment");
 
 
 $templateFolderPath = __DIR__ . '/../../data/template';
@@ -15,6 +15,6 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
     jMQTT::moveTopicToConfigurationByFile($file);
 }
 
-jMQTT::logger('info', __("Topics déplacé vers la configuration pour tous les Templates jMQTT", __FILE__));
+jMQTT::logger('info', "Topics moved to configuration for all jMQTT templates");
 
 ?>

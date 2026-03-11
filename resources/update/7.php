@@ -39,7 +39,7 @@ foreach ($eqLogics as $eqLogic) {
     }
 }
 
-jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les commandes info jMQTT", __FILE__));
+jMQTT::logger('info', "JsonPath separate from Topic for all jMQTT info commands");
 
 
 $templateFolderPath = __DIR__ . '/../../data/template';
@@ -104,11 +104,11 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
         $jsonExport = json_encode(array($templateKey=>$templateValue), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         file_put_contents(__DIR__ . '/../../' . jMQTTConst::PATH_TEMPLATES_PERSO . $file, $jsonExport);
     } catch (Throwable $e) {
-        throw new Exception(sprintf(__("Erreur lors de la lecture du Template '%s'", __FILE__), $file));
+        throw new Exception(sprintf("Error reading template '%s'.", $file));
     }
 }
 
-jMQTT::logger('info', __("JsonPath séparé du Topic pour tous les Templates jMQTT", __FILE__));
+jMQTT::logger('info', "JsonPath separated from topic for all jMQTT templates");
 
 
 raiseForceDepInstallFlag();

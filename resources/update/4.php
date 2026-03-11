@@ -15,6 +15,6 @@ foreach ((jMQTT::getBrokers()) as $broker) {
     }
 }
 
-jMQTT::logger('info', __("Ajout de tags sur le statut des Broker", __FILE__));
+jMQTT::logger('info', "Add tags to Broker status");
 
 ?>

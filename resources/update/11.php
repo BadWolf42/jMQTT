@@ -40,6 +40,6 @@ foreach (array_diff(scandir($oldPath), array('.','..')) as $file) {
 
 rmdir($oldPath);
 
-jMQTT::logger('info', __("Certificats déplacés dans la base de donnée", __FILE__));
+jMQTT::logger('info', "Certificates moved to database");
 
 ?>

@@ -37,7 +37,7 @@ foreach ($eqNonBrokers as $brk) {
     }
 }
 
-jMQTT::logger('info', __("Equipements nettoyés des informations du Broker", __FILE__));
+jMQTT::logger('info', "Equipments cleaned of Broker information");
 
 
 // list of broker configurations
@@ -89,6 +89,6 @@ foreach (ls($templateFolderPath, '*.json', false, array('files', 'quiet')) as $f
     } catch (Throwable $e) {}
 }
 
-jMQTT::logger('info', __("Templates nettoyés des informations du Broker", __FILE__));
+jMQTT::logger('info', "Templates cleaned of Broker information.");
 
 ?>

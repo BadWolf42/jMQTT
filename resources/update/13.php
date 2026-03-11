@@ -17,7 +17,7 @@ foreach ((jMQTT::getBrokers()) as $broker) {
         }
     } catch (Throwable $e) {
         if (log::getLogLevel(jMQTT::class) > 100)
-            jMQTT::logger('error', sprintf(__("%1\$s() a levé l'Exception: %2\$s", __FILE__), 'update_13_0_0', $e->getMessage()));
+            jMQTT::logger('error', sprintf("%1\$s() has raised Exception: %2\$s", 'update_13_0_0', $e->getMessage()));
         else
             jMQTT::logger(
                 'error',
@@ -25,8 +25,7 @@ foreach ((jMQTT::getBrokers()) as $broker) {
                     "\n",
                     ' <br/> ',
                     sprintf(
-                        __("%1\$s() a levé l'Exception: %2\$s", __FILE__).
-                        ",<br/>@Stack: %3\$s,<br/>@BrokerId: %4\$s.",
+                        "%1\$s() has raised Exception: %2\$s,<br/>@Stack: %3\$s,<br/>@BrokerId: %4\$s.",
                         'update_13_0_0',
                         $e->getMessage(),
                         $e->getTraceAsString(),
@@ -37,6 +36,6 @@ foreach ((jMQTT::getBrokers()) as $broker) {
     }
 }
 
-jMQTT::logger('info', __("Configuration des Client-Id mises à jour", __FILE__));
+jMQTT::logger('info', "Configuring the updated Client-Id");
 
 ?>
