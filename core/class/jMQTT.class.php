@@ -1303,47 +1303,23 @@ class jMQTT extends eqLogic {
     public static function health() {
         $return = array();
         foreach (self::getBrokers() as $broker) {
-            if (!$broker->getIsEnable()) {
-                $return[] = array(
-                    'test' => __('Accès au broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
-                    'result' => __('Client jMQTT désactivé', __FILE__),
-                    'advice' => '',
-                    'state' => true
-                );
-                continue;
-            }
-            $mosqHost = $broker->getConf(jMQTTConst::CONF_KEY_MQTT_ADDRESS);
-            $mosqPort = $broker->getConf(jMQTTConst::CONF_KEY_MQTT_PORT);
-            $socket = socket_create(AF_INET, SOCK_STREAM, 0);
-            $state = false;
-            if ($socket !== false) {
-                $state = socket_connect($socket , $mosqHost, $mosqPort);
-                socket_close($socket);
-            }
-
+            $info = $broker->getMqttClientInfo();
+            $brkName = ' <b>' . $broker->getName() . '</b>';
+            $launchable = $info['launchable'] == jMQTTConst::CLIENT_OK;
             $return[] = array(
-                'test' => __('Accès au broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
-                'result' => $state ? __('OK', __FILE__) : __('NOK', __FILE__),
-                'advice' => $state ? '' : __('Vérifiez les paramètres de connexion réseau', __FILE__),
-                'state' => $state
+                'test' => __('Configuration du broker', __FILE__) . $brkName,
+                'result' => $launchable ? 'OK' : $info['message'],
+                'advice' => '',
+                'state' => !$broker->getIsEnable() || $launchable,
             );
-
-            if ($state) {
-                $info = $broker->getMqttClientInfo();
+            if ($launchable) {
+                $state = $info['state'] == jMQTTConst::CLIENT_OK;
                 $return[] = array(
-                    'test' => __('Configuration du broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
-                    'result' => strtoupper($info['launchable']),
-                    'advice' => ($info['launchable'] != jMQTTConst::CLIENT_OK ? $info['message'] : ''),
-                    'state' => ($info['launchable'] == jMQTTConst::CLIENT_OK)
+                    'test' => __('Connexion au broker', __FILE__) . $brkName,
+                    'result' => $info['message'],
+                    'advice' => '',
+                    'state' => $state,
                 );
-                if (end($return)['state']) {
-                    $return[] = array(
-                        'test' => __('Connexion au broker', __FILE__) . ' <b>' . $broker->getName() . '</b>',
-                        'result' => strtoupper($info['state']),
-                        'advice' => ($info['state'] != jMQTTConst::CLIENT_OK ? $info['message'] : ''),
-                        'state' => ($info['state'] == jMQTTConst::CLIENT_OK)
-                    );
-                }
             }
         }
         return $return;
@@ -1574,9 +1550,9 @@ class jMQTT extends eqLogic {
         // Not a Broker
         if ($this->getType() != jMQTTConst::TYP_BRK)
             return array(
-                'message' => '',
                 'launchable' => jMQTTConst::CLIENT_NOK,
-                'state' => jMQTTConst::CLIENT_NOK
+                'state' => jMQTTConst::CLIENT_NOK,
+                'message' => ''
             );
 
         // Daemon is down
