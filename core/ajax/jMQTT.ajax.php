@@ -119,7 +119,7 @@ try {
         if (file_exists(__DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php'))
             require_once __DIR__ . '/../../resources/JsonPath-PHP/vendor/autoload.php';
         if (!class_exists('JsonPath\JsonObject'))
-            throw new Exception(__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__));
+            throw new Exception(__("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez l'installation des dépendances", __FILE__));
 
         $jsonPath = trim(init('jsonPath'));
         if (strlen($jsonPath) == 0 || $jsonPath[0] != '$')

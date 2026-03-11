@@ -14,7 +14,7 @@
         "Impossible de téléverser le fichier (limite du serveur web ?)": "Unable to upload this file (web server limit?)",
         "Impossible de téléverser le fichier car il existe déjà. Par sécurité, il faut supprimer le fichier existant avant de le remplacer.": "Unable to upload this file as it already exists. To be on the safe side, delete the existing file before replacing it.",
         "L'extension de fichier '%s' n'est pas autorisée": "File extension '%s' is not allowed",
-        "La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances": "JsonPath-PHP library not found, restart dependencies",
+        "La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez l'installation des dépendances": "JsonPath-PHP library not found, restart dependencies installation",
         "Lancement du Mode Temps Réel...": "Starting Real Time mode...",
         "Le Chemin JSON n'a pas retourné de résultat sur ce message json": "The JsonPath returned no result on this Json payload",
         "Le fichier est trop gros (maximum %s)": "The file is too large (maximum %s)",
@@ -63,7 +63,7 @@
         "Impossible d'activer la publication automatique sur <b>#%1\\$s#</b>, car la commande <b>#%2\\$s#</b> référence le même topic": "Unable to activate automatic publication on <b>#%1\\$s#</b>, because the <b>#%2\\$s#</b> command references the same topic.",
         "Impossible de créer la commande <b>#%1\\$s#</b>, seules les commandes de status sont autorisées sur un équipement Broker (%2\\$s)": "Impossible to create <b>#%1\\$s#</b>command, only status commands are allowed on a Broker equipment (%2\\$s).",
         "Impossible de créer la commande <b>#%s#</b>, car une commande avec le même nom existe déjà !": "Impossible to create the <b>#%s#</b>command, because a command with the same name already exists!",
-        "La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances": "JsonPath-PHP library not found, restart dependencies installation",
+        "La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez l'installation des dépendances": "JsonPath-PHP library not found, restart dependencies installation",
         "Le topic de la commande #%s# est incompatible avec le topic de souscription de l'équipement associé": "Topic of command #%s# is not compatible with the subscription topic of associated equipment."
     },
     "plugins/jMQTT/core/class/jMQTTComFromDaemon.class.php": {

@@ -174,7 +174,7 @@ class jMQTTCmd extends cmd {
         if (!class_exists('JsonPath\JsonObject')) {
             $eqLogic->log(
                 'error',
-                __("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez les dépendances", __FILE__)
+                __("La bibliothèque JsonPath-PHP n'a pas été trouvée, relancez l'installation des dépendances", __FILE__)
             );
             return;
         }
