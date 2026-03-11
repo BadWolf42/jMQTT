@@ -24,7 +24,7 @@
         "forum": "https://community.jeedom.com/tag/plugin-jmqtt",
         "github": "https://github.com/BadWolf42/jMQTT"
     },
-    "languages": ["fr_FR","en_US"],
+    "languages": ["fr_FR","en_US","es_ES"],
     "compatibility": ["atlas","diy","docker","luna","miniplus","rpi","smart","v4"],
     "pluginVersion" : "26.2.0"
 }
