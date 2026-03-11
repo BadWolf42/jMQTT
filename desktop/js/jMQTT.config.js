@@ -309,7 +309,7 @@ $('#box_debugToggle').on('click', function () {
             data: { action: "debugModaleToggle", status: $(this).value() },
             success: function(data) {
                 if (data.state == 'ok') {
-                    if ($('#box_debugToggle').value()) {
+                    if ($('#box_debugToggle').value() === "1") {
                         $.fn.showAlert({message: '{{Panneau de débogage activé. Rafraîchissez la page principale.}}', level: 'success'});
                     } else {
                         $.fn.showAlert({message: '{{Panneau de débogage désactivé.}}', level: 'success'});
