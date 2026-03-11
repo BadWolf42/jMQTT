@@ -94,7 +94,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                     echo '<legend class="danger"><i class="fas fa-table"></i> {{Mes Equipements orphelins}}&nbsp;<sup>';
                     echo '<i class="fas fa-exclamation-triangle tooltips" title="';
                     echo '{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.}}<br/>';
-                    echo '{{Il ne devrait pas y avoir un seul orphelin : supprimez-les ou rattachez-les à un broker.}}"></i></sup></legend>';
+                    echo '{{Il ne devrait pas y avoir un seul orphelin : supprimez-les ou rattachez-les à un Broker.}}"></i></sup></legend>';
                     $has_orphans = true;
                 }
                 foreach ($nonBrokers as $eqL) {
@@ -176,7 +176,7 @@ function displayActionCard($action_name, $fa_icon, $action = '', $class = 'logoS
                                 </div>
                                 <div class="col-lg-2">
                                     <label class="col-lg-8 control-label" style="text-align:right;">{{Retained}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                                        title="{{Recevoir aussi les payloads qui sont déjà retenus par le Broker.}}"></i></sup></label>
+                                        title="{{Recevoir aussi les payloads qui sont déjà retenus (retained) par le Broker.}}"></i></sup></label>
                                     <input type="checkbox" class="form-control" id="mqttRetTopic" checked="false">
                                 </div>
                                 <div class="col-lg-2">

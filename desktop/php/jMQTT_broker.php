@@ -79,7 +79,7 @@
                     <fieldset>
                         <legend><i class="fas fa-rss"></i>{{Paramètres d'accès au Broker}}</legend>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label">{{Adresse du broker}}&nbsp;<sup><i class="fa fa-question-circle tooltips" title="{{Paramètres d'accès au Broker.}}"></i></sup></label>
+                            <label class="col-lg-4 control-label">{{Adresse du broker}}&nbsp;<sup><i class="fa fa-question-circle tooltips" title="{{Adresse d'accès au Broker.}}"></i></sup></label>
                             <div class="col-lg-7 input-group">
                                 <span class="input-group-btn">
                                     <select class="eqLogicAttr form-control roundedLeft tooltips" data-l1key="configuration" data-l2key="mqttProto" style="width:80px;"
@@ -125,13 +125,13 @@
 
                         <div class="form-group">
                             <label class="col-lg-4 control-label">{{Publier le statut (LWT)}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                            title="{{Active/Désactive la publication du statut (Last Will and Testament) en MQTT sur le Broker.}}"></i></sup></label>
+                            title="{{Active/Désactive la publication du statut LWT (Last Will and Testament) en MQTT sur le Broker.}}"></i></sup></label>
                             <div class="col-lg-1">
                                 <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttLwt">
                             </div>
                             <div class="col-lg-6 jmqttLwt" style="display: none;">
                                 <input class="eqLogicAttr form-control tooltips" data-l1key="configuration" data-l2key="mqttLwtTopic" placeholder="jeedom/status"
-                                title="{{Topic de publication du statut (Last Will and Testament) en MQTT sur ce Broker ('jeedom/status' par défaut).}}">
+                                title="{{Topic de publication du statut LWT (Last Will and Testament) en MQTT sur ce Broker ('jeedom/status' par défaut).}}">
                             </div>
                         </div>
                         <div class="form-group jmqttLwt" style="display:none">
@@ -184,7 +184,7 @@
                                     <select class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsCheck">
                                         <option value="public">{{Activé - Autorités Publiques}}</option>
                                         <option value="private">{{Activé - Autorité Personnalisée}}</option>
-                                        <option value="disabled">{{Désactivé - Non Recommandé}}</option>
+                                        <option value="disabled">{{Désactivé (Non recommandé)}}</option>
                                     </select>
                                 </div>
                             </div>
@@ -193,7 +193,7 @@
                                 title="{{Autorité de certification attendue pour le Broker.}}"></i></sup></label>
                                 <div class="col-lg-1"></div>
                                 <div class="col-lg-8 input-group">
-                                    <div class="dropzone rounded" style="display:none">{{Déposez ici le certificat CA du Broker}}</div>
+                                    <div class="dropzone rounded" style="display:none">{{Déposez ici le Certificat CA du Broker}}</div>
                                     <textarea class="eqLogicAttr form-control cert blured roundedLeft" data-l1key="configuration" data-l2key="mqttTlsCa"></textarea>
                                     <span class="btn btn-default btn-file input-group-addon uploadzone roundedRight"><i class="fas fa-upload"></i></span>
                                 </div>
@@ -205,7 +205,7 @@
                                     <input type="checkbox" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="mqttTlsClient">
                                 </div>
                                 <div class="col-lg-8 input-group jmqttTlsClient" style="display:none">
-                                    <div class="dropzone rounded" style="display:none;">{{Déposez ici le certificat publique du client MQTT}}</div>
+                                    <div class="dropzone rounded" style="display:none;">{{Déposez ici le Certificat Publique du client MQTT}}</div>
                                     <textarea class="eqLogicAttr form-control cert blured roundedLeft" data-l1key="configuration" data-l2key="mqttTlsClientCert"></textarea>
                                     <span class="btn btn-default btn-file input-group-addon uploadzone roundedRight"><i class="fas fa-upload"></i></span>
                                 </div>
@@ -215,7 +215,7 @@
                                 title="{{Clée Privée du Client permettant de discuter avec le Broker.<br/>Cette Clé Privée doit être associée au Certificat au-dessus, si l'un est fourni l'autre est obligatoire.}}"></i></sup></label>
                                 <div class="col-lg-1"></div>
                                 <div class="col-lg-8 input-group">
-                                    <div class="dropzone rounded" style="display:none">{{Déposez ici la clé privée du client MQTT}}</div>
+                                    <div class="dropzone rounded" style="display:none">{{Déposez ici la Clé Privée du client MQTT}}</div>
                                     <textarea class="eqLogicAttr form-control cert blured roundedLeft" data-l1key="configuration" data-l2key="mqttTlsClientKey"></textarea>
                                     <span class="btn btn-default btn-file input-group-addon uploadzone roundedRight"><i class="fas fa-upload"></i></span>
                                 </div>

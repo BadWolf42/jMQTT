@@ -44,7 +44,7 @@ try {
             $allowed_ext = '.tgz';
             $max_size = 100*1024*1024; // 100MB
         } else {
-            throw new Exception(__('Téléversement invalide', __FILE__));
+            throw new Exception(__('Téléversement non valide', __FILE__));
         }
         if (filesize($_FILES['file']['tmp_name']) > $max_size) {
             throw new Exception(sprintf(__('Le fichier est trop gros (maximum %s)', __FILE__), sizeFormat($max_size)));
@@ -141,7 +141,7 @@ try {
             } else {
                 ajax::success(array(
                     'success' => false,
-                    'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce message json", __FILE__),
+                    'message' => __("Le Chemin JSON n'a pas retourné de résultat sur ce payload json", __FILE__),
                     'value' => ''
                 ));
             }

@@ -21,7 +21,7 @@
 // Actions on main plugin view
 //
 $('.eqLogicAction[data-action=addJmqttBrk]').off('click').on('click', function () {
-    bootbox.prompt("{{Nom du nouveau broker ?}}", function (result) {
+    bootbox.prompt("{{Nom du nouveau Broker ?}}", function (result) {
         if (result !== null) {
             jeedom.eqLogic.save({
                 type: 'jMQTT',
@@ -73,7 +73,7 @@ $('.eqLogicAction[data-action=addJmqttEq]').off('click').on('click', function ()
         callback: function (result){ if (result) {
             var broker = $('#addJmqttBrkSelector').value();
             if (broker === undefined || broker == null || broker == '' || broker == false) {
-                $.fn.showAlert({message: "{{Broker invalide !}}", level: 'warning'});
+                $.fn.showAlert({message: "{{Broker non valide !}}", level: 'warning'});
                 return false;
             }
             var eqName = $('#addJmqttEqName').value();

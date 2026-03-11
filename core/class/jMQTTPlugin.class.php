@@ -228,8 +228,8 @@ class jMQTTPlugin {
                     && plugin::byId('mqtt2')->isActive()
                     && config::byKey('mode', 'mqtt2', 'NotThere') == 'docker') {
                     // Plugin Active and mqtt2 mode is docker
-                    $res['by'] = 'MQTT Manager ' . __('(en docker)', __FILE__);
-                    $res['message'] = __('Mosquitto est installé <b>en docker</b> par', __FILE__);
+                    $res['by'] = 'MQTT Manager ' . __('(en Docker)', __FILE__);
+                    $res['message'] = __('Mosquitto est installé <b>en Docker</b> par', __FILE__);
                     $res['message'] .= ' <a class="control-label danger" href="index.php?v=d&p=plugin&id=mqtt2">';
                     $res['message'] .= 'MQTT Manager</a> (mqtt2).';
                 }

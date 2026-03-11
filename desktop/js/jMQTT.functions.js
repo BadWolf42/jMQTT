@@ -365,7 +365,7 @@ jmqtt.refreshEqLogicPage = function() {
         }
     }
     if (jeeFrontEnd.modifyWithoutSave) {
-        bootbox.confirm("{{La page a été modifiée. Etes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
+        bootbox.confirm("{{La page a été modifiée. Êtes-vous sûr de vouloir la recharger sans sauver ?}}", function (result) {
             if (result)
                 refreshPage();
         });

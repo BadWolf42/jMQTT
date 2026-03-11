@@ -423,7 +423,7 @@ class jMQTTCmd extends cmd {
                         if (!is_object($cmd))
                             throw new Exception(
                                 sprintf(
-                                    __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> est invalide", __FILE__),
+                                    __("Impossible d'activer la publication automatique sur <b>#%1\$s#</b>, car la commande <b>#%2\$s#</b> n'est pas valide", __FILE__),
                                     $this->getHumanName(),
                                     $cmd_id
                                 )

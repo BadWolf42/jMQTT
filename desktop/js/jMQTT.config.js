@@ -91,7 +91,7 @@ jmqtt_config.logSaveWrapper = function () {
                     },
                     success: function(data) {
                         if (data.state == 'ok')
-                            $.fn.showAlert({message: "{{Le démon est averti, il n'est pas nécessire de le redémarrer.}}", level: 'success'});
+                            $.fn.showAlert({message: "{{Niveau de log du démon modifié, il n'est pas nécessaire de le redémarrer.}}", level: 'success'});
                     }
                 });
             }
@@ -107,7 +107,7 @@ jmqtt_config.logSaveWrapper = function () {
 $('#bt_mosquittoInstall').on('click', function () {
     if (!$(this).hasClass('disabled')) {
         var btn = $(this);
-        bootbox.confirm('{{Etes-vous sûr de vouloir installer le service Mosquitto en local ?}}', function (result) {
+        bootbox.confirm('{{Êtes-vous sûr de vouloir installer le service Mosquitto en local ?}}', function (result) {
             if (result) {
                 jmqtt_config.toggleIco(btn);
                 jmqtt_config.jmqttAjax({
@@ -135,7 +135,7 @@ $('#bt_mosquittoInstall').on('click', function () {
 $('#bt_mosquittoRepare').on('click', function () {
     if (!$(this).hasClass('disabled')) {
         var btn = $(this);
-        bootbox.confirm('{{Etes-vous sûr de vouloir réparer le service Mosquitto local ?}}', function (result) {
+        bootbox.confirm('{{Êtes-vous sûr de vouloir réparer le service Mosquitto local ?}}', function (result) {
             if (result) {
                 jmqtt_config.toggleIco(btn);
                 jmqtt_config.jmqttAjax({
@@ -163,7 +163,7 @@ $('#bt_mosquittoRepare').on('click', function () {
 $('#bt_mosquittoRemove').on('click', function () {
     if (!$(this).hasClass('disabled')) {
         var btn = $(this);
-        bootbox.confirm('{{Etes-vous sûr de vouloir supprimer le service Mosquitto local ?}}', function (result) {
+        bootbox.confirm('{{Êtes-vous sûr de vouloir supprimer le service Mosquitto local ?}}', function (result) {
             if (result) {
                 jmqtt_config.toggleIco(btn);
                 jmqtt_config.jmqttAjax({
@@ -294,7 +294,7 @@ $('#bt_jmqttUrlOverride').on('click', function () {
             if (data.state != 'ok')
                 $.fn.showAlert({message: data.result,level: 'danger'});
             else
-                $.fn.showAlert({message: '{{Modification effectuée. Relancez le Démon.}}', level: 'success'});
+                $.fn.showAlert({message: '{{Modification effectuée, merci de relancez le Démon.}}', level: 'success'});
         }
     });
 });

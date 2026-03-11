@@ -73,8 +73,8 @@ jmqtt_globals.icons = {
         availability: {
             selector: function(_eq) { return (_eq.configuration.availability_cmd == '') ? 'none' : (_eq.status.warning ? 'nok' : 'ok'); },
             none:     { icon: 'far fa-bell', color: '',        msg: '' },
-            ok:       { icon: 'fas fa-bell', color: 'success', msg: '{{Equipement disponible}}' },
-            nok:      { icon: 'fas fa-bell', color: 'danger',  msg: '{{Equipement indisponible}}' }
+            ok:       { icon: 'fas fa-bell', color: 'success', msg: '{{Équipement disponible}}' },
+            nok:      { icon: 'fas fa-bell', color: 'danger',  msg: '{{Équipement indisponible}}' }
         }
     }
 };
