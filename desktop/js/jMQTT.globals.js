@@ -22,7 +22,7 @@ jmqtt_globals = {};
 jmqtt_globals.icons = {
     broker: {
         status: {
-            selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt_globals.daemonState) ? 'disabled' : info.color; },
+            selector: function(_eq) { var info = jmqtt.getMqttClientInfo(_eq); return (!jmqtt_globals.daemonState) ? 'down' : info.color; },
             success:  { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connexion au Broker active}}' },
             danger:   { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker en échec}}' },
             warning:  { icon: '',                    color: 'warning', msg: '{{Connexion au Broker désactivée}}' },
