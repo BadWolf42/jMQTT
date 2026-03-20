@@ -125,7 +125,7 @@
         "Modification effectuée, merci de relancez le Démon.": "Change saved, please restart the Daemon.",
         "Modifier le fichier jMQTT.conf du service Mosquitto": "Edit the jMQTT.conf file of the Mosquitto service",
         "Niveau de log du démon modifié, il n'est pas nécessaire de le redémarrer.": "Daemon log level changed, no need to restart it.",
-        "Panneau de débogage activé. Rafraîchissez la page principale.": "Debug panel enabled. Refresh the main page.",
+        "Panneau de débogage activé.": "Debug panel enabled.",
         "Panneau de débogage désactivé.": "Debug panel disabled.",
         "Êtes-vous sûr de vouloir installer le service Mosquitto en local ?": "Are you sure you want to install Mosquitto locally?",
         "Êtes-vous sûr de vouloir réparer le service Mosquitto local ?": "Are you sure you want to repair your local Mosquitto service?",

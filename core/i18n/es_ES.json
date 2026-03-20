@@ -125,7 +125,7 @@
         "Modification effectuée, merci de relancez le Démon.": "Modificación realizada, reinicie el demonio.",
         "Modifier le fichier jMQTT.conf du service Mosquitto": "Modificar el archivo jMQTT.conf del servicio Mosquitto",
         "Niveau de log du démon modifié, il n'est pas nécessaire de le redémarrer.": "Se ha modificado el nivel de registro del demonio, no es necesario reiniciarlo.",
-        "Panneau de débogage activé. Rafraîchissez la page principale.": "Panel de depuración activado. Actualice la página principal.",
+        "Panneau de débogage activé.": "Panel de depuración activado.",
         "Panneau de débogage désactivé.": "Panel de depuración desactivado.",
         "Êtes-vous sûr de vouloir installer le service Mosquitto en local ?": "¿Está seguro de que desea instalar el servicio Mosquitto localmente?",
         "Êtes-vous sûr de vouloir réparer le service Mosquitto local ?": "¿Está seguro de que desea reparar el servicio Mosquitto local?",

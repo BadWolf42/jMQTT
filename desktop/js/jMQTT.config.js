@@ -310,13 +310,16 @@ $('#box_debugToggle').on('click', function () {
             success: function(data) {
                 if (data.state == 'ok') {
                     if ($('#box_debugToggle').value() === "1") {
-                        $.fn.showAlert({message: '{{Panneau de débogage activé. Rafraîchissez la page principale.}}', level: 'success'});
+                        document.querySelector("div.eqLogicAction[data-action=debugJMQTT]").removeClass('hidden');
+                        jeeDialog.toast({message: '{{Panneau de débogage activé.}}', level: 'success'});
                     } else {
-                        $.fn.showAlert({message: '{{Panneau de débogage désactivé.}}', level: 'success'});
+                        document.querySelector("div.eqLogicAction[data-action=debugJMQTT]").addClass('hidden');
+                        jeeDialog.toast({message: '{{Panneau de débogage désactivé.}}', level: 'success'});
                     }
                 } else {
-                    $.fn.showAlert({message: data.result, level: 'danger'});
+                    jeeDialog.toast({message: data.result, level: 'danger'});
                 }
+                jeeFrontEnd.modifyWithoutSave = false;
             }
         });
     }
