@@ -336,8 +336,6 @@
         "Il ne devrait pas y avoir un seul orphelin : supprimez-les ou rattachez-les à un Broker.": "No debería haber ningún huérfano: elimínelos o vincúlelos a un Broker.",
         "Lancer": "Iniciar",
         "Le temps que le mode Temps Réel doit fonctionner en secondes [1-3600].": "El tiempo que el modo Tiempo real debe funcionar en segundos [1-3600].",
-        "Mes Equipements orphelins": "Mis dispositivos huérfanos",
-        "Mes Equipements sur le broker": "Mis equipos en el bróker",
         "Modifier Topics": "Modificar temas",
         "Nom": "Nombre",
         "Nouveau sujet": "Nuevo tema",

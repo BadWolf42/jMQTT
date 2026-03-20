@@ -728,7 +728,8 @@ function printEqLogic(_eqLogic) {
         _eqLogic.cmd = new_cmds;
 
         // JSON view: disable the sortable functionality
-        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true;
+        if (jeeFrontEnd.pluginTemplate.cmdSortable)
+            jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = true;
     } else {
         // CLASSIC view button is active
         for (var c of _eqLogic.cmd) {
@@ -736,33 +737,23 @@ function printEqLogic(_eqLogic) {
         }
 
         // Classical view: enable the sortable functionality
-        jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false;
+        if (jeeFrontEnd.pluginTemplate.cmdSortable)
+            jeeFrontEnd.pluginTemplate.cmdSortable.options.disabled = false;
     }
 
     // Show UI elements depending on the type
-    if ((_eqLogic.configuration.type == 'eqpt' && (_eqLogic.configuration.eqLogic == undefined || _eqLogic.configuration.eqLogic < 0))
-            || (_eqLogic.configuration.type != 'eqpt' && _eqLogic.configuration.type != 'broker')) { // Unknow EQ / orphan
-        $('.toDisable').addClass('disabled');
-        $('.typ-brk').hide();
-        $('.typ-std').hide();
-        $('.typ-brk-select').show();
-        $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
-
-        // Udpate panel as if on an eqLogic
-        $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val('eqpt');
-        jmqtt.updateEqptTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
-        $('.toDisable').removeClass('disabled');
+    if (_eqLogic.configuration.type == 'broker') { // jMQTT Broker
         $('.typ-std').hide();
         $('.typ-brk').show();
         $('.eqLogicAction[data-action=configure]').addClass('roundedLeft');
 
         // Udpate panel on eqBroker
         jmqtt.updateBrokerTabs(_eqLogic);
-    }
-    else if (_eqLogic.configuration.type == 'eqpt') { // jMQTT Eq
-        $('.toDisable').removeClass('disabled');
+    } else { // jMQTT Eq
+        // Ensure type is set on an unknow EQ / orphan
+        if (_eqLogic.configuration.type != 'eqpt') { // Unknow EQ / orphan
+            $('.eqLogicAttr[data-l1key=configuration][data-l2key=type]').val('eqpt');
+        }
         $('.typ-brk').hide();
         $('.typ-std').show();
         $('.eqLogicAction[data-action=configure]').removeClass('roundedLeft');

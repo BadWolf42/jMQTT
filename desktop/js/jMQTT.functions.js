@@ -490,6 +490,10 @@ jmqtt.displayRealTimeEvent = function(_eq) {
 
 // Helper to show/hide/disable Real Time buttons
 jmqtt.updateRealTimeTab = function(id, paused) {
+    // Stop if orphan equipment
+    if (undefined == jmqtt_globals.eqBrokers[id])
+        return;
+
     var eqCard = $('.eqLogicDisplayCard[jmqtt_type=broker][data-eqlogic_id="' + id + '"]');
     // Get Real Time mode values
     $('#mqttIncTopic').value(eqCard[0].dataset.rtInc != undefined ? eqCard[0].dataset.rtInc : '#');
