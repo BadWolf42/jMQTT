@@ -23,6 +23,49 @@ $eqNonBrokers = jMQTT::getNonBrokers();
 /** @var jMQTT[] $eqBrokers */
 $eqBrokers = jMQTT::getBrokers();
 
+// Check if there are orphans first
+$has_orphans = false;
+foreach ($eqNonBrokers as $id => $nonBrokers) {
+    if (!isset($eqBrokers[$id])) {
+        if (!$has_orphans) {
+            echo '<legend class="danger"><i class="fas fa-table"></i> {{Equipements orphelins}}&nbsp;<sup>';
+            echo '<i class="fas fa-exclamation-triangle tooltips" title="';
+            echo '{{Ces équipements ne sont associés à aucun broker et ne peuvent donc pas communiquer.}}<br/>';
+            echo '{{Il ne devrait pas y avoir un seul orphelin : supprimez-les ou rattachez-les à un Broker.}}"></i></sup></legend>';
+            echo '<table class="table table-condensed tablesorter" id="table_healthMQTT_orphans">';
+?>
+    <thead>
+        <tr>
+            <th class="col-md-3">{{Module}}</th>
+            <th class="col-md-1 center">{{ID}}</th>
+            <th class="col-md-4">{{Inscrit au Topic}}</th>
+            <th class="col-md-1 center">{{Commandes}}</th>
+            <th class="col-md-1 center">{{Dernière comm.}}</th>
+            <th class="col-md-1 center">{{Date de création}}</th>
+            <th>&nbsp;</th>
+        </tr>
+    </thead>
+    <tbody>
+<?php
+
+            $has_orphans = true;
+        }
+        foreach ($nonBrokers as $eqL) {
+            echo '<tr><td><a href="' . $eqL->getLinkToConfiguration() . '" class="eName" data-key="' . $eqL->getHumanName() . '" style="text-decoration: none;">' . $eqL->getHumanName(true) . '</a></td>';
+            echo '<td style="text-align:center"><span class="label label-info eId" style="font-size:1em;cursor:default;width:70px">' . $eqL->getId() . '</span></td>';
+            echo '<td><span class="label label-info" style="font-size:1em;cursor:default;">' . $eqL->getTopic() . '</span></td>';
+            echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:60px;height:20px;">' . count($eqL->getCmd()) . '</span></td>';
+            echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getStatus('lastCommunication') . ' </span></td>';
+            echo '<td style="text-align:center"><span class="label label-info" style="font-size:1em;cursor:default;width:135px;height:20px;">' . $eqL->getConfiguration('createtime') . ' </span></td>';
+            echo '<td style="text-align:center"><a class="eqLogicAction" data-action="configureEq"><i class="fas fa-cogs"></i></a> ';
+            echo '<a class="eqLogicAction" data-action="removeEq"><i class="fas fa-minus-circle"></i></a></td></tr>';
+
+            }
+        }
+    }
+    if ($has_orphans) {
+        echo '</tbody></table>';
+    }
 ?>
 <legend><i class="fas fa-table"></i> {{Brokers}}</legend>
 <table class="table table-condensed tablesorter" id="table_healthMQTT_brk">
