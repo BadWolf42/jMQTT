@@ -48,23 +48,35 @@ class jMQTTDaemon {
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
-        if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 300) {
+        try {
+            $deltaRx = time() - (cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0));
+            $deltaTx = time() - (cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0));
+        } catch (Throwable $e) {
+            jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                'Exception $s raised by $s(),<br/>@Stack: $s', $e->getMessage(), __METHOD__, $e->getTraceAsString()
+            )));
+            // Cache file/key missed or Exception, considering daemon OK
+            return true;
+        }
+        if ($deltaRx > 300) {
             jMQTT::logger(
-                'debug',
-                'No message or Heartbeat received for >300s, the Daemon is probably dead'
+                'warning',
+                'No message or Heartbeat received for >300s [deltaRx=' . strval($deltaRx)
+                . '], killing the probably dead Daemon [deltaTx=' . strval($deltaTx) . ']'
             );
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
-        if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0)) > 45) {
+        if ($deltaTx > 45) {
             jMQTT::logger(
                 'debug',
-                'Sending a Heartbeat to the Daemon (nothing has been sent for >45s)'
+                'Nothing has been sent for >45s [deltaTx=' . strval($deltaTx)
+                . '], sending a Heartbeat to the Daemon [deltaRx=' . strval($deltaRx) . ']'
             );
             jMQTTComToDaemon::hb();
             return true;
         }
-        // VERY VERBOSE (1/5s to 1/m): Do not activate if not needed!
+        // VERY VERBOSE (1 log every 5-60s): Do not activate if not needed!
         // jMQTT::logger('debug', 'Daemon OK');
         return true;
     }
