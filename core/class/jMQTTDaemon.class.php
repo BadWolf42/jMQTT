@@ -48,16 +48,32 @@ class jMQTTDaemon {
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
+        // Default value is time(), to avoid killing the daemon on cache miss
+        $lastRxDefault = time();
         try {
-            $deltaRx = time() - (cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0));
-            $deltaTx = time() - (cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue(0));
+            $lastRx = cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue($lastRxDefault);
         } catch (Throwable $e) {
             jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
-                'Exception $s raised by $s(),<br/>@Stack: $s', $e->getMessage(), __METHOD__, $e->getTraceAsString()
+                'Exception $s raised by cache on %s,<br/>@Stack: $s',
+                $e->getMessage(), jMQTTConst::CACHE_DAEMON_LAST_RCV, $e->getTraceAsString()
             )));
-            // Cache file/key missed or Exception, considering daemon OK
-            return true;
+            // Defaulting lastRx on Exception, to avoid killing the daemon
+            $lastRx = $lastRxDefault;
         }
+        $deltaRx = time() - $lastRx;
+        // Default value is 0, to send a heatbeat on cache miss
+        $lastTxDefault = 0;
+        try {
+            $lastTx = cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND)->getValue($lastTxDefault);
+        } catch (Throwable $e) {
+            jMQTT::logger('error', str_replace("\n", ' <br/> ', sprintf(
+                'Exception $s raised by cache on %s,<br/>@Stack: $s',
+                $e->getMessage(), jMQTTConst::CACHE_DAEMON_LAST_SND, $e->getTraceAsString()
+            )));
+            // Defaulting lastTx on Exception, to force a heartbeat
+            $lastTx = $lastTxDefault;
+        }
+        $deltaTx = time() - $lastTx;
         if ($deltaRx > 300) {
             jMQTT::logger(
                 'warning',
