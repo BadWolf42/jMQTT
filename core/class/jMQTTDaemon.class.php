@@ -48,7 +48,7 @@ class jMQTTDaemon {
             jMQTTDaemon::stop(); // Cleanup and put jmqtt in a good state
             return false;
         }
-        if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(0)) > 300) {
+        if (time() - (@cache::byKey('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV)->getValue(time())) > 300) {
             jMQTT::logger(
                 'debug',
                 __('Pas de message ou de Heartbeat reçu depuis >300s, le Démon est probablement mort.', __FILE__)
