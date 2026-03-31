@@ -132,10 +132,9 @@ class jMQTTPlugin {
         $url = 'https://stats.bad.wf/v1/query';
         $data = array();
         $data['plugin'] = 'jmqtt';
-        $data['hardwareKey'] = jeedom::getHardwareKey();
         // Ensure system unicity using a rotating UUID
-        $data['lastUUID'] = config::byKey(jMQTTConst::CONF_KEY_JMQTT_UUID, jMQTT::class, $data['hardwareKey']);
         $data['UUID'] = base64_encode(hash('sha384', microtime() . random_bytes(107), true));
+        $data['lastUUID'] = config::byKey(jMQTTConst::CONF_KEY_JMQTT_UUID, jMQTT::class, $data['UUID']);
         $data['hardwareName'] = jeedom::getHardwareName();
         if ($data['hardwareName'] == 'diy')
             $data['hardwareName'] = trim(shell_exec('systemd-detect-virt'));
