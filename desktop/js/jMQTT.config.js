@@ -300,7 +300,28 @@ $('#bt_jmqttUrlOverride').on('click', function () {
 });
 
 //////////////////////////////////////////////////////////////////////////////
-// Debugging modale visibility
+// Advanced parameters
+
+// Toggle statistics
+$('#box_disableStats').on('click', function () {
+    if (!$(this).hasClass('disabled')) {
+        jmqtt_config.jmqttAjax({
+            data: { action: "disableStatsToggle", status: $(this).value() },
+            success: function(data) {
+                if (data.state == 'ok') {
+                    if ($('#box_disableStats').value() === "1") {
+                        jeeDialog.toast({message: '{{Envoi des statistiques désactivé.}}', level: 'success'});
+                    } else {
+                        jeeDialog.toast({message: '{{Envoi des statistiques activé.}}', level: 'success'});
+                    }
+                } else {
+                    jeeDialog.toast({message: data.result, level: 'danger'});
+                }
+                jeeFrontEnd.modifyWithoutSave = false;
+            }
+        });
+    }
+});
 
 // Toggle debug modale
 $('#box_debugToggle').on('click', function () {

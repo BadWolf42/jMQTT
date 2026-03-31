@@ -113,6 +113,11 @@ class jMQTTPlugin {
      * @return void
      */
     public static function stats($_reason = 'cron') {
+        // Stats are disabled
+        if (config::byKey('disableStats', jMQTT::class, false)) {
+            // jMQTT::logger('debug', 'Statistics are disabled');
+            return;
+        }
         // Check last reporting (or if forced)
         $nextStats = @cache::byKey('jMQTT::'.jMQTTConst::CACHE_JMQTT_NEXT_STATS)->getValue(0);
         if ($_reason === 'cron' && (time() < $nextStats)) { // No reason to force send stats
@@ -147,7 +152,7 @@ class jMQTTPlugin {
         $data['branch'] = $jplugin->getConfiguration('version', 'unknown');
         $data['configVersion'] = config::byKey('version', jMQTT::class, -1);
         $data['reason'] = $_reason;
-        if ($_reason == 'uninstall' || $_reason == 'noStats')
+        if ($_reason == 'uninstall')
             $data['next'] = 0;
         else
             $data['next'] = time() + 432000 + rand(0, 172800); // Next stats in 5-7 days

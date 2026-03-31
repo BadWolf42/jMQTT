@@ -368,6 +368,13 @@ try {
         ajax::success(jMQTTPlugin::mosquittoCheck());
     }
 
+    if ($action == 'disableStatsToggle') {
+        if (init('status') == '')
+            throw new Exception(__('Valeur manquante', __FILE__));
+        config::save('disableStats', init('status'), 'jMQTT');
+        ajax::success();
+    }
+
     if ($action == 'debugModaleToggle') {
         if (init('status') == '')
             throw new Exception(__('Valeur manquante', __FILE__));
