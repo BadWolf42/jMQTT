@@ -126,12 +126,14 @@ if ($docker) {
         <legend><i class="fas fa-wrench"></i>{{Paramètres avancés}}</legend>
         <div class="form-group">
             <label class="col-sm-4 control-label">{{Ne pas envoyer les statistiques du système}}&nbsp;<sup><i class="fa fa-question-circle tooltips"
-                title="{{Lorsque cette case est décochée, jMQTT envoie les informations suivantes de façon anonymes au concepteur du plugin pour aider à l'amélioration du plugin :}}<br/>
+                title="{{Lorsque cette case est décochée, jMQTT envoie les informations suivantes de façon anonymes au concepteur du plugin pour aider à l'amélioration du plugin :}}
                 {{type de materiel, distribution et version du système d'exploitation, langue et version de Jeedom, version et source d'installation de jMQTT, version de Python et version de PHP.}}<br/>
                 {{Ces informations sont envoyées lors de installation, la mise à jour, la désinstallation du plugin ou tous les 5 à 7 jours, et sont conservées 10 jours maximum après qu’elles aient été reçues.}}"></i></sup></label>
             <div class="col-sm-8">
                 <input type="checkbox" class="configKey form-control" id="box_disableStats" data-l1key="disableStats" />
             </div>
+        </div>
+        <div class="form-group">
             <label class="col-sm-4 control-label">{{Afficher le panneau de débogage}}</label>
             <div class="col-sm-8">
                 <input type="checkbox" class="configKey form-control" id="box_debugToggle" data-l1key="debugMode" />
