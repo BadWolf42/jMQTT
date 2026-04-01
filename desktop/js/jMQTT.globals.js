@@ -26,7 +26,7 @@ jmqtt_globals.icons = {
             success:  { icon: 'fas fa-check-circle', color: 'success', msg: '{{Connexion au Broker active}}' },
             danger:   { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Connexion au Broker en échec}}' },
             warning:  { icon: '',                    color: 'warning', msg: '{{Connexion au Broker désactivée}}' },
-            down:     { icon: '',                    color: 'danger',  msg: '{{Démon non démarré}}' }
+            down:     { icon: 'fas fa-times-circle', color: 'danger',  msg: '{{Démon non démarré}}' }
         },
         visible: {
             selector: function(_eq) { return _eq.isVisible == '1'; },

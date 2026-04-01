@@ -150,7 +150,9 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
     // Set hiddenAsTable span
     var asCard = jmqtt.asCardHelper(_eq, 'visible', 'eyed');
     if (_eq.configuration.type == 'broker') {
-        asCard += jmqtt.asCardHelper(_eq, 'status', 'status-circle');
+        if (_eq.isEnable) { // No status on card, if eqBroker is disabled
+            asCard += jmqtt.asCardHelper(_eq, 'status', 'status-circle');
+        }
         asCard += jmqtt.asCardHelper(_eq, 'learning', 'rt-status');
         // Store Real Time parameters in eqLogicDisplayCard
         _card[0].dataset.rtRun = _eq.cache.realtime_mode == '1' ? 1 : 0;
@@ -161,6 +163,7 @@ jmqtt.updateDisplayCard = function (_card, _eq) {
     }
     _card.find('span.hiddenAsTable').empty().html(asCard);
 
+    // Set hiddenAsCard span
     var asTable = '';
     asTable += jmqtt.asTableHelper(_eq, 'status', '');
     asTable += jmqtt.asTableHelper(_eq, 'visible', '');

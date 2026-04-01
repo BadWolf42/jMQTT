@@ -149,7 +149,14 @@ class jMQTTComFromDaemon {
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_PORT, $rport);
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_RCV, time());
         cache::set('jMQTT::'.jMQTTConst::CACHE_DAEMON_LAST_SND, time());
+        // Send daemon state
         jMQTTDaemon::sendMqttDaemonStateEvent(true);
+        // Send event to disabled MQTT Clients (to update status down -> disabled)
+        foreach (jMQTT::getBrokers() as $broker) {
+            if (!$broker->getIsEnable()) {
+                $broker->sendMqttClientStateEvent();
+            }
+        }
         // Launch MQTT Clients
         jMQTTDaemon::checkAllMqttClients();
         // Active listeners

@@ -1153,9 +1153,9 @@ $('body').off('jMQTT::EventState').on('jMQTT::EventState', function (_event, _eq
     // Update card on main page
     jmqtt.updateDisplayCard(card, _eq);
     // Update Panel and menu only when on the right Broker
-    if (jmqtt.getEqId() == _eq.id)
+    if (jmqtt.getEqId() == _eq.id) {
         jmqtt.updateBrokerTabs(_eq);
-    else if (jmqtt.getBrkId() == _eq.id) {
+    } else if (jmqtt.getBrkId() == _eq.id) {
         jmqtt.updateRealTimeTab(_eq.id, false);
     }
 });
