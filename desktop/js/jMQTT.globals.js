@@ -94,5 +94,5 @@ jmqtt_globals.dropzoneCpt = 0;
 
 // Update daemon state global variable on reception of a new event (jmqtt_globals.daemonState is initialized by sendVarToJS() in jMQTT.php)
 $('body').off('jMQTT::EventDaemonState').on('jMQTT::EventDaemonState', function (_event, _options) {
-    jmqtt_globals.daemonState = _options.state;
+    jmqtt_globals.daemonState = !!_options.state;
 });

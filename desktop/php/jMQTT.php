@@ -13,7 +13,7 @@ $eqNonBrokers = jMQTT::getNonBrokers();
 $eqBrokers = jMQTT::getBrokers();
 
 // Send daemon current state
-sendVarToJS('jmqtt_globals.daemonState', jMQTTDaemon::state());
+echo '<script>jmqtt_globals.daemonState = ' . (jMQTTDaemon::state() ? 'true' : 'false') . '</script>';
 
 $eqBrokersName = array();
 foreach ($eqBrokers as $id => $eqL) {
