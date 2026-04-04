@@ -112,7 +112,7 @@
     "plugins\/jMQTT\/desktop\/js\/jMQTT.config.js": {
         "Avis": "Reviews",
         "Envoi des statistiques activé.": "Statistics reporting enabled.",
-        "Envoi des statistiques désactivé.": "Statistics sending disabled.",
+        "Envoi des statistiques désactivé.": "Statistics reporting disabled.",
         "Le fichier jMQTT.conf a bien été modifiée.<br\/>Redémarrez le service Mosquitto pour le prendre en compte.": "The jMQTT.conf file has been modified.<br\/>Restart the Mosquitto service to take it into account.",
         "Le service Mosquitto a bien été (re)démarré.": "Mosquitto service has been (re)started.",
         "Le service Mosquitto a bien été arrêté.": "Mosquitto service has been stopped.",
